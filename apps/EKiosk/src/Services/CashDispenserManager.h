@@ -27,19 +27,19 @@ class CashDispenserManager : public SDK::PaymentProcessor::ICashDispenserManager
     Q_OBJECT
 
     /// Данные выдаваемых объектов.
-    struct SItemData {
+    struct SItem_Data {
         SDK::Driver::IDispenser *dispenser;
         int unit;
         int count;
 
-        SItemData() : dispenser(nullptr), unit(0), count(0) {}
-        SItemData(SDK::Driver::IDispenser *aDispenser, int aUnit, int aCount)
+        SItem_Data() : dispenser(nullptr), unit(0), count(0) {}
+        SItem_Data(SDK::Driver::IDispenser *aDispenser, int aUnit, int aCount)
             : dispenser(aDispenser), unit(aUnit), count(aCount) {}
     };
 
-    typedef QList<SItemData> TItemData;
-    typedef QMap<int, TItemData> TItemDataSet;
-    typedef TItemDataSet::iterator TItemDataSetIt;
+    typedef QList<SItem_Data> TItem_Data;
+    typedef QMap<int, TItem_Data> TItem_DataSet;
+    typedef TItem_DataSet::iterator TItem_DataSetIt;
 
     struct SAmounts {
         SDK::PaymentProcessor::TPaymentAmount toDispensing; /// к выдаче
@@ -102,12 +102,12 @@ private:
     void saveCashCount();
 
     /// Получить данные объектов для выдачи
-    TItemDataSet getItemDataSet(SDK::PaymentProcessor::TPaymentAmount aAmount);
+    TItem_DataSet getItem_DataSet(SDK::PaymentProcessor::TPaymentAmount aAmount);
 
     /// Получить данные объекта для выдачи
-    bool getItemData(SDK::PaymentProcessor::TPaymentAmount aAmount,
-                     TItemDataSet &aItemData,
-                     TItemDataSetIt &aItemDataSetIt);
+    bool getItem_Data(SDK::PaymentProcessor::TPaymentAmount aAmount,
+                     TItem_DataSet &aItem_Data,
+                     TItem_DataSetIt &aItem_DataSetIt);
 
     /// Проверить сигнал о результате выдачи денег
     SDK::PaymentProcessor::SCashUnit *
@@ -120,37 +120,37 @@ private:
     bool handleSignal(QObject *aSender,
                       const QString &aSignalName,
                       int aUnit,
-                      int aItemCount,
+                      int aItem_Count,
                       SDK::PaymentProcessor::TPaymentAmount &aAmount);
 
     /// Установить конфигурацию кассет
     void setCashList(SDK::Driver::IDispenser *aDispenser);
 
     /// Валюта
-    QString mCurrencyName;
+    QString m_CurrencyName;
 
     /// Приложение
-    IApplication *mApplication;
+    IApplication *m_Application;
 
     /// Девайс-сервис
-    SDK::PaymentProcessor::IDeviceService *mDeviceService;
+    SDK::PaymentProcessor::IDeviceService *m_DeviceService;
 
     /// Экземпляр девайс-сервиса
-    IHardwareDatabaseUtils *mDatabase;
-    IPaymentDatabaseUtils *mPaymentDatabase;
+    IHardwareDatabaseUtils *m_Database;
+    IPaymentDatabaseUtils *m_PaymentDatabase;
 
     /// Сумма для выдачи/выданная
-    SAmounts mAmounts;
+    SAmounts m_Amounts;
 
     /// Список всех устройств с их GUID
-    QMap<SDK::Driver::IDispenser *, QString> mDispensers;
+    QMap<SDK::Driver::IDispenser *, QString> m_Dispensers;
 
     /// Список сломанных устройств
     typedef QSet<SDK::Driver::IDispenser *> TDispensers;
-    TDispensers mFailedDispensers;
+    TDispensers m_FailedDispensers;
 
     /// Актуальный список номиналов в каждом диспенсере
-    SDK::PaymentProcessor::TCashUnitsState mCurrencyCashList;
+    SDK::PaymentProcessor::TCashUnitsState m_CurrencyCashList;
 };
 
 //---------------------------------------------------------------------------

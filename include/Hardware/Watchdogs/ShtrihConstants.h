@@ -26,7 +26,7 @@ const uchar NoAddress = uchar(-1);
 const char SmartRebootPC = 1;
 
 /// Номер реле модема (не путать с номером бита!).
-const char ModemRelay = 2;
+const char Modem_Relay = 2;
 
 /// Время импульса, [мс].
 const ushort RelayPulseDelay = 3000;

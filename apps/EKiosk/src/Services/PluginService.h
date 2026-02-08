@@ -105,7 +105,7 @@ public:
 
     /// Возвращает загрузчик плагинов.
     using SDK::Plugin::IKernel::getPluginLoader;
-    virtual SDK::Plugin::IPluginLoader *getPluginLoader() const { return mPluginLoader; }
+    virtual SDK::Plugin::IPluginLoader *getPluginLoader() const { return m_PluginLoader; }
 
 private:
     /// Проверяет плагин на валидность и если необходимо запрещает его загрузку.
@@ -113,16 +113,16 @@ private:
 
 private:
     /// Интерфейс приложения.
-    IApplication *mApplication;
+    IApplication *m_Application;
 
     /// Загрузчик плагинов.
-    SDK::Plugin::IPluginLoader *mPluginLoader;
+    SDK::Plugin::IPluginLoader *m_PluginLoader;
 
     /// Потоки проверки подписи плагинов.
-    QFutureSynchronizer<void> mPluginVerifierSynchronizer;
+    QFutureSynchronizer<void> m_PluginVerifierSynchronizer;
 
-    QMap<QString, QString> mSignedPlugins;
-    QStringList mUnsignedPlugins;
+    QMap<QString, QString> m_SignedPlugins;
+    QStringList m_UnsignedPlugins;
 };
 
 //------------------------------------------------------------------------------

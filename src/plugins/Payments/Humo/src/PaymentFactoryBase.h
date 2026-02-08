@@ -75,21 +75,21 @@ public:
     NetworkTaskManager *getNetworkTaskManager() const;
 
     /// Получить окружение
-    SDK::Plugin::IEnvironment *getEnvironment() const { return mFactory; }
+    SDK::Plugin::IEnvironment *getEnvironment() const { return m_Factory; }
 
 private:
-    bool mInitialized;
-    SDK::Plugin::IEnvironment *mFactory;
-    QString mInstancePath;
-    QVariantMap mParameters;
+    bool m_Initialized;
+    SDK::Plugin::IEnvironment *m_Factory;
+    QString m_InstancePath;
+    QVariantMap m_Parameters;
 
-    TSerializer mSerializer;
+    TSerializer m_Serializer;
 
-    SDK::PaymentProcessor::ICore *mCore;
+    SDK::PaymentProcessor::ICore *m_Core;
 
-    ICryptEngine *mCryptEngine;
+    ICryptEngine *m_CryptEngine;
 
-    NetworkTaskManager *mNetwork;
+    NetworkTaskManager *m_Network;
 };
 
 //------------------------------------------------------------------------------

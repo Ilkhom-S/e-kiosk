@@ -27,7 +27,7 @@ public:
     virtual bool last() override;
 
     virtual bool isValid() override;
-    virtual int numRowsAffected() const override;
+    virtual int num_RowsAffected() const override;
 
     virtual QVariant value(int i) const override;
 

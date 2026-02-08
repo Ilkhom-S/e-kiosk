@@ -14,14 +14,14 @@ ATProtocol::ATProtocol(QObject *parent)
 
     // Соответсвие статусам сообщения
     smsTextInit << SmsTextIndex::txtErrorValidator << SmsTextIndex::txtErrorPrinter
-                << SmsTextIndex::txtErrorBalanceAgent << SmsTextIndex::txtErrorSimBalance
+                << SmsTextIndex::txtErrorBalanceAgent << SmsTextIndex::txtErrorSim_Balance
                 << SmsTextIndex::txtErrorLockTerminal << SmsTextIndex::txtErrorConnection;
 
     createDevicePort();
 }
 
 void ATProtocol::setPortName(const QString com_Name) {
-    comName = com_Name;
+    com_Name = com_Name;
 }
 
 bool ATProtocol::openPort() {
@@ -30,9 +30,9 @@ bool ATProtocol::openPort() {
         is_open = false;
         //    return is_open;
         // Даем девайсу название порта
-        //        if(Debugger)  qDebug() << "devicePort->setDeviceName(comName); - "
-        //        << comName;
-        serialPort->setPortName(comName);
+        //        if(Debugger)  qDebug() << "devicePort->setDeviceName(com_Name); - "
+        //        << com_Name;
+        serialPort->setPortName(com_Name);
 
         //        if(Debugger) qDebug() << "After set devicePort->DeviceName(); " <<
         //        devicePort->deviceName();
@@ -107,18 +107,18 @@ bool ATProtocol::sendSMSParam(QString text) {
     QByteArray response;
 
     // at+cmgf=1
-    if (this->processCommand(ModemProtocolCommands::CmdStateSMS, request, response)) {
+    if (this->processCommand(Modem_ProtocolCommands::CmdStateSMS, request, response)) {
 
         request.clear();
         response.clear();
 
-        this->processCommand(ModemProtocolCommands::CmdSetNumberSMS, request, response);
+        this->processCommand(Modem_ProtocolCommands::CmdSetNumberSMS, request, response);
 
         request.clear();
         response.clear();
 
         // Сам текст сообщения
-        if (this->processCommand(ModemProtocolCommands::CmdTextIntersetSMS, request, response)) {
+        if (this->processCommand(Modem_ProtocolCommands::CmdTextIntersetSMS, request, response)) {
 
             qDebug() << "\n<<======Answer CmdTextIntersetSMS true";
             resp = true;
@@ -220,7 +220,7 @@ ATErrors::Enum ATProtocol::unpacketError(const QByteArray &aPacket) {
 }
 
 //--------------------------------------------------------------------------------
-bool ATProtocol::processCommand(ModemProtocolCommands::Enum aCommand,
+bool ATProtocol::processCommand(Modem_ProtocolCommands::Enum aCommand,
                                 const QByteArray &aCommandData,
                                 QByteArray &aAnswerData) {
     int addRepeatCount = 0;
@@ -230,7 +230,7 @@ bool ATProtocol::processCommand(ModemProtocolCommands::Enum aCommand,
     QByteArray commandPacket;
 
     switch (aCommand) {
-    case ModemProtocolCommands::GetBalance: {
+    case Modem_ProtocolCommands::GetBalance: {
 
         commandData = aCommandData;
 
@@ -243,19 +243,19 @@ bool ATProtocol::processCommand(ModemProtocolCommands::Enum aCommand,
         waittimeforans = 100;
     } break;
 
-    case ModemProtocolCommands::GetSimNumber: {
+    case Modem_ProtocolCommands::GetSim_Number: {
 
         commandData = aCommandData;
 
         // вытаскиваем из данных регулярное выражение
-        m_getBalanceRegExp = QRegularExpression(regExpSimNumber);
+        m_getBalanceRegExp = QRegularExpression(regExpSim_Number);
 
         // устанавливаем число дополнительных чтений и паузу между чтениями
-        addRepeatCount = CATProtocolConstants::GetSimNumberAddRepeatCount;
-        pauseTime = CATProtocolConstants::GetSimNumberPauseTime;
+        addRepeatCount = CATProtocolConstants::GetSim_NumberAddRepeatCount;
+        pauseTime = CATProtocolConstants::GetSim_NumberPauseTime;
         waittimeforans = 1000;
     } break;
-    case ModemProtocolCommands::CmdSetNumberSMS: {
+    case Modem_ProtocolCommands::CmdSetNumberSMS: {
 
         commandData = aCommandData;
 
@@ -264,7 +264,7 @@ bool ATProtocol::processCommand(ModemProtocolCommands::Enum aCommand,
         pauseTime = CATProtocolConstants::GetBalancePauseTime;
         waittimeforans = 100;
     } break;
-    case ModemProtocolCommands::CmdTextIntersetSMS: {
+    case Modem_ProtocolCommands::CmdTextIntersetSMS: {
         commandData = aCommandData;
 
         // устанавливаем число дополнительных чтений и паузу между чтениями
@@ -272,7 +272,7 @@ bool ATProtocol::processCommand(ModemProtocolCommands::Enum aCommand,
         pauseTime = CATProtocolConstants::GetBalancePauseTime;
         waittimeforans = 1000;
     } break;
-    case ModemProtocolCommands::CmdDellAllSms: {
+    case Modem_ProtocolCommands::CmdDellAllSms: {
         commandData = aCommandData;
 
         // устанавливаем число дополнительных чтений и паузу между чтениями
@@ -280,7 +280,7 @@ bool ATProtocol::processCommand(ModemProtocolCommands::Enum aCommand,
         pauseTime = CATProtocolConstants::GetBalancePauseTime;
         waittimeforans = 100;
     } break;
-    case ModemProtocolCommands::CmdGetAllSms: {
+    case Modem_ProtocolCommands::CmdGetAllSms: {
         commandData = aCommandData;
 
         // устанавливаем число дополнительных чтений и паузу между чтениями
@@ -314,7 +314,7 @@ bool ATProtocol::processCommand(ModemProtocolCommands::Enum aCommand,
         return false;
     }
 
-    if (aCommand == ModemProtocolCommands::CmdRestart) {
+    if (aCommand == Modem_ProtocolCommands::CmdRestart) {
         this->msleep(10000);
         return true;
     }
@@ -329,14 +329,14 @@ bool ATProtocol::processCommand(ModemProtocolCommands::Enum aCommand,
         if (codecError) {
             QByteArray request;
             QByteArray response;
-            if (aCommand == ModemProtocolCommands::GetSimNumber) {
-                simNumberRequest = encodeGSM7bit(simNumberRequest);
-                qDebug() << "simNumberRequest = " << simNumberRequest;
-                processCommand(ModemProtocolCommands::GetSimNumber, request, response);
+            if (aCommand == Modem_ProtocolCommands::GetSim_Number) {
+                sim_NumberRequest = encodeGSM7bit(sim_NumberRequest);
+                qDebug() << "sim_NumberRequest = " << sim_NumberRequest;
+                processCommand(Modem_ProtocolCommands::GetSim_Number, request, response);
                 return true;
-            } else if (aCommand == ModemProtocolCommands::GetBalance) {
+            } else if (aCommand == Modem_ProtocolCommands::GetBalance) {
                 balanceRequest = encodeGSM7bit(balanceRequest);
-                processCommand(ModemProtocolCommands::GetBalance, request, response);
+                processCommand(Modem_ProtocolCommands::GetBalance, request, response);
                 return true;
             }
         } else {
@@ -510,7 +510,7 @@ bool ATProtocol::getAnswer(QByteArray &aData,
 }
 
 //--------------------------------------------------------------------------------
-bool ATProtocol::getCommandPacket(ModemProtocolCommands::Enum aCommand,
+bool ATProtocol::getCommandPacket(Modem_ProtocolCommands::Enum aCommand,
                                   const QByteArray &aCommandData,
                                   QByteArray &aPacketCommand) {
     Q_UNUSED(aCommandData)
@@ -518,69 +518,69 @@ bool ATProtocol::getCommandPacket(ModemProtocolCommands::Enum aCommand,
     qDebug() << "----------- aCommand ----------- " << aCommand;
     switch (aCommand) {
     //----------------------------------------
-    case ModemProtocolCommands::GetSignalQuality: {
+    case Modem_ProtocolCommands::GetSignalQuality: {
         aPacketCommand.push_back(CATProtocolCommands::SignalQuality.toLatin1());
     } break;
 
-    case ModemProtocolCommands::CmdRestart: {
+    case Modem_ProtocolCommands::CmdRestart: {
         aPacketCommand.push_back(CATProtocolCommands::Restart.toLatin1());
     } break;
 
         //----------------------------------------
-    case ModemProtocolCommands::GetComment: {
+    case Modem_ProtocolCommands::GetComment: {
         aPacketCommand.push_back(CATProtocolCommands::Comment.toLatin1());
     } break;
-    case ModemProtocolCommands::GetSimNumber: {
+    case Modem_ProtocolCommands::GetSim_Number: {
         QString request = CATProtocolCommands::UssdRequest;
-        request = request.arg(this->simNumberRequest);
+        request = request.arg(this->sim_NumberRequest);
         aPacketCommand.push_back(request.toLatin1());
     } break;
     //----------------------------------------
-    case ModemProtocolCommands::Reset: {
+    case Modem_ProtocolCommands::Reset: {
         aPacketCommand.push_back(CATProtocolCommands::ResetSettings.toLatin1());
     } break;
     //----------------------------------------
-    case ModemProtocolCommands::GetOperator: {
+    case Modem_ProtocolCommands::GetOperator: {
         aPacketCommand.push_back(CATProtocolCommands::GetOperator.toLatin1());
     } break;
     //----------------------------------------
-    case ModemProtocolCommands::OffEcho: {
+    case Modem_ProtocolCommands::OffEcho: {
         aPacketCommand.push_back(CATProtocolCommands::OffEcho.toLatin1());
     } break;
     //----------------------------------------
-    case ModemProtocolCommands::IsPin: {
+    case Modem_ProtocolCommands::IsPin: {
         aPacketCommand.push_back(CATProtocolCommands::IsPin.toLatin1());
     } break;
     //----------------------------------------
-    case ModemProtocolCommands::Identification: {
+    case Modem_ProtocolCommands::Identification: {
         aPacketCommand.push_back(CATProtocolCommands::Identification.toLatin1());
     } break;
     //----------------------------------------
-    case ModemProtocolCommands::GetBalance: {
+    case Modem_ProtocolCommands::GetBalance: {
 
         QString request = CATProtocolCommands::UssdRequest;
         request = request.arg(this->balanceRequest);
         aPacketCommand.push_back(request.toLatin1());
     } break;
-    case ModemProtocolCommands::CmdStateSMS: {
+    case Modem_ProtocolCommands::CmdStateSMS: {
         QString request = CATProtocolCommands::SmsState;
         aPacketCommand.push_back(request.toLatin1());
     } break;
-    case ModemProtocolCommands::CmdDellAllSms: {
+    case Modem_ProtocolCommands::CmdDellAllSms: {
         QString request = CATProtocolCommands::DellAllSms;
         aPacketCommand.push_back(request.toLatin1());
     } break;
-    case ModemProtocolCommands::CmdSetNumberSMS: {
+    case Modem_ProtocolCommands::CmdSetNumberSMS: {
         QString vrm = CATProtocolCommands::SmsSend;
         QString request = vrm.arg(this->GetLengthSMS);
         aPacketCommand.push_back(request.toLatin1());
     } break;
-    case ModemProtocolCommands::CmdTextIntersetSMS: {
+    case Modem_ProtocolCommands::CmdTextIntersetSMS: {
         QString request = this->textToSendSms;
         aPacketCommand.push_back(request.toLatin1());
         aPacketCommand.push_back(0x1A);
     } break;
-    case ModemProtocolCommands::CmdGetAllSms: {
+    case Modem_ProtocolCommands::CmdGetAllSms: {
         QString request = CATProtocolCommands::GetAllInputSms;
         aPacketCommand.push_back(request.toLatin1());
     } break;
@@ -591,47 +591,47 @@ bool ATProtocol::getCommandPacket(ModemProtocolCommands::Enum aCommand,
     return true;
 }
 
-QString ATProtocol::getCommandString(ModemProtocolCommands::Enum aCommand) {
+QString ATProtocol::getCommandString(Modem_ProtocolCommands::Enum aCommand) {
     QString command;
     switch (aCommand) {
-    case ModemProtocolCommands::GetSignalQuality: {
-        command = ModemCmd::GetSignalQuality;
+    case Modem_ProtocolCommands::GetSignalQuality: {
+        command = Modem_Cmd::GetSignalQuality;
     } break;
-    case ModemProtocolCommands::GetOperator: {
-        command = ModemCmd::GetOperator;
+    case Modem_ProtocolCommands::GetOperator: {
+        command = Modem_Cmd::GetOperator;
     } break;
-    case ModemProtocolCommands::GetBalance: {
-        command = ModemCmd::GetBalance;
+    case Modem_ProtocolCommands::GetBalance: {
+        command = Modem_Cmd::GetBalance;
     } break;
-    case ModemProtocolCommands::Identification: {
-        command = ModemCmd::Identification;
+    case Modem_ProtocolCommands::Identification: {
+        command = Modem_Cmd::Identification;
     } break;
-    case ModemProtocolCommands::OffEcho: {
-        command = ModemCmd::OffEcho;
+    case Modem_ProtocolCommands::OffEcho: {
+        command = Modem_Cmd::OffEcho;
     } break;
-    case ModemProtocolCommands::GetComment: {
-        command = ModemCmd::GetComment;
+    case Modem_ProtocolCommands::GetComment: {
+        command = Modem_Cmd::GetComment;
     } break;
-    case ModemProtocolCommands::GetSimNumber: {
-        command = ModemCmd::GetSimNumber;
+    case Modem_ProtocolCommands::GetSim_Number: {
+        command = Modem_Cmd::GetSim_Number;
     } break;
-    case ModemProtocolCommands::Reset: {
-        command = ModemCmd::Reset;
+    case Modem_ProtocolCommands::Reset: {
+        command = Modem_Cmd::Reset;
     } break;
-    case ModemProtocolCommands::CmdRestart: {
-        command = ModemCmd::CmdRestart;
+    case Modem_ProtocolCommands::CmdRestart: {
+        command = Modem_Cmd::CmdRestart;
     } break;
     default: {
-        command = ModemCmd::Uknown;
+        command = Modem_Cmd::Uknown;
     }
     };
     return command;
 }
 
 //--------------------------------------------------------------------------------
-bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray &aAnswer) {
+bool ATProtocol::prepareAnswer(Modem_ProtocolCommands::Enum aCommand, QByteArray &aAnswer) {
     switch (aCommand) {
-    case ModemProtocolCommands::GetOperator: {
+    case Modem_ProtocolCommands::GetOperator: {
         //                        if(Debugger) qDebug() << "Protocol AT:
         //                        GetOperator...";
         QString operatorString(aAnswer);
@@ -655,7 +655,7 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
         nowProviderSim = operatorString;
     } break;
     //---------------------------------------
-    case ModemProtocolCommands::GetSignalQuality: {
+    case Modem_ProtocolCommands::GetSignalQuality: {
         //                        if(Debugger) qDebug() << "Protocol AT:
         //                        GetSignalQuality...";
         QString signalString(aAnswer);
@@ -682,7 +682,7 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
     } break;
 
         // Comment
-    case ModemProtocolCommands::GetComment: {
+    case Modem_ProtocolCommands::GetComment: {
         //                        if(Debugger) qDebug() << "Protocol AT:
         //                        GetComment...";
         QString responseString(aAnswer);
@@ -690,17 +690,17 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
         int indexFirst = responseString.indexOf("\n");
         // if(Debugger) qDebug() << "indexFirst = " << indexFirst;
 
-        nowModemComment = responseString.mid(0, indexFirst - 1);
-        nowModemComment.replace("\n", "");
+        nowModem_Comment = responseString.mid(0, indexFirst - 1);
+        nowModem_Comment.replace("\n", "");
     } break;
 
-        // SimNumber
-    case ModemProtocolCommands::GetSimNumber: {
+        // Sim_Number
+    case Modem_ProtocolCommands::GetSim_Number: {
         QString responseString(aAnswer);
 
         QRegularExpressionMatch match = m_getBalanceRegExp.match(responseString);
         match.capturedStart();
-        nowSimNumber = match.captured();
+        nowSim_Number = match.captured();
 
         int indexFirstQuote = responseString.indexOf("+CUSD: 0,\"");
         int indexSecondQuote = -1;
@@ -714,32 +714,32 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
         QString parsedResponse = responseString;
 
         // decodeGSM7bit
-        if (nowSimNumber.trimmed() == "") {
+        if (nowSim_Number.trimmed() == "") {
             responseString = decodeGSM7bit(parsedResponse);
 
             QRegularExpressionMatch match = m_getBalanceRegExp.match(responseString);
             match.capturedStart();
-            nowSimNumber = match.captured();
+            nowSim_Number = match.captured();
         }
 
         // decodeUcs2
-        if (nowSimNumber.trimmed() == "") {
+        if (nowSim_Number.trimmed() == "") {
             responseString = decodeUcs2(parsedResponse);
 
             QRegularExpressionMatch match = m_getBalanceRegExp.match(responseString);
             match.capturedStart();
-            nowSimNumber = match.captured();
+            nowSim_Number = match.captured();
         }
     } break;
 
         //---------------------------------------
-    case ModemProtocolCommands::GetBalance: {
+    case Modem_ProtocolCommands::GetBalance: {
 
         QString responseString(aAnswer);
 
         QRegularExpressionMatch match = m_getBalanceRegExp.match(responseString, this->position);
         match.capturedStart();
-        nowSimBalance = match.captured();
+        nowSim_Balance = match.captured();
 
         int indexFirstQuote = responseString.indexOf("+CUSD: 0,\"");
         int indexSecondQuote = -1;
@@ -753,27 +753,27 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
         QString parsedResponse = responseString;
 
         // decodeGSM7bit
-        if (nowSimBalance.trimmed() == "") {
+        if (nowSim_Balance.trimmed() == "") {
             responseString = decodeGSM7bit(parsedResponse);
 
             QRegularExpressionMatch match =
                 m_getBalanceRegExp.match(responseString, this->position);
             match.capturedStart();
-            nowSimBalance = match.captured();
+            nowSim_Balance = match.captured();
         }
 
         // decodeUcs2
-        if (nowSimBalance.trimmed() == "") {
+        if (nowSim_Balance.trimmed() == "") {
             responseString = decodeUcs2(parsedResponse);
             //                        responseString = "Tavozun: -6.10 TJS. 0.75
             //                        TJS/ruz";
             QRegularExpressionMatch match =
                 m_getBalanceRegExp.match(responseString, this->position);
             match.capturedStart();
-            nowSimBalance = match.captured();
+            nowSim_Balance = match.captured();
         }
     } break;
-    case ModemProtocolCommands::CmdGetAllSms: {
+    case Modem_ProtocolCommands::CmdGetAllSms: {
 
         QString smsString(aAnswer);
         qDebug() << "_______GET ALL SMS_______";
@@ -786,17 +786,17 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
 }
 
 //--------------------------------------------------------------------------------
-bool ATProtocol::getStatusInfo(SModemStatusInfo &aStatusInfo) {
+bool ATProtocol::getStatusInfo(SModem_StatusInfo &aStatusInfo) {
     QByteArray commandData;
     QByteArray answerData;
 
-    m_state = ModemStates::Unknown;
-    m_error = ModemErrors::Unknown;
+    m_state = Modem_States::Unknown;
+    m_error = Modem_Errors::Unknown;
 
     // Статус пока будем определять только по идентификации, чтобы определить
     // наличие коннекта с модемом TO DO в дальнейшем необходимо доделать
     bool isConnect = true;
-    if (!processCommand(ModemProtocolCommands::Identification, commandData, answerData)) {
+    if (!processCommand(Modem_ProtocolCommands::Identification, commandData, answerData)) {
         // if(Debugger) qDebug() << "Protocol AT: error processing command
         // \"Identification\"";
 
@@ -804,14 +804,14 @@ bool ATProtocol::getStatusInfo(SModemStatusInfo &aStatusInfo) {
         // проверим данные на пустой байт
         if (answerData.size() && answerData.at(0) == CATProtocolConstants::EmptyByte) {
             // так и есть, уставливаем статус в "недоступен"
-            m_state = ModemStates::Error;
-            m_error = ModemErrors::NotAvailable;
+            m_state = Modem_States::Error;
+            m_error = Modem_Errors::NotAvailable;
             isConnect = false;
             // if(Debugger) qDebug() << "Protocol AT: NotAvailabled";
         } else
             return false;
     } else
-        m_state = ModemStates::Initialize;
+        m_state = Modem_States::Initialize;
 
     aStatusInfo.state = m_state;
     aStatusInfo.error = m_error;
@@ -827,15 +827,15 @@ QString ATProtocol::octet(QString hexString) {
 
 QString ATProtocol::encodeUcs2(QString msg) {
 
-    QByteArray encodedText = QAtUtils::codec("ucs2")->fromUnicode(msg);
+    QByteArray encodedText = QAtUtils::codec("ucs2")->from_Unicode(msg);
 
     return encodedText;
-    //    QByteArray hex = QByteArray::fromHex(msg.toLocal8Bit());
+    //    QByteArray hex = QByteArray::from_Hex(msg.toLocal8Bit());
 
     //    QString str;
     //    for (int i = 0; i < hex.size(); i += 2) {
     //        ushort u = (hex[i] << 8) | hex[i + 1];
-    //        str.append(QString::fromUtf16(&u, 1));
+    //        str.append(QString::from_Utf16(&u, 1));
     //    }
 
     //    return str;
@@ -908,7 +908,7 @@ QString ATProtocol::decodeGSM7bit(QString hexString) {
         int num = reverse.toInt(&ok, 2);
 
         if (num != 27) {
-            decodedText += QGsmCodec::singleToUnicode(num);
+            decodedText += QGsm_Codec::singleToUnicode(num);
         }
     }
 

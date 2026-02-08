@@ -22,26 +22,26 @@ class SimpleLog;
 
 //---------------------------------------------------------------------------
 class DestinationFile {
-    QFile mFile;
-    FILE *mStdFile;
+    QFile m_File;
+    FILE *m_StdFile;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QRecursiveMutex mMutex;
+    QRecursiveMutex m_Mutex;
 #else
-    QMutex mMutex;
+    QMutex m_Mutex;
 #endif
-    QTextStream mLogStream;
-    QString mFileName;
+    QTextStream m_LogStream;
+    QString m_FileName;
 
 protected:
     DestinationFile()
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        : mStdFile(nullptr), mMutex(QMutex::Recursive), mLogStream(&mFile)
+        : m_StdFile(nullptr), m_Mutex(QMutex::Recursive), m_LogStream(&m_File)
 #else
-        : mStdFile(nullptr), mLogStream(&mFile)
+        : m_StdFile(nullptr), m_LogStream(&m_File)
 #endif
     {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        mLogStream.setCodec("utf-8");
+        m_LogStream.setCodec("utf-8");
 #endif
     }
 
@@ -49,36 +49,36 @@ protected:
 
 public:
     bool open(const QString &aLogPath) {
-        mFile.close();
+        m_File.close();
 
-        if (mStdFile) {
-            fflush(mStdFile);
-            fclose(mStdFile);
+        if (m_StdFile) {
+            fflush(m_StdFile);
+            fclose(m_StdFile);
         }
 
 // Cross-platform file open
 #ifdef Q_OS_WIN
-        mStdFile = _fsopen(aLogPath.toLocal8Bit().constData(), "ab+", _SH_DENYNO);
+        m_StdFile = _fsopen(aLogPath.toLocal8Bit().constData(), "ab+", _SH_DENYNO);
 #else
-        mStdFile = fopen(aLogPath.toLocal8Bit().constData(), "ab+");
+        m_StdFile = fopen(aLogPath.toLocal8Bit().constData(), "ab+");
 #endif
 
-        bool isOK = mStdFile && mFile.open(mStdFile, QIODevice::Append | QIODevice::Text);
+        bool isOK = m_StdFile && m_File.open(m_StdFile, QIODevice::Append | QIODevice::Text);
 
-        mFileName = isOK ? aLogPath : "";
+        m_FileName = isOK ? aLogPath : "";
 
         return isOK;
     }
 
-    bool isOpen() const { return mFile.isOpen(); }
+    bool isOpen() const { return m_File.isOpen(); }
 
-    QString fileName() const { return mFileName; }
+    QString fileName() const { return m_FileName; }
 
     void write(const QString &aMessage) {
-        QMutexLocker locker(&mMutex);
+        QMutexLocker locker(&m_Mutex);
 
-        mLogStream << aMessage;
-        mLogStream.flush();
+        m_LogStream << aMessage;
+        m_LogStream.flush();
     }
 };
 
@@ -131,20 +131,20 @@ private:
     virtual void writeHeader();
 
 private:
-    bool mInitOk;
-    LogLevel::Enum mMaxLogLevel;
+    bool m_InitOk;
+    LogLevel::Enum m_MaxLogLevel;
 
-    QString mName;
-    QString mDestination;
-    LogType::Enum mType;
-    int mPadding;
+    QString m_Name;
+    QString m_Destination;
+    LogType::Enum m_Type;
+    int m_Padding;
 
     // TODO реализовать свёртку повторяющихся сообщений. Решить проблему сброса
     // кэша на диск в этом режиме.
-    int mDuplicateCounter;
-    QString mLastMessage;
+    int m_DuplicateCounter;
+    QString m_LastMessage;
 
-    DestinationFilePtr mCurrentFile;
+    DestinationFilePtr m_CurrentFile;
 };
 
 //---------------------------------------------------------------------------

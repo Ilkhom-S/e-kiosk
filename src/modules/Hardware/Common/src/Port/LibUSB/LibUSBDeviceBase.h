@@ -72,21 +72,21 @@ protected:
     /// Данные соединений устройств. libusb_device — это указатель,
     /// поэтому QMap работает с ним корректно как с ключом.
     typedef QMap<libusb_device *, bool> TUsageData;
-    static TUsageData mUsageData;
+    static TUsageData m_UsageData;
 
     // В Qt 6 используем QRecursiveMutex, в Qt 5 — QMutex с флагом Recursive.
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    static QRecursiveMutex mUsageDataGuard;
+    static QRecursiveMutex m_UsageDataGuard;
 #else
-    static QMutex mUsageDataGuard;
+    static QMutex m_UsageDataGuard;
 #endif
 
     /// Порт.
-    LibUSBPort mLibUSBPort;
+    LibUSBPort m_LibUSBPort;
 
     /// Данные устройств для авто поиска.
-    CUSBDevice::PDetectingData mDetectingData;
+    CUSBDevice::PDetectingData m_DetectingData;
 
     /// Позиция итератора при поиске.
-    int mDetectingPosition = -1;
+    int m_DetectingPosition = -1;
 };

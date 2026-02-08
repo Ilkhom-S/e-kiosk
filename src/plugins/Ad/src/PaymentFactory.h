@@ -67,7 +67,7 @@ public:
 #pragma endregion
 
 private:
-    QMutex mMutex;
+    QMutex m_Mutex;
 };
 
 //------------------------------------------------------------------------------

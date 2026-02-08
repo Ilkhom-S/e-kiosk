@@ -42,7 +42,7 @@ public slots:
     /// Проверка, возможна ли выдача наличных средств
     bool canDispense();
 
-    /// Выдать mAvailableAmount сумму (асинхронная операция)
+    /// Выдать m_AvailableAmount сумму (асинхронная операция)
     void dispense();
 
 private slots:
@@ -76,12 +76,12 @@ signals:
 
 private:
     /// Указатель на ядро.
-    ICore *mCore;
+    ICore *m_Core;
     /// Указатель на сервис средств.
-    IFundsService *mFundsService;
+    IFundsService *m_FundsService;
 
     /// Сумма, которую может выдать диспенсер.
-    TPaymentAmount mAvailableAmount;
+    TPaymentAmount m_AvailableAmount;
 };
 
 //------------------------------------------------------------------------------

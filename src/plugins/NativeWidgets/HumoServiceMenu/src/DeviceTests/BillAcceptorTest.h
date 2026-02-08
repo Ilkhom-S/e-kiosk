@@ -54,13 +54,13 @@ private slots:
 
 private:
     /// Экземпляр класса купюроприемника.
-    ObjectPointer<SDK::Driver::ICashAcceptor> mBillAcceptor;
+    ObjectPointer<SDK::Driver::ICashAcceptor> m_BillAcceptor;
 
     /// Набор разрешенных номиналов.
-    SDK::Driver::TParList mWorkingParList;
+    SDK::Driver::TParList m_WorkingParList;
 
     /// Таймер удаления сообщений.
-    QTimer mErasingTimer;
+    QTimer m_ErasingTimer;
 };
 
 //------------------------------------------------------------------------------

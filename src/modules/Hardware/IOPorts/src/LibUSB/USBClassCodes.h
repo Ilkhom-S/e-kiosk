@@ -59,7 +59,7 @@ public:
     CClassData();
 
     QString getData(uint8_t aClass, uint8_t aSubClass, uint8_t aProtocol) {
-        QString result = mData[aClass].description + ", descriptor usage - " + mData[aClass].usage;
+        QString result = m_Data[aClass].description + ", descriptor usage - " + m_Data[aClass].usage;
         // TODO: доделать локализацию данных девайса
 
         return result;
@@ -67,12 +67,12 @@ public:
 
 private:
     CClassDataIt add(uint8_t aCode, const QString &aUsage, const QString &aDescription) {
-        auto it = mData.insert(aCode, SClassData(aUsage, aDescription));
+        auto it = m_Data.insert(aCode, SClassData(aUsage, aDescription));
 
         return it;
     }
 
-    TClassData mData;
+    TClassData m_Data;
 };
 
 static CClassData ClassData;

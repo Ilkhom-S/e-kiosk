@@ -76,10 +76,10 @@ private slots:
                          int aStatus);
 
 private:
-    IApplication *mApplication;
-    SDK::PaymentProcessor::IDeviceService *mDeviceService;
-    QList<SDK::Driver::IHID *> mHIDs;
-    QList<SDK::Driver::ICardReader *> mCardReaders;
+    IApplication *m_Application;
+    SDK::PaymentProcessor::IDeviceService *m_DeviceService;
+    QList<SDK::Driver::IHID *> m_HIDs;
+    QList<SDK::Driver::ICardReader *> m_CardReaders;
 };
 
 //---------------------------------------------------------------------------

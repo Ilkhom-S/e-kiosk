@@ -5,9 +5,9 @@
 #include <QtCore/QDebug>
 
 Plugin::Plugin(SDK::Plugin::IEnvironment *aEnvironment, const QString &aInstancePath)
-    : mEnvironment(aEnvironment), mInstancePath(aInstancePath),
-      mHelloMessage("Hello World from Plugin Template!") {
-    setLog(mEnvironment->getLog("PluginTemplate"));
+    : m_Environment(aEnvironment), m_InstancePath(aInstancePath),
+      m_HelloMessage("Hello World from Plugin Template!") {
+    setLog(m_Environment->getLog("PluginTemplate"));
     toLog(LogLevel::Normal, "Plugin template initialized");
     // TODO - initialize plugin
 }
@@ -24,17 +24,17 @@ QString Plugin::getPluginName() const {
 
 //------------------------------------------------------------------------------
 QString Plugin::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //------------------------------------------------------------------------------
 QVariantMap Plugin::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //------------------------------------------------------------------------------
 void Plugin::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
     toLog(LogLevel::Normal, QString("Configuration updated: %1").arg(aParameters.size()));
 }
 
@@ -52,7 +52,7 @@ bool Plugin::isReady() const {
 
 //------------------------------------------------------------------------------
 QString Plugin::getHelloMessage() const {
-    return mHelloMessage;
+    return m_HelloMessage;
 }
 
 //------------------------------------------------------------------------------

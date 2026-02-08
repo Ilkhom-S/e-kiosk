@@ -23,7 +23,7 @@ extern const char PaymentAmount[];
 /// Дата и время ФР.
 extern const char FRDateTime[];
 /// Системная дата и время.
-extern const char SystemDateTime[];
+extern const char System_DateTime[];
 } // namespace CFiscalPrinter
 
 } // namespace Driver

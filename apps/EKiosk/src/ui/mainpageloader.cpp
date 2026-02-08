@@ -36,7 +36,7 @@ MainPageLoader::MainPageLoader(QWidget *parent) : QWidget(parent), ui(new Ui::Ma
 
     goInputSum = new QTimer(this);
     goInputSum->setSingleShot(true);
-    connect(goInputSum, SIGNAL(timeout()), this, SLOT(btnGotoInputSumClc()));
+    connect(goInputSum, SIGNAL(timeout()), this, SLOT(btnGotoInputSum_Clc()));
 
     webView = new QWebEngineView(this);
     webView->setAttribute(Qt::WA_DeleteOnClose);
@@ -93,7 +93,7 @@ void MainPageLoader::userInfoCheck(QString account, QString idPrv) {
     emit emit_getUserInfo(account, idPrv);
 }
 
-void MainPageLoader::gotoPageInputFromPayment(const int serviceId) {
+void MainPageLoader::gotoPageInputFrom_Payment(const int serviceId) {
     // Отключаем купюрник
     emit validator_activate(false);
 
@@ -190,17 +190,17 @@ void MainPageLoader::precheck(QString idPrv, QString account, double amount) {
 
     if (tpl != "tjk") {
         for (auto &key : fieldsData.keys()) {
-            paramPrecheck[key] = fieldsData[key];
+            param_Precheck[key] = fieldsData[key];
         }
     }
 
-    QString param = QJsonDocument::fromVariant(paramPrecheck).toJson(QJsonDocument::Compact);
+    QString param = QJsonDocument::from_Variant(param_Precheck).toJson(QJsonDocument::Compact);
     emit emit_toLoging(
         0,
         "MAIN",
         QString("Переходим на страницу пречека account- %1, param- %2").arg(account, param));
 
-    emit emit_checkOnline(gblTrnOnlineCheck, idPrv, account, amount, paramPrecheck);
+    emit emit_checkOnline(gblTrnOnlineCheck, idPrv, account, amount, param_Precheck);
 }
 
 void MainPageLoader::orzuUserDefine(QString inn) {
@@ -330,7 +330,7 @@ void MainPageLoader::jsonResponseSuccess(QVariantMap response, QString requestNa
 
         emit emit_toLoging(0, "ORZU", "Otp успешно подтвержден");
 
-        jsFunc = QString("otpConfirmSuccess()");
+        jsFunc = QString("otpConfirm_Success()");
     }
 
     if (requestName == "orzu_business_conditions") {
@@ -499,7 +499,7 @@ void MainPageLoader::loadMainPage() {
 
 void MainPageLoader::gotoPageInputAccount(int serviceId) {
     _serviceCurrent = serviceInfo(serviceId);
-    paramPrecheck.clear();
+    param_Precheck.clear();
     fieldsData.clear();
     _precheckItems.clear();
 
@@ -602,7 +602,7 @@ void MainPageLoader::gotoPage(PageIn::page page) {
     // Переход на главную страницу
     case PageIn::Main: {
         extraInfo.clear();
-        paramPrecheck.clear();
+        param_Precheck.clear();
         fieldsData.clear();
         _precheckItems.clear();
         _lang = _langDefault;
@@ -771,25 +771,25 @@ void MainPageLoader::sendOtpResult(QString resultCode, QString otpId) {
     webView->page()->runJavaScript(jsFunc);
 }
 
-void MainPageLoader::confirmOtpResult(QString resultCode) {
+void MainPageLoader::confirm_OtpResult(QString resultCode) {
     QString jsFunc;
     QString message;
 
     // Ошибка авторизации
     if (resultCode == "1") {
         message = QString("Введен неверный код подтверждения");
-        jsFunc = QString("otpConfirmError(\"%1\")").arg(message);
+        jsFunc = QString("otpConfirm_Error(\"%1\")").arg(message);
 
         emit emit_toLoging(1, "OTP", message);
         // Успешно
     } else if (resultCode == "0") {
-        jsFunc = QString("otpConfirmSuccess()");
+        jsFunc = QString("otpConfirm_Success()");
 
         emit emit_toLoging(0, "OTP", QString("Otp успешно подтвержден"));
         // Нет связи
     } else {
         message = "Отсутствует связь с сервером";
-        jsFunc = QString("otpConfirmError(\"%1\")").arg(message);
+        jsFunc = QString("otpConfirm_Error(\"%1\")").arg(message);
 
         emit emit_toLoging(1, "OTP", message);
     }
@@ -994,7 +994,7 @@ void MainPageLoader::inputNominal(int nominal, bool coin) {
     }
 
     // Вычисляем комиссии
-    getSumToFromMinusCommis(nominalCash);
+    getSum_ToFrom_MinusCommis(nominalCash);
 
     QVariantMap payment;
     payment["trn_id"] = gblNowTranzaction;
@@ -1030,7 +1030,7 @@ void MainPageLoader::inputNominal(int nominal, bool coin) {
     webView->page()->runJavaScript(jsFunction);
 }
 
-void MainPageLoader::getSumToFromMinusCommis(double amountFrom) {
+void MainPageLoader::getSum_ToFrom_MinusCommis(double amountFrom) {
     int count_comis = commissionMap.count();
 
     if (count_comis > 1) {
@@ -1038,7 +1038,7 @@ void MainPageLoader::getSumToFromMinusCommis(double amountFrom) {
         for (int i = 1; i <= count_comis; i++) {
             if (amountFrom >= commissionMap[i]["sum_from"].toDouble() &&
                 amountFrom <= commissionMap[i]["sum_to"].toDouble()) {
-                nominalAmount = getMoneyToFromAll(commissionMap[i]["type"].toInt(),
+                nominalAmount = getMoneyToFrom_All(commissionMap[i]["type"].toInt(),
                                                   amountFrom,
                                                   commissionMap[i]["value"].toDouble());
                 return;
@@ -1046,7 +1046,7 @@ void MainPageLoader::getSumToFromMinusCommis(double amountFrom) {
         }
     } else {
         // Имеется только одна запись с комиссией
-        nominalAmount = getMoneyToFromAll(
+        nominalAmount = getMoneyToFrom_All(
             commissionMap[1]["type"].toInt(), amountFrom, commissionMap[1]["value"].toDouble());
         return;
     }
@@ -1067,13 +1067,13 @@ void MainPageLoader::clearNominalData() {
     nominalCash = 0;
 }
 
-double MainPageLoader::getMoneyToFromAll(int cmsType, double from, double value) {
+double MainPageLoader::getMoneyToFrom_All(int cmsType, double from, double value) {
     double sum_to_in = 0;
 
     if (cmsType == 1) {
         // Статическая в сомони
         sum_to_in = from - value;
-        gblRatioPrv = getRatioFromIn(from, sum_to_in);
+        gblRatioPrv = getRatioFrom_In(from, sum_to_in);
     } else if (cmsType == 2) {
         double pp = (from * value) / 100;
         sum_to_in = from - pp;
@@ -1085,7 +1085,7 @@ double MainPageLoader::getMoneyToFromAll(int cmsType, double from, double value)
     return sum_to_in;
 }
 
-double MainPageLoader::getRatioFromIn(double from, double to) {
+double MainPageLoader::getRatioFrom_In(double from, double to) {
     double rat = 100 - ((to * 100) / from);
     rat = QString::number(rat, 'f', 2).toDouble();
     return rat;
@@ -1109,7 +1109,7 @@ QString MainPageLoader::commissionProfile() {
     }
 
     QJsonDocument doc;
-    doc.setArray(QJsonArray::fromVariantList(items));
+    doc.setArray(QJsonArray::from_VariantList(items));
 
     return doc.toJson();
 }
@@ -1162,7 +1162,7 @@ MainPageLoader::~MainPageLoader() {
     delete ui;
 }
 
-void MainPageLoader::btnGotoInputSumClc() {
+void MainPageLoader::btnGotoInputSum_Clc() {
     // Активируем купюроприемник
     emit validator_activate(true);
 }

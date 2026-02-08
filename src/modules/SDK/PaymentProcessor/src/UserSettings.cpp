@@ -13,7 +13,7 @@ namespace PaymentProcessor {
 
 //---------------------------------------------------------------------------
 UserSettings::UserSettings(TPtree &aProperties)
-    : mProperties(aProperties.get_child(CAdapterNames::UserAdapter, aProperties)) {}
+    : m_Properties(aProperties.get_child(CAdapterNames::UserAdapter, aProperties)) {}
 
 //---------------------------------------------------------------------------
 UserSettings::~UserSettings() {}
@@ -30,12 +30,12 @@ QString UserSettings::getAdapterName() {
 
 //---------------------------------------------------------------------------
 bool UserSettings::reportAllPayments() const {
-    return mProperties.get<bool>("user.monitoring.report_all_payments", false);
+    return m_Properties.get<bool>("user.monitoring.report_all_payments", false);
 }
 
 //---------------------------------------------------------------------------
 bool UserSettings::useStackerID() const {
-    return mProperties.get<bool>("user.encashment.use_stacker_id", false);
+    return m_Properties.get<bool>("user.encashment.use_stacker_id", false);
 }
 
 //---------------------------------------------------------------------------

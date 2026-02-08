@@ -41,29 +41,29 @@ FundsService *FundsService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 FundsService::FundsService(IApplication *aApplication)
-    : ILogable(CFundsService::LogName), mApplication(aApplication), mCashDispenserManager(nullptr),
-      mCashAcceptorManager(nullptr) {}
+    : ILogable(CFundsService::LogName), m_Application(aApplication), m_CashDispenserManager(nullptr),
+      m_CashAcceptorManager(nullptr) {}
 
 //---------------------------------------------------------------------------
 FundsService::~FundsService() {}
 
 //---------------------------------------------------------------------------
 bool FundsService::initialize() {
-    if (!mCashAcceptorManager) {
-        mCashAcceptorManager = new CashAcceptorManager(mApplication);
-        mCashAcceptorManager->setParent(this);
+    if (!m_CashAcceptorManager) {
+        m_CashAcceptorManager = new CashAcceptorManager(m_Application);
+        m_CashAcceptorManager->setParent(this);
     }
 
-    if (!mCashDispenserManager) {
-        mCashDispenserManager = new CashDispenserManager(mApplication);
-        mCashDispenserManager->setParent(this);
+    if (!m_CashDispenserManager) {
+        m_CashDispenserManager = new CashDispenserManager(m_Application);
+        m_CashDispenserManager->setParent(this);
     }
 
     auto database =
-        DatabaseService::instance(mApplication)->getDatabaseUtils<IPaymentDatabaseUtils>();
+        DatabaseService::instance(m_Application)->getDatabaseUtils<IPaymentDatabaseUtils>();
 
-    return mCashAcceptorManager->initialize(database) &&
-           mCashDispenserManager->initialize(database);
+    return m_CashAcceptorManager->initialize(database) &&
+           m_CashDispenserManager->initialize(database);
 }
 
 //------------------------------------------------------------------------------
@@ -76,16 +76,16 @@ bool FundsService::canShutdown() {
 
 //---------------------------------------------------------------------------
 bool FundsService::shutdown() {
-    if (mCashAcceptorManager) {
-        mCashAcceptorManager->shutdown();
-        delete mCashAcceptorManager;
-        mCashAcceptorManager = nullptr;
+    if (m_CashAcceptorManager) {
+        m_CashAcceptorManager->shutdown();
+        delete m_CashAcceptorManager;
+        m_CashAcceptorManager = nullptr;
     }
 
-    if (mCashDispenserManager) {
-        mCashDispenserManager->shutdown();
-        delete mCashDispenserManager;
-        mCashDispenserManager = nullptr;
+    if (m_CashDispenserManager) {
+        m_CashDispenserManager->shutdown();
+        delete m_CashDispenserManager;
+        m_CashDispenserManager = nullptr;
     }
 
     return true;
@@ -110,7 +110,7 @@ QVariantMap FundsService::getParameters() const {
     QVariantMap parameters;
 
     parameters[PPSDK::CServiceParameters::Funds::RejectCount] =
-        mCashAcceptorManager->getRejectCount();
+        m_CashAcceptorManager->getRejectCount();
 
     return parameters;
 }
@@ -119,7 +119,7 @@ QVariantMap FundsService::getParameters() const {
 void FundsService::resetParameters(const QSet<QString> &aParameters) {
     if (aParameters.contains(PPSDK::CServiceParameters::Funds::RejectCount)) {
         auto dbUtils =
-            DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
+            DatabaseService::instance(m_Application)->getDatabaseUtils<IHardwareDatabaseUtils>();
         dbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                 PPSDK::CDatabaseConstants::Parameters::RejectCount,
                                 0);
@@ -130,7 +130,7 @@ void FundsService::resetParameters(const QSet<QString> &aParameters) {
 QString FundsService::getState() const {
     // Получаем список всех доступных устройств.
     PPSDK::TerminalSettings *settings =
-        SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+        SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
     QStringList deviceList = settings->getDeviceList().filter(
         QRegularExpression(QString("(%1|%2)")
                                .arg(DSDK::CComponents::BillAcceptor)
@@ -140,7 +140,7 @@ QString FundsService::getState() const {
 
     foreach (const QString &configurationName, deviceList) {
         DSDK::IDevice *device =
-            DeviceService::instance(mApplication)->acquireDevice(configurationName);
+            DeviceService::instance(m_Application)->acquireDevice(configurationName);
         if (device) {
             QStringList dd = device->getDeviceConfiguration()
                                  .value(CHardwareSDK::DeviceData)
@@ -158,7 +158,7 @@ QString FundsService::getState() const {
                     }
                 }
 
-                result << DeviceService::instance(mApplication)
+                result << DeviceService::instance(m_Application)
                               ->getDeviceConfiguration(configurationName)
                               .value(CHardwareSDK::ModelName)
                               .toString()
@@ -173,12 +173,12 @@ QString FundsService::getState() const {
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::ICashAcceptorManager *FundsService::getAcceptor() const {
-    return mCashAcceptorManager;
+    return m_CashAcceptorManager;
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::ICashDispenserManager *FundsService::getDispenser() const {
-    return mCashDispenserManager;
+    return m_CashDispenserManager;
 }
 
 //---------------------------------------------------------------------------

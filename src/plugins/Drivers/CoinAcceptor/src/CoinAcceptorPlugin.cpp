@@ -12,12 +12,12 @@ template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QStri
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList EnumParameters() {
+template <class T> TParameterList Enum_Parameters() {
     return createNamedList<T>(T::getModelList(), CComponents::CoinAcceptor)
            << setProtocol(ProtocolNames::CashDevice::CCTalk)
 
            // ID валюты. TODO: необходимо получать поддержку валют статически от каждого протокола.
-           << SPluginParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId,
+           << SPluginParameter(CHardwareSDK::CashAcceptor::System_CurrencyId,
                                false,
                                QT_TRANSLATE_NOOP("BillAcceptorParameters",
                                                  "BillAcceptorParameters#system_currency_id"),
@@ -31,7 +31,7 @@ template <class T> TParameterList EnumParameters() {
 template <class T> TParameterList CCTalkParameters() {
     using namespace CHardware::CashDevice;
 
-    return EnumParameters<T>() << setProtocolType(CCTalkTypes::CRC8,
+    return Enum_Parameters<T>() << setProtocolType(CCTalkTypes::CRC8,
                                                   QStringList() << CCTalkTypes::CRC8);
 }
 

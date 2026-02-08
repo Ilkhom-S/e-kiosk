@@ -88,7 +88,7 @@ bool Platix::processCommand(char aCommand) {
     request.append(CPlatix::CommandSize);
     request.append(aCommand);
     QString CRC = QString("%1").arg(calcCRC(request), 4, 16, QChar(ASCII::Zero));
-    request.append(ProtocolUtils::getBufferFromString(CRC));
+    request.append(ProtocolUtils::getBufferFrom_String(CRC));
 
     if (!m_IOPort->write(request)) {
         return false;

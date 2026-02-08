@@ -19,7 +19,7 @@ const int KillTimeoutMs = 3000; // 3 seconds timeout for graceful termination
 
 //----------------------------------------------------------------------------
 void ProcessEnumerator::enumerate() {
-    mProcesses.clear();
+    m_Processes.clear();
 
     DIR *procDir = opendir("/proc");
     if (!procDir) {
@@ -43,8 +43,8 @@ void ProcessEnumerator::enumerate() {
             buffer[len] = '\0';
             ProcessInfo info;
             info.pid = static_cast<PID>(pid);
-            info.path = QString::fromLocal8Bit(buffer);
-            mProcesses.insert(info.pid, info);
+            info.path = QString::from_Local8Bit(buffer);
+            m_Processes.insert(info.pid, info);
         }
     }
 
@@ -100,12 +100,12 @@ ProcessEnumerator::ProcessEnumerator() {
 
 //----------------------------------------------------------------------------
 ProcessEnumerator::const_iterator ProcessEnumerator::begin() const {
-    return mProcesses.begin();
+    return m_Processes.begin();
 }
 
 //----------------------------------------------------------------------------
 ProcessEnumerator::const_iterator ProcessEnumerator::end() const {
-    return mProcesses.end();
+    return m_Processes.end();
 }
 
 //----------------------------------------------------------------------------

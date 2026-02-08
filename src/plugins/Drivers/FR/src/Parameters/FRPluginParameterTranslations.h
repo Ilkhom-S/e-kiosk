@@ -14,7 +14,7 @@ extern const char SessionOpeningTime[];
 extern const char EjectorParameters[];
 extern const char PrinterModel[];
 extern const char NotPrinting[];
-extern const char NullingSumInCash[];
+extern const char NullingSum_InCash[];
 }; // namespace PluginParameterTranslations
 
 //------------------------------------------------------------------------

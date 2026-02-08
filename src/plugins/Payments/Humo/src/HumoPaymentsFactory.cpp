@@ -3,9 +3,9 @@
 #include "HumoPaymentsFactory.h"
 
 HumoPaymentsFactory::HumoPaymentsFactory() {
-    mModuleName = "humo_payments";
-    mName = "Humo Payments";
-    mDescription = "Платежный плагин для HUMO, поддержка мультистейдж и дилерских платежей";
-    mAuthor = "Humo";
-    mVersion = "1.0";
+    m_ModuleName = "humo_payments";
+    m_Name = "Humo Payments";
+    m_Description = "Платежный плагин для HUMO, поддержка мультистейдж и дилерских платежей";
+    m_Author = "Humo";
+    m_Version = "1.0";
 }

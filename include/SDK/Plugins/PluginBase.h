@@ -13,14 +13,14 @@ public:
     PluginBase(const QString &aName,
                SDK::Plugin::IEnvironment *aEnvironment,
                const QString &aInstancePath)
-        : mInstanceName(aInstancePath), mEnvironment(aEnvironment), mPluginName(aName) {
+        : m_InstanceName(aInstancePath), m_Environment(aEnvironment), m_PluginName(aName) {
         setLog(aEnvironment->getLog(aName));
     }
 
     virtual ~PluginBase() {}
 
     /// Возвращает название плагина.
-    virtual QString getPluginName() const { return mPluginName; }
+    virtual QString getPluginName() const { return m_PluginName; }
 
     /// Возвращает параметры плагина.
     virtual QVariantMap getConfiguration() const { return QVariantMap(); }
@@ -33,15 +33,15 @@ public:
     virtual bool saveConfiguration() { return true; }
 
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
-    virtual QString getConfigurationName() const { return mInstanceName; }
+    virtual QString getConfigurationName() const { return m_InstanceName; }
 
     /// Проверяет успешно ли инициализировался плагин при создании.
     virtual bool isReady() const { return true; }
 
 private:
-    QString mPluginName;
-    QString mInstanceName;
-    SDK::Plugin::IEnvironment *mEnvironment;
+    QString m_PluginName;
+    QString m_InstanceName;
+    SDK::Plugin::IEnvironment *m_Environment;
 };
 
 //--------------------------------------------------------------------------------

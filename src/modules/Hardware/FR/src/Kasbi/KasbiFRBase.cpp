@@ -161,7 +161,7 @@ bool KasbiFRBase::checkPrintingParameters(const CFR::TTLVList &aRequiredTLVs) {
     }
 
     QSet<int> noFields = aRequiredTLVs.keys().toSet() - TLVs.keys().toSet();
-    QString errorLog = m_FFData.getLogFromList(noFields.toList());
+    QString errorLog = m_FFData.getLogFrom_List(noFields.toList());
 
     if (!errorLog.isEmpty()) {
         toLog(LogLevel::Error, m_DeviceName + ": No requied field(s): " + errorLog);
@@ -395,7 +395,7 @@ bool KasbiFRBase::processAnswer(char aCommand, char aError) {
 
 //--------------------------------------------------------------------------------
 bool KasbiFRBase::getStatus(TStatusCodes &aStatusCodes) {
-    QByteArray data = performStatus(aStatusCodes, CKasbiFR::Commands::GetStatus, 18);
+    QByteArray data = perform_Status(aStatusCodes, CKasbiFR::Commands::GetStatus, 18);
 
     if (data == CFR::Result::Fail) {
         return false;
@@ -403,7 +403,7 @@ bool KasbiFRBase::getStatus(TStatusCodes &aStatusCodes) {
         aStatusCodes.insert(CKasbiFR::Statuses[data[18]]);
     }
 
-    data = performStatus(aStatusCodes, CKasbiFR::Commands::GetOFDNotSentCount, 1);
+    data = perform_Status(aStatusCodes, CKasbiFR::Commands::GetOFDNotSentCount, 1);
 
     if (data == CFR::Result::Fail) {
         return false;
@@ -493,7 +493,7 @@ bool KasbiFRBase::execZReport(bool aAuto) {
 
     bool needCloseSession = true; // TODO: sessionState
     bool cannotAutoZReport =
-        m_OperatorPresence && !getConfigParameter(CHardware::FR::ForcePerformZReport).toBool();
+        m_OperatorPresence && !getConfigParameter(CHardware::FR::ForcePerform_ZReport).toBool();
 
     if (aAuto && cannotAutoZReport) {
         toLog(LogLevel::Error,
@@ -520,7 +520,7 @@ bool KasbiFRBase::execZReport(bool aAuto) {
 }
 
 //--------------------------------------------------------------------------------
-bool KasbiFRBase::performZReport(bool /*aPrintDeferredReports*/) {
+bool KasbiFRBase::perform_ZReport(bool /*aPrintDeferredReports*/) {
     toLog(LogLevel::Normal, m_DeviceName + ": Processing Z-report");
 
     return execZReport(false);
@@ -544,7 +544,7 @@ bool KasbiFRBase::sale(const SUnitData &aUnitData) {
 }
 
 //--------------------------------------------------------------------------------
-bool KasbiFRBase::performFiscal(const QStringList &aReceipt,
+bool KasbiFRBase::perform_Fiscal(const QStringList &aReceipt,
                                 const SPaymentData &aPaymentData,
                                 quint32 *aFDNumber) {
     if (((getDocumentState() == EDocumentState::Opened) &&

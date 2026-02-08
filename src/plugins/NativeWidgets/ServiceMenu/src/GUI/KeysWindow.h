@@ -55,11 +55,11 @@ private:
     }
 
 protected:
-    QVariantMap mTaskParameters;
+    QVariantMap m_TaskParameters;
 
-    QFutureWatcher<bool> mGenerateTaskWatcher;
+    QFutureWatcher<bool> m_GenerateTaskWatcher;
 
-    ServiceMenuBackend *mBackend;
+    ServiceMenuBackend *m_Backend;
 };
 
 //------------------------------------------------------------------------

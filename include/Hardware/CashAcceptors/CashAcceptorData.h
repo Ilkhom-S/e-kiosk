@@ -26,7 +26,7 @@ const int StartSetEnable = 600;
 } // namespace Timeout
 
 /// Минимальный из возможных интервал поллинга, девайс отключен на прием денег.
-const int MinimumPollingInterval = 800;
+const int Minimum_PollingInterval = 800;
 
 /// Максимальное количество попыток софтварного резета.
 const int MaxCommandAttempt = 3;

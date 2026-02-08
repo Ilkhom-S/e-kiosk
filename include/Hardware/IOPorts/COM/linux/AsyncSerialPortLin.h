@@ -22,7 +22,7 @@ public:
     AsyncSerialPortLin();
 
     /// Возвращает список доступных в системе портов.
-    static QStringList enumerateSystemNames();
+    static QStringList enumerateSystem_Names();
 
     /// Опрашивает данные портов.
     virtual void initialize();
@@ -73,7 +73,7 @@ protected:
     virtual bool checkExistence();
 
     /// Открыть порт.
-    virtual bool performOpen();
+    virtual bool perform_Open();
 
     /// Прочитать данные.
     virtual bool processReading(QByteArray &aData, int aTimeout);
@@ -97,7 +97,7 @@ protected:
     int m_MaxReadingSize;
 
     /// Системные имена портов.
-    QStringList m_SystemNames;
+    QStringList m_System_Names;
 };
 
 //--------------------------------------------------------------------------------

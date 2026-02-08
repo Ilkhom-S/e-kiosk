@@ -34,10 +34,10 @@ public:
 
 protected:
     /// Параметры.
-    QVariantMap mConfiguration;
+    QVariantMap m_Configuration;
 
     /// Сторож параметров.
-    mutable QReadWriteLock mConfigurationGuard;
+    mutable QReadWriteLock m_ConfigurationGuard;
 
     /// Кодек не нужен в Qt6 - используем UTF-8 напрямую.
 };

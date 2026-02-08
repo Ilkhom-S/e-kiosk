@@ -99,7 +99,7 @@ QByteArray BasePrinterDevices::packetImage(const QString &aPixelString, uchar aW
 }
 
 void BasePrinterDevices::setPortName(const QString com_Name) {
-    comName = com_Name;
+    com_Name = com_Name;
 }
 
 // bool BasePrinterDevices::print(const QString& aCheck)
@@ -112,7 +112,7 @@ void BasePrinterDevices::setPortName(const QString com_Name) {
 
 //}
 
-void BasePrinterDevices::setFirmPattern(const QString firm_name) {
+void BasePrinterDevices::setFirm_Pattern(const QString firm_name) {
     company_name = firm_name;
     viewLogoImg = false;
 }
@@ -147,7 +147,7 @@ bool BasePrinterDevices::sendCommand(QByteArray dataRequest,
         //        devicePort->flush();
         serialPort->write(dataRequest);
         // if(Debugger) qDebug() << QString("\n --> Request : to port -
-        // %1\n").arg(comName);
+        // %1\n").arg(com_Name);
         this->printDataToHex(dataRequest);
 
         if (getResponse) {
@@ -185,7 +185,7 @@ bool BasePrinterDevices::sendCommand(QByteArray dataRequest,
 
 //        devicePort->write(dataRequest);
 //        //if(Debugger) qDebug() << QString("\n --> Request : to port -
-//        %1\n").arg(comName); this->printDataToHex(dataRequest);
+//        %1\n").arg(com_Name); this->printDataToHex(dataRequest);
 
 //        if(getResponse){
 //        //Если нам нужен респонс
@@ -220,7 +220,7 @@ QByteArray BasePrinterDevices::encodingString(const QString &text, const QByteAr
 
     QTextCodec *codec = QTextCodec::codecForName(charCode);
 
-    return codec->fromUnicode(string);
+    return codec->from_Unicode(string);
 }
 
 void BasePrinterDevices::printDataToHex(const QByteArray &data) {

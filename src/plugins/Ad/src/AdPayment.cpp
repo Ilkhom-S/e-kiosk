@@ -39,8 +39,8 @@ const char TemporarySession[] = "temporary_session";
 // Конструктор класса AdPayment
 AdPayment::AdPayment(PaymentFactory *aFactory)
     : PaymentBase(aFactory, aFactory->getCore()),
-      mRequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
-    mRequestSender.setResponseCreator(boost::bind(
+      m_RequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
+    m_RequestSender.setResponseCreator(boost::bind(
         &AdPayment::createResponse, this, boost::placeholders::_1, boost::placeholders::_2));
 }
 
@@ -51,7 +51,7 @@ bool AdPayment::isNull() const {
 
 //------------------------------------------------------------------------------
 PaymentFactory *AdPayment::getPaymentFactory() const {
-    return dynamic_cast<PaymentFactory *>(mFactory);
+    return dynamic_cast<PaymentFactory *>(m_Factory);
 }
 
 //------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ Response *AdPayment::createResponse(const Request &aRequest, const QString &aRes
 
 //------------------------------------------------------------------------------
 Response *AdPayment::sendRequest(const QUrl &aUrl, Request &aRequest) {
-    mRequestSender.setCryptKeyPair(mProviderSettings.processor.keyPair);
+    m_RequestSender.setCryptKeyPair(m_ProviderSettings.processor.keyPair);
 
     toLog(LogLevel::Normal,
           QString("AdPayment %1. Sending request to url %2. ").arg(getID()).arg(aUrl.toString()) +
@@ -75,7 +75,7 @@ Response *AdPayment::sendRequest(const QUrl &aUrl, Request &aRequest) {
     RequestSender::ESendError error;
 
     std::unique_ptr<Response> response(
-        mRequestSender.post(aUrl, aRequest, RequestSender::Solid, error));
+        m_RequestSender.post(aUrl, aRequest, RequestSender::Solid, error));
     if (!response) {
         toLog(LogLevel::Error,
               QString("AdPayment %1. Failed to send request: %2.")
@@ -112,11 +112,11 @@ Response *AdPayment::sendRequest(const QUrl &aUrl, Request &aRequest) {
 //---------------------------------------------------------------------------
 bool AdPayment::isCriticalError(int aError) const {
     switch (aError) {
-    case EServerError::BadSumFormat:
+    case EServerError::BadSum_Format:
     case EServerError::BadNumberFormat:
     case EServerError::BadAccountFormat:
     case EServerError::ErrorDate:
-    case EServerError::MaxSumExceeded: {
+    case EServerError::MaxSum_Exceeded: {
         return true;
     }
 
@@ -132,8 +132,8 @@ bool AdPayment::pay() {
           QString("AdPayment %1. %2, operator: %3 (%4), session: %5")
               .arg(getID())
               .arg(CPayment::Requests::Pay)
-              .arg(mProviderSettings.id)
-              .arg(mProviderSettings.name)
+              .arg(m_ProviderSettings.id)
+              .arg(m_ProviderSettings.name)
               .arg(getSession()));
 
     QScopedPointer<Request> request(createRequest(CPayment::Requests::Pay));
@@ -144,7 +144,7 @@ bool AdPayment::pay() {
         return false;
     }
 
-    QUrl url(mProviderSettings.processor.requests[CPayment::Requests::Pay].url);
+    QUrl url(m_ProviderSettings.processor.requests[CPayment::Requests::Pay].url);
     if (!url.isValid()) {
         toLog(LogLevel::Error, QString("AdPayment %1. Can't find url for operation.").arg(getID()));
 
@@ -209,7 +209,7 @@ void AdPayment::setProcessError() {
 }
 
 //------------------------------------------------------------------------------
-void AdPayment::performTransaction() {
+void AdPayment::perform_Transaction() {
     toLog(LogLevel::Normal, QString("AdPayment %1. Processing...").arg(getID()));
 
     // Если дошли до этапа оплаты, сохраняем данные в базу, чтобы предотвратить дубликат платежа.
@@ -274,7 +274,7 @@ void AdPayment::process() {
                 }
             }
 
-            performTransaction();
+            perform_Transaction();
 
             break;
         }
@@ -304,7 +304,7 @@ bool AdPayment::canProcessOffline() const {
 }
 
 //------------------------------------------------------------------------------
-bool AdPayment::performStep(int /*aStep*/) {
+bool AdPayment::perform_Step(int /*aStep*/) {
     setStatus(PPSDK::EPaymentStatus::ProcessError);
 
     process();

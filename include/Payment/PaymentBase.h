@@ -193,11 +193,11 @@ private:
     TParameterList m_Parameters;
 
 protected:
-    SDK::PaymentProcessor::IPaymentFactory *mFactory;
-    SDK::PaymentProcessor::ICore *mCore;
+    SDK::PaymentProcessor::IPaymentFactory *m_Factory;
+    SDK::PaymentProcessor::ICore *m_Core;
 
-    SDK::PaymentProcessor::SKeySettings mKeySettings;
-    SDK::PaymentProcessor::SProvider mProviderSettings;
+    SDK::PaymentProcessor::SKeySettings m_KeySettings;
+    SDK::PaymentProcessor::SProvider m_ProviderSettings;
 
     /// Флаг - true, если идёт восстановление платежа из списка параметров.
     bool m_IsRestoring;

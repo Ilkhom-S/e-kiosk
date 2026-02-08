@@ -20,7 +20,7 @@ const QString Win2000PhonebookPath =
     "\\Application Data\\Microsoft\\Network\\Connections\\Pbk\\Rasphone.pbk";
 } // namespace CConnection
 
-ILog *IConnection::mLog = nullptr;
+ILog *IConnection::m_Log = nullptr;
 
 //--------------------------------------------------------------------------------
 /// Создание экземпляра соединения.
@@ -28,7 +28,7 @@ IConnection *IConnection::create(const QString &aName,
                                  EConnectionTypes::Enum aType,
                                  NetworkTaskManager *aNetwork,
                                  ILog *aLog) {
-    IConnection::mLog = aLog;
+    IConnection::m_Log = aLog;
 
     switch (aType) {
     case EConnectionTypes::Dialup: {
@@ -49,7 +49,7 @@ QStringList IConnection::getModems() {
     if (denum.isValid()) {
         while (denum.getDevice(device)) {
             if (RasApi::EDeviceType::ToEnum(device.type()) == RasApi::EDeviceType::Modem) {
-                modems.append(QString::fromStdWString(device.name()));
+                modems.append(QString::from_StdWString(device.name()));
             }
         }
     } else {
@@ -84,7 +84,7 @@ QStringList IConnection::getRemoteConnections() {
 
     if (eenum.isValid()) {
         while (eenum.getEntry(entryName)) {
-            connections.append(QString::fromStdWString(entryName.name()));
+            connections.append(QString::from_StdWString(entryName.name()));
         }
     } else {
         throw NetworkError(
@@ -101,7 +101,7 @@ QStringList IConnection::getRemoteConnections() {
 /// Список всех локальных соединений в системе.
 QStringList IConnection::getLocalConnections() {
     // UNDONE
-    mLog->write(LogLevel::Warning, "Retreiving the list of local connections is not implemented.");
+    m_Log->write(LogLevel::Warning, "Retreiving the list of local connections is not implemented.");
 
     return QStringList();
 }
@@ -122,7 +122,7 @@ void IConnection::createDialupConnection(const QString &aName,
     if (QSysInfo::WindowsVersion == QSysInfo::WV_2000) {
         QString path;
 
-        foreach (QString var, QProcess::systemEnvironment()) {
+        foreach (QString var, QProcess::system_Environment()) {
             if (var.startsWith(CConnection::AllUsersProfileVariable)) {
                 path = var.mid(CConnection::AllUsersProfileVariable.length()) +
                        CConnection::Win2000PhonebookPath;
@@ -132,7 +132,7 @@ void IConnection::createDialupConnection(const QString &aName,
 
         entryName.setPhonebookPath(path.toStdWString());
 
-        IConnection::mLog->write(
+        IConnection::m_Log->write(
             LogLevel::Error, QString("Win2000 phonebook path workaround applied: %1").arg(path));
     }
 
@@ -151,7 +151,7 @@ void IConnection::createDialupConnection(const QString &aName,
                            ESeverity::Major,
                            raserror,
                            QString("RasApi: ValidatePhonebookEntryName failed: %1 (%2)")
-                               .arg(QString::fromStdWString(RasApi::EErrorCode::ToString(raserror)))
+                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
                                .arg(raserror));
     }
 
@@ -172,7 +172,7 @@ void IConnection::createDialupConnection(const QString &aName,
             ESeverity::Major,
             entry.getLastError(),
             QString("RasApi: failed to declare PhonebookEntry: %1 (%2)")
-                .arg(QString::fromStdWString(RasApi::EErrorCode::ToString(entry.getLastError())))
+                .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(entry.getLastError())))
                 .arg(entry.getLastError()));
     }
 
@@ -188,7 +188,7 @@ void IConnection::createDialupConnection(const QString &aName,
 
     entry.setOptions(RasApi::EConnectionOption::RemoteDefaultGateway |
                      RasApi::EConnectionOption::DisableLcpExtensions |
-                     RasApi::EConnectionOption::ModemLights |
+                     RasApi::EConnectionOption::Modem_Lights |
                      RasApi::EConnectionOption::SecureLocalFiles);
 
     entry.setOptions2(RasApi::EConnectionOption2::Internet |
@@ -212,7 +212,7 @@ void IConnection::createDialupConnection(const QString &aName,
                            ESeverity::Major,
                            raserror,
                            QString("RasApi: CreateNewPhonebookEntry failed: %1 (%2)")
-                               .arg(QString::fromStdWString(RasApi::EErrorCode::ToString(raserror)))
+                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
                                .arg(raserror));
     }
 
@@ -238,7 +238,7 @@ void IConnection::createDialupConnection(const QString &aName,
                            ESeverity::Major,
                            raserror,
                            QString("RasApi: SetEntryDialParams failed: %1 (%2)")
-                               .arg(QString::fromStdWString(RasApi::EErrorCode::ToString(raserror)))
+                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
                                .arg(raserror));
     }
 }
@@ -254,7 +254,7 @@ void IConnection::removeDialupConnection(const QString &aName) {
     if (QSysInfo::WindowsVersion == QSysInfo::WV_2000) {
         QString path;
 
-        foreach (QString var, QProcess::systemEnvironment()) {
+        foreach (QString var, QProcess::system_Environment()) {
             if (var.startsWith(CConnection::AllUsersProfileVariable)) {
                 path = var.mid(CConnection::AllUsersProfileVariable.length()) +
                        CConnection::Win2000PhonebookPath;
@@ -264,7 +264,7 @@ void IConnection::removeDialupConnection(const QString &aName) {
 
         entryName.setPhonebookPath(path.toStdWString());
 
-        IConnection::mLog->write(
+        IConnection::m_Log->write(
             LogLevel::Error, QString("Win2000 phonebook path workaround applied: %1").arg(path));
     }
 
@@ -283,15 +283,15 @@ void IConnection::removeDialupConnection(const QString &aName) {
                            ESeverity::Major,
                            raserror,
                            QString("RasApi: RemovePhonebookEntry failed: %1 (%2)")
-                               .arg(QString::fromStdWString(RasApi::EErrorCode::ToString(raserror)))
+                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
                                .arg(raserror));
     }
 }
 
 //--------------------------------------------------------------------------------
-QString IConnection::getModemInfo(const QString &aName) throw(...) {
+QString IConnection::getModem_Info(const QString &aName) throw(...) {
     return QString("Port: %1")
-        .arg(QString::fromStdWString(RasApi::getAttachedTo(aName.toStdWString())));
+        .arg(QString::from_StdWString(RasApi::getAttachedTo(aName.toStdWString())));
 }
 
 //--------------------------------------------------------------------------------

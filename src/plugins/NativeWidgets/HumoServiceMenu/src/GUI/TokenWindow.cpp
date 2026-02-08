@@ -15,18 +15,18 @@
 #include "Backend/KeysManager.h"
 
 TokenWindow::TokenWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), mBackend(aBackend) {
+    : QFrame(aParent), m_Backend(aBackend) {
     setupUi(this);
 
     connect(btnFormat, SIGNAL(clicked()), SLOT(onFormatButtonClicked()));
 
-    connect(&mFormatTaskWatcher, SIGNAL(finished()), SLOT(onFormatTaskFinished()));
+    connect(&m_FormatTaskWatcher, SIGNAL(finished()), SLOT(onFormatTaskFinished()));
 }
 
 //------------------------------------------------------------------------
 TokenWindow::~TokenWindow() {
-    if (mFormatTaskWatcher.isRunning()) {
-        mFormatTaskWatcher.waitForFinished();
+    if (m_FormatTaskWatcher.isRunning()) {
+        m_FormatTaskWatcher.waitForFinished();
     }
 }
 
@@ -37,21 +37,21 @@ void TokenWindow::initialize(const CCrypt::TokenStatus &aStatus) {
 
 //------------------------------------------------------------------------
 void TokenWindow::doFormat() {
-    mFormatTaskWatcher.setFuture(
-        QtConcurrent::run([this]() { return mBackend->getKeysManager()->formatToken(); }));
+    m_FormatTaskWatcher.setFuture(
+        QtConcurrent::run([this]() { return m_Backend->getKeysManager()->formatToken(); }));
 }
 
 //------------------------------------------------------------------------
 void TokenWindow::onFormatButtonClicked() {
-    mTaskParameters.clear();
+    m_TaskParameters.clear();
 
     emit beginFormat();
 }
 
 //------------------------------------------------------------------------
 void TokenWindow::onFormatTaskFinished() {
-    if (mFormatTaskWatcher.result()) {
-        updateUI(mBackend->getKeysManager()->tokenStatus());
+    if (m_FormatTaskWatcher.result()) {
+        updateUI(m_Backend->getKeysManager()->tokenStatus());
 
         emit endFormat();
     } else {

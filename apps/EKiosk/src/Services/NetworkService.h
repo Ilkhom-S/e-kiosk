@@ -94,7 +94,7 @@ protected:
     virtual void run();
 
 private slots:
-    void onModemInitialized();
+    void onModem_Initialized();
     void doConnect(const SDK::PaymentProcessor::SConnection &aConnection);
     bool doDisconnect();
     void doTestConnection(bool *aResult);
@@ -103,7 +103,7 @@ private slots:
 
 private:
     SDK::Driver::IModem *getModem();
-    SDK::Driver::IModem *prepareModem(SDK::Driver::IModem *aModemDevice,
+    SDK::Driver::IModem *prepareModem(SDK::Driver::IModem *aModem_Device,
                                       const QString &aConnectionName);
     bool getConnectionTemplate(const QString &aConnectionName,
                                SDK::PaymentProcessor::SConnectionTemplate &aConnectionTem) const;
@@ -111,41 +111,41 @@ private:
 private slots:
     void onConnectionAlive();
     void onConnectionLost();
-    void updateModemParameters();
+    void updateModem_Parameters();
     void onNetworkTaskStatus(bool aFailure);
 
 private:
-    SDK::PaymentProcessor::IDeviceService *mDeviceService;
-    SDK::PaymentProcessor::IEventService *mEventService;
-    QSharedPointer<IConnection> mConnection;
+    SDK::PaymentProcessor::IDeviceService *m_DeviceService;
+    SDK::PaymentProcessor::IEventService *m_EventService;
+    QSharedPointer<IConnection> m_Connection;
 
     /// Признак работы сетевого сервиса
-    volatile bool mEnabled;
+    volatile bool m_Enabled;
 
     // Число неудачных попыток соединения.
-    int mFails;
-    QTimer mRestoreTimer;
+    int m_Fails;
+    QTimer m_RestoreTimer;
 
-    SDK::PaymentProcessor::SConnection mConnectionSettings;
+    SDK::PaymentProcessor::SConnection m_ConnectionSettings;
 
-    mutable QMutex mErrorMutex;
-    QString mLastConnectionError;
+    mutable QMutex m_ErrorMutex;
+    QString m_LastConnectionError;
 
     /// Флаги сервиса.
-    bool mDontWatchConnection;
-    QTimer mParametersUpdateTimer;
+    bool m_DontWatchConnection;
+    QTimer m_ParametersUpdateTimer;
 
-    NetworkTaskManager mNetworkTaskManager;
+    NetworkTaskManager m_NetworkTaskManager;
     /// Время первого неудачного обращения по сети
-    QDateTime mNetworkTaskFailureStamp;
+    QDateTime m_NetworkTaskFailureStamp;
 
     /// Параметры модема.
-    boost::optional<QString> mBalance;
-    boost::optional<int> mSignalLevel;
-    boost::optional<QString> mOperator;
+    boost::optional<QString> m_Balance;
+    boost::optional<int> m_SignalLevel;
+    boost::optional<QString> m_Operator;
 
-    IHardwareDatabaseUtils *mDatabaseUtils;
-    IApplication *mApplication;
+    IHardwareDatabaseUtils *m_DatabaseUtils;
+    IApplication *m_Application;
 };
 
 //---------------------------------------------------------------------------

@@ -44,10 +44,10 @@ private:
                           CSparkFR::TextProperties::EPosition::No);
 
     /// Конфигурация - настройки чека и шаблон
-    QVariantMap mConfiguration;
+    QVariantMap m_Configuration;
 
     /// Текстовые реквизиты
-    QStringList mTextProperties;
+    QStringList m_TextProperties;
 };
 
 //--------------------------------------------------------------------------------

@@ -41,21 +41,21 @@ const char UnprintedPaymentList[] = "[UNPRINTED_PAYMENT_LIST]";
 
 //------------------------------------------------------------------------
 PaymentManager::PaymentManager(PPSDK::ICore *aCore)
-    : mCore(aCore), mUseFiscalPrinter(false), mPaymentsRegistryPrintJob(0) {
-    mPrinterService = mCore->getPrinterService();
-    connect(mPrinterService,
+    : m_Core(aCore), m_UseFiscalPrinter(false), m_PaymentsRegistryPrintJob(0) {
+    m_PrinterService = m_Core->getPrinterService();
+    connect(m_PrinterService,
             SIGNAL(receiptPrinted(int, bool)),
             this,
             SLOT(onReceiptPrinted(int, bool)));
 
-    mPaymentService = mCore->getPaymentService();
-    connect(mPaymentService,
+    m_PaymentService = m_Core->getPaymentService();
+    connect(m_PaymentService,
             SIGNAL(stepCompleted(qint64, int, bool)),
             this,
             SIGNAL(paymentChanged(qint64)));
 
-    mDealerSettings = static_cast<PPSDK::DealerSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
+    m_DealerSettings = static_cast<PPSDK::DealerSettings *>(
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
 }
 
 //------------------------------------------------------------------------
@@ -80,13 +80,13 @@ PaymentManager::balanceParameters(const SDK::PaymentProcessor::SBalance &aBalanc
 
 //------------------------------------------------------------------------
 QVariantMap PaymentManager::getBalanceInfo() const {
-    return balanceParameters(mPaymentService->getBalance());
+    return balanceParameters(m_PaymentService->getBalance());
 }
 
 //------------------------------------------------------------------------
 QVariantMap PaymentManager::getEncashmentInfo(int aIndex) const {
-    if (mEncashmentList.size() > aIndex && aIndex >= 0) {
-        auto encashment = mEncashmentList[aIndex];
+    if (m_EncashmentList.size() > aIndex && aIndex >= 0) {
+        auto encashment = m_EncashmentList[aIndex];
         auto info = balanceParameters(encashment.balance);
 
         info.insert(encashment.getFields());
@@ -99,32 +99,32 @@ QVariantMap PaymentManager::getEncashmentInfo(int aIndex) const {
 //------------------------------------------------------------------------
 SDK::PaymentProcessor::EncashmentResult::Enum
 PaymentManager::perform(const QVariantMap &aParameters) {
-    mCore->getEventService()->sendEvent(PPSDK::Event(PPSDK::EEventType::ProcessEncashment));
+    m_Core->getEventService()->sendEvent(PPSDK::Event(PPSDK::EEventType::ProcessEncashment));
 
-    if (mPaymentService->getBalance().isEmpty()) {
-        mEncashment = mPaymentService->getLastEncashment();
+    if (m_PaymentService->getBalance().isEmpty()) {
+        m_Encashment = m_PaymentService->getLastEncashment();
 
-        return mEncashment.isValid() ? PPSDK::EncashmentResult::OK : PPSDK::EncashmentResult::Error;
+        return m_Encashment.isValid() ? PPSDK::EncashmentResult::OK : PPSDK::EncashmentResult::Error;
     }
 
-    return mPaymentService->performEncashment(aParameters, mEncashment);
+    return m_PaymentService->perform_Encashment(aParameters, m_Encashment);
 }
 
 //------------------------------------------------------------------------
 bool PaymentManager::canPrint(const QString &aReceiptType) const {
-    return mPrinterService->canPrintReceipt(aReceiptType, false);
+    return m_PrinterService->canPrintReceipt(aReceiptType, false);
 }
 
 //------------------------------------------------------------------------
 QString PaymentManager::decryptParameter(const QString &aValue) {
-    ICryptEngine *cryptEngine = mCore->getCryptService()->getCryptEngine();
+    ICryptEngine *cryptEngine = m_Core->getCryptService()->getCryptEngine();
 
     QByteArray decryptedValue;
 
     QString error;
 
     if (cryptEngine->decryptLong(-1, aValue.toLatin1(), decryptedValue, error)) {
-        return QString::fromUtf8(decryptedValue);
+        return QString::from_Utf8(decryptedValue);
     }
 
     return "**DECRYPT ERROR**";
@@ -133,11 +133,11 @@ QString PaymentManager::decryptParameter(const QString &aValue) {
 //------------------------------------------------------------------------
 bool PaymentManager::printReceipt(qint64 aPaymentId, DSDK::EPrintingModes::Enum aPrintingMode) {
     QList<PPSDK::IPayment::SParameter> paymentParams =
-        mPaymentService->getPaymentFields(aPaymentId);
+        m_PaymentService->getPaymentFields(aPaymentId);
     qint64 providerId =
         PPSDK::IPayment::parameterByName(CPayment::Provider, paymentParams).value.toLongLong();
     PPSDK::DealerSettings *dealerSettings = static_cast<PPSDK::DealerSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
     PPSDK::SProvider provider = dealerSettings->getProvider(providerId);
 
     QString receiptTemplate =
@@ -157,10 +157,10 @@ bool PaymentManager::printReceipt(qint64 aPaymentId, DSDK::EPrintingModes::Enum 
         receiptParameters[parameter] = provider.receiptParameters[parameter];
     }
 
-    int jonIndex = mPrinterService->printReceipt(
+    int jonIndex = m_PrinterService->printReceipt(
         PPSDK::CReceiptType::Payment, receiptParameters, receiptTemplate, aPrintingMode, true);
 
-    mPaymentPrintJobs.insert(jonIndex, aPaymentId);
+    m_PaymentPrintJobs.insert(jonIndex, aPaymentId);
 
     return jonIndex != 0;
 }
@@ -168,19 +168,19 @@ bool PaymentManager::printReceipt(qint64 aPaymentId, DSDK::EPrintingModes::Enum 
 //------------------------------------------------------------------------
 bool PaymentManager::printUnprintedReceiptsRegistry(const QSet<qint64> &aPayments) {
     struct PaymentAmounts {
-        QVariantList sumAmounts;
-        double sumAmountAll;
-        double sumDealerFee;
-        double sumProcessingFee;
+        QVariantList sum_Amounts;
+        double sum_AmountAll;
+        double sum_DealerFee;
+        double sum_ProcessingFee;
         QStringList registry;
         QStringList paymentTitles;
         QVariantList paymentsVAT;
         QStringList paymentInn;
 
         PaymentAmounts() {
-            sumAmountAll = 0.0;
-            sumDealerFee = 0.0;
-            sumProcessingFee = 0.0;
+            sum_AmountAll = 0.0;
+            sum_DealerFee = 0.0;
+            sum_ProcessingFee = 0.0;
         }
     };
 
@@ -207,7 +207,7 @@ bool PaymentManager::printUnprintedReceiptsRegistry(const QSet<qint64> &aPayment
         int vat = 0;
         int payTool = 0;
 
-        for (auto &parameter : mPaymentService->getPaymentFields(id)) {
+        for (auto &parameter : m_PaymentService->getPaymentFields(id)) {
             if (parameter.name == CPayment::Amount)
                 amount = parameter.value.toDouble();
             else if (parameter.name == CPayment::DealerFee)
@@ -231,16 +231,16 @@ bool PaymentManager::printUnprintedReceiptsRegistry(const QSet<qint64> &aPayment
         }
 
         if (!qFuzzyIsNull(amountAll.toDouble())) {
-            auto provider = mDealerSettings->getMNPProvider(providerId, gatewayIn, gatewayOut);
+            auto provider = m_DealerSettings->getMNPProvider(providerId, gatewayIn, gatewayOut);
 
-            amounts[payTool].sumAmountAll += amountAll.toDouble();
-            amounts[payTool].sumAmounts << amount;
+            amounts[payTool].sum_AmountAll += amountAll.toDouble();
+            amounts[payTool].sum_Amounts << amount;
             amounts[payTool].paymentTitles << formatPaymentTitle(provider);
             amounts[payTool].paymentsVAT << vat;
             amounts[payTool].paymentInn
                 << provider.receiptParameters.value("OPERATOR_INN").toString();
-            amounts[payTool].sumDealerFee += dealerFee;
-            amounts[payTool].sumProcessingFee += processingFee;
+            amounts[payTool].sum_DealerFee += dealerFee;
+            amounts[payTool].sum_ProcessingFee += processingFee;
 
             amounts[payTool].registry << QString("%1 %2 %3").arg(id).arg(session).arg(amountAll);
         }
@@ -252,25 +252,25 @@ bool PaymentManager::printUnprintedReceiptsRegistry(const QSet<qint64> &aPayment
         if (!amounts[payTool].registry.isEmpty()) {
             QVariantMap receiptParameters;
             receiptParameters[CPaymentManager::UnprintedPaymentList] = amounts[payTool].registry;
-            receiptParameters[CPayment::AmountAll] = amounts[payTool].sumAmountAll;
-            receiptParameters[QString("[%1]").arg(CPayment::Amount)] = amounts[payTool].sumAmounts;
+            receiptParameters[CPayment::AmountAll] = amounts[payTool].sum_AmountAll;
+            receiptParameters[QString("[%1]").arg(CPayment::Amount)] = amounts[payTool].sum_Amounts;
             receiptParameters["[AMOUNT_TITLE]"] = amounts[payTool].paymentTitles;
             receiptParameters["[AMOUNT_VAT]"] = amounts[payTool].paymentsVAT;
             receiptParameters["[OPERATOR_INN]"] = amounts[payTool].paymentInn;
             receiptParameters[CPayment::PayTool] = payTool;
-            receiptParameters[CPayment::DealerFee] = amounts[payTool].sumDealerFee;
+            receiptParameters[CPayment::DealerFee] = amounts[payTool].sum_DealerFee;
             receiptParameters[CPayment::Fee] =
-                amounts[payTool].sumDealerFee + amounts[payTool].sumProcessingFee;
-            receiptParameters[CPayment::ProcessingFee] = amounts[payTool].sumProcessingFee;
+                amounts[payTool].sum_DealerFee + amounts[payTool].sum_ProcessingFee;
+            receiptParameters[CPayment::ProcessingFee] = amounts[payTool].sum_ProcessingFee;
 
-            mPaymentsRegistryPrintJob =
-                mPrinterService->printReceipt(PPSDK::CReceiptType::Payment,
+            m_PaymentsRegistryPrintJob =
+                m_PrinterService->printReceipt(PPSDK::CReceiptType::Payment,
                                               receiptParameters,
                                               CPaymentManager::UnprintedReest,
                                               DSDK::EPrintingModes::Continuous,
                                               true);
 
-            ok = ok || (mPaymentsRegistryPrintJob != 0);
+            ok = ok || (m_PaymentsRegistryPrintJob != 0);
         }
     }
 
@@ -279,42 +279,42 @@ bool PaymentManager::printUnprintedReceiptsRegistry(const QSet<qint64> &aPayment
 
 //------------------------------------------------------------------------
 void PaymentManager::onReceiptPrinted(int aJobIndex, bool aErrorHappened) {
-    if (mPaymentsRegistryPrintJob == aJobIndex) {
+    if (m_PaymentsRegistryPrintJob == aJobIndex) {
         if (!aErrorHappened) {
             // Обновить платежи - чек напечатан
-            foreach (auto paymentId, mEncashment.balance.notPrintedPayments) {
-                mPaymentService->updatePaymentField(
+            foreach (auto paymentId, m_Encashment.balance.notPrintedPayments) {
+                m_PaymentService->updatePaymentField(
                     paymentId,
                     PPSDK::IPayment::SParameter(CPayment::ReceiptPrinted, true, true),
                     true);
             }
 
-            mEncashment.balance.notPrintedPayments.clear();
+            m_Encashment.balance.notPrintedPayments.clear();
         }
 
-        mPaymentsRegistryPrintJob = 0;
+        m_PaymentsRegistryPrintJob = 0;
 
         // Если была задача снять Z-отчёт и мы напечатали суммарный список платежей - выполняем сам
         // отчёт.
-        if (!mNeedPrintZReport.isEmpty() && aErrorHappened) {
-            mPrinterService->printReport(mNeedPrintZReport, QVariantMap());
+        if (!m_NeedPrintZReport.isEmpty() && aErrorHappened) {
+            m_PrinterService->printReport(m_NeedPrintZReport, QVariantMap());
 
-            mNeedPrintZReport.clear();
+            m_NeedPrintZReport.clear();
         }
-    } else if (mPaymentPrintJobs.contains(aJobIndex)) {
-        qint64 paymentId = mPaymentPrintJobs.value(aJobIndex);
+    } else if (m_PaymentPrintJobs.contains(aJobIndex)) {
+        qint64 paymentId = m_PaymentPrintJobs.value(aJobIndex);
 
         if (!aErrorHappened) {
             // Обновить платёж - чек напечатан
-            mPaymentService->updatePaymentField(
+            m_PaymentService->updatePaymentField(
                 paymentId, PPSDK::IPayment::SParameter(CPayment::ReceiptPrinted, true, true), true);
 
-            mEncashment.balance.notPrintedPayments.remove(paymentId);
+            m_Encashment.balance.notPrintedPayments.remove(paymentId);
 
             emit paymentChanged(paymentId);
         }
 
-        mPaymentPrintJobs.remove(aJobIndex);
+        m_PaymentPrintJobs.remove(aJobIndex);
         emit receiptPrinted(paymentId, aErrorHappened);
     } else {
         emit receiptPrinted(aJobIndex, aErrorHappened);
@@ -324,19 +324,19 @@ void PaymentManager::onReceiptPrinted(int aJobIndex, bool aErrorHappened) {
 //------------------------------------------------------------------------
 bool PaymentManager::printEncashment(int aIndex /*= -1*/) {
     PPSDK::SEncashment emptyEncashment;
-    PPSDK::SEncashment &encashment = mEncashment;
+    PPSDK::SEncashment &encashment = m_Encashment;
 
     if (aIndex >= 0) {
-        encashment = (mEncashmentList.size() > aIndex) ? mEncashmentList[aIndex] : emptyEncashment;
+        encashment = (m_EncashmentList.size() > aIndex) ? m_EncashmentList[aIndex] : emptyEncashment;
     }
 
     if (!encashment.isValid()) {
         return false;
     }
 
-    if (mUseFiscalPrinter && aIndex < 0) {
+    if (m_UseFiscalPrinter && aIndex < 0) {
         PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
-            mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
+            m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
         if (terminalSettings->getCommonSettings().printFailedReceipts) {
             // Перед отчётом печатаем все не напечатанные чеки
@@ -354,14 +354,14 @@ bool PaymentManager::printEncashment(int aIndex /*= -1*/) {
         fields.insert("NO_FISCAL", QVariant());
     }
 
-    result = (mPrinterService->printReport(PPSDK::CReceiptType::Encashment, fields) != 0);
+    result = (m_PrinterService->printReport(PPSDK::CReceiptType::Encashment, fields) != 0);
 
     // Если есть устройство диспенсер
-    if (!mCore->getDeviceService()
+    if (!m_Core->getDeviceService()
              ->getConfigurations()
              .filter(QRegularExpression(DSDK::CComponents::Dispenser))
              .isEmpty()) {
-        mPrinterService->printReceipt(PPSDK::CReceiptType::DispenserEncashment,
+        m_PrinterService->printReceipt(PPSDK::CReceiptType::DispenserEncashment,
                                       fields,
                                       PPSDK::CReceiptType::DispenserEncashment,
                                       DSDK::EPrintingModes::None,
@@ -373,7 +373,7 @@ bool PaymentManager::printEncashment(int aIndex /*= -1*/) {
 
 //------------------------------------------------------------------------
 bool PaymentManager::printTestPage() {
-    return (mPrinterService->printReceipt(PPSDK::CReceiptType::Test,
+    return (m_PrinterService->printReceipt(PPSDK::CReceiptType::Test,
                                           QVariantMap(),
                                           PPSDK::CReceiptType::Test,
                                           DSDK::EPrintingModes::None,
@@ -382,15 +382,15 @@ bool PaymentManager::printTestPage() {
 
 //------------------------------------------------------------------------
 bool PaymentManager::printBalance() const {
-    auto fields = mPaymentService->getBalance().getFields();
-    bool result = (mPrinterService->printReport(PPSDK::CReceiptType::Balance, fields) != 0);
+    auto fields = m_PaymentService->getBalance().getFields();
+    bool result = (m_PrinterService->printReport(PPSDK::CReceiptType::Balance, fields) != 0);
 
     // Если есть устройство диспенсер
-    if (!mCore->getDeviceService()
+    if (!m_Core->getDeviceService()
              ->getConfigurations()
              .filter(QRegularExpression(DSDK::CComponents::Dispenser))
              .isEmpty()) {
-        mPrinterService->printReceipt(PPSDK::CReceiptType::DispenserBalance,
+        m_PrinterService->printReceipt(PPSDK::CReceiptType::DispenserBalance,
                                       fields,
                                       PPSDK::CReceiptType::DispenserBalance,
                                       DSDK::EPrintingModes::None,
@@ -402,21 +402,21 @@ bool PaymentManager::printBalance() const {
 
 //------------------------------------------------------------------------
 int PaymentManager::printZReport(bool aFullZReport) {
-    if (mEncashment.balance.notPrintedPayments.isEmpty() || !mUseFiscalPrinter) {
-        return !!mPrinterService->printReport(aFullZReport ? PPSDK::CReceiptType::ZReportFull
+    if (m_Encashment.balance.notPrintedPayments.isEmpty() || !m_UseFiscalPrinter) {
+        return !!m_PrinterService->printReport(aFullZReport ? PPSDK::CReceiptType::ZReportFull
                                                            : PPSDK::CReceiptType::ZReport,
                                               QVariantMap());
     } else {
         int result = 0;
-        if (mPaymentsRegistryPrintJob == 0) {
+        if (m_PaymentsRegistryPrintJob == 0) {
             // Перед отчётом печатаем все не напечатанные чеки
-            if (!printUnprintedReceiptsRegistry(mEncashment.balance.notPrintedPayments)) {
+            if (!printUnprintedReceiptsRegistry(m_Encashment.balance.notPrintedPayments)) {
                 result = -1;
             }
         }
 
         // Оставляем пометку что мы хотели напечатать Z-отчет, но у нас есть не напечатанные чеки
-        mNeedPrintZReport =
+        m_NeedPrintZReport =
             aFullZReport ? PPSDK::CReceiptType::ZReportFull : PPSDK::CReceiptType::ZReport;
 
         return result;
@@ -427,7 +427,7 @@ int PaymentManager::printZReport(bool aFullZReport) {
 bool PaymentManager::getPaymentsInfo(QVariantMap & /*aPaymentsInfo*/) const {
     QVariantMap result;
 
-    foreach (PPSDK::IService *service, mCore->getServices()) {
+    foreach (PPSDK::IService *service, m_Core->getServices()) {
         const QVariantMap &params = service->getParameters();
         for (auto it = params.begin(); it != params.end(); ++it) {
             result.insert(it.key(), it.value());
@@ -479,7 +479,7 @@ PaymentInfo PaymentManager::loadPayment(const QList<PPSDK::IPayment::SParameter>
     qint64 providerId =
         PPSDK::IPayment::parameterByName(CPayment::Provider, aPaymentParams).value.toLongLong();
 
-    PPSDK::SProvider provider = mDealerSettings->getProvider(providerId);
+    PPSDK::SProvider provider = m_DealerSettings->getProvider(providerId);
     if (provider.name.isEmpty()) {
         paymentInfo.setProvider(paymentInfo.getStatus() == PPSDK::EPaymentStatus::LostChange
                                     ? tr("#lost_change")
@@ -506,14 +506,14 @@ PaymentInfo PaymentManager::loadPayment(const QList<PPSDK::IPayment::SParameter>
 
 //------------------------------------------------------------------------
 void PaymentManager::updatePaymentList() {
-    mPaymentList.clear();
+    m_PaymentList.clear();
 
-    QList<qint64> payments = mPaymentService->getPayments(QSet<PPSDK::EPaymentStatus::Enum>());
+    QList<qint64> payments = m_PaymentService->getPayments(QSet<PPSDK::EPaymentStatus::Enum>());
 
-    auto parameters = mPaymentService->getPaymentsFields(payments);
+    auto parameters = m_PaymentService->getPaymentsFields(payments);
 
     for (auto it = parameters.constBegin(); it != parameters.constEnd(); ++it) {
-        mPaymentList << loadPayment(it.value());
+        m_PaymentList << loadPayment(it.value());
     }
 }
 
@@ -523,39 +523,39 @@ QList<PaymentInfo> PaymentManager::getPayments(bool aNeedUpdate) {
         updatePaymentList();
     }
 
-    return mPaymentList;
+    return m_PaymentList;
 }
 
 //------------------------------------------------------------------------
 void PaymentManager::processPayment(qint64 id) {
-    if (mPaymentService->canProcessPaymentOffline(id)) {
-        mPaymentService->processPayment(id, false);
+    if (m_PaymentService->canProcessPaymentOffline(id)) {
+        m_PaymentService->processPayment(id, false);
     }
 }
 
 //------------------------------------------------------------------------
 PaymentInfo PaymentManager::getPayment(qint64 id) {
-    return loadPayment(mPaymentService->getPaymentFields(id));
+    return loadPayment(m_PaymentService->getPaymentFields(id));
 }
 
 //------------------------------------------------------------------------
 void PaymentManager::useHardwareFiscalPrinter(bool aUseFiscalPrinter) {
-    mUseFiscalPrinter = aUseFiscalPrinter;
+    m_UseFiscalPrinter = aUseFiscalPrinter;
 }
 
 //------------------------------------------------------------------------
 int PaymentManager::getEncashmentsHistoryCount() {
-    mEncashmentList = mPaymentService->getEncashmentList(10);
+    m_EncashmentList = m_PaymentService->getEncashmentList(10);
 
     // Удаляем первую "техническую" инкассацию
-    mEncashmentList.erase(std::remove_if(mEncashmentList.begin(),
-                                         mEncashmentList.end(),
+    m_EncashmentList.erase(std::remove_if(m_EncashmentList.begin(),
+                                         m_EncashmentList.end(),
                                          [](const PPSDK::SEncashment &aEncashment) -> bool {
                                              return aEncashment.id == 1;
                                          }),
-                          mEncashmentList.end());
+                          m_EncashmentList.end());
 
-    return mEncashmentList.size();
+    return m_EncashmentList.size();
 }
 
 //------------------------------------------------------------------------

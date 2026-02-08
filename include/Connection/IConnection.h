@@ -71,7 +71,7 @@ public:
     static QStringList getModems() noexcept(false);
 
     /// Получить информацию о модеме
-    static QString getModemInfo(const QString &aName) noexcept(false);
+    static QString getModem_Info(const QString &aName) noexcept(false);
 
     /// Поиск всех установленных в системе сетевых интерфейсов.
     static QStringList getInterfaces() noexcept(false);

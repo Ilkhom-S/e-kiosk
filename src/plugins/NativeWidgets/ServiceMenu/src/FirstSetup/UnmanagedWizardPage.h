@@ -29,10 +29,10 @@ private slots:
     void onTestFinished();
 
 private:
-    QVariantMap mConnectionSettings;
-    UnmanagedConnectionWindow *mConnectionWindow;
-    QFutureWatcher<bool> mTaskWatcher;
-    QVariantMap mStaticParameters;
+    QVariantMap m_ConnectionSettings;
+    UnmanagedConnectionWindow *m_ConnectionWindow;
+    QFutureWatcher<bool> m_TaskWatcher;
+    QVariantMap m_StaticParameters;
 };
 
 //---------------------------------------------------------------------------

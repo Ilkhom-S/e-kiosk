@@ -36,7 +36,7 @@ const QString RestartParameters = "RESTART_PARAMETERS";
 
 //---------------------------------------------------------------------------
 ServiceController::ServiceController(IApplication *aApplication)
-    : mApplication(aApplication), mFinalizeTimer(nullptr), mReturnCode(0) {}
+    : m_Application(aApplication), m_FinalizeTimer(nullptr), m_ReturnCode(0) {}
 
 //---------------------------------------------------------------------------
 ServiceController::~ServiceController() {
@@ -45,7 +45,7 @@ ServiceController::~ServiceController() {
 
 //---------------------------------------------------------------------------
 void ServiceController::registerService(PP::IService *aService) {
-    mRegisteredServices.insert(aService->getName(), aService);
+    m_RegisteredServices.insert(aService->getName(), aService);
 }
 
 //---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ void ServiceController::onEvent(const PP::Event &aEvent) {
 
     case PPSDK::EEventType::Restart: {
         if (aEvent.hasData()) {
-            mUserProperties[CServiceController::RestartParameters] = aEvent.getData();
+            m_UserProperties[CServiceController::RestartParameters] = aEvent.getData();
         }
 
         restartApplication();
@@ -83,14 +83,14 @@ void ServiceController::onEvent(const PP::Event &aEvent) {
 
     // Остановка всего набора приложений. Вызывается из сервисного меню.
     case PPSDK::EEventType::StopSoftware: {
-        mReturnCode = aEvent.getData().toMap().take("returnCode").toInt();
+        m_ReturnCode = aEvent.getData().toMap().take("returnCode").toInt();
 
-        auto wsClient = TerminalService::instance(mApplication)->getClient();
+        auto wsClient = TerminalService::instance(m_Application)->getClient();
 
         if (wsClient && wsClient->isConnected()) {
             wsClient->stopService();
         } else {
-            EventService::instance(mApplication)
+            EventService::instance(m_Application)
                 ->sendEvent(PPSDK::EEventType::CloseApplication, QVariant());
         }
         break;
@@ -108,62 +108,62 @@ bool ServiceController::initializeServices() {
 
     // Создаем необходимые сервисы.
     registerService(eventService);
-    registerService(new PrintingService(mApplication));
-    registerService(new FundsService(mApplication));
-    registerService(new HIDService(mApplication));
-    registerService(new SettingsService(mApplication));
-    registerService(new DeviceService(mApplication));
-    registerService(new DatabaseService(mApplication));
-    registerService(new CryptService(mApplication));
-    registerService(new PluginService(mApplication));
-    registerService(new NetworkService(mApplication));
-    registerService(new GUIService(mApplication));
-    registerService(new PaymentService(mApplication));
-    registerService(new TerminalService(mApplication));
-    registerService(new RemoteService(mApplication));
-    registerService(new HookService(mApplication));
-    registerService(new SchedulerService(mApplication));
+    registerService(new PrintingService(m_Application));
+    registerService(new FundsService(m_Application));
+    registerService(new HIDService(m_Application));
+    registerService(new SettingsService(m_Application));
+    registerService(new DeviceService(m_Application));
+    registerService(new DatabaseService(m_Application));
+    registerService(new CryptService(m_Application));
+    registerService(new PluginService(m_Application));
+    registerService(new NetworkService(m_Application));
+    registerService(new GUIService(m_Application));
+    registerService(new PaymentService(m_Application));
+    registerService(new TerminalService(m_Application));
+    registerService(new RemoteService(m_Application));
+    registerService(new HookService(m_Application));
+    registerService(new SchedulerService(m_Application));
 
-    mInitializedServices.clear();
-    mFailedServices.clear();
-    mShutdownOrder.clear();
+    m_InitializedServices.clear();
+    m_FailedServices.clear();
+    m_ShutdownOrder.clear();
 
     // Запуск процесса инициализации сервисов.
-    mInitializedServices.insert(eventService->getName());
-    mShutdownOrder.prepend(eventService);
+    m_InitializedServices.insert(eventService->getName());
+    m_ShutdownOrder.prepend(eventService);
 
-    for (int pass = 0; pass < mRegisteredServices.size(); pass++) {
-        foreach (PP::IService *service, mRegisteredServices) {
+    for (int pass = 0; pass < m_RegisteredServices.size(); pass++) {
+        foreach (PP::IService *service, m_RegisteredServices) {
             // Если сервис не был инициализирован и инициализированы все зависимости, то
             // инициализируем его.
-            if (!mInitializedServices.contains(service->getName()) &&
-                !mFailedServices.contains(service->getName()) &&
-                mInitializedServices.contains(service->getRequiredServices())) {
-                LOG(mApplication->getLog(),
+            if (!m_InitializedServices.contains(service->getName()) &&
+                !m_FailedServices.contains(service->getName()) &&
+                m_InitializedServices.contains(service->getRequiredServices())) {
+                LOG(m_Application->getLog(),
                     LogLevel::Normal,
                     QString("Initializing %1.").arg(service->getName()));
 
                 if (service->initialize()) {
-                    LOG(mApplication->getLog(),
+                    LOG(m_Application->getLog(),
                         LogLevel::Normal,
                         QString("Service %1 was initialized successfully.")
                             .arg(service->getName()));
 
-                    mInitializedServices.insert(service->getName());
-                    mShutdownOrder.prepend(service);
+                    m_InitializedServices.insert(service->getName());
+                    m_ShutdownOrder.prepend(service);
                 } else {
-                    mFailedServices.insert(service->getName());
+                    m_FailedServices.insert(service->getName());
                 }
             }
         }
     }
 
-    if (mRegisteredServices.size() == mInitializedServices.size()) {
-        foreach (PP::IService *service, mRegisteredServices) {
+    if (m_RegisteredServices.size() == m_InitializedServices.size()) {
+        foreach (PP::IService *service, m_RegisteredServices) {
             service->finishInitialize();
         }
 
-        auto watchServiceClient = TerminalService::instance(mApplication)->getClient();
+        auto watchServiceClient = TerminalService::instance(m_Application)->getClient();
         watchServiceClient->subscribeOnDisconnected(this);
         watchServiceClient->subscribeOnCloseCommandReceived(this);
 
@@ -177,19 +177,19 @@ bool ServiceController::initializeServices() {
 
 //---------------------------------------------------------------------------
 void ServiceController::initializeCoreItems() {
-    auto pluginLoader = PluginService::instance(mApplication)->getPluginLoader();
+    auto pluginLoader = PluginService::instance(m_Application)->getPluginLoader();
     QStringList corePlugins = pluginLoader->getPluginList(QRegularExpression(
         QString("PaymentProcessor\\.%1\\..*").arg(PPSDK::CComponents::CoreItem)));
 
     foreach (const QString &pluginName, corePlugins) {
-        LOG(mApplication->getLog(),
+        LOG(m_Application->getLog(),
             LogLevel::Normal,
             QString("Create core item: %1.").arg(pluginName));
 
         auto plugin = pluginLoader->createPlugin(pluginName);
 
         if (plugin) {
-            mCorePluginList << plugin;
+            m_CorePluginList << plugin;
         }
     }
 }
@@ -199,7 +199,7 @@ void ServiceController::onDisconnected() {
     try {
         getEventService()->sendEvent(PPSDK::Event(PPSDK::EEventType::CloseApplication));
     } catch (std::bad_cast) {
-        LOG(mApplication->getLog(),
+        LOG(m_Application->getLog(),
             LogLevel::Fatal,
             "Event service was destroyed. Unable to send event 'CloseApplication' by "
             "Disconnected.");
@@ -211,7 +211,7 @@ void ServiceController::onCloseCommandReceived() {
     try {
         getEventService()->sendEvent(PPSDK::Event(PPSDK::EEventType::CloseApplication));
     } catch (std::bad_cast) {
-        LOG(mApplication->getLog(),
+        LOG(m_Application->getLog(),
             LogLevel::Fatal,
             "Event service was destroyed. Unable to send event 'CloseApplication' by "
             "CloseCommand.");
@@ -222,24 +222,24 @@ void ServiceController::onCloseCommandReceived() {
 bool ServiceController::finalizeServices(const char *aRetrySlot) {
     auto delayFinalize = [&](const PP::IService *aService) -> bool {
         if (aService) {
-            LOG(mApplication->getLog(),
+            LOG(m_Application->getLog(),
                 LogLevel::Warning,
                 QString("Service %1 cannot be shutdown now, will try later.")
                     .arg(aService->getName()));
         }
 
         // Если не получилось, повторяем попытку через некоторое время.
-        mFinalizeTimer = new QTimer(this);
-        mFinalizeTimer->setSingleShot(true);
-        QObject::connect(mFinalizeTimer, SIGNAL(timeout()), this, aRetrySlot);
+        m_FinalizeTimer = new QTimer(this);
+        m_FinalizeTimer->setSingleShot(true);
+        QObject::connect(m_FinalizeTimer, SIGNAL(timeout()), this, aRetrySlot);
 
-        mFinalizeTimer->start(CServiceController::ShutdownRetryInterval);
+        m_FinalizeTimer->start(CServiceController::ShutdownRetryInterval);
         return false;
     };
 
-    if (mFinalizeTimer) {
-        delete mFinalizeTimer;
-        mFinalizeTimer = nullptr;
+    if (m_FinalizeTimer) {
+        delete m_FinalizeTimer;
+        m_FinalizeTimer = nullptr;
     }
 
     if (!canShutdown()) {
@@ -249,21 +249,21 @@ bool ServiceController::finalizeServices(const char *aRetrySlot) {
     finalizeCoreItems();
 
     // Пробуем остановить сервис.
-    while (!mShutdownOrder.empty()) {
-        PP::IService *service = mShutdownOrder.front();
+    while (!m_ShutdownOrder.empty()) {
+        PP::IService *service = m_ShutdownOrder.front();
         QString serviceName = service->getName();
 
-        LOG(mApplication->getLog(),
+        LOG(m_Application->getLog(),
             LogLevel::Normal,
             QString("Trying to shutdown service %1...").arg(serviceName));
 
         if (service->shutdown()) {
-            mRegisteredServices.remove(service->getName());
-            mShutdownOrder.pop_front();
+            m_RegisteredServices.remove(service->getName());
+            m_ShutdownOrder.pop_front();
             delete service;
             service = nullptr;
 
-            LOG(mApplication->getLog(),
+            LOG(m_Application->getLog(),
                 LogLevel::Debug,
                 QString("Service %1 shutdown OK...").arg(serviceName));
         } else {
@@ -276,17 +276,17 @@ bool ServiceController::finalizeServices(const char *aRetrySlot) {
 
 //---------------------------------------------------------------------------
 void ServiceController::finalizeCoreItems() {
-    if (mCorePluginList.isEmpty()) {
+    if (m_CorePluginList.isEmpty()) {
         return;
     }
 
-    PluginService *ps = PluginService::instance(mApplication);
+    PluginService *ps = PluginService::instance(m_Application);
 
     if (ps) {
         auto pluginLoader = ps->getPluginLoader();
 
-        foreach (auto coreItem, mCorePluginList) {
-            LOG(mApplication->getLog(),
+        foreach (auto coreItem, m_CorePluginList) {
+            LOG(m_Application->getLog(),
                 LogLevel::Normal,
                 QString("Destroy core item: %1.").arg(coreItem->getPluginName()));
 
@@ -294,14 +294,14 @@ void ServiceController::finalizeCoreItems() {
         }
     }
 
-    mCorePluginList.clear();
+    m_CorePluginList.clear();
 }
 
 //---------------------------------------------------------------------------
 bool ServiceController::canShutdown() {
-    foreach (auto service, mShutdownOrder) {
+    foreach (auto service, m_ShutdownOrder) {
         if (!service->canShutdown()) {
-            LOG(mApplication->getLog(),
+            LOG(m_Application->getLog(),
                 LogLevel::Warning,
                 QString("Service %1 cannot be shutdown now, will try later.")
                     .arg(service->getName()));
@@ -316,9 +316,9 @@ bool ServiceController::canShutdown() {
 //---------------------------------------------------------------------------
 void ServiceController::shutdownServices() {
     if (finalizeServices(SLOT(shutdownServices()))) {
-        LOG(mApplication->getLog(), LogLevel::Normal, "Exit from ServiceController.");
+        LOG(m_Application->getLog(), LogLevel::Normal, "Exit from ServiceController.");
 
-        emit exit(mReturnCode);
+        emit exit(m_ReturnCode);
     }
 }
 
@@ -332,7 +332,7 @@ void ServiceController::reinitializeServices() {
 //---------------------------------------------------------------------------
 void ServiceController::rebootMachine() {
     if (canShutdown()) {
-        TerminalService::instance(mApplication)->getClient()->rebootMachine();
+        TerminalService::instance(m_Application)->getClient()->rebootMachine();
     } else {
         // Если не получилось, повторяем попытку через некоторое время.
         QTimer::singleShot(CServiceController::ShutdownRetryInterval, this, SLOT(rebootMachine()));
@@ -342,9 +342,9 @@ void ServiceController::rebootMachine() {
 //---------------------------------------------------------------------------
 void ServiceController::restartApplication() {
     if (canShutdown()) {
-        TerminalService::instance(mApplication)
+        TerminalService::instance(m_Application)
             ->getClient()
-            ->restartService(mUserProperties[CServiceController::RestartParameters].toStringList());
+            ->restartService(m_UserProperties[CServiceController::RestartParameters].toStringList());
     } else {
         // Если не получилось, повторяем попытку через некоторое время.
         QTimer::singleShot(
@@ -355,7 +355,7 @@ void ServiceController::restartApplication() {
 //---------------------------------------------------------------------------
 void ServiceController::shutdownMachine() {
     if (canShutdown()) {
-        TerminalService::instance(mApplication)->getClient()->shutdownMachine();
+        TerminalService::instance(m_Application)->getClient()->shutdownMachine();
     } else {
         // Если не получилось, повторяем попытку через некоторое время.
         QTimer::singleShot(
@@ -366,17 +366,17 @@ void ServiceController::shutdownMachine() {
 //---------------------------------------------------------------------------
 void ServiceController::dumpFailureReport() {
     QString failureInfo;
-    foreach (const QString &serviceName, mFailedServices) {
+    foreach (const QString &serviceName, m_FailedServices) {
         failureInfo += QString(" ") + serviceName;
     }
 
     // Выводим отчет о зависимостях.
     QString details;
 
-    foreach (const PP::IService *service, mRegisteredServices.values()) {
+    foreach (const PP::IService *service, m_RegisteredServices.values()) {
         QSet<QString> requiredSet = service->getRequiredServices();
 
-        requiredSet.intersect(mFailedServices);
+        requiredSet.intersect(m_FailedServices);
 
         if (!requiredSet.empty()) {
             details += "\nService " + service->getName() + " requires service ";
@@ -390,7 +390,7 @@ void ServiceController::dumpFailureReport() {
         }
     }
 
-    LOG(mApplication->getLog(),
+    LOG(m_Application->getLog(),
         LogLevel::Fatal,
         QString("Services: %1 failed to initialize due to internal errors. %2")
             .arg(failureInfo)
@@ -399,102 +399,102 @@ void ServiceController::dumpFailureReport() {
 
 //---------------------------------------------------------------------------
 QSet<SDK::PaymentProcessor::IService *> ServiceController::getServices() const {
-    return QSet<SDK::PaymentProcessor::IService *>(mRegisteredServices.values().begin(),
-                                                   mRegisteredServices.values().end());
+    return QSet<SDK::PaymentProcessor::IService *>(m_RegisteredServices.values().begin(),
+                                                   m_RegisteredServices.values().end());
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::IRemoteService *ServiceController::getRemoteService() const {
     return boost::polymorphic_cast<PP::IRemoteService *>(
-        mRegisteredServices.value(CServices::RemoteService));
+        m_RegisteredServices.value(CServices::RemoteService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::IPaymentService *ServiceController::getPaymentService() const {
     return boost::polymorphic_cast<PP::IPaymentService *>(
-        mRegisteredServices.value(CServices::PaymentService));
+        m_RegisteredServices.value(CServices::PaymentService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::IFundsService *ServiceController::getFundsService() const {
     return boost::polymorphic_cast<PP::IFundsService *>(
-        mRegisteredServices.value(CServices::FundsService));
+        m_RegisteredServices.value(CServices::FundsService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::IPrinterService *ServiceController::getPrinterService() const {
     return boost::polymorphic_cast<PP::IPrinterService *>(
-        mRegisteredServices.value(CServices::PrintingService));
+        m_RegisteredServices.value(CServices::PrintingService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::IHIDService *ServiceController::getHIDService() const {
     return boost::polymorphic_cast<PP::IHIDService *>(
-        mRegisteredServices.value(CServices::HIDService));
+        m_RegisteredServices.value(CServices::HIDService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::INetworkService *ServiceController::getNetworkService() const {
     return boost::polymorphic_cast<PP::INetworkService *>(
-        mRegisteredServices.value(CServices::NetworkService));
+        m_RegisteredServices.value(CServices::NetworkService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::IEventService *ServiceController::getEventService() const {
     return boost::polymorphic_cast<PP::IEventService *>(
-        mRegisteredServices.value(CServices::EventService));
+        m_RegisteredServices.value(CServices::EventService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::IGUIService *ServiceController::getGUIService() const {
     return boost::polymorphic_cast<PP::IGUIService *>(
-        mRegisteredServices.value(CServices::GUIService));
+        m_RegisteredServices.value(CServices::GUIService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::IDeviceService *ServiceController::getDeviceService() const {
     return boost::polymorphic_cast<PP::IDeviceService *>(
-        mRegisteredServices.value(CServices::DeviceService));
+        m_RegisteredServices.value(CServices::DeviceService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::ICryptService *ServiceController::getCryptService() const {
     return boost::polymorphic_cast<PP::ICryptService *>(
-        mRegisteredServices.value(CServices::CryptService));
+        m_RegisteredServices.value(CServices::CryptService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::ISettingsService *ServiceController::getSettingsService() const {
     return boost::polymorphic_cast<PP::ISettingsService *>(
-        mRegisteredServices.value(CServices::SettingsService));
+        m_RegisteredServices.value(CServices::SettingsService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::IDatabaseService *ServiceController::getDatabaseService() const {
     return boost::polymorphic_cast<PP::IDatabaseService *>(
-        mRegisteredServices.value(CServices::DatabaseService));
+        m_RegisteredServices.value(CServices::DatabaseService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::ITerminalService *ServiceController::getTerminalService() const {
     return boost::polymorphic_cast<PP::ITerminalService *>(
-        mRegisteredServices.value(CServices::TerminalService));
+        m_RegisteredServices.value(CServices::TerminalService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::ISchedulerService *ServiceController::getSchedulerService() const {
     return boost::polymorphic_cast<PP::ISchedulerService *>(
-        mRegisteredServices.value(CServices::SchedulerService));
+        m_RegisteredServices.value(CServices::SchedulerService));
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::IService *ServiceController::getService(const QString &aServiceName) const {
-    if (mRegisteredServices.isEmpty()) {
+    if (m_RegisteredServices.isEmpty()) {
         return nullptr;
     }
 
-    if (mRegisteredServices.contains(aServiceName)) {
-        return mRegisteredServices.value(aServiceName);
+    if (m_RegisteredServices.contains(aServiceName)) {
+        return m_RegisteredServices.value(aServiceName);
     }
 
     throw PPSDK::ServiceIsNotImplemented(aServiceName);
@@ -502,7 +502,7 @@ SDK::PaymentProcessor::IService *ServiceController::getService(const QString &aS
 
 //---------------------------------------------------------------------------
 QVariantMap &ServiceController::getUserProperties() {
-    return mUserProperties;
+    return m_UserProperties;
 }
 
 //---------------------------------------------------------------------------

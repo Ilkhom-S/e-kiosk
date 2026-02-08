@@ -1,13 +1,13 @@
 /* @file Принтеры Custom. */
 
-#include "CustomPrinters.h"
+#include "Custom_Printers.h"
 
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QtMath>
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний принтеров Custom.
-namespace CCustomPrinter {
+namespace CCustom_Printer {
 namespace Models {
 const char TG2480[] = "Custom TG2480";
 const char TG2480H[] = "Custom TG2480H";
@@ -34,12 +34,12 @@ const char SendData[] = "\x1B\x2A\x62\x57";                     /// Послат
 const char PrintImage[] = "\x1B\x2A\x72\x42";                   /// Печать изображения.
 } // namespace Commands
 } // namespace GAM
-} // namespace CCustomPrinter
+} // namespace CCustom_Printer
 
-template class CustomPrinter<TSerialPrinterBase>;
+template class Custom_Printer<TSerialPrinterBase>;
 
 //--------------------------------------------------------------------------------
-template <class T> CustomPrinter<T>::CustomPrinter() {
+template <class T> Custom_Printer<T>::Custom_Printer() {
     this->m_Parameters = POSPrinters::CommonParameters;
 
     // статусы ошибок
@@ -73,23 +73,23 @@ template <class T> CustomPrinter<T>::CustomPrinter() {
 
     // модели
     this->m_ModelData.data().clear();
-    this->m_ModelData.add('\x93', false, CCustomPrinter::Models::TG2480);
-    this->m_ModelData.add('\xA7', false, CCustomPrinter::Models::TG2460H);
-    this->m_ModelData.add('\xAC', false, CCustomPrinter::Models::TL80);
-    this->m_ModelData.add('\xAD', false, CCustomPrinter::Models::TL60);
+    this->m_ModelData.add('\x93', false, CCustom_Printer::Models::TG2480);
+    this->m_ModelData.add('\xA7', false, CCustom_Printer::Models::TG2460H);
+    this->m_ModelData.add('\xAC', false, CCustom_Printer::Models::TL80);
+    this->m_ModelData.add('\xAD', false, CCustom_Printer::Models::TL60);
 
     this->setConfigParameter(CHardware::Printer::FeedingAmount, 1);
 }
 
 //--------------------------------------------------------------------------------
-template <class T> QStringList CustomPrinter<T>::getModelList() {
-    return QStringList() << CCustomPrinter::Models::TG2480 << CCustomPrinter::Models::TG2460H
-                         << CCustomPrinter::Models::TL80 << CCustomPrinter::Models::TL60;
+template <class T> QStringList Custom_Printer<T>::getModelList() {
+    return QStringList() << CCustom_Printer::Models::TG2480 << CCustom_Printer::Models::TG2460H
+                         << CCustom_Printer::Models::TL80 << CCustom_Printer::Models::TL60;
 }
 
 //--------------------------------------------------------------------------------
 template <class T>
-void CustomPrinter<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
+void Custom_Printer<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     this->setDeviceConfiguration(aConfiguration);
 
     int lineSpacing = this->getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
@@ -100,17 +100,17 @@ void CustomPrinter<T>::setDeviceConfiguration(const QVariantMap &aConfiguration)
 
 //--------------------------------------------------------------------------------
 template <class T>
-bool CustomPrinter<T>::printImageDefault(const QImage &aImage, const Tags::TTypes &aTags) {
+bool Custom_Printer<T>::printImageDefault(const QImage &aImage, const Tags::TTypes &aTags) {
     int width = aImage.width();
     int height = aImage.height();
-    int lines = qCeil(height / double(CCustomPrinter::LineHeight));
+    int lines = qCeil(height / double(CCustom_Printer::LineHeight));
     int widthInBytes = qCeil(width / 8.0);
 
-    if (width > CCustomPrinter::MaxImageWidth) {
+    if (width > CCustom_Printer::MaxImageWidth) {
         this->toLog(LogLevel::Warning,
                     this->m_DeviceName +
                         QString(": Image width > %1, so it cannot be printing properly")
-                            .arg(CCustomPrinter::MaxImageWidth));
+                            .arg(CCustom_Printer::MaxImageWidth));
         return false;
     }
 
@@ -125,19 +125,19 @@ bool CustomPrinter<T>::printImageDefault(const QImage &aImage, const Tags::TType
     for (int i = 0; i < lines; ++i) {
         QList<QByteArray> lineData;
 
-        for (int j = 0; j < CCustomPrinter::LineHeight; ++j) {
-            int index = i * CCustomPrinter::LineHeight + j;
+        for (int j = 0; j < CCustom_Printer::LineHeight; ++j) {
+            int index = i * CCustom_Printer::LineHeight + j;
 
             if (index < height) {
-                lineData << QByteArray::fromRawData((const char *)aImage.scanLine(index),
+                lineData << QByteArray::from_RawData((const char *)aImage.scanLine(index),
                                                     widthInBytes);
             } else {
                 lineData << QByteArray(widthInBytes, ASCII::NUL);
             }
         }
 
-        QByteArray request(CCustomPrinter::Commands::PrintImage);
-        request.append(CCustomPrinter::Image24BitMode);
+        QByteArray request(CCustom_Printer::Commands::PrintImage);
+        request.append(CCustom_Printer::Image24BitMode);
         request.append(uchar(width % 256));
         request.append(uchar(width / 256));
 
@@ -145,7 +145,7 @@ bool CustomPrinter<T>::printImageDefault(const QImage &aImage, const Tags::TType
             QByteArray data(3, ASCII::NUL);
             char mask = 1 << (7 - (j % 8));
 
-            for (int k = 0; k < CCustomPrinter::LineHeight; ++k) {
+            for (int k = 0; k < CCustom_Printer::LineHeight; ++k) {
                 if (lineData[k][j / 8] & mask) {
                     data[k / 8] = data[k / 8] | (1 << (7 - (k % 8)));
                 }
@@ -174,30 +174,30 @@ bool CustomPrinter<T>::printImageDefault(const QImage &aImage, const Tags::TType
 //--------------------------------------------------------------------------------
 
 template <class T>
-bool CustomPrinter<T>::printImage(const QImage &aImage, const Tags::TTypes &aTags) {
+bool Custom_Printer<T>::printImage(const QImage &aImage, const Tags::TTypes &aTags) {
     int width = aImage.width();
 
-    if (width > CCustomPrinter::GAM::MaxImageWidth) {
+    if (width > CCustom_Printer::GAM::MaxImageWidth) {
         this->toLog(LogLevel::Warning,
                     this->m_DeviceName +
                         QStringLiteral(": Image width > %1, so it cannot be printing properly")
-                            .arg(CCustomPrinter::GAM::MaxImageWidth));
+                            .arg(CCustom_Printer::GAM::MaxImageWidth));
         return false;
     }
 
     // Использование QStringLiteral и QByteArray::append для чистоты кода
     QByteArray initializeGAM;
-    initializeGAM.append(CCustomPrinter::GAM::Commands::SetPageLength);
-    initializeGAM.append(CCustomPrinter::GAM::Commands::SetResolution204);
-    initializeGAM.append(CCustomPrinter::GAM::Commands::SetNoCompression);
+    initializeGAM.append(CCustom_Printer::GAM::Commands::SetPageLength);
+    initializeGAM.append(CCustom_Printer::GAM::Commands::SetResolution204);
+    initializeGAM.append(CCustom_Printer::GAM::Commands::SetNoCompression);
 
-    int leftMargin = qFloor((CCustomPrinter::GAM::MaxImageWidth - width) / 2.0);
+    int leftMargin = qFloor((CCustom_Printer::GAM::MaxImageWidth - width) / 2.0);
 
     if (aTags.contains(Tags::Type::Center) && (leftMargin > 0)) {
         // Формируем команду отступа: вставляем значение перед последним байтом-разделителем
         QByteArray marginValue = QByteArray::number(leftMargin);
         initializeGAM.insert(initializeGAM.size() - 1, marginValue);
-        initializeGAM.prepend(CCustomPrinter::GAM::Commands::SetLeftMargin);
+        initializeGAM.prepend(CCustom_Printer::GAM::Commands::SetLeftMargin);
     }
 
     // В Qt 6 для замера интервалов используем QElapsedTimer (точнее и быстрее)
@@ -216,7 +216,7 @@ bool CustomPrinter<T>::printImage(const QImage &aImage, const Tags::TTypes &aTag
         // Qt 6: scanLine возвращает uchar*, приводим к const char* для QByteArray
         QByteArray data(reinterpret_cast<const char *>(aImage.scanLine(i)), widthInBytes);
 
-        QByteArray command = CCustomPrinter::GAM::Commands::SendData;
+        QByteArray command = CCustom_Printer::GAM::Commands::SendData;
         command.append(data);
 
         // Вставляем длину данных в команду (индекс 3 согласно протоколу GAM)
@@ -229,7 +229,7 @@ bool CustomPrinter<T>::printImage(const QImage &aImage, const Tags::TTypes &aTag
         }
     }
 
-    if (!this->m_IOPort->write(CCustomPrinter::GAM::Commands::PrintImage)) {
+    if (!this->m_IOPort->write(CCustom_Printer::GAM::Commands::PrintImage)) {
         this->toLog(LogLevel::Error,
                     this->m_DeviceName + QStringLiteral(": Failed to set resolution 204 dpi"));
         return false;
@@ -237,7 +237,7 @@ bool CustomPrinter<T>::printImage(const QImage &aImage, const Tags::TTypes &aTag
 
     SDK::Driver::TPortParameters portParameters;
     this->m_IOPort->getParameters(portParameters);
-    qint64 pause = CCustomPrinter::GAM::getImagePause(aImage, portParameters);
+    qint64 pause = CCustom_Printer::GAM::getImagePause(aImage, portParameters);
 
     // Расчет оставшейся паузы
     qint64 elapsed = timer.elapsed();

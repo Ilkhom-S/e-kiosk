@@ -21,56 +21,56 @@ const int CheckTimeout = 3 * 1000;
 
 //----------------------------------------------------------------------------
 WatchServiceController::WatchServiceController()
-    : mClient(createWatchServiceClient(CWatchService::Modules::WatchServiceController)),
-      mLastCommand(Unknown), mPreviousConnectionState(false) {
-    connect(&mTimer, &QTimer::timeout, this, &WatchServiceController::onCheck);
+    : m_Client(createWatchServiceClient(CWatchService::Modules::WatchServiceController)),
+      m_LastCommand(Unknown), m_PreviousConnectionState(false) {
+    connect(&m_Timer, &QTimer::timeout, this, &WatchServiceController::onCheck);
 
-    mClient->subscribeOnDisconnected(this);
-    mClient->subscribeOnCloseCommandReceived(this);
+    m_Client->subscribeOnDisconnected(this);
+    m_Client->subscribeOnCloseCommandReceived(this);
 
-    mTimer.setInterval(CWatchServiceController::CheckTimeout);
-    mTimer.start();
+    m_Timer.setInterval(CWatchServiceController::CheckTimeout);
+    m_Timer.start();
 
     // Create menu actions with direct connections instead of signal mapper
     {
-        auto settingsAction = mMenu.addAction(
+        auto settingsAction = m_Menu.addAction(
             createTemplateIcon(":/icons/menu-settingsTemplate.png"), tr("#start_service_menu"));
         connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(onStartServiceMenuClicked()));
-        mStartServiceActions << settingsAction;
+        m_StartServiceActions << settingsAction;
 
-        auto setupAction = mMenu.addAction(createTemplateIcon(":/icons/menu-setupTemplate.png"),
+        auto setupAction = m_Menu.addAction(createTemplateIcon(":/icons/menu-setupTemplate.png"),
                                            tr("#start_first_setup"));
         connect(setupAction, SIGNAL(triggered(bool)), this, SLOT(onStartFirstSetupClicked()));
-        mStartServiceActions << setupAction;
+        m_StartServiceActions << setupAction;
 
-        mMenu.addSeparator();
+        m_Menu.addSeparator();
     }
 
     auto playAction =
-        mMenu.addAction(createTemplateIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
+        m_Menu.addAction(createTemplateIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
     connect(playAction, SIGNAL(triggered(bool)), this, SLOT(onStartServiceClickedDirect()));
-    mStartServiceActions << playAction;
+    m_StartServiceActions << playAction;
 
-    mStopServiceAction =
-        mMenu.addAction(createTemplateIcon(":/icons/menu-stopTemplate.png"), tr("#stop_service"));
-    mMenu.addSeparator();
-    mCloseTrayIconAction =
-        mMenu.addAction(createTemplateIcon(":/icons/menu-closeTemplate.png"), tr("#close"));
+    m_StopServiceAction =
+        m_Menu.addAction(createTemplateIcon(":/icons/menu-stopTemplate.png"), tr("#stop_service"));
+    m_Menu.addSeparator();
+    m_CloseTrayIconAction =
+        m_Menu.addAction(createTemplateIcon(":/icons/menu-closeTemplate.png"), tr("#close"));
 
-    connect(mStopServiceAction, SIGNAL(triggered(bool)), SLOT(onStopServiceClicked()));
-    connect(mCloseTrayIconAction, SIGNAL(triggered(bool)), SLOT(onCloseIconClicked()));
+    connect(m_StopServiceAction, SIGNAL(triggered(bool)), SLOT(onStopServiceClicked()));
+    connect(m_CloseTrayIconAction, SIGNAL(triggered(bool)), SLOT(onCloseIconClicked()));
 
-    connect(&mIcon,
+    connect(&m_Icon,
             SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this,
             SLOT(onTrayIconActivated(QSystemTrayIcon::ActivationReason)));
 
-    mIcon.setContextMenu(&mMenu);
+    m_Icon.setContextMenu(&m_Menu);
 
     // Set initial icon based on connection state
     updateTrayIcon();
 
-    mIcon.show();
+    m_Icon.show();
 
     LOG(getLog(), LogLevel::Normal, "WatchServiceController started.");
 }
@@ -204,20 +204,20 @@ QString WatchServiceController::getExecutablePath(const QString &baseName) const
 //----------------------------------------------------------------------------
 WatchServiceController::~WatchServiceController() {
     // Stop timer to prevent further processing
-    mTimer.stop();
+    m_Timer.stop();
 
     // Hide tray icon
-    mIcon.hide();
+    m_Icon.hide();
 
     // Disconnect all signals (Qt does this automatically, but explicit for clarity)
-    disconnect(&mTimer, &QTimer::timeout, this, &WatchServiceController::onCheck);
+    disconnect(&m_Timer, &QTimer::timeout, this, &WatchServiceController::onCheck);
     disconnect(
-        &mIcon, &QSystemTrayIcon::activated, this, &WatchServiceController::onTrayIconActivated);
-    disconnect(mStopServiceAction,
+        &m_Icon, &QSystemTrayIcon::activated, this, &WatchServiceController::onTrayIconActivated);
+    disconnect(m_StopServiceAction,
                &QAction::triggered,
                this,
                &WatchServiceController::onStopServiceClicked);
-    disconnect(mCloseTrayIconAction,
+    disconnect(m_CloseTrayIconAction,
                &QAction::triggered,
                this,
                &WatchServiceController::onCloseIconClicked);
@@ -236,25 +236,25 @@ ILog *WatchServiceController::getLog() {
 
 //----------------------------------------------------------------------------
 void WatchServiceController::onCheck() {
-    bool wasConnected = mClient->isConnected();
+    bool wasConnected = m_Client->isConnected();
 
     if (!wasConnected) {
-        mLastCommand = Unknown;
-        mClient->start();
+        m_LastCommand = Unknown;
+        m_Client->start();
     }
 
     // Enable/disable start/stop service actions based on connection status
-    bool isConnected = mClient->isConnected();
-    foreach (auto action, mStartServiceActions) {
+    bool isConnected = m_Client->isConnected();
+    foreach (auto action, m_StartServiceActions) {
         action->setEnabled(!isConnected); // Enable start when not connected
     }
-    mStopServiceAction->setEnabled(isConnected); // Enable stop when connected
+    m_StopServiceAction->setEnabled(isConnected); // Enable stop when connected
     // Keep close action enabled
-    mCloseTrayIconAction->setEnabled(true);
+    m_CloseTrayIconAction->setEnabled(true);
 
     // Only update tray icon when connection state actually changes to avoid layout recursion
-    if (isConnected != mPreviousConnectionState) {
-        mPreviousConnectionState = isConnected;
+    if (isConnected != m_PreviousConnectionState) {
+        m_PreviousConnectionState = isConnected;
         LOG(getLog(),
             LogLevel::Normal,
             QString("Connection state changed: %1 -> %2").arg(wasConnected).arg(isConnected));
@@ -263,17 +263,17 @@ void WatchServiceController::onCheck() {
         QMetaObject::invokeMethod(this, "updateTrayIcon", Qt::QueuedConnection);
     }
 
-    // Note: mIcon.show() is called once in constructor, no need to call it repeatedly
+    // Note: m_Icon.show() is called once in constructor, no need to call it repeatedly
 }
 
 //----------------------------------------------------------------------------
 void WatchServiceController::updateTrayIcon() {
-    if (mClient->isConnected()) {
+    if (m_Client->isConnected()) {
         // Connected state: show normal template icon
-        mIcon.setIcon(createTemplateIcon(":/icons/controller-monogramTemplate.png"));
+        m_Icon.setIcon(createTemplateIcon(":/icons/controller-monogram_Template.png"));
     } else {
         // Disconnected state: show slashed H icon to indicate stopped state
-        mIcon.setIcon(createTemplateIcon(":/icons/controller-monogram-stoppedTemplate.png"));
+        m_Icon.setIcon(createTemplateIcon(":/icons/controller-monogram-stoppedTemplate.png"));
     }
 }
 
@@ -284,7 +284,7 @@ void WatchServiceController::onDisconnected() {
 
 //----------------------------------------------------------------------------
 void WatchServiceController::onCloseCommandReceived() {
-    if (mLastCommand != Stop) {
+    if (m_LastCommand != Stop) {
         LOG(getLog(), LogLevel::Normal, "Close tray by command from watch service.");
 
         QCoreApplication::instance()->quit();
@@ -297,9 +297,9 @@ void WatchServiceController::onCloseCommandReceived() {
 void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
     LOG(getLog(), LogLevel::Normal, QString("User say: start service. %1").arg(aArguments));
 
-    mLastCommand = Start;
+    m_LastCommand = Start;
 
-    if (!mClient->isConnected()) {
+    if (!m_Client->isConnected()) {
         // Validate application instance
         if (!BasicApplication::getInstance()) {
             LOG(getLog(),
@@ -349,7 +349,7 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
                 QString("Failed to start service process: %1").arg(path));
         }
     } else {
-        mClient->restartService(QStringList());
+        m_Client->restartService(QStringList());
     }
 }
 
@@ -357,10 +357,10 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
 void WatchServiceController::onStopServiceClicked() {
     LOG(getLog(), LogLevel::Normal, "User say: stop service.");
 
-    mLastCommand = Stop;
+    m_LastCommand = Stop;
 
-    if (mClient->isConnected()) {
-        mClient->stopService();
+    if (m_Client->isConnected()) {
+        m_Client->stopService();
     }
 }
 
@@ -403,8 +403,8 @@ void WatchServiceController::onTrayIconActivated(QSystemTrayIcon::ActivationReas
 #else
     // On Windows/Linux, show context menu on left-click or right-click
     if (aReason == QSystemTrayIcon::Trigger || aReason == QSystemTrayIcon::Context) {
-        mMenu.popup(QCursor::pos());
-        mMenu.activateWindow();
+        m_Menu.popup(QCursor::pos());
+        m_Menu.activateWindow();
     }
 #endif
 }

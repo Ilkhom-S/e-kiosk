@@ -9,9 +9,9 @@
 #include <SDK/Plugins/PluginFactory.h>
 
 QMLBackendFactory::QMLBackendFactory() {
-    mName = "QML graphics backend";
-    mDescription = "QML based graphics backend for qml widgets";
-    mAuthor = "Humo";
-    mVersion = "1.0";
-    mModuleName = "qml_backend";
+    m_Name = "QML graphics backend";
+    m_Description = "QML based graphics backend for qml widgets";
+    m_Author = "Humo";
+    m_Version = "1.0";
+    m_ModuleName = "qml_backend";
 }

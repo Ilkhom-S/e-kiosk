@@ -16,45 +16,45 @@ TokenServiceWindow::TokenServiceWindow(HumoServiceBackend *aBackend, QWidget *aP
     : QFrame(aParent), ServiceWindowBase(aBackend) {
     setupUi(this);
 
-    mWindow = new TokenWindow(aBackend, this);
+    m_Window = new TokenWindow(aBackend, this);
 
-    connect(mWindow, SIGNAL(beginFormat()), SLOT(onBeginFormat()));
-    connect(mWindow, SIGNAL(endFormat()), SLOT(onEndFormat()));
-    connect(mWindow, SIGNAL(error(QString)), SLOT(onError(QString)));
+    connect(m_Window, SIGNAL(beginFormat()), SLOT(onBeginFormat()));
+    connect(m_Window, SIGNAL(endFormat()), SLOT(onEndFormat()));
+    connect(m_Window, SIGNAL(error(QString)), SLOT(onError(QString)));
 
-    mWindow->setParent(this);
+    m_Window->setParent(this);
     wContainer->setLayout(new QHBoxLayout);
     wContainer->layout()->setSpacing(0);
     wContainer->layout()->setContentsMargins(0, 0, 0, 0);
-    wContainer->layout()->addWidget(mWindow);
+    wContainer->layout()->addWidget(m_Window);
 }
 
 //------------------------------------------------------------------------
 bool TokenServiceWindow::activate() {
-    mWindow->initialize(mBackend->getKeysManager()->tokenStatus());
+    m_Window->initialize(m_Backend->getKeysManager()->tokenStatus());
 
-    mUIUpdateTimer = startTimer(1000);
+    m_UIUpdateTimer = startTimer(1000);
 
     return true;
 }
 
 //------------------------------------------------------------------------
 bool TokenServiceWindow::deactivate() {
-    killTimer(mUIUpdateTimer);
+    killTimer(m_UIUpdateTimer);
 
     return true;
 }
 
 //------------------------------------------------------------------------
 bool TokenServiceWindow::initialize() {
-    mWindow->initialize(mBackend->getKeysManager()->tokenStatus());
+    m_Window->initialize(m_Backend->getKeysManager()->tokenStatus());
 
     return true;
 }
 
 //------------------------------------------------------------------------
 bool TokenServiceWindow::shutdown() {
-    killTimer(mUIUpdateTimer);
+    killTimer(m_UIUpdateTimer);
     return true;
 }
 
@@ -64,9 +64,9 @@ void TokenServiceWindow::onBeginFormat() {
         GUI::MessageBox::hide();
         GUI::MessageBox::wait(tr("#format_token"));
 
-        killTimer(mUIUpdateTimer);
+        killTimer(m_UIUpdateTimer);
 
-        mWindow->doFormat();
+        m_Window->doFormat();
     }
 }
 
@@ -74,7 +74,7 @@ void TokenServiceWindow::onBeginFormat() {
 void TokenServiceWindow::onEndFormat() {
     GUI::MessageBox::hide();
 
-    mUIUpdateTimer = startTimer(1000);
+    m_UIUpdateTimer = startTimer(1000);
 }
 
 //------------------------------------------------------------------------
@@ -82,12 +82,12 @@ void TokenServiceWindow::onError(QString aError) {
     GUI::MessageBox::hide();
     GUI::MessageBox::critical(aError);
 
-    mUIUpdateTimer = startTimer(1000);
+    m_UIUpdateTimer = startTimer(1000);
 }
 
 //------------------------------------------------------------------------
 void TokenServiceWindow::timerEvent(QTimerEvent *) {
-    mWindow->initialize(mBackend->getKeysManager()->tokenStatus());
+    m_Window->initialize(m_Backend->getKeysManager()->tokenStatus());
 }
 
 //------------------------------------------------------------------------

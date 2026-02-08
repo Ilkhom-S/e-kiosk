@@ -143,7 +143,7 @@ void AtolSerialFR::processDeviceData() {
             getRegister(CAtolFRBase::Registers::EKLZActivizationData, data)) {
             qlonglong EKLZNumber = data.left(5).toHex().toULongLong();
             QDate EKLZActivizationDate =
-                QDate::fromString(data.mid(5, 3).toHex().insert(4, "20"), CFR::DateFormat);
+                QDate::from_String(data.mid(5, 3).toHex().insert(4, "20"), CFR::DateFormat);
 
             setDeviceParameter(CDeviceData::EKLZ::Serial, EKLZNumber);
             setDeviceParameter(CDeviceData::EKLZ::ActivizationDate,
@@ -153,7 +153,7 @@ void AtolSerialFR::processDeviceData() {
         QByteArray commandData(1, CAtolFRBase::EKLZRequests::GetRegNumber);
         QByteArray answer;
 
-        if (canPerformEKLZRequest() &&
+        if (canPerform_EKLZRequest() &&
             processCommand(CAtolFRBase::Commands::EKLZRequest, commandData, &answer)) {
             qlonglong EKLZNumber = answer.mid(3).toHex().toULongLong();
             setDeviceParameter(CDeviceData::EKLZ::Serial, EKLZNumber);
@@ -216,8 +216,8 @@ CAtolFR::TModelKey AtolSerialFR::getModelKey(const QByteArray &aAnswer) {
 
 //--------------------------------------------------------------------------------
 TResult
-AtolSerialFR::performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
-    TResult result = AtolFRBase::performCommand(aCommandData, aAnswer, aTimeout);
+AtolSerialFR::perform_Command(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
+    TResult result = AtolFRBase::perform_Command(aCommandData, aAnswer, aTimeout);
 
     if (result == CommandResult::Transport) // m_PollingActive??
     {
@@ -244,7 +244,7 @@ bool AtolSerialFR::processAnswer(const QByteArray &aCommand, char aError) {
 
 //--------------------------------------------------------------------------------
 void AtolSerialFR::getEKLZStatus(TStatusCodes &aStatusCodes) {
-    if (!canPerformEKLZRequest()) {
+    if (!canPerform_EKLZRequest()) {
         return;
     }
 
@@ -275,7 +275,7 @@ void AtolSerialFR::setErrorFlags(const QByteArray &aCommand, char aError) {
 }
 
 //--------------------------------------------------------------------------------
-bool AtolSerialFR::canPerformEKLZRequest() {
+bool AtolSerialFR::canPerform_EKLZRequest() {
     if (m_StatusCollection.isEmpty() ||
         m_StatusCollection.contains(DeviceStatusCode::Error::NotAvailable) || m_BadAnswerCounter) {
         processCommand(CAtolFRBase::Commands::GetSoftEKLZStatus);

@@ -137,7 +137,7 @@ void CData::addNew(int aNumber,
             ? aDate
             : (m_DefaultFWDate.isValid() ? m_DefaultFWDate : QDate::currentDate().addYears(100));
     append(aNumber,
-           SModelData(QString::fromUtf8(aId),
+           SModelData(QString::from_Utf8(aId),
                       aName,
                       aVerified,
                       aEjector,

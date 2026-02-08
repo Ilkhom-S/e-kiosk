@@ -10,16 +10,16 @@ namespace Scripting {
 
 //------------------------------------------------------------------------------
 AudioService::AudioService(ICore *aCore)
-    : mCore(aCore), mAudioService(nullptr /*mCore->getAudioService()*/) {}
+    : m_Core(aCore), m_AudioService(nullptr /*m_Core->getAudioService()*/) {}
 
 //------------------------------------------------------------------------------
 void AudioService::play(const QString &aFileName) {
-    mAudioService->play(aFileName);
+    m_AudioService->play(aFileName);
 }
 
 //------------------------------------------------------------------------------
 void AudioService::stop() {
-    mAudioService->stop();
+    m_AudioService->stop();
 }
 
 //------------------------------------------------------------------------------

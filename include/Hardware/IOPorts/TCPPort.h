@@ -90,22 +90,22 @@ protected:
     bool invokeMethod(TBoolMethod aMethod);
 
     /// Открыть порт.
-    bool performOpen();
+    bool perform_Open();
 
     /// Закрыть порт.
-    bool performClose();
+    bool perform_Close();
 
     /// Прочитать данные.
-    bool performRead(QByteArray &aData, int aTimeout = DefaultReadTimeout, int aMinSize = 1);
+    bool perform_Read(QByteArray &aData, int aTimeout = DefaultReadTimeout, int aMinSize = 1);
 
     /// Передать данные.
-    bool performWrite(const QByteArray &aData);
+    bool perform_Write(const QByteArray &aData);
 
     /// Проверить готовность порта.
-    virtual bool performCheckReady();
+    virtual bool perform_CheckReady();
 
     /// Открыт?
-    virtual bool performOpened();
+    virtual bool perform_Opened();
 
     /// Проверить готовность порта.
     virtual bool checkReady();
@@ -127,7 +127,7 @@ protected:
     QByteArray m_DataFrom;
 
     /// Для охраны буфера прочитанных данных.
-    QMutex m_DataFromGuard;
+    QMutex m_DataFrom_Guard;
 
     /// Последний лог с ошибкой открытия порта.
     QString m_LastErrorLog;

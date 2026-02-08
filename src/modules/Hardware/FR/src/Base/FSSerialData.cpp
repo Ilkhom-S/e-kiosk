@@ -41,7 +41,7 @@ void CData::add(const QString &aSerialNumber,
                 const char *aProvider,
                 const char *aRevision) {
     append(aSerialNumber,
-           SData(aExpiration, aFFD, QString::fromUtf8(aProvider), QString::fromUtf8(aRevision)));
+           SData(aExpiration, aFFD, QString::from_Utf8(aProvider), QString::from_Utf8(aRevision)));
 }
 
 //--------------------------------------------------------------------------------

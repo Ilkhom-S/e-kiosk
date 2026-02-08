@@ -30,7 +30,7 @@ public:
     virtual bool eventFilter(QObject *aObject, QEvent *aEvent) override;
 
     /// Установка произвольного изображения в качестве фона для защитного экрана.
-    virtual void setCustomBackground(const QString &aPath);
+    virtual void setCustom_Background(const QString &aPath);
 
 public slots:
     /// Показывает значок для состояния aState, связанный с отправителем aSender.
@@ -71,9 +71,9 @@ private: // Данные
 
     Ui::SplashScreenClass ui;
 
-    TAreas mAreas;
-    TStateList mStates;
-    bool mQuitRequested;
+    TAreas m_Areas;
+    TStateList m_States;
+    bool m_QuitRequested;
 };
 
 //----------------------------------------------------------------------------

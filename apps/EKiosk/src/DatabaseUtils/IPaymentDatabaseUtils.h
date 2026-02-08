@@ -63,7 +63,7 @@ public:
 
     /// Выполняет инкассацию.
     virtual SDK::PaymentProcessor::SEncashment
-    performEncashment(const QVariantMap &aParameters) = 0;
+    perform_Encashment(const QVariantMap &aParameters) = 0;
 
     /// Возвращает последнюю выполненную инкассацию
     virtual QList<SDK::PaymentProcessor::SEncashment> getLastEncashments(int aCount) = 0;

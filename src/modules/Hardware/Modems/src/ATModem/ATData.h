@@ -5,9 +5,9 @@
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе AT.
 namespace AT {
-namespace EModemDialect {
-enum Enum { DefaultAtGsm, Siemens, SimCom, Huawei, ZTE };
-} // namespace EModemDialect
+namespace EModem_Dialect {
+enum Enum { DefaultAtGsm, Siemens, Sim_Com, Huawei, ZTE };
+} // namespace EModem_Dialect
 
 /// Команды.
 namespace Commands {
@@ -52,14 +52,14 @@ extern const char SIMID[]; /// SIM card identification number
 extern const char PowerOn[];              /// Подать питание на GSM модуль
 } // namespace ZTE
 
-namespace SimCom {
+namespace Sim_Com {
 extern const char Restart[]; /// Перегрузить модем и заставить его перерегистрироваться в
                                     /// сети. Требует 5 секундного ожидания.
 extern const char CSCS[]; /// Переключение кодировки USSD запросов.
 
 extern const char CGREG[];        /// Network Registration Status
 extern const char GetCellList[]; /// получение списка базовых станций
-} // namespace SimCom
+} // namespace Sim_Com
 } // namespace Commands
 } // namespace AT
 

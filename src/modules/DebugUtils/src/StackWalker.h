@@ -50,20 +50,20 @@ public:
         RetrieveVerbose = 0xF,
 
         // Generate a "good" symbol-search-path
-        SymBuildPath = 0x10,
+        Sym_BuildPath = 0x10,
 
         // Also use the public Microsoft-Symbol-Server
-        SymUseSymSrv = 0x20,
+        Sym_UseSym_Srv = 0x20,
 
         // Contains all the abouve "Sym"-options
-        SymAll = 0x30,
+        Sym_All = 0x30,
 
         // Contains all options (default)
         OptionsAll = 0x3F
     } StackWalkOptions;
 
     StackWalker(int options = OptionsAll, // 'int' is by design, to combine the enum-flags
-                LPCSTR szSymPath = NULL,
+                LPCSTR szSym_Path = NULL,
                 DWORD dwProcessId = GetCurrentProcessId(),
                 HANDLE hProcess = GetCurrentProcess());
     StackWalker(DWORD dwProcessId, HANDLE hProcess);
@@ -102,12 +102,12 @@ protected:
         CHAR name[STACKWALK_MAX_NAMELEN];
         CHAR undName[STACKWALK_MAX_NAMELEN];
         CHAR undFullName[STACKWALK_MAX_NAMELEN];
-        DWORD64 offsetFromSymbol;
-        DWORD offsetFromLine;
+        DWORD64 offsetFrom_Symbol;
+        DWORD offsetFrom_Line;
         DWORD lineNumber;
         CHAR lineFileName[STACKWALK_MAX_NAMELEN];
-        DWORD symType;
-        LPCSTR symTypeString;
+        DWORD sym_Type;
+        LPCSTR sym_TypeString;
         CHAR moduleName[STACKWALK_MAX_NAMELEN];
         DWORD64 baseOfImage;
         CHAR loadedImageName[STACKWALK_MAX_NAMELEN];
@@ -115,13 +115,13 @@ protected:
 
     enum CallstackEntryType { firstEntry, nextEntry, lastEntry };
 
-    virtual void OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName);
+    virtual void OnSym_Init(LPCSTR szSearchPath, DWORD sym_Options, LPCSTR szUserName);
     virtual void OnLoadModule(LPCSTR img,
                               LPCSTR mod,
                               DWORD64 baseAddr,
                               DWORD size,
                               DWORD result,
-                              LPCSTR symType,
+                              LPCSTR sym_Type,
                               LPCSTR pdbName,
                               ULONGLONG fileVersion);
     virtual void OnCallstackEntry(CallstackEntryType eType, struct CallstackEntry &entry);
@@ -132,7 +132,7 @@ protected:
     HANDLE m_HProcess;
     DWORD m_DwProcessId;
     BOOL m_ModulesLoaded;
-    LPSTR m_SzSymPath;
+    LPSTR m_SzSym_Path;
 
     int m_Options;
 

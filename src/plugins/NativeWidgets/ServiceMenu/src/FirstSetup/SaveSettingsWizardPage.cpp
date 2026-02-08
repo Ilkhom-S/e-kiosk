@@ -46,7 +46,7 @@ void SaveSettingsWizardPage::onSave() {
     lbStatus->setText(tr("#saving_configs"));
 
     // TODO Надо получать описание ошибки
-    if (!mBackend->saveConfiguration()) {
+    if (!m_Backend->saveConfiguration()) {
         showError(tr("#when_saving_configs"), tr("#save_configuration_error"));
         return;
     }
@@ -61,9 +61,9 @@ void SaveSettingsWizardPage::onFinish() {
     parameters["signal"] = "exit";
 
     // Завершаем сценарий.
-    mBackend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, parameters);
+    m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, parameters);
 
-    mBackend->sendEvent(SDK::PaymentProcessor::EEventType::CloseApplication);
+    m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::CloseApplication);
 }
 
 //----------------------------------------------------------------------------

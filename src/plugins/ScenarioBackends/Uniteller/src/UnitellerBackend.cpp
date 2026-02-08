@@ -36,28 +36,28 @@ namespace CUnitellerBackend {
 //---------------------------------------------------------------------------
 UnitellerBackendPlugin::UnitellerBackendPlugin(SDK::Plugin::IEnvironment *aFactory,
                                                const QString &aInstancePath)
-    : mEnvironment(aFactory), mInstancePath(aInstancePath) {}
+    : m_Environment(aFactory), m_InstancePath(aInstancePath) {}
 
 //---------------------------------------------------------------------------
 PPSDK::Scripting::IBackendScenarioObject *
 UnitellerBackendPlugin::create(const QString &aClassName) const {
     PPSDK::ICore *core =
-        dynamic_cast<PPSDK::ICore *>(mEnvironment->getInterface(PPSDK::CInterfaces::ICore));
+        dynamic_cast<PPSDK::ICore *>(m_Environment->getInterface(PPSDK::CInterfaces::ICore));
 
     return new UnitellerCore(
         core,
-        mEnvironment->getLog(Uniteller::LogName),
-        Uniteller::API::getInstance(mEnvironment->getLog(Uniteller::LogName), core));
+        m_Environment->getLog(Uniteller::LogName),
+        Uniteller::API::getInstance(m_Environment->getLog(Uniteller::LogName), core));
 }
 
 //---------------------------------------------------------------------------
 UnitellerCore::UnitellerCore(SDK::PaymentProcessor::ICore *aCore,
                              ILog *aLog,
                              QSharedPointer<Uniteller::API> aAPI)
-    : ILogable(aLog), mCore(aCore), mCountPINNumbers(0) {
-    connect(&mDummyTimer, SIGNAL(timeout()), this, SIGNAL(onTimeout()));
-    mDummyTimer.setInterval(1000);
-    mDummyTimer.start();
+    : ILogable(aLog), m_Core(aCore), m_CountPINNumbers(0) {
+    connect(&m_DummyTimer, SIGNAL(timeout()), this, SIGNAL(onTimeout()));
+    m_DummyTimer.setInterval(1000);
+    m_DummyTimer.start();
 
     connect(aAPI.data(), SIGNAL(readyToCard()), this, SIGNAL(onReadyToCard()));
     connect(aAPI.data(), SIGNAL(error(const QString &)), this, SIGNAL(onError(const QString &)));
@@ -86,17 +86,17 @@ void UnitellerCore::onDeviceEvent(Uniteller::DeviceEvent::Enum aEvent,
             break;
 
         case Uniteller::KeyCode::Numeric:
-            mCountPINNumbers = qMin(4, mCountPINNumbers + 1);
-            emit onEnterPin(mCountPINNumbers ? QString("*").repeated(mCountPINNumbers) : "");
+            m_CountPINNumbers = qMin(4, m_CountPINNumbers + 1);
+            emit onEnterPin(m_CountPINNumbers ? QString("*").repeated(m_CountPINNumbers) : "");
             break;
 
         case Uniteller::KeyCode::Clear:
-            mCountPINNumbers = qMax(0, mCountPINNumbers - 1);
-            emit onEnterPin(mCountPINNumbers ? QString("*").repeated(mCountPINNumbers) : "");
+            m_CountPINNumbers = qMax(0, m_CountPINNumbers - 1);
+            emit onEnterPin(m_CountPINNumbers ? QString("*").repeated(m_CountPINNumbers) : "");
             break;
 
         case Uniteller::KeyCode::Cancel:
-            mCountPINNumbers = 0;
+            m_CountPINNumbers = 0;
             emit onError(tr("#canceled_by_user"));
             break;
 
@@ -106,7 +106,7 @@ void UnitellerCore::onDeviceEvent(Uniteller::DeviceEvent::Enum aEvent,
         break;
 
     case Uniteller::DeviceEvent::CardInserted:
-        mCountPINNumbers = 0;
+        m_CountPINNumbers = 0;
         emit cardInserted();
         break;
 
@@ -129,7 +129,7 @@ void UnitellerCore::onPrintReceipt(const QStringList &aLines) {
 
     SDK::PaymentProcessor::Scripting::Core *scriptingCore =
         static_cast<SDK::PaymentProcessor::Scripting::Core *>(
-            dynamic_cast<SDK::GUI::IGraphicsHost *>(mCore->getGUIService())
+            dynamic_cast<SDK::GUI::IGraphicsHost *>(m_Core->getGUIService())
                 ->getInterface<QObject>(SDK::PaymentProcessor::Scripting::CProxyNames::Core));
 
     SDK::PaymentProcessor::Scripting::PrinterService *ps =

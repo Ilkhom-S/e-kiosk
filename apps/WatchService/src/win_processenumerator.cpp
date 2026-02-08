@@ -33,7 +33,7 @@ void loadDosDriveMap(QMap<QString, QString> &aResult) {
 
             char path[MAX_PATH] = {0};
             if (QueryDosDeviceA(str, path, MAX_PATH)) {
-                aResult.insert(QString::fromLatin1(path), QString::fromLatin1(str));
+                aResult.insert(QString::from_Latin1(path), QString::from_Latin1(str));
             }
 
             // get the next drive
@@ -69,12 +69,12 @@ ProcessEnumerator::ProcessEnumerator() {
 
 //----------------------------------------------------------------------------
 ProcessEnumerator::const_iterator ProcessEnumerator::begin() const {
-    return mProcesses.begin();
+    return m_Processes.begin();
 }
 
 //----------------------------------------------------------------------------
 ProcessEnumerator::const_iterator ProcessEnumerator::end() const {
-    return mProcesses.end();
+    return m_Processes.end();
 }
 
 //----------------------------------------------------------------------------
@@ -101,8 +101,8 @@ BOOL CALLBACK enum_windows_callback(HWND handle, LPARAM lParam) {
 bool ProcessEnumerator::kill(PID aPid, quint32 &aErrorCode) const {
     bool result = false;
 
-    if (mProcesses.contains(aPid)) {
-        if (mProcesses.value(aPid).path.contains("explorer.exe", Qt::CaseInsensitive)) {
+    if (m_Processes.contains(aPid)) {
+        if (m_Processes.value(aPid).path.contains("explorer.exe", Qt::CaseInsensitive)) {
             OSVERSIONINFOEX osVersion = {sizeof(OSVERSIONINFOEX), 0};
             GetVersionEx((OSVERSIONINFO *)&osVersion);
 
@@ -144,7 +144,7 @@ bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) const {
 
     // http://support.microsoft.com/kb/178893
     handle_data data = {aPid, 0};
-    EnumWindows(enum_windows_callback, (LPARAM)&data);
+    Enum_Windows(enum_windows_callback, (LPARAM)&data);
 
     HANDLE process = OpenProcess(SYNCHRONIZE | PROCESS_TERMINATE, FALSE, aPid);
 
@@ -170,7 +170,7 @@ bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) const {
 bool getModuleName(HANDLE aProcess, QString &aPath) {
     wchar_t path[MAX_PATH] = {0};
     if (GetProcessImageFileName(aProcess, path, MAX_PATH)) {
-        aPath = QString::fromWCharArray(path);
+        aPath = QString::from_WCharArray(path);
 
         QMapIterator<QString, QString> i(CProcessEnumerator::dosDriveMap);
         while (i.hasNext()) {
@@ -188,7 +188,7 @@ bool getModuleName(HANDLE aProcess, QString &aPath) {
 void ProcessEnumerator::enumerate() {
     DWORD processes[1024] = {0}, cbNeeded = 0, cProcesses = 0;
 
-    if (EnumProcesses(processes, sizeof(processes), &cbNeeded)) {
+    if (Enum_Processes(processes, sizeof(processes), &cbNeeded)) {
         // Calculate how many process identifiers were returned.
         cProcesses = cbNeeded / sizeof(DWORD);
 
@@ -205,7 +205,7 @@ void ProcessEnumerator::enumerate() {
                 if (getModuleName(hProcess, path)) {
                     ProcessInfo pInfo = {processes[i], path};
 
-                    mProcesses.insert(processes[i], pInfo);
+                    m_Processes.insert(processes[i], pInfo);
                 }
 
                 CloseHandle(hProcess);

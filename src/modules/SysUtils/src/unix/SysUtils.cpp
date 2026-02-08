@@ -74,7 +74,7 @@ QString ISysUtils::getOSVersionInfo() {
 
 //---------------------------------------------------------------------------
 // Удаляет BOM из файла, если он есть (UTF-8 BOM)
-QString ISysUtils::rmBOM(const QString &aFile) {
+QString ISysUtils::rm_BOM(const QString &aFile) {
     QFile file(aFile);
     if (!file.open(QIODevice::ReadOnly)) {
         return aFile;
@@ -95,7 +95,7 @@ QString ISysUtils::rmBOM(const QString &aFile) {
 
 //---------------------------------------------------------------------------
 // Перезагрузка системы (Linux: reboot syscall, macOS: shutdown command)
-int ISysUtils::systemReboot() {
+int ISysUtils::system_Reboot() {
 #if defined(__linux__)
     sync();
     int ret = reboot(RB_AUTOBOOT);
@@ -114,7 +114,7 @@ int ISysUtils::systemReboot() {
 
 //---------------------------------------------------------------------------
 // Выключение системы (Linux: reboot syscall with poweroff, macOS: shutdown command)
-int ISysUtils::systemShutdown() {
+int ISysUtils::system_Shutdown() {
 #if defined(__linux__)
 // Try to use the reboot syscall with RB_POWER_OFF (requires root)
 #include <sys/reboot.h>
@@ -208,9 +208,9 @@ void ISysUtils::runScreenSaver() {
 
 //---------------------------------------------------------------------------
 // Установка системного времени (Linux: date, macOS: systemsetup)
-void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false) {
+void ISysUtils::setSystem_Time(QDateTime aDateTime) noexcept(false) {
 #if defined(__linux__)
-    // Format: date MMDDhhmmYYYY.SS
+    // Format: date MMDDhhmm_YYYY.SS
     QDateTime dt = aDateTime.toLocalTime();
     QString cmd = QString("sudo date %1%2%3%4%5.%6")
                       .arg(dt.date().month(), 2, 10, QChar('0'))
@@ -241,7 +241,7 @@ void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false) {
     }
 #else
     Q_UNUSED(aDateTime);
-    qWarning() << "setSystemTime() not implemented for this Unix platform";
+    qWarning() << "setSystem_Time() not implemented for this Unix platform";
 #endif
 }
 
@@ -281,8 +281,8 @@ bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *a
     } else {
         pid = getpid();
     }
-    QString statmPath = QString("/proc/%1/statm").arg(pid);
-    QFile statm(statmPath);
+    QString statm_Path = QString("/proc/%1/statm").arg(pid);
+    QFile statm(statm_Path);
     if (statm.open(QIODevice::ReadOnly)) {
         QByteArray line = statm.readLine();
         statm.close();

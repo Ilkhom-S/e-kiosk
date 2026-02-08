@@ -6,7 +6,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QtCore/QFileSystemWatcher>
+#include <QtCore/QFileSystem_Watcher>
 #include <QtCore/QMutexLocker>
 
 #include <SDK/Drivers/Components.h>
@@ -89,15 +89,15 @@ RemoteService *RemoteService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 RemoteService::RemoteService(IApplication *aApplication)
-    : ILogable(CRemoteService::LogName), mApplication(aApplication), mDatabase(nullptr),
-      mLastCommand(0), mGenerateKeyCommand(0),
-      mSettings(aApplication->getWorkingDirectory() + CRemoteService::ConfigFileName,
+    : ILogable(CRemoteService::LogName), m_Application(aApplication), m_Database(nullptr),
+      m_LastCommand(0), m_GenerateKeyCommand(0),
+      m_Settings(aApplication->getWorkingDirectory() + CRemoteService::ConfigFileName,
                 QSettings::IniFormat),
-      mCommandMutex() {
+      m_CommandMutex() {
     // Создаем 5сек таймер отложенной проверки состояния файлов отчета
-    mCheckUpdateReportsTimer.setSingleShot(true);
-    mCheckUpdateReportsTimer.setInterval(CRemoteService::UpdateReportCheckTimeout);
-    connect(&mCheckUpdateReportsTimer, SIGNAL(timeout()), this, SLOT(onCheckUpdateReports()));
+    m_CheckUpdateReportsTimer.setSingleShot(true);
+    m_CheckUpdateReportsTimer.setInterval(CRemoteService::UpdateReportCheckTimeout);
+    connect(&m_CheckUpdateReportsTimer, SIGNAL(timeout()), this, SLOT(onCheckUpdateReports()));
 }
 
 //---------------------------------------------------------------------------
@@ -105,42 +105,42 @@ RemoteService::~RemoteService() {}
 
 //---------------------------------------------------------------------------
 bool RemoteService::initialize() {
-    mDatabase = DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
+    m_Database = DatabaseService::instance(m_Application)->getDatabaseUtils<IHardwareDatabaseUtils>();
 
     QVariant lastCommand =
-        mDatabase->getDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
+        m_Database->getDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
                                   CRemoteService::LastMonitoringCommand);
     if (!lastCommand.isValid()) {
-        mLastCommand = 0;
+        m_LastCommand = 0;
     } else {
-        mLastCommand = lastCommand.toInt();
+        m_LastCommand = lastCommand.toInt();
     }
 
-    connect(PaymentService::instance(mApplication),
+    connect(PaymentService::instance(m_Application),
             SIGNAL(paymentCommandComplete(int, EPaymentCommandResult::Enum)),
             SLOT(onPaymentCommandComplete(int, EPaymentCommandResult::Enum)),
             Qt::QueuedConnection);
 
     QStringList remotes =
-        PluginService::instance(mApplication)
+        PluginService::instance(m_Application)
             ->getPluginLoader()
             ->getPluginList(QRegularExpression(
                 QString("%1\\.%2\\..*").arg(PPSDK::Application, PPSDK::CComponents::RemoteClient)));
 
     foreach (const QString &path, remotes) {
         SDK::Plugin::IPlugin *plugin =
-            PluginService::instance(mApplication)->getPluginLoader()->createPlugin(path);
+            PluginService::instance(m_Application)->getPluginLoader()->createPlugin(path);
         if (plugin) {
             PPSDK::IRemoteClient *client = dynamic_cast<PPSDK::IRemoteClient *>(plugin);
             if (client) {
-                mMonitoringClients << client;
+                m_MonitoringClients << client;
             } else {
-                PluginService::instance(mApplication)->getPluginLoader()->destroyPlugin(plugin);
+                PluginService::instance(m_Application)->getPluginLoader()->destroyPlugin(plugin);
             }
         }
     }
 
-    auto deviceService = DeviceService::instance(mApplication);
+    auto deviceService = DeviceService::instance(m_Application);
 
     connect(
         deviceService, SIGNAL(configurationUpdated()), this, SLOT(onDeviceConfigurationUpdated()));
@@ -156,7 +156,7 @@ bool RemoteService::initialize() {
 
 //------------------------------------------------------------------------------
 void RemoteService::onDeviceConfigurationUpdated() {
-    foreach (auto client, mMonitoringClients) {
+    foreach (auto client, m_MonitoringClients) {
         client->useCapability(PPSDK::IRemoteClient::DeviceConfigurationUpdated);
     }
 }
@@ -165,25 +165,25 @@ void RemoteService::onDeviceConfigurationUpdated() {
 void RemoteService::finishInitialize() {
     restoreCommandQueue();
 
-    foreach (auto client, mMonitoringClients) {
+    foreach (auto client, m_MonitoringClients) {
         client->enable();
     }
 
-    if (mDatabase) {
+    if (m_Database) {
         bool ok = true;
-        mGenerateKeyCommand =
-            mDatabase
+        m_GenerateKeyCommand =
+            m_Database
                 ->getDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
                                  CRemoteService::GenKeyCommandId)
                 .toInt(&ok);
-        mGenerateKeyCommand = ok ? mGenerateKeyCommand : 0;
+        m_GenerateKeyCommand = ok ? m_GenerateKeyCommand : 0;
 
         QTimer::singleShot(
             CRemoteService::UpdateReportFirstCheckInterval, this, SLOT(onCheckUpdateReports()));
         QTimer::singleShot(
             CRemoteService::CommandCheckInterval, this, SLOT(onCheckQueuedRebootCommands()));
 
-        QDir(mApplication->getWorkingDirectory()).mkpath("update");
+        QDir(m_Application->getWorkingDirectory()).mkpath("update");
 
         restartUpdateWatcher();
 
@@ -191,7 +191,7 @@ void RemoteService::finishInitialize() {
         startTimer(CRemoteService::UpdateReportCheckInterval);
     }
 
-    if (!mScreenShotsCommands.isEmpty()) {
+    if (!m_ScreenShotsCommands.isEmpty()) {
         QTimer::singleShot(CRemoteService::CommandCheckInterval, this, SLOT(doScreenshotCommand()));
     }
 }
@@ -205,30 +205,30 @@ bool RemoteService::canShutdown() {
 bool RemoteService::shutdown() {
     saveCommandQueue();
 
-    if (mGenerateKeyFuture.isRunning()) {
-        mGenerateKeyFuture.waitForFinished();
+    if (m_GenerateKeyFuture.isRunning()) {
+        m_GenerateKeyFuture.waitForFinished();
     }
 
-    disconnect(PaymentService::instance(mApplication),
+    disconnect(PaymentService::instance(m_Application),
                SIGNAL(paymentCommandComplete(int, EPaymentCommandResult::Enum)),
                this,
                SLOT(onPaymentCommandComplete(int, EPaymentCommandResult::Enum)));
 
-    while (!mMonitoringClients.isEmpty()) {
-        mMonitoringClients.first()->disable();
+    while (!m_MonitoringClients.isEmpty()) {
+        m_MonitoringClients.first()->disable();
 
-        PluginService::instance(mApplication)
+        PluginService::instance(m_Application)
             ->getPluginLoader()
-            ->destroyPlugin(dynamic_cast<SDK::Plugin::IPlugin *>(mMonitoringClients.first()));
+            ->destroyPlugin(dynamic_cast<SDK::Plugin::IPlugin *>(m_MonitoringClients.first()));
 
-        mMonitoringClients.takeFirst();
+        m_MonitoringClients.takeFirst();
     }
 
-    mCheckUpdateReportsTimer.stop();
-    mDatabase->setDeviceParam(
+    m_CheckUpdateReportsTimer.stop();
+    m_Database->setDeviceParam(
         SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
         CRemoteService::QueuedRebootCommands,
-        mQueuedRebootCommands.join(CRemoteService::QueuedRebootCommandDelimeter));
+        m_QueuedRebootCommands.join(CRemoteService::QueuedRebootCommandDelimeter));
 
     return true;
 }
@@ -259,18 +259,18 @@ void RemoteService::resetParameters(const QSet<QString> &) {}
 
 //---------------------------------------------------------------------------
 int RemoteService::increaseLastCommandID() {
-    ++mLastCommand;
+    ++m_LastCommand;
 
-    mDatabase->setDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
+    m_Database->setDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
                               CRemoteService::LastMonitoringCommand,
-                              mLastCommand);
+                              m_LastCommand);
 
-    return mLastCommand;
+    return m_LastCommand;
 }
 
 //---------------------------------------------------------------------------
 int RemoteService::executeCommand(PPSDK::EEventType::Enum aEvent) {
-    QMutexLocker lock(&mCommandMutex);
+    QMutexLocker lock(&m_CommandMutex);
 
     int command = increaseLastCommandID();
 
@@ -289,14 +289,14 @@ void RemoteService::doExecuteCommand(int aComandId, int aEvent) {
             return;
         }
 
-        mQueuedRebootCommands << QString::number(aComandId);
+        m_QueuedRebootCommands << QString::number(aComandId);
     } else if (aEvent == PPSDK::EEventType::Restart) {
-        mQueuedRebootCommands << QString::number(aComandId);
+        m_QueuedRebootCommands << QString::number(aComandId);
     } else {
         emit commandStatusChanged(aComandId, OK, QVariantMap());
     }
 
-    EventService::instance(mApplication)->sendEvent(SDK::PaymentProcessor::Event(aEvent));
+    EventService::instance(m_Application)->sendEvent(SDK::PaymentProcessor::Event(aEvent));
 }
 
 //---------------------------------------------------------------------------
@@ -333,16 +333,16 @@ int RemoteService::registerAnyCommand() {
 int RemoteService::registerPaymentCommand(EPaymentOperation aOperation,
                                           const QString &aInitialSession,
                                           const QVariantMap &aParameters) {
-    QMutexLocker lock(&mCommandMutex);
+    QMutexLocker lock(&m_CommandMutex);
 
-    if (mGenerateKeyCommand) {
+    if (m_GenerateKeyCommand) {
         return 0;
     }
 
     int paymentCommand =
         aOperation == Remove
-            ? PaymentService::instance(mApplication)->registerRemovePaymentCommand(aInitialSession)
-            : PaymentService::instance(mApplication)
+            ? PaymentService::instance(m_Application)->registerRemovePaymentCommand(aInitialSession)
+            : PaymentService::instance(m_Application)
                   ->registerForcePaymentCommand(aInitialSession, aParameters);
 
     if (!paymentCommand) {
@@ -350,7 +350,7 @@ int RemoteService::registerPaymentCommand(EPaymentOperation aOperation,
     } else {
         int command = increaseLastCommandID();
 
-        mPaymentCommands.insert(paymentCommand, command);
+        m_PaymentCommands.insert(paymentCommand, command);
 
         return command;
     }
@@ -372,24 +372,24 @@ void RemoteService::onPaymentCommandComplete(int aID, EPaymentCommandResult::Enu
         status = Error;
     }
 
-    emit commandStatusChanged(mPaymentCommands[aID], status, QVariantMap());
+    emit commandStatusChanged(m_PaymentCommands[aID], status, QVariantMap());
 
-    mPaymentCommands.remove(aID);
+    m_PaymentCommands.remove(aID);
 }
 
 //---------------------------------------------------------------------------
 bool RemoteService::allowUpdateCommand() {
-    return mUpdateCommands.isEmpty() && mGenerateKeyCommand == 0 && mQueuedRebootCommands.isEmpty();
+    return m_UpdateCommands.isEmpty() && m_GenerateKeyCommand == 0 && m_QueuedRebootCommands.isEmpty();
 }
 
 //---------------------------------------------------------------------------
 bool RemoteService::allowRestart() {
-    if (!mUpdateCommands.isEmpty()) {
+    if (!m_UpdateCommands.isEmpty()) {
         // ускорение проверки статуса команды получения конфигурации
         onCheckUpdateReports();
     }
 
-    foreach (auto command, mUpdateCommands.values()) {
+    foreach (auto command, m_UpdateCommands.values()) {
         if (command.type == FirmwareUpload) {
             toLog(LogLevel::Error, "Deny restart/shutdown because FirmwareUpload processed.");
 
@@ -417,13 +417,13 @@ int RemoteService::registerUpdateCommand(EUpdateType aType,
         command.parameters = aComponents.trimmed().split("#");
     }
 
-    if (!mUpdateCommands.isEmpty()) {
+    if (!m_UpdateCommands.isEmpty()) {
         // ускорение проверки статуса команды получения конфигурации
         onCheckUpdateReports();
     }
 
     if (!allowUpdateCommand()) {
-        QMutexLocker lock(&mCommandMutex);
+        QMutexLocker lock(&m_CommandMutex);
 
         toLog(LogLevel::Normal,
               QString(
@@ -434,7 +434,7 @@ int RemoteService::registerUpdateCommand(EUpdateType aType,
                   .arg(command.updateUrl.toString())
                   .arg(command.parameters.join("#")));
 
-        mUpdateCommands.insert(command.ID, command);
+        m_UpdateCommands.insert(command.ID, command);
 
         saveCommandQueue();
 
@@ -446,10 +446,10 @@ int RemoteService::registerUpdateCommand(EUpdateType aType,
 
 //---------------------------------------------------------------------------
 int RemoteService::startUpdateCommand(UpdateCommand aCommand) {
-    auto appInfo = mApplication->getAppInfo();
+    auto appInfo = m_Application->getAppInfo();
 
     // Сериализуем настройки прокси.
-    auto settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+    auto settings = SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
 
     QString commandParams = QString("--server \"%1\" --version \"%2\" --application %3 --conf %4 "
                                     "--id %5 --point %6 --accept-keys %7")
@@ -520,10 +520,10 @@ int RemoteService::startUpdateCommand(UpdateCommand aCommand) {
     }
 
     aCommand.status = Executing;
-    mUpdateCommands.insert(aCommand.ID, aCommand);
+    m_UpdateCommands.insert(aCommand.ID, aCommand);
 
-    TerminalService::instance(mApplication)->getClient()->subscribeOnModuleClosed(this);
-    TerminalService::instance(mApplication)
+    TerminalService::instance(m_Application)->getClient()->subscribeOnModuleClosed(this);
+    TerminalService::instance(m_Application)
         ->getClient()
         ->startModule(CWatchService::Modules::Updater, commandParams);
 
@@ -536,11 +536,11 @@ int RemoteService::startUpdateCommand(UpdateCommand aCommand) {
 
 //---------------------------------------------------------------------------
 void RemoteService::doScreenshotCommand() {
-    while (!mScreenShotsCommands.isEmpty()) {
-        int command = mScreenShotsCommands.takeFirst();
+    while (!m_ScreenShotsCommands.isEmpty()) {
+        int command = m_ScreenShotsCommands.takeFirst();
 
         QVariantList value;
-        foreach (auto image, mApplication->getScreenshot()) {
+        foreach (auto image, m_Application->getScreenshot()) {
             value.push_back(image);
         }
 
@@ -553,11 +553,11 @@ void RemoteService::doScreenshotCommand() {
 
 //---------------------------------------------------------------------------
 int RemoteService::registerScreenshotCommand() {
-    QMutexLocker lock(&mCommandMutex);
+    QMutexLocker lock(&m_CommandMutex);
 
     int command = increaseLastCommandID();
 
-    mScreenShotsCommands.push_back(command);
+    m_ScreenShotsCommands.push_back(command);
     QTimer::singleShot(100, this, SLOT(doScreenshotCommand()));
 
     return command;
@@ -565,15 +565,15 @@ int RemoteService::registerScreenshotCommand() {
 
 //---------------------------------------------------------------------------
 int RemoteService::registerGenerateKeyCommand(const QString &aLogin, const QString &aPassword) {
-    QMutexLocker lock(&mCommandMutex);
+    QMutexLocker lock(&m_CommandMutex);
 
-    if (mGenerateKeyCommand == 0) {
-        mGenerateKeyCommand = increaseLastCommandID();
+    if (m_GenerateKeyCommand == 0) {
+        m_GenerateKeyCommand = increaseLastCommandID();
 
-        mGenerateKeyFuture =
+        m_GenerateKeyFuture =
             QtConcurrent::run(std::bind(doGenerateKeyCommand, this, aLogin, aPassword));
 
-        return mGenerateKeyCommand;
+        return m_GenerateKeyCommand;
     }
 
     return 0;
@@ -584,9 +584,9 @@ void RemoteService::doGenerateKeyCommand(RemoteService *aService,
                                          const QString &aLogin,
                                          const QString &aPassword) {
     auto terminalSettings = static_cast<PPSDK::TerminalSettings *>(
-        aService->mApplication->getCore()->getSettingsService()->getAdapter(
+        aService->m_Application->getCore()->getSettingsService()->getAdapter(
             PPSDK::CAdapterNames::TerminalAdapter));
-    auto cryptoService = aService->mApplication->getCore()->getCryptService();
+    auto cryptoService = aService->m_Application->getCore()->getCryptService();
 
     QString url(terminalSettings->getKeygenURL());
     QString SD, AP, OP;
@@ -603,9 +603,9 @@ void RemoteService::doGenerateKeyCommand(RemoteService *aService,
     }
 
     aService->commandStatusChanged(
-        aService->mGenerateKeyCommand, error ? Error : OK, QVariantMap());
+        aService->m_GenerateKeyCommand, error ? Error : OK, QVariantMap());
 
-    aService->mGenerateKeyCommand = error ? 0 : aService->mGenerateKeyCommand;
+    aService->m_GenerateKeyCommand = error ? 0 : aService->m_GenerateKeyCommand;
 
     if (!error) {
         aService->toLog(
@@ -613,24 +613,24 @@ void RemoteService::doGenerateKeyCommand(RemoteService *aService,
             QString("GENKEY: New key %1 generated. Wait for send command status to server.")
                 .arg(CRemoteService::GeneratedKeyId));
 
-        aService->mDatabase->setDeviceParam(
+        aService->m_Database->setDeviceParam(
             SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
             CRemoteService::GenKeyCommandId,
-            aService->mGenerateKeyCommand);
-        aService->mApplication->getCore()->getSettingsService()->saveConfiguration();
+            aService->m_GenerateKeyCommand);
+        aService->m_Application->getCore()->getSettingsService()->saveConfiguration();
     }
 }
 
 //---------------------------------------------------------------------------
 void RemoteService::commandStatusSent(int aCommandId, int aStatus) {
-    if (mGenerateKeyCommand && aCommandId == mGenerateKeyCommand && aStatus == OK) {
-        mGenerateKeyCommand = 0;
+    if (m_GenerateKeyCommand && aCommandId == m_GenerateKeyCommand && aStatus == OK) {
+        m_GenerateKeyCommand = 0;
 
-        if (mApplication->getCore()->getCryptService()->replaceKeys(CRemoteService::GeneratedKeyId,
+        if (m_Application->getCore()->getCryptService()->replaceKeys(CRemoteService::GeneratedKeyId,
                                                                     0)) {
-            mApplication->getCore()->getSettingsService()->saveConfiguration();
+            m_Application->getCore()->getSettingsService()->saveConfiguration();
 
-            mDatabase->setDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
+            m_Database->setDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
                                       CRemoteService::GenKeyCommandId,
                                       "");
 
@@ -646,14 +646,14 @@ void RemoteService::commandStatusSent(int aCommandId, int aStatus) {
 
 //---------------------------------------------------------------------------
 void RemoteService::updateContent() {
-    foreach (auto client, mMonitoringClients) {
+    foreach (auto client, m_MonitoringClients) {
         client->useCapability(PPSDK::IRemoteClient::UpdateContent);
     }
 }
 
 //---------------------------------------------------------------------------
 void RemoteService::sendHeartbeat() {
-    foreach (auto client, mMonitoringClients) {
+    foreach (auto client, m_MonitoringClients) {
         client->useCapability(PPSDK::IRemoteClient::SendHeartbeat);
     }
 }
@@ -661,7 +661,7 @@ void RemoteService::sendHeartbeat() {
 //---------------------------------------------------------------------------
 void RemoteService::onCheckQueuedRebootCommands() {
     QStringList ids =
-        mDatabase
+        m_Database
             ->getDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
                              CRemoteService::QueuedRebootCommands)
             .toString()
@@ -671,22 +671,22 @@ void RemoteService::onCheckQueuedRebootCommands() {
         emit commandStatusChanged(id.toInt(), OK, QVariantMap());
     }
 
-    mDatabase->setDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
+    m_Database->setDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
                               CRemoteService::QueuedRebootCommands,
                               QString());
 }
 
 //---------------------------------------------------------------------------
 void RemoteService::onUpdateDirChanged() {
-    mCheckUpdateReportsTimer.stop();
+    m_CheckUpdateReportsTimer.stop();
 
     toLog(LogLevel::Normal, "Directory 'update' changed.");
 
-    restartUpdateWatcher(dynamic_cast<QFileSystemWatcher *>(sender()));
+    restartUpdateWatcher(dynamic_cast<QFileSystem_Watcher *>(sender()));
 
     // Таймаут что бы этот обработчик, вызыванный много раз в течении короткого времени, не запускал
     // долгую процедуру проверки файлов отчетов.
-    mCheckUpdateReportsTimer.start();
+    m_CheckUpdateReportsTimer.start();
 }
 
 //---------------------------------------------------------------------------
@@ -707,7 +707,7 @@ QList<CommandReport> getReports(const QString &aReportsPath) {
 
         r.status = static_cast<SDK::PaymentProcessor::IRemoteService::EStatus>(
             report.value("status").toInt());
-        r.lastUpdate = QDateTime::fromString(report.value("last_update").toString(),
+        r.lastUpdate = QDateTime::from_String(report.value("last_update").toString(),
                                              CRemoteService::DateTimeFormat);
         r.description = report.value("status_desc");
         r.progress = report.value("progress");
@@ -723,7 +723,7 @@ int RemoteService::checkUpdateReports() {
     int removedCount = 0;
 
     // Проверка репортов команд
-    foreach (auto report, getReports(mApplication->getWorkingDirectory() + "/update/")) {
+    foreach (auto report, getReports(m_Application->getWorkingDirectory() + "/update/")) {
         QVariantMap parameters;
 
         if (report.description.isValid()) {
@@ -767,9 +767,9 @@ int RemoteService::checkUpdateReports() {
 
             if (report.isAlive()) {
                 // Обновляем время изменения команды
-                if (mUpdateCommands.contains(report.ID)) {
-                    QMutexLocker lock(&mCommandMutex);
-                    mUpdateCommands[report.ID].lastUpdate = report.lastUpdate;
+                if (m_UpdateCommands.contains(report.ID)) {
+                    QMutexLocker lock(&m_CommandMutex);
+                    m_UpdateCommands[report.ID].lastUpdate = report.lastUpdate;
                     saveCommandQueue();
                 }
 
@@ -799,7 +799,7 @@ void RemoteService::onCheckUpdateReports() {
 int RemoteService::checkCommandsLifetime() {
     int removed = 0;
 
-    foreach (auto cmd, mUpdateCommands.values()) {
+    foreach (auto cmd, m_UpdateCommands.values()) {
         if (cmd.lastUpdate.addSecs(CRemoteService::MaxUpdateCommandLifetime) <
             QDateTime::currentDateTime()) {
             toLog(LogLevel::Error,
@@ -807,8 +807,8 @@ int RemoteService::checkCommandsLifetime() {
                       .arg(cmd.ID)
                       .arg(cmd.configUrl.toString()));
 
-            QMutexLocker lock(&mCommandMutex);
-            mUpdateCommands.remove(cmd.ID);
+            QMutexLocker lock(&m_CommandMutex);
+            m_UpdateCommands.remove(cmd.ID);
             saveCommandQueue();
             removed++;
 
@@ -821,11 +821,11 @@ int RemoteService::checkCommandsLifetime() {
 
 //---------------------------------------------------------------------------
 bool RemoteService::checkFirmwareUpload(int aCommandID) {
-    if (!mUpdateCommands.contains(aCommandID)) {
+    if (!m_UpdateCommands.contains(aCommandID)) {
         return false;
     }
 
-    auto command = mUpdateCommands.value(aCommandID);
+    auto command = m_UpdateCommands.value(aCommandID);
 
     if (command.type != IRemoteService::FirmwareDownload) {
         return false;
@@ -833,13 +833,13 @@ bool RemoteService::checkFirmwareUpload(int aCommandID) {
 
     command.type = IRemoteService::FirmwareUpload;
     command.status = IRemoteService::Executing;
-    mUpdateCommands.insert(aCommandID, command);
+    m_UpdateCommands.insert(aCommandID, command);
     saveCommandQueue();
 
     toLog(LogLevel::Normal,
           QString("Complete download firmware. Restart command %1 for UPLOAD.").arg(aCommandID));
 
-    EventService::instance(mApplication)
+    EventService::instance(m_Application)
         ->sendEvent(PPSDK::Event(
             PPSDK::EEventType::Restart, "updater", QString("-start_scenario=FirmwareUpload")));
 
@@ -850,7 +850,7 @@ bool RemoteService::checkFirmwareUpload(int aCommandID) {
 bool RemoteService::restoreConfiguration() {
     bool result = false;
 
-    foreach (PPSDK::IRemoteClient *client, mMonitoringClients) {
+    foreach (PPSDK::IRemoteClient *client, m_MonitoringClients) {
         if (client->getCapabilities() & PPSDK::IRemoteClient::RestoreConfiguration) {
             result = client->useCapability(PPSDK::IRemoteClient::RestoreConfiguration);
         }
@@ -861,73 +861,73 @@ bool RemoteService::restoreConfiguration() {
 
 //---------------------------------------------------------------------------
 void RemoteService::saveCommandQueue() {
-    mSettings.clear();
+    m_Settings.clear();
 
-    foreach (auto command, mUpdateCommands) {
-        mSettings.beginGroup(QString("cmd_%1").arg(command.ID));
+    foreach (auto command, m_UpdateCommands) {
+        m_Settings.beginGroup(QString("cmd_%1").arg(command.ID));
 
-        mSettings.setValue("id", command.ID);
-        mSettings.setValue("configUrl", command.configUrl.toString());
-        mSettings.setValue("updateUrl", command.updateUrl.toString());
-        mSettings.setValue("type", command.type);
-        mSettings.setValue("parameters", command.parameters.join("#"));
-        mSettings.setValue("status", command.status);
-        mSettings.setValue("lastUpdate",
+        m_Settings.setValue("id", command.ID);
+        m_Settings.setValue("configUrl", command.configUrl.toString());
+        m_Settings.setValue("updateUrl", command.updateUrl.toString());
+        m_Settings.setValue("type", command.type);
+        m_Settings.setValue("parameters", command.parameters.join("#"));
+        m_Settings.setValue("status", command.status);
+        m_Settings.setValue("lastUpdate",
                            command.lastUpdate.toString(CRemoteService::DateTimeFormat));
 
-        mSettings.endGroup();
+        m_Settings.endGroup();
     }
 
     QStringList screenShotsCommands;
-    foreach (int cmd, mScreenShotsCommands) {
+    foreach (int cmd, m_ScreenShotsCommands) {
         screenShotsCommands << QString::number(cmd);
     }
 
-    mSettings.setValue("common/screenshot", screenShotsCommands.join(";"));
+    m_Settings.setValue("common/screenshot", screenShotsCommands.join(";"));
 
-    mSettings.sync();
+    m_Settings.sync();
 }
 
 //---------------------------------------------------------------------------
 void RemoteService::restoreCommandQueue() {
-    mSettings.sync();
+    m_Settings.sync();
 
-    foreach (auto group, mSettings.childGroups()) {
+    foreach (auto group, m_Settings.childGroups()) {
         UpdateCommand cmd;
 
-        mSettings.beginGroup(group);
+        m_Settings.beginGroup(group);
 
-        cmd.ID = mSettings.value("id").toInt();
-        cmd.configUrl = mSettings.value("configUrl").toUrl();
-        cmd.updateUrl = mSettings.value("updateUrl").toUrl();
-        cmd.type = static_cast<EUpdateType>(mSettings.value("type").toInt());
-        cmd.status = static_cast<EStatus>(mSettings.value("status").toInt());
-        cmd.parameters = mSettings.value("parameters").toString().split("#");
-        cmd.lastUpdate = QDateTime::fromString(mSettings.value("lastUpdate").toString(),
+        cmd.ID = m_Settings.value("id").toInt();
+        cmd.configUrl = m_Settings.value("configUrl").toUrl();
+        cmd.updateUrl = m_Settings.value("updateUrl").toUrl();
+        cmd.type = static_cast<EUpdateType>(m_Settings.value("type").toInt());
+        cmd.status = static_cast<EStatus>(m_Settings.value("status").toInt());
+        cmd.parameters = m_Settings.value("parameters").toString().split("#");
+        cmd.lastUpdate = QDateTime::from_String(m_Settings.value("lastUpdate").toString(),
                                                CRemoteService::DateTimeFormat);
 
         // Если метка времени до сих пор не использовалась, заполняем её текущим временем.
         if (cmd.lastUpdate.isNull() || !cmd.lastUpdate.isValid()) {
             cmd.lastUpdate = QDateTime::currentDateTime();
-            mSettings.setValue("lastUpdate",
+            m_Settings.setValue("lastUpdate",
                                cmd.lastUpdate.toString(CRemoteService::DateTimeFormat));
         }
 
         if (cmd.ID) {
-            mUpdateCommands.insert(cmd.ID, cmd);
+            m_UpdateCommands.insert(cmd.ID, cmd);
         }
 
-        mSettings.endGroup();
+        m_Settings.endGroup();
     }
 
-    foreach (auto cmd, mSettings.value("common/screenshot").toString().split(";")) {
-        mScreenShotsCommands << cmd.toInt();
+    foreach (auto cmd, m_Settings.value("common/screenshot").toString().split(";")) {
+        m_ScreenShotsCommands << cmd.toInt();
     }
 }
 
 //---------------------------------------------------------------------------
 RemoteService::UpdateCommand RemoteService::findUpdateCommand(EUpdateType aType) {
-    foreach (auto command, mUpdateCommands.values()) {
+    foreach (auto command, m_UpdateCommands.values()) {
         if (command.type == aType) {
             return command;
         }
@@ -937,19 +937,19 @@ RemoteService::UpdateCommand RemoteService::findUpdateCommand(EUpdateType aType)
 }
 
 //---------------------------------------------------------------------------
-void RemoteService::restartUpdateWatcher(QFileSystemWatcher *aWatcher) {
+void RemoteService::restartUpdateWatcher(QFileSystem_Watcher *aWatcher) {
     if (!aWatcher) {
-        aWatcher = new QFileSystemWatcher(this);
+        aWatcher = new QFileSystem_Watcher(this);
         connect(
             aWatcher, SIGNAL(directoryChanged(const QString &)), this, SLOT(onUpdateDirChanged()));
         connect(aWatcher, SIGNAL(fileChanged(const QString &)), this, SLOT(onUpdateDirChanged()));
-        aWatcher->addPath(mApplication->getWorkingDirectory() + "/update");
+        aWatcher->addPath(m_Application->getWorkingDirectory() + "/update");
     }
 
     QStringList files;
     foreach (
         auto name,
-        QDir(mApplication->getWorkingDirectory() + "/update", "*.rpt").entryInfoList(QDir::Files)) {
+        QDir(m_Application->getWorkingDirectory() + "/update", "*.rpt").entryInfoList(QDir::Files)) {
         files << name.filePath();
     }
 
@@ -962,7 +962,7 @@ void RemoteService::restartUpdateWatcher(QFileSystemWatcher *aWatcher) {
 void RemoteService::onModuleClosed(const QString &aModuleName) {
     if (aModuleName == CWatchService::Modules::Updater && checkUpdateReports() == 0) {
         // Updater закрылся, но команда осталась в очереди - удаляем эту команду.
-        foreach (auto cmd, mUpdateCommands.values()) {
+        foreach (auto cmd, m_UpdateCommands.values()) {
             if (cmd.isExternal() && cmd.status == Executing) {
                 toLog(LogLevel::Warning,
                       QString(
@@ -983,7 +983,7 @@ void RemoteService::onModuleClosed(const QString &aModuleName) {
 void RemoteService::onDeviceStatusChanged(const QString &aConfigName) {
     if (aConfigName.contains(SDK::Driver::CComponents::Watchdog) ||
         aConfigName.contains("Terminal", Qt::CaseInsensitive)) {
-        foreach (auto client, mMonitoringClients) {
+        foreach (auto client, m_MonitoringClients) {
             client->useCapability(PPSDK::IRemoteClient::ReportStatus);
         }
     }
@@ -1002,10 +1002,10 @@ void RemoteService::timerEvent(QTimerEvent *aEvent) {
 void RemoteService::updateCommandFinish(int aCmdID, EStatus aStatus, QVariantMap aParameters) {
     emit commandStatusChanged(aCmdID, aStatus, aParameters);
 
-    if (mUpdateCommands.contains(aCmdID)) {
-        QMutexLocker lock(&mCommandMutex);
+    if (m_UpdateCommands.contains(aCmdID)) {
+        QMutexLocker lock(&m_CommandMutex);
 
-        mUpdateCommands.remove(aCmdID);
+        m_UpdateCommands.remove(aCmdID);
         saveCommandQueue();
     }
 
@@ -1016,32 +1016,32 @@ void RemoteService::updateCommandFinish(int aCmdID, EStatus aStatus, QVariantMap
 void RemoteService::startNextUpdateCommand() {
     UpdateCommand nextCommand;
 
-    QMutexLocker lock(&mCommandMutex);
+    QMutexLocker lock(&m_CommandMutex);
 
-    foreach (int id, mUpdateCommands.keys()) {
-        if (mUpdateCommands[id].status == IRemoteService::Waiting) {
-            nextCommand = mUpdateCommands[id];
+    foreach (int id, m_UpdateCommands.keys()) {
+        if (m_UpdateCommands[id].status == IRemoteService::Waiting) {
+            nextCommand = m_UpdateCommands[id];
             break;
         }
     }
 
     // запускаем следующую команду, если это возможно
     if (nextCommand.isValid()) {
-        mUpdateCommands.remove(nextCommand.ID);
+        m_UpdateCommands.remove(nextCommand.ID);
 
         bool haveExecuted = false;
 
-        foreach (auto cmd, mUpdateCommands.values()) {
+        foreach (auto cmd, m_UpdateCommands.values()) {
             if (cmd.status != IRemoteService::Waiting) {
                 haveExecuted = true;
                 break;
             }
         }
 
-        if (!haveExecuted && mGenerateKeyCommand == 0 && mQueuedRebootCommands.isEmpty()) {
+        if (!haveExecuted && m_GenerateKeyCommand == 0 && m_QueuedRebootCommands.isEmpty()) {
             startUpdateCommand(nextCommand);
         } else {
-            mUpdateCommands.insert(nextCommand.ID, nextCommand);
+            m_UpdateCommands.insert(nextCommand.ID, nextCommand);
         }
     }
 }

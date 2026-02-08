@@ -84,7 +84,7 @@ bool CitizenPPU231::getStatus(TStatusCodes &aStatusCodes) {
 
 //--------------------------------------------------------------------------------
 bool CitizenPPU231::printBarcode(const QString &aBarcode) {
-    // 1. В Qt 6 для кодирования текста (fromUnicode) используется QStringEncoder.
+    // 1. В Qt 6 для кодирования текста (from_Unicode) используется QStringEncoder.
     // Так как m_Decoder в 2026 году — это std::shared_ptr<QStringDecoder>,
     // создаем энкодер с той же кодировкой.
     QByteArray encodedBarcode;

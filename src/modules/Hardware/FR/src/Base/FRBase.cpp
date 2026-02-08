@@ -168,10 +168,10 @@ template <class T> bool FRBase<T>::isConnected() {
 template <class T> void FRBase<T>::finaliseOnlineInitialization() {
     checkTaxes();
 
-    TTaxSystemData taxSystemData;
+    TTaxSystem_Data taxSystem_Data;
 
     foreach (char taxSystem, m_TaxSystems) {
-        taxSystemData.insert(ETaxSystems::Enum(taxSystem), CFR::TaxSystems[taxSystem]);
+        taxSystem_Data.insert(ETaxSystems::Enum(taxSystem), CFR::TaxSystems[taxSystem]);
     }
 
     TAgentFlagsData agentFlagsData;
@@ -180,7 +180,7 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
         agentFlagsData.insert(EAgentFlags::Enum(it.key()), it.value());
     }
 
-    setConfigParameter(CHardwareSDK::FR::AgentFlagsData, QVariant().fromValue(agentFlagsData));
+    setConfigParameter(CHardwareSDK::FR::AgentFlagsData, QVariant().from_Value(agentFlagsData));
 
     if (!m_AgentFlags.isEmpty()) {
         agentFlagsData.clear();
@@ -192,7 +192,7 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
         setDeviceParameter(CDeviceData::FR::AgentFlags,
                            QStringList(agentFlagsData.values()).join(", "));
         setConfigParameter(CHardwareSDK::FR::AgentFlags,
-                           QVariant().fromValue(agentFlagsData.keys()));
+                           QVariant().from_Value(agentFlagsData.keys()));
     }
 
     CFR::FiscalFields::TFields operationModeFields = CFR::OperationModeData.data().values();
@@ -241,13 +241,13 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
     }
 
     setDeviceParameter(CDeviceData::FS::SerialNumber, m_FSSerialNumber);
-    setDeviceParameter(CDeviceData::FR::TaxSystems, QStringList(taxSystemData.values()).join(", "));
+    setDeviceParameter(CDeviceData::FR::TaxSystems, QStringList(taxSystem_Data.values()).join(", "));
     setDeviceParameter(CDeviceData::FR::OperationModes, operationModeDescriptions.join(", "));
     setDeviceParameter(CDeviceData::FR::FFDFR, CFR::FFD[m_FFDFR].description);
     setDeviceParameter(CDeviceData::FR::FFDFS, CFR::FFD[m_FFDFS].description);
 
     setConfigParameter(CHardwareSDK::FR::FSSerialNumber, m_FSSerialNumber);
-    setConfigParameter(CHardwareSDK::FR::TaxSystems, QVariant().fromValue(taxSystemData));
+    setConfigParameter(CHardwareSDK::FR::TaxSystems, QVariant().from_Value(taxSystem_Data));
 
     if (!containsConfigParameter(CHardwareSDK::FR::FiscalFieldData)) {
         QList<CFR::FiscalFields::SData> fiscalFieldValues = m_FFData.data().values();
@@ -259,7 +259,7 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
                                    SFiscalFieldData(data.translationPF, data.isMoney()));
         }
 
-        setConfigParameter(CHardwareSDK::FR::FiscalFieldData, QVariant::fromValue(fiscalFieldData));
+        setConfigParameter(CHardwareSDK::FR::FiscalFieldData, QVariant::from_Value(fiscalFieldData));
 
         m_FFEngine.setConfigParameter(CFiscalSDK::SerialFSNumber,
                                      getDeviceParameter(CDeviceData::FS::SerialNumber));
@@ -315,7 +315,7 @@ template <class T> void FRBase<T>::finalizeInitialization() {
 //--------------------------------------------------------------------------------
 template <class T> void FRBase<T>::initializeZReportByTimer() {
     QString configOpeningTime = getConfigParameter(CHardware::FR::SessionOpeningTime).toString();
-    QTime OT = QTime::fromString(configOpeningTime, CFR::TimeLogFormat);
+    QTime OT = QTime::from_String(configOpeningTime, CFR::TimeLogFormat);
 
     QTime ZT = getConfigParameter(CHardwareSDK::FR::ZReportTime).toTime();
     QTime CT = QDateTime::currentDateTime().time();
@@ -807,9 +807,9 @@ bool FRBase<T>::processFiscal(const QStringList &aReceipt,
     bool taxesOK = checkTaxesOnPayment(paymentData);
     m_WrongTaxOnPayment = m_WrongTaxOnPayment || !taxesOK;
 
-    if (!checkAmountsOnPayment(paymentData) || !checkSumInCash(paymentData) ||
+    if (!checkAmountsOnPayment(paymentData) || !checkSum_InCash(paymentData) ||
         !checkPayTypeOnPayment(paymentData) || !checkNotPrinting() ||
-        !m_FFEngine.checkTaxSystemOnPayment(paymentData) ||
+        !m_FFEngine.checkTaxSystem_OnPayment(paymentData) ||
         !m_FFEngine.checkAgentFlagOnPayment(paymentData) || !taxesOK) {
         return false;
     }
@@ -839,7 +839,7 @@ bool FRBase<T>::processFiscal(const QStringList &aReceipt,
 
     QStringList receipt = simplifyReceipt(aReceipt);
 
-    return performFiscal(receipt, paymentData, aFDNumber);
+    return perform_Fiscal(receipt, paymentData, aFDNumber);
 }
 
 //--------------------------------------------------------------------------------
@@ -940,14 +940,14 @@ template <class T> bool FRBase<T>::printZReport(bool aPrintDeferredReports) {
         return false;
     }
 
-    return processNonReentrant(std::bind(&FRBase::performZReport, this, aPrintDeferredReports));
+    return processNonReentrant(std::bind(&FRBase::perform_ZReport, this, aPrintDeferredReports));
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool FRBase<T>::printXReport(const QStringList &aReceipt) {
     m_PrintingMode = EPrintingModes::Continuous;
 
-    return processNonReentrant(std::bind(&FRBase::performXReport, this, std::ref(aReceipt)));
+    return processNonReentrant(std::bind(&FRBase::perform_XReport, this, std::ref(aReceipt)));
 }
 
 //--------------------------------------------------------------------------------
@@ -981,7 +981,7 @@ template <class T> bool FRBase<T>::processEncashment(const QStringList &aReceipt
         m_PrintingMode = EPrintingModes::Continuous;
 
         return processNonReentrant(
-            std::bind(&FRBase::performEncashment, this, std::ref(aReceipt), aAmount));
+            std::bind(&FRBase::perform_Encashment, this, std::ref(aReceipt), aAmount));
     }
 
     toLog(LogLevel::Error, m_DeviceName + ": Failed to process payout" + log);
@@ -1032,7 +1032,7 @@ template <class T> bool FRBase<T>::complexFiscalDocument(TBoolMethod aMethod, co
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool FRBase<T>::performXReport(const QStringList &aReceipt) {
+template <class T> bool FRBase<T>::perform_XReport(const QStringList &aReceipt) {
     bool result = processReceipt(aReceipt, m_NextReceiptProcessing);
 
     if (result && checkNotPrinting()) {
@@ -1043,7 +1043,7 @@ template <class T> bool FRBase<T>::performXReport(const QStringList &aReceipt) {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool FRBase<T>::performEncashment(const QStringList &aReceipt, double aAmount) {
+template <class T> bool FRBase<T>::perform_Encashment(const QStringList &aReceipt, double aAmount) {
     bool result = processReceipt(aReceipt, m_NextReceiptProcessing);
 
     if (result && checkNotPrinting()) {
@@ -1246,7 +1246,7 @@ template <class T> bool FRBase<T>::processStatus(TStatusCodes &aStatusCodes) {
         }
 
         QString validityFSData = getDeviceParameter(CDeviceData::FS::ValidityData).toString();
-        QDate validityFSDate = QDate::fromString(validityFSData, CFR::DateLogFormat);
+        QDate validityFSDate = QDate::from_String(validityFSData, CFR::DateLogFormat);
         QDate currentDate = QDate::currentDate();
 
         if (validityFSDate.isValid() && (currentDate >= validityFSDate)) {
@@ -1403,7 +1403,7 @@ template <class T> bool FRBase<T>::checkAmountsOnPayment(const SPaymentData &aPa
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool FRBase<T>::checkSumInCash(const SPaymentData &aPaymentData) {
+template <class T> bool FRBase<T>::checkSum_InCash(const SPaymentData &aPaymentData) {
     if (!aPaymentData.back()) {
         return true;
     }
@@ -1523,7 +1523,7 @@ template <class T> void FRBase<T>::addFiscalFieldsOnPayment(const SPaymentData &
     addConfigFFData(CFiscalSDK::TransferOperatorName,
                     aPaymentData.fiscalParameters.value(CPrintConstants::BankName));
 
-    QString agentOperation = QString::fromUtf8(aPaymentData.back() ? CFR::AgentOperation::Payout
+    QString agentOperation = QString::from_Utf8(aPaymentData.back() ? CFR::AgentOperation::Payout
                                                                    : CFR::AgentOperation::Payment);
     m_FFEngine.setConfigParameter(CFiscalSDK::AgentOperation, agentOperation);
 
@@ -1671,7 +1671,7 @@ template <class T> bool FRBase<T>::isFS36() const {
     }
 
     QString FSValidityDateText = getDeviceParameter(CDeviceData::FS::ValidityData).toString();
-    QDate FSValidityDate = QDate::fromString(FSValidityDateText, CFR::DateLogFormat);
+    QDate FSValidityDate = QDate::from_String(FSValidityDateText, CFR::DateLogFormat);
 
     if (!FSValidityDate.isValid() || FSValidityDate.isNull()) {
         toLog(LogLevel::Error, m_DeviceName + ": Failed to check FS validity date");

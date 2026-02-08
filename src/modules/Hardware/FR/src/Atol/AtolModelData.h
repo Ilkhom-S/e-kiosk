@@ -25,7 +25,7 @@ const int OnlineTradeBuild = 5199;
 const int OnlineTerminalBuild = 5652;
 
 namespace Models {
-extern const char TriumF[];
+extern const char Trium_F[];
 extern const char FelixRF[];
 extern const char Felix02K[];
 extern const char Mercury140F[];

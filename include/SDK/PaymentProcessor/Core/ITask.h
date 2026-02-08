@@ -13,11 +13,11 @@ namespace PaymentProcessor {
 //------------------------------------------------------------------------------
 class ITask {
 protected:
-    QString mName;
+    QString m_Name;
 
 public:
     ITask(const QString &aName, const QString & /*aLogName*/, const QString & /*aParams*/)
-        : mName(aName) {}
+        : m_Name(aName) {}
     virtual ~ITask() {}
 
     /// выполнить задачу

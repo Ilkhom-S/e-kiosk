@@ -4,7 +4,7 @@
 
 namespace CAtolFR {
 namespace Models {
-const char TriumF[] = "ATOL Trium-F";
+const char Trium_F[] = "ATOL Trium-F";
 const char FelixRF[] = "ATOL Felix-R-F";
 const char Felix02K[] = "ATOL Felix-02K";
 const char Mercury140F[] = "ATOL Mercury-140F";
@@ -49,7 +49,7 @@ using namespace CAtolFR;
 
 //--------------------------------------------------------------------------------
 CModelData::CModelData() { // Cutter LineSpacing
-    addOldTrade(13, 40, Models::TriumF, true, false);
+    addOldTrade(13, 40, Models::Trium_F, true, false);
     addOldTrade(14, 20, Models::FelixRF, false, true);
     addOldTrade(15, 20, Models::Felix02K, false, true);
     addOldTrade(16, 24, Models::Mercury140F, false, false);

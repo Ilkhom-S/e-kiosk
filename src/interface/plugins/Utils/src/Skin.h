@@ -37,13 +37,13 @@ private:
     bool loadSkinConfig();
 
 private:
-    QString mName;
-    QString mSystemName22;
-    QString mPrevName;
-    QVariantMap mConfig;
-    QString mInterfacePath;
-    QVariantMap mProviderSkinConfig;
-    QObject *mGuiService;
+    QString m_Name;
+    QString m_System_Name22;
+    QString m_PrevName;
+    QVariantMap m_Config;
+    QString m_InterfacePath;
+    QVariantMap m_ProviderSkinConfig;
+    QObject *m_GuiService;
 };
 
 //------------------------------------------------------------------------------

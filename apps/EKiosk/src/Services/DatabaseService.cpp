@@ -23,7 +23,7 @@ namespace PP = SDK::PaymentProcessor;
 
 namespace CDatabaseService {
 /// Максимальное кол-во ошибок базы, после которых терминал блокирует свою работу
-const int MaximumDatabaseErrors = 13;
+const int Maximum_DatabaseErrors = 13;
 } // namespace CDatabaseService
 
 //---------------------------------------------------------------------------
@@ -34,35 +34,35 @@ DatabaseService *DatabaseService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 DatabaseService::DatabaseService(IApplication *aApplication)
-    : mApplication(aApplication), mDatabase(0), mErrorCounter(0) {}
+    : m_Application(aApplication), m_Database(0), m_ErrorCounter(0) {}
 
 //---------------------------------------------------------------------------
 DatabaseService::~DatabaseService() {
-    if (mDatabase) {
-        IDatabaseProxy::freeInstance(mDatabase);
-        mDatabase = 0;
+    if (m_Database) {
+        IDatabaseProxy::freeInstance(m_Database);
+        m_Database = 0;
     }
 }
 
 //---------------------------------------------------------------------------
 bool DatabaseService::initialize() {
-    LOG(mApplication->getLog(), LogLevel::Normal, "Initializing database...");
+    LOG(m_Application->getLog(), LogLevel::Normal, "Initializing database...");
 
     PP::TerminalSettings *terminalSettings =
-        SettingsService::instance(mApplication)->getAdapter<PP::TerminalSettings>();
+        SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
     // Инициализация базы данных.
-    mDatabase = IDatabaseProxy::getInstance(this);
-    if (!mDatabase) {
-        LOG(mApplication->getLog(), LogLevel::Error, "Can't get database proxy instance.");
+    m_Database = IDatabaseProxy::getInstance(this);
+    if (!m_Database) {
+        LOG(m_Application->getLog(), LogLevel::Error, "Can't get database proxy instance.");
         return false;
     }
 
-    mDbUtils = QSharedPointer<DatabaseUtils>(new DatabaseUtils(*mDatabase, mApplication));
+    m_DbUtils = QSharedPointer<DatabaseUtils>(new DatabaseUtils(*m_Database, m_Application));
 
     SDK::PaymentProcessor::SDatabaseSettings dbSettings = terminalSettings->getDatabaseSettings();
 
-    LOG(mApplication->getLog(),
+    LOG(m_Application->getLog(),
         LogLevel::Normal,
         QString("Opening terminal database (host: %1, port: %2, name: %3)...")
             .arg(dbSettings.host)
@@ -75,7 +75,7 @@ bool DatabaseService::initialize() {
     try {
         for (int retryCount = 0; retryCount < 2; ++retryCount) {
             // Подключаемся к БД.
-            if (!mDatabase->open(dbSettings.name,
+            if (!m_Database->open(dbSettings.name,
                                  dbSettings.user,
                                  dbSettings.password,
                                  dbSettings.host,
@@ -86,25 +86,25 @@ bool DatabaseService::initialize() {
             errorsList.clear();
 
             // Проверка на ошибку полностью испорченного формата базы
-            integrityFailed = !mDatabase->checkIntegrity(errorsList) ||
+            integrityFailed = !m_Database->checkIntegrity(errorsList) ||
                               errorsList.filter(QRegularExpression("*malformed*")).size() ||
-                              !mDbUtils->initialize();
+                              !m_DbUtils->initialize();
 
             if (integrityFailed) {
-                LOG(mApplication->getLog(),
+                LOG(m_Application->getLog(),
                     LogLevel::Error,
                     "Failed check database integrity. Backup broken database and create new.");
 
                 // Закрываем БД и переименовываем файл базы
-                QString databaseFile = mDatabase->getCurrentBaseName();
-                mDatabase->close();
+                QString databaseFile = m_Database->getCurrentBaseName();
+                m_Database->close();
                 QFile::rename(databaseFile,
                               databaseFile + QString(".backup_%1")
                                                  .arg(QDateTime::currentDateTime().toString(
                                                      "yyyyMMdd_hhmmss_zzz")));
 
                 // Выставить ошибочный статус устройства "терминал"
-                EventService::instance(mApplication)
+                EventService::instance(m_Application)
                     ->sendEvent(
                         SDK::PaymentProcessor::Event(SDK::PaymentProcessor::EEventType::Critical,
                                                      getName(),
@@ -115,7 +115,7 @@ bool DatabaseService::initialize() {
 
             if (retryCount && !integrityFailed) {
                 // Отмечаем статус устройства, что БД была восстановлена
-                EventService::instance(mApplication)
+                EventService::instance(m_Application)
                     ->sendEvent(SDK::PaymentProcessor::Event(SDK::PaymentProcessor::EEventType::OK,
                                                              getName(),
                                                              "New database was created."));
@@ -126,7 +126,7 @@ bool DatabaseService::initialize() {
             break;
         }
     } catch (QString &error) {
-        LOG(mApplication->getLog(),
+        LOG(m_Application->getLog(),
             LogLevel::Error,
             QString("Failed to initialize database manager: %1.").arg(error));
         return false;
@@ -145,11 +145,11 @@ bool DatabaseService::canShutdown() {
 
 //---------------------------------------------------------------------------
 bool DatabaseService::shutdown() {
-    mDbUtils.clear();
+    m_DbUtils.clear();
 
-    if (mDatabase) {
-        IDatabaseProxy::freeInstance(mDatabase);
-        mDatabase = 0;
+    if (m_Database) {
+        IDatabaseProxy::freeInstance(m_Database);
+        m_Database = 0;
     }
 
     return true;
@@ -185,14 +185,14 @@ bool DatabaseService::execQuery(const QString &aQuery) {
 
 //---------------------------------------------------------------------------
 QSharedPointer<IDatabaseQuery> DatabaseService::prepareQuery(const QString &aQuery) {
-    auto queryDeleter = [&](IDatabaseQuery *aQuery) { mDbUtils->releaseQuery(aQuery); };
+    auto queryDeleter = [&](IDatabaseQuery *aQuery) { m_DbUtils->releaseQuery(aQuery); };
 
-    return QSharedPointer<IDatabaseQuery>(mDbUtils->prepareQuery(aQuery), queryDeleter);
+    return QSharedPointer<IDatabaseQuery>(m_DbUtils->prepareQuery(aQuery), queryDeleter);
 }
 
 //---------------------------------------------------------------------------
 bool DatabaseService::execQuery(QSharedPointer<IDatabaseQuery> aQuery) {
-    return mDbUtils->execQuery(aQuery.data());
+    return m_DbUtils->execQuery(aQuery.data());
 }
 
 //---------------------------------------------------------------------------
@@ -208,19 +208,19 @@ QSharedPointer<IDatabaseQuery> DatabaseService::createAndExecQuery(const QString
 
 //---------------------------------------------------------------------------
 bool DatabaseService::isGood(bool aQueryResult) {
-    if (!aQueryResult && ++mErrorCounter >= CDatabaseService::MaximumDatabaseErrors) {
+    if (!aQueryResult && ++m_ErrorCounter >= CDatabaseService::Maximum_DatabaseErrors) {
         const char message[] = "Database error counter has reached a limit value. Lock the "
                                "terminal due to a DB error.";
-        LOG(mApplication->getLog(), LogLevel::Error, message);
+        LOG(m_Application->getLog(), LogLevel::Error, message);
 
         SDK::PaymentProcessor::Event e(SDK::PaymentProcessor::EEventType::TerminalLock,
                                        "DatabaseService");
-        mApplication->getCore()->getEventService()->sendEvent(e);
+        m_Application->getCore()->getEventService()->sendEvent(e);
 
         static bool feedbackSent = false;
 
         if (!feedbackSent) {
-            mApplication->getCore()->getTerminalService()->sendFeedback(CServices::DatabaseService,
+            m_Application->getCore()->getTerminalService()->sendFeedback(CServices::DatabaseService,
                                                                         message);
 
             feedbackSent = true;

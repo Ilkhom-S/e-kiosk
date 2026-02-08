@@ -32,8 +32,8 @@ bool ClassModem::e_Data_Execute() {
     QByteArray request;
     QByteArray response;
 
-    if (command == ModemCmd::GetOperator) {
-        if (ATDevice->processCommand(ModemProtocolCommands::GetOperator, request, response)) {
+    if (command == Modem_Cmd::GetOperator) {
+        if (ATDevice->processCommand(Modem_ProtocolCommands::GetOperator, request, response)) {
             // qDebug() << "\n<<======Answer true";
             resp = true;
         } else {
@@ -43,8 +43,8 @@ bool ClassModem::e_Data_Execute() {
         }
     }
 
-    if (command == ModemCmd::GetSignalQuality) {
-        if (ATDevice->processCommand(ModemProtocolCommands::GetSignalQuality, request, response)) {
+    if (command == Modem_Cmd::GetSignalQuality) {
+        if (ATDevice->processCommand(Modem_ProtocolCommands::GetSignalQuality, request, response)) {
             // qDebug() << "\n<<======Answer true";
             resp = true;
         } else {
@@ -53,8 +53,8 @@ bool ClassModem::e_Data_Execute() {
         }
     }
 
-    if (command == ModemCmd::CmdRestart) {
-        if (ATDevice->processCommand(ModemProtocolCommands::CmdRestart, request, response)) {
+    if (command == Modem_Cmd::CmdRestart) {
+        if (ATDevice->processCommand(Modem_ProtocolCommands::CmdRestart, request, response)) {
             // qDebug() << "\n<<======Answer true";
             resp = true;
         } else {
@@ -63,11 +63,11 @@ bool ClassModem::e_Data_Execute() {
         }
     }
 
-    if (command == ModemCmd::GetBalance) {
+    if (command == Modem_Cmd::GetBalance) {
         this->setBalanceRequest(
-            this->ussdRequestBalanseSim, CModemConstants::regExpBalance, this->indexBalanceParse);
-        if (ATDevice->processCommand(ModemProtocolCommands::GetBalance, request, response)) {
-            this->nowBalanceSim = ATDevice->nowSimBalance;
+            this->ussdRequestBalanseSim, CModem_Constants::regExpBalance, this->indexBalanceParse);
+        if (ATDevice->processCommand(Modem_ProtocolCommands::GetBalance, request, response)) {
+            this->nowBalanceSim = ATDevice->nowSim_Balance;
             // qDebug() << "\n<<======Answer true";
             resp = true;
         } else {
@@ -76,10 +76,10 @@ bool ClassModem::e_Data_Execute() {
         }
     }
 
-    if (command == ModemCmd::GetSimNumber) {
-        this->setSimNumberRequest(this->ussdRequestNumberSim, CModemConstants::regExpNumberSim);
-        if (ATDevice->processCommand(ModemProtocolCommands::GetSimNumber, request, response)) {
-            this->nowNumberSim = ATDevice->nowSimNumber;
+    if (command == Modem_Cmd::GetSim_Number) {
+        this->setSim_NumberRequest(this->ussdRequestNumberSim, CModem_Constants::regExpNumberSim);
+        if (ATDevice->processCommand(Modem_ProtocolCommands::GetSim_Number, request, response)) {
+            this->nowNumberSim = ATDevice->nowSim_Number;
             // qDebug() << "\n<<======Answer true";
             resp = true;
         } else {
@@ -88,18 +88,18 @@ bool ClassModem::e_Data_Execute() {
         }
     }
 
-    if (command == ModemCmd::CmdSendSms) {
+    if (command == Modem_Cmd::CmdSendSms) {
 
-        //            QString vrmInf;
+        //            QString vrm_Inf;
         //            for(int jek = 0; jek < this->smsIdIn.count(); jek++){
-        //                vrmInf += this->ATDevice->smsTextInit.at(jek) + "\n";
+        //                vrm_Inf += this->ATDevice->smsTextInit.at(jek) + "\n";
         //            }
 
-        //            qDebug() << vrmInf;
+        //            qDebug() << vrm_Inf;
 
         //            QString text = this->numberTrm + "\n" +
         //                           QDateTime::currentDateTime().toString("yyyy-MM-dd
-        //                           HH:mm:ss") + "\n" + vrmInf;
+        //                           HH:mm:ss") + "\n" + vrm_Inf;
 
         // qDebug() << text;
         if (this->ATDevice->sendSMSParam(this->SMSTEXT_TO))
@@ -121,7 +121,7 @@ void ClassModem::run() {
     this->e_Data_Execute();
 }
 
-bool ClassModem::isItYou(QStringList &comList,
+bool ClassModem::isItYou(QStringList &com_List,
                          QString &modem_name,
                          QString &com_str,
                          QString &modem_coment) {
@@ -137,17 +137,17 @@ bool ClassModem::isItYou(QStringList &comList,
         //         return false;
     }
 
-    int com_lst_c = comList.count();
+    int com_lst_c = com_List.count();
     for (int com_count = 0; com_count < com_lst_c; com_count++) {
 
-        QString vrmPort = comList.at(com_count);
+        QString vrm_Port = com_List.at(com_count);
         // qDebug() << "--- com_count  - " << com_count;
-        // qDebug() << "--- vrmPort    - " << vrmPort;
+        // qDebug() << "--- vrm_Port    - " << vrm_Port;
 
-        this->setPort(vrmPort);
+        this->setPort(vrm_Port);
 
         if (this->isItYou(modem_coment)) {
-            com_str = vrmPort;
+            com_str = vrm_Port;
             return true;
         } else {
             ATDevice->closePort();
@@ -162,9 +162,9 @@ void ClassModem::setBalanceRequest(QString text1, QString text2, int position) {
     ATDevice->regExpBalance = text2;
     ATDevice->position = position;
 }
-void ClassModem::setSimNumberRequest(QString text1, QString text2) {
-    ATDevice->simNumberRequest = text1;
-    ATDevice->regExpSimNumber = text2;
+void ClassModem::setSim_NumberRequest(QString text1, QString text2) {
+    ATDevice->sim_NumberRequest = text1;
+    ATDevice->regExpSim_Number = text2;
 }
 
 bool ClassModem::isItYou(QString &modem_coment) {
@@ -172,11 +172,11 @@ bool ClassModem::isItYou(QString &modem_coment) {
     if (ATDevice->openPort()) {
         qDebug() << "modem open  port";
 
-        nowSimPresent = true;
+        nowSim_Present = true;
 
         QByteArray cmdData, answerData;
 
-        ModemProtocolCommands::Enum protocolCommand = ModemProtocolCommands::Reset;
+        Modem_ProtocolCommands::Enum protocolCommand = Modem_ProtocolCommands::Reset;
         // 1) Сброс настроек
         // несколько попыток
         bool resultReset = false;
@@ -194,7 +194,7 @@ bool ClassModem::isItYou(QString &modem_coment) {
         // qDebug() << "\nModem reset OK\n";
 
         // 2) отключим эхо вывод команд
-        protocolCommand = ModemProtocolCommands::OffEcho;
+        protocolCommand = Modem_ProtocolCommands::OffEcho;
         if (!ATDevice->processCommand(protocolCommand, cmdData, answerData)) {
             // qDebug() << ": Error processing protocol command = OFFECHO";
             return false;
@@ -203,9 +203,9 @@ bool ClassModem::isItYou(QString &modem_coment) {
         // qDebug() << "\nModem OFFECHO OK\n";
 
         // 3) проверим симку
-        protocolCommand = ModemProtocolCommands::IsPin;
+        protocolCommand = Modem_ProtocolCommands::IsPin;
         if (!ATDevice->processCommand(protocolCommand, cmdData, answerData)) {
-            nowSimPresent = false;
+            nowSim_Present = false;
             // qDebug() << ": Error processing protocol command = ISPIN, may be SIM is
             // absent";
             //             return false;
@@ -214,10 +214,10 @@ bool ClassModem::isItYou(QString &modem_coment) {
         // qDebug() << "\nModem isPin OK\n";
 
         // Уровент сигнала
-        protocolCommand = ModemProtocolCommands::GetSignalQuality;
+        protocolCommand = Modem_ProtocolCommands::GetSignalQuality;
 
         if (ATDevice->processCommand(protocolCommand, cmdData, answerData)) {
-            this->nowModemQuality = ATDevice->nowSignalQuality;
+            this->nowModem_Quality = ATDevice->nowSignalQuality;
             // qDebug() << "\n<<======Answer true";
         } else {
             // qDebug() << "\n<<======Answer false";
@@ -226,20 +226,20 @@ bool ClassModem::isItYou(QString &modem_coment) {
         // qDebug() << "\nModem signalQuality OK\n";
 
         // Какой модем
-        protocolCommand = ModemProtocolCommands::GetComment;
+        protocolCommand = Modem_ProtocolCommands::GetComment;
 
         if (ATDevice->processCommand(protocolCommand, cmdData, answerData)) {
-            this->nowModemComment = ATDevice->nowModemComment;
+            this->nowModem_Comment = ATDevice->nowModem_Comment;
             // qDebug() << "\n<<======Answer true";
         } else {
             // qDebug() << "\n<<======Answer false";
         }
 
-        // qDebug() << "\nModem modemComment OK\n";
+        // qDebug() << "\nModem modem_Comment OK\n";
 
-        if (nowSimPresent) {
+        if (nowSim_Present) {
             // Берём оператора
-            protocolCommand = ModemProtocolCommands::GetOperator;
+            protocolCommand = Modem_ProtocolCommands::GetOperator;
 
             if (ATDevice->processCommand(protocolCommand, cmdData, answerData)) {
                 nowProviderSim = ATDevice->nowProviderSim;
@@ -258,8 +258,8 @@ bool ClassModem::isItYou(QString &modem_coment) {
             modem_coment = QString("( ---NO--- )");
 
         QString vrm = modem_coment;
-        if (nowModemComment != "") {
-            modem_coment = QString("(%1 %2)").arg(nowModemComment, vrm);
+        if (nowModem_Comment != "") {
+            modem_coment = QString("(%1 %2)").arg(nowModem_Comment, vrm);
         }
 
         ATDevice->closePort();
@@ -270,40 +270,40 @@ bool ClassModem::isItYou(QString &modem_coment) {
     }
 }
 
-bool ClassModem::execCommand(ModemProtocolCommands::Enum aCommand, bool thread) {
+bool ClassModem::execCommand(Modem_ProtocolCommands::Enum aCommand, bool thread) {
     switch (aCommand) {
-    case ModemProtocolCommands::GetSignalQuality: {
-        command = ModemCmd::GetSignalQuality;
+    case Modem_ProtocolCommands::GetSignalQuality: {
+        command = Modem_Cmd::GetSignalQuality;
     } break;
-    case ModemProtocolCommands::GetOperator: {
-        command = ModemCmd::GetOperator;
+    case Modem_ProtocolCommands::GetOperator: {
+        command = Modem_Cmd::GetOperator;
     } break;
-    case ModemProtocolCommands::GetBalance: {
-        command = ModemCmd::GetBalance;
+    case Modem_ProtocolCommands::GetBalance: {
+        command = Modem_Cmd::GetBalance;
     } break;
-    case ModemProtocolCommands::Identification: {
-        command = ModemCmd::Identification;
+    case Modem_ProtocolCommands::Identification: {
+        command = Modem_Cmd::Identification;
     } break;
-    case ModemProtocolCommands::OffEcho: {
-        command = ModemCmd::OffEcho;
+    case Modem_ProtocolCommands::OffEcho: {
+        command = Modem_Cmd::OffEcho;
     } break;
-    case ModemProtocolCommands::GetComment: {
-        command = ModemCmd::GetComment;
+    case Modem_ProtocolCommands::GetComment: {
+        command = Modem_Cmd::GetComment;
     } break;
-    case ModemProtocolCommands::GetSimNumber: {
-        command = ModemCmd::GetSimNumber;
+    case Modem_ProtocolCommands::GetSim_Number: {
+        command = Modem_Cmd::GetSim_Number;
     } break;
-    case ModemProtocolCommands::Reset: {
-        command = ModemCmd::Reset;
+    case Modem_ProtocolCommands::Reset: {
+        command = Modem_Cmd::Reset;
     } break;
-    case ModemProtocolCommands::CmdRestart: {
-        command = ModemCmd::CmdRestart;
+    case Modem_ProtocolCommands::CmdRestart: {
+        command = Modem_Cmd::CmdRestart;
     } break;
-    case ModemProtocolCommands::CmdSendSMS: {
-        command = ModemCmd::CmdSendSms;
+    case Modem_ProtocolCommands::CmdSendSMS: {
+        command = Modem_Cmd::CmdSendSms;
     } break;
     default: {
-        command = ModemCmd::Uknown;
+        command = Modem_Cmd::Uknown;
     }
     };
     if (thread) {

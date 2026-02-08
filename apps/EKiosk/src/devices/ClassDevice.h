@@ -29,18 +29,18 @@ class SearchDevices : public QThread {
 public:
     SearchDevices(QObject *parent = 0);
 
-    void setComListInfo(QStringList com_list);
+    void setCom_ListInfo(QStringList com_list);
     void setDbName(QSqlDatabase &dbName);
     bool takeBalanceSim;
-    bool takeSimNumber;
+    bool takeSim_Number;
 
     QString signalQuality;
-    QString simNumber;
-    QString simBalance;
+    QString sim_Number;
+    QString sim_Balance;
     QString operatorName;
-    QString modemComment;
+    QString modem_Comment;
     QString prtWinName;
-    bool nowSimPresent;
+    bool nowSim_Present;
     QString receiptTest;
 
     QString s_ussdRequestBalanseSim;
@@ -64,8 +64,8 @@ public:
     // Поиск Сторожа
     bool searchWD;
 
-    bool modemFound;
-    bool modemConUp;
+    bool modem_Found;
+    bool modem_ConUp;
 
     bool testMode;
 
@@ -77,8 +77,8 @@ private:
     WatchDogs *watchDogs;
 
     QSqlDatabase db;
-    QStringList comList;
-    QString vrmModemPort;
+    QStringList com_List;
+    QString vrm_Modem_Port;
 
     bool debugger;
 
@@ -98,10 +98,10 @@ public slots:
                             QString &com_str,
                             QString &dev_coment,
                             const bool with_test = false);
-    void getModemInfo();
+    void getModem_Info();
 
 signals:
-    void emit_getModemInfo();
+    void emit_getModem_Info();
 
 public slots:
 

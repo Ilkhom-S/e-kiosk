@@ -62,14 +62,14 @@ public:
 
 private:
     /// Указатель на окружение плагина.
-    SDK::Plugin::IEnvironment *mEnvironment;
+    SDK::Plugin::IEnvironment *m_Environment;
 
     /// Путь к экземпляру плагина.
-    QString mInstancePath;
+    QString m_InstancePath;
 
     /// Текущая конфигурация плагина.
-    QVariantMap mConfiguration;
+    QVariantMap m_Configuration;
 
     /// Приветственное сообщение.
-    QString mHelloMessage;
+    QString m_HelloMessage;
 };

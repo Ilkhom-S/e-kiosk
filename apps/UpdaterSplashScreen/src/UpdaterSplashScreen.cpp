@@ -30,7 +30,7 @@ void UpdaterSplashScreen::onFileUpdated(const QString &aPath) {
     QString line;
     while (true) {
         QString buf =
-            QString::fromLatin1(file.readLine().data()).replace("\n", "").replace("\r", "");
+            QString::from_Latin1(file.readLine().data()).replace("\n", "").replace("\r", "");
         if (buf.isEmpty())
             break;
 

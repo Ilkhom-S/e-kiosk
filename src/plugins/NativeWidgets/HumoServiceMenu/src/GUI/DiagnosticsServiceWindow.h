@@ -42,10 +42,10 @@ private slots:
     void onClickedResetReceipts();
 
 private:
-    QSpacerItem *mSpacerItem;
+    QSpacerItem *m_SpacerItem;
     typedef QMap<QString, DeviceStatusWindow *> TDeviceStatusWidget;
-    TDeviceStatusWidget mDeviceStatusWidget;
-    QFutureWatcher<bool> mTaskWatcher;
+    TDeviceStatusWidget m_DeviceStatusWidget;
+    QFutureWatcher<bool> m_TaskWatcher;
 };
 
 //------------------------------------------------------------------------

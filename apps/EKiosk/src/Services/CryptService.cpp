@@ -34,7 +34,7 @@ CryptService *CryptService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 CryptService::CryptService(IApplication *aApplication)
-    : mApplication(aApplication), mLog(aApplication->getLog()) {}
+    : m_Application(aApplication), m_Log(aApplication->getLog()) {}
 
 //---------------------------------------------------------------------------
 CryptService::~CryptService() {}
@@ -44,32 +44,32 @@ bool CryptService::initialize() {
     ICryptEngine &crypt = CCryptEngine::instance();
 
     if (!crypt.initialize()) {
-        LOG(mLog, LogLevel::Error, "Failed to initialize CryptEngine.");
+        LOG(m_Log, LogLevel::Error, "Failed to initialize CryptEngine.");
         return false;
     }
 
     // Подготавливаем к работе пары ключей.
     PP::TerminalSettings *settings =
-        SettingsService::instance(mApplication)->getAdapter<PP::TerminalSettings>();
+        SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
     QList<QByteArray> passwords = crypt.getRootPassword();
 
     if (passwords.isEmpty()) {
-        LOG(mLog, LogLevel::Error, "Failed to generate root key password.");
+        LOG(m_Log, LogLevel::Error, "Failed to generate root key password.");
         return false;
     }
 
     // Создаем ключ терминала.
     PP::SKeySettings terminalKey;
     terminalKey.serialNumber = 12345678;
-    terminalKey.publicKeyPath = mApplication->getUserDataPath().append("/keys/rootp.key");
-    terminalKey.secretKeyPath = mApplication->getUserDataPath().append("/keys/roots.key");
+    terminalKey.publicKeyPath = m_Application->getUserDataPath().append("/keys/rootp.key");
+    terminalKey.secretKeyPath = m_Application->getUserDataPath().append("/keys/roots.key");
 
     bool result = false;
 
     // Перебираем все возможные пароли для ключей терминала.
     foreach (const QByteArray &password, passwords) {
-        terminalKey.secretPassword = QString::fromLatin1(password.data(), password.size());
+        terminalKey.secretPassword = QString::from_Latin1(password.data(), password.size());
 
         QString error;
         result = crypt.loadKeyPair(-1,
@@ -89,13 +89,13 @@ bool CryptService::initialize() {
     if (!result || !QFile::exists(terminalKey.publicKeyPath) ||
         !QFile::exists(terminalKey.secretKeyPath)) {
         // Ключ не подошёл или отсутствует, надо создать.
-        QString keyPath = mApplication->getUserDataPath() + "/keys";
+        QString keyPath = m_Application->getUserDataPath() + "/keys";
 
         QDir keysDir;
         QString error;
 
         if (!keysDir.mkpath(keyPath)) {
-            LOG(mLog, LogLevel::Error, QString("Failed to create key path: %1.").arg(keyPath));
+            LOG(m_Log, LogLevel::Error, QString("Failed to create key path: %1.").arg(keyPath));
             return false;
         }
 
@@ -111,13 +111,13 @@ bool CryptService::initialize() {
                                  terminalKey.secretPassword,
                                  terminalKey.serialNumber,
                                  error)) {
-            LOG(mLog,
+            LOG(m_Log,
                 LogLevel::Error,
                 QString("Failed to create terminal key pair. Error: %1.").arg(error));
             return false;
         }
 
-        LOG(mLog, LogLevel::Normal, "Terminal key pair created.");
+        LOG(m_Log, LogLevel::Normal, "Terminal key pair created.");
 
         // Пробуем загрузить созданный ключ
         if (!crypt.loadKeyPair(-1,
@@ -128,7 +128,7 @@ bool CryptService::initialize() {
                                terminalKey.serialNumber,
                                terminalKey.serialNumber,
                                error)) {
-            LOG(mLog,
+            LOG(m_Log,
                 LogLevel::Error,
                 QString("Failed to load terminal key pair. Error: %1.").arg(error));
             return false;
@@ -136,7 +136,7 @@ bool CryptService::initialize() {
     }
 
     terminalKey.isValid = true;
-    mKeys.insert(-1, terminalKey);
+    m_Keys.insert(-1, terminalKey);
 
     // Загружаем остальные ключи.
     foreach (PP::SKeySettings key, settings->getKeys().values()) {
@@ -144,16 +144,16 @@ bool CryptService::initialize() {
     }
 
     // Проверяем, что первый ключ был корректно загружен.
-    if (mKeys.value(0).isValid) {
+    if (m_Keys.value(0).isValid) {
         // Пишем в лог информацию ключе по умолчанию.
-        LOG(mLog,
+        LOG(m_Log,
             LogLevel::Normal,
             QString("Default terminal key: SD %1, AP %2, OP %3.")
-                .arg(mKeys.value(0).sd)
-                .arg(mKeys.value(0).ap)
-                .arg(mKeys.value(0).op));
+                .arg(m_Keys.value(0).sd)
+                .arg(m_Keys.value(0).ap)
+                .arg(m_Keys.value(0).op));
     } else {
-        LOG(mLog, LogLevel::Error, "Terminal default key is not valid.");
+        LOG(m_Log, LogLevel::Error, "Terminal default key is not valid.");
     }
 
     return true;
@@ -170,7 +170,7 @@ void CryptService::loadKey(SDK::PaymentProcessor::SKeySettings &aKey) {
     QString secretKeyPath;
 
     if (!QDir::isAbsolutePath(aKey.secretKeyPath)) {
-        secretKeyPath = QDir::cleanPath(mApplication->getUserDataPath() + "/" + aKey.secretKeyPath);
+        secretKeyPath = QDir::cleanPath(m_Application->getUserDataPath() + "/" + aKey.secretKeyPath);
     } else {
         secretKeyPath = QDir::cleanPath(aKey.secretKeyPath);
     }
@@ -178,7 +178,7 @@ void CryptService::loadKey(SDK::PaymentProcessor::SKeySettings &aKey) {
     QString publicKeyPath;
 
     if (!QDir::isAbsolutePath(aKey.publicKeyPath)) {
-        publicKeyPath = QDir::cleanPath(mApplication->getUserDataPath() + "/" + aKey.publicKeyPath);
+        publicKeyPath = QDir::cleanPath(m_Application->getUserDataPath() + "/" + aKey.publicKeyPath);
     } else {
         publicKeyPath = QDir::cleanPath(aKey.publicKeyPath);
     }
@@ -190,7 +190,7 @@ void CryptService::loadKey(SDK::PaymentProcessor::SKeySettings &aKey) {
     // Для Token не нужен шифрованный пароль
     if (aKey.engine == CCrypt::ETypeEngine::RuToken ||
         crypt.decrypt(-1, secretPassword, decryptedSecretPassword, error)) {
-        aKey.secretPassword = QString::fromLatin1(decryptedSecretPassword.data());
+        aKey.secretPassword = QString::from_Latin1(decryptedSecretPassword.data());
 
         if (!crypt.loadKeyPair(aKey.id,
                                static_cast<CCrypt::ETypeEngine>(aKey.engine),
@@ -200,7 +200,7 @@ void CryptService::loadKey(SDK::PaymentProcessor::SKeySettings &aKey) {
                                aKey.serialNumber,
                                aKey.bankSerialNumber,
                                error)) {
-            LOG(mLog,
+            LOG(m_Log,
                 LogLevel::Error,
                 QString("Failed to load key pair %1 with encrypted password. Error: %2.")
                     .arg(aKey.id)
@@ -213,25 +213,25 @@ void CryptService::loadKey(SDK::PaymentProcessor::SKeySettings &aKey) {
         if (!crypt.loadKeyPair(aKey.id,
                                static_cast<CCrypt::ETypeEngine>(aKey.engine),
                                secretKeyPath,
-                               QString::fromLatin1(secretPassword.data()),
+                               QString::from_Latin1(secretPassword.data()),
                                publicKeyPath,
                                aKey.serialNumber,
                                aKey.bankSerialNumber,
                                error)) {
-            LOG(mLog,
+            LOG(m_Log,
                 LogLevel::Error,
                 QString("Failed to load key pair %1 with unencrypted password. Error: %2.")
                     .arg(aKey.id)
                     .arg(error));
         } else {
             aKey.isValid = true;
-            LOG(mLog,
+            LOG(m_Log,
                 LogLevel::Warning,
                 QString("Key pair %1 has unencrypted secret password.").arg(aKey.id));
         }
     }
 
-    mKeys.insert(aKey.id, aKey);
+    m_Keys.insert(aKey.id, aKey);
 }
 
 //------------------------------------------------------------------------------
@@ -272,8 +272,8 @@ void CryptService::resetParameters(const QSet<QString> &) {}
 
 //---------------------------------------------------------------------------
 PP::SKeySettings CryptService::getKey(int aId) const {
-    if (mKeys.contains(aId)) {
-        return mKeys[aId];
+    if (m_Keys.contains(aId)) {
+        return m_Keys[aId];
     } else {
         return PP::SKeySettings();
     }
@@ -283,7 +283,7 @@ PP::SKeySettings CryptService::getKey(int aId) const {
 bool CryptService::addKey(const PP::SKeySettings &aKey) {
     if (aKey.isValid) {
         // добавляем в список ключей
-        mKeys.insert(aKey.id, aKey);
+        m_Keys.insert(aKey.id, aKey);
 
         PP::SKeySettings key = aKey;
 
@@ -298,7 +298,7 @@ bool CryptService::addKey(const PP::SKeySettings &aKey) {
                                                   encryptedPhrase,
                                                   CCrypt::ETypeKey::Public,
                                                   error)) {
-                LOG(mLog,
+                LOG(m_Log,
                     LogLevel::Error,
                     QString("Failed to encrypt password phrase for key pair %1, serial = %2. "
                             "Error: %3.")
@@ -308,12 +308,12 @@ bool CryptService::addKey(const PP::SKeySettings &aKey) {
                 return false;
             }
 
-            key.secretPassword = QString::fromLatin1(encryptedPhrase);
+            key.secretPassword = QString::from_Latin1(encryptedPhrase);
         }
 
         // Добавляем запись в дерево настроек.
         PP::TerminalSettings *settings =
-            SettingsService::instance(mApplication)->getAdapter<PP::TerminalSettings>();
+            SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
         // Сериализуем настройки.
         settings->setKey(key);
@@ -326,7 +326,7 @@ bool CryptService::addKey(const PP::SKeySettings &aKey) {
 
 //---------------------------------------------------------------------------
 QList<int> CryptService::getLoadedKeys() const {
-    return mKeys.keys();
+    return m_Keys.keys();
 }
 
 //---------------------------------------------------------------------------
@@ -338,10 +338,10 @@ int CryptService::generateKey(int aKeyId,
                               QString &aAP,
                               QString &aOP,
                               const QString &aDescription) {
-    PP::INetworkService *networkService = mApplication->getCore()->getNetworkService();
+    PP::INetworkService *networkService = m_Application->getCore()->getNetworkService();
 
     if (!networkService->isConnected() && !networkService->openConnection(true)) {
-        LOG(mLog,
+        LOG(m_Log,
             LogLevel::Error,
             QString("Key %1 generation failed. Unable to establish connection.").arg(aKeyId));
         return EKeysUtilsError::NetworkError;
@@ -357,7 +357,7 @@ int CryptService::generateKey(int aKeyId,
                                 aLogin,
                                 aPassword,
                                 keyPair)) != EKeysUtilsError::Ok) {
-        LOG(mLog,
+        LOG(m_Log,
             LogLevel::Error,
             QString("Failed to create key pair %1. Error is %2")
                 .arg(aKeyId)
@@ -365,8 +365,8 @@ int CryptService::generateKey(int aKeyId,
         return result;
     }
 
-    mKeyPair = keyPair;
-    mKeyPair.description = aDescription;
+    m_KeyPair = keyPair;
+    m_KeyPair.description = aDescription;
 
     if ((result = registerKeyPair(getCryptEngine(),
                                   aKeyId,
@@ -374,8 +374,8 @@ int CryptService::generateKey(int aKeyId,
                                   aURL,
                                   aLogin,
                                   aPassword,
-                                  mKeyPair)) != EKeysUtilsError::Ok) {
-        LOG(mLog,
+                                  m_KeyPair)) != EKeysUtilsError::Ok) {
+        LOG(m_Log,
             LogLevel::Error,
             QString("Failed to register key pair %1. Error is %2")
                 .arg(aKeyId)
@@ -383,7 +383,7 @@ int CryptService::generateKey(int aKeyId,
         return result;
     }
 
-    LOG(mLog,
+    LOG(m_Log,
         LogLevel::Normal,
         QString("Key pair %1 with SD %2, AP %3, OP %4 is generated and registered successfully.")
             .arg(aKeyId)
@@ -402,7 +402,7 @@ int CryptService::generateKey(int aKeyId,
 bool CryptService::replaceKeys(int aKeyIdSrc, int aKeyIdDst) {
     bool result = false;
 
-    if (mKeys.contains(aKeyIdSrc)) {
+    if (m_Keys.contains(aKeyIdSrc)) {
         PP::SKeySettings keySrc = getKey(aKeyIdSrc);
 
         if (keySrc.isValid) {
@@ -413,20 +413,20 @@ bool CryptService::replaceKeys(int aKeyIdSrc, int aKeyIdDst) {
 
             dstKey.id = aKeyIdDst;
 
-            mKeys.remove(aKeyIdSrc);
-            mKeys[aKeyIdDst] = dstKey;
+            m_Keys.remove(aKeyIdSrc);
+            m_Keys[aKeyIdDst] = dstKey;
 
             // загружаем новый ключ в память
             loadKey(dstKey);
 
             PP::TerminalSettings *settings =
-                SettingsService::instance(mApplication)->getAdapter<PP::TerminalSettings>();
+                SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
             // чистим список ключей
             settings->cleanKeys();
 
             // сохраняем заново список действующих ключей
-            foreach (auto key, mKeys) {
+            foreach (auto key, m_Keys) {
                 if (key.id >= 0) {
                     addKey(key);
                 }
@@ -453,24 +453,24 @@ SDK::PaymentProcessor::ICryptService::SKeyInfo CryptService::getKeyInfo(int aKey
 
 //---------------------------------------------------------------------------
 bool CryptService::saveKey() {
-    LOG(mApplication->getLog(), LogLevel::Normal, QString("Saving key pair %1.").arg(mKeyPair.id));
+    LOG(m_Application->getLog(), LogLevel::Normal, QString("Saving key pair %1.").arg(m_KeyPair.id));
 
     // Формируем и сохраняем ключ.
     ICryptEngine *crypt = &CCryptEngine::instance();
 
     PP::SKeySettings key;
 
-    key.id = mKeyPair.id;
-    key.ap = mKeyPair.ap;
-    key.op = mKeyPair.op;
-    key.sd = mKeyPair.sd;
-    key.engine = mKeyPair.engine;
-    key.description = mKeyPair.description;
+    key.id = m_KeyPair.id;
+    key.ap = m_KeyPair.ap;
+    key.op = m_KeyPair.op;
+    key.sd = m_KeyPair.sd;
+    key.engine = m_KeyPair.engine;
+    key.description = m_KeyPair.description;
 
-    QByteArray serverPublicKey = mKeyPair.serverPublicKey;
+    QByteArray serverPublicKey = m_KeyPair.serverPublicKey;
 
     QString shortKeyPath = QString("keys/") + key.ap;
-    QString fullKeyPath = mApplication->getUserDataPath() + "/" + shortKeyPath;
+    QString fullKeyPath = m_Application->getUserDataPath() + "/" + shortKeyPath;
 
     if (QDir(fullKeyPath).exists()) {
         // если такая папка с ключами существует, то создаем новую папку
@@ -488,7 +488,7 @@ bool CryptService::saveKey() {
     QDir keyDir;
 
     if (!keyDir.mkpath(fullKeyPath)) {
-        LOG(mApplication->getLog(),
+        LOG(m_Application->getLog(),
             LogLevel::Error,
             QString("Failed to create directory: %1.").arg(fullKeyPath));
         return false;
@@ -496,30 +496,30 @@ bool CryptService::saveKey() {
 
     // Сначала дампим свой открытый ключ
     if (!crypt->exportPublicKeyToFile(key.id, fullPublicKeyPath, key.serialNumber)) {
-        LOG(mApplication->getLog(), LogLevel::Error, "Failed to export public key.");
+        LOG(m_Application->getLog(), LogLevel::Error, "Failed to export public key.");
         return false;
     }
 
     // Потом открытый серверный
     if (!crypt->replacePublicKey(key.id, serverPublicKey)) {
-        LOG(mApplication->getLog(), LogLevel::Error, "Failed to replace public key.");
+        LOG(m_Application->getLog(), LogLevel::Error, "Failed to replace public key.");
         return false;
     }
 
     if (!crypt->exportPublicKeyToFile(key.id, fullPublicKeyPath, key.bankSerialNumber)) {
-        LOG(mApplication->getLog(), LogLevel::Error, "Failed to export server public key.");
+        LOG(m_Application->getLog(), LogLevel::Error, "Failed to export server public key.");
         return false;
     }
 
     key.publicKeyPath = shortPublicKeyPath;
 
     if (key.engine == CCrypt::ETypeEngine::File) {
-        key.secretPassword = QString::fromLatin1(crypt->generatePassword());
+        key.secretPassword = QString::from_Latin1(crypt->generatePassword());
         key.secretKeyPath = shortSecretKeyPath;
 
         if (!crypt->exportSecretKeyToFile(
                 key.id, fullSecretKeyPath, key.secretPassword.toLatin1())) {
-            LOG(mApplication->getLog(), LogLevel::Error, "Failed to export private key.");
+            LOG(m_Application->getLog(), LogLevel::Error, "Failed to export private key.");
             return false;
         }
     }

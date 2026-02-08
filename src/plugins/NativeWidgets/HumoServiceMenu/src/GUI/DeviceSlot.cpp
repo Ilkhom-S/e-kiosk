@@ -24,16 +24,16 @@ DeviceSlot::DeviceSlot(HumoServiceBackend *aBackend,
                        const QString &aConfigurationName,
                        bool aIsUserSlot,
                        const QString &aType)
-    : mBackend(aBackend), mConfigurationName(aConfigurationName), mIsUserSlot(aIsUserSlot),
-      mType(aType) {
-    updateConfigurationName(mConfigurationName);
+    : m_Backend(aBackend), m_ConfigurationName(aConfigurationName), m_IsUserSlot(aIsUserSlot),
+      m_Type(aType) {
+    updateConfigurationName(m_ConfigurationName);
     QTimer::singleShot(0, this, SLOT(onRepaint()));
 }
 
 //------------------------------------------------------------------------
 DeviceSlot::~DeviceSlot() {
-    if (mWidget) {
-        mWidget->deleteLater();
+    if (m_Widget) {
+        m_Widget->deleteLater();
     }
 }
 
@@ -52,56 +52,56 @@ QWidget *DeviceSlot::createWidget() {
 
 //------------------------------------------------------------------------
 QWidget *DeviceSlot::getWidget() {
-    if (!mWidget) {
-        mWidget = createWidget();
+    if (!m_Widget) {
+        m_Widget = createWidget();
     }
 
-    return mWidget;
+    return m_Widget;
 }
 
 //------------------------------------------------------------------------
 const QString &DeviceSlot::getType() const {
-    return mType;
+    return m_Type;
 }
 
 //------------------------------------------------------------------------
 QString DeviceSlot::getModel() const {
-    return mParameterValues.contains("model_name") ? mParameterValues["model_name"].toString()
+    return m_ParameterValues.contains("model_name") ? m_ParameterValues["model_name"].toString()
                                                    : QString();
 }
 
 //------------------------------------------------------------------------
 bool DeviceSlot::isUserSlot() const {
-    return mIsUserSlot;
+    return m_IsUserSlot;
 }
 
 //------------------------------------------------------------------------
 void DeviceSlot::setParameterValues(QVariantMap aValues) {
     // Если сменили модель, устройство надо пересоздать
-    if (!mParameterValues["model_name"].isNull() &&
-        mParameterValues["model_name"] != aValues["model_name"]) {
-        mBackend->getHardwareManager()->releaseDevice(mConfigurationName);
-        mConfigurationName.clear();
+    if (!m_ParameterValues["model_name"].isNull() &&
+        m_ParameterValues["model_name"] != aValues["model_name"]) {
+        m_Backend->getHardwareManager()->releaseDevice(m_ConfigurationName);
+        m_ConfigurationName.clear();
     }
 
-    mParameterValues = aValues;
+    m_ParameterValues = aValues;
 
     QTimer::singleShot(0, this, SLOT(onRepaint()));
 }
 
 //------------------------------------------------------------------------
 const QVariantMap &DeviceSlot::getParameterValues() const {
-    return mParameterValues;
+    return m_ParameterValues;
 }
 
 //------------------------------------------------------------------------
 HumoServiceBackend *DeviceSlot::getBackend() const {
-    return mBackend;
+    return m_Backend;
 }
 
 //------------------------------------------------------------------------
 QString DeviceSlot::getConfigurationName() const {
-    return mConfigurationName;
+    return m_ConfigurationName;
 }
 
 //------------------------------------------------------------------------
@@ -110,31 +110,31 @@ void DeviceSlot::updateConfigurationName(const QString &aConfigurationName) {
         return;
     }
 
-    mConfigurationName = aConfigurationName;
-    mType = mConfigurationName.section(".", 2, 2);
+    m_ConfigurationName = aConfigurationName;
+    m_Type = m_ConfigurationName.section(".", 2, 2);
 
-    mDevice = mBackend->getHardwareManager()->getDevice(mConfigurationName);
+    m_Device = m_Backend->getHardwareManager()->getDevice(m_ConfigurationName);
 
-    if (mDevice) {
-        if (mType == SDK::Driver::CComponents::BillAcceptor) {
-            mDeviceTest =
-                QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(new BillAcceptorTest(mDevice));
-        } else if (mType == SDK::Driver::CComponents::CoinAcceptor) {
-            mDeviceTest =
-                QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(new CoinAcceptorTest(mDevice));
-        } else if (SDK::Driver::CComponents::isPrinter(mType)) {
-            mDeviceTest = QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(
-                new PrinterTest(mDevice, mBackend->getCore()));
-        } else if (mType == SDK::Driver::CComponents::Scanner ||
-                   mType == SDK::Driver::CComponents::Camera) {
-            mDeviceTest = QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(
-                new HIDTest(mDevice, mConfigurationName));
-        } else if (mType == SDK::Driver::CComponents::Dispenser) {
-            mDeviceTest = QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(
-                new DispenserTest(mDevice, mConfigurationName, mBackend->getCore()));
+    if (m_Device) {
+        if (m_Type == SDK::Driver::CComponents::BillAcceptor) {
+            m_DeviceTest =
+                QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(new BillAcceptorTest(m_Device));
+        } else if (m_Type == SDK::Driver::CComponents::CoinAcceptor) {
+            m_DeviceTest =
+                QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(new CoinAcceptorTest(m_Device));
+        } else if (SDK::Driver::CComponents::isPrinter(m_Type)) {
+            m_DeviceTest = QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(
+                new PrinterTest(m_Device, m_Backend->getCore()));
+        } else if (m_Type == SDK::Driver::CComponents::Scanner ||
+                   m_Type == SDK::Driver::CComponents::Camera) {
+            m_DeviceTest = QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(
+                new HIDTest(m_Device, m_ConfigurationName));
+        } else if (m_Type == SDK::Driver::CComponents::Dispenser) {
+            m_DeviceTest = QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(
+                new DispenserTest(m_Device, m_ConfigurationName, m_Backend->getCore()));
         } else {
-            mDeviceTest =
-                QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(new GenericDeviceTest(mDevice));
+            m_DeviceTest =
+                QSharedPointer<SDK::PaymentProcessor::IDeviceTest>(new GenericDeviceTest(m_Device));
         }
     }
 }
@@ -147,33 +147,33 @@ void DeviceSlot::updateDeviceStatus(const QString &aNewStatus,
     ui.lineStatus->setStyleSheet(ui.lineStatus->styleSheet() + ";color:" + aStatusColor +
                                  ";background-color: " + aStatusColor);
 
-    if (!mDeviceTest.isNull()) {
-        ui.btnRunTest->setEnabled(mDeviceTest->isReady());
+    if (!m_DeviceTest.isNull()) {
+        ui.btnRunTest->setEnabled(m_DeviceTest->isReady());
     }
 }
 
 //------------------------------------------------------------------------------
 void DeviceSlot::onDeviceRunTest() {
-    connect(mDeviceTest.data(),
+    connect(m_DeviceTest.data(),
             SIGNAL(result(const QString &, const QVariant &)),
             this,
             SLOT(onTestResult(const QString &, const QVariant &)));
 
-    if (mDeviceTest->hasResult()) {
+    if (m_DeviceTest->hasResult()) {
         GUI::MessageBox::subscribe(this);
     }
 
-    foreach (auto test, mDeviceTest->getTestNames()) {
-        if (mDeviceTest->hasResult()) {
+    foreach (auto test, m_DeviceTest->getTestNames()) {
+        if (m_DeviceTest->hasResult()) {
             GUI::MessageBox::info(test.second);
         }
 
-        mDeviceTest->run(test.first);
+        m_DeviceTest->run(test.first);
     }
 
-    mBackend->toLog(QString("Button clicked: %1; Device: %2:%3.")
+    m_Backend->toLog(QString("Button clicked: %1; Device: %2:%3.")
                         .arg(qobject_cast<QAbstractButton *>(sender())->text())
-                        .arg(mType)
+                        .arg(m_Type)
                         .arg(getModel()));
 }
 
@@ -191,7 +191,7 @@ void DeviceSlot::onTestResult(const QString &aTestName, const QVariant &aTestRes
             data.insert(0, "data:image/jpeg;base64,");
             data.squeeze();
 
-            params[SDK::GUI::CMessageBox::Image] = QString::fromLatin1(data);
+            params[SDK::GUI::CMessageBox::Image] = QString::from_Latin1(data);
         }
     } break;
 
@@ -204,8 +204,8 @@ void DeviceSlot::onTestResult(const QString &aTestName, const QVariant &aTestRes
 
 //------------------------------------------------------------------------------
 void DeviceSlot::onClicked(const QVariantMap & /*aParameters*/) {
-    mDeviceTest->stop();
-    disconnect(mDeviceTest.data(),
+    m_DeviceTest->stop();
+    disconnect(m_DeviceTest.data(),
                SIGNAL(result(const QString &, const QVariant &)),
                this,
                SLOT(onTestResult(const QString &, const QVariant &)));
@@ -229,7 +229,7 @@ void DeviceSlot::onRepaint() {
     // Для устройств вида Класс.Модель выкусываем название класса
     ui.btnChange->setText(QString("%1: %2")
                               .arg(QCoreApplication::translate("Hardware::Types",
-                                                               mType.section(".", 0, 0).toLatin1()))
+                                                               m_Type.section(".", 0, 0).toLatin1()))
                               .arg(title));
 }
 
@@ -240,9 +240,9 @@ void DeviceSlot::onClick() {
 
 //------------------------------------------------------------------------
 void DeviceSlot::onRemove() {
-    mBackend->toLog(QString("Button clicked: %1; Device: %2:%3.")
+    m_Backend->toLog(QString("Button clicked: %1; Device: %2:%3.")
                         .arg(qobject_cast<QAbstractButton *>(sender())->text())
-                        .arg(mType)
+                        .arg(m_Type)
                         .arg(getModel()));
 
     emit remove();

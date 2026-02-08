@@ -19,10 +19,10 @@
 #include "Misc.h"
 
 class ZipArchiveVerifier : public IVerifier {
-    ILog *mLog;
+    ILog *m_Log;
 
 public:
-    ZipArchiveVerifier(ILog *aLog) : mLog(aLog) {}
+    ZipArchiveVerifier(ILog *aLog) : m_Log(aLog) {}
 
     virtual bool verify(NetworkTask *aTask, const QByteArray & /*aData*/) {
         FileDownloadTask *task = dynamic_cast<FileDownloadTask *>(aTask);
@@ -31,7 +31,7 @@ public:
             // Закрываем файл для корректной работы 7-Zip а.
             task->closeFile();
 
-            Packer zip("", mLog);
+            Packer zip("", m_Log);
             return zip.test(task->getPath());
         }
 
@@ -47,7 +47,7 @@ Package::Package(const QString &aName,
                  const QString &aURL,
                  const QString &aHash,
                  int aSize)
-    : Component(aName, aVersion, aFiles, aPostActions, aURL), mHash(aHash), mSize(aSize) {}
+    : Component(aName, aVersion, aFiles, aPostActions, aURL), m_Hash(aHash), m_Size(aSize) {}
 
 //---------------------------------------------------------------------------
 QList<NetworkTask *> Package::download(const QString &aBaseURL, const TFileList &aExceptions) {
@@ -57,7 +57,7 @@ QList<NetworkTask *> Package::download(const QString &aBaseURL, const TFileList 
     QList<NetworkTask *> tasks;
 
     if (!aExceptions.contains(getFiles()) || getPostActions().size() > 0) {
-        File componentFile("", mHash, URL, mSize);
+        File componentFile("", m_Hash, URL, m_Size);
 
         switch (componentFile.verify(filePath)) {
         case File::OK: // качать не нужно
@@ -75,12 +75,12 @@ QList<NetworkTask *> Package::download(const QString &aBaseURL, const TFileList 
 
         default:
             auto task = new FileDownloadTask(URL, filePath);
-            if (mHash.isEmpty()) {
+            if (m_Hash.isEmpty()) {
                 task->setVerifier(new ZipArchiveVerifier(Log()));
-            } else if (mHash.size() == CHashVerifier::MD5HashSize) {
-                task->setVerifier(new Md5Verifier(mHash));
+            } else if (m_Hash.size() == CHashVerifier::MD5HashSize) {
+                task->setVerifier(new Md5Verifier(m_Hash));
             } else {
-                task->setVerifier(new Sha256Verifier(mHash));
+                task->setVerifier(new Sha256Verifier(m_Hash));
             }
 
             task->setProperty(CComponent::OptionalTask(), optional());
@@ -97,7 +97,7 @@ void Package::deploy(const TFileList &aFiles, const QString &aDestination) noexc
         Log(LogLevel::Normal,
             QString("Deploying package %1%2...")
                 .arg(getId())
-                .arg(mSkipExisting ? " with skip existing" : ""));
+                .arg(m_SkipExisting ? " with skip existing" : ""));
 
         // Распаковываем архив в папку назначения.
         Packer unzip("", Log());
@@ -110,7 +110,7 @@ void Package::deploy(const TFileList &aFiles, const QString &aDestination) noexc
             if (!unzip.unpack(
                     QDir::toNativeSeparators(getTemporaryFolder() + "/" + getId() + ".zip"),
                     QDir::toNativeSeparators(aDestination),
-                    mSkipExisting)) {
+                    m_SkipExisting)) {
                 throw Exception(ECategory::Application,
                                 ESeverity::Major,
                                 0,

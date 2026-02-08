@@ -20,6 +20,6 @@ const char EjectorParameters[] =
     QT_TRANSLATE_NOOP("FRParameters", "FRParameters#ejector_parameters");
 const char PrinterModel[] = QT_TRANSLATE_NOOP("FRParameters", "FRParameters#printer_model");
 const char NotPrinting[] = QT_TRANSLATE_NOOP("FRParameters", "FRParameters#not_printing");
-const char NullingSumInCash[] =
+const char NullingSum_InCash[] =
     QT_TRANSLATE_NOOP("FRParameters", "FRParameters#nulling_sum_in_cash");
 }; // namespace PluginParameterTranslations

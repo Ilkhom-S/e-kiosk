@@ -24,7 +24,7 @@ const uchar ModeMask = 0x0F;
 const char ReportMode = '\x03';
 
 /// Маска для обнуления суммы в кассе при закрытии смены.
-const char NullingSumInCashMask = '\x04';
+const char NullingSum_InCashMask = '\x04';
 
 /// Маска для длинных отчетов.
 const char LongReportMask = '\xE4';
@@ -43,7 +43,7 @@ const char SaleFlags = FiscalFlags::ExecutionMode | FiscalFlags::CashChecking;
 const char FRModeTableSeries = 1;
 
 /// Тип налога - налог на каждую покупку.
-const char CustomSaleTax = 2;
+const char Custom_SaleTax = 2;
 
 /// Область действия налога - на регистрацию.
 const char TaxControlArea = 2;
@@ -146,7 +146,7 @@ const char Cut = '\x75';           /// Отрезка.
 const char PrintString = '\x4C';   /// Печать строки.
 const char PrinterAccess = '\x8F'; /// Прямой доступ к принтеру.
 const char EnterToMode = '\x56';   /// Вход в режим.
-const char ExitFromMode = '\x48';  /// Выход из режима.
+const char ExitFrom_Mode = '\x48';  /// Выход из режима.
 
 /// Фискальные команды.
 const char OpenDocument = '\x92';   /// Открыть документ.
@@ -275,34 +275,34 @@ const uchar SysAdmin = 0x30;
 typedef QMap<uchar, QString> TLanguages;
 
 struct SLanguages {
-    TLanguages mLanguages;
+    TLanguages m_Languages;
 
     SLanguages() {
-        mLanguages.insert(0, "Russian");
-        mLanguages.insert(1, "Armenian");
-        mLanguages.insert(2, "Moldavian");
-        mLanguages.insert(3, "Ukrainian");
-        mLanguages.insert(4, "Lithuanian");
-        mLanguages.insert(5, "Turkmen");
-        mLanguages.insert(6, "Mongolian");
-        mLanguages.insert(7, "Belarus");
-        mLanguages.insert(8, "Latvian");
-        mLanguages.insert(9, "Georgian");
-        mLanguages.insert(10, "Kazakh");
-        mLanguages.insert(11, "Estonian");
-        mLanguages.insert(12, "Azerbaijan");
-        mLanguages.insert(13, "Kirghiz");
-        mLanguages.insert(14, "Tadjik");
-        mLanguages.insert(15, "Uzbek");
-        mLanguages.insert(16, "Polish");
-        mLanguages.insert(17, "Romanian");
-        mLanguages.insert(18, "Bulgarian");
-        mLanguages.insert(19, "English");
-        mLanguages.insert(20, "Finnish");
+        m_Languages.insert(0, "Russian");
+        m_Languages.insert(1, "Armenian");
+        m_Languages.insert(2, "Moldavian");
+        m_Languages.insert(3, "Ukrainian");
+        m_Languages.insert(4, "Lithuanian");
+        m_Languages.insert(5, "Turkmen");
+        m_Languages.insert(6, "Mongolian");
+        m_Languages.insert(7, "Belarus");
+        m_Languages.insert(8, "Latvian");
+        m_Languages.insert(9, "Georgian");
+        m_Languages.insert(10, "Kazakh");
+        m_Languages.insert(11, "Estonian");
+        m_Languages.insert(12, "Azerbaijan");
+        m_Languages.insert(13, "Kirghiz");
+        m_Languages.insert(14, "Tadjik");
+        m_Languages.insert(15, "Uzbek");
+        m_Languages.insert(16, "Polish");
+        m_Languages.insert(17, "Romanian");
+        m_Languages.insert(18, "Bulgarian");
+        m_Languages.insert(19, "English");
+        m_Languages.insert(20, "Finnish");
     }
 
     QString operator[](const uchar languageKey) const {
-        return mLanguages.contains(languageKey) ? mLanguages[languageKey] : "Unknown";
+        return m_Languages.contains(languageKey) ? m_Languages[languageKey] : "Unknown";
     }
 };
 

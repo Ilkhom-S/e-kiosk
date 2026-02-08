@@ -22,10 +22,10 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------------
 PrinterService::PrinterService(ICore *aCore)
-    : mCore(aCore), mPrinterService(mCore->getPrinterService()),
-      mPaymentService(mCore->getPaymentService()) {
-    connect(mPrinterService, SIGNAL(receiptPrinted(int, bool)), SLOT(onReceiptPrinted(int, bool)));
-    connect(mPrinterService, SIGNAL(printerStatus(bool)), SIGNAL(printerChecked(bool)));
+    : m_Core(aCore), m_PrinterService(m_Core->getPrinterService()),
+      m_PaymentService(m_Core->getPaymentService()) {
+    connect(m_PrinterService, SIGNAL(receiptPrinted(int, bool)), SLOT(onReceiptPrinted(int, bool)));
+    connect(m_PrinterService, SIGNAL(printerStatus(bool)), SIGNAL(printerChecked(bool)));
 }
 
 //------------------------------------------------------------------------------
@@ -33,24 +33,24 @@ bool PrinterService::checkPrinter(bool aRealCheck) {
     if (aRealCheck) {
         // эта проверка должна вызываться крайне редко, т.к. в случае не ответа принтера подвешивает
         // интерфейс
-        if (mCheckSynchronizer.futures().size() == 0 ||
-            mCheckSynchronizer.futures().last().isFinished())
-            mCheckSynchronizer.addFuture(QtConcurrent::run([this]() { privateCheckPrinter(); }));
+        if (m_CheckSynchronizer.futures().size() == 0 ||
+            m_CheckSynchronizer.futures().last().isFinished())
+            m_CheckSynchronizer.addFuture(QtConcurrent::run([this]() { privateCheckPrinter(); }));
 
         return true;
     } else {
-        return mPrinterService->canPrintReceipt("payment", false);
+        return m_PrinterService->canPrintReceipt("payment", false);
     }
 }
 
 //------------------------------------------------------------------------------
 bool PrinterService::checkFiscalRegister() {
-    return mPrinterService->hasFiscalRegister();
+    return m_PrinterService->hasFiscalRegister();
 }
 
 //------------------------------------------------------------------------------
 void PrinterService::privateCheckPrinter() {
-    emit printerChecked(mPrinterService->canPrintReceipt("payment", true));
+    emit printerChecked(m_PrinterService->canPrintReceipt("payment", true));
 }
 
 //------------------------------------------------------------------------------
@@ -58,22 +58,22 @@ void PrinterService::printReceiptExt(const QString &aReceiptType,
                                      const QVariantMap &aParameters,
                                      const QString &aTemplate,
                                      DSDK::EPrintingModes::Enum aPrintingMode) {
-    qint64 paymentID = mPaymentService->getActivePayment();
+    qint64 paymentID = m_PaymentService->getActivePayment();
 
     if (paymentID > 0 && !aParameters.contains(SDK::PaymentProcessor::CPayment::Parameters::ID)) {
         QVariantMap aNewParameters(aParameters);
         aNewParameters.insert(SDK::PaymentProcessor::CPayment::Parameters::ID, paymentID);
 
         // Отправляем на печать с добавлением ID платежа
-        mPrintedJobs.insert(mPrinterService->printReceipt(aReceiptType,
+        m_PrintedJobs.insert(m_PrinterService->printReceipt(aReceiptType,
                                                           aNewParameters,
                                                           QString(aTemplate).replace(".xml", ""),
                                                           aPrintingMode),
                             TJobInfo(paymentID, aReceiptType));
     } else {
         // Отправляем на печать
-        mPrintedJobs.insert(
-            mPrinterService->printReceipt(
+        m_PrintedJobs.insert(
+            m_PrinterService->printReceipt(
                 aReceiptType, aParameters, QString(aTemplate).replace(".xml", ""), aPrintingMode),
             TJobInfo(paymentID, aReceiptType));
     }
@@ -91,42 +91,42 @@ void PrinterService::printReceipt(const QString &aReceiptType,
 
 //------------------------------------------------------------------------------
 void PrinterService::saveReceipt(const QVariantMap &aParameters, const QString &aTemplate) {
-    mPrinterService->saveReceipt(aParameters, QString(aTemplate).replace(".xml", ""));
+    m_PrinterService->saveReceipt(aParameters, QString(aTemplate).replace(".xml", ""));
 
     emit receiptSaved();
 }
 
 //------------------------------------------------------------------------------
 QString PrinterService::loadReceipt(qint64 aPaymentId) {
-    return mPrinterService->loadReceipt(aPaymentId == -1 ? mPaymentService->getActivePayment()
+    return m_PrinterService->loadReceipt(aPaymentId == -1 ? m_PaymentService->getActivePayment()
                                                          : aPaymentId);
 }
 
 //------------------------------------------------------------------------------
 bool PrinterService::checkReceiptMail() {
     return !(static_cast<PPSDK::TerminalSettings *>(
-                 mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
+                 m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
                  ->getReceiptMailURL()
                  .isEmpty());
 }
 
 //------------------------------------------------------------------------------
 void PrinterService::onReceiptPrinted(int aJobIndex, bool aError) {
-    if (mPrintedJobs.contains(aJobIndex)) {
+    if (m_PrintedJobs.contains(aJobIndex)) {
         emit receiptPrinted(aError);
 
-        TJobInfo job = mPrintedJobs.value(aJobIndex);
+        TJobInfo job = m_PrintedJobs.value(aJobIndex);
 
         // В случае успеха отмечаем платеж как напечатанный
         if (!aError && job.first != 0 && !job.second.isEmpty()) {
-            mPaymentService->updatePaymentField(
+            m_PaymentService->updatePaymentField(
                 job.first,
                 IPayment::SParameter(
                     SDK::PaymentProcessor::CPayment::Parameters::ReceiptPrinted, true, true),
                 true);
         }
 
-        mPrintedJobs.remove(aJobIndex);
+        m_PrintedJobs.remove(aJobIndex);
     }
 }
 

@@ -72,9 +72,9 @@ public:
     virtual SDK::PaymentProcessor::ICashDispenserManager *getDispenser() const;
 
 private:
-    IApplication *mApplication;
-    CashDispenserManager *mCashDispenserManager;
-    CashAcceptorManager *mCashAcceptorManager;
+    IApplication *m_Application;
+    CashDispenserManager *m_CashDispenserManager;
+    CashAcceptorManager *m_CashAcceptorManager;
 };
 
 //---------------------------------------------------------------------------

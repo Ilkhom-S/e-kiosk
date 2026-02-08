@@ -35,13 +35,13 @@ private slots:
     void onTestFinished();
 
 private:
-    QButtonGroup mTypeButtonGroup;
-    DialupConnectionWindow *mDialupWindow;
-    UnmanagedConnectionWindow *mUnmanagedWindow;
+    QButtonGroup m_TypeButtonGroup;
+    DialupConnectionWindow *m_DialupWindow;
+    UnmanagedConnectionWindow *m_UnmanagedWindow;
 
-    QFutureWatcher<bool> mTaskWatcher;
-    QString mConnectionError;
-    ServiceMenuBackend *mBackend;
+    QFutureWatcher<bool> m_TaskWatcher;
+    QString m_ConnectionError;
+    ServiceMenuBackend *m_Backend;
 };
 
 //------------------------------------------------------------------------

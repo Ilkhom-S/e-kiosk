@@ -72,10 +72,10 @@ const int Password = 0;
 extern const char PushZReport[];
 
 /// Системные флаги.
-namespace SystemFlags {
+namespace System_Flags {
 const int ZReportsAndFiscal = 7; /// Настройки Z-отчёта и чека.
-const int SystemOptions2 = 24;   /// Системные настройки-2.
-} // namespace SystemFlags
+const int System_Options2 = 24;   /// Системные настройки-2.
+} // namespace System_Flags
 
 /// Маска для длинных отчетов.
 const char LongReportMask = '\x1F';
@@ -183,7 +183,7 @@ public:
     }
 
     virtual SData value(const QByteArray &aCommand) const {
-        return mBuffer.contains(aCommand) ? mBuffer[aCommand] : SData(aCommand, true, false);
+        return m_Buffer.contains(aCommand) ? m_Buffer[aCommand] : SData(aCommand, true, false);
     }
 
 private:
@@ -505,16 +505,16 @@ public:
         addStatus(6, DeviceStatusCode::Warning::Unknown, "", true);
         addStatus(7, DeviceStatusCode::Warning::Unknown);
 
-        mErrors.addStatus('\x2C', FRStatusCode::Error::FM);
-        mErrors.addStatus('\x24', FRStatusCode::Error::FM);
-        mErrors.addStatus('\x20', DeviceStatusCode::Warning::OperationError);
-        mErrors.addStatus('\x1C', DeviceStatusCode::Warning::OperationError);
-        mErrors.addStatus('\x18', DeviceStatusCode::Warning::OperationError);
-        mErrors.addStatus('\x14', DeviceStatusCode::Warning::OperationError);
-        mErrors.addStatus('\x10', DeviceStatusCode::Warning::OperationError);
-        mErrors.addStatus('\x30', DeviceStatusCode::Warning::OperationError);
-        mErrors.addStatus('\x08', PrinterStatusCode::Error::PaperEnd);
-        mErrors.addStatus('\x0C', PrinterStatusCode::Error::PaperEnd);
+        m_Errors.addStatus('\x2C', FRStatusCode::Error::FM);
+        m_Errors.addStatus('\x24', FRStatusCode::Error::FM);
+        m_Errors.addStatus('\x20', DeviceStatusCode::Warning::OperationError);
+        m_Errors.addStatus('\x1C', DeviceStatusCode::Warning::OperationError);
+        m_Errors.addStatus('\x18', DeviceStatusCode::Warning::OperationError);
+        m_Errors.addStatus('\x14', DeviceStatusCode::Warning::OperationError);
+        m_Errors.addStatus('\x10', DeviceStatusCode::Warning::OperationError);
+        m_Errors.addStatus('\x30', DeviceStatusCode::Warning::OperationError);
+        m_Errors.addStatus('\x08', PrinterStatusCode::Error::PaperEnd);
+        m_Errors.addStatus('\x0C', PrinterStatusCode::Error::PaperEnd);
     }
 
     /// Получить спецификации девайс-кодов по байт-массиву. байт-массив не должен содержать лишних
@@ -522,12 +522,12 @@ public:
     virtual void getSpecification(char aAnswerData, TStatusCodes &aStatusCodes) {
         BitmapDeviceCodeSpecification::getSpecification(aAnswerData, aStatusCodes);
 
-        mErrors.getSpecification(aAnswerData & '\x3C', aStatusCodes);
+        m_Errors.getSpecification(aAnswerData & '\x3C', aStatusCodes);
     }
 
 protected:
     /// Спецификация дополнительных девайс-кодов.
-    CommonDeviceCodeSpecification mErrors;
+    CommonDeviceCodeSpecification m_Errors;
 };
 
 //--------------------------------------------------------------------------------

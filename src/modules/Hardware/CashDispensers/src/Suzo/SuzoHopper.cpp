@@ -148,10 +148,10 @@ bool SuzoHopper::getDispensingStatus(CSuzo::SStatus &aStatus) {
 }
 
 //--------------------------------------------------------------------------------
-void SuzoHopper::performDispense(int aUnit, int aItems) {
+void SuzoHopper::perform_Dispense(int aUnit, int aItems) {
     if (!isWorkingThread()) {
         QMetaObject::invokeMethod(
-            this, "performDispense", Qt::QueuedConnection, Q_ARG(int, aUnit), Q_ARG(int, aItems));
+            this, "perform_Dispense", Qt::QueuedConnection, Q_ARG(int, aUnit), Q_ARG(int, aItems));
 
         return;
     }

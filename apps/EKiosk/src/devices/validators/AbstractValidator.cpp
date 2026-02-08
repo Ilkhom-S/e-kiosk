@@ -30,7 +30,7 @@ bool BaseValidatorDevices::isOpened() {
 }
 
 void BaseValidatorDevices::setPortName(const QString com_Name) {
-    comName = com_Name;
+    com_Name = com_Name;
 }
 
 void BaseValidatorDevices::setPartNumber(const QString partNumber) {
@@ -87,7 +87,7 @@ bool BaseValidatorDevices::sendCommand(QByteArray dataRequest,
 
         serialPort->write(dataRequest);
         // if(Debugger) qDebug() << QString("\n --> Request : to port -
-        // %1\n").arg(comName);
+        // %1\n").arg(com_Name);
         //         this->printDataToHex(dataRequest);
 
         // Задержка после команды
@@ -122,5 +122,5 @@ bool BaseValidatorDevices::sendCommand(QByteArray dataRequest,
 }
 
 QString BaseValidatorDevices::cmdName(ValidatorCommands::Enum cmd) {
-    return QVariant::fromValue(cmd).value<QString>();
+    return QVariant::from_Value(cmd).value<QString>();
 }

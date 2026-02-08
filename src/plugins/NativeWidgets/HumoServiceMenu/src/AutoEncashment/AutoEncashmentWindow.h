@@ -53,8 +53,8 @@ private:
     Ui::AutoEncashmentWindow ui;
 
 private:
-    QTimer mDateTimeTimer;
-    QVariantMap mTerminalInfo;
+    QTimer m_DateTimeTimer;
+    QVariantMap m_TerminalInfo;
 };
 
 //---------------------------------------------------------------------------

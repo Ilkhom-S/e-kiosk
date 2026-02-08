@@ -39,16 +39,16 @@ REGISTER_PLUGIN(makePath(PPSDK::Application,
 //---------------------------------------------------------------------------
 // Конструктор плагина источника рекламы
 AdSourcePlugin::AdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mFactory(aFactory), mInstancePath(aInstancePath) {
-    mClient = getAdClientInstance(aFactory);
+    : m_Factory(aFactory), m_InstancePath(aInstancePath) {
+    m_Client = getAdClientInstance(aFactory);
 
-    mCore = dynamic_cast<SDK::PaymentProcessor::ICore *>(
-        mFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+        m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 }
 
 //------------------------------------------------------------------------------
 AdSourcePlugin::~AdSourcePlugin(void) {
-    mClient.clear();
+    m_Client.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ void AdSourcePlugin::setConfiguration(const QVariantMap &aParameters) {
 
 //------------------------------------------------------------------------------
 QString AdSourcePlugin::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ bool AdSourcePlugin::isReady() const {
 
 //------------------------------------------------------------------------------
 QString AdSourcePlugin::getContent(const QString &aType) const {
-    return mClient->getContent(aType);
+    return m_Client->getContent(aType);
 }
 
 //------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ void AdSourcePlugin::addEvent(const QString &aType, const QVariantMap &aParamete
     Q_UNUSED(aParameters)
 
     // TODO use aParameters!!!
-    mClient->addEvent(aType);
+    m_Client->addEvent(aType);
 }
 
 //------------------------------------------------------------------------------

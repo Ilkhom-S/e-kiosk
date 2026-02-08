@@ -4,7 +4,7 @@ CommandConfirm::CommandConfirm(QObject *parent) : SendRequest(parent) {
     senderName = "COMMAND_CONFIRM";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
+    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
 }
 
 void CommandConfirm::resendRequest() {
@@ -19,11 +19,11 @@ void CommandConfirm::sendRequestRepeet() {
     sendRequest(requestXml, 30000);
 }
 
-void CommandConfirm::setDataNote(const QDomNode &domElement) {
+void CommandConfirm::setDataNote(const QDom_Node &dom_Element) {
     resultCode = false;
 
     // Парсим данные
-    parcerNote(domElement);
+    parcerNote(dom_Element);
 
     if (resultCode) {
         // Обнуляем счетчик
@@ -32,16 +32,16 @@ void CommandConfirm::setDataNote(const QDomNode &domElement) {
     }
 }
 
-void CommandConfirm::parcerNote(const QDomNode &domElement) {
-    QDomNode domNode = domElement.firstChild();
+void CommandConfirm::parcerNote(const QDom_Node &dom_Element) {
+    QDom_Node dom_Node = dom_Element.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
-            QDomElement domElement = domNode.toElement();
-            QString strTag = domElement.tagName();
+    while (!dom_Node.isNull()) {
+        if (dom_Node.isElement()) {
+            QDom_Element dom_Element = dom_Node.toElement();
+            QString strTag = dom_Element.tagName();
 
             if (strTag == "resultCode") {
-                QString sts = domElement.text();
+                QString sts = dom_Element.text();
 
                 if (sts == "0") {
                     resultCode = true;
@@ -49,8 +49,8 @@ void CommandConfirm::parcerNote(const QDomNode &domElement) {
             }
         }
 
-        parcerNote(domNode);
-        domNode = domNode.nextSibling();
+        parcerNote(dom_Node);
+        dom_Node = dom_Node.nextSibling();
     }
 }
 

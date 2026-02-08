@@ -25,7 +25,7 @@ bool MessageQueueClient::connect(const QString &aQueueName) {
 
 //----------------------------------------------------------------------------
 void MessageQueueClient::disconnect() {
-    m_Socket.disconnectFromServer();
+    m_Socket.disconnectFrom_Server();
 }
 
 //----------------------------------------------------------------------------
@@ -107,7 +107,7 @@ void MessageQueueClient::parseInputBuffer(QByteArray &aBuffer) {
 //----------------------------------------------------------------------------
 void MessageQueueClient::pingServer() {
     sendMessage(MessageQueueConstants::PingMessage);
-    m_AnswerTimer.start(MessageQueueConstants::AnswerFromServerTime);
+    m_AnswerTimer.start(MessageQueueConstants::AnswerFrom_ServerTime);
 }
 
 //----------------------------------------------------------------------------

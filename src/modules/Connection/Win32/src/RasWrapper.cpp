@@ -130,35 +130,35 @@ std::wstring EErrorCode::ToString(DWORD aCode) {
 
 //------------------------------------------------------------------------------
 IpAddress::IpAddress() {
-    std::memset(&mAddress, 0, sizeof(mAddress));
+    std::memset(&m_Address, 0, sizeof(m_Address));
 }
 
 //--------------------------------------------------------------------------------
 IpAddress::IpAddress(const RASIPADDR &aIpAddress) {
-    mAddress = aIpAddress;
+    m_Address = aIpAddress;
 }
 
 //--------------------------------------------------------------------------------
 IpAddress::operator RASIPADDR *() {
-    return &mAddress;
+    return &m_Address;
 }
 
 //--------------------------------------------------------------------------------
 IpAddress::operator const RASIPADDR *() const {
-    return &mAddress;
+    return &m_Address;
 }
 
 //--------------------------------------------------------------------------------
 char IpAddress::byte(size_t index) const {
     switch (index) {
     case 0:
-        return mAddress.a;
+        return m_Address.a;
     case 1:
-        return mAddress.b;
+        return m_Address.b;
     case 2:
-        return mAddress.c;
+        return m_Address.c;
     case 3:
-        return mAddress.d;
+        return m_Address.d;
     }
 
     return 0;
@@ -168,13 +168,13 @@ char IpAddress::byte(size_t index) const {
 void IpAddress::setByte(size_t index, char byte) {
     switch (index) {
     case 0:
-        mAddress.a = byte;
+        m_Address.a = byte;
     case 1:
-        mAddress.b = byte;
+        m_Address.b = byte;
     case 2:
-        mAddress.c = byte;
+        m_Address.c = byte;
     case 3:
-        mAddress.d = byte;
+        m_Address.d = byte;
     }
 }
 
@@ -515,13 +515,13 @@ void PhonebookEntry::setEncriptionType(EEncryptionType::Enum aType) {
 }
 
 //--------------------------------------------------------------------------------
-size_t PhonebookEntry::customAuthKey() const {
-    return m_Entry->dwCustomAuthKey;
+size_t PhonebookEntry::custom_AuthKey() const {
+    return m_Entry->dwCustom_AuthKey;
 }
 
 //--------------------------------------------------------------------------------
-void PhonebookEntry::setCustomAuthKey(size_t aKey) {
-    m_Entry->dwCustomAuthKey = aKey;
+void PhonebookEntry::setCustom_AuthKey(size_t aKey) {
+    m_Entry->dwCustom_AuthKey = aKey;
 }
 
 //--------------------------------------------------------------------------------
@@ -535,14 +535,14 @@ void PhonebookEntry::setBookEntryGuid(const GUID &aGuid) {
 }
 
 //--------------------------------------------------------------------------------
-std::wstring PhonebookEntry::customDialDll() const {
-    return m_Entry->szCustomDialDll;
+std::wstring PhonebookEntry::custom_DialDll() const {
+    return m_Entry->szCustom_DialDll;
 }
 
 //--------------------------------------------------------------------------------
-void PhonebookEntry::setCustomDialDll(const std::wstring &aDll) {
-    std::memset(m_Entry->szCustomDialDll, 0, sizeof(m_Entry->szCustomDialDll));
-    aDll.copy(m_Entry->szCustomDialDll, aDll.size());
+void PhonebookEntry::setCustom_DialDll(const std::wstring &aDll) {
+    std::memset(m_Entry->szCustom_DialDll, 0, sizeof(m_Entry->szCustom_DialDll));
+    aDll.copy(m_Entry->szCustom_DialDll, aDll.size());
 }
 
 //--------------------------------------------------------------------------------

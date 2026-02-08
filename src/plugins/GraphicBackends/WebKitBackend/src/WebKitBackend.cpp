@@ -26,7 +26,7 @@ const char Type[] = "web";
 const QString KeysDir = "keys";
 
 /// Pem-файл
-const QString PemFile = "local.pem";
+const QString Pem_File = "local.pem";
 
 /// Key-файл
 const QString KeyFile = "local.key";
@@ -41,7 +41,7 @@ SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
     return new WebKitBackend(aFactory, aInstancePath);
 }
 
-QVector<SDK::Plugin::SPluginParameter> EnumParameters() {
+QVector<SDK::Plugin::SPluginParameter> Enum_Parameters() {
     return QVector<SDK::Plugin::SPluginParameter>(1) << SDK::Plugin::SPluginParameter(
                SDK::Plugin::Parameters::Debug,
                SDK::Plugin::SPluginParameter::Bool,
@@ -59,15 +59,15 @@ REGISTER_PLUGIN_WITH_PARAMETERS(
                           SDK::PaymentProcessor::CComponents::GraphicsBackend,
                           CWebKitBackend::PluginName),
     &CreatePlugin,
-    &EnumParameters);
+    &Enum_Parameters);
 
 //------------------------------------------------------------------------------
 WebKitBackend::WebKitBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mFactory(aFactory), mInstancePath(aInstancePath), mEngine(0), mCoreProxy(0) {}
+    : m_Factory(aFactory), m_InstancePath(aInstancePath), m_Engine(0), m_CoreProxy(0) {}
 
 //------------------------------------------------------------------------------
 WebKitBackend::~WebKitBackend() {
-    mItems.clear();
+    m_Items.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -77,17 +77,17 @@ QString WebKitBackend::getPluginName() const {
 
 //------------------------------------------------------------------------------
 QVariantMap WebKitBackend::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //------------------------------------------------------------------------------
 void WebKitBackend::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 }
 
 //------------------------------------------------------------------------------
 QString WebKitBackend::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //------------------------------------------------------------------------------
@@ -103,30 +103,30 @@ bool WebKitBackend::isReady() const {
 
 //------------------------------------------------------------------------------
 std::weak_ptr<SDK::GUI::IGraphicsItem>
-WebKitBackend::getItem(const SDK::GUI::GraphicsItemInfo &aInfo) {
-    QMap<QString, std::shared_ptr<WebGraphicsItem>>::iterator it = mItems.find(aInfo.name);
+WebKitBackend::getItem(const SDK::GUI::GraphicsItem_Info &aInfo) {
+    QMap<QString, std::shared_ptr<WebGraphicsItem>>::iterator it = m_Items.find(aInfo.name);
 
-    if (it != mItems.end() && it.value()->getContext() == aInfo.context) {
+    if (it != m_Items.end() && it.value()->getContext() == aInfo.context) {
         return it.value();
     }
 
-    std::shared_ptr<WebGraphicsItem> item(new WebGraphicsItem(aInfo, mCoreProxy, mEngine->getLog()),
-                                          SDK::GUI::GraphicsItemDeleter());
+    std::shared_ptr<WebGraphicsItem> item(new WebGraphicsItem(aInfo, m_CoreProxy, m_Engine->getLog()),
+                                          SDK::GUI::GraphicsItem_Deleter());
 
     if (item->isValid()) {
-        mItems.insert(aInfo.name, item);
+        m_Items.insert(aInfo.name, item);
     } else {
-        mEngine->getLog()->write(LogLevel::Error, item->getError());
+        m_Engine->getLog()->write(LogLevel::Error, item->getError());
     }
 
     return item;
 }
 
 //------------------------------------------------------------------------------
-bool WebKitBackend::removeItem(const SDK::GUI::GraphicsItemInfo &aInfo) {
-    foreach (auto item, mItems.values(aInfo.name)) {
+bool WebKitBackend::removeItem(const SDK::GUI::GraphicsItem_Info &aInfo) {
+    foreach (auto item, m_Items.values(aInfo.name)) {
         if (item->getContext() == aInfo.context) {
-            return mItems.remove(aInfo.name, item) != 0;
+            return m_Items.remove(aInfo.name, item) != 0;
         }
     }
 
@@ -139,41 +139,41 @@ QString WebKitBackend::getType() const {
 }
 
 //------------------------------------------------------------------------------
-QList<SDK::GUI::GraphicsItemInfo> WebKitBackend::getItemList() {
-    return QList<SDK::GUI::GraphicsItemInfo>();
+QList<SDK::GUI::GraphicsItem_Info> WebKitBackend::getItem_List() {
+    return QList<SDK::GUI::GraphicsItem_Info>();
 }
 
 //------------------------------------------------------------------------------
 bool WebKitBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine) {
-    mEngine = aEngine;
-    mCoreProxy = static_cast<SDK::PaymentProcessor::Scripting::Core *>(
-        mEngine->getGraphicsHost()->getInterface<QObject>(
+    m_Engine = aEngine;
+    m_CoreProxy = static_cast<SDK::PaymentProcessor::Scripting::Core *>(
+        m_Engine->getGraphicsHost()->getInterface<QObject>(
             SDK::PaymentProcessor::Scripting::CProxyNames::Core));
 
     // Импорт ssl сертификата
-    QFile pem(mFactory->getKernelDataDirectory() + QDir::separator() + CWebKitBackend::KeysDir +
-              QDir::separator() + CWebKitBackend::PemFile);
+    QFile pem(m_Factory->getKernelDataDirectory() + QDir::separator() + CWebKitBackend::KeysDir +
+              QDir::separator() + CWebKitBackend::Pem_File);
     if (pem.open(QIODevice::ReadOnly)) {
         QSslConfiguration conf = QSslConfiguration::defaultConfiguration();
 
         QSslCertificate cert(pem.readAll());
         conf.setLocalCertificate(cert);
-        mEngine->getLog()->write(LogLevel::Normal, "WebKitBackend: Pem certifiacate added.");
+        m_Engine->getLog()->write(LogLevel::Normal, "WebKitBackend: Pem certifiacate added.");
 
-        QFile key(mFactory->getKernelDataDirectory() + QDir::separator() + CWebKitBackend::KeysDir +
+        QFile key(m_Factory->getKernelDataDirectory() + QDir::separator() + CWebKitBackend::KeysDir +
                   QDir::separator() + CWebKitBackend::KeyFile);
         if (key.open(QIODevice::ReadOnly)) {
             QSslKey k(key.readAll(), QSsl::Rsa);
             conf.setPrivateKey(k);
-            mEngine->getLog()->write(LogLevel::Normal,
+            m_Engine->getLog()->write(LogLevel::Normal,
                                      "WebKitBackend: Key for certifiacate added.");
         } else {
-            mEngine->getLog()->write(LogLevel::Error, "WebKitBackend: Can't open key file.");
+            m_Engine->getLog()->write(LogLevel::Error, "WebKitBackend: Can't open key file.");
         }
 
         QSslConfiguration::setDefaultConfiguration(conf);
     } else {
-        mEngine->getLog()->write(LogLevel::Error, "WebKitBackend: Can't open pem file.");
+        m_Engine->getLog()->write(LogLevel::Error, "WebKitBackend: Can't open pem file.");
     }
 
     return true;

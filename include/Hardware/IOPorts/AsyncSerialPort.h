@@ -77,7 +77,7 @@ public:
     virtual ~AsyncSerialPort();
 
     /// Возвращает список доступных в системе портов.
-    static QStringList enumerateSystemNames();
+    static QStringList enumerateSystem_Names();
 
     /// Опрашивает данные портов.
     virtual void initialize();
@@ -132,7 +132,7 @@ public:
     public:
         virtual ~ISerialPortImpl() = default;
 
-        virtual QStringList enumerateSystemNames() = 0;
+        virtual QStringList enumerateSystem_Names() = 0;
         virtual void initialize() = 0;
         virtual void setDeviceConfiguration(const QVariantMap &aConfiguration) = 0;
         virtual bool release() = 0;

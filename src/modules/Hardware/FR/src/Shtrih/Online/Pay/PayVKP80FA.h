@@ -10,11 +10,11 @@ template <class T> class PayVKP80FA : public PayFRBase<T> {
 
 public:
     PayVKP80FA() {
-        mDeviceName = CShtrihFR::Models::CData()[CShtrihFR::Models::ID::PayVKP80KFA].name;
-        mSupportedModels = QStringList() << mDeviceName;
+        m_DeviceName = CShtrihFR::Models::CData()[CShtrihFR::Models::ID::PayVKP80KFA].name;
+        m_SupportedModels = QStringList() << m_DeviceName;
 
-        mPrinterModelId = CPayPrinters::Custom80;
-        setDeviceParameter(CHardware::FR::PrinterModel, CPayPrinters::Models[mPrinterModelId].name);
+        m_PrinterModelId = CPayPrinters::Custom80;
+        setDeviceParameter(CHardware::FR::PrinterModel, CPayPrinters::Models[m_PrinterModelId].name);
     }
 };
 

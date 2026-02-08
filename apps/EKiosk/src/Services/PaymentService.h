@@ -166,7 +166,7 @@ public:
     /// <ID>\t<дата_создания>\t<начальная_сессия>\t<сессия>\t<провайдер>\t<сумма_платежа>\t<принятая_сумма>\t<статус>\t<поля>\t<купюры>\r\n
     /// Дополнительно: <поля> хранятся в UTF-8, <имя>:<значение>|<имя>:<значение>...
     ///                <купюры> хранятся в формате <номинал>:<количество>|<номинал>:<количество>...
-    virtual PPSDK::EncashmentResult::Enum performEncashment(const QVariantMap &aParameters,
+    virtual PPSDK::EncashmentResult::Enum perform_Encashment(const QVariantMap &aParameters,
                                                             PPSDK::SEncashment &aEncashment);
 
     /// Получение информации о последней инкасации
@@ -251,44 +251,44 @@ private:
     bool processPaymentInternal(std::shared_ptr<PPSDK::IPayment> aPayment);
 
 private:
-    IApplication *mApplication;
-    volatile bool mEnabled;
-    IPaymentDatabaseUtils *mDBUtils;
+    IApplication *m_Application;
+    volatile bool m_Enabled;
+    IPaymentDatabaseUtils *m_DBUtils;
 
-    QList<PPSDK::IPaymentFactory *> mFactories;
-    QMap<QString, PPSDK::IPaymentFactory *> mFactoryByType;
+    QList<PPSDK::IPaymentFactory *> m_Factories;
+    QMap<QString, PPSDK::IPaymentFactory *> m_FactoryByType;
 
-    QRecursiveMutex mPaymentLock;
+    QRecursiveMutex m_PaymentLock;
 
     /// Активный платёж.
-    std::shared_ptr<PPSDK::IPayment> mActivePayment;
+    std::shared_ptr<PPSDK::IPayment> m_ActivePayment;
 
     /// Платёж, в котором хранится неизрасходованная сдача.
-    std::shared_ptr<PPSDK::IPayment> mChangePayment;
+    std::shared_ptr<PPSDK::IPayment> m_ChangePayment;
 
-    QFutureSynchronizer<void> mActivePaymentSynchronizer;
+    QFutureSynchronizer<void> m_ActivePaymentSynchronizer;
 
-    QThread mPaymentThread;
-    QTimer mPaymentTimer;
+    QThread m_PaymentThread;
+    QTimer m_PaymentTimer;
 
-    QRecursiveMutex mCommandMutex;
+    QRecursiveMutex m_CommandMutex;
 
     /// Порядковый номер команды на изменение/удаление платежа.
-    int mCommandIndex;
+    int m_CommandIndex;
 
     /// Очередь команд на изменение/удаление платежа.
-    QList<QPair<int, std::function<EPaymentCommandResult::Enum(PaymentService *)>>> mCommands;
+    QList<QPair<int, std::function<EPaymentCommandResult::Enum(PaymentService *)>>> m_Commands;
 
     /// Список платежей, имеющих несохраненные параметры
-    QSet<qint64> mPaymentHaveUnsavedParameters;
+    QSet<qint64> m_PaymentHaveUnsavedParameters;
 
     /// Дата последней выгрузки устаревших платежей.
-    QDateTime mLastBackupDate;
+    QDateTime m_LastBackupDate;
 
     /// ID платежа, проходящего в данный момент обработку в оффлайне.
-    QRecursiveMutex mOfflinePaymentLock;
-    qint64 mOfflinePaymentID;
-    std::shared_ptr<PPSDK::IPayment> mOfflinePayment;
+    QRecursiveMutex m_OfflinePaymentLock;
+    qint64 m_OfflinePaymentID;
+    std::shared_ptr<PPSDK::IPayment> m_OfflinePayment;
 };
 
 //---------------------------------------------------------------------------

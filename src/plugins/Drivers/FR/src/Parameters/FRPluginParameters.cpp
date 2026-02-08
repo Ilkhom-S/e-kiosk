@@ -88,10 +88,10 @@ SPluginParameter setPrinterModel(const QString &aModel) {
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setNullingSumInCash() {
-    return SPluginParameter(CHardwareSDK::FR::NullingSumInCash,
+SPluginParameter setNullingSum_InCash() {
+    return SPluginParameter(CHardwareSDK::FR::NullingSum_InCash,
                             false,
-                            PPT::NullingSumInCash,
+                            PPT::NullingSum_InCash,
                             QString(),
                             CHardwareSDK::Values::NotUse,
                             QStringList()

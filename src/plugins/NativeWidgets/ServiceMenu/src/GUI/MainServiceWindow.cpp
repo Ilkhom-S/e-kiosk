@@ -36,7 +36,7 @@ const int ExitQuestionTimeout = 60; // in sec
 
 //------------------------------------------------------------------------
 MainServiceWindow::MainServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), mBackend(aBackend), mCurrentPageIndex(-1) {
+    : QWidget(aParent), m_Backend(aBackend), m_CurrentPageIndex(-1) {
     setupUi(this);
 
     swPages->setCurrentWidget(wPasswordPage);
@@ -60,11 +60,11 @@ MainServiceWindow::MainServiceWindow(ServiceMenuBackend *aBackend, QWidget *aPar
     connect(btnBackspace, SIGNAL(clicked()), this, SLOT(onBackspaceClicked()));
     connect(btnClear, SIGNAL(clicked()), this, SLOT(onClearClicked()));
 
-    mIdleTimer.setSingleShot(true);
-    mDateTimeTimer.setInterval(CMainServiceWindow::DateTimeRefreshInterval);
+    m_IdleTimer.setSingleShot(true);
+    m_DateTimeTimer.setInterval(CMainServiceWindow::DateTimeRefreshInterval);
 
-    connect(&mIdleTimer, SIGNAL(timeout()), SLOT(onIdleTimeout()));
-    connect(&mDateTimeTimer, SIGNAL(timeout()), SLOT(onDateTimeRefresh()));
+    connect(&m_IdleTimer, SIGNAL(timeout()), SLOT(onIdleTimeout()));
+    connect(&m_DateTimeTimer, SIGNAL(timeout()), SLOT(onDateTimeRefresh()));
 
     connect(lePassword, SIGNAL(returnPressed()), this, SLOT(onProceedLogin()));
 
@@ -77,31 +77,31 @@ bool MainServiceWindow::initialize() {
     connect(twServiceScreens, SIGNAL(currentChanged(int)), SLOT(onCurrentPageChanged(int)));
 
     // Обновим состояние диспенсера
-    mBackend->saveDispenserUnitState();
+    m_Backend->saveDispenserUnitState();
 
-    mBackend->getTerminalInfo(mTerminalInfo);
+    m_Backend->getTerminalInfo(m_TerminalInfo);
     lbTerminalNumber->setText(tr("#terminal_number") +
-                              mTerminalInfo[CServiceTags::TerminalNumber].toString());
+                              m_TerminalInfo[CServiceTags::TerminalNumber].toString());
     lbVersion->setText(tr("#software_version") +
-                       mTerminalInfo[CServiceTags::SoftwareVersion].toString());
+                       m_TerminalInfo[CServiceTags::SoftwareVersion].toString());
 
-    btnToggleLock->setText(mTerminalInfo[CServiceTags::TerminalLocked].toBool()
+    btnToggleLock->setText(m_TerminalInfo[CServiceTags::TerminalLocked].toBool()
                                ? tr("#title_unlock")
                                : tr("#title_lock"));
 
-    if (mBackend->isAuthorizationEnabled() && mBackend->hasAnyPassword()) {
+    if (m_Backend->isAuthorizationEnabled() && m_Backend->hasAnyPassword()) {
         swPages->setCurrentWidget(wPasswordPage);
         lbStatusMessage->clear();
         lePassword->clear();
         lePassword->setFocus();
-        mIdleTimer.setInterval(CMainServiceWindow::PasswordIdleTimeout);
-        mIdleTimer.start();
+        m_IdleTimer.setInterval(CMainServiceWindow::PasswordIdleTimeout);
+        m_IdleTimer.start();
     } else {
         applyConfiguration();
     }
 
     onDateTimeRefresh();
-    mDateTimeTimer.start();
+    m_DateTimeTimer.start();
 
     return true;
 }
@@ -114,23 +114,23 @@ void MainServiceWindow::shutdown() {
         twServiceScreens, SIGNAL(currentChanged(int)), this, SLOT(onCurrentPageChanged(int)));
 
     IServiceWindow *current =
-        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(mCurrentPageIndex)) = nullptr;
+        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr;
     if (current) {
         current->deactivate();
     }
 
-    foreach (IServiceWindow *window, mServiceWindowList) {
+    foreach (IServiceWindow *window, m_ServiceWindowList) {
         window->shutdown();
         delete window;
     }
 
     twServiceScreens->clear();
-    mServiceWindowList.clear();
+    m_ServiceWindowList.clear();
 }
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onIdleTimeout() {
-    mBackend->toLog("Timeout Login in service_menu scenario.");
+    m_Backend->toLog("Timeout Login in service_menu scenario.");
 
     closeMenu(true);
 }
@@ -148,10 +148,10 @@ void MainServiceWindow::applyConfiguration() {
 
 //------------------------------------------------------------------------
 bool MainServiceWindow::applyAccessRights() {
-    ServiceMenuBackend::TAccessRights rights = mBackend->getAccessRights();
+    ServiceMenuBackend::TAccessRights rights = m_Backend->getAccessRights();
 
     auto addServiceWindow = [&](IServiceWindow *aServiceWindow, const QString &aTitle) {
-        mServiceWindowList << aServiceWindow;
+        m_ServiceWindowList << aServiceWindow;
 
         if (aServiceWindow->initialize()) {
             auto *window = dynamic_cast<QWidget *>(aServiceWindow);
@@ -162,34 +162,34 @@ bool MainServiceWindow::applyAccessRights() {
     };
 
     // Право на диагностику
-    if (rights.contains(ServiceMenuBackend::Diagnostic) || !mBackend->hasAnyPassword()) {
-        addServiceWindow(new DiagnosticsServiceWindow(mBackend, this), tr("#title_diagnostic"));
-        addServiceWindow(new LogsServiceWindow(mBackend, this), tr("#title_logs"));
+    if (rights.contains(ServiceMenuBackend::Diagnostic) || !m_Backend->hasAnyPassword()) {
+        addServiceWindow(new DiagnosticsServiceWindow(m_Backend, this), tr("#title_diagnostic"));
+        addServiceWindow(new LogsServiceWindow(m_Backend, this), tr("#title_logs"));
     }
 
     // Право на инкассацию/диспенсер
     if (rights.contains(ServiceMenuBackend::Encash)) {
-        addServiceWindow(new EncashmentServiceWindow(mBackend, this), tr("#title_encashment"));
+        addServiceWindow(new EncashmentServiceWindow(m_Backend, this), tr("#title_encashment"));
     }
 
     // Права на работу с платежами
     if ((rights.contains(ServiceMenuBackend::ViewPayments) ||
          rights.contains(ServiceMenuBackend::ViewPaymentSummary))) {
-        addServiceWindow(new PaymentServiceWindow(mBackend, this), tr("#title_payments"));
+        addServiceWindow(new PaymentServiceWindow(m_Backend, this), tr("#title_payments"));
     }
 
     // Права на настройку ПО
-    if (!mBackend->hasAnyPassword() || rights.contains(ServiceMenuBackend::SetupHardware) ||
+    if (!m_Backend->hasAnyPassword() || rights.contains(ServiceMenuBackend::SetupHardware) ||
         rights.contains(ServiceMenuBackend::SetupNetwork) ||
         rights.contains(ServiceMenuBackend::SetupKeys) ||
         rights.contains(ServiceMenuBackend::Encash)) // а инкасатор может настраивать диспенсер
     {
-        addServiceWindow(new SetupServiceWindow(mBackend, this), tr("#title_setup"));
+        addServiceWindow(new SetupServiceWindow(m_Backend, this), tr("#title_setup"));
     }
 
     if (twServiceScreens->count()) {
         twServiceScreens->setCurrentIndex(0);
-        mCurrentPageIndex = 0;
+        m_CurrentPageIndex = 0;
     }
 
     // Право на остановку ПО
@@ -203,18 +203,18 @@ bool MainServiceWindow::applyAccessRights() {
 
 //------------------------------------------------------------------------
 void MainServiceWindow::closeMenu(bool aStartIdle) {
-    mIdleTimer.stop();
+    m_IdleTimer.stop();
 
-    mBackend->printDispenserDiffState();
+    m_Backend->printDispenserDiffState();
 
     QVariantMap params;
     params["signal"] = "close";
 
     // После завершения текущего сценария, показываем главное меню.
     params["start_idle"] = aStartIdle;
-    mBackend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, params);
+    m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, params);
 
-    mBackend->toLog("Logout.");
+    m_Backend->toLog("Logout.");
 }
 
 //------------------------------------------------------------------------
@@ -227,13 +227,13 @@ void MainServiceWindow::connectAllAbstractButtons(QWidget *aParentWidget) {
 //------------------------------------------------------------------------
 void MainServiceWindow::onCurrentPageChanged(int aIndex) {
     IServiceWindow *prev =
-        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(mCurrentPageIndex)) = nullptr;
+        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr;
 
     if (prev) {
         if (!prev->deactivate()) {
             // Окно не может быть сейчас закрыто.
             twServiceScreens->blockSignals(true);
-            twServiceScreens->setCurrentIndex(mCurrentPageIndex);
+            twServiceScreens->setCurrentIndex(m_CurrentPageIndex);
             twServiceScreens->blockSignals(false);
 
             return;
@@ -247,11 +247,11 @@ void MainServiceWindow::onCurrentPageChanged(int aIndex) {
         next->activate();
     }
 
-    mCurrentPageIndex = aIndex;
+    m_CurrentPageIndex = aIndex;
 
-    QWidget *currentPage = twServiceScreens->widget(mCurrentPageIndex) = nullptr;
+    QWidget *currentPage = twServiceScreens->widget(m_CurrentPageIndex) = nullptr;
     if (currentPage) {
-        mBackend->toLog(QString("Page activated: %1.").arg(currentPage->objectName()));
+        m_Backend->toLog(QString("Page activated: %1.").arg(currentPage->objectName()));
     }
 }
 
@@ -273,7 +273,7 @@ void MainServiceWindow::onAbstractButtonClicked() {
 
     message += ".";
 
-    mBackend->toLog(message);
+    m_Backend->toLog(message);
 }
 
 //------------------------------------------------------------------------
@@ -301,52 +301,52 @@ void MainServiceWindow::onDigitClicked() {
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onProceedLogin() {
-    if (mBackend->authorize(lePassword->text())) {
-        mIdleTimer.stop();
+    if (m_Backend->authorize(lePassword->text())) {
+        m_IdleTimer.stop();
 
         applyConfiguration();
-        mBackend->toLog(QString("%1 has logged in.").arg(mBackend->getUserRole()));
+        m_Backend->toLog(QString("%1 has logged in.").arg(m_Backend->getUserRole()));
 
-        mBackend->saveDispenserUnitState();
+        m_Backend->saveDispenserUnitState();
     } else {
-        mIdleTimer.start();
+        m_IdleTimer.start();
 
         lePassword->clear();
         lbStatusMessage->setText(tr("#error_auth_failed"));
         lePassword->setFocus();
-        mBackend->toLog("Authentication failed.");
+        m_Backend->toLog("Authentication failed.");
     }
 }
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onCancelAuthorization() {
-    mIdleTimer.stop();
+    m_IdleTimer.stop();
 
     QVariantMap params;
     params["signal"] = "close";
-    mBackend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, params);
+    m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, params);
 }
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onRebootApplication() {
     if (closeServiceMenu(false, tr("#question_reboot_software"))) {
-        mBackend->sendEvent(SDK::PaymentProcessor::EEventType::Restart);
+        m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::Restart);
     }
 }
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onRebootTerminal() {
     if (closeServiceMenu(false, tr("#question_reboot_terminal"))) {
-        mBackend->sendEvent(SDK::PaymentProcessor::EEventType::Reboot);
+        m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::Reboot);
     }
 }
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onToggleLock() {
-    bool isLocked = mTerminalInfo[CServiceTags::TerminalLocked].toBool() = false;
+    bool isLocked = m_TerminalInfo[CServiceTags::TerminalLocked].toBool() = false;
     if (closeServiceMenu(
             false, isLocked ? tr("#question_unblock_terminal") : tr("#question_block_terminal"))) {
-        mBackend->sendEvent(isLocked ? SDK::PaymentProcessor::EEventType::TerminalUnlock
+        m_Backend->sendEvent(isLocked ? SDK::PaymentProcessor::EEventType::TerminalUnlock
                                      : SDK::PaymentProcessor::EEventType::TerminalLock);
     }
 }
@@ -354,7 +354,7 @@ void MainServiceWindow::onToggleLock() {
 //------------------------------------------------------------------------
 void MainServiceWindow::onStopApplication() {
     if (closeServiceMenu(false, tr("#question_stop_terminal"))) {
-        mBackend->sendEvent(SDK::PaymentProcessor::EEventType::StopSoftware);
+        m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::StopSoftware);
     }
 }
 
@@ -373,7 +373,7 @@ bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
 
     if (GUI::MessageBox::question(aMessage) != 0) {
         IServiceWindow *window =
-            dynamic_cast<IServiceWindow *>(twServiceScreens->widget(mCurrentPageIndex)) = nullptr;
+            dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr;
         if (window) {
             window->deactivate();
         }

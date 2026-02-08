@@ -4,7 +4,7 @@ SendReceipt::SendReceipt(QObject *parent) : SendRequest(parent) {
     senderName = "SEND_RECEIPT";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
+    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
 }
 
 void SendReceipt::resendRequest() {
@@ -21,12 +21,12 @@ void SendReceipt::sendRequestRepeet() {
     sendRequest(requestXml, 15000);
 }
 
-void SendReceipt::setDataNote(const QDomNode &domElement) {
+void SendReceipt::setDataNote(const QDom_Node &dom_Element) {
     getData = false;
     resultCode = "";
 
     // Парсим данные
-    parcerNote(domElement);
+    parcerNote(dom_Element);
 
     if (resultCode != "") {
         // Обнуляем счетчик
@@ -37,27 +37,27 @@ void SendReceipt::setDataNote(const QDomNode &domElement) {
     }
 }
 
-void SendReceipt::parcerNote(const QDomNode &domElement) {
+void SendReceipt::parcerNote(const QDom_Node &dom_Element) {
     // Необходимо отпарсить документ
-    QDomNode domNode = domElement.firstChild();
+    QDom_Node dom_Node = dom_Element.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
-            QDomElement domElement = domNode.toElement();
-            QString strTag = domElement.tagName();
+    while (!dom_Node.isNull()) {
+        if (dom_Node.isElement()) {
+            QDom_Element dom_Element = dom_Node.toElement();
+            QString strTag = dom_Element.tagName();
 
             if (strTag == "resultCode") {
-                resultCode = domElement.text();
+                resultCode = dom_Element.text();
             }
 
             if (strTag == "receipt") {
-                trn = domElement.attribute("tran_id", "");
-                status = domElement.attribute("resultCode", "");
+                trn = dom_Element.attribute("tran_id", "");
+                status = dom_Element.attribute("resultCode", "");
             }
         }
 
-        parcerNote(domNode);
-        domNode = domNode.nextSibling();
+        parcerNote(dom_Node);
+        dom_Node = dom_Node.nextSibling();
     }
 }
 

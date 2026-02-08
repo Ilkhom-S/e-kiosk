@@ -25,7 +25,7 @@ const uchar PrinterNormalState = 0x00; /// Нормальный статус п�
 const uchar PrinterTemperatureError = 0x02; /// Температурный бит. 0- норма
 const uchar PrinterNoPaperError = 0x04;     /// Наличие бумаги бит. 0- норма
 const uchar PrinterHeadOpenError = 0x08;    /// Дверца термоголовки(открыта). 0- норма
-const uchar PrinterSystemError = 0x20;      /// Системная ошибка. 0- норма
+const uchar PrinterSystem_Error = 0x20;      /// Системная ошибка. 0- норма
 const uchar PrinterDataReceiveError = 0x40; /// Ошибка приема данных. 0- норма
 
 /// Количество Baud_Rate, которое поддерживает принтер

@@ -9,9 +9,9 @@ using namespace SDK::Driver;
 
 // Инициализация рекурсивного мьютекса (совместимо с Qt 5.15 и 6)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-QMutex USBPort::m_SystemPropertyMutex;
+QMutex USBPort::m_System_PropertyMutex;
 #else
-QMutex USBPort::m_SystemPropertyMutex(QMutex::Recursive);
+QMutex USBPort::m_System_PropertyMutex(QMutex::Recursive);
 #endif
 
 //--------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ const char USBPDO[] = "USBPDO";
 }
 
 //--------------------------------------------------------------------------------
-bool USBPort::performOpen() {
+bool USBPort::perform_Open() {
     if (!checkReady()) {
         return false;
     }
@@ -40,7 +40,7 @@ bool USBPort::performOpen() {
 
     // В Qt реализация открытия порта скрыта внутри QSerialPort
     // m_SerialPort — это экземпляр QSerialPort, который должен быть в AsyncSerialPort
-    this->m_SerialPort.setPortName(m_SystemName);
+    this->m_SerialPort.setPortName(m_System_Name);
 
     // Настраиваем стандартные параметры (могут быть переопределены позже)
     this->m_SerialPort.setBaudRate(QSerialPort::Baud9600);
@@ -61,11 +61,11 @@ bool USBPort::performOpen() {
 bool USBPort::checkReady() {
     // Обновляем список доступных имен в системе кроссплатформенно
     TWinDeviceProperties props = getDevicesProperties(true);
-    m_Exist = props.contains(m_SystemName);
+    m_Exist = props.contains(m_System_Name);
 
     if (!m_Exist) {
         setOpeningTimeout(CAsyncSerialPort::OnlineOpeningTimeout);
-        toLog(LogLevel::Error, QStringLiteral("Port %1 does not exist.").arg(m_SystemName));
+        toLog(LogLevel::Error, QStringLiteral("Port %1 does not exist.").arg(m_System_Name));
         return false;
     }
 
@@ -100,7 +100,7 @@ bool USBPort::processReading(QByteArray &aData, int aTimeout) {
 
 //--------------------------------------------------------------------------------
 TDeviceProperties USBPort::getDevicesProperties(bool aForce, bool aPDODetecting) {
-    QMutexLocker locker(&m_SystemPropertyMutex);
+    QMutexLocker locker(&m_System_PropertyMutex);
     static TDeviceProperties properties;
 
     if (!properties.isEmpty() && !aForce) {
@@ -142,6 +142,6 @@ TDeviceProperties USBPort::getDevicesProperties(bool aForce, bool aPDODetecting)
         properties.insert(info.portName(), props);
     }
 
-    m_SystemNames = properties.keys();
+    m_System_Names = properties.keys();
     return properties;
 }

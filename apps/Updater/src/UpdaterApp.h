@@ -34,7 +34,7 @@ typedef enum {
 namespace ExitCode {
 enum Enum {
     NoError = 0,         /// Выход без ошибок.
-    ErrorRunFromTempDir, /// Ошибка запуска из временной папки
+    ErrorRunFrom_TempDir, /// Ошибка запуска из временной папки
     NoWatchService,      /// Отсутствует соединение с WatchService
     UnknownCommand,      /// Неизвестная команда
     SecondInstance,      /// Повторный запуск приложения
@@ -73,7 +73,7 @@ public:
 
 private slots:
     /// Система обновления в процессе работы, ожидаем следующей попытки
-    void updateSystemIsWaiting();
+    void updateSystem_IsWaiting();
 
     /// Переводим updater в состояние разворачивания установки
     void onDeployment();
@@ -109,16 +109,16 @@ private slots:
     void tooLondToDownload();
 
 private:
-    QSharedPointer<IWatchServiceClient> mWatchServiceClient;
-    QPointer<Updater> mUpdater;
+    QSharedPointer<IWatchServiceClient> m_WatchServiceClient;
+    QPointer<Updater> m_Updater;
 
-    SplashScreen mSplashScreen;
-    ReportBuilder mReportBuilder;
-    CUpdaterApp::State mState;
-    QPointer<QTimer> mErrorStopTimer;
+    SplashScreen m_SplashScreen;
+    ReportBuilder m_ReportBuilder;
+    CUpdaterApp::State m_State;
+    QPointer<QTimer> m_ErrorStopTimer;
 
-    int mResultCode_;
-    QString mResultDescription;
+    int m_ResultCode_;
+    QString m_ResultDescription;
 
 private:
     /// Получить значение параметра командной строки
@@ -128,7 +128,7 @@ private:
     bool loadSettings();
 
     /// перезапускает updater из временной папки
-    bool reRunFromTempDirectory();
+    bool reRunFrom_TempDirectory();
 
     /// Копируем updater в временную папку и оттуда запускаем
     bool CopyToTempPath();

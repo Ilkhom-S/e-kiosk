@@ -24,10 +24,10 @@ AudioService *AudioService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 AudioService::AudioService(IApplication *aApplication)
-    : mApplication(aApplication), ILogable(CAudioService::LogName) {
+    : m_Application(aApplication), ILogable(CAudioService::LogName) {
     // Получаем директорию с файлами интерфейса из настроек.
-    mInterfacePath = IApplication::toAbsolutePath(
-        mApplication->getSettings().value(CSettings::InterfacePath).toString());
+    m_InterfacePath = IApplication::toAbsolutePath(
+        m_Application->getSettings().value(CSettings::InterfacePath).toString());
 }
 
 //---------------------------------------------------------------------------
@@ -35,8 +35,8 @@ AudioService::~AudioService() {}
 
 //---------------------------------------------------------------------------
 bool AudioService::initialize() {
-    mPlayer = QSharedPointer<QMediaPlayer>(new QMediaPlayer());
-    connect(mPlayer.data(), &QMediaPlayer::playbackStateChanged, this, &AudioService::stateChanged);
+    m_Player = QSharedPointer<QMediaPlayer>(new QMediaPlayer());
+    connect(m_Player.data(), &QMediaPlayer::playbackStateChanged, this, &AudioService::stateChanged);
 
     return true;
 }
@@ -75,15 +75,15 @@ void AudioService::resetParameters(const QSet<QString> &) {}
 
 //---------------------------------------------------------------------------
 void AudioService::play(const QString &aFileName) {
-    QString filePath = mInterfacePath + "/" + aFileName;
+    QString filePath = m_InterfacePath + "/" + aFileName;
 
     if (QFile::exists(filePath)) {
-        if (mPlayer->playbackState() != QMediaPlayer::StoppedState) {
+        if (m_Player->playbackState() != QMediaPlayer::StoppedState) {
             stop();
         }
 
-        mPlayer->setSource(QUrl::fromLocalFile(filePath));
-        mPlayer->play();
+        m_Player->setSource(QUrl::from_LocalFile(filePath));
+        m_Player->play();
     } else {
         stop();
 
@@ -93,8 +93,8 @@ void AudioService::play(const QString &aFileName) {
 
 //---------------------------------------------------------------------------
 void AudioService::stop() {
-    if (mPlayer) {
-        mPlayer->stop();
+    if (m_Player) {
+        m_Player->stop();
     }
 }
 

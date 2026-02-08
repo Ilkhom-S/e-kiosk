@@ -18,9 +18,9 @@ PaymentCheckRequest::PaymentCheckRequest(Payment *aPayment, bool aFake)
     if (aFake) {
         addParameter("REQ_TYPE", 1);
 
-        QString limit = mPayment->getProviderSettings().limits.check.isEmpty()
-                            ? mPayment->getProviderSettings().limits.min
-                            : mPayment->getProviderSettings().limits.check;
+        QString limit = m_Payment->getProviderSettings().limits.check.isEmpty()
+                            ? m_Payment->getProviderSettings().limits.min
+                            : m_Payment->getProviderSettings().limits.check;
 
         // Сначала смотрим на сумму для проверку номера для оператора.
         bool convertOk(false);
@@ -34,7 +34,7 @@ PaymentCheckRequest::PaymentCheckRequest(Payment *aPayment, bool aFake)
             QRegularExpressionMatch match = macroPattern.match(limit);
             while (match.capturedStart() != -1) {
                 limit.replace(match.captured(0),
-                              mPayment->getParameter(match.captured(1)).value.toString());
+                              m_Payment->getParameter(match.captured(1)).value.toString());
                 match = macroPattern.match(limit);
             }
 

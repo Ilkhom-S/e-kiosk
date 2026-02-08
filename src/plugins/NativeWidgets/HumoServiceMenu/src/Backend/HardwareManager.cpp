@@ -21,23 +21,23 @@ const QString StatusError = "#7e0000";
 
 //------------------------------------------------------------------------
 HardwareManager::HardwareManager(SDK::Plugin::IEnvironment *aFactory, PPSDK::ICore *aCore)
-    : mFactory(aFactory), mCore(aCore) {
-    mDeviceService = mCore->getDeviceService();
+    : m_Factory(aFactory), m_Core(aCore) {
+    m_DeviceService = m_Core->getDeviceService();
 
-    connect(mDeviceService,
+    connect(m_DeviceService,
             SIGNAL(deviceDetected(const QString &)),
             this,
             SIGNAL(deviceDetected(const QString &)));
-    connect(mDeviceService, SIGNAL(detectionStopped()), this, SIGNAL(detectionStopped()));
-    connect(mDeviceService,
+    connect(m_DeviceService, SIGNAL(detectionStopped()), this, SIGNAL(detectionStopped()));
+    connect(m_DeviceService,
             SIGNAL(deviceStatusChanged(
                 const QString &, SDK::Driver::EWarningLevel::Enum, const QString &, int)),
             this,
             SLOT(deviceStatusChanged(
                 const QString &, SDK::Driver::EWarningLevel::Enum, const QString &)));
 
-    foreach (QString config, mDeviceService->getConfigurations(false)) {
-        mCurrentConfiguration[config] = mDeviceService->getDeviceConfiguration(config);
+    foreach (QString config, m_DeviceService->getConfigurations(false)) {
+        m_CurrentConfiguration[config] = m_DeviceService->getDeviceConfiguration(config);
     }
 }
 
@@ -46,38 +46,38 @@ HardwareManager::~HardwareManager() {}
 
 //------------------------------------------------------------------------
 bool HardwareManager::isConfigurationChanged() const {
-    return !(mCurrentConfiguration == getConfiguration());
+    return !(m_CurrentConfiguration == getConfiguration());
 }
 
 //------------------------------------------------------------------------
 void HardwareManager::resetConfiguration() {
-    mCurrentConfiguration = getConfiguration();
+    m_CurrentConfiguration = getConfiguration();
 }
 
 //------------------------------------------------------------------------
 void HardwareManager::detect(const QString &aDeviceType) {
-    mDeviceService->detect(aDeviceType);
+    m_DeviceService->detect(aDeviceType);
 }
 
 //------------------------------------------------------------------------
 void HardwareManager::stopDetection() {
-    mDeviceService->stopDetection();
+    m_DeviceService->stopDetection();
 }
 
 //------------------------------------------------------------------------
 QStringList HardwareManager::getConfigurations() const {
-    return mDeviceService->getConfigurations();
+    return m_DeviceService->getConfigurations();
 }
 
 //------------------------------------------------------------------------
 void HardwareManager::setConfigurations(const QStringList &aConfigurations) {
-    mDeviceService->saveConfigurations(aConfigurations);
+    m_DeviceService->saveConfigurations(aConfigurations);
 }
 
 //------------------------------------------------------------------------
 QVariantMap HardwareManager::getConfiguration() const {
     QVariantMap result;
-    QStringList configList(mDeviceService->getConfigurations());
+    QStringList configList(m_DeviceService->getConfigurations());
 
     foreach (QString config, configList) {
         result[config] = getDeviceConfiguration(config);
@@ -88,27 +88,27 @@ QVariantMap HardwareManager::getConfiguration() const {
 
 //------------------------------------------------------------------------
 bool HardwareManager::setConfiguration(const QVariantMap &aConfig) {
-    if (mCurrentConfiguration == aConfig) {
+    if (m_CurrentConfiguration == aConfig) {
         return true;
     }
 
     // Обновляем параметры устройств
     foreach (QString config, aConfig.keys()) {
-        mDeviceService->setDeviceConfiguration(config, aConfig[config].toMap());
+        m_DeviceService->setDeviceConfiguration(config, aConfig[config].toMap());
     }
 
-    return mDeviceService->saveConfigurations(aConfig.keys());
+    return m_DeviceService->saveConfigurations(aConfig.keys());
 }
 
 //------------------------------------------------------------------------
 QVariantMap HardwareManager::getDeviceConfiguration(const QString &aConfigName) const {
-    QVariantMap config = mDeviceService->getDeviceConfiguration(aConfigName);
+    QVariantMap config = m_DeviceService->getDeviceConfiguration(aConfigName);
 
     // Если конфигурация пустая, то не найден необходимый ресурс. Какой-нибудь сом-порт.
     // Попробуем получить описание через плагин устройства
     if (config.isEmpty()) {
         SDK::Plugin::IPlugin *plugin =
-            mFactory->getPluginLoader()->createPlugin(aConfigName, aConfigName);
+            m_Factory->getPluginLoader()->createPlugin(aConfigName, aConfigName);
         SDK::Driver::IDevice *device = dynamic_cast<SDK::Driver::IDevice *>(plugin);
 
         if (device) {
@@ -122,32 +122,32 @@ QVariantMap HardwareManager::getDeviceConfiguration(const QString &aConfigName) 
 //------------------------------------------------------------------------
 void HardwareManager::setDeviceConfiguration(const QString &aConfigurationName,
                                              const QVariantMap &aConfig) {
-    mDeviceService->setDeviceConfiguration(aConfigurationName, aConfig);
+    m_DeviceService->setDeviceConfiguration(aConfigurationName, aConfig);
 }
 
 //------------------------------------------------------------------------
 QStringList HardwareManager::getDriverList() const {
-    return mDeviceService->getDriverList();
+    return m_DeviceService->getDriverList();
 }
 
 //------------------------------------------------------------------------
 PPSDK::TModelList HardwareManager::getModelList(const QString &aFilter) const {
-    return mDeviceService->getModelList(aFilter);
+    return m_DeviceService->getModelList(aFilter);
 }
 
 //------------------------------------------------------------------------
 SDK::Plugin::TParameterList HardwareManager::getDriverParameters(const QString &aDriverPath) const {
-    return mDeviceService->getDriverParameters(aDriverPath);
+    return m_DeviceService->getDriverParameters(aDriverPath);
 }
 
 //------------------------------------------------------------------------
 QString HardwareManager::createDevice(const QString &aDriverPath, const QVariantMap &aConfig) {
-    return mDeviceService->createDevice(aDriverPath, aConfig);
+    return m_DeviceService->createDevice(aDriverPath, aConfig);
 }
 
 //------------------------------------------------------------------------
 bool HardwareManager::checkDevice(const QString &aConfigName) {
-    DSDK::IDevice *device = mDeviceService->acquireDevice(aConfigName);
+    DSDK::IDevice *device = m_DeviceService->acquireDevice(aConfigName);
 
     if (device) {
         return true;
@@ -158,7 +158,7 @@ bool HardwareManager::checkDevice(const QString &aConfigName) {
 
 //------------------------------------------------------------------------
 DSDK::IDevice *HardwareManager::getDevice(const QString &aConfigName) {
-    return mDeviceService->acquireDevice(aConfigName);
+    return m_DeviceService->acquireDevice(aConfigName);
 }
 
 //------------------------------------------------------------------------
@@ -166,13 +166,13 @@ void HardwareManager::releaseDevice(const QString &aConfigName) {
     DSDK::IDevice *device(getDevice(aConfigName));
 
     if (device) {
-        mDeviceService->releaseDevice(device);
+        m_DeviceService->releaseDevice(device);
     }
 }
 
 //------------------------------------------------------------------------
 void HardwareManager::releaseAll() {
-    mDeviceService->releaseAll();
+    m_DeviceService->releaseAll();
 }
 
 //------------------------------------------------------------------------
@@ -180,7 +180,7 @@ void HardwareManager::updateStatuses() {
     QStringList configurations(getConfigurations());
 
     foreach (const QString &configuration, configurations) {
-        auto status = mDeviceService->getDeviceStatus(configuration);
+        auto status = m_DeviceService->getDeviceStatus(configuration);
         if (status) {
             deviceStatusChanged(configuration, status->level(), status->description());
         }
@@ -224,7 +224,7 @@ bool HardwareManager::isFiscalPrinterPresent(bool aVirtual, bool aCheckPrintFull
 
     // Проверяем наличие пусть даже и облачного ФР
     bool haveVirtualFiscal =
-        mCore->getPrinterService()->canPrintReceipt(PPSDK::CReceiptType::ZReport, false);
+        m_Core->getPrinterService()->canPrintReceipt(PPSDK::CReceiptType::ZReport, false);
 
     // Проверяем наличие аппаратного ФР в фискальном режиме или принтера для виртуального
     // фискальника

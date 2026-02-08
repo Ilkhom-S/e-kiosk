@@ -76,12 +76,12 @@ public:
 #pragma endregion
 
 private:
-    IApplication *mApplication;
-    QSettings *mSettings;
-    QMap<int, QString> mChannelsMap;
+    IApplication *m_Application;
+    QSettings *m_Settings;
+    QMap<int, QString> m_ChannelsMap;
 
-    QSharedPointer<Ad::DatabaseUtils> mDatabase;
-    QSharedPointer<Ad::Client> mClient;
+    QSharedPointer<Ad::DatabaseUtils> m_Database;
+    QSharedPointer<Ad::Client> m_Client;
 };
 
 //---------------------------------------------------------------------------

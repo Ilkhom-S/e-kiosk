@@ -4,23 +4,23 @@
 
 class SendRequest;
 
-class ConfirmOtp : public SendRequest {
+class Confirm_Otp : public SendRequest {
     Q_OBJECT
 
 public:
-    ConfirmOtp(QObject *parent = 0);
+    Confirm_Otp(QObject *parent = 0);
 
 private slots:
     void resendRequest();
-    void setDataNote(const QDomNode &domElement);
+    void setDataNote(const QDom_Node &dom_Element);
 
 public slots:
-    void confirmOtpRequest(QString otpId, QString otpValue);
+    void confirm_OtpRequest(QString otpId, QString otpValue);
 
 private:
-    void parcerNote(const QDomNode &domElement);
+    void parcerNote(const QDom_Node &dom_Element);
     QString resultCode;
 
 signals:
-    void emit_ConfirmOtpResult(QString resultCode);
+    void emit_Confirm_OtpResult(QString resultCode);
 };

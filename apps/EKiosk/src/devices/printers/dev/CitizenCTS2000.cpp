@@ -14,7 +14,7 @@ bool CitizenCTS2000_PRINTER::openPort() {
         is_open = false;
 
         // Даем девайсу название порта
-        serialPort->setPortName(comName);
+        serialPort->setPortName(com_Name);
 
         if (serialPort->open(QIODevice::ReadWrite)) {
             // Устанавливаем параметры открытия порта
@@ -150,7 +150,7 @@ bool CitizenCTS2000_PRINTER::getStatus(int &aStatus) {
 
     if (printerError != CMDCitizenCTS2000::PrinterIsOK) {
         // Error
-        int code = printerError & CMDCitizenCTS2000::PaperJamError;
+        int code = printerError & CMDCitizenCTS2000::PaperJam_Error;
         if (code > 0) {
             // Paper jam
             result |= PrinterState::PaperJam;

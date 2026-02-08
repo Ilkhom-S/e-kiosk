@@ -55,28 +55,28 @@ public:
     virtual void shutdown();
 
     /// Создаёт (или возвращает из кэша) графический элемент по описанию.
-    virtual std::weak_ptr<SDK::GUI::IGraphicsItem> getItem(const SDK::GUI::GraphicsItemInfo &aInfo);
+    virtual std::weak_ptr<SDK::GUI::IGraphicsItem> getItem(const SDK::GUI::GraphicsItem_Info &aInfo);
 
     /// Удаляет графический элемент по описанию
-    virtual bool removeItem(const SDK::GUI::GraphicsItemInfo &aInfo);
+    virtual bool removeItem(const SDK::GUI::GraphicsItem_Info &aInfo);
 
     /// Возвращает тип движка.
     virtual QString getType() const;
 
     /// Возвращает список экранов, с которыми работает бэкэнд
-    virtual QList<SDK::GUI::GraphicsItemInfo> getItemList();
+    virtual QList<SDK::GUI::GraphicsItem_Info> getItem_List();
 
 #pragma endregion
 
 private:
-    QString mInstancePath;
-    QMultiMap<QString, std::shared_ptr<WebGraphicsItem>> mItems;
+    QString m_InstancePath;
+    QMultiMap<QString, std::shared_ptr<WebGraphicsItem>> m_Items;
 
-    QVariantMap mParameters;
-    SDK::Plugin::IEnvironment *mFactory;
-    SDK::GUI::IGraphicsEngine *mEngine;
+    QVariantMap m_Parameters;
+    SDK::Plugin::IEnvironment *m_Factory;
+    SDK::GUI::IGraphicsEngine *m_Engine;
 
-    SDK::PaymentProcessor::Scripting::Core *mCoreProxy;
+    SDK::PaymentProcessor::Scripting::Core *m_CoreProxy;
 };
 
 //------------------------------------------------------------------------------

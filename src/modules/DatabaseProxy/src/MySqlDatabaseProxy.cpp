@@ -122,7 +122,7 @@ bool MySqlDatabaseProxy::execDML(const QString &strQuery, long &rowsAffected) {
 
     bool execResult = safeExec(&dbQuery, strQuery);
 
-    rowsAffected = dbQuery.numRowsAffected();
+    rowsAffected = dbQuery.num_RowsAffected();
 
     return execResult;
 }

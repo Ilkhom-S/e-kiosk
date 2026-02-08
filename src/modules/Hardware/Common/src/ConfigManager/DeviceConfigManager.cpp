@@ -5,7 +5,7 @@
 #include "Hardware/Protocols/Common/ProtocolUtils.h"
 
 //--------------------------------------------------------------------------------
-DeviceConfigManager::DeviceConfigManager() : mConfigurationGuard(QReadWriteLock::Recursive) {}
+DeviceConfigManager::DeviceConfigManager() : m_ConfigurationGuard(QReadWriteLock::Recursive) {}
 
 //--------------------------------------------------------------------------------
 void DeviceConfigManager::setConfiguration(const QVariantMap &aConfiguration) {
@@ -16,53 +16,53 @@ void DeviceConfigManager::setConfiguration(const QVariantMap &aConfiguration) {
 
 //--------------------------------------------------------------------------------
 QVariantMap DeviceConfigManager::getConfiguration() const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mConfiguration;
+    return m_Configuration;
 }
 
 //--------------------------------------------------------------------------------
 void DeviceConfigManager::setConfigParameter(const QString &aName, const QVariant &aValue) {
-    QWriteLocker lock(&mConfigurationGuard);
+    QWriteLocker lock(&m_ConfigurationGuard);
 
-    mConfiguration.insert(aName, aValue);
+    m_Configuration.insert(aName, aValue);
 }
 
 //--------------------------------------------------------------------------------
 void DeviceConfigManager::setLConfigParameter(const QString &aName, const QByteArray &aData) {
     QByteArray data = ProtocolUtils::clean(aData.simplified());
-    QString value = QString::fromUtf8(data);
+    QString value = QString::from_Utf8(data);
 
     setConfigParameter(aName, value);
 }
 
 //--------------------------------------------------------------------------------
 QVariant DeviceConfigManager::getConfigParameter(const QString &aName) const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mConfiguration.value(aName);
+    return m_Configuration.value(aName);
 }
 
 //--------------------------------------------------------------------------------
 QVariant DeviceConfigManager::getConfigParameter(const QString &aName,
                                                  const QVariant &aDefault) const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mConfiguration.value(aName, aDefault);
+    return m_Configuration.value(aName, aDefault);
 }
 
 //--------------------------------------------------------------------------------
 void DeviceConfigManager::removeConfigParameter(const QString &aName) {
-    QWriteLocker lock(&mConfigurationGuard);
+    QWriteLocker lock(&m_ConfigurationGuard);
 
-    mConfiguration.remove(aName);
+    m_Configuration.remove(aName);
 }
 
 //--------------------------------------------------------------------------------
 bool DeviceConfigManager::containsConfigParameter(const QString &aName) const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mConfiguration.contains(aName);
+    return m_Configuration.contains(aName);
 }
 
 //--------------------------------------------------------------------------------

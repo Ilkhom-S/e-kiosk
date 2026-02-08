@@ -10,17 +10,17 @@ namespace Scripting {
 
 //------------------------------------------------------------------------------
 DeviceService::DeviceService(ICore *aCore)
-    : mCore(aCore), mDeviceService(mCore->getDeviceService()) {
-    connect(mDeviceService,
+    : m_Core(aCore), m_DeviceService(m_Core->getDeviceService()) {
+    connect(m_DeviceService,
             SIGNAL(deviceDetected(const QString &)),
             this,
             SLOT(onDeviceDetected(const QString &)));
-    connect(mDeviceService, SIGNAL(detectionStopped()), this, SLOT(onDetectionStopped()));
+    connect(m_DeviceService, SIGNAL(detectionStopped()), this, SLOT(onDetectionStopped()));
 }
 
 //------------------------------------------------------------------------------
 void DeviceService::detect() {
-    mDeviceService->detect();
+    m_DeviceService->detect();
 }
 
 //------------------------------------------------------------------------------

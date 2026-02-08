@@ -6,10 +6,10 @@
 #include <QtCore/QReadWriteLock>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QStringList>
-#include <QtXml/QDomDocument>
+#include <QtXml/QDom_Document>
 
 class Item;
-class ItemObject;
+class Item_Object;
 
 //------------------------------------------------------------------------------
 class GroupModel : public QAbstractListModel {
@@ -74,71 +74,71 @@ signals:
     void categoryNameChanged();
 
 public:
-    typedef QSharedPointer<Item> ItemPtr;
-    typedef QList<ItemPtr> ItemList;
+    typedef QSharedPointer<Item> Item_Ptr;
+    typedef QList<Item_Ptr> Item_List;
 
 private:
-    bool loadContent(const QString &mFileName, QDomDocument &aDocument);
+    bool loadContent(const QString &m_FileName, QDom_Document &aDocument);
 
     /// Слияние двух groups
-    void mergeGroups(QDomElement aTargetGroup, QDomElement aSourceGroup);
+    void mergeGroups(QDom_Element aTargetGroup, QDom_Element aSourceGroup);
 
     void setRootElementInternal(qint64 aRootElement);
 
     /// Высчитываем максимальную индекс сортировки для содержимого группы
     quint32 getGroupOrder(qint64 aGroupID);
 
-    qint64 getCategory(QDomNode aNode);
+    qint64 getCategory(QDom_Node aNode);
 
     void clearNodes();
 
-    const ItemList &getItemList(qint64 aGroupID);
+    const Item_List &getItem_List(qint64 aGroupID);
 
     virtual QHash<int, QByteArray> roleNames() const;
 
 private:
-    QHash<int, QByteArray> mRoles;
+    QHash<int, QByteArray> m_Roles;
 
     /// Имя xml файла с списком групп
-    QString mSource;
+    QString m_Source;
 
     /// Весь документ
-    QDomDocument mDocument;
+    QDom_Document m_Document;
 
     /// Список групп по их идентификаторам
-    QHash<qint64, QDomNode> mGroups;
+    QHash<qint64, QDom_Node> m_Groups;
 
     /// Соответствие категории для каждой группы
-    QHash<qint64, qint64> mCategories;
+    QHash<qint64, qint64> m_Categories;
 
     /// Соответствие категории для каждого провайдера
-    QHash<qint64, qint64> mProviderCategorys;
+    QHash<qint64, qint64> m_ProviderCategorys;
 
     /// Фильтр имён тегов xml
-    QStringList mElementFilter;
+    QStringList m_ElementFilter;
 
     /// Id текущей корневой группы
-    qint64 mRootElement;
+    qint64 m_RootElement;
 
     /// Id текущей категории
-    qint64 mCurrentCategory;
+    qint64 m_CurrentCategory;
 
     /// Список узлов внутри текущей корневой группы
-    ItemList mNodes;
-    QMap<qint64, ItemList> mNodesCache;
-    QList<QPointer<ItemObject>> mNodesObject;
+    Item_List m_Nodes;
+    QMap<qint64, Item_List> m_NodesCache;
+    QList<QPointer<Item_Object>> m_NodesObject;
 
     /// Данные для сортировки кнопок, полученные по статистике платежей
-    QMap<qint64, quint32> mProvidersStatistic;
+    QMap<qint64, quint32> m_ProvidersStatistic;
 
     /// Группа - количество столбцов
-    QMap<qint64, qint32> mGroupsWidth;
+    QMap<qint64, qint32> m_GroupsWidth;
 };
 
 //------------------------------------------------------------------------------
 class Item {
 public:
-    Item(const QDomNode &aNode);
+    Item(const QDom_Node &aNode);
 
     virtual qint64 getId() const;
     virtual QString getName() const;
@@ -156,14 +156,14 @@ public:
     virtual quint32 getOrder() const;
 
 protected:
-    QDomNamedNodeMap mAttributes;
-    bool mIsGroup;
-    QString mElementName;
-    quint32 mOrder;
+    QDom_NamedNodeMap m_Attributes;
+    bool m_IsGroup;
+    QString m_ElementName;
+    quint32 m_Order;
 };
 
 //------------------------------------------------------------------------------
-class ItemObject : public QObject {
+class Item_Object : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(qint64 id READ getId)
@@ -176,7 +176,7 @@ class ItemObject : public QObject {
     Q_PROPERTY(bool isGroup READ isGroup)
 
 public:
-    ItemObject(const Item &aItem, QObject *aParent);
+    Item_Object(const Item &aItem, QObject *aParent);
 
     qint64 getId() const;
     QString getName() const;
@@ -188,7 +188,7 @@ public:
     bool isGroup() const;
 
 private:
-    const Item &mItem;
+    const Item &m_Item;
 };
 
 //------------------------------------------------------------------------------

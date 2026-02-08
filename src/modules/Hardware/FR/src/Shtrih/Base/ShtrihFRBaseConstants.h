@@ -8,7 +8,7 @@
 //--------------------------------------------------------------------------------
 namespace CShtrihFRBase {
 /// Запрашивать сумму записей ФП после последней перерегистрации.
-const char TotalFMSumType = 1;
+const char TotalFMSum_Type = 1;
 
 /// Признак отсутствия ИНН.
 const qulonglong NoINN = 0xFFFFFFFFFFFF;

@@ -9,9 +9,9 @@
 #include "NativeBackend.h"
 
 NativeBackendFactory::NativeBackendFactory() {
-    mModuleName = "native_backend";
-    mName = "Native Backend";
-    mDescription = "Native graphics backend for EKiosk";
-    mAuthor = "CPP Static Author Test";
-    mVersion = "1.0";
+    m_ModuleName = "native_backend";
+    m_Name = "Native Backend";
+    m_Description = "Native graphics backend for EKiosk";
+    m_Author = "CPP Static Author Test";
+    m_Version = "1.0";
 }

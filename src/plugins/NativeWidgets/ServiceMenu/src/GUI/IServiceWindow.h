@@ -19,10 +19,10 @@ public:
 //------------------------------------------------------------------------
 class ServiceWindowBase : public IServiceWindow {
 public:
-    ServiceWindowBase(ServiceMenuBackend *aBackend) : mBackend(aBackend) {}
+    ServiceWindowBase(ServiceMenuBackend *aBackend) : m_Backend(aBackend) {}
 
 protected:
-    ServiceMenuBackend *mBackend;
+    ServiceMenuBackend *m_Backend;
 };
 
 //------------------------------------------------------------------------

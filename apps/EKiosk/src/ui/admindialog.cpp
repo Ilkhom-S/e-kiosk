@@ -78,8 +78,8 @@ AdminDialog::AdminDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AdminDia
     connect(ui->btnPowerOffTypeDevices, SIGNAL(clicked()), SLOT(shutDounASO()));
     connect(ui->btnSaveChangeTypeDevices, SIGNAL(clicked()), SLOT(saveDeviceParam()));
     connect(ui->btnAdminCheckConnection, SIGNAL(clicked()), SLOT(checkConnection()));
-    connect(ui->btnAdminGetDataFromModem, SIGNAL(clicked()), SLOT(getModemDataInfo()));
-    connect(ui->btnAdminSaveTerminalAccept, SIGNAL(clicked()), SLOT(saveTrmAutorizationData()));
+    connect(ui->btnAdminGetDataFrom_Modem, SIGNAL(clicked()), SLOT(getModem_DataInfo()));
+    connect(ui->btnAdminSaveTerminalAccept, SIGNAL(clicked()), SLOT(saveTrm_AutorizationData()));
     connect(ui->btnAdminSelectLogParam, SIGNAL(clicked()), SLOT(openSelectCategory()));
     connect(ui->btnAdminUpdateLogData, SIGNAL(clicked()), SLOT(openLogInfoDate()));
     connect(ui->btnAdminNavigationUp, SIGNAL(clicked()), SLOT(go_to_up_log()));
@@ -91,9 +91,9 @@ AdminDialog::AdminDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AdminDia
     connect(ui->btnAdminSaveConnectionParams, SIGNAL(clicked()), SLOT(saveConnectionParam()));
     connect(ui->btnAdminSavePrinterParam, SIGNAL(clicked()), SLOT(savePrinterParam()));
     connect(ui->btnAdminGetServicesData, SIGNAL(clicked()), SLOT(getServices()));
-    connect(ui->btnAdminSaveTrmSettings2, SIGNAL(clicked()), SLOT(saveOtherSettings()));
+    connect(ui->btnAdminSaveTrm_Settings2, SIGNAL(clicked()), SLOT(saveOtherSettings()));
     connect(ui->btnAdminSaveTerminaSecret, SIGNAL(clicked()), SLOT(saveUserAutorizationData()));
-    connect(ui->btnAdminTestRestartModemReal, SIGNAL(clicked()), SLOT(restartModem()));
+    connect(ui->btnAdminTestRestartModem_Real, SIGNAL(clicked()), SLOT(restartModem()));
     connect(
         ui->cbxAdminNamePrinter, SIGNAL(currentIndexChanged(int)), SLOT(printerNameChanged(int)));
 
@@ -193,7 +193,7 @@ void AdminDialog::savePrinterParam() {
     settings["prt_win_top_margin"] =
         ui->cbxAdminTopMarginWinprtCheck->currentText().trimmed().toInt();
     settings["prt_win_bottom_margin"] =
-        ui->cbxAdminBottomMarginWinprtCheck->currentText().trimmed().toInt();
+        ui->cbxAdminBottom_MarginWinprtCheck->currentText().trimmed().toInt();
     settings["chek_small_beetwen_string"] = ui->chbxAdminSmallLineText->isChecked();
     settings["chek_small_text"] = ui->chbxAdminSmallCheck->isChecked();
     settings["chek_width"] = ui->cbxAdminWidthCheck->currentText().trimmed().toInt();
@@ -332,7 +332,7 @@ void AdminDialog::searchWithKeyParam() {
 
     QStringList lstLog;
     QString string;
-    getLogDataFromFile(lstLog, string);
+    getLogDataFrom_File(lstLog, string);
 
     // Попробуем посмотреть что в поле поиска
     QString searchString = ui->editSearchKeyParam->text();
@@ -370,23 +370,23 @@ void AdminDialog::openLogInfoDate() {
 
     QStringList lstLog;
     QString string;
-    getLogDataFromFile(lstLog, string);
+    getLogDataFrom_File(lstLog, string);
 
     ui->editBrowserLogView->setText(string);
 
     QTimer::singleShot(500, this, SLOT(go_to_end_text_edit()));
 }
 
-void AdminDialog::getLogDataFromFile(QStringList &logLst, QString &all) {
+void AdminDialog::getLogDataFrom_File(QStringList &logLst, QString &all) {
     logLst.clear();
     all = "";
     // дата создания
-    QString vrmDate = ui->dEditAdminSelectDataLog->text();
+    QString vrm_Date = ui->dEditAdminSelectDataLog->text();
     QByteArray ba;
-    QFile fileInfo(QString("log/%1.txt").arg(vrmDate));
+    QFile fileInfo(QString("log/%1.txt").arg(vrm_Date));
 
     if (!fileInfo.open(QIODevice::ReadOnly)) {
-        ba = QString("File Log Not Present %1").arg(vrmDate).toLatin1();
+        ba = QString("File Log Not Present %1").arg(vrm_Date).toLatin1();
     } else {
         ba.append(fileInfo.readAll());
     }
@@ -426,7 +426,7 @@ void AdminDialog::openSelectCategory() {
     selectCategoryLogView->show();
 }
 
-void AdminDialog::saveTrmAutorizationData() {
+void AdminDialog::saveTrm_AutorizationData() {
     closeTimer->start();
 
     QString login = ui->editAdminLoginTrm->text().trimmed();
@@ -453,7 +453,7 @@ void AdminDialog::saveTrmAutorizationData() {
 
     authButtonSet(false);
 
-    emit emit_execToMain(AdminCommand::aCmdSaveTrmNumSett);
+    emit emit_execToMain(AdminCommand::aCmdSaveTrm_Num_Sett);
 }
 
 void AdminDialog::authButtonSet(bool enable) {
@@ -497,7 +497,7 @@ void AdminDialog::checkConnection() {
     emit emit_execToMain(AdminCommand::aCmdCheckConnect);
 }
 
-void AdminDialog::getModemDataInfo() {
+void AdminDialog::getModem_DataInfo() {
     closeTimer->start();
 
     if (ui->cbxAdminConnectionList->currentText().toUpper() != "LOCAL CONNECTION") {
@@ -525,7 +525,7 @@ void AdminDialog::getModemDataInfo() {
 
             setDataToAdmin(AdminCommand::aCmdConnectInfo, data);
 
-            emit emit_execToMain(AdminCommand::aCmdGetSimInfo);
+            emit emit_execToMain(AdminCommand::aCmdGetSim_Info);
         }
     } else {
         showMsgDialog("Админ панель", "Используется локальное соединение");
@@ -620,7 +620,7 @@ void AdminDialog::saveDeviceParam() {
         if (rr == QMessageBox::Yes) {
 
             // Надо дать команду сохранение с перезагрузкой
-            cmd = AdminCommand::aCmdSaveDeviceParamR;
+            cmd = AdminCommand::aCmdSaveDeviceParam_R;
         } else if (rr == QMessageBox::Cancel) {
 
             ui->cbxAdminNameValidator->setCurrentText(
@@ -721,10 +721,10 @@ void AdminDialog::doCollectExec() {
 
 void AdminDialog::doCollectDateExec() {
     closeTimer->start();
-    QString vrmDate = ui->cbxAdminTextDateIncashment->currentText();
+    QString vrm_Date = ui->cbxAdminTextDateIncashment->currentText();
 
-    if (vrmDate != titleDataIncashment) {
-        dateCollectParam = vrmDate;
+    if (vrm_Date != titleDataIncashment) {
+        dateCollectParam = vrm_Date;
         emit emit_execToMain(AdminCommand::aCmdExecDateIncash);
     } else {
         QMessageBox msgBox(this);
@@ -876,7 +876,7 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
         deviceParam["printer_port"] = ui->cbxAdminPortPrinter->currentText();
         deviceParam["printer_port_speed"] = ui->cbxAdminPortSpeed->currentIndex();
     } break;
-    case AdminCommand::aCmdModemInform: {
+    case AdminCommand::aCmdModem_Inform: {
         // Показываем информацию
         ui->lblAdminTextDeviceInf3->setText(data.value("modem_comment").toString());
         ui->lblAdminTextDeviceInf4->setText(data.value("modem_name").toString());
@@ -906,7 +906,7 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
 
         deviceParam["watchdog_port"] = ui->cbxAdminPortWD->currentText();
     } break;
-    case AdminCommand::aCmdSearchParamRef: {
+    case AdminCommand::aCmdSearchParam_Ref: {
         ui->chbxAdminSearchValidator->setChecked(data.value("search_validator").toBool());
         ui->chbxAdminSearchPrinter->setChecked(data.value("search_printer").toBool());
         ui->chbxAdminSearchModem->setChecked(data.value("search_modem").toBool());
@@ -915,7 +915,7 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
     case AdminCommand::aCmdInfrmationPanel: {
         //            ui->lblAdminInformationTest->setText(data.value("message").toString());
     } break;
-    case AdminCommand::aCmdSimInfoData: {
+    case AdminCommand::aCmdSim_InfoData: {
         ui->lblAdminTextPrvSim->setText(data.value("modem_sim_provider").toString());
         ui->lblAdminTextNumberSim->setText(data.value("modem_sim_number").toString());
         ui->lblAdminTextUrovanSignala->setText(data.value("modem_sim_rate").toString());
@@ -939,9 +939,9 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
     } break;
     case AdminCommand::aCmdConnectInfo: {
         auto msg = data.value("message").toString();
-        ui->lblAdminInfoGetDataFromModem->setText(msg);
+        ui->lblAdminInfoGetDataFrom_Modem->setText(msg);
     } break;
-    case AdminCommand::aCmdModemInfData: {
+    case AdminCommand::aCmdModem_InfData: {
         ui->chbxAdminCheckBalanceSim->setChecked(data.value("check_balance_sim").toBool());
         ui->chbxAdminCheckNumberSim->setChecked(data.value("check_number_sim").toBool());
         ui->cbxAdminRequestBalanceSim->setCurrentText(data.value("ussd_balance_sim").toString());
@@ -971,7 +971,7 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
             data.value("prt_win_right_margin").toString());
         ui->cbxAdminTopMarginWinprtCheck->setCurrentText(
             data.value("prt_win_top_margin").toString());
-        ui->cbxAdminBottomMarginWinprtCheck->setCurrentText(
+        ui->cbxAdminBottom_MarginWinprtCheck->setCurrentText(
             data.value("prt_win_bottom_margin").toString());
     } break;
     case AdminCommand::aCmdCounterCheckInf: {
@@ -983,7 +983,7 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
     case AdminCommand::aCmdCounterCheckVal: {
         ui->lblAdminResultCounterInfo->setText(data.value("counter_info").toString());
     } break;
-    case AdminCommand::aCmdAvtorizationTrmP: {
+    case AdminCommand::aCmdAvtorizationTrm_P: {
         auto login = data.value("login").toString();
         auto secretLogin = data.value("secret_login").toString();
 

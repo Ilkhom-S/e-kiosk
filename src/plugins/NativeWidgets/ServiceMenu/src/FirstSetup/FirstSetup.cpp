@@ -38,48 +38,48 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
 
 //--------------------------------------------------------------------------
 FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mMainWidget(0), mEnvironment(aFactory), mInstancePath(aInstancePath), mIsReady(false) {
+    : m_MainWidget(0), m_Environment(aFactory), m_InstancePath(aInstancePath), m_IsReady(false) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
-        mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+        m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
     if (core) {
-        mBackend = QSharedPointer<ServiceMenuBackend>(new ServiceMenuBackend(
-            mEnvironment, mEnvironment->getLog(CServiceMenuBackend::LogName)));
+        m_Backend = QSharedPointer<ServiceMenuBackend>(new ServiceMenuBackend(
+            m_Environment, m_Environment->getLog(CServiceMenuBackend::LogName)));
     } else {
-        mEnvironment->getLog("ServiceMenu")->write(LogLevel::Error, "Failed to get ICore");
+        m_Environment->getLog("ServiceMenu")->write(LogLevel::Error, "Failed to get ICore");
     }
 
-    mIsReady = core != 0;
+    m_IsReady = core != 0;
 
-    if (mIsReady) {
-        mMainWidget = new QGraphicsProxyWidget();
+    if (m_IsReady) {
+        m_MainWidget = new QGraphicsProxyWidget();
 
-        mWizardFrame = new WizardFrame(mBackend.data());
-        mWizardFrame->initialize();
-        mWizardFrame->setStatus(QObject::tr("#humo_copyright"));
+        m_WizardFrame = new WizardFrame(m_Backend.data());
+        m_WizardFrame->initialize();
+        m_WizardFrame->setStatus(QObject::tr("#humo_copyright"));
 
-        mMainWidget->setWidget(mWizardFrame);
-        mMainWidget->setScale(
-            qMin(core->getGUIService()->getScreenSize(0).width() / qreal(mWizardFrame->width()),
-                 core->getGUIService()->getScreenSize(0).height() / qreal(mWizardFrame->height())));
+        m_MainWidget->setWidget(m_WizardFrame);
+        m_MainWidget->setScale(
+            qMin(core->getGUIService()->getScreenSize(0).width() / qreal(m_WizardFrame->width()),
+                 core->getGUIService()->getScreenSize(0).height() / qreal(m_WizardFrame->height())));
 
         qreal newWidgetWidth =
-            core->getGUIService()->getScreenSize(0).width() / mMainWidget->scale();
-        mMainWidget->setMinimumWidth(newWidgetWidth);
-        mMainWidget->setMaximumWidth(newWidgetWidth);
+            core->getGUIService()->getScreenSize(0).width() / m_MainWidget->scale();
+        m_MainWidget->setMinimum_Width(newWidgetWidth);
+        m_MainWidget->setMaximum_Width(newWidgetWidth);
 
         qreal newWidgetHeight =
-            core->getGUIService()->getScreenSize(0).height() / mMainWidget->scale();
-        mMainWidget->setMinimumHeight(newWidgetHeight);
-        mMainWidget->setMaximumHeight(newWidgetHeight);
+            core->getGUIService()->getScreenSize(0).height() / m_MainWidget->scale();
+        m_MainWidget->setMinimum_Height(newWidgetHeight);
+        m_MainWidget->setMaximum_Height(newWidgetHeight);
     }
 }
 
 //--------------------------------------------------------------------------
 FirstSetup::~FirstSetup() {
-    if (mMainWidget) {
-        mWizardFrame->shutdown();
-        mMainWidget->deleteLater();
+    if (m_MainWidget) {
+        m_WizardFrame->shutdown();
+        m_MainWidget->deleteLater();
     }
 }
 
@@ -90,17 +90,17 @@ QString FirstSetup::getPluginName() const {
 
 //--------------------------------------------------------------------------
 QVariantMap FirstSetup::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //--------------------------------------------------------------------------
 void FirstSetup::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 }
 
 //--------------------------------------------------------------------------
 QString FirstSetup::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //--------------------------------------------------------------------------
@@ -110,7 +110,7 @@ bool FirstSetup::saveConfiguration() {
 
 //--------------------------------------------------------------------------
 bool FirstSetup::isReady() const {
-    return mIsReady;
+    return m_IsReady;
 }
 
 //---------------------------------------------------------------------------
@@ -129,7 +129,7 @@ void FirstSetup::reset(const QVariantMap & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 QQuickItem *FirstSetup::getWidget() const {
-    // return mMainWidget;
+    // return m_MainWidget;
     // FIXME
     return nullptr;
 }
@@ -142,7 +142,7 @@ QVariantMap FirstSetup::getContext() const {
 
 //---------------------------------------------------------------------------
 bool FirstSetup::isValid() const {
-    return mMainWidget != 0;
+    return m_MainWidget != 0;
 }
 
 //---------------------------------------------------------------------------

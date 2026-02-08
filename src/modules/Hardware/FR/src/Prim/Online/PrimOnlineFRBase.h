@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "../PrimFRBase.h"
+#include "../Prim_FRBase.h"
 
 //--------------------------------------------------------------------------------
-class PrimOnlineFRBase : public PrimFRBase {
-    SET_SERIES("PrimOnline")
+class Prim_OnlineFRBase : public Prim_FRBase {
+    SET_SERIES("Prim_Online")
 
 public:
-    PrimOnlineFRBase();
+    Prim_OnlineFRBase();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
@@ -28,7 +28,7 @@ protected:
     void processDeviceData();
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt,
+    virtual bool perform_Fiscal(const QStringList &aReceipt,
                                const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
@@ -38,8 +38,8 @@ protected:
                                  SDK::Driver::TComplexFiscalPaymentData &aPSData);
 
     /// Заполнить фискальные данные для ПФД.
-    virtual void setFiscalData(CPrimFR::TData &aCommandData,
-                               CPrimFR::TDataList &aAdditionalAFDData,
+    virtual void setFiscalData(CPrim_FR::TData &aCommandData,
+                               CPrim_FR::TDataList &aAdditionalAFDData,
                                const SDK::Driver::SPaymentData &aPaymentData,
                                int aReceiptSize);
 
@@ -47,7 +47,7 @@ protected:
     void setFPData(SDK::Driver::TFiscalPaymentData &aFPData, const CFR::STLV &aTLV);
 
     /// Печать Z отчета.
-    virtual bool performZReport(bool aPrintDeferredReports);
+    virtual bool perform_ZReport(bool aPrintDeferredReports);
 
     /// Выполнить Z-отчет.
     virtual TResult doZReport(bool aAuto);
@@ -63,7 +63,7 @@ protected:
 
     /// Сформировать необязательное G-поле произвольного фискального документа (ПФД), содержащее
     /// фискальный реквизит.
-    CPrimFR::TData
+    CPrim_FR::TData
     addFiscalField(int aX, int aY, int aFont, int aFiscalField = 0, const QString &aData = "");
 
     /// Получить данные регистрации.
@@ -71,7 +71,7 @@ protected:
     bool getRegTLVData(int aField, uchar &aData);
 
     /// Шрифт для ПФД.
-    int mAFDFont;
+    int m_AFDFont;
 };
 
 //--------------------------------------------------------------------------------

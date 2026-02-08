@@ -1,9 +1,9 @@
 /* @file Константы, коды команд и ответов онлайн ФР семейства ПРИМ. */
 
-#include "PrimOnlineFRConstants.h"
+#include "Prim_OnlineFRConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CPrimOnlineFR {
+namespace CPrim_OnlineFR {
 const char ZReportOut[] = "00";
 const char ZReportInBuffer[] = "01";
 const char LastRegistration[] = "00";

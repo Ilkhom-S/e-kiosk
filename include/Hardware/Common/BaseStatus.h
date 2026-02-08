@@ -32,7 +32,7 @@ const int Unknown = 41;             /// Неизвестное (подозрит
 /// Ошибки.
 namespace Error {
 const int Unknown = 60;              /// Неизвестная ошибка устройства.
-const int MechanismPosition = 61;    /// Внутренний механизм не приведен в рабочее положение.
+const int Mechanism_Position = 61;    /// Внутренний механизм не приведен в рабочее положение.
 const int PowerSupply = 62;          /// Ошибка электропитания.
 const int MemoryStorage = 63;        /// Повреждена микросхема памяти (Flash/RAM/EEPROM).
 const int NotAvailable = 64;         /// Недоступен.

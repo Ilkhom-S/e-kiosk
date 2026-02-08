@@ -60,7 +60,7 @@ void ISysUtils::getPrinterStatus(const QString &aPrinterName,
         output += QString::fromLocal8Bit(buffer);
     }
     pclose(fp);
-    // Map CUPS status to codes (see SystemPrinterStatusCodes.h)
+    // Map CUPS status to codes (see System_PrinterStatusCodes.h)
     if (output.contains("disabled"))
         aStatusCodes.insert(1); // 1 = disabled
     if (output.contains("enabled"))

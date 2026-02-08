@@ -66,52 +66,52 @@ public slots:
     bool isItServiceProvider(qint64 aProvider, const QVariantMap &aParameters);
 
 private:
-    QString getAp() const { return mTerminalSettings->getKeys()[0].ap; }
-    QString getDataPath() const { return mTerminalSettings->getAppEnvironment().userDataPath; }
-    QString getContentPath() const { return mTerminalSettings->getAppEnvironment().contentPath; }
-    QString getVersion() const { return mTerminalSettings->getAppEnvironment().version; }
-    QString getAdProfile() const { return mTerminalSettings->getAdProfile(); }
-    QString getMinNote() const { return mTerminalSettings->getCommonSettings().minPar.toString(); }
+    QString getAp() const { return m_TerminalSettings->getKeys()[0].ap; }
+    QString getDataPath() const { return m_TerminalSettings->getAppEnvironment().userDataPath; }
+    QString getContentPath() const { return m_TerminalSettings->getAppEnvironment().contentPath; }
+    QString getVersion() const { return m_TerminalSettings->getAppEnvironment().version; }
+    QString getAdProfile() const { return m_TerminalSettings->getAdProfile(); }
+    QString getMinNote() const { return m_TerminalSettings->getCommonSettings().minPar.toString(); }
     QString getCurrencyId() const {
-        return QString::number(mTerminalSettings->getCurrencySettings().id);
+        return QString::number(m_TerminalSettings->getCurrencySettings().id);
     }
-    QString getCurrencyCode() const { return mTerminalSettings->getCurrencySettings().code; }
-    QString getCurrencyName() const { return mTerminalSettings->getCurrencySettings().name; }
+    QString getCurrencyCode() const { return m_TerminalSettings->getCurrencySettings().code; }
+    QString getCurrencyName() const { return m_TerminalSettings->getCurrencySettings().name; }
     QString getCurrencyAllNotes() const {
-        return seq2Str2(mTerminalSettings->getCurrencySettings().notes);
+        return seq2Str2(m_TerminalSettings->getCurrencySettings().notes);
     }
     QString getCurrencyAllCoins() const {
-        return seq2Str2(mTerminalSettings->getCurrencySettings().coins);
+        return seq2Str2(m_TerminalSettings->getCurrencySettings().coins);
     }
     QString geEnabledNotes() const {
-        return seq2Str2(mTerminalSettings->getCommonSettings().enabledParNotesList);
+        return seq2Str2(m_TerminalSettings->getCommonSettings().enabledParNotesList);
     }
     QString geEnabledCoins() const {
-        return seq2Str2(mTerminalSettings->getCommonSettings().enabledParCoinsList);
+        return seq2Str2(m_TerminalSettings->getCommonSettings().enabledParCoinsList);
     }
 
     QString getDisabledNotes() const {
-        QSet<Currency::Nominal> allNotes(mTerminalSettings->getCurrencySettings().notes.begin(),
-                                         mTerminalSettings->getCurrencySettings().notes.end());
+        QSet<Currency::Nominal> allNotes(m_TerminalSettings->getCurrencySettings().notes.begin(),
+                                         m_TerminalSettings->getCurrencySettings().notes.end());
         return seq2Str2(
-            allNotes.subtract(mTerminalSettings->getCommonSettings().enabledParNotesList).values());
+            allNotes.subtract(m_TerminalSettings->getCommonSettings().enabledParNotesList).values());
     }
 
     QString getDisabledCoins() const {
-        QSet<Currency::Nominal> allCoins(mTerminalSettings->getCurrencySettings().coins.begin(),
-                                         mTerminalSettings->getCurrencySettings().coins.end());
+        QSet<Currency::Nominal> allCoins(m_TerminalSettings->getCurrencySettings().coins.begin(),
+                                         m_TerminalSettings->getCurrencySettings().coins.end());
         return seq2Str2(
-            allCoins.subtract(mTerminalSettings->getCommonSettings().enabledParCoinsList).values());
+            allCoins.subtract(m_TerminalSettings->getCommonSettings().enabledParCoinsList).values());
     }
 
     QString getInterfacePath() const {
-        return mTerminalSettings->getAppEnvironment().interfacePath;
+        return m_TerminalSettings->getAppEnvironment().interfacePath;
     }
     QString getCurrentSkinPath() const;
 
 private:
-    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;
-    SDK::PaymentProcessor::IGUIService *mGuiService;
+    SDK::PaymentProcessor::TerminalSettings *m_TerminalSettings;
+    SDK::PaymentProcessor::IGUIService *m_GuiService;
 };
 
 //------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ class DealerSettings : public QObject {
     Q_PROPERTY(QString bankContractNumber READ getBankContractNumber CONSTANT)
 
 public:
-    DealerSettings(ICore *mCore);
+    DealerSettings(ICore *m_Core);
 
 public slots:
     /// Получение разрешения на платёж.
@@ -148,31 +148,31 @@ public slots:
     QObject *getCommissions(qint64 aProvider, const QVariantMap &aParameters, double aAmount);
 
 private:
-    QString getPointName() const { return mPersonalSettings.pointName; }
-    QString getPointAddress() const { return mPersonalSettings.pointAddress; }
-    QString getName() const { return mPersonalSettings.name; }
+    QString getPointName() const { return m_PersonalSettings.pointName; }
+    QString getPointAddress() const { return m_PersonalSettings.pointAddress; }
+    QString getName() const { return m_PersonalSettings.name; }
     QString getAddress() const {
-        return mPersonalSettings.businessAddress.isEmpty() ? mPersonalSettings.address
-                                                           : mPersonalSettings.businessAddress;
+        return m_PersonalSettings.businessAddress.isEmpty() ? m_PersonalSettings.address
+                                                           : m_PersonalSettings.businessAddress;
     }
-    QString getInn() const { return mPersonalSettings.inn; }
-    QString getKbk() const { return mPersonalSettings.kbk; }
-    QString getPhone() const { return mPersonalSettings.phone; }
-    QString getIsBank() const { return mPersonalSettings.isBank; }
-    QString getOperatorName() const { return mPersonalSettings.operatorName; }
-    QString getOperatorAddress() const { return mPersonalSettings.operatorAddress; }
-    QString getOperatorInn() const { return mPersonalSettings.operatorInn; }
-    QString getOperatorContractNumber() const { return mPersonalSettings.operatorContractNumber; }
-    QString getBankName() const { return mPersonalSettings.bankName; }
-    QString getBankAddress() const { return mPersonalSettings.bankAddress; }
-    QString getBankBik() const { return mPersonalSettings.bankBik; }
-    QString getBankInn() const { return mPersonalSettings.bankInn; }
-    QString getBankPhone() const { return mPersonalSettings.bankPhone; }
-    QString getBankContractNumber() const { return mPersonalSettings.bankContractNumber; }
+    QString getInn() const { return m_PersonalSettings.inn; }
+    QString getKbk() const { return m_PersonalSettings.kbk; }
+    QString getPhone() const { return m_PersonalSettings.phone; }
+    QString getIsBank() const { return m_PersonalSettings.isBank; }
+    QString getOperatorName() const { return m_PersonalSettings.operatorName; }
+    QString getOperatorAddress() const { return m_PersonalSettings.operatorAddress; }
+    QString getOperatorInn() const { return m_PersonalSettings.operatorInn; }
+    QString getOperatorContractNumber() const { return m_PersonalSettings.operatorContractNumber; }
+    QString getBankName() const { return m_PersonalSettings.bankName; }
+    QString getBankAddress() const { return m_PersonalSettings.bankAddress; }
+    QString getBankBik() const { return m_PersonalSettings.bankBik; }
+    QString getBankInn() const { return m_PersonalSettings.bankInn; }
+    QString getBankPhone() const { return m_PersonalSettings.bankPhone; }
+    QString getBankContractNumber() const { return m_PersonalSettings.bankContractNumber; }
 
 private:
-    SDK::PaymentProcessor::DealerSettings *mSettings;
-    SDK::PaymentProcessor::SPersonalSettings mPersonalSettings;
+    SDK::PaymentProcessor::DealerSettings *m_Settings;
+    SDK::PaymentProcessor::SPersonalSettings m_PersonalSettings;
 };
 
 //------------------------------------------------------------------------------
@@ -191,21 +191,21 @@ class SCommission : public QObject {
 
 public:
     SCommission(const Commission &aCommission, QObject *aParent)
-        : QObject(aParent), mCommission(aCommission) {}
+        : QObject(aParent), m_Commission(aCommission) {}
 
 private:
-    double getMinLimit() const { return mCommission.getMinLimit(); }
-    double getMaxLimit() const { return mCommission.getMaxLimit(); }
-    double getMinCharge() const { return mCommission.getMinCharge(); }
-    double getMaxCharge() const { return mCommission.getMaxCharge(); }
-    double getValue() const { return mCommission.getValue(); }
-    bool getIsPercent() const { return mCommission.getType() == Commission::Percent; }
-    bool getHasLimits() const { return mCommission.hasLimits(); }
-    bool getHasMinLimit() const { return mCommission.hasMinLimit(); }
-    bool getHasMaxLimit() const { return mCommission.hasMaxLimit(); }
+    double getMinLimit() const { return m_Commission.getMinLimit(); }
+    double getMaxLimit() const { return m_Commission.getMaxLimit(); }
+    double getMinCharge() const { return m_Commission.getMinCharge(); }
+    double getMaxCharge() const { return m_Commission.getMaxCharge(); }
+    double getValue() const { return m_Commission.getValue(); }
+    bool getIsPercent() const { return m_Commission.getType() == Commission::Percent; }
+    bool getHasLimits() const { return m_Commission.hasLimits(); }
+    bool getHasMinLimit() const { return m_Commission.hasMinLimit(); }
+    bool getHasMaxLimit() const { return m_Commission.hasMaxLimit(); }
 
 private:
-    Commission mCommission;
+    Commission m_Commission;
 };
 
 //------------------------------------------------------------------------------
@@ -217,16 +217,16 @@ class Settings : public QObject {
 
 public:
     Settings(ICore *aCore)
-        : mCore(aCore), mTerminalSettingsProxy(aCore), mDealerSettingsProxy(aCore) {}
+        : m_Core(aCore), m_TerminalSettingsProxy(aCore), m_DealerSettingsProxy(aCore) {}
 
 private:
-    QObject *getDealerSettings() { return &mDealerSettingsProxy; }
-    QObject *getTerminalSettings() { return &mTerminalSettingsProxy; }
+    QObject *getDealerSettings() { return &m_DealerSettingsProxy; }
+    QObject *getTerminalSettings() { return &m_TerminalSettingsProxy; }
 
 private:
-    ICore *mCore;
-    TerminalSettings mTerminalSettingsProxy;
-    DealerSettings mDealerSettingsProxy;
+    ICore *m_Core;
+    TerminalSettings m_TerminalSettingsProxy;
+    DealerSettings m_DealerSettingsProxy;
 };
 
 //------------------------------------------------------------------------------

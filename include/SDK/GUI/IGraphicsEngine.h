@@ -4,7 +4,7 @@
 
 #include <QtCore/QString>
 
-#include <SDK/GUI/GraphicsItemInfo.h>
+#include <SDK/GUI/GraphicsItem_Info.h>
 #include <SDK/GUI/IGraphicsHost.h>
 #include <SDK/GUI/IGraphicsItem.h>
 

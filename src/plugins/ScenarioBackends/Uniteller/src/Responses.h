@@ -11,22 +11,22 @@ namespace Uniteller {
 //---------------------------------------------------------------------------
 class BaseResponse {
 public:
-    char mClass;
-    char mCode;
-    QString mTerminalID;
-    QByteArray mData;
+    char m_Class;
+    char m_Code;
+    QString m_TerminalID;
+    QByteArray m_Data;
 
 public:
     BaseResponse(const BaseResponse &aResponse)
-        : mClass(aResponse.mClass), mCode(aResponse.mCode), mTerminalID(aResponse.mTerminalID),
-          mData(aResponse.mData) {}
+        : m_Class(aResponse.m_Class), m_Code(aResponse.m_Code), m_TerminalID(aResponse.m_TerminalID),
+          m_Data(aResponse.m_Data) {}
     virtual ~BaseResponse() {}
     static QSharedPointer<BaseResponse> createResponse(QByteArray &aResponseBuffer);
 
     virtual bool isValid() { return false; }
 
 protected:
-    BaseResponse() { mClass = mCode = 0; }
+    BaseResponse() { m_Class = m_Code = 0; }
     BaseResponse(const QByteArray &aResponseBuffer);
 };
 
@@ -116,17 +116,17 @@ public:
 //---------------------------------------------------------------------------
 class AuthResponse : public BaseResponse {
 public:
-    Operation::Enum mOperation;
-    quint32 mTransactionSumm;
-    quint32 mCurrency;
-    QDateTime mStamp;
-    QString mMerchant;
-    QString mRRN;
-    QString mResponse;
-    QString mConfirmation;
-    QString mCardNumber;
-    QString mCardLabel;
-    QString mMessage;
+    Operation::Enum m_Operation;
+    quint32 m_TransactionSumm;
+    quint32 m_Currency;
+    QDateTime m_Stamp;
+    QString m_Merchant;
+    QString m_RRN;
+    QString m_Response;
+    QString m_Confirmation;
+    QString m_CardNumber;
+    QString m_CardLabel;
+    QString m_Message;
 
 public:
     AuthResponse(const BaseResponse &aResponse);

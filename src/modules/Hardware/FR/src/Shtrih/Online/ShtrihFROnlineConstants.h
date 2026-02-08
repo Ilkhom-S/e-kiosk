@@ -37,10 +37,10 @@ extern const char FiscalTaxData[];
 /// Сервисные команды (параметры).
 namespace Service {
 /// Cофтварная перезагрузка.
-const QByteArray Reboot = QByteArray::fromRawData("\xF3\x00\x00\x00\x00", 5);
+const QByteArray Reboot = QByteArray::from_RawData("\xF3\x00\x00\x00\x00", 5);
 
 /// Прошивка загрузчика.
-const QByteArray BootFirmware = QByteArray::fromRawData("\xEC\x00\x00\x00\x00", 5);
+const QByteArray BootFirmware = QByteArray::from_RawData("\xEC\x00\x00\x00\x00", 5);
 } // namespace Service
 
 /// Минимально рекомендованная версия загрузчика.
@@ -98,8 +98,8 @@ const SData PrintEndToEndNumber = SData(9, 17); /// Печатать сквоз�
 const SData PrintOFDData = SData(10, 17);       /// Печатать данные ОФД.
 const SData PrintUserData = SData(12, 17);      /// Печатать реквизиты [суб]дилера.
 const SData FFDFR = SData(17, 17);              /// ФФД ФР.
-const SData PrintCustomFields = SData(25, 17);  /// Автопечать тегов, вводимых на платеже.
-const SData SetCustomFields = SData(28, 17);    /// Установка тегов, вводимых на платеже.
+const SData PrintCustom_Fields = SData(25, 17);  /// Автопечать тегов, вводимых на платеже.
+const SData SetCustom_Fields = SData(28, 17);    /// Установка тегов, вводимых на платеже.
 const SData StrongFormatChecking =
     SData(35, 17);                          /// Строгий/нестрогий форматно-логический контроль.
 const SData SerialNumber = SData(1, 18);    /// Серийный номер.

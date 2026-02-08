@@ -70,7 +70,7 @@ protected slots:
     void onParameterRowChanged(QListWidgetItem *aCurrent, QListWidgetItem *aPrevious);
 
     /// Срабатывает, когда изменяется значение списка.
-    void onEnumValueChanged(QListWidgetItem *aItem);
+    void onEnum_ValueChanged(QListWidgetItem *aItem);
 
     /// Срабатывает, когда изменяется значение флага.
     void onBoolValueChanged();
@@ -91,18 +91,18 @@ protected slots:
     void onCancel();
 
 private:
-    Ui::frmEditorPane mUi;
-    DeviceSlot *mSlot;
-    QPointer<QWidget> mWidget;
+    Ui::frm_EditorPane m_Ui;
+    DeviceSlot *m_Slot;
+    QPointer<QWidget> m_Widget;
 
-    bool mFirstShow;
+    bool m_FirstShow;
 
-    QVariantMap mValues;
+    QVariantMap m_Values;
 
-    SDK::Plugin::TParameterList mParameters;
+    SDK::Plugin::TParameterList m_Parameters;
 
     /// TODO: Список моделей устройств, временно здесь.
-    QMap<QString, SDK::Plugin::TParameterList> mModels;
+    QMap<QString, SDK::Plugin::TParameterList> m_Models;
 };
 
 //------------------------------------------------------------------------

@@ -86,7 +86,7 @@ BasicApplication::BasicApplication(const QString &aName,
     QString settingsFilePath =
         QDir::toNativeSeparators(basePath + QDir::separator() + info.completeBaseName() + ".ini");
 
-    m_Settings.reset(new QSettings(ISysUtils::rmBOM(settingsFilePath), QSettings::IniFormat));
+    m_Settings.reset(new QSettings(ISysUtils::rm_BOM(settingsFilePath), QSettings::IniFormat));
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) && defined(Q_OS_WIN)
     m_Settings->setIniCodec("UTF-8");
 #endif
@@ -106,7 +106,7 @@ BasicApplication::BasicApplication(const QString &aName,
     QString userFilePath = m_WorkingDirectory + QDir::separator() +
                            m_Settings->value("common/user_data_path").toString() +
                            QDir::separator() + "user.ini";
-    QSettings userSettings(ISysUtils::rmBOM(userFilePath), QSettings::IniFormat);
+    QSettings userSettings(ISysUtils::rm_BOM(userFilePath), QSettings::IniFormat);
     if (userSettings.contains("log/level")) {
         int level = userSettings.value("log/level").toInt();
         if (level < LogLevel::Off) {
@@ -149,7 +149,7 @@ BasicApplication::BasicApplication(const QString &aName,
         LOG(m_Log,
             LogLevel::Error,
             QString("CoInitializeSecurity failed: %1.")
-                .arg(QString::fromWCharArray((const wchar_t *)_com_error(hr).ErrorMessage())));
+                .arg(QString::from_WCharArray((const wchar_t *)_com_error(hr).ErrorMessage())));
     }
 #endif
 }

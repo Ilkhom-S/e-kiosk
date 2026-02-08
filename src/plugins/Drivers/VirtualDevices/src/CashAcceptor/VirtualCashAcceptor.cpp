@@ -8,26 +8,26 @@
 using namespace SDK::Driver;
 
 //---------------------------------------------------------------------------------
-VirtualCashAcceptor::VirtualCashAcceptor() : mNotesPerEscrow(1) {
-    mDeviceName = "Virtual cash acceptor";
+VirtualCashAcceptor::VirtualCashAcceptor() : m_NotesPerEscrow(1) {
+    m_DeviceName = "Virtual cash acceptor";
 }
 
 //--------------------------------------------------------------------------------
 bool VirtualCashAcceptor::updateParameters() {
-    mReady = true;
+    m_Ready = true;
     setEnable(false);
 
-    mCurrencyError = processParTable();
+    m_CurrencyError = processParTable();
 
-    return mCurrencyError == ECurrencyError::OK;
+    return m_CurrencyError == ECurrencyError::OK;
 }
 
 //---------------------------------------------------------------------------------
 void VirtualCashAcceptor::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     TVirtualCashAcceptor::setDeviceConfiguration(aConfiguration);
 
-    mNotesPerEscrow =
-        aConfiguration.value(CHardware::VirtualCashAcceptor::NotesPerEscrow, mNotesPerEscrow)
+    m_NotesPerEscrow =
+        aConfiguration.value(CHardware::VirtualCashAcceptor::NotesPerEscrow, m_NotesPerEscrow)
             .toUInt();
 }
 
@@ -36,7 +36,7 @@ void VirtualCashAcceptor::testStack(double aAmount) {
     SDK::Driver::TParList pars;
 
     pars << SDK::Driver::SPar(
-        aAmount, getConfigParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId).toInt());
+        aAmount, getConfigParameter(CHardwareSDK::CashAcceptor::System_CurrencyId).toInt());
 
     emit stacked(pars);
 
@@ -47,14 +47,14 @@ void VirtualCashAcceptor::testStack(double aAmount) {
 
 //--------------------------------------------------------------------------------
 bool VirtualCashAcceptor::loadParTable() {
-    int currencyId = getConfigParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId).toInt();
+    int currencyId = getConfigParameter(CHardwareSDK::CashAcceptor::System_CurrencyId).toInt();
 
-    mEscrowParTable.add(Qt::Key_F1, SPar(10, currencyId));
-    mEscrowParTable.add(Qt::Key_F2, SPar(50, currencyId));
-    mEscrowParTable.add(Qt::Key_F3, SPar(100, currencyId));
-    mEscrowParTable.add(Qt::Key_F4, SPar(500, currencyId));
-    mEscrowParTable.add(Qt::Key_F5, SPar(1000, currencyId));
-    mEscrowParTable.add(Qt::Key_F6, SPar(5000, currencyId));
+    m_EscrowParTable.add(Qt::Key_F1, SPar(10, currencyId));
+    m_EscrowParTable.add(Qt::Key_F2, SPar(50, currencyId));
+    m_EscrowParTable.add(Qt::Key_F3, SPar(100, currencyId));
+    m_EscrowParTable.add(Qt::Key_F4, SPar(500, currencyId));
+    m_EscrowParTable.add(Qt::Key_F5, SPar(1000, currencyId));
+    m_EscrowParTable.add(Qt::Key_F6, SPar(5000, currencyId));
 
     // TODO: при необходимости кастомизировать для евро, доллара и тенге
 
@@ -63,15 +63,15 @@ bool VirtualCashAcceptor::loadParTable() {
 
 //--------------------------------------------------------------------------------
 bool VirtualCashAcceptor::setEnable(bool aEnabled) {
-    if (!mReady && aEnabled) {
+    if (!m_Ready && aEnabled) {
         return false;
     }
 
     using namespace BillAcceptorStatusCode::Normal;
 
-    mStatusCodes.remove(Enabled);
-    mStatusCodes.remove(Disabled);
-    mStatusCodes.insert(aEnabled ? Enabled : Disabled);
+    m_StatusCodes.remove(Enabled);
+    m_StatusCodes.remove(Disabled);
+    m_StatusCodes.insert(aEnabled ? Enabled : Disabled);
 
     if (aEnabled) {
         emit status(EWarningLevel::OK, "Enabled", ECashAcceptorStatus::Enabled);
@@ -84,17 +84,17 @@ bool VirtualCashAcceptor::setEnable(bool aEnabled) {
 
 //--------------------------------------------------------------------------------
 bool VirtualCashAcceptor::leaveEscrow(int aStatusCode) {
-    bool escrow = mStatusCodes.contains(BillAcceptorStatusCode::BillOperation::Escrow);
-    mStatusCodes.remove(BillAcceptorStatusCode::BillOperation::Escrow);
+    bool escrow = m_StatusCodes.contains(BillAcceptorStatusCode::BillOperation::Escrow);
+    m_StatusCodes.remove(BillAcceptorStatusCode::BillOperation::Escrow);
 
-    if (!mStackedStatusCodes.isEmpty()) {
+    if (!m_StackedStatusCodes.isEmpty()) {
         onPoll();
-        mStackedStatusCodes.clear();
+        m_StackedStatusCodes.clear();
 
         return false;
     }
 
-    if (!mReady || !escrow || !mStatusCodes.contains(BillAcceptorStatusCode::Normal::Enabled)) {
+    if (!m_Ready || !escrow || !m_StatusCodes.contains(BillAcceptorStatusCode::Normal::Enabled)) {
         onPoll();
 
         return false;
@@ -107,8 +107,8 @@ bool VirtualCashAcceptor::leaveEscrow(int aStatusCode) {
 
 //--------------------------------------------------------------------------------
 bool VirtualCashAcceptor::stack() {
-    if (!mStackedStatusCodes.isEmpty()) {
-        mStatusCodes += mStackedStatusCodes;
+    if (!m_StackedStatusCodes.isEmpty()) {
+        m_StatusCodes += m_StackedStatusCodes;
     }
 
     return leaveEscrow(BillAcceptorStatusCode::BillOperation::Stacked);
@@ -129,9 +129,9 @@ void VirtualCashAcceptor::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &
         case Qt::Key_F4:
         case Qt::Key_F5:
         case Qt::Key_F6: {
-            if (mEscrowParTable.data().contains(aKey)) {
-                mEscrowPars = QVector<SPar>(mNotesPerEscrow, mEscrowParTable[aKey]).toList();
-                mStatusCodes.insert(BillAcceptorStatusCode::BillOperation::Escrow);
+            if (m_EscrowParTable.data().contains(aKey)) {
+                m_EscrowPars = QVector<SPar>(m_NotesPerEscrow, m_EscrowParTable[aKey]).toList();
+                m_StatusCodes.insert(BillAcceptorStatusCode::BillOperation::Escrow);
             }
 
             break;
@@ -164,19 +164,19 @@ void VirtualCashAcceptor::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &
     } else if (aModifiers & Qt::AltModifier) {
         switch (aKey) {
         case Qt::Key_F8: {
-            mStackedStatusCodes.insert(BillAcceptorStatusCode::MechanicFailure::JammedInStacker);
+            m_StackedStatusCodes.insert(BillAcceptorStatusCode::MechanicFailure::JammedInStacker);
             break;
         } // Купюра замята
         case Qt::Key_F9: {
-            mStackedStatusCodes.insert(DeviceStatusCode::Error::NotAvailable);
+            m_StackedStatusCodes.insert(DeviceStatusCode::Error::NotAvailable);
             break;
         } // Недоступен питания
         case Qt::Key_F10: {
-            mStackedStatusCodes.insert(BillAcceptorStatusCode::MechanicFailure::StackerOpen);
+            m_StackedStatusCodes.insert(BillAcceptorStatusCode::MechanicFailure::StackerOpen);
             break;
         } // Стекер снят
         case Qt::Key_F11: {
-            mStackedStatusCodes.insert(BillAcceptorStatusCode::MechanicFailure::StackerFull);
+            m_StackedStatusCodes.insert(BillAcceptorStatusCode::MechanicFailure::StackerFull);
             break;
         } // Стекер полон
         }

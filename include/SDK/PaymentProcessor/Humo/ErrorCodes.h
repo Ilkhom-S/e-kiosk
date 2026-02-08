@@ -48,7 +48,7 @@ enum Enum {
     BadSignature = 6,
 
     /// Неправильный формат суммы или значение суммы вне допустимого диапазона
-    BadSumFormat = 7,
+    BadSum_Format = 7,
 
     /// Неправильный формат номера телефона
     BadNumberFormat = 8,
@@ -98,7 +98,7 @@ enum Enum {
     ClosedGateway = 45,
 
     /// Превышена максимальная сумма для дилера
-    MaxSumExceeded = 81,
+    MaxSum_Exceeded = 81,
 
     /// Попытка мошенничества с устройством терминала
     Cheated = 271

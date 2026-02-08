@@ -47,10 +47,10 @@ public:
     QString getHelloMessage() const;
 
 private:
-    SDK::Plugin::IEnvironment *mEnvironment;
-    QString mInstancePath;
-    QVariantMap mParameters;
-    QString mHelloMessage;
+    SDK::Plugin::IEnvironment *m_Environment;
+    QString m_InstancePath;
+    QVariantMap m_Parameters;
+    QString m_HelloMessage;
 };
 
 //------------------------------------------------------------------------------

@@ -7,7 +7,7 @@ DealerLocalData::DealerLocalData() {}
 
 //------------------------------------------------------------------------------
 bool DealerLocalData::loadInfo(const QString &aFileName) {
-    mColumns.clear();
+    m_Columns.clear();
 
     QFile file(aFileName);
 
@@ -23,12 +23,12 @@ bool DealerLocalData::loadInfo(const QString &aFileName) {
             if (columnHeader.size() != 2) {
                 return false;
             }
-            mColumns << QPair<QString, QString>(columnHeader[0], columnHeader[1]);
+            m_Columns << QPair<QString, QString>(columnHeader[0], columnHeader[1]);
         }
     }
 
-    if (mColumns.size() > 0) {
-        mFilePath = aFileName;
+    if (m_Columns.size() > 0) {
+        m_FilePath = aFileName;
 
         return true;
     }
@@ -38,8 +38,8 @@ bool DealerLocalData::loadInfo(const QString &aFileName) {
 
 //------------------------------------------------------------------------------
 QString DealerLocalData::getFirstField() const {
-    if (mColumns.size()) {
-        return mColumns.first().first;
+    if (m_Columns.size()) {
+        return m_Columns.first().first;
     }
 
     return "";
@@ -47,7 +47,7 @@ QString DealerLocalData::getFirstField() const {
 
 //------------------------------------------------------------------------------
 QList<QPair<QString, QString>> DealerLocalData::getColumns() const {
-    return mColumns;
+    return m_Columns;
 }
 
 //------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ bool DealerLocalData::findNumber(const QString &aFirstColumnValue,
                                  QMap<QString, QString> &aParameters) {
     aParameters.clear();
 
-    QFile file(mFilePath);
+    QFile file(m_FilePath);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return false;
@@ -77,8 +77,8 @@ bool DealerLocalData::findNumber(const QString &aFirstColumnValue,
         QStringList columns = in.readLine().trimmed().split(";");
 
         if (columns[0] == aFirstColumnValue) {
-            for (int i = 0; i < mColumns.size() && i < columns.size(); i++) {
-                aParameters.insert(mColumns[i].first, columns[i]);
+            for (int i = 0; i < m_Columns.size() && i < columns.size(); i++) {
+                aParameters.insert(m_Columns[i].first, columns[i]);
             }
 
             return aParameters.size() > 0;

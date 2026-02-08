@@ -24,21 +24,21 @@ bool DatabaseUtils::getDeviceParams(const QString & /*aDeviceConfigName*/,
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::isDeviceParamExists(const QString & /*aDeviceConfigName*/) {
+bool DatabaseUtils::isDeviceParam_Exists(const QString & /*aDeviceConfigName*/) {
     Q_ASSERT(false);
     return false;
 }
 
 //---------------------------------------------------------------------------
 QVariant DatabaseUtils::getDeviceParam(const QString &aDeviceConfigName,
-                                       const QString &aParamName) {
+                                       const QString &aParam_Name) {
     QString queryMessage =
         "SELECT `value` FROM `device_param` WHERE `name` = :param_name AND "
         "`fk_device_id` = (SELECT `id` FROM `device` WHERE `name` = :config_name)";
 
-    QScopedPointer<IDatabaseQuery> dbQuery(mDatabase.createQuery(queryMessage));
+    QScopedPointer<IDatabaseQuery> dbQuery(m_Database.createQuery(queryMessage));
     if (!dbQuery.isNull()) {
-        dbQuery->bindValue(":param_name", aParamName);
+        dbQuery->bindValue(":param_name", aParam_Name);
         dbQuery->bindValue(":config_name", aDeviceConfigName);
 
         if (dbQuery->exec() && dbQuery->first()) {
@@ -51,28 +51,28 @@ QVariant DatabaseUtils::getDeviceParam(const QString &aDeviceConfigName,
 
 //---------------------------------------------------------------------------
 bool DatabaseUtils::setDeviceParam(const QString &aDeviceConfigName,
-                                   const QString &aParamName,
-                                   const QVariant &aParamValue) {
+                                   const QString &aParam_Name,
+                                   const QVariant &aParam_Value) {
     if (!hasDevice(aDeviceConfigName)) {
         if (!addDevice(aDeviceConfigName)) {
             return false;
         }
     }
 
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
     QString queryMessage =
         QString("INSERT OR REPLACE INTO `device_param` (`name`, `value`, `fk_device_id`) VALUES "
                 "(:param_name, "
                 ":param_value, (SELECT `id` FROM `device` WHERE `name` = :config_name))");
 
-    QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(queryMessage));
+    QScopedPointer<IDatabaseQuery> query(m_Database.createQuery(queryMessage));
     if (!query) {
         return false;
     }
 
-    query->bindValue(":param_name", aParamName);
-    query->bindValue(":param_value", aParamValue);
+    query->bindValue(":param_name", aParam_Name);
+    query->bindValue(":param_value", aParam_Value);
     query->bindValue(":config_name", aDeviceConfigName);
 
     return query->exec();
@@ -81,7 +81,7 @@ bool DatabaseUtils::setDeviceParam(const QString &aDeviceConfigName,
 //---------------------------------------------------------------------------
 bool DatabaseUtils::hasDevice(const QString &aDeviceConfigName) {
     QScopedPointer<IDatabaseQuery> dbQuery(
-        mDatabase.createQuery("SELECT * FROM `device` WHERE `name` = :config_name"));
+        m_Database.createQuery("SELECT * FROM `device` WHERE `name` = :config_name"));
 
     dbQuery->bindValue(":config_name", aDeviceConfigName);
 
@@ -90,11 +90,11 @@ bool DatabaseUtils::hasDevice(const QString &aDeviceConfigName) {
 
 //---------------------------------------------------------------------------
 bool DatabaseUtils::addDevice(const QString &aDeviceConfigName) {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
-    int deviceType = SDK::Driver::EDeviceType::fromString(aDeviceConfigName.section('.', 2, 2));
+    int deviceType = SDK::Driver::EDeviceType::from_String(aDeviceConfigName.section('.', 2, 2));
 
-    QScopedPointer<IDatabaseQuery> dbQuery(mDatabase.createQuery(
+    QScopedPointer<IDatabaseQuery> dbQuery(m_Database.createQuery(
         "INSERT OR REPLACE INTO `device` (`name`, `type`) VALUES (:config_name, :device_type)"));
 
     if (!dbQuery) {
@@ -129,14 +129,14 @@ bool DatabaseUtils::addDeviceStatus(const QString &aDeviceConfigName,
         }
     }
 
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
     // Смотрим последний статус у этого девайса. Если совпадает с нынешним - то не пишем его.
     QString queryMessage =
         QString("SELECT `level`, `description` FROM `device_status` WHERE `fk_device_id` = (SELECT "
                 "`id` FROM `device` WHERE `name` = :config_name)");
 
-    QScopedPointer<IDatabaseQuery> dbQuery(mDatabase.createQuery(queryMessage));
+    QScopedPointer<IDatabaseQuery> dbQuery(m_Database.createQuery(queryMessage));
     if (!dbQuery) {
         return false;
     }
@@ -189,7 +189,7 @@ void DatabaseUtils::removeUnknownDevice(const QStringList &aCurrentDevicesList) 
         return result.join(",");
     };
 
-    QScopedPointer<IDatabaseQuery> dbQuery(mDatabase.createQuery(
+    QScopedPointer<IDatabaseQuery> dbQuery(m_Database.createQuery(
         QString("DELETE FROM `device` WHERE `name` NOT IN (%1)").arg(formatDeviceList())));
 
     if (dbQuery) {
@@ -197,10 +197,10 @@ void DatabaseUtils::removeUnknownDevice(const QStringList &aCurrentDevicesList) 
     }
 
     long affected;
-    mDatabase.execDML(
+    m_Database.execDML(
         "DELETE FROM `device_param` WHERE `fk_device_id` NOT IN (select `id` from device)",
         affected);
-    mDatabase.execDML(
+    m_Database.execDML(
         "DELETE FROM `device_status` WHERE `fk_device_id` NOT IN (select `id` from device)",
         affected);
 }

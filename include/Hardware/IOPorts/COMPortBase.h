@@ -154,7 +154,7 @@ inline static const char *toString(Enum aValue) {
 
 //--------------------------------------------------------------------------------
 /// Параметры COM-порта.
-struct SComPortParameters {
+struct SCom_PortParameters {
     int portNumber = 0;
     PortParameters::BaudRate::Enum baudRate = PortParameters::BaudRate::BR9600;
     PortParameters::StopBits::Enum stopBits = PortParameters::StopBits::One;
@@ -165,10 +165,10 @@ struct SComPortParameters {
 
 //--------------------------------------------------------------------------------
 /// Базовый класс для COM-портов.
-class ComPortBase {
+class Com_PortBase {
 public:
-    ComPortBase() = default;
-    virtual ~ComPortBase() = default;
+    Com_PortBase() = default;
+    virtual ~Com_PortBase() = default;
 
     /// Открыть порт.
     virtual bool open() = 0;
@@ -209,7 +209,7 @@ public:
 
 protected:
     /// Параметры COM-порта.
-    SComPortParameters m_COMParameters;
+    SCom_PortParameters m_COMParameters;
 
     /// Параметры реестра.
     IRegistry *m_registryParameters = nullptr;

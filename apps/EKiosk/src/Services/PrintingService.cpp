@@ -8,10 +8,10 @@
 #include <QtCore/QMutexLocker>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QStringDecoder>
-#include <QtCore/QXmlStreamWriter>
+#include <QtCore/QXmlStream_Writer>
 #include <QtQml/QJSEngine>
 #include <QtQml/QJSValue>
-#include <QtXML/QDomDocument>
+#include <QtXML/QDom_Document>
 
 // Thirdparty
 #include <qzint.h>
@@ -62,12 +62,12 @@ const QString DislayPostfix = "_DISPLAY";
 
 //---------------------------------------------------------------------------
 PrintingService::PrintingService(IApplication *aApplication)
-    : mApplication(aApplication), mDatabaseUtils(nullptr), mDeviceService(nullptr),
-      mPrintingMode(DSDK::EPrintingModes::None), mServiceOperation(false), mRandomReceiptsID(false),
-      mNextReceiptIndex(1), mRandomGenerator(static_cast<unsigned>(
+    : m_Application(aApplication), m_DatabaseUtils(nullptr), m_DeviceService(nullptr),
+      m_PrintingMode(DSDK::EPrintingModes::None), m_ServiceOperation(false), m_Random_ReceiptsID(false),
+      m_NextReceiptIndex(1), m_Random_Generator(static_cast<unsigned>(
                                 QDateTime::currentDateTime().currentMSecsSinceEpoch())),
-      mEnableBlankFiscalData(false), mFiscalRegister(nullptr) {
-    setLog(mApplication->getLog());
+      m_EnableBlankFiscalData(false), m_FiscalRegister(nullptr) {
+    setLog(m_Application->getLog());
 }
 
 //---------------------------------------------------------------------------
@@ -100,7 +100,7 @@ QVariantMap PrintingService::getParameters() const {
 //---------------------------------------------------------------------------
 void PrintingService::resetParameters(const QSet<QString> &aParameters) {
     if (aParameters.contains(PPSDK::CServiceParameters::Printing::ReceiptCount)) {
-        mDatabaseUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+        m_DatabaseUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                        PPSDK::CDatabaseConstants::Parameters::ReceiptCount,
                                        0);
     }
@@ -109,7 +109,7 @@ void PrintingService::resetParameters(const QSet<QString> &aParameters) {
 //---------------------------------------------------------------------------
 bool PrintingService::initialize() {
     // Запрашиваем доступные устройства.
-    mDeviceService = mApplication->getCore()->getDeviceService();
+    m_DeviceService = m_Application->getCore()->getDeviceService();
 
     loadReceiptTemplates();
     loadTags();
@@ -117,11 +117,11 @@ bool PrintingService::initialize() {
     updateHardwareConfiguration();
     createFiscalRegister();
 
-    mDatabaseUtils =
-        DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
+    m_DatabaseUtils =
+        DatabaseService::instance(m_Application)->getDatabaseUtils<IHardwareDatabaseUtils>();
 
-    connect(mDeviceService, SIGNAL(configurationUpdated()), SLOT(updateHardwareConfiguration()));
-    connect(&mFutureWatcher, SIGNAL(finished()), this, SLOT(taskFinished()));
+    connect(m_DeviceService, SIGNAL(configurationUpdated()), SLOT(updateHardwareConfiguration()));
+    connect(&m_FutureWatcher, SIGNAL(finished()), this, SLOT(taskFinished()));
 
     return true;
 }
@@ -136,18 +136,18 @@ bool PrintingService::canShutdown() {
 
 //---------------------------------------------------------------------------
 bool PrintingService::shutdown() {
-    mFutureWatcher.waitForFinished();
+    m_FutureWatcher.waitForFinished();
 
-    foreach (DSDK::IPrinter *printer, mPrinterDevices) {
-        mDeviceService->releaseDevice(printer);
+    foreach (DSDK::IPrinter *printer, m_PrinterDevices) {
+        m_DeviceService->releaseDevice(printer);
     }
 
-    if (mFiscalRegister) {
+    if (m_FiscalRegister) {
         SDK::Plugin::IPluginLoader *pluginLoader =
-            PluginService::instance(mApplication)->getPluginLoader();
+            PluginService::instance(m_Application)->getPluginLoader();
 
-        pluginLoader->destroyPlugin(dynamic_cast<SDK::Plugin::IPlugin *>(mFiscalRegister));
-        mFiscalRegister = nullptr;
+        pluginLoader->destroyPlugin(dynamic_cast<SDK::Plugin::IPlugin *>(m_FiscalRegister));
+        m_FiscalRegister = nullptr;
     }
 
     return true;
@@ -190,8 +190,8 @@ int PrintingService::printReceipt(const QString &aReceiptType,
                                   const QString &aReceiptTemplate,
                                   DSDK::EPrintingModes::Enum aPrintingMode,
                                   bool aServiceOperation) {
-    mPrintingMode = aPrintingMode;
-    mServiceOperation = aServiceOperation;
+    m_PrintingMode = aPrintingMode;
+    m_ServiceOperation = aServiceOperation;
 
     QStringList receiptTemplates;
     receiptTemplates
@@ -210,11 +210,11 @@ int PrintingService::printReceipt(const QString &aReceiptType,
             break;
         }
 
-        if (mCachedReceipts.contains(templateName)) {
+        if (m_CachedReceipts.contains(templateName)) {
             auto printCommand = getPrintCommand(aReceiptType);
             printCommand->setReceiptTemplate(templateName);
 
-            return performPrint(printCommand, aParameters, mCachedReceipts[templateName]);
+            return perform_Print(printCommand, aParameters, m_CachedReceipts[templateName]);
         }
     }
 
@@ -236,10 +236,10 @@ void PrintingService::printEmptyReceipt(int aJobIndex, bool aError) {
 bool PrintingService::printReceiptDirected(DSDK::IPrinter *aPrinter,
                                            const QString &aReceiptTemplate,
                                            const QVariantMap &aParameters) {
-    mPrintingMode = DSDK::EPrintingModes::None;
+    m_PrintingMode = DSDK::EPrintingModes::None;
 
     // Извлекаем шаблон для чека нужного типа.
-    if (!mCachedReceipts.contains(aReceiptTemplate.toLower())) {
+    if (!m_CachedReceipts.contains(aReceiptTemplate.toLower())) {
         toLog(LogLevel::Error, QString("Missing receipt template : %1.").arg(aReceiptTemplate));
         return false;
     }
@@ -248,8 +248,8 @@ bool PrintingService::printReceiptDirected(DSDK::IPrinter *aPrinter,
     printCommand->setReceiptTemplate(aReceiptTemplate);
 
     QVariantMap configuration;
-    configuration.insert(CHardwareSDK::Printer::PrintingMode, mPrintingMode);
-    configuration.insert(CHardwareSDK::Printer::ServiceOperation, mServiceOperation);
+    configuration.insert(CHardwareSDK::Printer::PrintingMode, m_PrintingMode);
+    configuration.insert(CHardwareSDK::Printer::ServiceOperation, m_ServiceOperation);
     aPrinter->setDeviceConfiguration(configuration);
 
     // TODO: нужно ли увеличивать счетчик чеков?
@@ -266,16 +266,16 @@ template <class ResultT, class T> ResultT &joinMap(ResultT &aResult, const T &aP
 }
 
 //---------------------------------------------------------------------------
-int PrintingService::performPrint(PrintCommand *aCommand,
+int PrintingService::perform_Print(PrintCommand *aCommand,
                                   const QVariantMap &aParameters,
                                   QStringList aReceiptTemplate) {
     // Функция, в которой прозводится печать. Должно быть исключено обращение к общим для разных
     // принтеров данным.
-    mPrintingFunction = [this, aReceiptTemplate](int aJobIndex,
+    m_PrintingFunction = [this, aReceiptTemplate](int aJobIndex,
                                                  PrintCommand *aCommand,
                                                  QVariantMap aParameters) -> bool {
         QVariantMap staticParameters;
-        joinMap(staticParameters, mStaticParameters);
+        joinMap(staticParameters, m_StaticParameters);
         QVariantMap paymentParameters = joinMap(aParameters, staticParameters);
 
         auto printer = takePrinter(aCommand->getReceiptType(), false);
@@ -304,8 +304,8 @@ int PrintingService::performPrint(PrintCommand *aCommand,
         }
 
         QVariantMap configuration;
-        configuration.insert(CHardwareSDK::Printer::PrintingMode, mPrintingMode);
-        configuration.insert(CHardwareSDK::Printer::ServiceOperation, mServiceOperation);
+        configuration.insert(CHardwareSDK::Printer::PrintingMode, m_PrintingMode);
+        configuration.insert(CHardwareSDK::Printer::ServiceOperation, m_ServiceOperation);
         configuration.insert(CHardwareSDK::Printer::ReceiptTemplate, aReceiptTemplate);
         printer->setDeviceConfiguration(configuration);
 
@@ -320,15 +320,15 @@ int PrintingService::performPrint(PrintCommand *aCommand,
         return makeResult(result, "Send receipt printed");
     };
 
-    int taskIndex = mNextReceiptIndex.fetchAndAddOrdered(1);
+    int taskIndex = m_NextReceiptIndex.fetchAndAddOrdered(1);
 
-    if (taskIndex != 1 && !mFutureWatcher.isFinished()) {
+    if (taskIndex != 1 && !m_FutureWatcher.isFinished()) {
         Task task = {taskIndex, aCommand, aParameters};
 
-        mQueue.enqueue(task);
+        m_Queue.enqueue(task);
     } else {
-        mFutureWatcher.setFuture(
-            QtConcurrent::run(mPrintingFunction, taskIndex, aCommand, aParameters));
+        m_FutureWatcher.setFuture(
+            QtConcurrent::run(m_PrintingFunction, taskIndex, aCommand, aParameters));
     }
 
     return taskIndex;
@@ -336,11 +336,11 @@ int PrintingService::performPrint(PrintCommand *aCommand,
 
 //---------------------------------------------------------------------------
 void PrintingService::taskFinished() {
-    if (!mQueue.isEmpty()) {
-        Task task = mQueue.dequeue();
+    if (!m_Queue.isEmpty()) {
+        Task task = m_Queue.dequeue();
 
-        mFutureWatcher.setFuture(
-            QtConcurrent::run(mPrintingFunction, task.index, task.command, task.parameters));
+        m_FutureWatcher.setFuture(
+            QtConcurrent::run(m_PrintingFunction, task.index, task.command, task.parameters));
     }
 }
 
@@ -358,34 +358,34 @@ int PrintingService::printReport(const QString &aReceiptType, const QVariantMap 
 
     QVariantMap parameters;
 
-    return performPrint(printCommand, joinMap(joinMap(parameters, mStaticParameters), aParameters));
+    return perform_Print(printCommand, joinMap(joinMap(parameters, m_StaticParameters), aParameters));
 }
 
 //---------------------------------------------------------------------------
 bool PrintingService::hasFiscalRegister() {
-    return mFiscalRegister && mFiscalRegister->hasCapability(PPSDK::ERequestType::Receipt);
+    return m_FiscalRegister && m_FiscalRegister->hasCapability(PPSDK::ERequestType::Receipt);
 }
 
 //---------------------------------------------------------------------------
 void PrintingService::giveBackPrinter(DSDK::IPrinter *aPrinter) {
     if (aPrinter) {
-        QMutexLocker lock(&mAvailablePrintersMutex);
+        QMutexLocker lock(&m_AvailablePrintersMutex);
 
-        mAvailablePrinters.insert(aPrinter);
+        m_AvailablePrinters.insert(aPrinter);
 
-        mPrintersAvailable.wakeOne();
+        m_PrintersAvailable.wakeOne();
     }
 }
 
 //---------------------------------------------------------------------------
 DSDK::IPrinter *PrintingService::takePrinter(const QString &aReceiptType, bool aCheckOnline) {
-    if (mPrinterDevices.empty()) {
+    if (m_PrinterDevices.empty()) {
         toLog(LogLevel::Error, "Printers are not found in current configuration.");
         return 0;
     }
 
     // Пытаемся найти предпочтительный принтер.
-    auto settings = SettingsService::instance(mApplication)
+    auto settings = SettingsService::instance(m_Application)
                         ->getAdapter<SDK::PaymentProcessor::TerminalSettings>();
     QString preferredName = settings->getPrinterForReceipt(aReceiptType);
 
@@ -394,15 +394,15 @@ DSDK::IPrinter *PrintingService::takePrinter(const QString &aReceiptType, bool a
     DSDK::IPrinter *preferred = nullptr;
 
     if (!preferredName.isEmpty()) {
-        preferred = dynamic_cast<DSDK::IPrinter *>(mDeviceService->acquireDevice(preferredName));
+        preferred = dynamic_cast<DSDK::IPrinter *>(m_DeviceService->acquireDevice(preferredName));
 
-        if (preferred && mPrinterDevices.contains(preferred) &&
+        if (preferred && m_PrinterDevices.contains(preferred) &&
             printCommand->canPrint(preferred, aCheckOnline)) {
             printers << preferred;
         }
     }
 
-    foreach (auto printer, mPrinterDevices) {
+    foreach (auto printer, m_PrinterDevices) {
         if (printer && (printer != preferred) && printCommand->canPrint(printer, aCheckOnline)) {
             printers << printer;
         }
@@ -421,42 +421,42 @@ DSDK::IPrinter *PrintingService::takePrinter(const QString &aReceiptType, bool a
     DSDK::IPrinter *printer = printers.first();
 
     // Ждем, пока принтер не появится в списке доступных.
-    QMutexLocker lock(&mAvailablePrintersMutex);
+    QMutexLocker lock(&m_AvailablePrintersMutex);
 
-    if (!mAvailablePrinters.contains(printer)) {
-        mPrintersAvailable.wait(&mAvailablePrintersMutex);
+    if (!m_AvailablePrinters.contains(printer)) {
+        m_PrintersAvailable.wait(&m_AvailablePrintersMutex);
     }
 
-    mAvailablePrinters.remove(printer);
+    m_AvailablePrinters.remove(printer);
 
     return printer;
 }
 
 //---------------------------------------------------------------------------
 void PrintingService::incrementReceiptCount(DSDK::IPrinter *aPrinter) const {
-    QString deviceConfigName = mDeviceService->getDeviceConfigName(aPrinter);
+    QString deviceConfigName = m_DeviceService->getDeviceConfigName(aPrinter);
 
     // Увеличиваем количество напечатанных чеков для конкртетного принтера.
-    QVariant receiptCount = mDatabaseUtils->getDeviceParam(
+    QVariant receiptCount = m_DatabaseUtils->getDeviceParam(
         deviceConfigName, PPSDK::CDatabaseConstants::Parameters::ReceiptCount);
-    receiptCount = QVariant::fromValue(receiptCount.toInt() + 1);
-    mDatabaseUtils->setDeviceParam(
+    receiptCount = QVariant::from_Value(receiptCount.toInt() + 1);
+    m_DatabaseUtils->setDeviceParam(
         deviceConfigName, PPSDK::CDatabaseConstants::Parameters::ReceiptCount, receiptCount);
 
     // Увеличиваем количество напечатанных чеков для терминала.
     receiptCount =
-        mDatabaseUtils->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+        m_DatabaseUtils->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                        PPSDK::CDatabaseConstants::Parameters::ReceiptCount);
-    receiptCount = QVariant::fromValue(receiptCount.toInt() + 1);
-    mDatabaseUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+    receiptCount = QVariant::from_Value(receiptCount.toInt() + 1);
+    m_DatabaseUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                    PPSDK::CDatabaseConstants::Parameters::ReceiptCount,
                                    receiptCount);
 }
 
 //---------------------------------------------------------------------------
 unsigned PrintingService::getReceiptID() const {
-    if (mRandomReceiptsID) {
-        return mRandomGenerator();
+    if (m_Random_ReceiptsID) {
+        return m_Random_Generator();
     } else {
         return getReceiptCount() + 1;
     }
@@ -465,7 +465,7 @@ unsigned PrintingService::getReceiptID() const {
 //---------------------------------------------------------------------------
 int PrintingService::getReceiptCount() const {
     QVariant receiptCount =
-        mDatabaseUtils->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+        m_DatabaseUtils->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                        PPSDK::CDatabaseConstants::Parameters::ReceiptCount);
 
     return receiptCount.isNull() ? 0 : receiptCount.toInt();
@@ -473,9 +473,9 @@ int PrintingService::getReceiptCount() const {
 
 //---------------------------------------------------------------------------
 bool PrintingService::loadTags() {
-    mStaticParameters.clear();
+    m_StaticParameters.clear();
 
-    SettingsService *settingsService = SettingsService::instance(mApplication);
+    SettingsService *settingsService = SettingsService::instance(m_Application);
 
     PPSDK::TerminalSettings *terminalSettings =
         settingsService->getAdapter<PPSDK::TerminalSettings>();
@@ -486,7 +486,7 @@ bool PrintingService::loadTags() {
         toLog(LogLevel::Error, "Failed to retrieve terminal number from configs.");
         return false;
     } else {
-        mStaticParameters.insert(CPrintConstants::TermNumber, key0.ap);
+        m_StaticParameters.insert(CPrintConstants::Term_Number, key0.ap);
     }
 
     PPSDK::DealerSettings *dealerSettings = settingsService->getAdapter<PPSDK::DealerSettings>();
@@ -494,31 +494,31 @@ bool PrintingService::loadTags() {
     // TODO: проверить на валидность.
     PPSDK::SPersonalSettings dealer = dealerSettings->getPersonalSettings();
 
-    joinMap(mStaticParameters, dealer.mPrintingParameters);
+    joinMap(m_StaticParameters, dealer.m_PrintingParameters);
 
-    mStaticParameters.insert(CPrintConstants::DealerName, dealer.name);
-    mStaticParameters.insert(CPrintConstants::DealerPhone, dealer.phone);
-    mStaticParameters.insert(CPrintConstants::DealerSupportPhone, dealer.phone);
-    mStaticParameters.insert(CPrintConstants::DealerAddress, dealer.address);
-    mStaticParameters.insert(CPrintConstants::DealerBusinessAddress,
+    m_StaticParameters.insert(CPrintConstants::DealerName, dealer.name);
+    m_StaticParameters.insert(CPrintConstants::DealerPhone, dealer.phone);
+    m_StaticParameters.insert(CPrintConstants::DealerSupportPhone, dealer.phone);
+    m_StaticParameters.insert(CPrintConstants::DealerAddress, dealer.address);
+    m_StaticParameters.insert(CPrintConstants::DealerBusinessAddress,
                              dealer.businessAddress.isEmpty() ? dealer.address
                                                               : dealer.businessAddress);
-    mStaticParameters.insert(CPrintConstants::DealerInn, dealer.inn);
-    mStaticParameters.insert(CPrintConstants::DealerKbk, dealer.kbk);
-    mStaticParameters.insert(CPrintConstants::DealerIsBank, dealer.isBank);
-    mStaticParameters.insert(CPrintConstants::PointAddress, dealer.pointAddress);
-    mStaticParameters.insert(CPrintConstants::PointName, dealer.pointName);
-    mStaticParameters.insert(CPrintConstants::PointExternalID, dealer.pointExternalID);
-    mStaticParameters.insert(CPrintConstants::BankName, dealer.bankName);
-    mStaticParameters.insert(CPrintConstants::BankBik, dealer.bankBik);
-    mStaticParameters.insert(CPrintConstants::BankPhone, dealer.bankPhone);
-    mStaticParameters.insert(CPrintConstants::BankAddress, dealer.bankAddress);
-    mStaticParameters.insert(CPrintConstants::BankInn, dealer.bankInn);
+    m_StaticParameters.insert(CPrintConstants::DealerInn, dealer.inn);
+    m_StaticParameters.insert(CPrintConstants::DealerKbk, dealer.kbk);
+    m_StaticParameters.insert(CPrintConstants::DealerIsBank, dealer.isBank);
+    m_StaticParameters.insert(CPrintConstants::PointAddress, dealer.pointAddress);
+    m_StaticParameters.insert(CPrintConstants::PointName, dealer.pointName);
+    m_StaticParameters.insert(CPrintConstants::PointExternalID, dealer.pointExternalID);
+    m_StaticParameters.insert(CPrintConstants::BankName, dealer.bankName);
+    m_StaticParameters.insert(CPrintConstants::BankBik, dealer.bankBik);
+    m_StaticParameters.insert(CPrintConstants::BankPhone, dealer.bankPhone);
+    m_StaticParameters.insert(CPrintConstants::BankAddress, dealer.bankAddress);
+    m_StaticParameters.insert(CPrintConstants::BankInn, dealer.bankInn);
 
     QString currency = terminalSettings->getCurrencySettings().code;
 
     if (!currency.isEmpty()) {
-        mStaticParameters.insert(CPrintConstants::Currency,
+        m_StaticParameters.insert(CPrintConstants::Currency,
                                  terminalSettings->getCurrencySettings().name);
     } else {
         toLog(LogLevel::Warning,
@@ -533,11 +533,11 @@ bool PrintingService::loadTags() {
 //---------------------------------------------------------------------------
 QStringList PrintingService::getReceipt(const QString &aReceiptTemplate,
                                         const QVariantMap &aParameters) {
-    if (!mCachedReceipts.contains(aReceiptTemplate.toLower())) {
+    if (!m_CachedReceipts.contains(aReceiptTemplate.toLower())) {
         toLog(LogLevel::Error, QString("Missing receipt template %1.").arg(aReceiptTemplate));
     }
 
-    QStringList receipt = mCachedReceipts.value(aReceiptTemplate.toLower());
+    QStringList receipt = m_CachedReceipts.value(aReceiptTemplate.toLower());
     expandTags(receipt, aParameters);
 
     return receipt;
@@ -579,7 +579,7 @@ QString PrintingService::convertImage2base64(const QString &aString) {
 
             QFile file(match.captured(1));
             if (file.open(QIODevice::ReadOnly)) {
-                img = QString::fromLatin1(file.readAll().toBase64());
+                img = QString::from_Latin1(file.readAll().toBase64());
             } else {
                 toLog(LogLevel::Error,
                       QString("Error load image '%1': %2")
@@ -921,11 +921,11 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
     userParameters[CPrintConstants::ReceiptNumber] = getReceiptID();
 
     int providerId = aParameters.value(PPSDK::CPayment::Parameters::Provider, -1).toInt();
-    PPSDK::SProvider provider = SettingsService::instance(mApplication)
+    PPSDK::SProvider provider = SettingsService::instance(m_Application)
                                     ->getAdapter<PPSDK::DealerSettings>()
                                     ->getProvider(providerId);
     PPSDK::SProvider mnpProvider =
-        SettingsService::instance(mApplication)
+        SettingsService::instance(m_Application)
             ->getAdapter<PPSDK::DealerSettings>()
             ->getMNPProvider(
                 providerId,
@@ -996,9 +996,9 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
             }
 
             // Статический параметр?
-            auto staticParameter = mStaticParameters.find(tag);
+            auto staticParameter = m_StaticParameters.find(tag);
 
-            if (staticParameter != mStaticParameters.end()) {
+            if (staticParameter != m_StaticParameters.end()) {
                 QString masked = isMasked
                                      ? maskedString(staticParameter.value(), isMasked)
                                      : filter.apply(staticParameter.key(), staticParameter.value());
@@ -1159,7 +1159,7 @@ bool PrintingService::loadReceiptTemplate(const QFileInfo &aFileInfo) {
         return false;
     }
 
-    QDomDocument xmlFile(aFileInfo.fileName());
+    QDom_Document xmlFile(aFileInfo.fileName());
     QFile file(aFileInfo.filePath());
 
     if (!file.open(QIODevice::ReadOnly)) {
@@ -1169,12 +1169,12 @@ bool PrintingService::loadReceiptTemplate(const QFileInfo &aFileInfo) {
 
     xmlFile.setContent(&file);
 
-    QDomElement body = xmlFile.documentElement();
+    QDom_Element body = xmlFile.documentElement();
 
     QStringList receiptContents;
 
-    for (QDomNode node = body.firstChild(); !node.isNull(); node = node.nextSibling()) {
-        QDomElement row = node.toElement();
+    for (QDom_Node node = body.firstChild(); !node.isNull(); node = node.nextSibling()) {
+        QDom_Element row = node.toElement();
 
         if (row.tagName() == "string" || row.tagName() == "else") {
             QString prefix =
@@ -1193,7 +1193,7 @@ bool PrintingService::loadReceiptTemplate(const QFileInfo &aFileInfo) {
         return false;
     }
 
-    mCachedReceipts.insert(aFileInfo.baseName().toLower(), receiptContents);
+    m_CachedReceipts.insert(aFileInfo.baseName().toLower(), receiptContents);
 
     return true;
 }
@@ -1203,7 +1203,7 @@ void PrintingService::loadReceiptTemplates() {
     // Загружаем все шаблоны чеков в папке ./receipts
     QDir receiptDirectory;
 
-    receiptDirectory.setPath(mApplication->getWorkingDirectory() + "/data/receipts");
+    receiptDirectory.setPath(m_Application->getWorkingDirectory() + "/data/receipts");
 
     // Загружаем все файлы, которые есть в каталоге.
     foreach (const QFileInfo &fileInfo, receiptDirectory.entryInfoList(QDir::Files)) {
@@ -1211,7 +1211,7 @@ void PrintingService::loadReceiptTemplates() {
     }
 
     // загружаем все шаблоны из папки пользовательских шаблонов чеков
-    receiptDirectory.setPath(mApplication->getWorkingDirectory() + "/user/receipts");
+    receiptDirectory.setPath(m_Application->getWorkingDirectory() + "/user/receipts");
 
     // Загружаем все файлы, которые есть в каталоге.
     foreach (const QFileInfo &fileInfo, receiptDirectory.entryInfoList(QDir::Files)) {
@@ -1225,7 +1225,7 @@ void PrintingService::saveReceiptContent(const QString &aReceiptName,
     // Получаем имя папки с чеками.
     QString suffix = QDate::currentDate().toString("yyyy.MM.dd");
 
-    QDir path(mApplication->getWorkingDirectory() + "/receipts/" + suffix);
+    QDir path(m_Application->getWorkingDirectory() + "/receipts/" + suffix);
 
     if (!path.exists()) {
         if (!QDir().mkpath(path.path())) {
@@ -1279,7 +1279,7 @@ QString PrintingService::loadReceipt(qint64 aPaymentId) {
     // Получаем имя папки с чеками.
     QString suffix = QDate::currentDate().toString("yyyy.MM.dd");
 
-    QDir path(mApplication->getWorkingDirectory() + "/receipts/" + suffix);
+    QDir path(m_Application->getWorkingDirectory() + "/receipts/" + suffix);
 
     if (!path.exists()) {
         toLog(LogLevel::Error, "Failed to find printed receipts folder.");
@@ -1296,7 +1296,7 @@ QString PrintingService::loadReceipt(qint64 aPaymentId) {
     while (!receipts.isEmpty()) {
         QFile f(dir.absolutePath() + QDir::separator() + receipts.takeFirst());
         if (f.open(QIODevice::ReadOnly)) {
-            receiptsBody << replaceTags(QString::fromUtf8(f.readAll()));
+            receiptsBody << replaceTags(QString::from_Utf8(f.readAll()));
         }
     }
 
@@ -1305,7 +1305,7 @@ QString PrintingService::loadReceipt(qint64 aPaymentId) {
 
 //---------------------------------------------------------------------------
 void PrintingService::onOFDNotSent(bool aExist) {
-    auto service = SettingsService::instance(mApplication);
+    auto service = SettingsService::instance(m_Application);
     auto adapter = service ? service->getAdapter<PPSDK::TerminalSettings>() : nullptr;
     bool block =
         adapter ? adapter->getCommonSettings().blockOn(PPSDK::SCommonSettings::PrinterError) : true;
@@ -1314,7 +1314,7 @@ void PrintingService::onOFDNotSent(bool aExist) {
     configuration.insert(CHardwareSDK::Printer::OFDNotSentError, aExist);
     configuration.insert(CHardwareSDK::Printer::BlockTerminalOnError, block);
 
-    foreach (auto printer, mPrinterDevices) {
+    foreach (auto printer, m_PrinterDevices) {
         if (printer) {
             printer->setDeviceConfiguration(configuration);
         }
@@ -1331,7 +1331,7 @@ void PrintingService::onStatusChanged(DSDK::EWarningLevel::Enum aWarningLevel,
 //---------------------------------------------------------------------------
 void PrintingService::onFRSessionClosed(const QVariantMap &aParameters) {
     // Получаем имя папки с отчётами.
-    QDir path(mApplication->getWorkingDirectory() + "/receipts/reports");
+    QDir path(m_Application->getWorkingDirectory() + "/receipts/reports");
 
     if (!path.exists()) {
         if (!QDir().mkpath(path.path())) {
@@ -1351,7 +1351,7 @@ void PrintingService::onFRSessionClosed(const QVariantMap &aParameters) {
 
     using namespace SDK::Driver;
 
-    QXmlStreamWriter stream(&file);
+    QXmlStream_Writer stream(&file);
     stream.setAutoFormatting(true);
     stream.writeStartDocument();
 
@@ -1371,8 +1371,8 @@ void PrintingService::onFRSessionClosed(const QVariantMap &aParameters) {
     stream.writeTextElement(CFRReport::NonNullableAmount, QString::number(amount, 'f', 2));
     stream.writeTextElement(CFRReport::FRDateTime,
                             aParameters[CFiscalPrinter::FRDateTime].toString());
-    stream.writeTextElement(CFRReport::SystemDateTime,
-                            aParameters[CFiscalPrinter::SystemDateTime].toString());
+    stream.writeTextElement(CFRReport::System_DateTime,
+                            aParameters[CFiscalPrinter::System_DateTime].toString());
 
     stream.writeEndElement(); // CFRReport::ZReport
     stream.writeEndDocument();
@@ -1384,7 +1384,7 @@ void PrintingService::onFRSessionClosed(const QVariantMap &aParameters) {
 //---------------------------------------------------------------------------
 void PrintingService::updateHardwareConfiguration() {
     PPSDK::TerminalSettings *settings =
-        SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+        SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
 
     // Получаем информацию о принтерах из конфигов.
     QString regExpData = QString("(%1|%2|%3)")
@@ -1395,17 +1395,17 @@ void PrintingService::updateHardwareConfiguration() {
 
     auto commonSettings = settings->getCommonSettings();
 
-    mRandomReceiptsID = commonSettings.randomReceiptsID;
+    m_Random_ReceiptsID = commonSettings.random_ReceiptsID;
     QTime autoZReportTime = commonSettings.autoZReportTime;
-    mEnableBlankFiscalData = commonSettings.enableBlankFiscalData;
+    m_EnableBlankFiscalData = commonSettings.enableBlankFiscalData;
 
-    mPrinterDevices.clear();
-    mAvailablePrinters.clear();
+    m_PrinterDevices.clear();
+    m_AvailablePrinters.clear();
 
     // Запрашиваем устройства.
     foreach (const QString &printerName, printerNames) {
         DSDK::IPrinter *device =
-            dynamic_cast<DSDK::IPrinter *>(mDeviceService->acquireDevice(printerName));
+            dynamic_cast<DSDK::IPrinter *>(m_DeviceService->acquireDevice(printerName));
 
         if (!device) {
             toLog(LogLevel::Error, QString("Failed to acquire device %1 .").arg(printerName));
@@ -1413,20 +1413,20 @@ void PrintingService::updateHardwareConfiguration() {
         }
 
         QVariantMap dealerSettings;
-        if (mStaticParameters.contains(CPrintConstants::DealerTaxSystem))
+        if (m_StaticParameters.contains(CPrintConstants::DealerTaxSystem))
             dealerSettings.insert(CHardwareSDK::FR::DealerTaxSystem,
-                                  mStaticParameters[CPrintConstants::DealerTaxSystem]);
-        if (mStaticParameters.contains(CPrintConstants::DealerAgentFlag))
+                                  m_StaticParameters[CPrintConstants::DealerTaxSystem]);
+        if (m_StaticParameters.contains(CPrintConstants::DealerAgentFlag))
             dealerSettings.insert(CHardwareSDK::FR::DealerAgentFlag,
-                                  mStaticParameters[CPrintConstants::DealerAgentFlag]);
-        if (mStaticParameters.contains(CPrintConstants::DealerVAT))
+                                  m_StaticParameters[CPrintConstants::DealerAgentFlag]);
+        if (m_StaticParameters.contains(CPrintConstants::DealerVAT))
             dealerSettings.insert(CHardwareSDK::FR::DealerVAT,
-                                  mStaticParameters[CPrintConstants::DealerVAT]);
-        if (mStaticParameters.contains(CPrintConstants::DealerSupportPhone))
+                                  m_StaticParameters[CPrintConstants::DealerVAT]);
+        if (m_StaticParameters.contains(CPrintConstants::DealerSupportPhone))
             dealerSettings.insert(CHardwareSDK::FR::DealerSupportPhone,
-                                  mStaticParameters[CPrintConstants::DealerSupportPhone]);
+                                  m_StaticParameters[CPrintConstants::DealerSupportPhone]);
 
-        mPrinterDevices.append(device);
+        m_PrinterDevices.append(device);
 
         // Подписываемся на события принтера.
         device->subscribe(
@@ -1452,21 +1452,21 @@ void PrintingService::updateHardwareConfiguration() {
         device->setDeviceConfiguration(dealerSettings);
     }
 
-    mAvailablePrinters =
-        QSet<SDK::Driver::IPrinter *>(mPrinterDevices.begin(), mPrinterDevices.end());
+    m_AvailablePrinters =
+        QSet<SDK::Driver::IPrinter *>(m_PrinterDevices.begin(), m_PrinterDevices.end());
 }
 
 //---------------------------------------------------------------------------
 void PrintingService::createFiscalRegister() {
-    if (mFiscalRegister) {
+    if (m_FiscalRegister) {
         return;
     }
 
     // Получаем информацию о фискальных регистраторах.
     PPSDK::ExtensionsSettings *extSettings =
-        SettingsService::instance(mApplication)->getAdapter<PPSDK::ExtensionsSettings>();
+        SettingsService::instance(m_Application)->getAdapter<PPSDK::ExtensionsSettings>();
     SDK::Plugin::IPluginLoader *pluginLoader =
-        PluginService::instance(mApplication)->getPluginLoader();
+        PluginService::instance(m_Application)->getPluginLoader();
     QStringList frPlugins =
         pluginLoader->getPluginList(QRegularExpression(PPSDK::CComponents::FiscalRegister));
 
@@ -1507,7 +1507,7 @@ void PrintingService::createFiscalRegister() {
             continue;
         }
 
-        mFiscalRegister = frPlugin;
+        m_FiscalRegister = frPlugin;
 
         toLog(LogLevel::Normal, QString("FR %1 loaded successful.").arg(plugin->getPluginName()));
 
@@ -1517,7 +1517,7 @@ void PrintingService::createFiscalRegister() {
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::IFiscalRegister *PrintingService::getFiscalRegister() const {
-    return mFiscalRegister;
+    return m_FiscalRegister;
 }
 
 //---------------------------------------------------------------------------
@@ -1528,7 +1528,7 @@ void PrintingService::setFiscalNumber(qint64 aPaymentId, const QVariantMap &aPar
         parameters.push_back(PPSDK::IPayment::SParameter(name, aParameters.value(name), true));
     }
 
-    if (!PaymentService::instance(mApplication)->updatePaymentFields(aPaymentId, parameters)) {
+    if (!PaymentService::instance(m_Application)->updatePaymentFields(aPaymentId, parameters)) {
         toLog(LogLevel::Error,
               QString("Payment %1: Error update fiscal parameters.").arg(aPaymentId));
     }
@@ -1536,7 +1536,7 @@ void PrintingService::setFiscalNumber(qint64 aPaymentId, const QVariantMap &aPar
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::SCurrencySettings PrintingService::getCurrencySettings() const {
-    SettingsService *settingsService = SettingsService::instance(mApplication);
+    SettingsService *settingsService = SettingsService::instance(m_Application);
 
     PPSDK::TerminalSettings *terminalSettings =
         settingsService->getAdapter<PPSDK::TerminalSettings>();

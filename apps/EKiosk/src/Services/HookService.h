@@ -88,9 +88,9 @@ public:
                             QGenericArgument aVal9 = QGenericArgument());
 
 private:
-    IApplication *mApplication;
+    IApplication *m_Application;
 
-    QList<SDK::Plugin::IPlugin *> mHooks;
+    QList<SDK::Plugin::IPlugin *> m_Hooks;
 };
 
 //---------------------------------------------------------------------------

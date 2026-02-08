@@ -38,9 +38,9 @@ signals:
 
 private:
     /// Указатель на ядро.
-    ICore *mCore;
+    ICore *m_Core;
     /// Указатель на сервис устройств.
-    IDeviceService *mDeviceService;
+    IDeviceService *m_DeviceService;
 };
 
 //------------------------------------------------------------------------------

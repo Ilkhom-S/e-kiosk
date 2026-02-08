@@ -47,15 +47,15 @@ TerminalService *TerminalService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 TerminalService::TerminalService(IApplication *aApplication)
-    : mDbUtils(nullptr), mEventService(nullptr), mApplication(aApplication),
-      mClient(createWatchServiceClient(CWatchService::Modules::PaymentProcessor,
+    : m_DbUtils(nullptr), m_EventService(nullptr), m_Application(aApplication),
+      m_Client(createWatchServiceClient(CWatchService::Modules::PaymentProcessor,
                                        IWatchServiceClient::MainThread)) {
-    setLog(mApplication->getLog());
+    setLog(m_Application->getLog());
 
-    mApplication = aApplication;
+    m_Application = aApplication;
 
-    mEventService = mApplication->getCore()->getEventService();
-    mEventService->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
+    m_EventService = m_Application->getCore()->getEventService();
+    m_EventService->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
 }
 
 //---------------------------------------------------------------------------
@@ -63,23 +63,23 @@ TerminalService::~TerminalService() {}
 
 //---------------------------------------------------------------------------
 bool TerminalService::initialize() {
-    DatabaseService *dbService = DatabaseService::instance(mApplication);
+    DatabaseService *dbService = DatabaseService::instance(m_Application);
 
-    mDbUtils = dbService->getDatabaseUtils<IHardwareDatabaseUtils>();
+    m_DbUtils = dbService->getDatabaseUtils<IHardwareDatabaseUtils>();
 
     // Добавляем устройство "терминал" в БД.
-    if (!mDbUtils->hasDevice(PPSDK::CDatabaseConstants::Devices::Terminal)) {
-        if (!mDbUtils->addDevice(PPSDK::CDatabaseConstants::Devices::Terminal)) {
+    if (!m_DbUtils->hasDevice(PPSDK::CDatabaseConstants::Devices::Terminal)) {
+        if (!m_DbUtils->addDevice(PPSDK::CDatabaseConstants::Devices::Terminal)) {
             toLog(LogLevel::Error, "Failed to add a record to database.");
             return false;
         }
     }
 
-    mSettings = SettingsService::instance(mApplication)
+    m_Settings = SettingsService::instance(m_Application)
                     ->getAdapter<PPSDK::TerminalSettings>()
                     ->getCommonSettings();
 
-    PPSDK::IDeviceService *deviceService = mApplication->getCore()->getDeviceService();
+    PPSDK::IDeviceService *deviceService = m_Application->getCore()->getDeviceService();
     connect(deviceService,
             SIGNAL(deviceStatusChanged(
                 const QString &, SDK::Driver::EWarningLevel::Enum, const QString &, int)),
@@ -89,7 +89,7 @@ bool TerminalService::initialize() {
     connect(deviceService, SIGNAL(configurationUpdated()), SLOT(onHardwareConfigUpdated()));
 
     // Проверяем наличие ключей.
-    auto key = CryptService::instance(mApplication)->getKey(0);
+    auto key = CryptService::instance(m_Application)->getKey(0);
 
     if (!key.isValid) {
         setTerminalError(PPSDK::ETerminalError::KeyError, true);
@@ -105,23 +105,23 @@ bool TerminalService::initialize() {
     setRestartCount(restartCount);
 
     // Проверяем состояние блокировки терминала
-    if (mDbUtils
+    if (m_DbUtils
             ->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                              PPSDK::CDatabaseConstants::Parameters::DisabledParam)
             .isNull()) {
         writeLockStatus(false);
     }
 
-    mDbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+    m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                              PPSDK::CDatabaseConstants::Parameters::Configuration,
-                             mApplication->getSettings().value("common/configuration"));
+                             m_Application->getSettings().value("common/configuration"));
 
-    mDbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+    m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                              PPSDK::CDatabaseConstants::Parameters::OperationSystem,
                              ISysUtils::getOSVersionInfo());
 
     // Проверяем параметры командной строки.
-    if (mClient->start() || mApplication->getSettings().value("common/standalone").toBool()) {
+    if (m_Client->start() || m_Application->getSettings().value("common/standalone").toBool()) {
         return true;
     } else {
         toLog(LogLevel::Error, "Watchdog service module is not available.");
@@ -131,7 +131,7 @@ bool TerminalService::initialize() {
 
 //------------------------------------------------------------------------------
 void TerminalService::finishInitialize() {
-    auto guiService = GUIService::instance(mApplication);
+    auto guiService = GUIService::instance(m_Application);
 
     if (guiService) {
         QStringList screenList;
@@ -147,14 +147,14 @@ void TerminalService::finishInitialize() {
             }
         } while (!resolution.isEmpty());
 
-        mDbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+        m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                  QString(PPSDK::CDatabaseConstants::Parameters::DisplayResolution),
                                  QString("[%1]").arg(screenList.join(",")));
     }
 
     // Получаем информацию о дефолтном ключе
     PPSDK::TerminalSettings *terminalSettings =
-        SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+        SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
     PPSDK::SKeySettings key = terminalSettings->getKeys().value(0);
 
     // Устанавливаем User-Agent (Имя_ПО + Версия_ПО + код_дилера + код_точки + код_оператора)
@@ -163,7 +163,7 @@ void TerminalService::finishInitialize() {
         userAgent.append(" SD:" + key.sd + " AP:" + key.ap + " OP:" + key.op);
     }
 
-    PPSDK::INetworkService *networkService = mApplication->getCore()->getNetworkService();
+    PPSDK::INetworkService *networkService = m_Application->getCore()->getNetworkService();
     networkService->setUserAgent(userAgent);
 }
 
@@ -175,8 +175,8 @@ bool TerminalService::canShutdown() {
 //---------------------------------------------------------------------------
 bool TerminalService::shutdown() {
     // Показываем экран блокировки WatchService.
-    mClient->resetState();
-    mClient->stop();
+    m_Client->resetState();
+    m_Client->stop();
 
     return true;
 }
@@ -213,7 +213,7 @@ bool TerminalService::isLocked() const {
 //---------------------------------------------------------------------------
 void TerminalService::setLock(bool aIsLocked) {
     // Отключаем интерфейс.
-    auto guiService = GUIService::instance(mApplication);
+    auto guiService = GUIService::instance(m_Application);
 
     if (guiService) {
         guiService->disable(aIsLocked);
@@ -225,7 +225,7 @@ void TerminalService::setLock(bool aIsLocked) {
 //---------------------------------------------------------------------------
 void TerminalService::resetParameters(const QSet<QString> &aParameters) {
     if (aParameters.contains(PPSDK::CServiceParameters::Terminal::RestartCount)) {
-        mDbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+        m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                  PPSDK::CDatabaseConstants::Parameters::LaunchCount,
                                  0);
     }
@@ -235,27 +235,27 @@ void TerminalService::resetParameters(const QSet<QString> &aParameters) {
 void TerminalService::writeLockStatus(bool aIsLocked) {
     // Если разблокируем, то все критические ошибки превращаем в некритические (кроме ошибки БД)
     if (!aIsLocked) {
-        foreach (auto key, mTerminalStatusHash.keys()) {
+        foreach (auto key, m_TerminalStatusHash.keys()) {
             if (key != CServices::DatabaseService &&
-                mTerminalStatusHash[key].getType() >= PPSDK::EEventType::Warning) {
-                mTerminalStatusHash.remove(key);
-            } else if (mTerminalStatusHash[key].getData().toString().contains("#alarm")) {
-                PPSDK::Event e = mTerminalStatusHash[key];
+                m_TerminalStatusHash[key].getType() >= PPSDK::EEventType::Warning) {
+                m_TerminalStatusHash.remove(key);
+            } else if (m_TerminalStatusHash[key].getData().toString().contains("#alarm")) {
+                PPSDK::Event e = m_TerminalStatusHash[key];
 
-                mTerminalStatusHash[key] = PPSDK::Event(
+                m_TerminalStatusHash[key] = PPSDK::Event(
                     e.getType(), e.getSender(), e.getData().toString().remove("#alarm"));
             }
         }
 
         // Сбрасываем "плохие" статусы при разблокировке
         TStatusCodes statuses = QSet<int>(
-            mDeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).begin(),
-            mDeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).end());
+            m_DeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).begin(),
+            m_DeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).end());
 
         foreach (auto status, statuses) {
             if (TerminalStatusCode::Specification[status].warningLevel >=
                 SDK::Driver::EWarningLevel::Warning) {
-                mDeviceErrorFlags.remove(PPSDK::CDatabaseConstants::Devices::Terminal, status);
+                m_DeviceErrorFlags.remove(PPSDK::CDatabaseConstants::Devices::Terminal, status);
             }
         }
     }
@@ -263,29 +263,29 @@ void TerminalService::writeLockStatus(bool aIsLocked) {
     updateTerminalStatus();
 
     // Проверка на "Уже записали статус в БД?", иначе при блокировке по ошибке БД мы зацикливаемся
-    if (mLocked.is_initialized() && mLocked.get() == aIsLocked) {
+    if (m_Locked.is_initialized() && m_Locked.get() == aIsLocked) {
         return;
     } else {
-        mLocked = aIsLocked;
+        m_Locked = aIsLocked;
 
-        mDbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+        m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                  PPSDK::CDatabaseConstants::Parameters::DisabledParam,
-                                 mLocked.get());
+                                 m_Locked.get());
     }
 }
 
 //---------------------------------------------------------------------------
 bool TerminalService::isDisabled() const {
-    if (mLocked.is_initialized()) {
-        return mLocked.get();
+    if (m_Locked.is_initialized()) {
+        return m_Locked.get();
     }
 
-    mLocked = mDbUtils
+    m_Locked = m_DbUtils
                   ->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                    PPSDK::CDatabaseConstants::Parameters::DisabledParam)
                   .toBool();
 
-    return mLocked.get();
+    return m_Locked.get();
 }
 
 //---------------------------------------------------------------------------
@@ -307,7 +307,7 @@ void TerminalService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
     }
 
     case PPSDK::EEventType::RestoreConfiguration: {
-        if (!RemoteService::instance(mApplication)->restoreConfiguration()) {
+        if (!RemoteService::instance(m_Application)->restoreConfiguration()) {
             toLog(LogLevel::Error, "Failed to execute restore configuration command.");
         }
 
@@ -317,7 +317,7 @@ void TerminalService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
     case PPSDK::EEventType::OK:
     case PPSDK::EEventType::Warning:
     case PPSDK::EEventType::Critical: {
-        mTerminalStatusHash[aEvent.getSender()] = aEvent;
+        m_TerminalStatusHash[aEvent.getSender()] = aEvent;
 
         if (aEvent.getSender() == CServices::DatabaseService) {
             setTerminalError(PPSDK::ETerminalError::DatabaseError,
@@ -355,7 +355,7 @@ QPair<SDK::Driver::EWarningLevel::Enum, QString> TerminalService::getTerminalSta
         }
     };
 
-    QMapIterator<QString, SDK::PaymentProcessor::Event> i(mTerminalStatusHash);
+    QMapIterator<QString, SDK::PaymentProcessor::Event> i(m_TerminalStatusHash);
     while (i.hasNext()) {
         i.next();
 
@@ -373,8 +373,8 @@ QPair<SDK::Driver::EWarningLevel::Enum, QString> TerminalService::getTerminalSta
     }
 
     TStatusCodes statuses =
-        QSet<int>(mDeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).begin(),
-                  mDeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).end());
+        QSet<int>(m_DeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).begin(),
+                  m_DeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).end());
 
     if (statuses.isEmpty()) {
         statuses << DeviceStatusCode::OK::OK;
@@ -419,10 +419,10 @@ void TerminalService::onDeviceStatusChanged(const QString &aConfigName,
         if (aLevel == SDK::Driver::EWarningLevel::Error ||
             SDK::Driver::EStatus::Interface == aStatus) {
             // Device has entered error state
-            mDeviceErrorFlags.insert(aConfigName, aStatus);
+            m_DeviceErrorFlags.insert(aConfigName, aStatus);
         } else {
             // Device has exited error state
-            mDeviceErrorFlags.remove(aConfigName);
+            m_DeviceErrorFlags.remove(aConfigName);
         }
     }
 
@@ -430,10 +430,10 @@ void TerminalService::onDeviceStatusChanged(const QString &aConfigName,
 
     // Автоинкассация.
     if (deviceType == DeviceType::BillAcceptor &&
-        aStatus == SDK::Driver::ECashAcceptorStatus::StackerOpen && mSettings.autoEncashment) {
+        aStatus == SDK::Driver::ECashAcceptorStatus::StackerOpen && m_Settings.autoEncashment) {
         // Запускаем авто инкассацию только тогда, когда нет ошибок у валидатора.
-        QList<int> validatorErrorFlags = mDeviceErrorFlags.values(
-            mDeviceErrorFlags.key(SDK::Driver::ECashAcceptorStatus::StackerOpen));
+        QList<int> validatorErrorFlags = m_DeviceErrorFlags.values(
+            m_DeviceErrorFlags.key(SDK::Driver::ECashAcceptorStatus::StackerOpen));
 
         validatorErrorFlags.removeAll(SDK::Driver::ECashAcceptorStatus::StackerOpen);
 
@@ -441,7 +441,7 @@ void TerminalService::onDeviceStatusChanged(const QString &aConfigName,
     }
 
     if (autoencashment) {
-        EventService::instance(mApplication)
+        EventService::instance(m_Application)
             ->sendEvent(PPSDK::EEventType::Autoencashment, QVariantMap());
     } else {
         updateGUI();
@@ -453,14 +453,14 @@ void TerminalService::setTerminalError(PPSDK::ETerminalError::Enum aErrorType, b
     bool changed = false;
 
     if (aError) {
-        if (!mDeviceErrorFlags.contains(PPSDK::CDatabaseConstants::Devices::Terminal, aErrorType)) {
-            mDeviceErrorFlags.insert(PPSDK::CDatabaseConstants::Devices::Terminal, aErrorType);
+        if (!m_DeviceErrorFlags.contains(PPSDK::CDatabaseConstants::Devices::Terminal, aErrorType)) {
+            m_DeviceErrorFlags.insert(PPSDK::CDatabaseConstants::Devices::Terminal, aErrorType);
 
             changed = true;
         }
-    } else if (mDeviceErrorFlags.contains(PPSDK::CDatabaseConstants::Devices::Terminal,
+    } else if (m_DeviceErrorFlags.contains(PPSDK::CDatabaseConstants::Devices::Terminal,
                                           aErrorType)) {
-        mDeviceErrorFlags.remove(PPSDK::CDatabaseConstants::Devices::Terminal, aErrorType);
+        m_DeviceErrorFlags.remove(PPSDK::CDatabaseConstants::Devices::Terminal, aErrorType);
 
         changed = true;
     }
@@ -474,7 +474,7 @@ void TerminalService::setTerminalError(PPSDK::ETerminalError::Enum aErrorType, b
 
 //---------------------------------------------------------------------------
 void TerminalService::updateGUI() {
-    auto guiService = GUIService::instance(mApplication);
+    auto guiService = GUIService::instance(m_Application);
 
     if (guiService) {
         guiService->disable(!getFaultyDevices(true).isEmpty() || isLocked());
@@ -483,7 +483,7 @@ void TerminalService::updateGUI() {
 
 //---------------------------------------------------------------------------
 bool TerminalService::isTerminalError(PPSDK::ETerminalError::Enum aErrorType) const {
-    return mDeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal)
+    return m_DeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal)
         .contains(aErrorType);
 }
 
@@ -502,12 +502,12 @@ void TerminalService::updateTerminalStatus() {
 
     auto status = getTerminalStatus();
 
-    if (mTerminalStatusCache != status) {
+    if (m_TerminalStatusCache != status) {
         toLog(warningLevel2LogLevel(status.first),
               QString("Terminal status: %1.")
                   .arg(status.second.replace("\r", "").replace("\n", ";")));
 
-        mDbUtils->addDeviceStatus(
+        m_DbUtils->addDeviceStatus(
             PPSDK::CDatabaseConstants::Devices::Terminal, status.first, status.second);
     }
 }
@@ -518,7 +518,7 @@ void TerminalService::checkConfigsIntegrity() {
     bool valid = true;
 
     foreach (const PPSDK::ISettingsAdapter *settings,
-             SettingsService::instance(mApplication)->enumerateAdapters()) {
+             SettingsService::instance(m_Application)->enumerateAdapters()) {
         valid = valid && settings->isValid();
     }
 
@@ -528,17 +528,17 @@ void TerminalService::checkConfigsIntegrity() {
         setTerminalError(PPSDK::ETerminalError::ConfigError, true);
 
         // Проверяем время с прошедшего обновления.
-        QDateTime lastTryTime = mDbUtils
+        QDateTime lastTryTime = m_DbUtils
                                     ->getDeviceParam(DbConstants::Devices::Terminal,
                                                      DbConstants::Parameters::LastUpdateTime)
                                     .toDateTime();
         QDateTime now = QDateTime::currentDateTime();
 
         if (!lastTryTime.isValid() || lastTryTime.addSecs(60 * ConfigRestoreInterval) <= now) {
-            EventService::instance(mApplication)
+            EventService::instance(m_Application)
                 ->sendEvent(PPSDK::EEventType::RestoreConfiguration, QVariant());
 
-            mDbUtils->setDeviceParam(
+            m_DbUtils->setDeviceParam(
                 DbConstants::Devices::Terminal, DbConstants::Parameters::LastUpdateTime, now);
         } else {
             int retryTimeout = now.secsTo(lastTryTime.addSecs(60 * ConfigRestoreInterval));
@@ -560,7 +560,7 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
     static QSet<QString> sentMessages;
 
     QString url = static_cast<PPSDK::TerminalSettings *>(
-                      mApplication->getCore()->getSettingsService()->getAdapter(
+                      m_Application->getCore()->getSettingsService()->getAdapter(
                           PPSDK::CAdapterNames::TerminalAdapter))
                       ->getFeedbackURL();
 
@@ -570,7 +570,7 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
         sendBody += "complain=1&offer=1&";
         sendBody += "PMVer=" + Humo::getVersion().toUtf8().toPercentEncoding() + "&";
 
-        auto key = CryptService::instance(mApplication)->getKey(0);
+        auto key = CryptService::instance(m_Application)->getKey(0);
         sendBody += QString("SD=%1&AP=%2&OP=%3&").arg(key.sd).arg(key.ap).arg(key.op).toUtf8();
 
         sendBody += "Display=AxB&";
@@ -589,11 +589,11 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
         sendBody += "email=" + QString("help@humo.tj").toUtf8().toPercentEncoding() + "&";
         sendBody += "message=" + aMessage.toUtf8().toPercentEncoding() + "&";
 
-        if (qint64 paymentId = mApplication->getCore()->getPaymentService()->getActivePayment()) {
+        if (qint64 paymentId = m_Application->getCore()->getPaymentService()->getActivePayment()) {
             sendBody += "pluslog=1&";
             QByteArray zipArray = "[{\"fields\":{";
 
-            auto fields = mApplication->getCore()->getPaymentService()->getPaymentFields(paymentId);
+            auto fields = m_Application->getCore()->getPaymentService()->getPaymentFields(paymentId);
 
             foreach (auto f, fields) {
                 zipArray += QString("\"%1\":\"%2\",").arg(f.name).arg(f.value.toString()).toUtf8();
@@ -601,7 +601,7 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
 
             zipArray += "}}";
 
-            double changeAmount = mApplication->getCore()->getPaymentService()->getChangeAmount();
+            double changeAmount = m_Application->getCore()->getPaymentService()->getChangeAmount();
 
             if (!qFuzzyIsNull(changeAmount) && changeAmount > 0.) {
                 zipArray +=
@@ -625,7 +625,7 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
         task->getRequestHeader().insert("Content-Type", "application/x-www-form-urlencoded");
         task->getDataStream()->write(sendBody);
 
-        mApplication->getCore()->getNetworkService()->getNetworkTaskManager()->addTask(task);
+        m_Application->getCore()->getNetworkService()->getNetworkTaskManager()->addTask(task);
         sentMessages.insert(aMessage);
     }
 }
@@ -635,7 +635,7 @@ void TerminalService::needUpdateConfigs() {
     // Переименовываем config.xml, тем самым конфиги будут скачаны заново при следующем запуске.
     QString backupExt = QDateTime::currentDateTime().toString(".yyyy-MM-dd_hh-mm-ss") + "_backup";
     QString config = QString("%1%2%3")
-                         .arg(mApplication->getUserDataPath())
+                         .arg(m_Application->getUserDataPath())
                          .arg(QDir::separator())
                          .arg("config.xml");
 
@@ -652,7 +652,7 @@ QStringList TerminalService::getAcceptorTypes() const {
 
 //---------------------------------------------------------------------------
 QStringList TerminalService::getDeviceNames() const {
-    return QStringList(mApplication->getCore()->getDeviceService()->getConfigurations())
+    return QStringList(m_Application->getCore()->getDeviceService()->getConfigurations())
            << PPSDK::CDatabaseConstants::Devices::Terminal;
 }
 
@@ -661,23 +661,23 @@ void TerminalService::onHardwareConfigUpdated() {
     // Согласовываем список устройств в состоянии ошибки с текущим списком устройств.
     QStringList configNames = getDeviceNames();
 
-    foreach (auto configName, mDeviceErrorFlags.keys()) {
+    foreach (auto configName, m_DeviceErrorFlags.keys()) {
         if (!configNames.contains(configName)) {
-            mDeviceErrorFlags.remove(configName);
+            m_DeviceErrorFlags.remove(configName);
         }
     }
 }
 
 //---------------------------------------------------------------------------
 IWatchServiceClient *TerminalService::getClient() {
-    return mClient.data();
+    return m_Client.data();
 }
 
 //---------------------------------------------------------------------------
 QMultiMap<QString, int> TerminalService::getFaultyDevices(bool aActual) const {
     namespace DeviceType = SDK::Driver::CComponents;
 
-    auto result = mDeviceErrorFlags;
+    auto result = m_DeviceErrorFlags;
 
     if (aActual) {
         QStringList cashAcceptors = getAcceptorTypes();
@@ -704,15 +704,15 @@ QMultiMap<QString, int> TerminalService::getFaultyDevices(bool aActual) const {
             QString deviceType = device.section('.', 2, 2);
 
             if ((cashAcceptors.contains(deviceType) &&
-                 (!mSettings.blockOn(PPSDK::SCommonSettings::ValidatorError) ||
+                 (!m_Settings.blockOn(PPSDK::SCommonSettings::ValidatorError) ||
                   !hasValidatorError)) ||
                 (DeviceType::isPrinter(deviceType) &&
-                 !mSettings.blockOn(PPSDK::SCommonSettings::PrinterError)) ||
+                 !m_Settings.blockOn(PPSDK::SCommonSettings::PrinterError)) ||
 #ifndef TC_USE_TOKEN
                 (deviceType == DeviceType::Token) ||
 #endif
                 (deviceType == DeviceType::CardReader &&
-                 !mSettings.blockOn(PPSDK::SCommonSettings::CardReaderError))) {
+                 !m_Settings.blockOn(PPSDK::SCommonSettings::CardReaderError))) {
                 result.remove(device);
             }
         }
@@ -723,31 +723,31 @@ QMultiMap<QString, int> TerminalService::getFaultyDevices(bool aActual) const {
 
 //---------------------------------------------------------------------------
 void TerminalService::setRestartCount(int aCount) {
-    QDate lastStartDate = mDbUtils
+    QDate lastStartDate = m_DbUtils
                               ->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                                PPSDK::CDatabaseConstants::Parameters::LastStartDate)
                               .toDate();
     QDate currentDate = QDate::currentDate();
 
     if (lastStartDate != currentDate) {
-        mDbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+        m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                  PPSDK::CDatabaseConstants::Parameters::LastStartDate,
                                  currentDate);
         aCount = 0;
     }
 
-    mDbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+    m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                              PPSDK::CDatabaseConstants::Parameters::LaunchCount,
                              aCount);
 }
 
 //---------------------------------------------------------------------------
 int TerminalService::getRestartCount() const {
-    int count = mDbUtils
+    int count = m_DbUtils
                     ->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                      PPSDK::CDatabaseConstants::Parameters::LaunchCount)
                     .toInt();
-    QDate lastStartDate = mDbUtils
+    QDate lastStartDate = m_DbUtils
                               ->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                                PPSDK::CDatabaseConstants::Parameters::LastStartDate)
                               .toDate();

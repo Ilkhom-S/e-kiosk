@@ -6,7 +6,7 @@
 
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFuture>
-#include <QtCore/QItemSelectionModel>
+#include <QtCore/QItem_SelectionModel>
 #include <QtCore/QSettings>
 #include <QtCore/QSortFilterProxyModel>
 #include <QtCore/QTimer>
@@ -37,19 +37,19 @@ const QString ColumnVisibility = "columnVisibility";
 
 //----------------------------------------------------------------------------
 PaymentServiceWindow::PaymentServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend), mBackend(aBackend), mFiscalMode(false) {
+    : QFrame(aParent), ServiceWindowBase(aBackend), m_Backend(aBackend), m_FiscalMode(false) {
     setupUi(this);
 
-    mPaymentManager = mBackend->getPaymentManager();
-    mModel = new PaymentTableModel(mFiscalMode, mPaymentManager, this);
-    mProxyModel = new PaymentProxyModel(this);
-    mProxyModel->setDynamicSortFilter(true);
-    mProxyModel->setSourceModel(mModel);
-    tvPayments->setModel(mProxyModel);
+    m_PaymentManager = m_Backend->getPaymentManager();
+    m_Model = new PaymentTableModel(m_FiscalMode, m_PaymentManager, this);
+    m_ProxyModel = new PaymentProxyModel(this);
+    m_ProxyModel->setDynamicSortFilter(true);
+    m_ProxyModel->setSourceModel(m_Model);
+    tvPayments->setModel(m_ProxyModel);
 
     tvPayments->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     tvPayments->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    connect(mProxyModel,
+    connect(m_ProxyModel,
             SIGNAL(layoutChanged()),
             tvPayments,
             SLOT(resizeRowsToContents()),
@@ -64,7 +64,7 @@ PaymentServiceWindow::PaymentServiceWindow(ServiceMenuBackend *aBackend, QWidget
 
 //----------------------------------------------------------------------------
 void PaymentServiceWindow::createColumnWidgets() {
-    if (!pageFields->layout() || pageFields->layout()->count() >= mProxyModel->columnCount()) {
+    if (!pageFields->layout() || pageFields->layout()->count() >= m_ProxyModel->columnCount()) {
         return;
     }
 
@@ -72,25 +72,25 @@ void PaymentServiceWindow::createColumnWidgets() {
     defaultDisabledColumn << PaymentTableModel::LastUpdate << PaymentTableModel::InitialSession
                           << PaymentTableModel::Session << PaymentTableModel::TransId;
 
-    for (int i = 0; i < mModel->columnCount(); i++) {
-        if (mProxyModel->hiddenColumn(i)) {
-            mProxyModel->showColumn(i, false);
+    for (int i = 0; i < m_Model->columnCount(); i++) {
+        if (m_ProxyModel->hiddenColumn(i)) {
+            m_ProxyModel->showColumn(i, false);
             continue;
         }
 
         QCheckBox *checkBox = new QCheckBox(this);
-        QString header = mModel->headerData(i, Qt::Horizontal).toString();
+        QString header = m_Model->headerData(i, Qt::Horizontal).toString();
 
         checkBox->setText(header);
         checkBox->setProperty("column", i);
 
         checkBox->setChecked(!defaultDisabledColumn.contains(i));
-        mProxyModel->showColumn(i, !defaultDisabledColumn.contains(i));
+        m_ProxyModel->showColumn(i, !defaultDisabledColumn.contains(i));
 
         connect(checkBox, SIGNAL(toggled(bool)), this, SLOT(showColumn(bool)));
 
         pageFields->layout()->addWidget(checkBox);
-        mColumnCheckboxs.insert(i, checkBox);
+        m_ColumnCheckboxs.insert(i, checkBox);
     }
     pageFields->layout()->addItem(
         new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
@@ -98,15 +98,15 @@ void PaymentServiceWindow::createColumnWidgets() {
 
 //----------------------------------------------------------------------------
 void PaymentServiceWindow::setupWidgets() {
-    mPaymentsFilterButtonGroup = new QButtonGroup(this);
-    mPaymentsFilterButtonGroup->addButton(rbAllPayments);
-    mPaymentsFilterButtonGroup->addButton(rbPrinted);
-    mPaymentsFilterButtonGroup->addButton(rbProcessed);
+    m_PaymentsFilterButtonGroup = new QButtonGroup(this);
+    m_PaymentsFilterButtonGroup->addButton(rbAllPayments);
+    m_PaymentsFilterButtonGroup->addButton(rbPrinted);
+    m_PaymentsFilterButtonGroup->addButton(rbProcessed);
 
-    mDateFilterButtonGroup = new QButtonGroup(this);
-    mDateFilterButtonGroup->addButton(rbAllDates);
-    mDateFilterButtonGroup->addButton(rbLastEncashment);
-    mDateFilterButtonGroup->addButton(rbDate);
+    m_DateFilterButtonGroup = new QButtonGroup(this);
+    m_DateFilterButtonGroup->addButton(rbAllDates);
+    m_DateFilterButtonGroup->addButton(rbLastEncashment);
+    m_DateFilterButtonGroup->addButton(rbDate);
 
     dateEdit->setDate(QDate::currentDate());
 
@@ -120,15 +120,15 @@ void PaymentServiceWindow::setupWidgets() {
 
 //----------------------------------------------------------------------------
 void PaymentServiceWindow::setupConnections() {
-    connect(&mPaymentTaskWatcher, SIGNAL(finished()), SLOT(onPaymentsUpdated()));
-    connect(mModel, SIGNAL(updatePayments(QString)), SLOT(onUpdatePayments(QString)));
+    connect(&m_PaymentTaskWatcher, SIGNAL(finished()), SLOT(onPaymentsUpdated()));
+    connect(m_Model, SIGNAL(updatePayments(QString)), SLOT(onUpdatePayments(QString)));
     connect(
-        mModel, SIGNAL(showProcessWindow(bool, QString)), SLOT(onShowProcessWindow(bool, QString)));
+        m_Model, SIGNAL(showProcessWindow(bool, QString)), SLOT(onShowProcessWindow(bool, QString)));
     connect(btnPrintCurrentReceipt, SIGNAL(clicked()), SLOT(printCurrentReceipt()));
-    connect(btnPrintReceipts, SIGNAL(clicked()), mModel, SLOT(printAllReceipts()));
+    connect(btnPrintReceipts, SIGNAL(clicked()), m_Model, SLOT(printAllReceipts()));
     connect(btnPrintFilteredReceipts, SIGNAL(clicked()), this, SLOT(printFilteredReceipts()));
     connect(btnProcessCurrentPayment, SIGNAL(clicked()), SLOT(processCurrentPayment()));
-    connect(btnProcessPayments, SIGNAL(clicked()), mModel, SLOT(processAllPayments()));
+    connect(btnProcessPayments, SIGNAL(clicked()), m_Model, SLOT(processAllPayments()));
 
     connect(rbAllDates, SIGNAL(toggled(bool)), this, SLOT(disableDateFilter(bool)));
     connect(rbLastEncashment, SIGNAL(toggled(bool)), this, SLOT(enableLastEncashmentFilter(bool)));
@@ -140,16 +140,16 @@ void PaymentServiceWindow::setupConnections() {
     connect(cbRange, SIGNAL(currentIndexChanged(int)), this, SLOT(updateDateRange()));
     connect(dateEdit, SIGNAL(dateChanged(QDate)), this, SLOT(updateDateRange()));
 
-    connect(rbAllPayments, SIGNAL(toggled(bool)), mProxyModel, SLOT(disablePaymentsFilter()));
-    connect(rbProcessed, SIGNAL(toggled(bool)), mProxyModel, SLOT(enableProcessedPaymentsFilter()));
-    connect(rbPrinted, SIGNAL(toggled(bool)), mProxyModel, SLOT(enablePrintedPaymentsFilter()));
+    connect(rbAllPayments, SIGNAL(toggled(bool)), m_ProxyModel, SLOT(disablePaymentsFilter()));
+    connect(rbProcessed, SIGNAL(toggled(bool)), m_ProxyModel, SLOT(enableProcessedPaymentsFilter()));
+    connect(rbPrinted, SIGNAL(toggled(bool)), m_ProxyModel, SLOT(enablePrintedPaymentsFilter()));
 
-    connect(leSearch, SIGNAL(textChanged(QString)), mProxyModel, SLOT(setFilterWildcard(QString)));
+    connect(leSearch, SIGNAL(textChanged(QString)), m_ProxyModel, SLOT(setFilterWildcard(QString)));
 }
 
 //----------------------------------------------------------------------------
 bool PaymentServiceWindow::initialize() {
-    ServiceMenuBackend::TAccessRights rights = mBackend->getAccessRights();
+    ServiceMenuBackend::TAccessRights rights = m_Backend->getAccessRights();
 
     // Право на просмотр суммарной информации по платежам
     wPaymentSummary->setEnabled(rights.contains(ServiceMenuBackend::ViewPaymentSummary));
@@ -168,7 +168,7 @@ bool PaymentServiceWindow::shutdown() {
 //----------------------------------------------------------------------------
 bool PaymentServiceWindow::activate() {
     // Обновим состояние кнопок печати
-    bool canPrint = mBackend->getPaymentManager()->canPrint(PPSDK::CReceiptType::Payment);
+    bool canPrint = m_Backend->getPaymentManager()->canPrint(PPSDK::CReceiptType::Payment);
 
     btnPrintCurrentReceipt->setEnabled(canPrint);
     btnPrintReceipts->setEnabled(canPrint);
@@ -177,17 +177,17 @@ bool PaymentServiceWindow::activate() {
     // Обновляем все данные по платежам
     onUpdatePayments();
 
-    connect(mPaymentManager,
+    connect(m_PaymentManager,
             SIGNAL(receiptPrinted(qint64, bool)),
-            mModel,
+            m_Model,
             SLOT(onReceiptPrinted(qint64, bool)));
-    connect(mPaymentManager, SIGNAL(paymentChanged(qint64)), mModel, SLOT(onUpdatePayment(qint64)));
+    connect(m_PaymentManager, SIGNAL(paymentChanged(qint64)), m_Model, SLOT(onUpdatePayment(qint64)));
 
-    QVariantMap parameters = mBackend->getConfiguration();
+    QVariantMap parameters = m_Backend->getConfiguration();
     QVariantList columns = parameters[CPaymentServiceWindow::ColumnVisibility].toList();
     for (int i = 0; i < columns.size(); i++) {
-        mColumnCheckboxs.contains(i) ? mColumnCheckboxs[i]->setChecked(columns[i].toBool())
-                                     : mProxyModel->showColumn(i, columns[i].toBool());
+        m_ColumnCheckboxs.contains(i) ? m_ColumnCheckboxs[i]->setChecked(columns[i].toBool())
+                                     : m_ProxyModel->showColumn(i, columns[i].toBool());
     }
 
     return true;
@@ -195,17 +195,17 @@ bool PaymentServiceWindow::activate() {
 
 //----------------------------------------------------------------------------
 bool PaymentServiceWindow::deactivate() {
-    disconnect(mPaymentManager,
+    disconnect(m_PaymentManager,
                SIGNAL(receiptPrinted(qint64, bool)),
-               mModel,
+               m_Model,
                SLOT(onReceiptPrinted(qint64, bool)));
     disconnect(
-        mPaymentManager, SIGNAL(paymentChanged(qint64)), mModel, SLOT(onUpdatePayment(qint64)));
+        m_PaymentManager, SIGNAL(paymentChanged(qint64)), m_Model, SLOT(onUpdatePayment(qint64)));
 
     QVariantMap parameters;
-    parameters.insert(CPaymentServiceWindow::ColumnVisibility, mProxyModel->getColumnVisibility());
-    mBackend->setConfiguration(parameters);
-    mBackend->saveConfiguration();
+    parameters.insert(CPaymentServiceWindow::ColumnVisibility, m_ProxyModel->getColumnVisibility());
+    m_Backend->setConfiguration(parameters);
+    m_Backend->saveConfiguration();
 
     return true;
 }
@@ -214,7 +214,7 @@ bool PaymentServiceWindow::deactivate() {
 void PaymentServiceWindow::onUpdatePayments(const QString &aMessage) {
     QVariantMap result;
 
-    if (mPaymentManager->getPaymentsInfo(result)) {
+    if (m_PaymentManager->getPaymentsInfo(result)) {
         lbLastRecievedPayment->setText(result[CServiceTags::LastPaymentDate].toString());
         lbLastProcessedPayment->setText(result[CServiceTags::LastProcessedPaymentDate].toString());
         lbSuccessfulPaymentCount->setText(result[CServiceTags::SuccessfulPaymentCount].toString());
@@ -224,7 +224,7 @@ void PaymentServiceWindow::onUpdatePayments(const QString &aMessage) {
     aMessage.isEmpty() ? GUI::MessageBox::wait(tr("#updating_payment_data"))
                        : GUI::MessageBox::wait(aMessage);
 
-    mPaymentTaskWatcher.setFuture(QtConcurrent::run([this]() { loadPayments(); }));
+    m_PaymentTaskWatcher.setFuture(QtConcurrent::run([this]() { loadPayments(); }));
 }
 
 //----------------------------------------------------------------------------
@@ -238,12 +238,12 @@ void PaymentServiceWindow::onShowProcessWindow(bool aShow, const QString &aMessa
 
 //----------------------------------------------------------------------------
 void PaymentServiceWindow::loadPayments() {
-    mPaymentInfoList = mPaymentManager->getPayments(true);
+    m_PaymentInfoList = m_PaymentManager->getPayments(true);
 }
 
 //----------------------------------------------------------------------------
 void PaymentServiceWindow::onPaymentsUpdated() {
-    mModel->setPayments(mPaymentInfoList);
+    m_Model->setPayments(m_PaymentInfoList);
 
     rbLastEncashment->setChecked(true);
     rbAllPayments->setChecked(true);
@@ -253,19 +253,19 @@ void PaymentServiceWindow::onPaymentsUpdated() {
 
 //----------------------------------------------------------------------------
 void PaymentServiceWindow::printCurrentReceipt() {
-    mModel->printReceipt(getSelectedIndex());
+    m_Model->printReceipt(getSelectedIndex());
 }
 
 //----------------------------------------------------------------------------
 void PaymentServiceWindow::processCurrentPayment() {
-    mModel->proccessPayment(getSelectedIndex());
+    m_Model->proccessPayment(getSelectedIndex());
 }
 
 //----------------------------------------------------------------------------
 QModelIndex PaymentServiceWindow::getSelectedIndex() {
-    QItemSelectionModel *selectionModel = tvPayments->selectionModel();
-    QItemSelection itemSelection = selectionModel->selection();
-    QItemSelection sourceSelection = mProxyModel->mapSelectionToSource(itemSelection);
+    QItem_SelectionModel *selectionModel = tvPayments->selectionModel();
+    QItem_Selection item_Selection = selectionModel->selection();
+    QItem_Selection sourceSelection = m_ProxyModel->mapSelectionToSource(item_Selection);
 
     return sourceSelection.isEmpty() ? QModelIndex() : sourceSelection.indexes().first();
 }
@@ -273,7 +273,7 @@ QModelIndex PaymentServiceWindow::getSelectedIndex() {
 //----------------------------------------------------------------------------
 void PaymentServiceWindow::disableDateFilter(bool aEnabled) {
     if (aEnabled) {
-        mProxyModel->disableDateFilter();
+        m_ProxyModel->disableDateFilter();
     }
 }
 
@@ -287,7 +287,7 @@ void PaymentServiceWindow::enableDateRangeFilter(bool aEnabled) {
 //----------------------------------------------------------------------------
 void PaymentServiceWindow::enableLastEncashmentFilter(bool aEnabled) {
     if (aEnabled) {
-        QVariantMap encashmentInfo = mBackend->getPaymentManager()->getBalanceInfo();
+        QVariantMap encashmentInfo = m_Backend->getPaymentManager()->getBalanceInfo();
         if (encashmentInfo.isEmpty()) {
             rbLastEncashment->setEnabled(false);
             rbAllDates->setChecked(true);
@@ -296,7 +296,7 @@ void PaymentServiceWindow::enableLastEncashmentFilter(bool aEnabled) {
 
         QDateTime lastEncashment = encashmentInfo[CServiceTags::LastEncashmentDate].toDateTime();
 
-        mProxyModel->setDateFilter(lastEncashment, QDateTime::currentDateTime());
+        m_ProxyModel->setDateFilter(lastEncashment, QDateTime::currentDateTime());
     }
 }
 
@@ -324,14 +324,14 @@ void PaymentServiceWindow::updateDateRange() {
         start = end.addDays(-1);
     }
 
-    mProxyModel->setDateFilter(start, end);
+    m_ProxyModel->setDateFilter(start, end);
 }
 
 //----------------------------------------------------------------------------
 void PaymentServiceWindow::showColumn(bool aShow) {
     if (sender()) {
         int columnId = sender()->property("column").toInt();
-        mProxyModel->showColumn(columnId, aShow);
+        m_ProxyModel->showColumn(columnId, aShow);
     }
 }
 
@@ -339,7 +339,7 @@ void PaymentServiceWindow::showColumn(bool aShow) {
 PaymentTableModel::PaymentTableModel(bool aFiscalMode,
                                      PaymentManager *aPaymentManager,
                                      QObject *aParent)
-    : QAbstractTableModel(aParent), mFiscalMode(aFiscalMode), mPaymentManager(aPaymentManager) {
+    : QAbstractTableModel(aParent), m_FiscalMode(aFiscalMode), m_PaymentManager(aPaymentManager) {
     columnHeaders.insert(Id, tr("#id"));
     columnHeaders.insert(ProviderFields, tr("#provider_fields"));
     columnHeaders.insert(Amount, tr("#amount_field"));
@@ -353,13 +353,13 @@ PaymentTableModel::PaymentTableModel(bool aFiscalMode,
     columnHeaders.insert(Status, tr("#status_field"));
     columnHeaders.insert(
         Printed,
-        (mFiscalMode ? tr("#fiscal_receipt_printed_field") : tr("#receipt_printed_field")));
+        (m_FiscalMode ? tr("#fiscal_receipt_printed_field") : tr("#receipt_printed_field")));
     columnHeaders.insert(Processed, "#processed");
 }
 
 //----------------------------------------------------------------------------
 int PaymentTableModel::rowCount(const QModelIndex & /*parent*/) const {
-    return mPaymentInfoList.size();
+    return m_PaymentInfoList.size();
 }
 
 //----------------------------------------------------------------------------
@@ -376,37 +376,37 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
     int row = index.row();
 
     if (role == IDRole) {
-        return mPaymentInfoList[row].getId();
+        return m_PaymentInfoList[row].getId();
     }
 
     if (role == DataRole) {
         switch (index.column()) {
         case Id:
-            return mPaymentInfoList[row].getId();
+            return m_PaymentInfoList[row].getId();
         case Provider:
-            return mPaymentInfoList[row].getProvider();
+            return m_PaymentInfoList[row].getProvider();
         case ProviderFields:
-            return mPaymentInfoList[row].getProviderFields();
+            return m_PaymentInfoList[row].getProviderFields();
         case Amount:
-            return mPaymentInfoList[row].getAmount();
+            return m_PaymentInfoList[row].getAmount();
         case AmountAll:
-            return mPaymentInfoList[row].getAmountAll();
+            return m_PaymentInfoList[row].getAmountAll();
         case CreationDate:
-            return mPaymentInfoList[row].getCreationDate();
+            return m_PaymentInfoList[row].getCreationDate();
         case LastUpdate:
-            return mPaymentInfoList[row].getLastUpdate();
+            return m_PaymentInfoList[row].getLastUpdate();
         case InitialSession:
-            return mPaymentInfoList[row].getInitialSession();
+            return m_PaymentInfoList[row].getInitialSession();
         case Session:
-            return mPaymentInfoList[row].getSession();
+            return m_PaymentInfoList[row].getSession();
         case TransId:
-            return mPaymentInfoList[row].getTransId();
+            return m_PaymentInfoList[row].getTransId();
         case Printed:
-            return mPaymentInfoList[row].getPrinted();
+            return m_PaymentInfoList[row].getPrinted();
         case Status:
-            return mPaymentInfoList[row].getStatus();
+            return m_PaymentInfoList[row].getStatus();
         case Processed:
-            return mPaymentInfoList[row].isProcessed();
+            return m_PaymentInfoList[row].isProcessed();
         default:
             return QVariant();
         }
@@ -415,38 +415,38 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
         case Id:
-            return mPaymentInfoList[row].getId();
+            return m_PaymentInfoList[row].getId();
         case Provider:
-            return mPaymentInfoList[row].getProvider();
+            return m_PaymentInfoList[row].getProvider();
         case ProviderFields:
-            return mPaymentInfoList[row].getProviderFields();
+            return m_PaymentInfoList[row].getProviderFields();
         case Amount:
-            return QString::number(mPaymentInfoList[row].getAmount(), 'f', 2);
+            return QString::number(m_PaymentInfoList[row].getAmount(), 'f', 2);
         case AmountAll:
-            return QString::number(mPaymentInfoList[row].getAmountAll(), 'f', 2);
+            return QString::number(m_PaymentInfoList[row].getAmountAll(), 'f', 2);
         case CreationDate:
-            return mPaymentInfoList[row].getCreationDate().toString("yyyy.MM.dd hh:mm:ss");
+            return m_PaymentInfoList[row].getCreationDate().toString("yyyy.MM.dd hh:mm:ss");
         case LastUpdate:
-            return mPaymentInfoList[row].getLastUpdate().toString("yyyy.MM.dd hh:mm:ss:zzz");
+            return m_PaymentInfoList[row].getLastUpdate().toString("yyyy.MM.dd hh:mm:ss:zzz");
         case InitialSession:
-            return mPaymentInfoList[row].getInitialSession();
+            return m_PaymentInfoList[row].getInitialSession();
         case Session:
-            return mPaymentInfoList[row].getSession();
+            return m_PaymentInfoList[row].getSession();
         case TransId:
-            return mPaymentInfoList[row].getTransId();
+            return m_PaymentInfoList[row].getTransId();
         case Printed:
-            return mPaymentInfoList[row].getPrinted() ? tr("#yes") : tr("#no");
+            return m_PaymentInfoList[row].getPrinted() ? tr("#yes") : tr("#no");
         case Status:
-            return mPaymentInfoList[row].getStatusString();
+            return m_PaymentInfoList[row].getStatusString();
         case Processed:
-            return mPaymentInfoList[row].isProcessed();
+            return m_PaymentInfoList[row].isProcessed();
         default:
             return QVariant();
         }
     }
 
     if (role == Qt::BackgroundRole) {
-        auto status = mPaymentInfoList[row].getStatus();
+        auto status = m_PaymentInfoList[row].getStatus();
 
         // Попытка мошенничества - фиолетовая строка.
         if (status == PPSDK::EPaymentStatus::Cheated) {
@@ -472,8 +472,8 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
 }
 
 //----------------------------------------------------------------------------
-Qt::ItemFlags PaymentTableModel::flags(const QModelIndex & /*index*/) const {
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+Qt::Item_Flags PaymentTableModel::flags(const QModelIndex & /*index*/) const {
+    return Qt::Item_IsSelectable | Qt::Item_IsEnabled;
 }
 
 //----------------------------------------------------------------------------
@@ -493,12 +493,12 @@ PaymentTableModel::headerData(int aSection, Qt::Orientation aOrientation, int aR
 
 //----------------------------------------------------------------------------
 void PaymentTableModel::printReceipt(const QModelIndex &index) {
-    if (index.row() >= 0 && index.row() < mPaymentInfoList.size()) {
-        PaymentInfo payment = mPaymentInfoList[index.row()];
+    if (index.row() >= 0 && index.row() < m_PaymentInfoList.size()) {
+        PaymentInfo payment = m_PaymentInfoList[index.row()];
 
         if (payment.canPrint()) {
-            if (mPaymentManager->printReceipt(payment.getId(), DSDK::EPrintingModes::None)) {
-                mPrintingQueue.insert(payment.getId());
+            if (m_PaymentManager->printReceipt(payment.getId(), DSDK::EPrintingModes::None)) {
+                m_PrintingQueue.insert(payment.getId());
             }
 
             emit showProcessWindow(true, tr("printing_receipt"));
@@ -512,17 +512,17 @@ void PaymentTableModel::printReceipt(const QModelIndex &index) {
 
 //----------------------------------------------------------------------------
 void PaymentTableModel::printAllReceipts() {
-    foreach (const PaymentInfo &paymentInfo, mPaymentInfoList) {
+    foreach (const PaymentInfo &paymentInfo, m_PaymentInfoList) {
         if (paymentInfo.canPrint() && !paymentInfo.getPrinted()) {
-            if (mPaymentManager->printReceipt(paymentInfo.getId(),
+            if (m_PaymentManager->printReceipt(paymentInfo.getId(),
                                               DSDK::EPrintingModes::Continuous)) {
-                mPrintingQueue.insert(paymentInfo.getId());
+                m_PrintingQueue.insert(paymentInfo.getId());
             }
         }
     }
 
-    if (!mPrintingQueue.isEmpty()) {
-        emit showProcessWindow(true, tr("#printing %1 receipts").arg(mPrintingQueue.size()));
+    if (!m_PrintingQueue.isEmpty()) {
+        emit showProcessWindow(true, tr("#printing %1 receipts").arg(m_PrintingQueue.size()));
     } else {
         GUI::MessageBox::info(tr("#nothing_to_print"));
     }
@@ -532,28 +532,28 @@ void PaymentTableModel::printAllReceipts() {
 void PaymentServiceWindow::printFilteredReceipts() {
     QSet<qint64> payments;
 
-    for (int i = 0; i < mProxyModel->rowCount(); ++i) {
+    for (int i = 0; i < m_ProxyModel->rowCount(); ++i) {
         payments
-            << mProxyModel->data(mProxyModel->index(i, 0), PaymentTableModel::IDRole).toLongLong();
+            << m_ProxyModel->data(m_ProxyModel->index(i, 0), PaymentTableModel::IDRole).toLongLong();
     }
 
-    mModel->printFilteredReceipts(payments);
+    m_Model->printFilteredReceipts(payments);
 }
 
 //----------------------------------------------------------------------------
 void PaymentTableModel::printFilteredReceipts(const QSet<qint64> &aPaymentsID) {
-    foreach (const PaymentInfo &paymentInfo, mPaymentInfoList) {
+    foreach (const PaymentInfo &paymentInfo, m_PaymentInfoList) {
         if (paymentInfo.canPrint() && !paymentInfo.getPrinted() &&
             aPaymentsID.contains(paymentInfo.getId())) {
-            if (mPaymentManager->printReceipt(paymentInfo.getId(),
+            if (m_PaymentManager->printReceipt(paymentInfo.getId(),
                                               DSDK::EPrintingModes::Continuous)) {
-                mPrintingQueue.insert(paymentInfo.getId());
+                m_PrintingQueue.insert(paymentInfo.getId());
             }
         }
     }
 
-    if (!mPrintingQueue.isEmpty()) {
-        emit showProcessWindow(true, tr("#printing %1 receipts").arg(mPrintingQueue.size()));
+    if (!m_PrintingQueue.isEmpty()) {
+        emit showProcessWindow(true, tr("#printing %1 receipts").arg(m_PrintingQueue.size()));
     } else {
         GUI::MessageBox::info(tr("#nothing_to_print"));
     }
@@ -563,40 +563,40 @@ void PaymentTableModel::printFilteredReceipts(const QSet<qint64> &aPaymentsID) {
 void PaymentTableModel::onReceiptPrinted(qint64 aPaymentId, bool aErrorHappened) {
     if (aErrorHappened) {
         GUI::MessageBox::critical(tr("#error_occurred_printing"));
-        mPrintingQueue.clear();
+        m_PrintingQueue.clear();
         return;
     }
 
-    if (mPrintingQueue.isEmpty()) {
+    if (m_PrintingQueue.isEmpty()) {
         return;
     }
 
-    mPrintingQueue.remove(aPaymentId);
+    m_PrintingQueue.remove(aPaymentId);
 
     emit layoutAboutToBeChanged();
 
-    int row = mPaymentRowIndex[aPaymentId];
-    mPaymentInfoList[row].setPrinted(true);
+    int row = m_PaymentRowIndex[aPaymentId];
+    m_PaymentInfoList[row].setPrinted(true);
 
     emit dataChanged(index(row, 0), index(row, columnCount()));
     emit layoutChanged();
 
-    if (mPrintingQueue.isEmpty()) {
+    if (m_PrintingQueue.isEmpty()) {
         if (!aErrorHappened) {
             emit showProcessWindow(false, "");
         }
     } else {
-        emit showProcessWindow(true, tr("#printing %1 receipts").arg(mPrintingQueue.size()));
+        emit showProcessWindow(true, tr("#printing %1 receipts").arg(m_PrintingQueue.size()));
     }
 }
 
 //----------------------------------------------------------------------------
 void PaymentTableModel::onUpdatePayment(qint64 aPaymentId) {
-    if (mPaymentRowIndex.contains(aPaymentId)) {
+    if (m_PaymentRowIndex.contains(aPaymentId)) {
         emit layoutAboutToBeChanged();
-        int row = mPaymentRowIndex[aPaymentId];
+        int row = m_PaymentRowIndex[aPaymentId];
 
-        mPaymentInfoList[row] = mPaymentManager->getPayment(aPaymentId);
+        m_PaymentInfoList[row] = m_PaymentManager->getPayment(aPaymentId);
 
         emit dataChanged(index(row, 0), index(row, columnCount()));
         emit layoutChanged();
@@ -605,11 +605,11 @@ void PaymentTableModel::onUpdatePayment(qint64 aPaymentId) {
 
 //----------------------------------------------------------------------------
 void PaymentTableModel::proccessPayment(const QModelIndex &index) {
-    if (index.row() >= 0 && index.row() < mPaymentInfoList.size()) {
-        PaymentInfo payment = mPaymentInfoList[index.row()];
+    if (index.row() >= 0 && index.row() < m_PaymentInfoList.size()) {
+        PaymentInfo payment = m_PaymentInfoList[index.row()];
 
         if (payment.canProcess()) {
-            mPaymentManager->processPayment(payment.getId());
+            m_PaymentManager->processPayment(payment.getId());
             onUpdatePayment(payment.getId());
 
             GUI::MessageBox::info(tr("#process"));
@@ -623,23 +623,23 @@ void PaymentTableModel::proccessPayment(const QModelIndex &index) {
 
 //----------------------------------------------------------------------------
 void PaymentTableModel::proccessNextPayment() {
-    if (mProcessPayments.payments.count()) {
-        auto payment = mProcessPayments.payments.takeFirst();
+    if (m_ProcessPayments.payments.count()) {
+        auto payment = m_ProcessPayments.payments.takeFirst();
 
         if (payment.canProcess()) {
-            mPaymentManager->processPayment(payment.getId());
+            m_PaymentManager->processPayment(payment.getId());
 
             onUpdatePayment(payment.getId());
-            ++mProcessPayments.processed;
+            ++m_ProcessPayments.processed;
         }
     } else {
-        if (mProcessPayments.processed) {
-            GUI::MessageBox::info(tr("#process %1 payments").arg(mProcessPayments.processed));
+        if (m_ProcessPayments.processed) {
+            GUI::MessageBox::info(tr("#process %1 payments").arg(m_ProcessPayments.processed));
         } else {
             GUI::MessageBox::info(tr("#nothing_to_process"));
         }
 
-        mProcessPayments.clear();
+        m_ProcessPayments.clear();
         return;
     }
 
@@ -649,8 +649,8 @@ void PaymentTableModel::proccessNextPayment() {
 
 //----------------------------------------------------------------------------
 void PaymentTableModel::processAllPayments() {
-    mProcessPayments.payments = mPaymentInfoList;
-    mProcessPayments.processed = 0;
+    m_ProcessPayments.payments = m_PaymentInfoList;
+    m_ProcessPayments.processed = 0;
 
     GUI::MessageBox::wait(tr("#updating_payment_data"), true);
     GUI::MessageBox::subscribe(this);
@@ -662,20 +662,20 @@ void PaymentTableModel::processAllPayments() {
 //----------------------------------------------------------------------------
 void PaymentTableModel::onClicked(const QVariantMap &) {
     // прерываем обработку платежей
-    mProcessPayments.payments.clear();
+    m_ProcessPayments.payments.clear();
 }
 
 //----------------------------------------------------------------------------
 void PaymentTableModel::setPayments(QList<PaymentInfo> aPaymentInfoList) {
     beginResetModel();
 
-    mProcessPayments.clear();
+    m_ProcessPayments.clear();
 
-    mPaymentInfoList = aPaymentInfoList;
+    m_PaymentInfoList = aPaymentInfoList;
 
-    mPaymentRowIndex.clear();
-    for (int i = 0; i < mPaymentInfoList.size(); ++i) {
-        mPaymentRowIndex.insert(mPaymentInfoList[i].getId(), i);
+    m_PaymentRowIndex.clear();
+    for (int i = 0; i < m_PaymentInfoList.size(); ++i) {
+        m_PaymentRowIndex.insert(m_PaymentInfoList[i].getId(), i);
     }
 
     endResetModel();
@@ -683,7 +683,7 @@ void PaymentTableModel::setPayments(QList<PaymentInfo> aPaymentInfoList) {
 
 //----------------------------------------------------------------------------
 PaymentProxyModel::PaymentProxyModel(QObject *parent)
-    : QSortFilterProxyModel(parent), mPaymentFilter(AllPayments), mDateFilterEnabled(false) {
+    : QSortFilterProxyModel(parent), m_PaymentFilter(AllPayments), m_DateFilterEnabled(false) {
     setFilterCaseSensitivity(Qt::CaseInsensitive);
     setSortRole(PaymentTableModel::DataRole);
 }
@@ -691,7 +691,7 @@ PaymentProxyModel::PaymentProxyModel(QObject *parent)
 //----------------------------------------------------------------------------
 void PaymentProxyModel::showColumn(int aColumn, bool aShow) {
     PaymentTableModel::Column column = static_cast<PaymentTableModel::Column>(aColumn);
-    mColumns[column] = aShow;
+    m_Columns[column] = aShow;
     // QSettings settings;
     // settings.setValue(QString("ServiceMenu/column%1").arg(aColumn), aShow);
     invalidateFilter();
@@ -700,8 +700,8 @@ void PaymentProxyModel::showColumn(int aColumn, bool aShow) {
 //----------------------------------------------------------------------------
 QVariantList PaymentProxyModel::getColumnVisibility() const {
     QVariantList columns;
-    for (int i = 0; i < mColumns.size(); i++)
-        columns << mColumns[i];
+    for (int i = 0; i < m_Columns.size(); i++)
+        columns << m_Columns[i];
     return columns;
 }
 
@@ -718,40 +718,40 @@ bool PaymentProxyModel::hiddenColumn(int aColumn) const {
 
 //----------------------------------------------------------------------------
 void PaymentProxyModel::disableDateFilter() {
-    mDateFilterEnabled = false;
+    m_DateFilterEnabled = false;
     invalidateFilter();
 }
 
 //----------------------------------------------------------------------------
 void PaymentProxyModel::setDateFilter(const QDateTime &aFrom, const QDateTime &aTo) {
-    mStartDateTime = aFrom;
-    mEndDateTime = aTo;
-    mDateFilterEnabled = true;
+    m_StartDateTime = aFrom;
+    m_EndDateTime = aTo;
+    m_DateFilterEnabled = true;
 
     invalidateFilter();
 }
 
 //----------------------------------------------------------------------------
 void PaymentProxyModel::disablePaymentsFilter() {
-    mPaymentFilter = AllPayments;
+    m_PaymentFilter = AllPayments;
     invalidateFilter();
 }
 
 //----------------------------------------------------------------------------
 void PaymentProxyModel::enablePrintedPaymentsFilter() {
-    mPaymentFilter = PrintedPayments;
+    m_PaymentFilter = PrintedPayments;
     invalidateFilter();
 }
 
 //----------------------------------------------------------------------------
 void PaymentProxyModel::enableProcessedPaymentsFilter() {
-    mPaymentFilter = ProcessedPayments;
+    m_PaymentFilter = ProcessedPayments;
     invalidateFilter();
 }
 
 //----------------------------------------------------------------------------
 bool PaymentProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const {
-    QAbstractItemModel *sourceModel = this->sourceModel();
+    QAbstractItem_Model *sourceModel = this->sourceModel();
     QRegularExpression regExp = filterRegularExpression();
 
     QModelIndex providerFieldsIndex =
@@ -777,24 +777,24 @@ bool PaymentProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourc
     bool transIdFilter = transIdValue.contains(regExp);
 
     bool dateFilter = true;
-    if (mDateFilterEnabled) {
+    if (m_DateFilterEnabled) {
         QModelIndex creationDateIndex =
             sourceModel->index(sourceRow, PaymentTableModel::CreationDate, sourceParent);
         QDateTime creationDateTimeValue =
             sourceModel->data(creationDateIndex, PaymentTableModel::DataRole).toDateTime();
         dateFilter =
-            creationDateTimeValue >= mStartDateTime && creationDateTimeValue <= mEndDateTime;
+            creationDateTimeValue >= m_StartDateTime && creationDateTimeValue <= m_EndDateTime;
     }
 
     bool processedFilter = true;
-    if (mPaymentFilter == ProcessedPayments) {
+    if (m_PaymentFilter == ProcessedPayments) {
         QModelIndex processedIndex =
             sourceModel->index(sourceRow, PaymentTableModel::Processed, sourceParent);
         processedFilter = !sourceModel->data(processedIndex, PaymentTableModel::DataRole).toBool();
     }
 
     bool printedFilter = true;
-    if (mPaymentFilter == PrintedPayments) {
+    if (m_PaymentFilter == PrintedPayments) {
         QModelIndex printedIndex =
             sourceModel->index(sourceRow, PaymentTableModel::Printed, sourceParent);
         printedFilter = !sourceModel->data(printedIndex, PaymentTableModel::DataRole).toBool();
@@ -810,7 +810,7 @@ bool PaymentProxyModel::filterAcceptsColumn(int sourceColumn,
     Q_UNUSED(sourceParent);
 
     PaymentTableModel::Column column = static_cast<PaymentTableModel::Column>(sourceColumn);
-    return mColumns.value(column, true);
+    return m_Columns.value(column, true);
 }
 
 //----------------------------------------------------------------------------

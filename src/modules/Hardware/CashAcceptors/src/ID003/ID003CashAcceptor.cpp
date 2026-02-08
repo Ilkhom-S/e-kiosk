@@ -227,7 +227,7 @@ bool ID003CashAcceptor::isConnected() {
 //--------------------------------------------------------------------------------
 bool ID003CashAcceptor::setDefaultParameters() {
     // устанавливаем режим связи с устройством
-    if (!processCommand(CID003::Commands::SetCommMode, QByteArray(1, CID003::CommunicationMode))) {
+    if (!processCommand(CID003::Commands::SetComm_Mode, QByteArray(1, CID003::CommunicationMode))) {
         toLog(LogLevel::Error, m_DeviceName + ": Failed to set communication mode");
         return false;
     }

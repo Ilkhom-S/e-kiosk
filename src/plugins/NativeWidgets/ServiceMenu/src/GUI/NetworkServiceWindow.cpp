@@ -20,14 +20,14 @@
 #include "ServiceTags.h"
 
 NetworkServiceWindow::NetworkServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), ServiceWindowBase(aBackend), mBackend(aBackend), mDialupWindow(0),
-      mUnmanagedWindow(0) {
+    : QWidget(aParent), ServiceWindowBase(aBackend), m_Backend(aBackend), m_DialupWindow(0),
+      m_UnmanagedWindow(0) {
     setupUi(this);
 
-    mTypeButtonGroup.addButton(rbDialupLink);
-    mTypeButtonGroup.addButton(rbUnmanagedLink);
+    m_TypeButtonGroup.addButton(rbDialupLink);
+    m_TypeButtonGroup.addButton(rbUnmanagedLink);
 
-    connect(&mTypeButtonGroup,
+    connect(&m_TypeButtonGroup,
             SIGNAL(buttonClicked(QAbstractButton *)),
             SLOT(onChangeConnectionType(QAbstractButton *)));
 }
@@ -44,47 +44,47 @@ bool NetworkServiceWindow::deactivate() {
     if (rbUnmanagedLink->isChecked()) {
         connection.name = "unmanaged connection";
         connection.type = EConnectionTypes::Unmanaged;
-        connection.proxy = mUnmanagedWindow->getUserSelection();
+        connection.proxy = m_UnmanagedWindow->getUserSelection();
     } else if (rbDialupLink->isChecked()) {
-        connection.name = mDialupWindow->getUserSelection();
+        connection.name = m_DialupWindow->getUserSelection();
         connection.type = EConnectionTypes::Dialup;
     }
 
-    mBackend->getNetworkManager()->setConnection(connection);
-    mBackend->saveConfiguration();
+    m_Backend->getNetworkManager()->setConnection(connection);
+    m_Backend->saveConfiguration();
 
     return true;
 }
 
 //------------------------------------------------------------------------
 bool NetworkServiceWindow::initialize() {
-    connect(&mTaskWatcher, SIGNAL(finished()), SLOT(onTestFinished()));
+    connect(&m_TaskWatcher, SIGNAL(finished()), SLOT(onTestFinished()));
 
     QVariantMap networkInfo;
-    mBackend->getNetworkManager()->getNetworkInfo(networkInfo);
+    m_Backend->getNetworkManager()->getNetworkInfo(networkInfo);
 
     EConnectionTypes::Enum type =
         EConnectionTypes::Enum(networkInfo[CServiceTags::ConnectionType].toInt());
 
     // Инициализация окна с настройками модемного соединения
-    mDialupWindow = new DialupConnectionWindow(this);
-    mDialupWindow->initialize();
-    mDialupWindow->fillTemplateList(mBackend->getNetworkManager()->getConnectionTemplates());
-    mDialupWindow->fillModemList(mBackend->getNetworkManager()->getModems());
-    mDialupWindow->fillConnectionList(mBackend->getNetworkManager()->getRemoteConnections(),
+    m_DialupWindow = new DialupConnectionWindow(this);
+    m_DialupWindow->initialize();
+    m_DialupWindow->fillTemplateList(m_Backend->getNetworkManager()->getConnectionTemplates());
+    m_DialupWindow->fillModem_List(m_Backend->getNetworkManager()->getModems());
+    m_DialupWindow->fillConnectionList(m_Backend->getNetworkManager()->getRemoteConnections(),
                                       networkInfo[CServiceTags::Connection].toString());
 
-    connect(mDialupWindow,
+    connect(m_DialupWindow,
             SIGNAL(createConnection(const QString &, const QString &)),
             SLOT(onCreateDialupConnection(const QString &, const QString &)));
-    connect(mDialupWindow,
+    connect(m_DialupWindow,
             SIGNAL(testConnection(const QString &)),
             SLOT(onTestDialupConnection(const QString &)));
-    connect(mDialupWindow,
+    connect(m_DialupWindow,
             SIGNAL(removeConnection(const QString &)),
             SLOT(onRemoveDialupConnection(const QString &)));
 
-    swContainer->addWidget(mDialupWindow);
+    swContainer->addWidget(m_DialupWindow);
 
     // Инициализация окна с настройками соединения по локальной сети
     QNetworkProxy proxy(
@@ -94,14 +94,14 @@ bool NetworkServiceWindow::initialize() {
         networkInfo[CServiceTags::ProxyUser].toString(),
         networkInfo[CServiceTags::ProxyPassword].toString());
 
-    mUnmanagedWindow = new UnmanagedConnectionWindow(this);
-    mUnmanagedWindow->initialize(proxy);
+    m_UnmanagedWindow = new UnmanagedConnectionWindow(this);
+    m_UnmanagedWindow->initialize(proxy);
 
-    connect(mUnmanagedWindow,
+    connect(m_UnmanagedWindow,
             SIGNAL(testConnection(QNetworkProxy)),
             SLOT(onTestUnmanagedConnection(QNetworkProxy)));
 
-    swContainer->addWidget(mUnmanagedWindow);
+    swContainer->addWidget(m_UnmanagedWindow);
 
     // Контролы переключения типа соединения
     if (type == EConnectionTypes::Unmanaged) {
@@ -115,7 +115,7 @@ bool NetworkServiceWindow::initialize() {
 
 //------------------------------------------------------------------------
 bool NetworkServiceWindow::shutdown() {
-    mTaskWatcher.waitForFinished();
+    m_TaskWatcher.waitForFinished();
 
     return true;
 }
@@ -123,9 +123,9 @@ bool NetworkServiceWindow::shutdown() {
 //------------------------------------------------------------------------
 void NetworkServiceWindow::onChangeConnectionType(QAbstractButton *aButton) {
     if (aButton == rbDialupLink) {
-        swContainer->setCurrentWidget(mDialupWindow);
+        swContainer->setCurrentWidget(m_DialupWindow);
     } else {
-        swContainer->setCurrentWidget(mUnmanagedWindow);
+        swContainer->setCurrentWidget(m_UnmanagedWindow);
     }
 }
 
@@ -137,15 +137,15 @@ void NetworkServiceWindow::onCreateDialupConnection(const QString &aConnection,
     connection.type = EConnectionTypes::Dialup;
     connection.name = aConnection;
 
-    mBackend->getNetworkManager()->createDialupConnection(connection, aNetworkDevice);
+    m_Backend->getNetworkManager()->createDialupConnection(connection, aNetworkDevice);
 
     QVariantMap connections;
-    foreach (QString c, mBackend->getNetworkManager()->getRemoteConnections()) {
+    foreach (QString c, m_Backend->getNetworkManager()->getRemoteConnections()) {
         connections.insert(c, 0);
     }
 
-    mDialupWindow->fillConnectionList(connections.keys(), aConnection);
-    mDialupWindow->switchToListPage();
+    m_DialupWindow->fillConnectionList(connections.keys(), aConnection);
+    m_DialupWindow->switchToListPage();
 }
 
 //------------------------------------------------------------------------
@@ -157,10 +157,10 @@ void NetworkServiceWindow::onTestDialupConnection(const QString &aConnection) {
 
     GUI::MessageBox::wait(tr("#testing_connection"));
 
-    mBackend->getNetworkManager()->setConnection(connection);
-    mTaskWatcher.setFuture(QtConcurrent::run(boost::bind(&NetworkManager::testConnection,
-                                                         mBackend->getNetworkManager(),
-                                                         boost::ref(mConnectionError))));
+    m_Backend->getNetworkManager()->setConnection(connection);
+    m_TaskWatcher.setFuture(QtConcurrent::run(boost::bind(&NetworkManager::testConnection,
+                                                         m_Backend->getNetworkManager(),
+                                                         boost::ref(m_ConnectionError))));
 }
 
 //------------------------------------------------------------------------
@@ -170,15 +170,15 @@ void NetworkServiceWindow::onRemoveDialupConnection(const QString &aConnection) 
     connection.type = EConnectionTypes::Dialup;
     connection.name = aConnection;
 
-    mBackend->getNetworkManager()->removeDialupConnection(connection);
+    m_Backend->getNetworkManager()->removeDialupConnection(connection);
 
     QVariantMap connections;
-    foreach (QString c, mBackend->getNetworkManager()->getRemoteConnections()) {
+    foreach (QString c, m_Backend->getNetworkManager()->getRemoteConnections()) {
         connections.insert(c, 0);
     }
 
-    mDialupWindow->fillConnectionList(connections.keys(), aConnection);
-    mDialupWindow->switchToListPage();
+    m_DialupWindow->fillConnectionList(connections.keys(), aConnection);
+    m_DialupWindow->switchToListPage();
 }
 
 //---------------------------------------------------------------------------
@@ -200,18 +200,18 @@ void NetworkServiceWindow::onTestUnmanagedConnection(QNetworkProxy aProxy) {
 
     GUI::MessageBox::wait(tr("#testing_connection"));
 
-    mBackend->getNetworkManager()->setConnection(connection);
-    mTaskWatcher.setFuture(QtConcurrent::run(boost::bind(&NetworkManager::testConnection,
-                                                         mBackend->getNetworkManager(),
-                                                         boost::ref(mConnectionError))));
+    m_Backend->getNetworkManager()->setConnection(connection);
+    m_TaskWatcher.setFuture(QtConcurrent::run(boost::bind(&NetworkManager::testConnection,
+                                                         m_Backend->getNetworkManager(),
+                                                         boost::ref(m_ConnectionError))));
 }
 
 //---------------------------------------------------------------------------
 void NetworkServiceWindow::onTestFinished() {
     GUI::MessageBox::hide();
-    GUI::MessageBox::info(mTaskWatcher.result()
+    GUI::MessageBox::info(m_TaskWatcher.result()
                               ? tr("#connection_test_ok")
-                              : tr("#connection_test_failed") + "\n" + mConnectionError);
+                              : tr("#connection_test_failed") + "\n" + m_ConnectionError);
 }
 
 //------------------------------------------------------------------------

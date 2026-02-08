@@ -15,7 +15,7 @@ public:
     virtual bool canProcessOffline() const;
 
     /// Выполнение шага с идентификатором aStep.
-    virtual bool performStep(int aStep);
+    virtual bool perform_Step(int aStep);
 
 #pragma endregion
 

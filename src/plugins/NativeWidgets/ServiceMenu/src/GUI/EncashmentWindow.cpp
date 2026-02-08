@@ -30,14 +30,14 @@ template <class T> void safeDelete(T *&aPointer) {
 
 //---------------------------------------------------------------------------
 EncashmentWindow::EncashmentWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), ServiceWindowBase(aBackend), mEncashmentWithZReport(false),
-      mInputBox(nullptr), mHistoryWindow(nullptr), mLastPrintJob(0) {}
+    : QWidget(aParent), ServiceWindowBase(aBackend), m_EncashmentWithZReport(false),
+      m_InputBox(nullptr), m_HistoryWindow(nullptr), m_LastPrintJob(0) {}
 
 //---------------------------------------------------------------------------
 EncashmentWindow::~EncashmentWindow() {}
 
 bool EncashmentWindow::activate() {
-    connect(mBackend->getPaymentManager(),
+    connect(m_Backend->getPaymentManager(),
             SIGNAL(receiptPrinted(qint64, bool)),
             this,
             SLOT(onPeceiptPrinted(qint64, bool)));
@@ -46,9 +46,9 @@ bool EncashmentWindow::activate() {
 
 //---------------------------------------------------------------------------
 bool EncashmentWindow::deactivate() {
-    safeDelete(mInputBox);
+    safeDelete(m_InputBox);
 
-    disconnect(mBackend->getPaymentManager(),
+    disconnect(m_Backend->getPaymentManager(),
                SIGNAL(receiptPrinted(qint64, bool)),
                this,
                SLOT(onPeceiptPrinted(qint64, bool)));
@@ -58,28 +58,28 @@ bool EncashmentWindow::deactivate() {
 
 //---------------------------------------------------------------------------
 void EncashmentWindow::doEncashment() {
-    auto paymentManager = mBackend->getPaymentManager();
+    auto paymentManager = m_Backend->getPaymentManager();
     bool isPrinterOK = paymentManager->canPrint(PPSDK::CReceiptType::Encashment);
     QString text = isPrinterOK ? tr("#question_encash") : tr("#question_encash_without_receipt");
 
-    safeDelete(mInputBox);
+    safeDelete(m_InputBox);
 
     if (GUI::MessageBox::question(text)) {
         // Если баланс не пустой и нужно ввести номер кассеты
         if (paymentManager->getBalanceInfo()[CServiceTags::CashAmount].toDouble() > 0.0 &&
             dynamic_cast<PPSDK::UserSettings *>(
-                mBackend->getCore()->getSettingsService()->getAdapter(
+                m_Backend->getCore()->getSettingsService()->getAdapter(
                     PPSDK::CAdapterNames::UserAdapter))
                 ->useStackerID()) {
             InputBox::ValidatorFunction validator = [](const QString &aText) -> bool {
                 return !aText.trimmed().isEmpty();
             };
-            mInputBox = new InputBox(this, validator);
-            mInputBox->setLabelText(tr("#enter_stacker_id"));
+            m_InputBox = new InputBox(this, validator);
+            m_InputBox->setLabelText(tr("#enter_stacker_id"));
 
-            connect(mInputBox, SIGNAL(accepted()), this, SLOT(doEncashmentProcess()));
+            connect(m_InputBox, SIGNAL(accepted()), this, SLOT(doEncashmentProcess()));
 
-            mInputBox->show();
+            m_InputBox->show();
         } else {
             doEncashmentProcess();
         }
@@ -89,16 +89,16 @@ void EncashmentWindow::doEncashment() {
 //---------------------------------------------------------------------------
 bool EncashmentWindow::doEncashmentProcess() {
     bool result = false;
-    auto paymentManager = mBackend->getPaymentManager();
+    auto paymentManager = m_Backend->getPaymentManager();
     bool printerOK = paymentManager->canPrint(PPSDK::CReceiptType::Encashment);
 
-    mIdleTimer.stop();
+    m_IdleTimer.stop();
 
     QVariantMap parameters;
 
-    if (mInputBox) {
-        parameters[PPSDK::EncashmentParameter::StackerID] = mInputBox->textValue().trimmed();
-        safeDelete(mInputBox);
+    if (m_InputBox) {
+        parameters[PPSDK::EncashmentParameter::StackerID] = m_InputBox->textValue().trimmed();
+        safeDelete(m_InputBox);
     }
 
     switch (paymentManager->perform(parameters)) {
@@ -108,9 +108,9 @@ bool EncashmentWindow::doEncashmentProcess() {
         GUI::MessageBox::info(tr("#encashment_complete"));
 
         if (!printerOK) {
-            mMessageError = tr("#encashment_print_failed");
+            m_MessageError = tr("#encashment_print_failed");
         } else {
-            mMessageSuccess = tr("#encashment_complete_and_printed");
+            m_MessageSuccess = tr("#encashment_complete_and_printed");
             GUI::MessageBox::wait(tr("#printing"));
         }
 
@@ -118,7 +118,7 @@ bool EncashmentWindow::doEncashmentProcess() {
         paymentManager->printEncashment();
 
         // Сбросим счетчики отбракованных купюр/монет
-        mBackend->getCore()
+        m_Backend->getCore()
             ->getService("FundsService")
             ->resetParameters(QSet<QString>() << PPSDK::CServiceParameters::Funds::RejectCount);
         break;
@@ -142,12 +142,12 @@ void EncashmentWindow::onPrintZReport() {
     QPushButton *zReportButton = dynamic_cast<QPushButton *>(sender());
     GUI::MessageBox::hide();
 
-    mMessageError = tr("#zreport_failed");
-    if (mBackend->getPaymentManager()->canPrint(PPSDK::CReceiptType::ZReport)) {
-        mMessageSuccess = tr("#zreport_printed");
+    m_MessageError = tr("#zreport_failed");
+    if (m_Backend->getPaymentManager()->canPrint(PPSDK::CReceiptType::ZReport)) {
+        m_MessageSuccess = tr("#zreport_printed");
         bool fullZReport = false;
         bool canPrintFullZReport =
-            mBackend->getHardwareManager()->isFiscalPrinterPresent(false, true);
+            m_Backend->getHardwareManager()->isFiscalPrinterPresent(false, true);
 
         QString msg =
             canPrintFullZReport ? tr("#print_full_zreport") : tr("#full_zreport_print_failed");
@@ -158,57 +158,57 @@ void EncashmentWindow::onPrintZReport() {
             GUI::MessageBox::warning(msg);
         }
 
-        mIdleTimer.stop();
+        m_IdleTimer.stop();
 
         GUI::MessageBox::wait(tr("#printing"));
 
         // if (zReportButton)
         {
-            int jobIndex = mBackend->getPaymentManager()->printZReport(fullZReport);
+            int jobIndex = m_Backend->getPaymentManager()->printZReport(fullZReport);
             if (jobIndex == -1) {
-                mBackend->toLog(LogLevel::Debug, QString("JOB id=%1 CREATE FAIL.").arg(jobIndex));
+                m_Backend->toLog(LogLevel::Debug, QString("JOB id=%1 CREATE FAIL.").arg(jobIndex));
                 GUI::MessageBox::warning(tr("#full_zreport_print_failed"));
             } else {
-                mBackend->toLog(LogLevel::Debug, QString("JOB id=%1 CREATE.").arg(jobIndex));
+                m_Backend->toLog(LogLevel::Debug, QString("JOB id=%1 CREATE.").arg(jobIndex));
             }
         }
     } else {
         // TODO Дополнять статусом принтера
-        GUI::MessageBox::critical(mMessageError);
+        GUI::MessageBox::critical(m_MessageError);
     }
 }
 
 //------------------------------------------------------------------------
 void EncashmentWindow::onReceiptPrinted(qint64 aJobIndex, bool aErrorHappened) {
-    if (mLastPrintJob && mLastPrintJob == aJobIndex) {
-        mBackend->toLog(LogLevel::Debug,
+    if (m_LastPrintJob && m_LastPrintJob == aJobIndex) {
+        m_Backend->toLog(LogLevel::Debug,
                         QString("JOB id=%1 ALREADY COMPLETE. SKIP SLOT.").arg(aJobIndex));
         GUI::MessageBox::hide();
         return;
     }
 
-    mLastPrintJob = aJobIndex;
+    m_LastPrintJob = aJobIndex;
 
-    mBackend->toLog(
+    m_Backend->toLog(
         LogLevel::Debug,
         QString("JOB id=%1 COMPLETE. Error status: %2").arg(aJobIndex).arg(aErrorHappened));
 
-    if (!mMessageError.isEmpty() && aErrorHappened) {
-        GUI::MessageBox::critical(mMessageError);
-    } else if (!mMessageSuccess.isEmpty() && !aErrorHappened) {
-        GUI::MessageBox::info(mMessageSuccess);
+    if (!m_MessageError.isEmpty() && aErrorHappened) {
+        GUI::MessageBox::critical(m_MessageError);
+    } else if (!m_MessageSuccess.isEmpty() && !aErrorHappened) {
+        GUI::MessageBox::info(m_MessageSuccess);
     }
 
-    mMessageError.clear();
-    mMessageSuccess.clear();
+    m_MessageError.clear();
+    m_MessageSuccess.clear();
 
-    if (mEncashmentWithZReport) {
+    if (m_EncashmentWithZReport) {
         QTimer::singleShot(1000, this, SLOT(onPrintZReport()));
 
-        mEncashmentWithZReport = false;
+        m_EncashmentWithZReport = false;
     }
 
-    mIdleTimer.start();
+    m_IdleTimer.start();
     ;
 }
 

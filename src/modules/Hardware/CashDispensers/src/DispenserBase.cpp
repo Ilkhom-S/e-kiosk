@@ -243,7 +243,7 @@ template <class T> void DispenserBase<T>::dispense(int aUnit, int aItems) {
         return;
     }
 
-    this->performDispense(aUnit, aItems);
+    this->perform_Dispense(aUnit, aItems);
 }
 
 //--------------------------------------------------------------------------------

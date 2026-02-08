@@ -1,5 +1,5 @@
 
-#include "CustomTG2480.h"
+#include "Custom_TG2480.h"
 
 TG2480_PRINTER::TG2480_PRINTER(QObject *parent) : BasePrinterDevices(parent) {
     //    printer_name = "Custom-VKP80";
@@ -16,9 +16,9 @@ bool TG2480_PRINTER::openPort() {
         is_open = false;
         //    return is_open;
         // Даем девайсу название порта
-        // if(Debugger)  qDebug() << "devicePort->setDeviceName(comName); - " <<
-        // comName;
-        serialPort->setPortName(comName);
+        // if(Debugger)  qDebug() << "devicePort->setDeviceName(com_Name); - " <<
+        // com_Name;
+        serialPort->setPortName(com_Name);
 
         if (serialPort->open(QIODevice::ReadWrite)) {
             // Если Девайсу удалось открыть порт
@@ -144,7 +144,7 @@ bool TG2480_PRINTER::getStatus(int &aStatus) {
             aStatus |= PrinterState::PrintingHeadError;
             // if(Debugger) qDebug() << "AV268::getStatus(): Printing head open";
         }
-        code = status & CMDTG2480::PrinterSystemError;
+        code = status & CMDTG2480::PrinterSystem_Error;
         if (code > 0) {
             // System error
             aStatus |= PrinterState::PrinterError;

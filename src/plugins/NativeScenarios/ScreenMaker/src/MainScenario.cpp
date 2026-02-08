@@ -39,10 +39,10 @@ namespace ScreenMaker {
 
 //---------------------------------------------------------------------------
 MainScenario::MainScenario(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
-    : Scenario(CScenarioPlugin::PluginName, aLog), mCore(aCore), mDrawAreaWindow(nullptr) {
+    : Scenario(CScenarioPlugin::PluginName, aLog), m_Core(aCore), m_DrawAreaWindow(nullptr) {
     QString path =
         static_cast<SDK::PaymentProcessor::TerminalSettings *>(
-            mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
+            m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
             ->getAppEnvironment()
             .userDataPath +
         QDir::separator() + "interface.ini";
@@ -57,9 +57,9 @@ MainScenario::MainScenario(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
         }
     }
 
-    QRect rect = mCore->getGUIService()->getScreenSize(displayIndex);
+    QRect rect = m_Core->getGUIService()->getScreenSize(displayIndex);
 
-    mDrawAreaWindow = new DrawAreaWindow(mCore, rect);
+    m_DrawAreaWindow = new DrawAreaWindow(m_Core, rect);
 }
 
 //---------------------------------------------------------------------------
@@ -72,15 +72,15 @@ bool MainScenario::initialize(const QList<GUI::SScriptObject> & /*aScriptObjects
 
 //---------------------------------------------------------------------------
 void MainScenario::start(const QVariantMap & /*aContext*/) {
-    // mCore->getGUIService()->show("ScreenMakerWidget", QVariantMap());
-    mDrawAreaWindow->updateImage(mCore->getGUIService()->getScreenshot().toImage());
-    mDrawAreaWindow->setVisible(true);
+    // m_Core->getGUIService()->show("ScreenMakerWidget", QVariantMap());
+    m_DrawAreaWindow->updateImage(m_Core->getGUIService()->getScreenshot().toImage());
+    m_DrawAreaWindow->setVisible(true);
 }
 
 //---------------------------------------------------------------------------
 void MainScenario::stop() {
-    mTimeoutTimer.stop();
-    mDrawAreaWindow->setVisible(false);
+    m_TimeoutTimer.stop();
+    m_DrawAreaWindow->setVisible(false);
 }
 
 //---------------------------------------------------------------------------

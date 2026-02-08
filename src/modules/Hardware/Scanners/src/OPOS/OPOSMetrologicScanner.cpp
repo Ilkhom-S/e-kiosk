@@ -24,7 +24,7 @@
 //--------------------------------------------------------------------------------
 OPOSMetrologicScanner::OPOSMetrologicScanner() {
     m_DeviceName = "Honeywell Metrologic based on OPOS driver";
-    m_ClaimTimeout = 2000;
+    m_Claim_Timeout = 2000;
     m_ProfileNames = getProfileNames();
     m_PollingInterval = 500;
     m_ExEnabled = false;

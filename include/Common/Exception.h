@@ -24,18 +24,18 @@ public:
               ESeverity::Enum aSeverity,
               int aCode,
               const QString &aMessage)
-        : mCategory(aCategory), mSeverity(aSeverity), mCode(aCode), mMessage(aMessage) {}
+        : m_Category(aCategory), m_Severity(aSeverity), m_Code(aCode), m_Message(aMessage) {}
 
-    ECategory::Enum getCategory() const { return mCategory; }
-    ESeverity::Enum getSeverity() const { return mSeverity; }
-    int getCode() const { return mCode; }
-    QString getMessage() const { return mMessage; }
+    ECategory::Enum getCategory() const { return m_Category; }
+    ESeverity::Enum getSeverity() const { return m_Severity; }
+    int getCode() const { return m_Code; }
+    QString getMessage() const { return m_Message; }
 
 private:
-    ECategory::Enum mCategory;
-    ESeverity::Enum mSeverity;
-    int mCode;
-    QString mMessage;
+    ECategory::Enum m_Category;
+    ESeverity::Enum m_Severity;
+    int m_Code;
+    QString m_Message;
 };
 
 //--------------------------------------------------------------------------------

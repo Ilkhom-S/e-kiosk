@@ -91,20 +91,20 @@ public:
 
 protected:
     // Фуфуфу
-    SDK::Plugin::IEnvironment *mFactory;
+    SDK::Plugin::IEnvironment *m_Factory;
 
 private:
-    bool mInitialized;
-    QString mInstancePath;
-    QVariantMap mParameters;
+    bool m_Initialized;
+    QString m_InstancePath;
+    QVariantMap m_Parameters;
 
-    TSerializer mSerializer;
+    TSerializer m_Serializer;
 
-    SDK::PaymentProcessor::ICore *mCore;
+    SDK::PaymentProcessor::ICore *m_Core;
 
-    ICryptEngine *mCryptEngine;
+    ICryptEngine *m_CryptEngine;
 
-    NetworkTaskManager *mNetwork;
+    NetworkTaskManager *m_Network;
 };
 
 //------------------------------------------------------------------------------

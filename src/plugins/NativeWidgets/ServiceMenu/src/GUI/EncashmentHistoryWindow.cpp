@@ -12,11 +12,11 @@
 #include "ServiceTags.h"
 
 EncashmentHistoryWindow::EncashmentHistoryWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), mBackend(aBackend) {
+    : QWidget(aParent), m_Backend(aBackend) {
     setupUi(this);
 
-    mSignalMapper = new QSignalMapper(this);
-    connect(mSignalMapper, SIGNAL(mapped(int)), this, SLOT(printEncashment(int)));
+    m_SignalMapper = new QSignalMapper(this);
+    connect(m_SignalMapper, SIGNAL(mapped(int)), this, SLOT(printEncashment(int)));
 }
 
 //------------------------------------------------------------------------
@@ -25,13 +25,13 @@ EncashmentHistoryWindow::~EncashmentHistoryWindow() {}
 //------------------------------------------------------------------------
 void EncashmentHistoryWindow::updateHistory() {
     // clear all
-    foreach (auto button, mWidgets) {
+    foreach (auto button, m_Widgets) {
         gridHistoryLayout->removeWidget(button);
         button->deleteLater();
     }
-    mWidgets.clear();
+    m_Widgets.clear();
 
-    auto paymentManager = mBackend->getPaymentManager();
+    auto paymentManager = m_Backend->getPaymentManager();
     int count = paymentManager->getEncashmentsHistoryCount();
 
     for (int i = 0; i < count; i++) {
@@ -43,16 +43,16 @@ void EncashmentHistoryWindow::updateHistory() {
                        tr("#total") + ": " + encashment[CServiceTags::CashAmount].toString();
 
         QPushButton *button = new QPushButton(text, this);
-        button->setMinimumHeight(35);
-        button->setMaximumWidth(250);
+        button->setMinimum_Height(35);
+        button->setMaximum_Width(250);
         button->setEnabled(
             paymentManager->canPrint(SDK::PaymentProcessor::CReceiptType::Encashment));
 
-        connect(button, SIGNAL(clicked()), mSignalMapper, SLOT(map()));
-        mSignalMapper->setMapping(button, i);
+        connect(button, SIGNAL(clicked()), m_SignalMapper, SLOT(map()));
+        m_SignalMapper->setMapping(button, i);
 
         gridHistoryLayout->addWidget(button, i % 5, i / 5);
-        mWidgets << button;
+        m_Widgets << button;
     }
 
     gridHistoryLayout->addItem(
@@ -61,7 +61,7 @@ void EncashmentHistoryWindow::updateHistory() {
 
 //------------------------------------------------------------------------
 void EncashmentHistoryWindow::printEncashment(int aIndex) {
-    auto paymentManager = mBackend->getPaymentManager();
+    auto paymentManager = m_Backend->getPaymentManager();
 
     paymentManager->printEncashment(aIndex);
 }

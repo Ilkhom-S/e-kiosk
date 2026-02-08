@@ -19,10 +19,10 @@ const int CellInfo = 300;         /// Инфо о статусе регистр�
 const int SMS = 5000;             /// Забирание SMS
 const int Config = 300;           /// Получение конфигурации
 
-namespace SimCom {
+namespace Sim_Com {
 const int Config = 1000; /// Получение конфигурации
 const int USSD = 5000;   /// USSD-запрос
-} // namespace SimCom
+} // namespace Sim_Com
 
 namespace Siemens {
 const int CellInfo = 1000; /// Инфо о статусе регистрации в сети
@@ -73,7 +73,7 @@ public:
     QStringList getDeviceDataKeys() {
         QStringList result;
 
-        foreach (const SSIMRequestInfo &aInfo, mBuffer) {
+        foreach (const SSIMRequestInfo &aInfo, m_Buffer) {
             result << aInfo.name;
         }
 

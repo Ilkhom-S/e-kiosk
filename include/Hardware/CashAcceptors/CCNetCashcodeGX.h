@@ -26,7 +26,7 @@ protected:
     virtual bool checkConnectionAbility();
 
     /// Выполнить команду.
-    virtual TResult performCommand(const QByteArray &aCommand,
+    virtual TResult perform_Command(const QByteArray &aCommand,
                                    const QByteArray &aCommandData,
                                    QByteArray *aAnswer = nullptr);
 
@@ -37,7 +37,7 @@ protected:
     virtual bool processUpdating(const QByteArray &aBuffer, int aSectionSize);
 
     /// Изменить скорость работы.
-    virtual bool performBaudRateChanging(const SDK::Driver::TPortParameters &aPortParameters);
+    virtual bool perform_BaudRateChanging(const SDK::Driver::TPortParameters &aPortParameters);
 };
 
 //--------------------------------------------------------------------------------

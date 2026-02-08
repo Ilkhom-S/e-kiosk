@@ -46,7 +46,7 @@ inline QString getUnitellerHostPath() {
                         CloseHandle(hProcess);
                         CloseHandle(snapshot);
 
-                        return QFileInfo(QString::fromWCharArray(fullPath)).dir().path();
+                        return QFileInfo(QString::from_WCharArray(fullPath)).dir().path();
                     }
 
                     CloseHandle(processHandle);

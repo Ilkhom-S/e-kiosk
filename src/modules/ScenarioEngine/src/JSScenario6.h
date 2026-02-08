@@ -40,7 +40,7 @@ public:
     /// Инициализация сценария. Вызывается из скрипта.
     virtual bool initialize(const QList<SScriptObject> &aScriptObjects);
 
-    virtual void setStateHook(const QList<SExternalStateHook> &aHook) { mHooks << aHook; }
+    virtual void setStateHook(const QList<SExternalStateHook> &aHook) { m_Hooks << aHook; }
 
     /// Обработка сигнала из активного состояния с дополнительными аргументами.
     virtual void signalTriggered(const QString &aSignal,
@@ -100,25 +100,25 @@ private:
     typedef QMap<QString, SState> TStateList;
 
 private:
-    QString mPath;     /// Путь к сценарию.
-    QString mBasePath; /// Путь к скрипту родительского сценария (если применяется наследование).
-    QSharedPointer<QJSEngine> mScriptEngine;     /// Скриптовый движок для обработчиков.
-    QSharedPointer<QStateMachine> mStateMachine; /// Конечный автомат.
-    TStateList mStates;                          /// Набор состояний.
-    QSignalMapper mEnterSignalMapper;
-    QSignalMapper mExitSignalMapper;
-    QString mCurrentState;                    /// Имя текущего состояния.
-    QString mInitialState;                    /// Начальное состояние.
-    QVariantMap mSignalArguments;             /// Параметры сигналов.
-    QVariantMap mContext;                     /// Контекст.
-    QString mScriptPath;                      /// Путь к файлу скрипты.
-    QJSValue mTimeoutHandler;                 /// Обработчик таймаута.
-    QMultiMap<QString, QString> mTransitions; /// Список возможных переходов для состояния.
-    bool mIsPaused;                           /// Флаг для пропуска переходов в сценариях "на паузе"
-    int mDefaultTimeout;                      /// Таймаут по умолчанию.
-    QTimer mTimeoutTimer;                     /// Таймер для таймаутов состояний.
+    QString m_Path;     /// Путь к сценарию.
+    QString m_BasePath; /// Путь к скрипту родительского сценария (если применяется наследование).
+    QSharedPointer<QJSEngine> m_ScriptEngine;     /// Скриптовый движок для обработчиков.
+    QSharedPointer<QStateMachine> m_StateMachine; /// Конечный автомат.
+    TStateList m_States;                          /// Набор состояний.
+    QSignalMapper m_EnterSignalMapper;
+    QSignalMapper m_ExitSignalMapper;
+    QString m_CurrentState;                    /// Имя текущего состояния.
+    QString m_InitialState;                    /// Начальное состояние.
+    QVariantMap m_SignalArguments;             /// Параметры сигналов.
+    QVariantMap m_Context;                     /// Контекст.
+    QString m_ScriptPath;                      /// Путь к файлу скрипты.
+    QJSValue m_TimeoutHandler;                 /// Обработчик таймаута.
+    QMultiMap<QString, QString> m_Transitions; /// Список возможных переходов для состояния.
+    bool m_IsPaused;                           /// Флаг для пропуска переходов в сценариях "на паузе"
+    int m_DefaultTimeout;                      /// Таймаут по умолчанию.
+    QTimer m_TimeoutTimer;                     /// Таймер для таймаутов состояний.
 
-    QList<Scenario::SExternalStateHook> mHooks;
+    QList<Scenario::SExternalStateHook> m_Hooks;
 };
 
 } // namespace GUI

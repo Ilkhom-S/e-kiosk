@@ -6,18 +6,18 @@
 #include "Hardware/Common/ProtocolBase.h"
 
 /// Маски ответов на запрос статуса выполнения команды.
-namespace CPrimFR {
+namespace CPrim_FR {
 namespace CommandResultMask {
 const char CommandVerified = '\x04'; /// Команда распознана.
 const char CommandComplete = '\x08'; /// Команда выполнена.
 const char PrinterError = '\x20';    /// Ошибка принтера.
 const char PrinterMode = '\x40';     /// Работа в режиме принтера.
 } // namespace CommandResultMask
-} // namespace CPrimFR
+} // namespace CPrim_FR
 
 //--------------------------------------------------------------------------------
 /// Протокол реал-тайм запросов ФР ПРИМ.
-class PrimFRRealTimeProtocol : public ProtocolBase {
+class Prim_FRRealTimeProtocol : public ProtocolBase {
 public:
     /// Обработка команды.
     TResult processCommand(int aCommand, char &aAnswer) {

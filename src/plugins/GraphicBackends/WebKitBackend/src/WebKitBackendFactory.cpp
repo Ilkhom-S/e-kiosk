@@ -8,9 +8,9 @@
 
 #include "WebKitBackend.h"
 
-QString SDK::Plugin::PluginFactory::mName = "Webkit graphics backend";
-QString SDK::Plugin::PluginFactory::mDescription =
+QString SDK::Plugin::PluginFactory::m_Name = "Webkit graphics backend";
+QString SDK::Plugin::PluginFactory::m_Description =
     "Webkit based graphics backend for html widgets (with webkit plugins support)";
-QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
-QString SDK::Plugin::PluginFactory::mModuleName = "webkit_backend";
+QString SDK::Plugin::PluginFactory::m_Author = "Humo";
+QString SDK::Plugin::PluginFactory::m_Version = "1.0";
+QString SDK::Plugin::PluginFactory::m_ModuleName = "webkit_backend";

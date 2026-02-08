@@ -54,13 +54,13 @@ class Properties : public QObject {
 
 public:
     /// Конструктор.
-    Properties(QVariantMap &aProperties) : mProperties(aProperties) {}
+    Properties(QVariantMap &aProperties) : m_Properties(aProperties) {}
 
 public slots:
     /// Получить значение свойства.
     QVariant get(const QString &aName) {
         if (has(aName)) {
-            return mProperties[aName];
+            return m_Properties[aName];
         }
 
         return QVariant();
@@ -68,12 +68,12 @@ public slots:
 
     /// Установить значение свойства.
     void set(const QString &aName, const QVariant &aValue) {
-        mProperties[aName] = aValue;
+        m_Properties[aName] = aValue;
         emit updated();
     }
 
     /// Проверить наличие свойства.
-    bool has(const QString &aName) { return mProperties.contains(aName); }
+    bool has(const QString &aName) { return m_Properties.contains(aName); }
 
 signals:
     /// Сигнал об обновлении.
@@ -81,7 +81,7 @@ signals:
 
 private:
     /// Ссылка на свойства.
-    QVariantMap &mProperties;
+    QVariantMap &m_Properties;
 };
 
 //------------------------------------------------------------------------------
@@ -168,32 +168,32 @@ private slots:
 
 private:
     /// Указатель на ядро.
-    ICore *mCore;
+    ICore *m_Core;
 
     /// Пользовательские свойства.
-    Properties mUserProperties;
+    Properties m_UserProperties;
     /// Карта сервисов.
-    QMap<QString, QObject *> mServices;
+    QMap<QString, QObject *> m_Services;
 
     /// Сервис средств.
-    FundsService mFundsService;
+    FundsService m_FundsService;
     /// Сервис принтера.
-    PrinterService mPrinterService;
+    PrinterService m_PrinterService;
     /// Сервис сети.
-    NetworkService mNetworkService;
+    NetworkService m_NetworkService;
     /// Сервис платежей.
-    PaymentService mPaymentService;
+    PaymentService m_PaymentService;
     /// Сервис GUI.
-    GUIService mGUIService;
+    GUIService m_GUIService;
     /// Сервис рекламы.
-    AdService mAdService;
+    AdService m_AdService;
     /// Сервис устройств.
-    DeviceService mDeviceService;
+    DeviceService m_DeviceService;
     /// Настройки.
-    Settings mSettings;
+    Settings m_Settings;
     /// Лог.
-    Log mLog;
-    HIDService mHID;
+    Log m_Log;
+    HIDService m_HID;
 };
 
 //------------------------------------------------------------------------------

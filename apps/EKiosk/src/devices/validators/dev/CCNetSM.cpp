@@ -9,14 +9,14 @@
 #include "CCNetFirmware.h"
 #include "CashPayment.h"
 
-typedef int (*SendFirmWareDataByPathFunc)(int, char *);
+typedef int (*SendFirm_WareDataByPathFunc)(int, char *);
 typedef long (*GetDataStatusFunc)();
 
 CCNetSm::CCNetSm(QObject *parent) : BaseValidatorDevices(parent) {
     preDateTime = QDateTime::currentDateTime().addSecs(-1);
 
     validatorLogEnable = false;
-    maxSumReject = false;
+    maxSum_Reject = false;
     hasDBError = false;
     escrowed = false;
     firmwareUpdating = false;
@@ -45,7 +45,7 @@ bool CCNetSm::openPort() {
         is_open = false;
 
         // Даем девайсу название порта
-        serialPort->setPortName(comName);
+        serialPort->setPortName(com_Name);
 
         if (serialPort->open(QIODevice::ReadWrite)) {
 
@@ -164,7 +164,7 @@ ushort CCNetSm::calcCRC16(const QByteArray &aData) {
     return CRC;
 }
 
-QByteArray CCNetSm::makeCustomRequest(int adr, int cmd, const QByteArray &data) {
+QByteArray CCNetSm::makeCustom_Request(int adr, int cmd, const QByteArray &data) {
 
     QByteArray request;
 
@@ -193,12 +193,12 @@ bool CCNetSm::execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdRespon
             switch (cmdType) {
 
             case ValidatorCommands::Reset:
-                cmdRequest = this->makeCustomRequest(
+                cmdRequest = this->makeCustom_Request(
                     CCNetConstruct::PABillValidator, CCNetConstruct::CCReset, 0);
                 break;
 
             case ValidatorCommands::GetNominalTable:
-                cmdRequest = this->makeCustomRequest(
+                cmdRequest = this->makeCustom_Request(
                     CCNetConstruct::PABillValidator, CCNetConstruct::CCGetBillTable, 0);
                 break;
 
@@ -214,17 +214,17 @@ bool CCNetSm::execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdRespon
                 btm_data[4] = '\xFF';
                 btm_data[5] = '\xFF';
 
-                cmdRequest = this->makeCustomRequest(
+                cmdRequest = this->makeCustom_Request(
                     CCNetConstruct::PABillValidator, CCNetConstruct::CCEnableBillTypes, btm_data);
             } break;
 
             case ValidatorCommands::Poll:
-                cmdRequest = this->makeCustomRequest(
+                cmdRequest = this->makeCustom_Request(
                     CCNetConstruct::PABillValidator, CCNetConstruct::CCPoll, 0);
                 break;
 
             case ValidatorCommands::Idintification:
-                cmdRequest = this->makeCustomRequest(
+                cmdRequest = this->makeCustom_Request(
                     CCNetConstruct::PABillValidator, CCNetConstruct::CCIdentification, 0);
                 break;
 
@@ -236,12 +236,12 @@ bool CCNetSm::execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdRespon
                     btm_data[i] = '\xFF';
                 }
 
-                cmdRequest = this->makeCustomRequest(
+                cmdRequest = this->makeCustom_Request(
                     CCNetConstruct::PABillValidator, CCNetConstruct::CCSetSecurity, btm_data);
             } break;
 
             case ValidatorCommands::ACK:
-                cmdRequest = this->makeCustomRequest(
+                cmdRequest = this->makeCustom_Request(
                     CCNetConstruct::PABillValidator, CCNetConstruct::CCAck, 0);
                 break;
 
@@ -251,17 +251,17 @@ bool CCNetSm::execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdRespon
                 for (int i = 0; i < 6; i++)
                     btm_data[i] = 0x00;
 
-                cmdRequest = this->makeCustomRequest(
+                cmdRequest = this->makeCustom_Request(
                     CCNetConstruct::PABillValidator, CCNetConstruct::CCEnableBillTypes, btm_data);
             } break;
 
             case ValidatorCommands::Return:
-                cmdRequest = this->makeCustomRequest(
+                cmdRequest = this->makeCustom_Request(
                     CCNetConstruct::PABillValidator, CCNetConstruct::CCReturn, 0);
                 break;
 
             case ValidatorCommands::Stack:
-                cmdRequest = this->makeCustomRequest(
+                cmdRequest = this->makeCustom_Request(
                     CCNetConstruct::PABillValidator, CCNetConstruct::CCStack, 0);
                 break;
 
@@ -510,7 +510,7 @@ bool CCNetSm::readAnswers(QList<QByteArray> &aAnswers, int aTimeout) {
 
 bool CCNetSm::sendACK() {
     QByteArray cmdRequest =
-        this->makeCustomRequest(CCNetConstruct::PABillValidator, CCNetConstruct::CCAck, 0);
+        this->makeCustom_Request(CCNetConstruct::PABillValidator, CCNetConstruct::CCAck, 0);
 
     if (isOpened()) {
         serialPort->write(cmdRequest);
@@ -613,7 +613,7 @@ void CCNetSm::CmdStartPoll() {
                         "CCNET",
                         QString("Возвращаем купюру %1 смн, из за ошибки БД").arg(escrowNominal));
                     this->setReturnNominalState(true);
-                } else if (maxSumReject && (nominalSum + escrowNominal > maxSum)) {
+                } else if (maxSum_Reject && (nominalSum + escrowNominal > maxSum)) {
                     this->execCommand(ValidatorCommands::Return, respData);
                     emit emitLog(0,
                                  "CCNET",
@@ -1203,9 +1203,9 @@ bool CCNetSm::fwCmdExec(const QByteArray aCommandData) {
 
         aAnswerData.append(answerData);
 
-    } while ((clockTimer.elapsed() < 2000) && QString::fromUtf8(aAnswerData) != "OK");
+    } while ((clockTimer.elapsed() < 2000) && QString::from_Utf8(aAnswerData) != "OK");
 
-    return QString::fromUtf8(aAnswerData) == "OK";
+    return QString::from_Utf8(aAnswerData) == "OK";
 }
 
 bool CCNetSm::serviceModeSwitch() {
@@ -1518,16 +1518,16 @@ bool CCNetSm::fwUpdateC100(QString version) {
     QFileInfo fileInfo(file);
 
     QString path = fileInfo.absoluteFilePath();
-    QString port = comName;
+    QString port = com_Name;
     QByteArray filePathBytes = path.toUtf8();
 
     int state;
     int nPort = port.remove("COM").toInt();
     char *filePath = filePathBytes.data();
 
-    SendFirmWareDataByPathFunc sendFirmWareDataByPathFunc =
-        (SendFirmWareDataByPathFunc)m_lib.resolve("SendFirmWareDataByPath");
-    if (!sendFirmWareDataByPathFunc) {
+    SendFirm_WareDataByPathFunc sendFirm_WareDataByPathFunc =
+        (SendFirm_WareDataByPathFunc)m_lib.resolve("SendFirm_WareDataByPath");
+    if (!sendFirm_WareDataByPathFunc) {
         emit emitLog(
             2, "FIRMWARE_CCNET", QString("Не найдена функция: %1").arg(m_lib.errorString()));
         emit emitFirmwareUpdate("cancel");
@@ -1539,7 +1539,7 @@ bool CCNetSm::fwUpdateC100(QString version) {
 
     msleep(2000);
 
-    state = sendFirmWareDataByPathFunc(nPort, filePath);
+    state = sendFirm_WareDataByPathFunc(nPort, filePath);
 
     if (state > 0) {
         emit emitFirmwareUpdate("start");

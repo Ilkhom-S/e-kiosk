@@ -12,7 +12,7 @@ namespace GUI {
 //---------------------------------------------------------------------------
 /// Описатель графического объекта. Загружается из файла description.ini в
 /// каталоге объекта.
-struct GraphicsItemInfo {
+struct GraphicsItem_Info {
     QString name;      /// Уникальное название графического элемента.
     QString type;      /// Тип нужного графического движка.
     QString directory; /// Директория с контентом элемента.
@@ -21,15 +21,15 @@ struct GraphicsItemInfo {
     QVariantMap context;               /// Специфические параметры для виджета.
 
     /// Оператор ==.
-    inline bool operator==(const GraphicsItemInfo &aGraphicsItemInfo) {
-        return name == aGraphicsItemInfo.name && type == aGraphicsItemInfo.type &&
-               directory == aGraphicsItemInfo.directory &&
-               parameters == aGraphicsItemInfo.parameters && context == aGraphicsItemInfo.context;
+    inline bool operator==(const GraphicsItem_Info &aGraphicsItem_Info) {
+        return name == aGraphicsItem_Info.name && type == aGraphicsItem_Info.type &&
+               directory == aGraphicsItem_Info.directory &&
+               parameters == aGraphicsItem_Info.parameters && context == aGraphicsItem_Info.context;
     }
 
     /// Оператор !=.
-    inline bool operator!=(const GraphicsItemInfo &aGraphicsItemInfo) {
-        return !(*this == aGraphicsItemInfo);
+    inline bool operator!=(const GraphicsItem_Info &aGraphicsItem_Info) {
+        return !(*this == aGraphicsItem_Info);
     }
 };
 

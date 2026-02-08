@@ -18,23 +18,23 @@ namespace PaymentProcessor {
 
 //----------------------------------------------------------------------------
 Commission::Commission()
-    : mValue(0.0), mAbove(CCommissions::DefaultAboveValue), mBelow(CCommissions::DefaultBelowValue),
-      mMinCharge(CCommissions::MinChargeValue), mMaxCharge(CCommissions::MaxChargeValue),
-      mType(Absolute), mRound(Bank), mBase(AmountAll) {}
+    : m_Value(0.0), m_Above(CCommissions::DefaultAboveValue), m_Below(CCommissions::DefaultBelowValue),
+      m_MinCharge(CCommissions::MinChargeValue), m_MaxCharge(CCommissions::MaxChargeValue),
+      m_Type(Absolute), m_Round(Bank), m_Base(AmountAll) {}
 
 //----------------------------------------------------------------------------
 bool Commission::contains(double aSum) const {
-    return qFuzzyCompare(aSum, mBelow) || ((aSum > mAbove) && (aSum < mBelow));
+    return qFuzzyCompare(aSum, m_Below) || ((aSum > m_Above) && (aSum < m_Below));
 }
 
 //----------------------------------------------------------------------------
 double Commission::getMinLimit() const {
-    return mAbove;
+    return m_Above;
 }
 
 //----------------------------------------------------------------------------
 double Commission::getMaxLimit() const {
-    return mBelow;
+    return m_Below;
 }
 
 //----------------------------------------------------------------------------
@@ -56,103 +56,103 @@ bool Commission::hasLimits() const {
 double Commission::getValueFor(double aSum, bool aAtAmount) const {
     double commission = 0;
 
-    if (mType == Percent) {
-        if (aAtAmount || mBase == Amount) {
+    if (m_Type == Percent) {
+        if (aAtAmount || m_Base == Amount) {
             // Комиссия считается по сумме к зачислению
-            commission = aSum - aSum / (1 + mValue / 100.0);
+            commission = aSum - aSum / (1 + m_Value / 100.0);
         } else {
             // Комиссия считается по внесённым средствам
-            commission = mValue * aSum * 0.01;
+            commission = m_Value * aSum * 0.01;
         }
     } else {
-        commission = mValue;
+        commission = m_Value;
     }
 
-    return commission < mMinCharge ? mMinCharge : commission > mMaxCharge ? mMaxCharge : commission;
+    return commission < m_MinCharge ? m_MinCharge : commission > m_MaxCharge ? m_MaxCharge : commission;
 }
 
 //----------------------------------------------------------------------------
 double Commission::getValue() const {
-    return mValue;
+    return m_Value;
 }
 
 //----------------------------------------------------------------------------
 Commission::Type Commission::getType() const {
-    return mType;
+    return m_Type;
 }
 
 //----------------------------------------------------------------------------
 Commission::Base Commission::getBase() const {
-    return mBase;
+    return m_Base;
 }
 
 //----------------------------------------------------------------------------
 double Commission::getMinCharge() const {
-    return mMinCharge;
+    return m_MinCharge;
 }
 
 //----------------------------------------------------------------------------
 double Commission::getMaxCharge() const {
-    return mMaxCharge;
+    return m_MaxCharge;
 }
 
 //----------------------------------------------------------------------------
 bool Commission::operator>(const Commission &aOther) const {
-    if ((qFuzzyCompare(mAbove, aOther.mAbove) && (mBelow < aOther.mBelow)) ||
-        (qFuzzyCompare(mBelow, aOther.mBelow) && (mAbove > aOther.mAbove))) {
+    if ((qFuzzyCompare(m_Above, aOther.m_Above) && (m_Below < aOther.m_Below)) ||
+        (qFuzzyCompare(m_Below, aOther.m_Below) && (m_Above > aOther.m_Above))) {
         return true;
     }
 
-    return ((mAbove > aOther.mAbove) && (mBelow < aOther.mBelow));
+    return ((m_Above > aOther.m_Above) && (m_Below < aOther.m_Below));
 }
 
 //----------------------------------------------------------------------------
 bool Commission::operator<(const Commission &aOther) const {
-    if (qFuzzyCompare(aOther.mBelow, CCommissions::DefaultBelowValue) &&
-        qFuzzyCompare(aOther.mAbove, CCommissions::DefaultAboveValue)) {
+    if (qFuzzyCompare(aOther.m_Below, CCommissions::DefaultBelowValue) &&
+        qFuzzyCompare(aOther.m_Above, CCommissions::DefaultAboveValue)) {
         return true;
     }
 
-    if (qFuzzyCompare(mBelow, CCommissions::DefaultBelowValue) &&
-        qFuzzyCompare(mAbove, CCommissions::DefaultAboveValue)) {
+    if (qFuzzyCompare(m_Below, CCommissions::DefaultBelowValue) &&
+        qFuzzyCompare(m_Above, CCommissions::DefaultAboveValue)) {
         return false;
     }
 
-    return (mAbove < aOther.mAbove);
+    return (m_Above < aOther.m_Above);
 }
 
 //----------------------------------------------------------------------------
-Commission Commission::fromSettings(const TPtree &aSettings) {
+Commission Commission::from_Settings(const TPtree &aSettings) {
     Commission commission;
 
-    commission.mType =
+    commission.m_Type =
         (aSettings.get<QString>("<xmlattr>.type").toLower() == "absolute") ? Absolute : Percent;
-    commission.mValue = aSettings.get<double>("<xmlattr>.amount");
+    commission.m_Value = aSettings.get<double>("<xmlattr>.amount");
 
     QString minChargeValue =
         aSettings
             .get<QString>("<xmlattr>.min_charge", QString::number(CCommissions::MinChargeValue))
             .trimmed();
-    commission.mMinCharge =
+    commission.m_MinCharge =
         minChargeValue.isEmpty() ? CCommissions::MinChargeValue : minChargeValue.toDouble();
 
     QString maxChargeValue =
         aSettings
             .get<QString>("<xmlattr>.max_charge", QString::number(CCommissions::MaxChargeValue))
             .trimmed();
-    commission.mMaxCharge =
+    commission.m_MaxCharge =
         maxChargeValue.isEmpty() ? CCommissions::MaxChargeValue : maxChargeValue.toDouble();
 
     QString round = aSettings.get<QString>("<xmlattr>.round", "bank").toLower();
     if (round == "high") {
-        commission.mRound = High;
+        commission.m_Round = High;
     } else if (round == "low") {
-        commission.mRound = Low;
+        commission.m_Round = Low;
     } else {
-        commission.mRound = Bank;
+        commission.m_Round = Bank;
     }
 
-    commission.mBase =
+    commission.m_Base =
         (aSettings.get<QString>("<xmlattr>.base", "amount_all").toLower() == "amount") ? Amount
                                                                                        : AmountAll;
 
@@ -160,7 +160,7 @@ Commission Commission::fromSettings(const TPtree &aSettings) {
 }
 
 //----------------------------------------------------------------------------
-Commission Commission::fromVariant(const QVariant &aCommissions) {
+Commission Commission::from_Variant(const QVariant &aCommissions) {
     Commission commission;
 
     auto val = [&aCommissions](QString aName, QString aDefault) -> QVariant {
@@ -168,30 +168,30 @@ Commission Commission::fromVariant(const QVariant &aCommissions) {
         return v.isNull() ? aDefault : v;
     };
 
-    commission.mType =
+    commission.m_Type =
         val("type", QString()).toString().toLower() == "absolute" ? Absolute : Percent;
-    commission.mValue = val("amount", QString()).toDouble();
+    commission.m_Value = val("amount", QString()).toDouble();
 
     QString minChargeValue =
         val("min_charge", QString::number(CCommissions::MinChargeValue)).toString().trimmed();
-    commission.mMinCharge =
+    commission.m_MinCharge =
         minChargeValue.isEmpty() ? CCommissions::MinChargeValue : minChargeValue.toDouble();
 
     QString maxChargeValue =
         val("max_charge", QString::number(CCommissions::MaxChargeValue)).toString().trimmed();
-    commission.mMaxCharge =
+    commission.m_MaxCharge =
         maxChargeValue.isEmpty() ? CCommissions::MaxChargeValue : maxChargeValue.toDouble();
 
     QString round = val("round", "bank").toString().toLower();
     if (round == "high") {
-        commission.mRound = High;
+        commission.m_Round = High;
     } else if (round == "low") {
-        commission.mRound = Low;
+        commission.m_Round = Low;
     } else {
-        commission.mRound = Bank;
+        commission.m_Round = Bank;
     }
 
-    commission.mBase =
+    commission.m_Base =
         (val("base", "amount_all").toString().toLower() == "amount") ? Amount : AmountAll;
 
     return commission;
@@ -202,14 +202,14 @@ CommissionList::CommissionList() {}
 
 //----------------------------------------------------------------------------
 TCommissions CommissionList::getCommissions() const {
-    return mCommissions;
+    return m_Commissions;
 }
 
 //----------------------------------------------------------------------------
 bool CommissionList::query(double aSum, Commission &aCommission) const {
     bool response = true;
 
-    foreach (const Commission &commission, mCommissions) {
+    foreach (const Commission &commission, m_Commissions) {
         if (commission.contains(aSum)) {
             if (response) {
                 aCommission = commission;
@@ -228,46 +228,46 @@ bool CommissionList::query(double aSum, Commission &aCommission) const {
 
 //----------------------------------------------------------------------------
 CommissionList &CommissionList::operator<<(const Commission &aCommission) {
-    mCommissions << aCommission;
+    m_Commissions << aCommission;
 
     return *this;
 }
 
 //----------------------------------------------------------------------------
-CommissionList CommissionList::fromSettings(const TPtree &aSettings) noexcept(false) {
+CommissionList CommissionList::from_Settings(const TPtree &aSettings) noexcept(false) {
     CommissionList list;
 
     std::pair<TPtree::const_assoc_iterator, TPtree::const_assoc_iterator> searchBounds =
         aSettings.equal_range("amount");
     for (TPtree::const_assoc_iterator it = searchBounds.first; it != searchBounds.second; ++it) {
-        Commission commission(Commission::fromSettings(it->second.get_child("commission")));
+        Commission commission(Commission::from_Settings(it->second.get_child("commission")));
 
-        commission.mAbove =
+        commission.m_Above =
             it->second.get<double>("<xmlattr>.above", CCommissions::DefaultAboveValue);
-        commission.mBelow =
+        commission.m_Below =
             it->second.get<double>("<xmlattr>.below", CCommissions::DefaultBelowValue);
 
-        list.mCommissions << commission;
+        list.m_Commissions << commission;
     }
 
     searchBounds = aSettings.equal_range("commission");
     for (TPtree::const_assoc_iterator it = searchBounds.first; it != searchBounds.second; ++it) {
-        list.mCommissions << Commission::fromSettings(it->second);
+        list.m_Commissions << Commission::from_Settings(it->second);
     }
 
     return list;
 }
 
 //----------------------------------------------------------------------------
-CommissionList CommissionList::fromVariant(const QVariant &aCommissions) {
+CommissionList CommissionList::from_Variant(const QVariant &aCommissions) {
     CommissionList list;
     QVariant amount = aCommissions.toMap().value("amount").toMap();
-    Commission commission(Commission::fromVariant(amount.toMap().value("commission")));
+    Commission commission(Commission::from_Variant(amount.toMap().value("commission")));
 
-    commission.mAbove = amount.toMap().value("above", CCommissions::DefaultAboveValue).toDouble();
-    commission.mBelow = amount.toMap().value("below", CCommissions::DefaultBelowValue).toDouble();
+    commission.m_Above = amount.toMap().value("above", CCommissions::DefaultAboveValue).toDouble();
+    commission.m_Below = amount.toMap().value("below", CCommissions::DefaultBelowValue).toDouble();
 
-    list.mCommissions << commission;
+    list.m_Commissions << commission;
 
     return list;
 }
@@ -279,8 +279,8 @@ CommissionByTimeList::CommissionByTimeList() {}
 TCommissions CommissionByTimeList::getCommissions() const {
     QTime currentTime = QTime::currentTime();
 
-    if ((currentTime >= mBegin) && (currentTime <= mEnd)) {
-        return mCommissions.getCommissions();
+    if ((currentTime >= m_Begin) && (currentTime <= m_End)) {
+        return m_Commissions.getCommissions();
     } else {
         return TCommissions();
     }
@@ -291,8 +291,8 @@ bool CommissionByTimeList::query(double aSum,
                                  SDK::PaymentProcessor::Commission &aCommission) const {
     QTime time(QTime::currentTime());
 
-    if ((mBegin <= time) && (time <= mEnd)) {
-        return mCommissions.query(aSum, aCommission);
+    if ((m_Begin <= time) && (time <= m_End)) {
+        return m_Commissions.query(aSum, aCommission);
     }
 
     return false;
@@ -300,24 +300,24 @@ bool CommissionByTimeList::query(double aSum,
 
 //----------------------------------------------------------------------------
 CommissionByTimeList &CommissionByTimeList::operator<<(const Commission &aCommission) {
-    mCommissions << aCommission;
+    m_Commissions << aCommission;
 
     return *this;
 }
 
 //----------------------------------------------------------------------------
-CommissionByTimeList CommissionByTimeList::fromSettings(const TPtree &aSettings) {
+CommissionByTimeList CommissionByTimeList::from_Settings(const TPtree &aSettings) {
     CommissionByTimeList list;
 
-    list.mBegin = QTime::fromString(aSettings.get<QString>("<xmlattr>.begin"), "hh:mm:ss");
-    list.mEnd = QTime::fromString(aSettings.get<QString>("<xmlattr>.end"), "hh:mm:ss");
-    list.mCommissions = CommissionList::fromSettings(aSettings);
+    list.m_Begin = QTime::from_String(aSettings.get<QString>("<xmlattr>.begin"), "hh:mm:ss");
+    list.m_End = QTime::from_String(aSettings.get<QString>("<xmlattr>.end"), "hh:mm:ss");
+    list.m_Commissions = CommissionList::from_Settings(aSettings);
 
     return list;
 }
 
 //----------------------------------------------------------------------------
-CommissionByTimeList CommissionByTimeList::fromVariant(const QVariant &aCommissions) {
+CommissionByTimeList CommissionByTimeList::from_Variant(const QVariant &aCommissions) {
     Q_UNUSED(aCommissions);
 
     // TODO-TODO
@@ -332,8 +332,8 @@ CommissionByDayList::CommissionByDayList() {}
 TCommissions CommissionByDayList::getCommissions() const {
     TCommissions result;
 
-    if (mDays.contains(static_cast<Commission::Day>(QDate::currentDate().dayOfWeek()))) {
-        foreach (const CommissionByTimeList &commissionByTime, mCommissionsByTime) {
+    if (m_Days.contains(static_cast<Commission::Day>(QDate::currentDate().dayOfWeek()))) {
+        foreach (const CommissionByTimeList &commissionByTime, m_CommissionsByTime) {
             result = commissionByTime.getCommissions();
 
             if (!result.isEmpty()) {
@@ -342,7 +342,7 @@ TCommissions CommissionByDayList::getCommissions() const {
         }
 
         if (result.isEmpty()) {
-            result = mCommissions.getCommissions();
+            result = m_Commissions.getCommissions();
         }
     }
 
@@ -351,21 +351,21 @@ TCommissions CommissionByDayList::getCommissions() const {
 
 //----------------------------------------------------------------------------
 bool CommissionByDayList::query(double aSum, SDK::PaymentProcessor::Commission &aCommission) const {
-    if (mDays.contains(static_cast<Commission::Day>(QDate::currentDate().dayOfWeek()))) {
-        foreach (const CommissionByTimeList &commissionByTime, mCommissionsByTime) {
+    if (m_Days.contains(static_cast<Commission::Day>(QDate::currentDate().dayOfWeek()))) {
+        foreach (const CommissionByTimeList &commissionByTime, m_CommissionsByTime) {
             if (commissionByTime.query(aSum, aCommission)) {
                 return true;
             }
         }
 
-        return mCommissions.query(aSum, aCommission);
+        return m_Commissions.query(aSum, aCommission);
     }
 
     return false;
 }
 
 //----------------------------------------------------------------------------
-CommissionByDayList CommissionByDayList::fromSettings(const TPtree &aSettings) {
+CommissionByDayList CommissionByDayList::from_Settings(const TPtree &aSettings) {
     CommissionByDayList list;
 
     QStringList days = aSettings.get<QString>("<xmlattr>.id").split(",", Qt::SkipEmptyParts);
@@ -377,23 +377,23 @@ CommissionByDayList CommissionByDayList::fromSettings(const TPtree &aSettings) {
         int temp = day.toInt();
 
         if ((temp >= Commission::Mon) && (temp <= Commission::Sun)) {
-            list.mDays << static_cast<Commission::Day>(temp);
+            list.m_Days << static_cast<Commission::Day>(temp);
         }
     }
 
     std::pair<TPtree::const_assoc_iterator, TPtree::const_assoc_iterator> searchBounds =
         aSettings.equal_range("time");
     for (TPtree::const_assoc_iterator it = searchBounds.first; it != searchBounds.second; ++it) {
-        list.mCommissionsByTime << CommissionByTimeList::fromSettings(it->second);
+        list.m_CommissionsByTime << CommissionByTimeList::from_Settings(it->second);
     }
 
-    list.mCommissions = CommissionList::fromSettings(aSettings);
+    list.m_Commissions = CommissionList::from_Settings(aSettings);
 
     return list;
 }
 
 //----------------------------------------------------------------------------
-CommissionByDayList CommissionByDayList::fromVariant(const QVariant &aCommissions) {
+CommissionByDayList CommissionByDayList::from_Variant(const QVariant &aCommissions) {
     CommissionByDayList list;
 
     QStringList days = aCommissions.toMap().value("day").toStringList();
@@ -402,43 +402,43 @@ CommissionByDayList CommissionByDayList::fromVariant(const QVariant &aCommission
         int temp = day.toInt();
 
         if ((temp >= Commission::Mon) && (temp <= Commission::Sun)) {
-            list.mDays << static_cast<Commission::Day>(temp);
+            list.m_Days << static_cast<Commission::Day>(temp);
         }
     }
 
-    list.mCommissions = CommissionList::fromVariant(aCommissions);
+    list.m_Commissions = CommissionList::from_Variant(aCommissions);
 
     return list;
 }
 
 //----------------------------------------------------------------------------
-ProcessingCommission::ProcessingCommission() : mValue(0), mMinValue(0), mType(Real) {}
+ProcessingCommission::ProcessingCommission() : m_Value(0), m_MinValue(0), m_Type(Real) {}
 
 //----------------------------------------------------------------------------
-ProcessingCommission ProcessingCommission::fromSettings(const TPtree &aSettings) {
+ProcessingCommission ProcessingCommission::from_Settings(const TPtree &aSettings) {
     ProcessingCommission result;
 
     auto settings = aSettings.get_child_optional("cyberaddcomission");
 
     if (settings.is_initialized()) {
-        result.mValue = settings->get<double>("<xmlattr>.percent");
-        result.mMinValue = settings->get<double>("<xmlattr>.min_value");
-        result.mType = static_cast<Type>(settings->get<int>("<xmlattr>.type"));
+        result.m_Value = settings->get<double>("<xmlattr>.percent");
+        result.m_MinValue = settings->get<double>("<xmlattr>.min_value");
+        result.m_Type = static_cast<Type>(settings->get<int>("<xmlattr>.type"));
     }
 
     return result;
 }
 
 //----------------------------------------------------------------------------
-ProcessingCommission ProcessingCommission::fromVariant(const QVariant &aCommissions) {
+ProcessingCommission ProcessingCommission::from_Variant(const QVariant &aCommissions) {
     ProcessingCommission result;
 
     auto settings = aCommissions.toMap().value("cyberaddcomission");
 
     if (settings.isValid()) {
-        result.mValue = settings.toMap().value("percent").toDouble();
-        result.mMinValue = settings.toMap().value("min_value").toDouble();
-        result.mType = static_cast<Type>(settings.toMap().value("type").toInt());
+        result.m_Value = settings.toMap().value("percent").toDouble();
+        result.m_MinValue = settings.toMap().value("min_value").toDouble();
+        result.m_Type = static_cast<Type>(settings.toMap().value("type").toInt());
     }
 
     return result;
@@ -448,28 +448,28 @@ ProcessingCommission ProcessingCommission::fromVariant(const QVariant &aCommissi
 double ProcessingCommission::getValue(double aAmount, double aAmountAll) {
     double result = 0.f;
 
-    switch (mType) {
+    switch (m_Type) {
     case Real:
-        result = aAmount * mValue / 100.0;
+        result = aAmount * m_Value / 100.0;
         break;
     case Diff:
-        result = aAmountAll < aAmount ? 0.0 : (aAmountAll - aAmount) * mValue / 100.0;
+        result = aAmountAll < aAmount ? 0.0 : (aAmountAll - aAmount) * m_Value / 100.0;
         break;
     case Inverse:
-        result = aAmount * mValue / (qFuzzyIsNull(100.0 - mValue) ? 1.0 : (100.0 - mValue));
+        result = aAmount * m_Value / (qFuzzyIsNull(100.0 - m_Value) ? 1.0 : (100.0 - m_Value));
         break;
     }
 
-    return qRound((result < mMinValue ? mMinValue : result) * 100.0) / 100.0;
+    return qRound((result < m_MinValue ? m_MinValue : result) * 100.0) / 100.0;
 }
 
 //----------------------------------------------------------------------------
 bool ProcessingCommission::isNull() const {
-    return qFuzzyIsNull(mValue) && qFuzzyIsNull(mMinValue);
+    return qFuzzyIsNull(m_Value) && qFuzzyIsNull(m_MinValue);
 }
 
 //----------------------------------------------------------------------------
-Commissions::Commissions() : mIsValid(false) {}
+Commissions::Commissions() : m_IsValid(false) {}
 
 //----------------------------------------------------------------------------
 bool Commissions::SComplexCommissions::sortByMinLimit(const Commission &aFirst,
@@ -523,32 +523,32 @@ Commission Commissions::SComplexCommissions::query(double aSum) const {
 
 //----------------------------------------------------------------------------
 TCommissions Commissions::getCommissions(qint64 aProvider) const {
-    if (mProviderCommissions.contains(aProvider)) {
-        return mProviderCommissions[aProvider].getCommissions();
+    if (m_ProviderCommissions.contains(aProvider)) {
+        return m_ProviderCommissions[aProvider].getCommissions();
     }
 
-    return mDefaultCommissions.getCommissions();
+    return m_DefaultCommissions.getCommissions();
 }
 
 //----------------------------------------------------------------------------
 Commission Commissions::getCommission(qint64 aProvider, double aSum) const {
-    if (mProviderCommissions.contains(aProvider)) {
-        return mProviderCommissions[aProvider].query(aSum);
+    if (m_ProviderCommissions.contains(aProvider)) {
+        return m_ProviderCommissions[aProvider].query(aSum);
     }
 
-    return mDefaultCommissions.query(aSum);
+    return m_DefaultCommissions.query(aSum);
 }
 
 //----------------------------------------------------------------------------
 ProcessingCommission Commissions::getProcessingCommission(qint64 aProvider) {
-    return mProcessingCommissions.contains(aProvider) ? mProcessingCommissions[aProvider]
+    return m_ProcessingCommissions.contains(aProvider) ? m_ProcessingCommissions[aProvider]
                                                       : ProcessingCommission();
 }
 
 //----------------------------------------------------------------------------
 int Commissions::getVAT(qint64 aProvider) {
-    if (mProviderCommissions.contains(aProvider)) {
-        return mProviderCommissions[aProvider].vat;
+    if (m_ProviderCommissions.contains(aProvider)) {
+        return m_ProviderCommissions[aProvider].vat;
     }
 
     return 0;
@@ -556,60 +556,60 @@ int Commissions::getVAT(qint64 aProvider) {
 
 //----------------------------------------------------------------------------
 bool Commissions::isValid() const {
-    return mIsValid;
+    return m_IsValid;
 }
 
 //----------------------------------------------------------------------------
 bool Commissions::contains(qint64 aProvider, bool aCheckProcessing) {
-    return aCheckProcessing ? mProcessingCommissions.contains(aProvider)
-                            : mProviderCommissions.contains(aProvider);
+    return aCheckProcessing ? m_ProcessingCommissions.contains(aProvider)
+                            : m_ProviderCommissions.contains(aProvider);
 }
 
 //----------------------------------------------------------------------------
-Commissions Commissions::fromSettings(const TPtree &aSettings) {
+Commissions Commissions::from_Settings(const TPtree &aSettings) {
     Commissions result;
 
     std::pair<TPtree::const_assoc_iterator, TPtree::const_assoc_iterator> searchBounds =
         aSettings.equal_range("operator");
     for (TPtree::const_assoc_iterator it = searchBounds.first; it != searchBounds.second; ++it) {
         try {
-            result.mProviderCommissions.insert(it->second.get<qint64>("<xmlattr>.id"),
+            result.m_ProviderCommissions.insert(it->second.get<qint64>("<xmlattr>.id"),
                                                result.loadCommissions(it->second));
 
             ProcessingCommission processingCommission =
-                ProcessingCommission::fromSettings(it->second);
+                ProcessingCommission::from_Settings(it->second);
             if (!processingCommission.isNull()) {
-                result.mProcessingCommissions.insert(it->second.get<qint64>("<xmlattr>.id"),
+                result.m_ProcessingCommissions.insert(it->second.get<qint64>("<xmlattr>.id"),
                                                      processingCommission);
             }
         } catch (std::runtime_error &) {
         }
     }
 
-    result.mDefaultCommissions = result.loadCommissions(aSettings);
-    result.mIsValid = true;
+    result.m_DefaultCommissions = result.loadCommissions(aSettings);
+    result.m_IsValid = true;
 
     return result;
 }
 
 //----------------------------------------------------------------------------
-SDK::PaymentProcessor::Commissions Commissions::fromVariant(const QVariantList &aCommissions) {
+SDK::PaymentProcessor::Commissions Commissions::from_Variant(const QVariantList &aCommissions) {
     Commissions result;
 
     foreach (QVariant com, aCommissions) {
-        result.mProviderCommissions.insert(com.toMap()["provider"].toInt(),
+        result.m_ProviderCommissions.insert(com.toMap()["provider"].toInt(),
                                            result.loadCommissions(com));
 
-        ProcessingCommission processingCommission = ProcessingCommission::fromVariant(com);
+        ProcessingCommission processingCommission = ProcessingCommission::from_Variant(com);
 
         if (!processingCommission.isNull()) {
-            result.mProcessingCommissions.insert(com.toMap()["provider"].toInt(),
+            result.m_ProcessingCommissions.insert(com.toMap()["provider"].toInt(),
                                                  processingCommission);
         }
     }
 
-    result.mDefaultCommissions = Commissions::SComplexCommissions();
-    result.mIsValid = true;
+    result.m_DefaultCommissions = Commissions::SComplexCommissions();
+    result.m_IsValid = true;
 
     return result;
 }
@@ -623,15 +623,15 @@ Commissions::SComplexCommissions Commissions::loadCommissions(const TPtree &aBra
     std::pair<TPtree::const_assoc_iterator, TPtree::const_assoc_iterator> searchBounds =
         aBranch.equal_range("day");
     for (TPtree::const_assoc_iterator it = searchBounds.first; it != searchBounds.second; ++it) {
-        result.commissionsByDay << CommissionByDayList::fromSettings(it->second);
+        result.commissionsByDay << CommissionByDayList::from_Settings(it->second);
     }
 
     searchBounds = aBranch.equal_range("time");
     for (TPtree::const_assoc_iterator it = searchBounds.first; it != searchBounds.second; ++it) {
-        result.commissionsByTime << CommissionByTimeList::fromSettings(it->second);
+        result.commissionsByTime << CommissionByTimeList::from_Settings(it->second);
     }
 
-    result.commissions = CommissionList::fromSettings(aBranch);
+    result.commissions = CommissionList::from_Settings(aBranch);
 
     return result;
 }
@@ -643,36 +643,36 @@ Commissions::SComplexCommissions Commissions::loadCommissions(const QVariant &aC
     result.vat = aCommissions.toMap().value("vat", 0).toDouble();
 
     foreach (QVariant com, aCommissions.toMap().value("commissions").toList()) {
-        result.commissionsByDay << CommissionByDayList::fromVariant(com);
+        result.commissionsByDay << CommissionByDayList::from_Variant(com);
     }
 
     return result;
 }
 
 //----------------------------------------------------------------------------
-void Commissions::appendFromSettings(const TPtree &aSettings) {
-    auto localCommissions = fromSettings(aSettings);
+void Commissions::appendFrom_Settings(const TPtree &aSettings) {
+    auto localCommissions = from_Settings(aSettings);
 
     // Комиссии провайдера.
     {
-        QMapIterator<qint64, SComplexCommissions> i(localCommissions.mProviderCommissions);
+        QMapIterator<qint64, SComplexCommissions> i(localCommissions.m_ProviderCommissions);
         while (i.hasNext()) {
             i.next();
 
-            if (!this->mProviderCommissions.contains(i.key())) {
-                this->mProviderCommissions.insert(i.key(), i.value());
+            if (!this->m_ProviderCommissions.contains(i.key())) {
+                this->m_ProviderCommissions.insert(i.key(), i.value());
             }
         }
     }
 
     // Комиссии процессинга.
     {
-        QMapIterator<qint64, ProcessingCommission> i(localCommissions.mProcessingCommissions);
+        QMapIterator<qint64, ProcessingCommission> i(localCommissions.m_ProcessingCommissions);
         while (i.hasNext()) {
             i.next();
 
-            if (!this->mProcessingCommissions.contains(i.key())) {
-                this->mProcessingCommissions.insert(i.key(), i.value());
+            if (!this->m_ProcessingCommissions.contains(i.key())) {
+                this->m_ProcessingCommissions.insert(i.key(), i.value());
             }
         }
     }
@@ -680,10 +680,10 @@ void Commissions::appendFromSettings(const TPtree &aSettings) {
 
 //----------------------------------------------------------------------------
 void Commissions::clear() {
-    mIsValid = false;
+    m_IsValid = false;
 
-    mProviderCommissions.clear();
-    mProcessingCommissions.clear();
+    m_ProviderCommissions.clear();
+    m_ProcessingCommissions.clear();
 }
 
 //----------------------------------------------------------------------------

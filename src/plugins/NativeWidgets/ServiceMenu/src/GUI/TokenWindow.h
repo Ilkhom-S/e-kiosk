@@ -47,11 +47,11 @@ private:
     void updateUI(const CCrypt::TokenStatus &aStatus);
 
 protected:
-    QVariantMap mTaskParameters;
+    QVariantMap m_TaskParameters;
 
-    QFutureWatcher<bool> mFormatTaskWatcher;
+    QFutureWatcher<bool> m_FormatTaskWatcher;
 
-    ServiceMenuBackend *mBackend;
+    ServiceMenuBackend *m_Backend;
 };
 
 //------------------------------------------------------------------------

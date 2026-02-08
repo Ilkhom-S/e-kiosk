@@ -14,20 +14,20 @@
 #include "TokenServiceWindow.h"
 
 SetupServiceWindow::SetupServiceWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend), mCurrentPageIndex(-1) {
+    : QFrame(aParent), ServiceWindowBase(aBackend), m_CurrentPageIndex(-1) {
     setupUi(this);
     connect(twPages, SIGNAL(currentChanged(int)), SLOT(onCurrentPageChanged(int)));
 }
 
 //------------------------------------------------------------------------
 void SetupServiceWindow::onCurrentPageChanged(int aIndex) {
-    IServiceWindow *prev = dynamic_cast<IServiceWindow *>(twPages->widget(mCurrentPageIndex));
+    IServiceWindow *prev = dynamic_cast<IServiceWindow *>(twPages->widget(m_CurrentPageIndex));
 
     if (prev) {
         if (!prev->deactivate()) {
             // Окно не может быть сейчас закрыто.
             twPages->blockSignals(true);
-            twPages->setCurrentIndex(mCurrentPageIndex);
+            twPages->setCurrentIndex(m_CurrentPageIndex);
             twPages->blockSignals(false);
 
             return;
@@ -40,11 +40,11 @@ void SetupServiceWindow::onCurrentPageChanged(int aIndex) {
         next->activate();
     }
 
-    mCurrentPageIndex = aIndex;
+    m_CurrentPageIndex = aIndex;
 
-    QWidget *currentPage = twPages->widget(mCurrentPageIndex);
+    QWidget *currentPage = twPages->widget(m_CurrentPageIndex);
     if (currentPage) {
-        mBackend->toLog(QString("Page activated: %1.").arg(currentPage->objectName()));
+        m_Backend->toLog(QString("Page activated: %1.").arg(currentPage->objectName()));
     }
 }
 
@@ -52,13 +52,13 @@ void SetupServiceWindow::onCurrentPageChanged(int aIndex) {
 bool SetupServiceWindow::activate() {
     IServiceWindow *page = 0;
 
-    if (mCurrentPageIndex == -1) {
+    if (m_CurrentPageIndex == -1) {
         if (twPages->count()) {
-            mCurrentPageIndex = 0;
+            m_CurrentPageIndex = 0;
         }
     }
 
-    page = dynamic_cast<IServiceWindow *>(twPages->widget(mCurrentPageIndex));
+    page = dynamic_cast<IServiceWindow *>(twPages->widget(m_CurrentPageIndex));
 
     if (page) {
         page->activate();
@@ -69,7 +69,7 @@ bool SetupServiceWindow::activate() {
 
 //------------------------------------------------------------------------
 bool SetupServiceWindow::deactivate() {
-    IServiceWindow *page = dynamic_cast<IServiceWindow *>(twPages->widget(mCurrentPageIndex));
+    IServiceWindow *page = dynamic_cast<IServiceWindow *>(twPages->widget(m_CurrentPageIndex));
 
     if (page) {
         return page->deactivate();
@@ -83,41 +83,41 @@ bool SetupServiceWindow::initialize() {
     twPages->blockSignals(true);
     twPages->clear();
 
-    HumoServiceBackend::TAccessRights rights = mBackend->getAccessRights();
+    HumoServiceBackend::TAccessRights rights = m_Backend->getAccessRights();
 
-    if (rights.contains(HumoServiceBackend::SetupHardware) || !mBackend->hasAnyPassword()) {
-        HardwareServiceWindow *hardwareWindow = new HardwareServiceWindow(mBackend, this);
+    if (rights.contains(HumoServiceBackend::SetupHardware) || !m_Backend->hasAnyPassword()) {
+        HardwareServiceWindow *hardwareWindow = new HardwareServiceWindow(m_Backend, this);
         hardwareWindow->initialize();
         twPages->addTab(hardwareWindow, tr("#hardware"));
     }
 
-    if (rights.contains(HumoServiceBackend::SetupNetwork) || !mBackend->hasAnyPassword()) {
-        NetworkServiceWindow *networkWindow = new NetworkServiceWindow(mBackend, this);
+    if (rights.contains(HumoServiceBackend::SetupNetwork) || !m_Backend->hasAnyPassword()) {
+        NetworkServiceWindow *networkWindow = new NetworkServiceWindow(m_Backend, this);
         networkWindow->initialize();
         twPages->addTab(networkWindow, tr("#network"));
     }
 
 #ifdef TC_USE_TOKEN
-    if (rights.contains(HumoServiceBackend::SetupKeys) || !mBackend->hasAnyPassword()) {
-        TokenServiceWindow *tokenWindow = new TokenServiceWindow(mBackend, this);
+    if (rights.contains(HumoServiceBackend::SetupKeys) || !m_Backend->hasAnyPassword()) {
+        TokenServiceWindow *tokenWindow = new TokenServiceWindow(m_Backend, this);
         tokenWindow->initialize();
         twPages->addTab(tokenWindow, tr("#token"));
     }
 #endif
 
-    if (rights.contains(HumoServiceBackend::SetupKeys) || !mBackend->hasAnyPassword()) {
-        KeysServiceWindow *keysWindow = new KeysServiceWindow(mBackend, this);
+    if (rights.contains(HumoServiceBackend::SetupKeys) || !m_Backend->hasAnyPassword()) {
+        KeysServiceWindow *keysWindow = new KeysServiceWindow(m_Backend, this);
         keysWindow->initialize();
         twPages->addTab(keysWindow, tr("#keys"));
     }
 
     if (rights.contains(HumoServiceBackend::Encash)) {
-        DispenserServiceWindow *dispenserWindow = new DispenserServiceWindow(mBackend, this);
+        DispenserServiceWindow *dispenserWindow = new DispenserServiceWindow(m_Backend, this);
         dispenserWindow->initialize();
         twPages->addTab(dispenserWindow, tr("#dispenser"));
     }
 
-    foreach (QWidget *widget, mBackend->getExternalWidgets()) {
+    foreach (QWidget *widget, m_Backend->getExternalWidgets()) {
         twPages->addTab(widget, widget->property("widget_name").toString());
     }
 
@@ -128,7 +128,7 @@ bool SetupServiceWindow::initialize() {
 
 //------------------------------------------------------------------------
 bool SetupServiceWindow::shutdown() {
-    foreach (QWidget *widget, mBackend->getExternalWidgets(false)) {
+    foreach (QWidget *widget, m_Backend->getExternalWidgets(false)) {
         twPages->removeTab(twPages->indexOf(widget));
         widget->setParent(nullptr);
     }

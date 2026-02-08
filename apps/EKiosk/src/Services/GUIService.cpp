@@ -60,8 +60,8 @@ GUIService *GUIService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 GUIService::GUIService(IApplication *aApplication)
-    : ILogable(CGUIService::LogName), mApplication(aApplication), mPluginService(nullptr),
-      mEventManager(nullptr), mScriptingCore(nullptr), mDisabled(false), mWidth(0), mHeight(0) {}
+    : ILogable(CGUIService::LogName), m_Application(aApplication), m_PluginService(nullptr),
+      m_EventManager(nullptr), m_ScriptingCore(nullptr), m_Disabled(false), m_Width(0), m_Height(0) {}
 
 //---------------------------------------------------------------------------
 GUIService::~GUIService() {}
@@ -73,42 +73,42 @@ bool GUIService::initialize() {
     getLog()->write(LogLevel::Normal, QString("Initializing GUI Service."));
     getLog()->write(LogLevel::Normal, QString("*").repeated(58));
 
-    mScriptingCore = new PPSDK::Scripting::Core(mApplication->getCore());
-    mScriptingCore->setLog(getLog());
+    m_ScriptingCore = new PPSDK::Scripting::Core(m_Application->getCore());
+    m_ScriptingCore->setLog(getLog());
 
-    mEventManager = mApplication->getCore()->getEventService();
-    mEventManager->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
+    m_EventManager = m_Application->getCore()->getEventService();
+    m_EventManager->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
 
-    mCheckTopmostTimer.setInterval(CGUIService::CheckTopmostWindowTimeout);
-    connect(&mCheckTopmostTimer, SIGNAL(timeout()), this, SLOT(bringToFront()));
+    m_CheckTopmostTimer.setInterval(CGUIService::CheckTopmostWindowTimeout);
+    connect(&m_CheckTopmostTimer, SIGNAL(timeout()), this, SLOT(bringToFront()));
 
     // Получаем директорию с файлами интерфейса из настроек.
     QString interfacePath = IApplication::toAbsolutePath(
-        mApplication->getSettings().value(CSettings::InterfacePath).toString());
+        m_Application->getSettings().value(CSettings::InterfacePath).toString());
 
-    connect(&mGraphicsEngine, SIGNAL(userActivity()), &mScenarioEngine, SLOT(resetTimeout()));
-    connect(&mGraphicsEngine,
+    connect(&m_GraphicsEngine, SIGNAL(userActivity()), &m_ScenarioEngine, SLOT(resetTimeout()));
+    connect(&m_GraphicsEngine,
             SIGNAL(intruderActivity()),
             SLOT(onIntruderActivity()),
             Qt::QueuedConnection);
-    connect(&mGraphicsEngine, SIGNAL(closed()), SLOT(onMainWidgetClosed()));
-    connect(&mGraphicsEngine, SIGNAL(keyPressed(QString)), SLOT(onKeyPressed(QString)));
+    connect(&m_GraphicsEngine, SIGNAL(closed()), SLOT(onMainWidgetClosed()));
+    connect(&m_GraphicsEngine, SIGNAL(keyPressed(QString)), SLOT(onKeyPressed(QString)));
 
-    mScenarioEngine.injectScriptObject(PPSDK::Scripting::CProxyNames::Core, mScriptingCore);
-    mScenarioEngine.injectScriptObject<PPSDK::EEventType>(PPSDK::Scripting::CProxyNames::EventType);
-    mScenarioEngine.injectScriptObject<PPSDK::EPaymentStep>(
+    m_ScenarioEngine.injectScriptObject(PPSDK::Scripting::CProxyNames::Core, m_ScriptingCore);
+    m_ScenarioEngine.injectScriptObject<PPSDK::EEventType>(PPSDK::Scripting::CProxyNames::EventType);
+    m_ScenarioEngine.injectScriptObject<PPSDK::EPaymentStep>(
         PPSDK::Scripting::CProxyNames::PaymentStep);
 
-    mScenarioEngine.addDirectory(interfacePath);
-    mScenarioEngine.addDirectory(":/Scenario");
-    mScenarioEngine.initialize();
+    m_ScenarioEngine.addDirectory(interfacePath);
+    m_ScenarioEngine.addDirectory(":/Scenario");
+    m_ScenarioEngine.initialize();
 
-    mGraphicsEngine.addContentDirectory(interfacePath);
-    mGraphicsEngine.addContentDirectory(":/GraphicsItems");
+    m_GraphicsEngine.addContentDirectory(interfacePath);
+    m_GraphicsEngine.addContentDirectory(":/GraphicsItems");
 
-    mGraphicsEngine.setGraphicsHost(this);
+    m_GraphicsEngine.setGraphicsHost(this);
 
-    mPluginService = PluginService::instance(mApplication);
+    m_PluginService = PluginService::instance(m_Application);
 
     loadScriptObjects();
     loadBackends();
@@ -118,10 +118,10 @@ bool GUIService::initialize() {
     QVariantMap unitedSettings;
 
     auto parseIni = [&](const QString &aIniFile) {
-        QSettings settings(ISysUtils::rmBOM(aIniFile), QSettings::IniFormat);
+        QSettings settings(ISysUtils::rm_BOM(aIniFile), QSettings::IniFormat);
 
         foreach (auto key, settings.allKeys()) {
-            mConfig.insert(key, settings.value(key));
+            m_Config.insert(key, settings.value(key));
         }
     };
 
@@ -129,70 +129,70 @@ bool GUIService::initialize() {
     parseIni(interfacePath + "/interface.ini");
 
     // Обновляем пользовательскими настройками
-    parseIni(mApplication->getUserDataPath() + "/user.ini");
+    parseIni(m_Application->getUserDataPath() + "/user.ini");
 
-    mDefaultScenario = mConfig.value("interface/default_scenario").toString();
-    if (mDefaultScenario.isEmpty()) {
+    m_DefaultScenario = m_Config.value("interface/default_scenario").toString();
+    if (m_DefaultScenario.isEmpty()) {
         toLog(LogLevel::Warning,
               QString("Default scenario is not specified. Set scenario name '%1'")
                   .arg(CGUIService::DefaultScenario));
-        mDefaultScenario = CGUIService::DefaultScenario;
+        m_DefaultScenario = CGUIService::DefaultScenario;
     }
 
-    int display = mConfig.value("interface/display", 0).toInt();
-    mWidth = mConfig.value("interface/width", CGUIService::DefaultScreenWidth).toInt();
-    mHeight = mConfig.value("interface/height", CGUIService::DefaultScreenHeight).toInt();
+    int display = m_Config.value("interface/display", 0).toInt();
+    m_Width = m_Config.value("interface/width", CGUIService::DefaultScreenWidth).toInt();
+    m_Height = m_Config.value("interface/height", CGUIService::DefaultScreenHeight).toInt();
 
-    toLog(LogLevel::Debug, QString("%1, %2, %3").arg(display).arg(mWidth).arg(mHeight));
+    toLog(LogLevel::Debug, QString("%1, %2, %3").arg(display).arg(m_Width).arg(m_Height));
 
     // Установка чувствительности для события mouse drag
     qApp->setStartDragDistance(
-        mConfig.value("interface/sensitivity", CGUIService::StartDragDistance).toInt());
+        m_Config.value("interface/sensitivity", CGUIService::StartDragDistance).toInt());
 
-    bool showCursor = mConfig.value("interface/show_mouse_cursor", false).toBool();
-    bool showDebugInfo = mConfig.value("interface/show_debug_info", false).toBool();
+    bool showCursor = m_Config.value("interface/show_mouse_cursor", false).toBool();
+    bool showDebugInfo = m_Config.value("interface/show_debug_info", false).toBool();
 
     QVariantMap scenarios = getUiSettings("scenarios");
     if (!scenarios.isEmpty()) {
-        mExternalScenarios.clear();
+        m_ExternalScenarios.clear();
         QStringList handledKeyList;
 
         foreach (QString key, scenarios.keys()) {
-            mExternalScenarios.insert(scenarios.value(key).toString(), key);
+            m_ExternalScenarios.insert(scenarios.value(key).toString(), key);
             handledKeyList << scenarios.value(key).toString();
         }
 
-        mGraphicsEngine.addHandledKeys(handledKeyList);
+        m_GraphicsEngine.addHandledKeys(handledKeyList);
     }
 
-    if (!mGraphicsEngine.initialize(display, mWidth, mHeight, showCursor, showDebugInfo)) {
-        LOG(mApplication->getLog(), LogLevel::Error, "Failed to initialize graphics engine.");
+    if (!m_GraphicsEngine.initialize(display, m_Width, m_Height, showCursor, showDebugInfo)) {
+        LOG(m_Application->getLog(), LogLevel::Error, "Failed to initialize graphics engine.");
 
         // GUI не будет отображаться, но платежная логика продолжит работу.
         return true;
     } else {
         // Добавляем сценарий перепрошивки устройств
-        mScenarioEngine.addScenario(new FirmwareUploadScenario(mApplication));
+        m_ScenarioEngine.addScenario(new FirmwareUploadScenario(m_Application));
 
         // Добавляем основной сценарий и запускаем его.
-        GUI::Scenario *idle = new IdleScenario(mApplication);
-        mScenarioEngine.addScenario(idle);
+        GUI::Scenario *idle = new IdleScenario(m_Application);
+        m_ScenarioEngine.addScenario(idle);
 
 #ifndef _DEBUG
         // Запускаем проверку окна поверх всех
-        mCheckTopmostTimer.start();
+        m_CheckTopmostTimer.start();
 #endif
-        mGraphicsEngine.start();
+        m_GraphicsEngine.start();
 
         QVariantMap noGui;
-        noGui.insert("no_gui", mConfig.value("interface/no_gui", false).toBool());
-        if (!mScenarioEngine.startScenario(idle->getName(), noGui)) {
+        noGui.insert("no_gui", m_Config.value("interface/no_gui", false).toBool());
+        if (!m_ScenarioEngine.startScenario(idle->getName(), noGui)) {
             toLog(LogLevel::Error, "Failed to start idle scenario.");
             return false;
         }
     }
 
-    mDisabled = mDisabled || TerminalService::instance(mApplication)->isLocked();
+    m_Disabled = m_Disabled || TerminalService::instance(m_Application)->isLocked();
 
     return true;
 }
@@ -202,41 +202,41 @@ void GUIService::finishInitialize() {}
 
 //---------------------------------------------------------------------------
 bool GUIService::canShutdown() {
-    return mScenarioEngine.canStop();
+    return m_ScenarioEngine.canStop();
 }
 
 //---------------------------------------------------------------------------
 bool GUIService::shutdown() {
-    mGraphicsEngine.stop();
-    mGraphicsEngine.finalize();
-    mScenarioEngine.finalize();
+    m_GraphicsEngine.stop();
+    m_GraphicsEngine.finalize();
+    m_ScenarioEngine.finalize();
 
-    foreach (SDK::Plugin::IPlugin *plugin, mBackendPluginList) {
+    foreach (SDK::Plugin::IPlugin *plugin, m_BackendPluginList) {
         dynamic_cast<SDK::GUI::IGraphicsBackend *>(plugin)->shutdown();
-        mPluginService->getPluginLoader()->destroyPlugin(plugin);
+        m_PluginService->getPluginLoader()->destroyPlugin(plugin);
     }
 
-    mBackendPluginList.clear();
+    m_BackendPluginList.clear();
 
-    delete mScriptingCore;
-    mScriptingCore = nullptr;
+    delete m_ScriptingCore;
+    m_ScriptingCore = nullptr;
 
-    mEventManager->unsubscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
+    m_EventManager->unsubscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
 
-    disconnect(&mCheckTopmostTimer, SIGNAL(timeout()), this, SLOT(bringToFront()));
-    disconnect(&mGraphicsEngine, SIGNAL(userActivity()), &mScenarioEngine, SLOT(resetTimeout()));
-    disconnect(&mGraphicsEngine, SIGNAL(closed()), this, SLOT(onMainWidgetClosed()));
-    disconnect(&mGraphicsEngine,
+    disconnect(&m_CheckTopmostTimer, SIGNAL(timeout()), this, SLOT(bringToFront()));
+    disconnect(&m_GraphicsEngine, SIGNAL(userActivity()), &m_ScenarioEngine, SLOT(resetTimeout()));
+    disconnect(&m_GraphicsEngine, SIGNAL(closed()), this, SLOT(onMainWidgetClosed()));
+    disconnect(&m_GraphicsEngine,
                SIGNAL(keyPressed(const QString &)),
                this,
                SLOT(onKeyPressed(const QString &)));
 
-    foreach (auto adSource, mAdSourceList) {
-        mPluginService->getPluginLoader()->destroyPlugin(
+    foreach (auto adSource, m_AdSourceList) {
+        m_PluginService->getPluginLoader()->destroyPlugin(
             dynamic_cast<SDK::Plugin::IPlugin *>(adSource));
     }
 
-    mAdSourceList.clear();
+    m_AdSourceList.clear();
 
     return true;
 }
@@ -270,7 +270,7 @@ QStringList GUIService::getInterfacesName() const {
 
     result << PPSDK::CInterfaces::ICore << PPSDK::Scripting::CProxyNames::Core;
 
-    result.append(mBackendScenarioObjects.keys());
+    result.append(m_BackendScenarioObjects.keys());
 
     return result;
 }
@@ -280,11 +280,11 @@ void *GUIService::getInterface(const QString &aInterface) {
     void *object = nullptr;
 
     if (aInterface == PPSDK::CInterfaces::ICore) {
-        object = mApplication->getCore();
+        object = m_Application->getCore();
     } else if (aInterface == PPSDK::Scripting::CProxyNames::Core) {
-        object = mScriptingCore;
-    } else if (mBackendScenarioObjects.contains(aInterface)) {
-        object = mBackendScenarioObjects.value(aInterface).toStrongRef().data();
+        object = m_ScriptingCore;
+    } else if (m_BackendScenarioObjects.contains(aInterface)) {
+        object = m_BackendScenarioObjects.value(aInterface).toStrongRef().data();
     }
 
     return object;
@@ -307,9 +307,9 @@ void GUIService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
 
         // FIXME: нужен другой тип события для попапов.
         if (signal == "popup_notify") {
-            mGraphicsEngine.popupNotify(signal, parameters);
+            m_GraphicsEngine.popupNotify(signal, parameters);
         } else {
-            mScenarioEngine.signalTriggered(signal, parameters);
+            m_ScenarioEngine.signalTriggered(signal, parameters);
         }
 
         break;
@@ -323,11 +323,11 @@ void GUIService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
         if (eventData.contains("name")) {
             QString scenarioName = eventData["name"].toString();
 
-            mScenarioEngine.startScenario(scenarioName, eventData);
+            m_ScenarioEngine.startScenario(scenarioName, eventData);
         } else {
-            if (mDefaultScenario != CGUIService::IdleScenarioName) {
+            if (m_DefaultScenario != CGUIService::IdleScenarioName) {
                 // Пытаемся запустить дефолтный сценарий.
-                mScenarioEngine.startScenario(mDefaultScenario);
+                m_ScenarioEngine.startScenario(m_DefaultScenario);
             } else {
                 // default_scenario=idle
                 // idle сценарий уже запущен
@@ -338,7 +338,7 @@ void GUIService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
     }
 
     case PPSDK::EEventType::StopScenario: {
-        mScenarioEngine.stopScenario();
+        m_ScenarioEngine.stopScenario();
         break;
     }
 
@@ -348,46 +348,46 @@ void GUIService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
     case PPSDK::EEventType::StartGraphics:
 #ifndef _DEBUG
         // Запускаем проверку окна поверх всех
-        mCheckTopmostTimer.start();
+        m_CheckTopmostTimer.start();
 #endif
-        mGraphicsEngine.start();
+        m_GraphicsEngine.start();
         break;
 
     case PPSDK::EEventType::PauseGraphics:
-        mGraphicsEngine.pause();
-        mCheckTopmostTimer.stop();
+        m_GraphicsEngine.pause();
+        m_CheckTopmostTimer.stop();
         break;
 
     case PPSDK::EEventType::StopGraphics:
-        mGraphicsEngine.stop();
+        m_GraphicsEngine.stop();
         break;
     }
 }
 
 //---------------------------------------------------------------------------
 void GUIService::onKeyPressed(const QString &aKeyText) {
-    QString scenario = mExternalScenarios.value(aKeyText).toString();
+    QString scenario = m_ExternalScenarios.value(aKeyText).toString();
     if (!scenario.isEmpty()) {
-        mScenarioEngine.startScenario(scenario);
+        m_ScenarioEngine.startScenario(scenario);
     }
 }
 
 //---------------------------------------------------------------------------
 void GUIService::disable(bool aDisable) {
-    if (mDisabled != aDisable) {
-        mDisabled = aDisable;
+    if (m_Disabled != aDisable) {
+        m_Disabled = aDisable;
 
         QVariantMap parameters;
         parameters["signal"] = aDisable ? CGUISignals::StopGUI : CGUISignals::StartGUI;
-        EventService::instance(mApplication)
+        EventService::instance(m_Application)
             ->sendEvent(PPSDK::EEventType::UpdateScenario, parameters);
     }
     // Каждый раз заново посылаем сигнал на disabled=true, даже если уже заблокирован, т.к. причина
     // блокировки могла измениться
-    else if (mDisabled) {
+    else if (m_Disabled) {
         QVariantMap parameters;
         parameters["signal"] = CGUISignals::UpdateGUI;
-        EventService::instance(mApplication)
+        EventService::instance(m_Application)
             ->sendEvent(PPSDK::EEventType::UpdateScenario, parameters);
     }
 }
@@ -398,43 +398,43 @@ void GUIService::onHIDData(const QVariant &aData) {
     QVariantMap arguments;
     arguments["msisdn"] = aData;
 
-    mScenarioEngine.signalTriggered("datapending", arguments);
+    m_ScenarioEngine.signalTriggered("datapending", arguments);
 }
 
 //---------------------------------------------------------------------------
 bool GUIService::show(const QString &aScene, const QVariantMap &aParameters) {
-    return mGraphicsEngine.show(aScene, aParameters);
+    return m_GraphicsEngine.show(aScene, aParameters);
 }
 
 //---------------------------------------------------------------------------
 bool GUIService::showPopup(const QString &aWidget, const QVariantMap &aParameters) {
-    return mGraphicsEngine.showPopup(aWidget, aParameters);
+    return m_GraphicsEngine.showPopup(aWidget, aParameters);
 }
 
 //---------------------------------------------------------------------------
 QVariantMap GUIService::showModal(const QString &aWidget, const QVariantMap &aParameters) {
-    return mGraphicsEngine.showModal(aWidget, aParameters);
+    return m_GraphicsEngine.showModal(aWidget, aParameters);
 }
 
 //---------------------------------------------------------------------------
 bool GUIService::hidePopup(const QVariantMap &aParameters) {
-    return mGraphicsEngine.hidePopup(aParameters);
+    return m_GraphicsEngine.hidePopup(aParameters);
 }
 
 //---------------------------------------------------------------------------
 void GUIService::notify(const QString &aEvent, const QVariantMap &aParameters) {
-    mGraphicsEngine.notify(aEvent, aParameters);
+    m_GraphicsEngine.notify(aEvent, aParameters);
 }
 
 //---------------------------------------------------------------------------
 void GUIService::onMainWidgetClosed() {
-    mEventManager->sendEvent(PPSDK::Event(PPSDK::EEventType::CloseApplication));
+    m_EventManager->sendEvent(PPSDK::Event(PPSDK::EEventType::CloseApplication));
 }
 
 //---------------------------------------------------------------------------
 void GUIService::onIntruderActivity() {
     auto settings = dynamic_cast<PPSDK::TerminalSettings *>(
-                        mApplication->getCore()->getSettingsService()->getAdapter(
+                        m_Application->getCore()->getSettingsService()->getAdapter(
                             PPSDK::CAdapterNames::TerminalAdapter))
                         ->getCommonSettings();
 
@@ -447,7 +447,7 @@ void GUIService::onIntruderActivity() {
         message += " #alarm";
 
         if (settings.blockOn(PPSDK::SCommonSettings::Penetration)) {
-            mEventManager->sendEvent(
+            m_EventManager->sendEvent(
                 PPSDK::Event(PPSDK::EEventType::TerminalLock, CGUIService::LogName, message));
         }
         break;
@@ -464,34 +464,34 @@ void GUIService::onIntruderActivity() {
 
 //---------------------------------------------------------------------------
 bool GUIService::isDisabled() const {
-    return mDisabled;
+    return m_Disabled;
 }
 
 //---------------------------------------------------------------------------
 void GUIService::reset() {
-    mGraphicsEngine.reset();
+    m_GraphicsEngine.reset();
 }
 
 //---------------------------------------------------------------------------
 QRect GUIService::getScreenSize(int aIndex) const {
-    return aIndex ? mGraphicsEngine.getDisplayRectangle(aIndex) : QRect(0, 0, mWidth, mHeight);
+    return aIndex ? m_GraphicsEngine.getDisplayRectangle(aIndex) : QRect(0, 0, m_Width, m_Height);
 }
 
 //---------------------------------------------------------------------------
 QPixmap GUIService::getScreenshot() {
-    return mGraphicsEngine.getScreenshot();
+    return m_GraphicsEngine.getScreenshot();
 }
 
 //---------------------------------------------------------------------------
 QVariantMap GUIService::getUiSettings(const QString &aSection) const {
     QVariantMap result;
 
-    foreach (QString key, mConfig.keys()) {
+    foreach (QString key, m_Config.keys()) {
         if (!key.contains(aSection)) {
             continue;
         }
 
-        result.insert(key.split("/").last(), mConfig.value(key));
+        result.insert(key.split("/").last(), m_Config.value(key));
     }
 
     return result;
@@ -499,77 +499,77 @@ QVariantMap GUIService::getUiSettings(const QString &aSection) const {
 
 //---------------------------------------------------------------------------
 void GUIService::loadAdSources() {
-    QStringList adSources = mPluginService->getPluginLoader()->getPluginList(
+    QStringList adSources = m_PluginService->getPluginLoader()->getPluginList(
         QRegularExpression("PaymentProcessor\\.AdSource\\..*"));
 
     foreach (const QString &source, adSources) {
-        auto plugin = mPluginService->getPluginLoader()->createPlugin(source);
+        auto plugin = m_PluginService->getPluginLoader()->createPlugin(source);
         auto adSource = dynamic_cast<SDK::GUI::IAdSource *>(plugin);
 
         if (adSource) {
-            mAdSourceList << adSource;
+            m_AdSourceList << adSource;
         } else {
-            mPluginService->getPluginLoader()->destroyPlugin(plugin);
+            m_PluginService->getPluginLoader()->destroyPlugin(plugin);
         }
     }
 }
 
 //---------------------------------------------------------------------------
 void GUIService::loadNativeScenarios() {
-    QStringList scenarios = mPluginService->getPluginLoader()->getPluginList(
+    QStringList scenarios = m_PluginService->getPluginLoader()->getPluginList(
         QRegularExpression("PaymentProcessor\\.ScenarioFactory\\..*"));
 
     foreach (const QString &scenario, scenarios) {
-        auto plugin = mPluginService->getPluginLoader()->createPlugin(scenario);
+        auto plugin = m_PluginService->getPluginLoader()->createPlugin(scenario);
         auto factory = dynamic_cast<SDK::Plugin::IFactory<GUI::Scenario> *>(plugin);
 
         if (factory) {
             // Создаем сценарии.
             foreach (auto className, factory->getClassNames()) {
                 GUI::Scenario *scenarioObject = factory->create(className);
-                mScenarioEngine.addScenario(scenarioObject);
+                m_ScenarioEngine.addScenario(scenarioObject);
             }
         } else {
-            LOG(mApplication->getLog(),
+            LOG(m_Application->getLog(),
                 LogLevel::Error,
                 QString("Bad scenario plugin %1.").arg(scenario));
         }
 
-        mPluginService->getPluginLoader()->destroyPlugin(plugin);
+        m_PluginService->getPluginLoader()->destroyPlugin(plugin);
     }
 }
 
 //---------------------------------------------------------------------------
 void GUIService::loadBackends() {
-    QStringList backends = mPluginService->getPluginLoader()->getPluginList(
+    QStringList backends = m_PluginService->getPluginLoader()->getPluginList(
         QRegularExpression("PaymentProcessor\\.GraphicsBackend\\..*"));
 
     foreach (const QString &backend, backends) {
-        SDK::Plugin::IPlugin *plugin = mPluginService->getPluginLoader()->createPlugin(backend);
+        SDK::Plugin::IPlugin *plugin = m_PluginService->getPluginLoader()->createPlugin(backend);
 
         SDK::GUI::IGraphicsBackend *backendObject =
             dynamic_cast<SDK::GUI::IGraphicsBackend *>(plugin);
         if (backendObject) {
-            backendObject->initialize(&mGraphicsEngine);
-            mGraphicsEngine.addBackend(backendObject);
+            backendObject->initialize(&m_GraphicsEngine);
+            m_GraphicsEngine.addBackend(backendObject);
 
-            mBackendPluginList << plugin;
+            m_BackendPluginList << plugin;
         } else {
-            LOG(mApplication->getLog(),
+            LOG(m_Application->getLog(),
                 LogLevel::Error,
                 QString("Bad backend plugin %1.").arg(backend));
-            mPluginService->getPluginLoader()->destroyPlugin(plugin);
+            m_PluginService->getPluginLoader()->destroyPlugin(plugin);
         }
     }
 }
 
 //---------------------------------------------------------------------------
 void GUIService::loadScriptObjects() {
-    QStringList scriptObjects = mPluginService->getPluginLoader()->getPluginList(
+    QStringList scriptObjects = m_PluginService->getPluginLoader()->getPluginList(
         QRegularExpression("PaymentProcessor\\.ScriptFactory\\..*"));
 
     foreach (const QString &scriptPluginName, scriptObjects) {
-        auto plugin = mPluginService->getPluginLoader()->createPlugin(scriptPluginName);
+        auto plugin = m_PluginService->getPluginLoader()->createPlugin(scriptPluginName);
         auto factory =
             dynamic_cast<SDK::Plugin::IFactory<PPSDK::Scripting::IBackendScenarioObject> *>(plugin);
 
@@ -583,29 +583,29 @@ void GUIService::loadScriptObjects() {
                           .arg(scriptPluginName));
 
                 QString objectName = CGUIService::BackedObjectPrefix + scriptObject->getName();
-                mScenarioEngine.injectScriptObject(objectName, scriptObject);
+                m_ScenarioEngine.injectScriptObject(objectName, scriptObject);
                 // TODO PORT_QT5
-                // mBackendScenarioObjects.insert(objectName, QWeakPointer<QObject>(scriptObject));
+                // m_BackendScenarioObjects.insert(objectName, QWeakPointer<QObject>(scriptObject));
             }
         } else {
-            LOG(mApplication->getLog(),
+            LOG(m_Application->getLog(),
                 LogLevel::Error,
                 QString("Bad script object plugin %1.").arg(scriptPluginName));
-            mPluginService->getPluginLoader()->destroyPlugin(plugin);
+            m_PluginService->getPluginLoader()->destroyPlugin(plugin);
         }
     }
 }
 
 //---------------------------------------------------------------------------
 SDK::GUI::IAdSource *GUIService::getAdSource() const {
-    return mAdSourceList.count() ? mAdSourceList.first() : nullptr;
+    return m_AdSourceList.count() ? m_AdSourceList.first() : nullptr;
 }
 
 //------------------------------------------------------------------------
 QObject *GUIService::getBackendObject(const QString &aName) const {
     QString fullName = CGUIService::BackedObjectPrefix + aName;
-    return mBackendScenarioObjects.keys().contains(fullName)
-               ? mBackendScenarioObjects.value(fullName).toStrongRef().data()
+    return m_BackendScenarioObjects.keys().contains(fullName)
+               ? m_BackendScenarioObjects.value(fullName).toStrongRef().data()
                : nullptr;
 }
 
@@ -637,7 +637,7 @@ void GUIService::bringToFront() {
         return topmostWindows;
     };
 
-    static QStringList topmostWindows = getTopmostWindowsTitle(mApplication->getSettings());
+    static QStringList topmostWindows = getTopmostWindowsTitle(m_Application->getSettings());
 
     foreach (auto title, topmostWindows) {
         ISysUtils::bringWindowToFront(title);

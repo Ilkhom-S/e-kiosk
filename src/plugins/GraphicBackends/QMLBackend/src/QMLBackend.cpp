@@ -34,7 +34,7 @@ SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
     return new QMLBackend(aFactory, aInstancePath);
 }
 
-QVector<SDK::Plugin::SPluginParameter> EnumParameters() {
+QVector<SDK::Plugin::SPluginParameter> Enum_Parameters() {
     return QVector<SDK::Plugin::SPluginParameter>(1) << SDK::Plugin::SPluginParameter(
                SDK::Plugin::Parameters::Debug,
                SDK::Plugin::SPluginParameter::Bool,
@@ -51,14 +51,14 @@ REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
                                          SDK::PaymentProcessor::CComponents::GraphicsBackend,
                                          CQMLBackend::PluginName),
                                 &CreatePlugin,
-                                &EnumParameters,
+                                &Enum_Parameters,
                                 QMLBackend);
 
 //------------------------------------------------------------------------------
 QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
-    mFactory = aFactory;
-    mInstancePath = aInstancePath;
-    mEngine = 0;
+    m_Factory = aFactory;
+    m_InstancePath = aInstancePath;
+    m_Engine = 0;
 
 #ifndef Q_OS_MACOS
     QtWebEngine::initialize();
@@ -85,7 +85,7 @@ QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInst
         "MessageBox",
         "MessageBoxParams enum is readonly.");
 
-    connect(&mQMLEngine,
+    connect(&m_QMLEngine,
             SIGNAL(warnings(const QList<QQmlError> &)),
             this,
             SLOT(onWarnings(const QList<QQmlError> &)));
@@ -98,17 +98,17 @@ QString QMLBackend::getPluginName() const {
 
 //------------------------------------------------------------------------------
 QVariantMap QMLBackend::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //------------------------------------------------------------------------------
 void QMLBackend::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 }
 
 //------------------------------------------------------------------------------
 QString QMLBackend::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //------------------------------------------------------------------------------
@@ -124,31 +124,31 @@ bool QMLBackend::isReady() const {
 
 //------------------------------------------------------------------------------
 std::weak_ptr<SDK::GUI::IGraphicsItem>
-QMLBackend::getItem(const SDK::GUI::GraphicsItemInfo &aInfo) {
-    TGraphicItemsCache::iterator it = mCachedItems.find(aInfo.name);
+QMLBackend::getItem(const SDK::GUI::GraphicsItem_Info &aInfo) {
+    TGraphicItemsCache::iterator it = m_CachedItems.find(aInfo.name);
 
-    if (it != mCachedItems.end() && it.value()->getContext() == aInfo.context) {
+    if (it != m_CachedItems.end() && it.value()->getContext() == aInfo.context) {
         return it.value();
     }
 
     std::shared_ptr<QMLGraphicsItem> item(
-        new QMLGraphicsItem(aInfo, &mQMLEngine, mEngine->getLog()),
-        SDK::GUI::GraphicsItemDeleter());
+        new QMLGraphicsItem(aInfo, &m_QMLEngine, m_Engine->getLog()),
+        SDK::GUI::GraphicsItem_Deleter());
 
     if (item->isValid()) {
-        mCachedItems.insert(aInfo.name, item);
+        m_CachedItems.insert(aInfo.name, item);
     } else {
-        mEngine->getLog()->write(LogLevel::Error, item->getError());
+        m_Engine->getLog()->write(LogLevel::Error, item->getError());
     }
 
     return item;
 }
 
 //------------------------------------------------------------------------------
-bool QMLBackend::removeItem(const SDK::GUI::GraphicsItemInfo &aInfo) {
-    foreach (auto item, mCachedItems.values(aInfo.name)) {
+bool QMLBackend::removeItem(const SDK::GUI::GraphicsItem_Info &aInfo) {
+    foreach (auto item, m_CachedItems.values(aInfo.name)) {
         if (item->getContext() == aInfo.context) {
-            return mCachedItems.remove(aInfo.name, item) != 0;
+            return m_CachedItems.remove(aInfo.name, item) != 0;
         }
     }
 
@@ -161,21 +161,21 @@ QString QMLBackend::getType() const {
 }
 
 //------------------------------------------------------------------------------
-QList<SDK::GUI::GraphicsItemInfo> QMLBackend::getItemList() {
-    return QList<SDK::GUI::GraphicsItemInfo>();
+QList<SDK::GUI::GraphicsItem_Info> QMLBackend::getItem_List() {
+    return QList<SDK::GUI::GraphicsItem_Info>();
 }
 
 //------------------------------------------------------------------------------
 bool QMLBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine) {
-    mEngine = aEngine;
-    mCore = mEngine->getGraphicsHost()->getInterface<SDK::PaymentProcessor::ICore>(
+    m_Engine = aEngine;
+    m_Core = m_Engine->getGraphicsHost()->getInterface<SDK::PaymentProcessor::ICore>(
         SDK::PaymentProcessor::CInterfaces::ICore);
 
-    foreach (auto objectName, mEngine->getGraphicsHost()->getInterfacesName()) {
+    foreach (auto objectName, m_Engine->getGraphicsHost()->getInterfacesName()) {
         if (SDK::PaymentProcessor::CInterfaces::ICore != objectName) {
-            auto object = mEngine->getGraphicsHost()->getInterface<QObject>(objectName);
+            auto object = m_Engine->getGraphicsHost()->getInterface<QObject>(objectName);
             if (object) {
-                mQMLEngine.rootContext()->setContextProperty(objectName, object);
+                m_QMLEngine.rootContext()->setContextProperty(objectName, object);
             }
         }
     }
@@ -193,7 +193,7 @@ void QMLBackend::onWarnings(const QList<QQmlError> &aWarnings) {
         warnings += e.toString() + "\n";
     }
 
-    mEngine->getLog()->write(LogLevel::Warning, warnings);
+    m_Engine->getLog()->write(LogLevel::Warning, warnings);
 }
 
 //------------------------------------------------------------------------------

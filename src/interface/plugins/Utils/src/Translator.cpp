@@ -10,23 +10,23 @@
 
 #include "Log.h"
 
-Translator::Translator(const QString &aInterfacePath) : mInterfacePath(aInterfacePath) {
+Translator::Translator(const QString &aInterfacePath) : m_InterfacePath(aInterfacePath) {
     // Загружаем настройки интерфейса.
-    QSettings settings(mInterfacePath + QDir::separator() + "interface.ini", QSettings::IniFormat);
+    QSettings settings(m_InterfacePath + QDir::separator() + "interface.ini", QSettings::IniFormat);
     settings.setIniCodec("UTF-8");
     settings.beginGroup("locale");
 
     foreach (QString key, settings.allKeys()) {
         if (key == "default") {
-            mDefaultLanguage = settings.value(key).toString();
+            m_DefaultLanguage = settings.value(key).toString();
         } else {
-            mLanguages[key] = settings.value(key).toString();
+            m_Languages[key] = settings.value(key).toString();
         }
     }
 
-    mCurrentLanguage = (mDefaultLanguage.isEmpty() && !mLanguages.empty())
-                           ? mLanguages.begin().key()
-                           : mDefaultLanguage;
+    m_CurrentLanguage = (m_DefaultLanguage.isEmpty() && !m_Languages.empty())
+                           ? m_Languages.begin().key()
+                           : m_DefaultLanguage;
 }
 
 //------------------------------------------------------------------------------
@@ -35,19 +35,19 @@ QString Translator::tr(const QString &aString) {
     QString moduleName = aString.section('#', 0, 0);
 
     if (!moduleName.isEmpty()) {
-        QMap<QString, QTranslator *>::iterator translator = mTranslators.find(moduleName);
+        QMap<QString, QTranslator *>::iterator translator = m_Translators.find(moduleName);
 
-        if (translator == mTranslators.end()) {
+        if (translator == m_Translators.end()) {
             // Подгружаем транслятор.
             std::unique_ptr<QTranslator> tr(new QTranslator());
             if (tr->load(moduleName,
-                         mInterfacePath + QDir::separator() + "locale",
+                         m_InterfacePath + QDir::separator() + "locale",
                          "",
-                         QString("_%1.qm").arg(mCurrentLanguage))) {
-                translator = mTranslators.insert(moduleName, tr.release());
+                         QString("_%1.qm").arg(m_CurrentLanguage))) {
+                translator = m_Translators.insert(moduleName, tr.release());
             } else {
                 Log(Log::Error) << "Failed to load translation file " << moduleName << " in "
-                                << mInterfacePath;
+                                << m_InterfacePath;
                 return aString;
             }
         }
@@ -61,39 +61,39 @@ QString Translator::tr(const QString &aString) {
 
 //------------------------------------------------------------------------------
 void Translator::setLanguage(const QString &aLanguage) {
-    if (aLanguage != mCurrentLanguage) {
-        if (!mLanguages.contains(aLanguage)) {
+    if (aLanguage != m_CurrentLanguage) {
+        if (!m_Languages.contains(aLanguage)) {
             Log(Log::Error) << "Language " << aLanguage << " is not supported.";
             return;
         }
 
         // Удаляем все загруженные трансляторы.
-        foreach (QTranslator *tr, mTranslators.values()) {
+        foreach (QTranslator *tr, m_Translators.values()) {
             delete tr;
         }
 
-        mTranslators.clear();
-        mCurrentLanguage = aLanguage;
+        m_Translators.clear();
+        m_CurrentLanguage = aLanguage;
         emit languageChanged();
     }
 }
 
 //------------------------------------------------------------------------------
 QString Translator::getLanguage() const {
-    return mCurrentLanguage;
+    return m_CurrentLanguage;
 }
 
 //------------------------------------------------------------------------------
 QString Translator::getDefaultLanguage() const {
-    return mDefaultLanguage;
+    return m_DefaultLanguage;
 }
 
 //------------------------------------------------------------------------------
 QStringList Translator::getLanguageList() const {
     QStringList result;
 
-    foreach (QString key, mLanguages.keys()) {
-        result << QString("%1.%2").arg(key).arg(mLanguages[key]);
+    foreach (QString key, m_Languages.keys()) {
+        result << QString("%1.%2").arg(key).arg(m_Languages[key]);
     }
 
     return result;

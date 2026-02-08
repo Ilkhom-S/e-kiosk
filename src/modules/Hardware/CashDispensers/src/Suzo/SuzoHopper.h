@@ -55,10 +55,10 @@ protected:
     bool getDispensingStatus(CSuzo::SStatus &aStatus);
 
     /// Выдать.
-    virtual void performDispense(int aUnit, int aItems);
+    virtual void perform_Dispense(int aUnit, int aItems);
 
     /// Режим выдачи монет.
-    bool mSingleMode;
+    bool m_SingleMode;
 };
 
 //--------------------------------------------------------------------------------

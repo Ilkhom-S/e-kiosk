@@ -90,7 +90,7 @@ template <class T> bool ShtrihOnlineFRBase<T>::updateParameters() {
                    CShtrihOnlineFR::PrintFullUserData);
 
     // Печатать фискальные теги, вводимые на платеже
-    setFRParameter(CShtrihOnlineFR::FRParameters::PrintCustomFields, true);
+    setFRParameter(CShtrihOnlineFR::FRParameters::PrintCustom_Fields, true);
 
     // Отключить строгий ФЛК
     setFRParameter(CShtrihOnlineFR::FRParameters::StrongFormatChecking, false);
@@ -220,7 +220,7 @@ template <class T> bool ShtrihOnlineFRBase<T>::getStatus(TStatusCodes &aStatusCo
     }
 
     QByteArray data =
-        performStatus(aStatusCodes, CShtrihOnlineFR::Commands::FS::GetOFDInterchangeStatus, 6);
+        perform_Status(aStatusCodes, CShtrihOnlineFR::Commands::FS::GetOFDInterchangeStatus, 6);
 
     if (data == CFR::Result::Fail) {
         return false;
@@ -230,7 +230,7 @@ template <class T> bool ShtrihOnlineFRBase<T>::getStatus(TStatusCodes &aStatusCo
         checkOFDNotSentCount(OFDNotSentCount, aStatusCodes);
     }
 
-    data = performStatus(aStatusCodes, CShtrihOnlineFR::Commands::FS::GetStatus, 7);
+    data = perform_Status(aStatusCodes, CShtrihOnlineFR::Commands::FS::GetStatus, 7);
 
     if (data == CFR::Result::Fail) {
         return false;
@@ -268,7 +268,7 @@ template <class T> void ShtrihOnlineFRBase<T>::processDeviceData() {
 
     if (processCommand(CShtrihOnlineFR::Commands::FS::GetValidity, &data)) {
         QDate date =
-            QDate::fromString(hexToBCD(data.mid(3, 3)).prepend("20"), CShtrihOnlineFR::DateFormat);
+            QDate::from_String(hexToBCD(data.mid(3, 3)).prepend("20"), CShtrihOnlineFR::DateFormat);
 
         if (date.isValid()) {
             setDeviceParameter(CDeviceData::FS::ValidityData, CFR::FSValidityDateOff(date));
@@ -491,7 +491,7 @@ bool ShtrihOnlineFRBase<T>::sale(const SUnitData &aUnitData, EPayOffTypes::Enum 
     commandData.append(section);                                 // отдел
     commandData.append(char(aUnitData.payOffSubjectMethodType)); // признак способа расчета (1214)
     commandData.append(char(aUnitData.payOffSubjectType));       // признак предмета расчета (1212)
-    commandData.append(m_Codec->fromUnicode(name));               // наименование товара (1030)
+    commandData.append(m_Codec->from_Unicode(name));               // наименование товара (1030)
 
     if (!processCommand(CShtrihOnlineFR::Commands::FS::Sale, commandData)) {
         toLog(LogLevel::Error,
@@ -536,7 +536,7 @@ bool ShtrihOnlineFRBase<T>::closeDocument(double aSum, EPayTypes::Enum aPayType)
 
 //--------------------------------------------------------------------------------
 template <class T>
-bool ShtrihOnlineFRBase<T>::performFiscal(const QStringList &aReceipt,
+bool ShtrihOnlineFRBase<T>::perform_Fiscal(const QStringList &aReceipt,
                                           const SPaymentData &aPaymentData,
                                           quint32 *aFDNumber) {
     // СНО ставится либо параметром системной таблицы, либо параметром команды закрытия чека.
@@ -557,12 +557,12 @@ bool ShtrihOnlineFRBase<T>::performFiscal(const QStringList &aReceipt,
         }
     }
 
-    bool setCustomFieldsOK = false;
-    char setCustomFields = ASCII::NUL;
+    bool setCustom_FieldsOK = false;
+    char setCustom_Fields = ASCII::NUL;
     QByteArray data;
 
     if (isFS36() && (aPaymentData.taxSystem == ETaxSystems::Main) &&
-        getFRParameter(CShtrihOnlineFR::FRParameters::SetCustomFields, data) && !data.isEmpty()) {
+        getFRParameter(CShtrihOnlineFR::FRParameters::SetCustom_Fields, data) && !data.isEmpty()) {
         QStringList noPayLog;
 
         foreach (const SUnitData &unitData, aPaymentData.unitDataList) {
@@ -574,11 +574,11 @@ bool ShtrihOnlineFRBase<T>::performFiscal(const QStringList &aReceipt,
             }
         }
 
-        setCustomFields = data[0];
-        char newSetCustomFields =
-            setCustomFields | CShtrihOnlineFR::FRParameters::DontSendPayOffSubjectType;
+        setCustom_Fields = data[0];
+        char newSetCustom_Fields =
+            setCustom_Fields | CShtrihOnlineFR::FRParameters::DontSendPayOffSubjectType;
 
-        if (!noPayLog.isEmpty() && (setCustomFields != newSetCustomFields)) {
+        if (!noPayLog.isEmpty() && (setCustom_Fields != newSetCustom_Fields)) {
             QString log =
                 m_DeviceName +
                 QString(": Failed to make fiscal document due to cannot sale unit(s): %1, because ")
@@ -591,17 +591,17 @@ bool ShtrihOnlineFRBase<T>::performFiscal(const QStringList &aReceipt,
             } else if (!m_FiscalServerPresence) {
                 toLog(LogLevel::Error, log + "it is not fiscal server");
                 return false;
-            } else if (!setFRParameter(CShtrihOnlineFR::FRParameters::SetCustomFields,
-                                       newSetCustomFields)) {
+            } else if (!setFRParameter(CShtrihOnlineFR::FRParameters::SetCustom_Fields,
+                                       newSetCustom_Fields)) {
                 toLog(LogLevel::Error, log + "impossible to set custom fields data");
                 return false;
             } else {
-                setCustomFieldsOK = true;
+                setCustom_FieldsOK = true;
             }
         }
     }
 
-    if (!ShtrihFRBase<T>::performFiscal(aReceipt, aPaymentData)) {
+    if (!ShtrihFRBase<T>::perform_Fiscal(aReceipt, aPaymentData)) {
         return false;
     }
 
@@ -610,10 +610,10 @@ bool ShtrihOnlineFRBase<T>::performFiscal(const QStringList &aReceipt,
         *aFDNumber = revert(data.mid(29, 4)).toHex().toUInt(0, 16);
     }
 
-    if (setCustomFieldsOK &&
-        !setFRParameter(CShtrihOnlineFR::FRParameters::SetCustomFields, setCustomFields)) {
+    if (setCustom_FieldsOK &&
+        !setFRParameter(CShtrihOnlineFR::FRParameters::SetCustom_Fields, setCustom_Fields)) {
         m_PPTaskList.append([&]() {
-            setFRParameter(CShtrihOnlineFR::FRParameters::SetCustomFields, setCustomFields);
+            setFRParameter(CShtrihOnlineFR::FRParameters::SetCustom_Fields, setCustom_Fields);
         });
     }
 

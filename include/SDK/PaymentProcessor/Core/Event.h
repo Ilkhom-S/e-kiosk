@@ -15,29 +15,29 @@ namespace PaymentProcessor {
 /// самим классом Event.
 class Event {
 public:
-    Event() : mType(-1), mData() {}
-    Event(int aType, const QString &aSender = "") : mType(aType), mSender(aSender) {}
+    Event() : m_Type(-1), m_Data() {}
+    Event(int aType, const QString &aSender = "") : m_Type(aType), m_Sender(aSender) {}
     Event(int aType, const QString &aSender, const QVariant &aData)
-        : mType(aType), mSender(aSender), mData(aData) {}
+        : m_Type(aType), m_Sender(aSender), m_Data(aData) {}
 
     virtual ~Event() {}
 
     /// Возвращает тип события.
-    inline int getType() const { return mType; }
+    inline int getType() const { return m_Type; }
 
     /// Возвращает отправителя события.
-    inline QString getSender() const { return mSender; }
+    inline QString getSender() const { return m_Sender; }
 
     /// Возвращает true, если событие имеет данные.
-    inline bool hasData() const { return !mData.isNull(); }
+    inline bool hasData() const { return !m_Data.isNull(); }
 
     /// Возвращает данные события.
-    inline const QVariant &getData() const { return mData; }
+    inline const QVariant &getData() const { return m_Data; }
 
 private:
-    int mType;
-    QString mSender;
-    QVariant mData;
+    int m_Type;
+    QString m_Sender;
+    QVariant m_Data;
 };
 
 //---------------------------------------------------------------------------

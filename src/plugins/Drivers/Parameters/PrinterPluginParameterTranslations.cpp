@@ -8,7 +8,7 @@ const char PrintPageNumber[] =
     QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#print_page_number");
 const char RemotePaperSensor[] =
     QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#remote_paper_sensor");
-const char PaperJamSensor[] =
+const char PaperJam_Sensor[] =
     QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#paper_jam_sensor");
 const char PaperWeightSensors[] =
     QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#paper_weight_sensors");

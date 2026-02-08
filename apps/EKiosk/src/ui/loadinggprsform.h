@@ -17,7 +17,7 @@ public:
     void setCopirightText(QString text, QString version);
     void setGprsInfo(QString text);
     void setGprsComment(QString text);
-    void setSimInfo(QString text);
+    void setSim_Info(QString text);
     void setLogo(QString path);
 
 private:

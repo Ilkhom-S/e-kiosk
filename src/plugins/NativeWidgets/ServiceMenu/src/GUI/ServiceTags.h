@@ -29,7 +29,7 @@ const QString ValidatorStatus = "#validator_status";
 const QString PrinterStatus = "#printer_status";
 const QString FiscalPrinter = "#fiscal_printer";
 const QString WatchdogStatus = "#watchdog_status";
-const QString ModemStatus = "#modem_status";
+const QString Modem_Status = "#modem_status";
 const QString DeviceType = "#device_type";
 
 namespace UserRole {

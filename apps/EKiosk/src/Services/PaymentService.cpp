@@ -71,50 +71,50 @@ PaymentService *PaymentService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 PaymentService::PaymentService(IApplication *aApplication)
-    : ILogable("Payments"), mApplication(aApplication), mEnabled(false), mDBUtils(nullptr),
-      mCommandIndex(0), mPaymentLock(QRecursiveMutex()), mOfflinePaymentID(-1),
-      mOfflinePaymentLock(QRecursiveMutex()), mCommandMutex(QRecursiveMutex()) {
+    : ILogable("Payments"), m_Application(aApplication), m_Enabled(false), m_DBUtils(nullptr),
+      m_CommandIndex(0), m_PaymentLock(QRecursiveMutex()), m_OfflinePaymentID(-1),
+      m_OfflinePaymentLock(QRecursiveMutex()), m_CommandMutex(QRecursiveMutex()) {
     qRegisterMetaType<EPaymentCommandResult::Enum>("EPaymentCommandResult");
 
-    mPaymentThread.setObjectName(CPaymentService::ThreadName);
+    m_PaymentThread.setObjectName(CPaymentService::ThreadName);
 
-    mPaymentTimer.setSingleShot(true);
-    mPaymentTimer.moveToThread(&mPaymentThread);
+    m_PaymentTimer.setSingleShot(true);
+    m_PaymentTimer.moveToThread(&m_PaymentThread);
 
     connect(
-        &mPaymentThread, SIGNAL(started()), SLOT(onPaymentThreadStarted()), Qt::DirectConnection);
+        &m_PaymentThread, SIGNAL(started()), SLOT(onPaymentThreadStarted()), Qt::DirectConnection);
     connect(
-        &mPaymentThread, SIGNAL(finished()), &mPaymentTimer, SLOT(stop()), Qt::DirectConnection);
+        &m_PaymentThread, SIGNAL(finished()), &m_PaymentTimer, SLOT(stop()), Qt::DirectConnection);
 
-    connect(&mPaymentTimer, SIGNAL(timeout()), SLOT(onProcessPayments()), Qt::DirectConnection);
+    connect(&m_PaymentTimer, SIGNAL(timeout()), SLOT(onProcessPayments()), Qt::DirectConnection);
 }
 
 //---------------------------------------------------------------------------
 bool PaymentService::initialize() {
-    connect(mApplication->getCore()->getFundsService()->getAcceptor(),
+    connect(m_Application->getCore()->getFundsService()->getAcceptor(),
             SIGNAL(amountUpdated(qint64, double, double)),
             SLOT(onAmountUpdated(qint64, double, double)));
-    connect(mApplication->getCore()->getFundsService()->getDispenser(),
+    connect(m_Application->getCore()->getFundsService()->getDispenser(),
             SIGNAL(dispensed(double)),
             SLOT(onAmountDispensed(double)));
 
-    mCommandIndex = 1;
+    m_CommandIndex = 1;
 
-    mDBUtils = DatabaseService::instance(mApplication)->getDatabaseUtils<IPaymentDatabaseUtils>();
-    if (!mDBUtils) {
+    m_DBUtils = DatabaseService::instance(m_Application)->getDatabaseUtils<IPaymentDatabaseUtils>();
+    if (!m_DBUtils) {
         toLog(LogLevel::Error, "Failed to get database utils.");
 
         return false;
     }
 
     QStringList factories =
-        PluginService::instance(mApplication)
+        PluginService::instance(m_Application)
             ->getPluginLoader()
             ->getPluginList(QRegularExpression("PaymentProcessor\\.PaymentFactory\\..*"));
 
     foreach (const QString &path, factories) {
         SDK::Plugin::IPlugin *plugin =
-            PluginService::instance(mApplication)->getPluginLoader()->createPlugin(path);
+            PluginService::instance(m_Application)->getPluginLoader()->createPlugin(path);
 
         SDK::PaymentProcessor::IPaymentFactory *factory =
             dynamic_cast<SDK::PaymentProcessor::IPaymentFactory *>(plugin);
@@ -122,24 +122,24 @@ bool PaymentService::initialize() {
             factory->setSerializer(std::bind(&PaymentService::savePayment, this, _1));
 
             foreach (const QString &type, factory->getSupportedPaymentTypes()) {
-                mFactoryByType[type] = factory;
+                m_FactoryByType[type] = factory;
             }
 
-            mFactories << factory;
+            m_Factories << factory;
         } else {
-            PluginService::instance(mApplication)->getPluginLoader()->destroyPlugin(plugin);
+            PluginService::instance(m_Application)->getPluginLoader()->destroyPlugin(plugin);
         }
     }
 
     // Ищем всех провайдеров с неподдерживаемым типом процессинга
-    auto dealerSettings = SettingsService::instance(mApplication)
+    auto dealerSettings = SettingsService::instance(m_Application)
                               ->getAdapter<SDK::PaymentProcessor::DealerSettings>();
 
     foreach (
         const QString &processingType,
         QSet<QString>(dealerSettings->getProviderProcessingTypes().begin(),
                       dealerSettings->getProviderProcessingTypes().end())
-            .subtract(QSet<QString>(mFactoryByType.keys().begin(), mFactoryByType.keys().end()))) {
+            .subtract(QSet<QString>(m_FactoryByType.keys().begin(), m_FactoryByType.keys().end()))) {
         // И удаляем их
         foreach (qint64 providerId, dealerSettings->getProviders(processingType)) {
             toLog(LogLevel::Error,
@@ -156,7 +156,7 @@ bool PaymentService::initialize() {
 
 //------------------------------------------------------------------------------
 void PaymentService::finishInitialize() {
-    foreach (auto factory, mFactories) {
+    foreach (auto factory, m_Factories) {
         if (!factory->initialize()) {
             toLog(LogLevel::Error,
                   QString("Failed initialize payment factory plugin for payment types: %1.")
@@ -165,9 +165,9 @@ void PaymentService::finishInitialize() {
     }
 
     // Запускаем поток на обработку оффлайн платежей.
-    mPaymentThread.start();
+    m_PaymentThread.start();
 
-    mEnabled = true;
+    m_Enabled = true;
 }
 
 //---------------------------------------------------------------------------
@@ -177,28 +177,28 @@ bool PaymentService::canShutdown() {
 
 //---------------------------------------------------------------------------
 bool PaymentService::shutdown() {
-    mEnabled = false;
+    m_Enabled = false;
 
     // Спрашиваем сетевой сервис может ли он закрыться. Тем самым сбрасывая все сетевые задачи.
-    mApplication->getCore()->getService(CServices::NetworkService)->canShutdown();
+    m_Application->getCore()->getService(CServices::NetworkService)->canShutdown();
 
-    disconnect(mApplication->getCore()->getFundsService()->getAcceptor());
-    disconnect(mApplication->getCore()->getFundsService()->getDispenser());
+    disconnect(m_Application->getCore()->getFundsService()->getAcceptor());
+    disconnect(m_Application->getCore()->getFundsService()->getDispenser());
 
-    mActivePaymentSynchronizer.waitForFinished();
+    m_ActivePaymentSynchronizer.waitForFinished();
 
-    SafeStopServiceThread(&mPaymentThread, 3000, getLog());
+    SafeStopServiceThread(&m_PaymentThread, 3000, getLog());
 
-    if (mChangePayment) {
-        mChangePayment.reset();
+    if (m_ChangePayment) {
+        m_ChangePayment.reset();
     }
 
     setPaymentActive(std::shared_ptr<PPSDK::IPayment>());
 
-    while (!mFactories.isEmpty()) {
-        PluginService::instance(mApplication)
+    while (!m_Factories.isEmpty()) {
+        PluginService::instance(m_Application)
             ->getPluginLoader()
-            ->destroyPlugin(dynamic_cast<SDK::Plugin::IPlugin *>(mFactories.takeFirst()));
+            ->destroyPlugin(dynamic_cast<SDK::Plugin::IPlugin *>(m_Factories.takeFirst()));
     }
 
     return true;
@@ -234,16 +234,16 @@ void PaymentService::resetParameters(const QSet<QString> &) {}
 
 //---------------------------------------------------------------------------
 void PaymentService::setPaymentActive(std::shared_ptr<SDK::PaymentProcessor::IPayment> aPayment) {
-    QMutexLocker lock(&mPaymentLock);
+    QMutexLocker lock(&m_PaymentLock);
 
-    mActivePayment = aPayment;
+    m_ActivePayment = aPayment;
 }
 
 //---------------------------------------------------------------------------
 bool PaymentService::isPaymentActive(std::shared_ptr<PPSDK::IPayment> aPayment) {
-    QMutexLocker lock(&mPaymentLock);
+    QMutexLocker lock(&m_PaymentLock);
 
-    return aPayment == mActivePayment;
+    return aPayment == m_ActivePayment;
 }
 
 //---------------------------------------------------------------------------
@@ -256,7 +256,7 @@ qint64 PaymentService::createPayment(qint64 aProvider) {
 
     toLog(LogLevel::Normal, QString("Creating payment. Provider: %1.").arg(aProvider));
 
-    PPSDK::SProvider provider = SettingsService::instance(mApplication)
+    PPSDK::SProvider provider = SettingsService::instance(m_Application)
                                     ->getAdapter<SDK::PaymentProcessor::DealerSettings>()
                                     ->getProvider(aProvider);
     if (provider.isNull()) {
@@ -265,8 +265,8 @@ qint64 PaymentService::createPayment(qint64 aProvider) {
         return -1;
     }
 
-    if (mFactoryByType.contains(provider.processor.type)) {
-        PPSDK::IPaymentFactory *factory = mFactoryByType[provider.processor.type];
+    if (m_FactoryByType.contains(provider.processor.type)) {
+        PPSDK::IPaymentFactory *factory = m_FactoryByType[provider.processor.type];
 
         std::shared_ptr<PPSDK::IPayment> payment(
             factory->createPayment(provider.processor.type),
@@ -280,7 +280,7 @@ qint64 PaymentService::createPayment(qint64 aProvider) {
         QList<PPSDK::IPayment::SParameter> parameters;
 
         parameters << PPSDK::IPayment::SParameter(
-                          PPSDK::CPayment::Parameters::ID, mDBUtils->createDummyPayment(), true)
+                          PPSDK::CPayment::Parameters::ID, m_DBUtils->createDummyPayment(), true)
                    << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::CreationDate,
                                                   QDateTime::currentDateTime(),
                                                   true)
@@ -319,8 +319,8 @@ qint64 PaymentService::createPayment(qint64 aProvider) {
 
 //---------------------------------------------------------------------------
 bool PaymentService::savePayment(PPSDK::IPayment *aPayment) {
-    if (mDBUtils->savePayment(aPayment, createSignature(aPayment))) {
-        EventService::instance(mApplication)
+    if (m_DBUtils->savePayment(aPayment, createSignature(aPayment))) {
+        EventService::instance(m_Application)
             ->sendEvent(PPSDK::Event(
                 PPSDK::EEventType::PaymentUpdated, CServices::PaymentService, aPayment->getID()));
 
@@ -333,7 +333,7 @@ bool PaymentService::savePayment(PPSDK::IPayment *aPayment) {
                           .arg(amountAll);
 
         // Выставить ошибочный статус устройства "терминал"
-        mApplication->getCore()->getEventService()->sendEvent(SDK::PaymentProcessor::Event(
+        m_Application->getCore()->getEventService()->sendEvent(SDK::PaymentProcessor::Event(
             SDK::PaymentProcessor::EEventType::Critical, CServices::DatabaseService, msg));
 
         return false;
@@ -342,21 +342,21 @@ bool PaymentService::savePayment(PPSDK::IPayment *aPayment) {
 
 //---------------------------------------------------------------------------
 qint64 PaymentService::getActivePayment() const {
-    return mActivePayment ? mActivePayment->getID() : -1;
+    return m_ActivePayment ? m_ActivePayment->getID() : -1;
 }
 
 //---------------------------------------------------------------------------
 void PaymentService::deactivatePayment() {
-    if (mActivePayment) {
-        QMutexLocker lock(&mPaymentLock);
+    if (m_ActivePayment) {
+        QMutexLocker lock(&m_PaymentLock);
 
-        savePayment(mActivePayment.get());
+        savePayment(m_ActivePayment.get());
 
-        mActivePayment.reset();
+        m_ActivePayment.reset();
     }
 
     // Если существует пустой платеж "сдача", нужно его пометить в БД как удаленный
-    if (mChangePayment && qFuzzyIsNull(getChangeAmount())) {
+    if (m_ChangePayment && qFuzzyIsNull(getChangeAmount())) {
         resetChange();
     }
 }
@@ -371,11 +371,11 @@ QString PaymentService::createSignature(PPSDK::IPayment *aPayment, bool aWithCRC
 
     QString signature;
 
-    PPSDK::SProvider provider = SettingsService::instance(mApplication)
+    PPSDK::SProvider provider = SettingsService::instance(m_Application)
                                     ->getAdapter<SDK::PaymentProcessor::DealerSettings>()
                                     ->getProvider(aPayment->getProvider(false));
 
-    PPSDK::SKeySettings keys = SettingsService::instance(mApplication)
+    PPSDK::SKeySettings keys = SettingsService::instance(m_Application)
                                    ->getAdapter<PPSDK::TerminalSettings>()
                                    ->getKeys()[provider.processor.keyPair];
 
@@ -445,15 +445,15 @@ QString PaymentService::createSignature(PPSDK::IPayment *aPayment, bool aWithCRC
 #else
 
 #if QT_VERSION < 0x050000
-        signature = QString::fromLatin1(
+        signature = QString::from_Latin1(
             CCryptographicHash::hash(signature.toUtf8(), CCryptographicHash::Sha256).toHex());
 #else
-        signature = QString::fromLatin1(
+        signature = QString::from_Latin1(
             QCryptographicHash::hash(signature.toUtf8(), QCryptographicHash::Sha256).toHex());
 #endif
     } else {
         signature =
-            QString::fromUtf8(QCryptographicHash::hash(signature.toUtf8(), QCryptographicHash::Md5)
+            QString::from_Utf8(QCryptographicHash::hash(signature.toUtf8(), QCryptographicHash::Md5)
                                   .toHex()
                                   .toUpper());
     }
@@ -461,7 +461,7 @@ QString PaymentService::createSignature(PPSDK::IPayment *aPayment, bool aWithCRC
 
 #ifndef _DEBUG
     ICryptEngine *crypt =
-        static_cast<ICryptEngine *>(CryptService::instance(mApplication)->getCryptEngine());
+        static_cast<ICryptEngine *>(CryptService::instance(m_Application)->getCryptEngine());
 
     QByteArray encodedSignature;
 
@@ -476,7 +476,7 @@ QString PaymentService::createSignature(PPSDK::IPayment *aPayment, bool aWithCRC
         return QString();
     }
 
-    return QString::fromUtf8(encodedSignature);
+    return QString::from_Utf8(encodedSignature);
 #else
     return signature;
 #endif // _DEBUG
@@ -498,7 +498,7 @@ bool PaymentService::verifySignature(PPSDK::IPayment *aPayment) {
 
 #ifndef _DEBUG
     ICryptEngine *crypt =
-        static_cast<ICryptEngine *>(CryptService::instance(mApplication)->getCryptEngine());
+        static_cast<ICryptEngine *>(CryptService::instance(m_Application)->getCryptEngine());
 
     QString error;
     QByteArray decodedSignature;
@@ -534,11 +534,11 @@ bool PaymentService::verifySignature(PPSDK::IPayment *aPayment) {
 //---------------------------------------------------------------------------
 std::shared_ptr<PPSDK::IPayment> PaymentService::getPayment(qint64 aID) {
     {
-        QMutexLocker lock(&mPaymentLock);
+        QMutexLocker lock(&m_PaymentLock);
 
         // Если спрашиваем активный платёж, не перезагружаем его из базы.
-        if (mActivePayment && (mActivePayment->getID() == aID)) {
-            return mActivePayment;
+        if (m_ActivePayment && (m_ActivePayment->getID() == aID)) {
+            return m_ActivePayment;
         }
     }
 
@@ -550,16 +550,16 @@ std::shared_ptr<PPSDK::IPayment> PaymentService::getPayment(qint64 aID) {
 
     toLog(LogLevel::Normal, QString("Payment %1. Loading...").arg(aID));
 
-    QList<PPSDK::IPayment::SParameter> parameters = mDBUtils->getPaymentParameters(aID);
+    QList<PPSDK::IPayment::SParameter> parameters = m_DBUtils->getPaymentParameters(aID);
 
     PPSDK::IPayment::SParameter type =
         PPSDK::IPayment::parameterByName(PPSDK::CPayment::Parameters::Type, parameters);
 
-    if (!type.isNull() && mFactoryByType.contains(type.value.toString())) {
+    if (!type.isNull() && m_FactoryByType.contains(type.value.toString())) {
         std::shared_ptr<PPSDK::IPayment> payment(
-            mFactoryByType[type.value.toString()]->createPayment(type.value.toString()),
+            m_FactoryByType[type.value.toString()]->createPayment(type.value.toString()),
             std::bind(&PPSDK::IPaymentFactory::releasePayment,
-                      mFactoryByType[type.value.toString()],
+                      m_FactoryByType[type.value.toString()],
                       _1));
         if (!payment) {
             toLog(LogLevel::Normal,
@@ -591,7 +591,7 @@ std::shared_ptr<PPSDK::IPayment> PaymentService::getPayment(qint64 aID) {
 
 //---------------------------------------------------------------------------
 std::shared_ptr<PPSDK::IPayment> PaymentService::getPayment(const QString &aInitialSession) {
-    qint64 id = mDBUtils->getPaymentByInitialSession(aInitialSession);
+    qint64 id = m_DBUtils->getPaymentByInitialSession(aInitialSession);
 
     if (id != -1) {
         return getPayment(id);
@@ -602,12 +602,12 @@ std::shared_ptr<PPSDK::IPayment> PaymentService::getPayment(const QString &aInit
 
 //---------------------------------------------------------------------------
 PPSDK::SProvider PaymentService::getProvider(qint64 aID) {
-    PPSDK::SProvider provider = SettingsService::instance(mApplication)
+    PPSDK::SProvider provider = SettingsService::instance(m_Application)
                                     ->getAdapter<SDK::PaymentProcessor::DealerSettings>()
                                     ->getProvider(aID);
     if (!provider.isNull()) {
-        if (mFactoryByType.contains(provider.processor.type)) {
-            provider = mFactoryByType[provider.processor.type]->getProviderSpecification(provider);
+        if (m_FactoryByType.contains(provider.processor.type)) {
+            provider = m_FactoryByType[provider.processor.type]->getProviderSpecification(provider);
         } else {
             toLog(LogLevel::Error,
                   QString("Provider #%1: has unknown payment processor type: %2.")
@@ -631,13 +631,13 @@ TPaymentParameters PaymentService::getPaymentFields(qint64 aPayment) {
 
         return payment ? payment->getParameters() : QList<PPSDK::IPayment::SParameter>();
     } else {
-        return mDBUtils->getPaymentParameters(aPayment);
+        return m_DBUtils->getPaymentParameters(aPayment);
     }
 }
 
 //------------------------------------------------------------------------------
 QMap<qint64, TPaymentParameters> PaymentService::getPaymentsFields(const QList<qint64> &aIds) {
-    QMap<qint64, TPaymentParameters> result = mDBUtils->getPaymentParameters(aIds);
+    QMap<qint64, TPaymentParameters> result = m_DBUtils->getPaymentParameters(aIds);
 
     if (aIds.contains(getActivePayment())) {
         std::shared_ptr<PPSDK::IPayment> payment = getPayment(getActivePayment());
@@ -667,8 +667,8 @@ QMap<qint64, TPaymentParameters> PaymentService::getPaymentsFields(const QList<q
 //---------------------------------------------------------------------------
 QList<PPSDK::IPayment::SParameter>
 PaymentService::calculateCommission(const QList<PPSDK::IPayment::SParameter> &aParameters) {
-    if (mActivePayment) {
-        return mActivePayment->calculateCommission(aParameters);
+    if (m_ActivePayment) {
+        return m_ActivePayment->calculateCommission(aParameters);
     }
 
     return QList<PPSDK::IPayment::SParameter>();
@@ -690,31 +690,31 @@ bool PaymentService::updatePaymentFields(
     qint64 aID,
     const QList<SDK::PaymentProcessor::IPayment::SParameter> &aFields,
     bool aForceUpdate) {
-    QMutexLocker lock(&mOfflinePaymentLock);
+    QMutexLocker lock(&m_OfflinePaymentLock);
 
-    if (mOfflinePaymentID != aID) {
+    if (m_OfflinePaymentID != aID) {
         doUpdatePaymentFields(aID, getPayment(aID), aFields);
     } else if (aForceUpdate) {
-        // mOfflinePaymentLock гарантирует что мы попали на запись параметра ДО сохранения оффлайн
+        // m_OfflinePaymentLock гарантирует что мы попали на запись параметра ДО сохранения оффлайн
         // платежа в БД сохраняем параметр в объект, обслуживаемый в оффлайне
-        doUpdatePaymentFields(aID, mOfflinePayment, aFields, aForceUpdate);
+        doUpdatePaymentFields(aID, m_OfflinePayment, aFields, aForceUpdate);
         // тут же сохраняем объект в базу напрямую
         doUpdatePaymentFields(aID, getPayment(aID), aFields, aForceUpdate);
     } else {
         lock.unlock();
 
         // Создаем команду на обновление поля.
-        QMutexLocker lock(&mCommandMutex);
+        QMutexLocker lock(&m_CommandMutex);
 
         auto command = [aID, aFields](PaymentService *aService) -> EPaymentCommandResult::Enum {
             aService->doUpdatePaymentFields(aID, aService->getPayment(aID), aFields);
-            aService->mPaymentHaveUnsavedParameters.remove(aID);
+            aService->m_PaymentHaveUnsavedParameters.remove(aID);
             return EPaymentCommandResult::OK;
         };
 
-        mCommands << qMakePair(
-            mCommandIndex++, std::function<EPaymentCommandResult::Enum(PaymentService *)>(command));
-        mPaymentHaveUnsavedParameters.insert(aID);
+        m_Commands << qMakePair(
+            m_CommandIndex++, std::function<EPaymentCommandResult::Enum(PaymentService *)>(command));
+        m_PaymentHaveUnsavedParameters.insert(aID);
     }
 
     // TODO: убрать возвращаемое значение.
@@ -736,32 +736,32 @@ void PaymentService::processPaymentStep(qint64 aPayment,
                 payment->setCompleteDate(QDateTime::currentDateTime());
             }
 
-            bool result = payment->performStep(aStep);
+            bool result = payment->perform_Step(aStep);
 
             savePayment(payment.get());
 
             emit stepCompleted(aPayment, aStep, !result);
         }
     } else {
-        mActivePaymentSynchronizer.addFuture(QtConcurrent::run(
+        m_ActivePaymentSynchronizer.addFuture(QtConcurrent::run(
             [this, aPayment, aStep]() { processPaymentStep(aPayment, aStep, true); }));
     }
 }
 
 //---------------------------------------------------------------------------
 bool PaymentService::convertPayment(qint64 aPayment, const QString &aTargetType) {
-    if (mFactoryByType.contains(aTargetType)) {
+    if (m_FactoryByType.contains(aTargetType)) {
         std::shared_ptr<PPSDK::IPayment> payment(getPayment(aPayment));
 
         if (payment) {
-            if (mFactoryByType[aTargetType]->convertPayment(aTargetType, payment.get())) {
+            if (m_FactoryByType[aTargetType]->convertPayment(aTargetType, payment.get())) {
                 savePayment(payment.get());
 
                 if (isPaymentActive(payment)) {
-                    QMutexLocker lock(&mPaymentLock);
+                    QMutexLocker lock(&m_PaymentLock);
 
                     // Заменяем активный платёж на новый экземпляр с другим типом процессинга
-                    mActivePayment.reset();
+                    m_ActivePayment.reset();
                     setPaymentActive(getPayment(aPayment));
                 }
 
@@ -946,7 +946,7 @@ void PaymentService::onAmountUpdated(qint64 aPayment, double /*aTotalAmount*/, d
                               .arg(payment->getInitialSession())
                               .arg(amountAll, 0, 'f', 2);
 
-            mApplication->getCore()->getTerminalService()->sendFeedback(CServices::PaymentService,
+            m_Application->getCore()->getTerminalService()->sendFeedback(CServices::PaymentService,
                                                                         msg);
         }
 
@@ -970,12 +970,12 @@ void PaymentService::onAmountDispensed(double aAmount) {
         return;
     }
 
-    if (mChangePayment) {
+    if (m_ChangePayment) {
         double amountAll =
-            mChangePayment->getParameter(PPSDK::CPayment::Parameters::AmountAll).value.toDouble();
+            m_ChangePayment->getParameter(PPSDK::CPayment::Parameters::AmountAll).value.toDouble();
 
         if (amountAll >= aAmount) {
-            setChangeAmount(amountAll - aAmount, mActivePayment);
+            setChangeAmount(amountAll - aAmount, m_ActivePayment);
 
             toLog(LogLevel::Normal,
                   QString("Dispensed %1. Change %2")
@@ -988,7 +988,7 @@ void PaymentService::onAmountDispensed(double aAmount) {
                       .arg(aAmount, 0, 'f', 2)
                       .arg(amountAll, 0, 'f', 2));
 
-            setChangeAmount(0, mActivePayment);
+            setChangeAmount(0, m_ActivePayment);
         }
     } else {
         // Ругаемся, т.к. выдали денег, а сдачи реально нет.
@@ -999,21 +999,21 @@ void PaymentService::onAmountDispensed(double aAmount) {
 
 //---------------------------------------------------------------------------
 void PaymentService::onPaymentThreadStarted() {
-    mPaymentTimer.start(CPaymentService::ProcessOfflineTimeout);
+    m_PaymentTimer.start(CPaymentService::ProcessOfflineTimeout);
 }
 
 //---------------------------------------------------------------------------
 bool PaymentService::processPaymentInternal(std::shared_ptr<PPSDK::IPayment> aPayment) {
     // Пропускаем платежи с неизрасходованной сдачей.
-    if (mChangePayment && (mChangePayment->getID() == aPayment->getID())) {
-        mDBUtils->suspendPayment(aPayment->getID(), 15);
+    if (m_ChangePayment && (m_ChangePayment->getID() == aPayment->getID())) {
+        m_DBUtils->suspendPayment(aPayment->getID(), 15);
 
         return false;
     }
 
     // Пропускаем платёж, если он активен.
     if (isPaymentActive(aPayment) && (aPayment->getPriority() == PPSDK::IPayment::Online)) {
-        mDBUtils->suspendPayment(aPayment->getID(), 15);
+        m_DBUtils->suspendPayment(aPayment->getID(), 15);
 
         return false;
     }
@@ -1022,16 +1022,16 @@ bool PaymentService::processPaymentInternal(std::shared_ptr<PPSDK::IPayment> aPa
     if (aPayment->isNull() && getPaymentNotes(aPayment->getID()).empty()) {
         toLog(LogLevel::Normal, QString("Payment %1. Is null.").arg(aPayment->getID()));
 
-        mDBUtils->removePayment(aPayment->getID());
+        m_DBUtils->removePayment(aPayment->getID());
 
         return false;
     }
 
     // Запоминаем id платежа, находящегося в обработке.
     {
-        QMutexLocker lock(&mOfflinePaymentLock);
-        mOfflinePaymentID = aPayment->getID();
-        mOfflinePayment = aPayment;
+        QMutexLocker lock(&m_OfflinePaymentLock);
+        m_OfflinePaymentID = aPayment->getID();
+        m_OfflinePayment = aPayment;
     }
 
     // Проверка на неиспользованный остаток
@@ -1063,10 +1063,10 @@ bool PaymentService::processPaymentInternal(std::shared_ptr<PPSDK::IPayment> aPa
 
     // Отпускаем платеж.
     {
-        QMutexLocker lock(&mOfflinePaymentLock);
+        QMutexLocker lock(&m_OfflinePaymentLock);
 
-        mOfflinePaymentID = -1;
-        mOfflinePayment.reset();
+        m_OfflinePaymentID = -1;
+        m_OfflinePayment.reset();
 
         // Сохраняем платёж внутри защищенного блока для избежания записи параметров offline платежа
         savePayment(aPayment.get());
@@ -1083,60 +1083,60 @@ bool PaymentService::processPaymentInternal(std::shared_ptr<PPSDK::IPayment> aPa
 //---------------------------------------------------------------------------
 void PaymentService::onProcessPayments() {
     // Выгружаем старые платежи раз в день.
-    if (mLastBackupDate.addDays(1) <= QDateTime::currentDateTime()) {
-        mDBUtils->backupOldPayments();
+    if (m_LastBackupDate.addDays(1) <= QDateTime::currentDateTime()) {
+        m_DBUtils->backupOldPayments();
 
-        mLastBackupDate = QDateTime::currentDateTime();
+        m_LastBackupDate = QDateTime::currentDateTime();
     }
 
     // Блокируем offline проведение платежей до установления связи
-    if (!mApplication->getCore()->getNetworkService()->isConnected(true)) {
+    if (!m_Application->getCore()->getNetworkService()->isConnected(true)) {
         toLog(LogLevel::Warning, "Waiting network connection for payment processing.");
 
-        mPaymentTimer.start(CPaymentService::CheckNetworkConnectionTimeout);
+        m_PaymentTimer.start(CPaymentService::CheckNetworkConnectionTimeout);
 
         return;
     }
 
-    QList<qint64> payments = mDBUtils->getPaymentQueue();
+    QList<qint64> payments = m_DBUtils->getPaymentQueue();
 
     if (payments.size()) {
         qint64 id = payments.takeFirst();
 
-        if (mEnabled) {
+        if (m_Enabled) {
             std::shared_ptr<PPSDK::IPayment> payment(getPayment(id));
 
             // Если платеж не прогрузился, останавливаем его обработку на 15 минут.
             if (!payment) {
                 toLog(LogLevel::Warning, QString("Suspending bad payment %1.").arg(id));
 
-                mDBUtils->suspendPayment(id, 15);
+                m_DBUtils->suspendPayment(id, 15);
             } else {
                 processPaymentInternal(payment);
             }
         }
     }
 
-    QMutexLocker lock(&mCommandMutex);
+    QMutexLocker lock(&m_CommandMutex);
 
     // Обрабатываем очередь команд.
-    foreach (auto &command, mCommands) {
+    foreach (auto &command, m_Commands) {
         emit paymentCommandComplete(command.first, command.second(this));
     }
 
-    mCommands.clear();
+    m_Commands.clear();
 
-    mPaymentTimer.start(CPaymentService::ProcessOfflineTimeout);
+    m_PaymentTimer.start(CPaymentService::ProcessOfflineTimeout);
 }
 
 //---------------------------------------------------------------------------
 int PaymentService::registerForcePaymentCommand(const QString &aInitialSession,
                                                 const QVariantMap &aParameters) {
-    QMutexLocker lock(&mCommandMutex);
+    QMutexLocker lock(&m_CommandMutex);
 
     auto command = [aInitialSession,
                     aParameters](PaymentService *aService) -> EPaymentCommandResult::Enum {
-        if (!aService->mEnabled) {
+        if (!aService->m_Enabled) {
             return EPaymentCommandResult::Error;
         }
 
@@ -1167,7 +1167,7 @@ int PaymentService::registerForcePaymentCommand(const QString &aInitialSession,
                                                          : EPaymentCommandResult::Error;
     };
 
-    mCommands << qMakePair(mCommandIndex++,
+    m_Commands << qMakePair(m_CommandIndex++,
                            std::function<EPaymentCommandResult::Enum(PaymentService *)>(command));
 
     auto parametersToString = [aParameters]() -> QString {
@@ -1183,18 +1183,18 @@ int PaymentService::registerForcePaymentCommand(const QString &aInitialSession,
     toLog(LogLevel::Normal,
           QString("Register command 'process payment %1'. Internal command id: %2. Parameters: %3")
               .arg(aInitialSession)
-              .arg(mCommandIndex)
+              .arg(m_CommandIndex)
               .arg(parametersToString()));
 
-    return mCommands.last().first;
+    return m_Commands.last().first;
 }
 
 //---------------------------------------------------------------------------
 int PaymentService::registerRemovePaymentCommand(const QString &aInitialSession) {
-    QMutexLocker lock(&mCommandMutex);
+    QMutexLocker lock(&m_CommandMutex);
 
     auto command = [aInitialSession](PaymentService *aService) -> EPaymentCommandResult::Enum {
-        qint64 id = aService->mDBUtils->getPaymentByInitialSession(aInitialSession);
+        qint64 id = aService->m_DBUtils->getPaymentByInitialSession(aInitialSession);
 
         if (id < 0) {
             return EPaymentCommandResult::NotFound;
@@ -1204,57 +1204,57 @@ int PaymentService::registerRemovePaymentCommand(const QString &aInitialSession)
                                            : EPaymentCommandResult::Error;
     };
 
-    mCommands << qMakePair(mCommandIndex++,
+    m_Commands << qMakePair(m_CommandIndex++,
                            std::function<EPaymentCommandResult::Enum(PaymentService *)>(command));
 
     toLog(LogLevel::Normal,
           QString("Register command 'remove payment %1'. Internal command id: %2.")
               .arg(aInitialSession)
-              .arg(mCommandIndex));
+              .arg(m_CommandIndex));
 
-    return mCommands.last().first;
+    return m_Commands.last().first;
 }
 
 //---------------------------------------------------------------------------
 PPSDK::SBalance PaymentService::getBalance() {
-    return mDBUtils->getBalance();
+    return m_DBUtils->getBalance();
 }
 
 //---------------------------------------------------------------------------
-PPSDK::EncashmentResult::Enum PaymentService::performEncashment(const QVariantMap &aParameters,
+PPSDK::EncashmentResult::Enum PaymentService::perform_Encashment(const QVariantMap &aParameters,
                                                                 PPSDK::SEncashment &aEncashment) {
-    PPSDK::SBalance balance = mDBUtils->getBalance();
+    PPSDK::SBalance balance = m_DBUtils->getBalance();
 
     {
-        QMutexLocker lock(&mCommandMutex);
+        QMutexLocker lock(&m_CommandMutex);
 
         // не можем выполнить инкассацию в случае несохраненных в БД данных
-        if (!balance.notPrintedPayments.intersect(mPaymentHaveUnsavedParameters).isEmpty()) {
+        if (!balance.notPrintedPayments.intersect(m_PaymentHaveUnsavedParameters).isEmpty()) {
             return PPSDK::EncashmentResult::TryLater;
         }
     }
 
-    aEncashment = mDBUtils->performEncashment(aParameters);
+    aEncashment = m_DBUtils->perform_Encashment(aParameters);
 
     return aEncashment.isValid() ? PPSDK::EncashmentResult::OK : PPSDK::EncashmentResult::Error;
 }
 
 //---------------------------------------------------------------------------
 PPSDK::SEncashment PaymentService::getLastEncashment() {
-    auto encashments = mDBUtils->getLastEncashments(1);
+    auto encashments = m_DBUtils->getLastEncashments(1);
 
     return encashments.isEmpty() ? PPSDK::SEncashment() : encashments.at(0);
 }
 
 //---------------------------------------------------------------------------
 QList<PPSDK::SEncashment> PaymentService::getEncashmentList(int aDepth) {
-    return mDBUtils->getLastEncashments(aDepth);
+    return m_DBUtils->getLastEncashments(aDepth);
 }
 
 //---------------------------------------------------------------------------
 double PaymentService::getChangeAmount() {
-    if (mChangePayment) {
-        return mChangePayment->getParameter(PPSDK::CPayment::Parameters::AmountAll)
+    if (m_ChangePayment) {
+        return m_ChangePayment->getParameter(PPSDK::CPayment::Parameters::AmountAll)
             .value.toDouble();
     }
 
@@ -1263,7 +1263,7 @@ double PaymentService::getChangeAmount() {
 
 //---------------------------------------------------------------------------
 void PaymentService::moveChangeToPayment(qint64 aPayment) {
-    if (mChangePayment) {
+    if (m_ChangePayment) {
         double change = getChangeAmount();
 
         if (!qFuzzyIsNull(change)) {
@@ -1283,14 +1283,14 @@ void PaymentService::moveChangeToPayment(qint64 aPayment) {
                                                 true,
                                                 false));
 
-                mChangePayment->setParameter(PPSDK::IPayment::SParameter(
+                m_ChangePayment->setParameter(PPSDK::IPayment::SParameter(
                     PPSDK::CPayment::Parameters::AmountAll,
                     payment->getParameter(PPSDK::CPayment::Parameters::Change).value,
                     true));
 
                 // Использовал мошенническую сдачу - сам мошенник
                 auto originalPayment = getPayment(getChangeSessionRef());
-                auto cheatedParameter = (originalPayment ? originalPayment : mChangePayment)
+                auto cheatedParameter = (originalPayment ? originalPayment : m_ChangePayment)
                                             ->getParameter(PPSDK::CPayment::Parameters::Cheated);
 
                 if (!cheatedParameter.isNull()) {
@@ -1298,7 +1298,7 @@ void PaymentService::moveChangeToPayment(qint64 aPayment) {
                     payment->setParameter(cheatedParameter);
                 }
 
-                savePayment(mChangePayment.get());
+                savePayment(m_ChangePayment.get());
                 savePayment(payment.get());
 
                 double newChange =
@@ -1345,12 +1345,12 @@ void PaymentService::movePaymentToChange(qint64 aPayment) {
 //---------------------------------------------------------------------------
 void PaymentService::resetChange() {
     // Если есть активный платёж со сдачей, отправляем его на мониторинг и создаём новый.
-    if (mChangePayment) {
+    if (m_ChangePayment) {
         bool remove = qFuzzyIsNull(getChangeAmount());
-        qint64 changePaymentID = mChangePayment->getID();
+        qint64 changePaymentID = m_ChangePayment->getID();
 
         auto originalPayment = getPayment(getChangeSessionRef());
-        auto cheatedParameter = (originalPayment ? originalPayment : mChangePayment)
+        auto cheatedParameter = (originalPayment ? originalPayment : m_ChangePayment)
                                     ->getParameter(PPSDK::CPayment::Parameters::Cheated);
 
         toLog(LogLevel::Normal,
@@ -1361,15 +1361,15 @@ void PaymentService::resetChange() {
 
         // Если есть платёж "сдача" с нулевой суммой, то не оставляем его в БД "как есть", а
         // помечаем как удалённый.
-        mChangePayment->setStatus(remove ? PPSDK::EPaymentStatus::Deleted
+        m_ChangePayment->setStatus(remove ? PPSDK::EPaymentStatus::Deleted
                                          : PPSDK::EPaymentStatus::LostChange);
 
-        savePayment(mChangePayment.get());
+        savePayment(m_ChangePayment.get());
 
-        mChangePayment.reset();
+        m_ChangePayment.reset();
 
         if (remove) {
-            mDBUtils->removePayment(changePaymentID);
+            m_DBUtils->removePayment(changePaymentID);
         }
     }
 
@@ -1378,8 +1378,8 @@ void PaymentService::resetChange() {
 
 //---------------------------------------------------------------------------
 QString PaymentService::getChangeSessionRef() {
-    if (mChangePayment) {
-        return mChangePayment->getParameter(PPSDK::CPayment::Parameters::OriginalPayment)
+    if (m_ChangePayment) {
+        return m_ChangePayment->getParameter(PPSDK::CPayment::Parameters::OriginalPayment)
             .value.toString()
             .split(PPSDK::CPayment::Parameters::ProviderFieldsDelimiter)
             .takeFirst();
@@ -1391,21 +1391,21 @@ QString PaymentService::getChangeSessionRef() {
 //---------------------------------------------------------------------------
 bool PaymentService::setChangeAmount(double aChange,
                                      std::shared_ptr<PPSDK::IPayment> aPaymentSource) {
-    if (!mChangePayment) {
-        if (mFactoryByType.contains(CPaymentService::ChangePaymentType)) {
-            mChangePayment = std::shared_ptr<PPSDK::IPayment>(
-                mFactoryByType[CPaymentService::ChangePaymentType]->createPayment(
+    if (!m_ChangePayment) {
+        if (m_FactoryByType.contains(CPaymentService::ChangePaymentType)) {
+            m_ChangePayment = std::shared_ptr<PPSDK::IPayment>(
+                m_FactoryByType[CPaymentService::ChangePaymentType]->createPayment(
                     CPaymentService::ChangePaymentType),
                 std::bind(&PPSDK::IPaymentFactory::releasePayment,
-                          mFactoryByType[CPaymentService::ChangePaymentType],
+                          m_FactoryByType[CPaymentService::ChangePaymentType],
                           _1));
 
-            if (mChangePayment) {
+            if (m_ChangePayment) {
                 QList<PPSDK::IPayment::SParameter> parameters;
 
                 parameters
                     << PPSDK::IPayment::SParameter(
-                           PPSDK::CPayment::Parameters::ID, mDBUtils->createDummyPayment(), true)
+                           PPSDK::CPayment::Parameters::ID, m_DBUtils->createDummyPayment(), true)
                     << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::CreationDate,
                                                    QDateTime::currentDateTime(),
                                                    true)
@@ -1419,10 +1419,10 @@ bool PaymentService::setChangeAmount(double aChange,
                            PPSDK::CPayment::Parameters::Priority, PPSDK::IPayment::Offline, true)
                     << PPSDK::IPayment::SParameter(CPaymentService::ChangePaymentParam, 1, true);
 
-                if (!mChangePayment->restore(parameters)) {
+                if (!m_ChangePayment->restore(parameters)) {
                     toLog(LogLevel::Error, "Failed to register storage for the change.");
 
-                    mChangePayment.reset();
+                    m_ChangePayment.reset();
 
                     return false;
                 }
@@ -1441,9 +1441,9 @@ bool PaymentService::setChangeAmount(double aChange,
 
     // В сдачу засовываем все данные из родительского платежа
     if (aPaymentSource) {
-        QMutexLocker lock(&mPaymentLock);
+        QMutexLocker lock(&m_PaymentLock);
 
-        QStringList paramValues(
+        QStringList param_Values(
             aPaymentSource->getParameter(PPSDK::CPayment::Parameters::InitialSession)
                 .value.toString());
 
@@ -1452,28 +1452,28 @@ bool PaymentService::setChangeAmount(double aChange,
             aPaymentSource->getParameter(PPSDK::CPayment::Parameters::ProviderFields)
                 .value.toString()
                 .split(PPSDK::CPayment::Parameters::ProviderFieldsDelimiter, Qt::SkipEmptyParts)) {
-            paramValues << aPaymentSource->getParameter(param).value.toString();
+            param_Values << aPaymentSource->getParameter(param).value.toString();
         }
 
         // Если платеж с подозрением на мошенничество, сдача тоже мошенническая
         auto cheatedParameter = aPaymentSource->getParameter(PPSDK::CPayment::Parameters::Cheated);
         if (!cheatedParameter.isNull()) {
             cheatedParameter.updated = true;
-            mChangePayment->setParameter(cheatedParameter);
+            m_ChangePayment->setParameter(cheatedParameter);
         }
 
-        mChangePayment->setParameter(PPSDK::IPayment::SParameter(
+        m_ChangePayment->setParameter(PPSDK::IPayment::SParameter(
             PPSDK::CPayment::Parameters::OriginalPayment,
-            paramValues.join(PPSDK::CPayment::Parameters::ProviderFieldsDelimiter),
+            param_Values.join(PPSDK::CPayment::Parameters::ProviderFieldsDelimiter),
             true));
 
-        mChangePayment->setParameter(
+        m_ChangePayment->setParameter(
             PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::ProviderFields,
                                         PPSDK::CPayment::Parameters::OriginalPayment,
                                         true));
     }
 
-    mChangePayment->setParameter(PPSDK::IPayment::SParameter(
+    m_ChangePayment->setParameter(PPSDK::IPayment::SParameter(
         PPSDK::CPayment::Parameters::AmountAll, QString::number(aChange, 'f', 2), true));
 
     toLog(LogLevel::Normal,
@@ -1481,27 +1481,27 @@ bool PaymentService::setChangeAmount(double aChange,
 
     emit changeUpdated(aChange);
 
-    return savePayment(mChangePayment.get());
+    return savePayment(m_ChangePayment.get());
 }
 
 //---------------------------------------------------------------------------
 QList<PPSDK::SNote> PaymentService::getPaymentNotes(qint64 aID) const {
-    return mDBUtils->getPaymentNotes(aID);
+    return m_DBUtils->getPaymentNotes(aID);
 }
 
 //---------------------------------------------------------------------------
 QList<qint64> PaymentService::getPayments(const QSet<PPSDK::EPaymentStatus::Enum> &aStates) {
-    return mDBUtils->getPayments(aStates);
+    return m_DBUtils->getPayments(aStates);
 }
 
 //---------------------------------------------------------------------------
 QList<qint64> PaymentService::findPayments(const QDate &aDate, const QString &aPhoneNumber) {
-    return mDBUtils->findPayments(aDate, aPhoneNumber);
+    return m_DBUtils->findPayments(aDate, aPhoneNumber);
 }
 
 //------------------------------------------------------------------------------
 QMap<qint64, quint32> PaymentService::getStatistic() const {
-    return mDBUtils->getStatistic();
+    return m_DBUtils->getStatistic();
 }
 
 //------------------------------------------------------------------------------

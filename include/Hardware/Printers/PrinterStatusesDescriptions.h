@@ -80,7 +80,7 @@ public:
 
         return m_StatusCodes - (TStatusCodes() << OK::PaperInPresenter << OK::MotorMotion
                                               << Error::PrinterFRNotAvailable
-                                              << DeviceStatusCode::Error::MechanismPosition
+                                              << DeviceStatusCode::Error::Mechanism_Position
                                               << DeviceStatusCode::Error::Temperature
                                               << DeviceStatusCode::Error::CoverIsOpened
                                               << DeviceStatusCode::Error::MechanicFailure);

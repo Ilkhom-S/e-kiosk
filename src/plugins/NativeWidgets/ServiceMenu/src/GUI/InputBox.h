@@ -40,7 +40,7 @@ private:
 
 private:
     Ui::InputBox ui;
-    ValidatorFunction mValidator;
+    ValidatorFunction m_Validator;
 };
 
 //---------------------------------------------------------------------------

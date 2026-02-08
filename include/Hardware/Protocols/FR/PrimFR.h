@@ -1,3 +1,3 @@
 /* @file Протокол Prim FR. */
 
-#include <Hardware/FR/PrimFR.h>
+#include <Hardware/FR/Prim_FR.h>

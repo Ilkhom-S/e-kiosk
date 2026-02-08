@@ -35,20 +35,20 @@ public:
 
 private:
     /// Рабочий мьютекс (union for both types).
-    MutexUnion mMutexUnion;
+    MutexUnion m_MutexUnion;
 
     /// Тип мьютекса (true = recursive, false = regular).
-    bool mIsRecursive;
+    bool m_IsRecursive;
 
     /// Таблица соответствия потока, вызвавшего локер, и замещающего его потока с ограниченной
     /// синхронизацией.
-    static TMatchedThreads mMatchedThreads;
+    static TMatchedThreads m_MatchedThreads;
 
     /// Потоки, залочившие мьютексы + количество локов (для рекурсивных мьютексов).
-    static TThreadsLocked mThreadsLocked;
+    static TThreadsLocked m_ThreadsLocked;
 
     // Мьютекс для защиты ресурсов.
-    static QRecursiveMutex mResourceMutex;
+    static QRecursiveMutex m_ResourceMutex;
 };
 
 //--------------------------------------------------------------------------------

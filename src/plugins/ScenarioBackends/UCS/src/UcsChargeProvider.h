@@ -18,7 +18,7 @@ class DealerSettings;
 } // namespace SDK
 
 namespace {
-extern const char ParamRuntimePath[];
+extern const char Param_RuntimePath[];
 } // namespace
 
 //------------------------------------------------------------------------------
@@ -79,13 +79,13 @@ private slots:
     void onEncashmentComplete();
 
 private:
-    QString mInstancePath;
-    QVariantMap mParameters;
-    SDK::Plugin::IEnvironment *mFactory;
-    SDK::PaymentProcessor::ICore *mCore;
-    SDK::PaymentProcessor::DealerSettings *mDealerSettings;
-    QSharedPointer<Ucs::API> mApi;
-    QSharedPointer<Ucs::API> mDatabaseUtils;
+    QString m_InstancePath;
+    QVariantMap m_Parameters;
+    SDK::Plugin::IEnvironment *m_Factory;
+    SDK::PaymentProcessor::ICore *m_Core;
+    SDK::PaymentProcessor::DealerSettings *m_DealerSettings;
+    QSharedPointer<Ucs::API> m_Api;
+    QSharedPointer<Ucs::API> m_DatabaseUtils;
 };
 
 //------------------------------------------------------------------------------

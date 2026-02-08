@@ -7,15 +7,15 @@
 class SerialDevice;
 
 //-----------------------------------------------------------------------------
-namespace CComPortLin {
-const QString LogName = "ComPortLin";
-}; // namespace CComPortLin
+namespace CCom_PortLin {
+const QString LogName = "Com_PortLin";
+}; // namespace CCom_PortLin
 
 //-----------------------------------------------------------------------------
-class ComPortLin : public ComPortBase {
+class Com_PortLin : public Com_PortBase {
 public:
-    ComPortLin(const QString &aFilePath);
-    virtual ~ComPortLin();
+    Com_PortLin(const QString &aFilePath);
+    virtual ~Com_PortLin();
 
     virtual bool open();
     virtual bool init();

@@ -146,7 +146,7 @@ TLibUSBDataList getEPCompanionData(const libusb_endpoint_descriptor &aEndpoint);
 void addDescriptorData(libusb_device_handle *aHandle, uint8_t aDescriptor, QVariant &aData);
 
 /// Получить набор по ключу из списка набора данных.
-bool getDataFromMap(QVariantMap &aData, const QString &aKey, bool aSetNextData = true);
+bool getDataFrom_Map(QVariantMap &aData, const QString &aKey, bool aSetNextData = true);
 
 /// Конвертировать число в строку с точкой посередине xx.yy.
 template <class T> QString doubleBCD2String(T aData);

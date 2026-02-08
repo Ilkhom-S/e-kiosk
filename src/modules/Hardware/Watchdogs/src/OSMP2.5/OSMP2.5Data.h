@@ -16,7 +16,7 @@ const int PingInterval = 10000;
 const uchar PingTimeout = 30;
 
 /// Пауза при отключении питания модема, [с].
-const uchar ModemResettingPause = 2;
+const uchar Modem_ResettingPause = 2;
 
 /// Пауза при отключении питания PC, [с].
 const uchar PCResettingPause = 3;
@@ -41,7 +41,7 @@ namespace Commands {
 const char GetVersion = '\x00';           /// Версия
 const char SerialNumber = '\x01';         /// Серийный номер
 const char ResetModem = '\x02';           /// Сброс модема
-extern const char SetModemPause[];  /// Установка времени сброса модема
+extern const char SetModem_Pause[];  /// Установка времени сброса модема
 const char SetPingEnable = '\x03';        /// Включение таймера сторожа
 extern const char SetPingTimeout[]; /// Установка времени сторожа таймера
 const char SetPingDisable = '\x04';       /// Отключение таймера сторожа
@@ -54,7 +54,7 @@ const char ReadKey = '\x12';              /// Чтение ключа
 const char PCWakeUpTime = '\x15';         /// Установка/получение времени включения PC
 
 const QByteArray ResetPCWakeUpTime =
-    QByteArray::fromRawData("\x15\x00", 2); /// Сброс времени включения PC
+    QByteArray::from_RawData("\x15\x00", 2); /// Сброс времени включения PC
 } // namespace Commands
 } // namespace COSMP25
 

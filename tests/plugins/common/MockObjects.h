@@ -18,24 +18,24 @@
 // Mock logger for testing
 class MockLog : public ILog {
 public:
-    MockLog(const QString &name = "MockLog") : mName(name), mLevel(LogLevel::Normal) {}
+    MockLog(const QString &name = "MockLog") : m_Name(name), m_Level(LogLevel::Normal) {}
 
     // ILog interface
-    virtual const QString &getName() const override { return mName; }
+    virtual const QString &getName() const override { return m_Name; }
     virtual LogType::Enum getType() const override { return LogType::Debug; }
-    virtual const QString &getDestination() const override { return mDestination; }
+    virtual const QString &getDestination() const override { return m_Destination; }
     virtual void setDestination(const QString &aDestination) override {
-        mDestination = aDestination;
+        m_Destination = aDestination;
     }
-    virtual void setLevel(LogLevel::Enum aLevel) override { mLevel = aLevel; }
+    virtual void setLevel(LogLevel::Enum aLevel) override { m_Level = aLevel; }
     virtual void adjustPadding(int aStep) override { /* Mock implementation - do nothing */ }
     virtual void write(LogLevel::Enum aLevel, const QString &aMessage) override {
         // Don't log during Qt shutdown to avoid crashes
         if (QCoreApplication::instance() == nullptr) {
             return;
         }
-        if (aLevel >= mLevel) {
-            mMessages.append(QString("[%1] %2").arg(logLevelToString(aLevel)).arg(aMessage));
+        if (aLevel >= m_Level) {
+            m_Messages.append(QString("[%1] %2").arg(logLevelToString(aLevel)).arg(aMessage));
         }
     }
     virtual void
@@ -55,8 +55,8 @@ public:
     static void setGlobalLevel(LogLevel::Enum) {}
 
     // Test helpers
-    QStringList getMessages() const { return mMessages; }
-    void clearMessages() { mMessages.clear(); }
+    QStringList getMessages() const { return m_Messages; }
+    void clearMessages() { m_Messages.clear(); }
 
 private:
     QString logLevelToString(LogLevel::Enum level) const {
@@ -80,10 +80,10 @@ private:
         }
     }
 
-    QString mName;
-    QString mDestination;
-    LogLevel::Enum mLevel;
-    QStringList mMessages;
+    QString m_Name;
+    QString m_Destination;
+    LogLevel::Enum m_Level;
+    QStringList m_Messages;
 };
 
 // Mock plugin loader for testing
@@ -93,13 +93,13 @@ public:
 
     // IPluginLoader interface
     virtual int addDirectory(const QString &aDirectory) override {
-        mDirectories.append(aDirectory);
+        m_Directories.append(aDirectory);
         return 1; // Simulate success
     }
 
     virtual QStringList getPluginList(const QRegularExpression &aFilter) const override {
         QStringList result;
-        foreach (QString plugin, mRegisteredPlugins) {
+        foreach (QString plugin, m_RegisteredPlugins) {
             if (aFilter.pattern().isEmpty() || aFilter.match(plugin).capturedStart() != -1) {
                 result.append(plugin);
             }
@@ -140,19 +140,19 @@ public:
     }
 
     // Test helpers
-    void registerPlugin(const QString &pluginPath) { mRegisteredPlugins.append(pluginPath); }
+    void registerPlugin(const QString &pluginPath) { m_RegisteredPlugins.append(pluginPath); }
 
 private:
-    QStringList mDirectories;
-    QStringList mRegisteredPlugins;
+    QStringList m_Directories;
+    QStringList m_RegisteredPlugins;
 };
 
 // Mock kernel for plugin testing
 class MockKernel : public SDK::Plugin::IKernel {
 public:
-    MockKernel() : mPluginLoader(new MockPluginLoader()) {}
+    MockKernel() : m_PluginLoader(new MockPluginLoader()) {}
 
-    ~MockKernel() { delete mPluginLoader; }
+    ~MockKernel() { delete m_PluginLoader; }
 
     // IKernel interface
     virtual ILog *getLog(const QString &aName = "") const override {
@@ -170,7 +170,7 @@ public:
     virtual bool canConfigurePlugin(const QString &aInstancePath) const override { return true; }
 
     virtual QVariantMap getPluginConfiguration(const QString &aInstancePath) const override {
-        return mConfigurations.value(aInstancePath, QVariantMap());
+        return m_Configurations.value(aInstancePath, QVariantMap());
     }
 
     virtual bool canSavePluginConfiguration(const QString &aInstancePath) const override {
@@ -179,7 +179,7 @@ public:
 
     virtual bool savePluginConfiguration(const QString &aInstancePath,
                                          const QVariantMap &aParameters) override {
-        mConfigurations[aInstancePath] = aParameters;
+        m_Configurations[aInstancePath] = aParameters;
         return true;
     }
 
@@ -187,16 +187,16 @@ public:
         return nullptr; // Not implemented for basic testing
     }
 
-    virtual SDK::Plugin::IPluginLoader *getPluginLoader() const override { return mPluginLoader; }
+    virtual SDK::Plugin::IPluginLoader *getPluginLoader() const override { return m_PluginLoader; }
 
     // Test helpers
     void setPluginConfiguration(const QString &instancePath, const QVariantMap &config) {
-        mConfigurations[instancePath] = config;
+        m_Configurations[instancePath] = config;
     }
 
-    MockPluginLoader *getMockPluginLoader() const { return mPluginLoader; }
+    MockPluginLoader *getMockPluginLoader() const { return m_PluginLoader; }
 
 private:
-    MockPluginLoader *mPluginLoader;
-    QMap<QString, QVariantMap> mConfigurations;
+    MockPluginLoader *m_PluginLoader;
+    QMap<QString, QVariantMap> m_Configurations;
 };

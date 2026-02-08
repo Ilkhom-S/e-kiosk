@@ -39,7 +39,7 @@ private slots:
     void onStacked(SDK::Driver::TParList aNotes);
 
 private:
-    ObjectPointer<SDK::Driver::ICashAcceptor> mCoinAcceptor;
+    ObjectPointer<SDK::Driver::ICashAcceptor> m_CoinAcceptor;
 };
 
 //------------------------------------------------------------------------------

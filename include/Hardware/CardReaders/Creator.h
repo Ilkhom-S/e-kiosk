@@ -29,7 +29,7 @@ private:
     bool checkUSBData(QByteArray &aData, int &aBase) const;
 
     /// Обрезать прочитанные данные, оставив только данные протокола.
-    void trimUSBData(QByteArray &aData);
+    void trim_USBData(QByteArray &aData);
 
     /// Подсчет контрольной суммы пакета данных.
     char calcCRC(const QByteArray &aData);

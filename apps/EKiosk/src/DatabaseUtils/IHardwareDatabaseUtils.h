@@ -20,15 +20,15 @@ public:
 
     /// Возвращает true, если параметр aName для устройства с именем aDeviceName и типом aType
     /// существует.
-    virtual bool isDeviceParamExists(const QString &aDeviceConfigName) = 0;
+    virtual bool isDeviceParam_Exists(const QString &aDeviceConfigName) = 0;
 
     /// Возвращает значение конкретного параметра из список параметров устройства по имени и типу.
     virtual QVariant getDeviceParam(const QString &aDeviceConfigName, const QString &aName) = 0;
 
     /// Добавить определенный параметр устройства по имени и типу.
     virtual bool setDeviceParam(const QString &aDeviceConfigName,
-                                const QString &aParamName,
-                                const QVariant &aParamValue) = 0;
+                                const QString &aParam_Name,
+                                const QVariant &aParam_Value) = 0;
 
     /// Предикат, определяющий наличие устройства по его имени и типу.
     virtual bool hasDevice(const QString &aDeviceConfigName) = 0;

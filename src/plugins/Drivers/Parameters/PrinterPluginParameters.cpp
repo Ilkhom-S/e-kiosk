@@ -47,10 +47,10 @@ SPluginParameter setRemoteSensor(bool aEnabled) {
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setJamSensorEnabled() {
-    return SPluginParameter(PrinterSettings::PaperJamSensor,
+SPluginParameter setJam_SensorEnabled() {
+    return SPluginParameter(PrinterSettings::PaperJam_Sensor,
                             false,
-                            PPT::PaperJamSensor,
+                            PPT::PaperJam_Sensor,
                             QString(),
                             Values::Use,
                             QStringList() << Values::Use << Values::NotUse,
@@ -222,14 +222,14 @@ SPluginParameter setPresentationLength(const QString &aOptionalTranslation, int 
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setCustomCodepage() {
+SPluginParameter setCustom_Codepage() {
     return SPluginParameter(CHardware::Codepage,
                             false,
                             PPT::Codepage,
                             QString(),
                             CHardware::Codepages::CP866,
                             QStringList()
-                                << CHardware::Codepages::CP866 << CHardware::Codepages::CustomKZT,
+                                << CHardware::Codepages::CP866 << CHardware::Codepages::Custom_KZT,
                             false);
 }
 

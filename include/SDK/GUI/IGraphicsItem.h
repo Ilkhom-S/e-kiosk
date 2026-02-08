@@ -41,13 +41,13 @@ public:
     virtual QVariantMap getContext() const = 0;
 
 protected:
-    friend class GraphicsItemDeleter;
+    friend class GraphicsItem_Deleter;
     virtual ~IGraphicsItem() {};
 };
 
 //---------------------------------------------------------------------------
 /// Deleter для smart-поинтера
-class GraphicsItemDeleter {
+class GraphicsItem_Deleter {
 public:
     void operator()(IGraphicsItem *aGraphicsItem) { delete aGraphicsItem; }
 };

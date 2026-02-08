@@ -103,27 +103,27 @@ private:
 
 private:
     /// Указатель на ядро.
-    ICore *mCore;
+    ICore *m_Core;
     /// Указатель на сетевой сервис.
-    INetworkService *mNetworkService;
+    INetworkService *m_NetworkService;
     /// Менеджер задач.
-    NetworkTaskManager *mTaskManager;
+    NetworkTaskManager *m_TaskManager;
     /// Текущая задача.
-    NetworkTask *mCurrentTask;
+    NetworkTask *m_CurrentTask;
 
 private:
     /// SD.
-    QString mSD;
+    QString m_SD;
     /// AP.
-    QString mAP;
+    QString m_AP;
     /// OP.
-    QString mOP;
+    QString m_OP;
     /// Отправитель запросов.
-    QSharedPointer<SDK::PaymentProcessor::Humo::RequestSender> mRequestSender;
+    QSharedPointer<SDK::PaymentProcessor::Humo::RequestSender> m_RequestSender;
     /// Наблюдатель за ответами.
-    QFutureWatcher<SDK::PaymentProcessor::Humo::Response *> mResponseWatcher;
+    QFutureWatcher<SDK::PaymentProcessor::Humo::Response *> m_ResponseWatcher;
     /// Наблюдатель за отправкой чеков.
-    QFutureWatcher<Response *> mResponseSendReceiptWatcher;
+    QFutureWatcher<Response *> m_ResponseSendReceiptWatcher;
 };
 
 //------------------------------------------------------------------------------

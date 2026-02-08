@@ -36,8 +36,8 @@ public:
     TStringMap getSettings(const QString &aExtensionName) const;
 
 private:
-    TPtree &mProperties;
-    QMap<QString, TStringMap> mExtensionSettings;
+    TPtree &m_Properties;
+    QMap<QString, TStringMap> m_ExtensionSettings;
 
 private:
     Q_DISABLE_COPY(ExtensionsSettings);

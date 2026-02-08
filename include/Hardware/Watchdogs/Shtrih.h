@@ -33,7 +33,7 @@ protected:
     bool parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer,
                      CShtrih::SUnpackedData *aUnpackedData);
 
-    bool performCommand(const QByteArray &aPacket, QByteArray &aAnswer);
+    bool perform_Command(const QByteArray &aPacket, QByteArray &aAnswer);
 
     void packedData(const QByteArray &aCommandPacket, QByteArray &aPacket);
 

@@ -24,14 +24,14 @@ ProviderListFilter::~ProviderListFilter() {}
 //------------------------------------------------------------------------------
 bool ProviderListFilter::filterAcceptsRow(int aSourceRow,
                                           const QModelIndex & /*aSourceParent*/) const {
-    if (mFilterLexemList.isEmpty()) {
+    if (m_FilterLexem_List.isEmpty()) {
         return false;
     }
 
     QModelIndex index = sourceModel()->index(aSourceRow, 0);
     QString info = sourceModel()->data(index, ProviderListModel::InfoRole).value<QString>();
 
-    foreach (auto lexem, mFilterLexemList) {
+    foreach (auto lexem, m_FilterLexem_List) {
         if (!info.contains(lexem)) {
             return false;
         }
@@ -42,7 +42,7 @@ bool ProviderListFilter::filterAcceptsRow(int aSourceRow,
 
 //------------------------------------------------------------------------------
 bool ProviderListFilter::lessThan(const QModelIndex &aLeft, const QModelIndex &aRight) const {
-    if (mFilterLexemList.isEmpty()) {
+    if (m_FilterLexem_List.isEmpty()) {
         return false;
     }
 
@@ -54,7 +54,7 @@ bool ProviderListFilter::lessThan(const QModelIndex &aLeft, const QModelIndex &a
 inline int ProviderListFilter::calcSortIndex(const QString &aInfo) const {
     int index = std::numeric_limits<int>::max();
 
-    foreach (auto lexem, mFilterLexemList) {
+    foreach (auto lexem, m_FilterLexem_List) {
         int pos = aInfo.indexOf(lexem);
 
         if (pos >= 0) {
@@ -72,7 +72,7 @@ bool ProviderListFilter::getEmpty() const {
 
 //------------------------------------------------------------------------------
 QString ProviderListFilter::getFilter() const {
-    return mFilter;
+    return m_Filter;
 }
 
 //------------------------------------------------------------------------------
@@ -81,8 +81,8 @@ void ProviderListFilter::setFilter(const QString &aFilter) {
 
     beginResetModel();
 
-    mFilter = aFilter;
-    mFilterLexemList =
+    m_Filter = aFilter;
+    m_FilterLexem_List =
         aFilter.toLower().replace(spaceRegExp, " ").split(" ", QString::SkipEmptyParts);
 
     endResetModel();

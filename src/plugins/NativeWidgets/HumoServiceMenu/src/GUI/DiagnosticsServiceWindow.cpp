@@ -17,11 +17,11 @@
 #include "ServiceTags.h"
 
 DiagnosticsServiceWindow::DiagnosticsServiceWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend), mSpacerItem(0) {
+    : QFrame(aParent), ServiceWindowBase(aBackend), m_SpacerItem(0) {
     setupUi(this);
 
     connect(
-        mBackend->getHardwareManager(),
+        m_Backend->getHardwareManager(),
         SIGNAL(deviceStatusChanged(
             const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)),
         this,
@@ -30,7 +30,7 @@ DiagnosticsServiceWindow::DiagnosticsServiceWindow(HumoServiceBackend *aBackend,
 
     connect(btnInfoPanel, SIGNAL(clicked()), this, SLOT(onClickedEncashmentInfo()));
     connect(btnTestServer, SIGNAL(clicked()), this, SLOT(onClickedTestServer()));
-    connect(&mTaskWatcher, SIGNAL(finished()), SLOT(onTestServerFinished()));
+    connect(&m_TaskWatcher, SIGNAL(finished()), SLOT(onTestServerFinished()));
     connect(btnResetReject, SIGNAL(clicked()), this, SLOT(onClickedResetReject()));
     connect(btnResetReceipts, SIGNAL(clicked()), this, SLOT(onClickedResetReceipts()));
 
@@ -47,30 +47,30 @@ DiagnosticsServiceWindow::DiagnosticsServiceWindow(HumoServiceBackend *aBackend,
 bool DiagnosticsServiceWindow::activate() {
     onClickedEncashmentInfo();
 
-    foreach (DeviceStatusWindow *widget, mDeviceStatusWidget.values()) {
+    foreach (DeviceStatusWindow *widget, m_DeviceStatusWidget.values()) {
         widget->deleteLater();
     }
 
-    mDeviceStatusWidget.clear();
+    m_DeviceStatusWidget.clear();
 
-    vlTestWidgets->removeItem(mSpacerItem);
-    delete mSpacerItem;
-    mSpacerItem = 0;
+    vlTestWidgets->removeItem(m_SpacerItem);
+    delete m_SpacerItem;
+    m_SpacerItem = 0;
 
     // Получаем список устройств из конфигов.
-    QStringList configNames = mBackend->getHardwareManager()->getConfigurations();
+    QStringList configNames = m_Backend->getHardwareManager()->getConfigurations();
 
     foreach (const QString config, configNames) {
-        DeviceStatusWindow *dtw = new DeviceStatusWindow(mBackend, config, this);
+        DeviceStatusWindow *dtw = new DeviceStatusWindow(m_Backend, config, this);
         vlTestWidgets->addWidget(dtw->getWidget());
 
-        mDeviceStatusWidget[config] = dtw;
+        m_DeviceStatusWidget[config] = dtw;
     }
 
-    mBackend->getHardwareManager()->updateStatuses();
+    m_Backend->getHardwareManager()->updateStatuses();
 
-    mSpacerItem = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    vlTestWidgets->layout()->addItem(mSpacerItem);
+    m_SpacerItem = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    vlTestWidgets->layout()->addItem(m_SpacerItem);
 
     updateInfoPanel();
 
@@ -89,7 +89,7 @@ bool DiagnosticsServiceWindow::initialize() {
 
 //------------------------------------------------------------------------
 bool DiagnosticsServiceWindow::shutdown() {
-    mTaskWatcher.waitForFinished();
+    m_TaskWatcher.waitForFinished();
 
     return true;
 }
@@ -99,7 +99,7 @@ void DiagnosticsServiceWindow::onDeviceStatusChanged(const QString &aConfigurati
                                                      const QString &aNewStatus,
                                                      const QString &aStatusColor,
                                                      SDK::Driver::EWarningLevel::Enum aLevel) {
-    DeviceStatusWindow *widget = mDeviceStatusWidget[aConfigurationName];
+    DeviceStatusWindow *widget = m_DeviceStatusWidget[aConfigurationName];
     if (widget) {
         widget->updateDeviceStatus(aNewStatus, aStatusColor, aLevel);
     }
@@ -118,12 +118,12 @@ void DiagnosticsServiceWindow::onClickedEncashmentInfo() {
 void DiagnosticsServiceWindow::updateInfoPanel() {
     QVariantMap result;
 
-    foreach (SDK::PaymentProcessor::IService *service, mBackend->getCore()->getServices()) {
+    foreach (SDK::PaymentProcessor::IService *service, m_Backend->getCore()->getServices()) {
         result.insert(service->getParameters());
     }
 
-    lbSimBalance->setText(
-        result[SDK::PaymentProcessor::CServiceParameters::Networking::SimBalance].toString());
+    lbSim_Balance->setText(
+        result[SDK::PaymentProcessor::CServiceParameters::Networking::Sim_Balance].toString());
     lbRejectedBills->setText(QString::number(
         result[SDK::PaymentProcessor::CServiceParameters::Funds::RejectCount].toInt()));
     lbUnprocessedPayments->setText(QString::number(
@@ -146,10 +146,10 @@ void DiagnosticsServiceWindow::updateInfoPanel() {
     lbZReportCount->setEnabled(!param.isNull());
     lbTitleZReportCount->setEnabled(!param.isNull());
 
-    QVariantMap cashInfo = mBackend->getPaymentManager()->getBalanceInfo();
+    QVariantMap cashInfo = m_Backend->getPaymentManager()->getBalanceInfo();
     lbLastEncashmentDate->setText(cashInfo[CServiceTags::LastEncashmentDate].toString());
 
-    bool isRoleTechician = mBackend->getUserRole() == CServiceTags::UserRole::RoleTechnician;
+    bool isRoleTechician = m_Backend->getUserRole() == CServiceTags::UserRole::RoleTechnician;
     lbAmount->setText(isRoleTechician ? "-/-" : cashInfo[CServiceTags::CashAmount].toString());
     lbNotesCount->setText(
         isRoleTechician ? "-/-" : QString::number(cashInfo[CServiceTags::NoteCount].toInt()));
@@ -162,7 +162,7 @@ void DiagnosticsServiceWindow::resetParameter(const QString &aParameterName) {
     QSet<QString> parameters;
     parameters << aParameterName;
 
-    foreach (SDK::PaymentProcessor::IService *service, mBackend->getCore()->getServices()) {
+    foreach (SDK::PaymentProcessor::IService *service, m_Backend->getCore()->getServices()) {
         service->resetParameters(parameters);
     }
 }
@@ -171,16 +171,16 @@ void DiagnosticsServiceWindow::resetParameter(const QString &aParameterName) {
 void DiagnosticsServiceWindow::onClickedTestServer() {
     btnTestServer->setEnabled(false);
     lbNetworkStatus->setText(tr("#connection_checking_status"));
-    mTaskWatcher.setFuture(QtConcurrent::run([this]() {
+    m_TaskWatcher.setFuture(QtConcurrent::run([this]() {
         QString errorMessage;
-        return mBackend->getNetworkManager()->testConnection(errorMessage);
+        return m_Backend->getNetworkManager()->testConnection(errorMessage);
     }));
 }
 
 //---------------------------------------------------------------------------
 void DiagnosticsServiceWindow::onTestServerFinished() {
     btnTestServer->setEnabled(true);
-    mTaskWatcher.result() ? lbNetworkStatus->setText(tr("#connection_test_ok"))
+    m_TaskWatcher.result() ? lbNetworkStatus->setText(tr("#connection_test_ok"))
                           : lbNetworkStatus->setText(tr("#connection_test_failed"));
 }
 

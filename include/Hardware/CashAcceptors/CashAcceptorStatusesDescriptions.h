@@ -81,7 +81,7 @@ public:
 
         /// Тип состояния - Ошибка.
         MODIFY_BASE_CA_STATUS(Unknown, Error, MechanicFailure);
-        MODIFY_BASE_CA_STATUS(MechanismPosition, Error, MechanicFailure);
+        MODIFY_BASE_CA_STATUS(Mechanism_Position, Error, MechanicFailure);
         MODIFY_BASE_CA_STATUS(PowerSupply, Error, MechanicFailure);
         MODIFY_BASE_CA_STATUS(NotAvailable, Error, MechanicFailure);
         MODIFY_BASE_CA_STATUS(Maintenance, Error, MechanicFailure);

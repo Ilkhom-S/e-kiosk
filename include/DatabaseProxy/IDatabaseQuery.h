@@ -38,7 +38,7 @@ public:
     /// Проверяет валидность.
     virtual bool isValid() = 0;
     /// Возвращает количество затронутых строк.
-    virtual int numRowsAffected() const = 0;
+    virtual int num_RowsAffected() const = 0;
 
     /// Возвращает значение по индексу.
     virtual QVariant value(int i) const = 0;

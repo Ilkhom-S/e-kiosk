@@ -51,7 +51,7 @@ enum Enum {
     DisableLcpExtensions = RASEO_DisableLcpExtensions,
     TerminalBeforeDial = RASEO_TerminalBeforeDial,
     TerminalAfterDial = RASEO_TerminalAfterDial,
-    ModemLights = RASEO_ModemLights,
+    Modem_Lights = RASEO_Modem_Lights,
     SwCompression = RASEO_SwCompression,
     RequireEncryptedPw = RASEO_RequireEncryptedPw,
     RequireMsEncryptedPw = RASEO_RequireMsEncryptedPw,
@@ -73,7 +73,7 @@ enum Enum {
     RequireMsCHAP = RASEO_RequireMsCHAP,
     RequireMsCHAP2 = RASEO_RequireMsCHAP2,
     RequireW95MSCHAP = RASEO_RequireW95MSCHAP,
-    CustomScript = RASEO_CustomScript
+    Custom_Script = RASEO_Custom_Script
 };
 
 typedef DWORD OptionSet;
@@ -270,7 +270,7 @@ public:
     void setByte(size_t size_t, char byte);
 
 private:
-    RASIPADDR mAddress;
+    RASIPADDR m_Address;
 };
 
 //------------------------------------------------------------------------------
@@ -292,7 +292,7 @@ public:
     void setIsSystem(bool aIsSystem);
 
 private:
-    RASENTRYNAME mEntry;
+    RASENTRYNAME m_Entry;
 };
 
 //------------------------------------------------------------------------------
@@ -387,14 +387,14 @@ public:
     EEncryptionType::Enum encriptionType() const;
     void setEncriptionType(EEncryptionType::Enum aType);
 
-    size_t customAuthKey() const;
-    void setCustomAuthKey(size_t aKey);
+    size_t custom_AuthKey() const;
+    void setCustom_AuthKey(size_t aKey);
 
     GUID bookEntryGuid() const;
     void setBookEntryGuid(const GUID &aGuid);
 
-    std::wstring customDialDll() const;
-    void setCustomDialDll(const std::wstring &aDll);
+    std::wstring custom_DialDll() const;
+    void setCustom_DialDll(const std::wstring &aDll);
 
     EVpnStrategy::Enum vpnStrategy() const;
     void setVpnStrategy(EVpnStrategy::Enum aStrategy);

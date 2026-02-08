@@ -66,7 +66,7 @@ public:
     QStringList getTextKeys() const;
     QStringList getTextKeys(const TFields &aFields) const;
     QString getTextLog(int aField) const;
-    QString getLogFromList(const TFields &aFields) const;
+    QString getLogFrom_List(const TFields &aFields) const;
 
 private:
     void checkRFVAT20(int aField);

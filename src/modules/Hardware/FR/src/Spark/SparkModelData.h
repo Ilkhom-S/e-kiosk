@@ -9,7 +9,7 @@
 //--------------------------------------------------------------------------------
 namespace CSparkFR {
 /// Системные флаги.
-namespace SystemFlags {
+namespace System_Flags {
 struct SData {
     int number;
     QString mask;
@@ -20,13 +20,13 @@ struct SData {
         : number(aNumber), mask(aMask), name(aName) {}
 };
 
-class Data : public QList<SystemFlags::SData> {
+class Data : public QList<System_Flags::SData> {
 public:
     void add(int aNumber, const QString &aMask, const QString &aName) {
-        append(SystemFlags::SData(aNumber, aMask, aName));
+        append(System_Flags::SData(aNumber, aMask, aName));
     }
 };
-} // namespace SystemFlags
+} // namespace System_Flags
 
 //--------------------------------------------------------------------------------
 /// Модели.
@@ -45,14 +45,14 @@ struct SData {
     QString name;
     int lineSize;
     bool verified;
-    SystemFlags::Data systemFlags;
+    System_Flags::Data system_Flags;
 
     SData() : name(Default), lineSize(43), verified(false) {}
     SData(const QString &aName,
           int aLineSize,
           bool aVerified,
-          const SystemFlags::Data &aSystemFlags)
-        : name(aName), lineSize(aLineSize), verified(aVerified), systemFlags(aSystemFlags) {}
+          const System_Flags::Data &aSystem_Flags)
+        : name(aName), lineSize(aLineSize), verified(aVerified), system_Flags(aSystem_Flags) {}
 };
 
 class CData : public CSpecification<int, SData> {
@@ -61,7 +61,7 @@ public:
         // add(100, "SPARK FR100K", 44);
         // add(800, "SPARK 800TK" , 43);
 
-        SystemFlags::Data flags110;                    // Приоритеты установки флагов не менять.
+        System_Flags::Data flags110;                    // Приоритеты установки флагов не менять.
         flags110.add(28, "1x10xx01", "extra options"); /// Дополнительные опции (только 110)
         flags110.add(
             13,
@@ -105,11 +105,11 @@ public:
 
 private:
     void add(int aTag, const QString &aName, int aLineSize) {
-        append(aTag, SData(aName, aLineSize, false, SystemFlags::Data()));
+        append(aTag, SData(aName, aLineSize, false, System_Flags::Data()));
     }
 
-    void add(int aTag, const QString &aName, int aLineSize, const SystemFlags::Data &aSystemFlags) {
-        append(aTag, SData(aName, aLineSize, true, aSystemFlags));
+    void add(int aTag, const QString &aName, int aLineSize, const System_Flags::Data &aSystem_Flags) {
+        append(aTag, SData(aName, aLineSize, true, aSystem_Flags));
     }
 };
 

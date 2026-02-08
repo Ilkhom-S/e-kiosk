@@ -8,12 +8,12 @@ StatusDaemons::StatusDaemons(QObject *parent) : SendRequest(parent) {
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
 
-    connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
+    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
 
     firstSend = true;
 }
 
-void StatusDaemons::setDataNote(const QDomNode &domElement) {
+void StatusDaemons::setDataNote(const QDom_Node &dom_Element) {
     gbl_overdraft = 999.999;
     gbl_balance = 999.999;
     gbl_active = "";
@@ -21,7 +21,7 @@ void StatusDaemons::setDataNote(const QDomNode &domElement) {
 
     emit emit_Loging(0, senderName, "Запрос успешно отправлен.");
     // Парсим данные
-    parcerNote(domElement);
+    parcerNote(dom_Element);
 
     // Делаем небольшую проверку
     if (gbl_balance != 999.999 && gbl_overdraft != 999.999) {
@@ -41,16 +41,16 @@ void StatusDaemons::setDataNote(const QDomNode &domElement) {
     }
 }
 
-void StatusDaemons::parcerNote(const QDomNode &domElement) {
-    QDomNode domNode = domElement.firstChild();
+void StatusDaemons::parcerNote(const QDom_Node &dom_Element) {
+    QDom_Node dom_Node = dom_Element.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
-            QDomElement domElement = domNode.toElement();
-            QString strTag = domElement.tagName();
+    while (!dom_Node.isNull()) {
+        if (dom_Node.isElement()) {
+            QDom_Element dom_Element = dom_Node.toElement();
+            QString strTag = dom_Element.tagName();
             // проверям респонс
             if (strTag == "resultCode") {
-                QString sts = domElement.text();
+                QString sts = dom_Element.text();
 
                 if (sts == "150" || sts == "151" || sts == "245" || sts == "11" || sts == "12" ||
                     sts == "133") {
@@ -64,41 +64,41 @@ void StatusDaemons::parcerNote(const QDomNode &domElement) {
             }
 
             if (strTag == "balance") {
-                gbl_balance = domElement.text().toDouble();
+                gbl_balance = dom_Element.text().toDouble();
             }
 
             if (strTag == "overdraft") {
-                gbl_overdraft = domElement.text().toDouble();
+                gbl_overdraft = dom_Element.text().toDouble();
             }
 
             if (strTag == "active") {
-                gbl_active = domElement.text();
+                gbl_active = dom_Element.text();
             }
 
             if (strTag == "cmd") {
                 QVariantMap cmd;
-                cmd["trn"] = domElement.attribute("trn", "");
-                cmd["account"] = domElement.attribute("account", "");
-                cmd["comment"] = domElement.attribute("comment", "");
-                cmd["cmd"] = domElement.text();
+                cmd["trn"] = dom_Element.attribute("trn", "");
+                cmd["account"] = dom_Element.attribute("account", "");
+                cmd["comment"] = dom_Element.attribute("comment", "");
+                cmd["cmd"] = dom_Element.text();
 
                 cmdList.append(cmd);
             }
 
             if (strTag == "hash") {
                 // Отправляем хеш на проверку
-                emit emit_hashToCheck(domElement.text());
+                emit emit_hashToCheck(dom_Element.text());
             }
 
             if (strTag == "hash_conf") {
-                QString com = domElement.attribute("p", "");
+                QString com = dom_Element.attribute("p", "");
                 // Отправляем хеш update на проверку
-                emit emit_hashUpdateToCheck(domElement.text(), com);
+                emit emit_hashUpdateToCheck(dom_Element.text(), com);
             }
         }
 
-        parcerNote(domNode);
-        domNode = domNode.nextSibling();
+        parcerNote(dom_Node);
+        dom_Node = dom_Node.nextSibling();
     }
 }
 void StatusDaemons::resendRequest() {
@@ -144,12 +144,12 @@ void StatusDaemons::sendStatusToServer(Sender::Data &a_Data) {
     QString forLogData = "";
 
     if (a_Data.firstSend) {
-        auto os = a_Data.systemInfo.value("os").toMap();
-        auto cpu = a_Data.systemInfo.value("cpu").toMap();
-        auto mboard = a_Data.systemInfo.value("mboard").toMap();
-        auto ram = a_Data.systemInfo.value("ram").toMap();
-        auto disk = a_Data.systemInfo.value("disk").toMap();
-        auto system_disk = a_Data.systemInfo.value("system_disk").toMap();
+        auto os = a_Data.system_Info.value("os").toMap();
+        auto cpu = a_Data.system_Info.value("cpu").toMap();
+        auto mboard = a_Data.system_Info.value("mboard").toMap();
+        auto ram = a_Data.system_Info.value("ram").toMap();
+        auto disk = a_Data.system_Info.value("disk").toMap();
+        auto system_disk = a_Data.system_Info.value("system_disk").toMap();
 
         auto osInfo = QString("<os version=\"%1\" csname=\"%2\" csdversion=\"%3\" "
                               "osarchitecture=\"%4\">%5</os>\n")
@@ -171,7 +171,7 @@ void StatusDaemons::sendStatusToServer(Sender::Data &a_Data) {
                                    mboard.value("serialnumber").toString(),
                                    mboard.value("manufacturer").toString());
 
-        auto ramInfo = QString("<ram size=\"%1 MB\" speed=\"%2\" memorytype=\"%3\">%4</ram>\n")
+        auto ram_Info = QString("<ram size=\"%1 MB\" speed=\"%2\" memorytype=\"%3\">%4</ram>\n")
                            .arg(ram.value("capacity").toString(),
                                 ram.value("speed").toString(),
                                 ram.value("memorytype").toString(),
@@ -213,7 +213,7 @@ void StatusDaemons::sendStatusToServer(Sender::Data &a_Data) {
                     "</sim>\n"
                     "<connection>" +
                     a_Data.connection + "</connection>\n" + osInfo + cpuInfo + mboardInfo +
-                    ramInfo + diskInfo + "</tech_parametrs>\n");
+                    ram_Info + diskInfo + "</tech_parametrs>\n");
 
         forLogData += QString("Версия ПО                 - %1 \n"
                               "Порт валидатора           - %2 \n"

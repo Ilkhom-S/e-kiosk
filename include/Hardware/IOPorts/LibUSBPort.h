@@ -23,11 +23,11 @@ namespace CLibUSBPort {
 const double ByteTimeout = 0.01;
 
 /// Таймаут системных операций при отправке данных, [мс].
-const double SystemTimeout = 1;
+const double System_Timeout = 1;
 
 /// Таймаут для отправки данных, [мс].
 inline int writingTimeout(int aSize) {
-    return qCeil(SystemTimeout + aSize * ByteTimeout);
+    return qCeil(System_Timeout + aSize * ByteTimeout);
 }
 
 /// Ошибки пропажи порта.
@@ -89,7 +89,7 @@ protected:
     virtual bool checkReady();
 
     /// Передать данные.
-    bool performWrite(const QByteArray &aData);
+    bool perform_Write(const QByteArray &aData);
 
     /// Обработать результат выполнения функции LibUSB.
     TResult handleResult(const QString &aFunctionName, int aResult);

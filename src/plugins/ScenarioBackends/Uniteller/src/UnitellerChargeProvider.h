@@ -70,13 +70,13 @@ private slots:
                         const QString &aConfirmationCode);
 
 private:
-    QString mInstancePath;
-    QVariantMap mParameters;
-    SDK::Plugin::IEnvironment *mFactory;
-    SDK::PaymentProcessor::ICore *mCore;
-    SDK::PaymentProcessor::DealerSettings *mDealerSettings;
-    QSharedPointer<Uniteller::API> mApi;
-    SDK::PaymentProcessor::TPaymentAmount mMaxAmount;
+    QString m_InstancePath;
+    QVariantMap m_Parameters;
+    SDK::Plugin::IEnvironment *m_Factory;
+    SDK::PaymentProcessor::ICore *m_Core;
+    SDK::PaymentProcessor::DealerSettings *m_DealerSettings;
+    QSharedPointer<Uniteller::API> m_Api;
+    SDK::PaymentProcessor::TPaymentAmount m_MaxAmount;
 };
 
 //------------------------------------------------------------------------------

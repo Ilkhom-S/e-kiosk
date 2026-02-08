@@ -64,7 +64,7 @@ bool SparkFRProtocol::check(const QByteArray &aAnswerData) {
 }
 
 //--------------------------------------------------------------------------------
-TResult SparkFRProtocol::performCommand(const QByteArray &aCommandData,
+TResult SparkFRProtocol::perform_Command(const QByteArray &aCommandData,
                                         QByteArray &aAnswerData,
                                         int aTimeout) {
     int index = 1;
@@ -115,12 +115,12 @@ TResult SparkFRProtocol::processCommand(const QByteArray &aCommandData,
     packet.append(calcCRC(packet));
     packet.prepend(CSparkFR::Prefix);
 
-    return performCommand(packet, aAnswerData, aTimeout);
+    return perform_Command(packet, aAnswerData, aTimeout);
 }
 
 //--------------------------------------------------------------------------------
 TResult SparkFRProtocol::processCommand(char aCommand, QByteArray &aAnswerData, int aTimeout) {
-    return performCommand(QByteArray(1, aCommand), aAnswerData, aTimeout);
+    return perform_Command(QByteArray(1, aCommand), aAnswerData, aTimeout);
 }
 
 //--------------------------------------------------------------------------------

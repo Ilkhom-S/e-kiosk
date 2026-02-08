@@ -56,7 +56,7 @@ void SendRequest::run() {
 
 void SendRequest::sendRequestData() {
     QByteArray timeOutRec = QString::number(reTimerStart).toUtf8();
-    QByteArray headerPic = headerParamInit.toUtf8();
+    QByteArray headerPic = headerParam_Init.toUtf8();
     QUrl url(serverUrl);
 
     QSslConfiguration config = QSslConfiguration::defaultConfiguration();
@@ -179,16 +179,16 @@ void SendRequest::slotReadyRead() {
         if (statusCode == 200) {
             if (reply->bytesAvailable() > 0) {
                 QByteArray bytes = reply->readAll();
-                QString str(QString::fromUtf8(bytes));
+                QString str(QString::from_Utf8(bytes));
 
                 toDebug("\n===============RESPONSE===============\n");
                 toDebug(str);
 
-                QDomDocument domDoc;
+                QDom_Document dom_Doc;
 
-                if (domDoc.setContent(str.toUtf8())) {
-                    QDomElement domElement = domDoc.documentElement();
-                    emit emit_DomElement(domElement);
+                if (dom_Doc.setContent(str.toUtf8())) {
+                    QDom_Element dom_Element = dom_Doc.documentElement();
+                    emit emit_Dom_Element(dom_Element);
                 } else {
                     emit emit_Loging(
                         2, senderName, "Пришел ответ от сервера Не верный формат XML.");
@@ -364,8 +364,8 @@ QString SendRequest::getHeaderRequest(int type) {
     case Request::Type::SendOtp: {
         title = Request::CommentType::SendOtp;
     } break;
-    case Request::Type::ConfirmOtp: {
-        title = Request::CommentType::ConfirmOtp;
+    case Request::Type::Confirm_Otp: {
+        title = Request::CommentType::Confirm_Otp;
     } break;
     }
 

@@ -91,12 +91,12 @@ protected slots:
     void needRestart();
 
 protected:
-    QSharedPointer<Ad::Client> mClient;
+    QSharedPointer<Ad::Client> m_Client;
 
-    SDK::Plugin::IEnvironment *mFactory;
-    QString mInstancePath;
+    SDK::Plugin::IEnvironment *m_Factory;
+    QString m_InstancePath;
 
-    SDK::PaymentProcessor::ICore *mCore;
+    SDK::PaymentProcessor::ICore *m_Core;
 };
 
 /// Функция получения ссылки на объект клиента

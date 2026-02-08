@@ -15,23 +15,23 @@ CollectDaemons::CollectDaemons(QObject *parent) : SendRequest(parent) {
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(errResponse()));
 
-    connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
+    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
 
     debugger = false;
 }
 
-void CollectDaemons::setDataNote(const QDomNode &domElement) {
+void CollectDaemons::setDataNote(const QDom_Node &dom_Element) {
     emit emit_Loging(0, senderName, QString("Пришел ответ инкассации от сервера. Парсим данные"));
 
     cIdUpdate = "";
 
     // Парсим данные
-    parcerNote(domElement);
+    parcerNote(dom_Element);
 
     // Делаем небольшую проверку
     if (cIdUpdate != "") {
         // Обновляем статус инкассации на sent
-        if (confirmCollection(cIdUpdate)) {
+        if (confirm_Collection(cIdUpdate)) {
             // Обновляем статус купюр мимо с id_collect
             emit emit_Loging(
                 0,
@@ -74,17 +74,17 @@ bool CollectDaemons::getDataCollectList(QStringList &lst, int &count_i) {
     return true;
 }
 
-void CollectDaemons::parcerNote(const QDomNode &domElement) {
-    QDomNode domNode = domElement.firstChild();
+void CollectDaemons::parcerNote(const QDom_Node &dom_Element) {
+    QDom_Node dom_Node = dom_Element.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
-            QDomElement domElement = domNode.toElement();
-            QString strTag = domElement.tagName();
+    while (!dom_Node.isNull()) {
+        if (dom_Node.isElement()) {
+            QDom_Element dom_Element = dom_Node.toElement();
+            QString strTag = dom_Element.tagName();
 
             // проверям респонс
             if (strTag == "resultCode") {
-                QString sts = domElement.text();
+                QString sts = dom_Element.text();
                 if (sts == "150" || sts == "245" || sts == "11" || sts == "12" || sts == "133") {
                     emit lockUnlockAvtorization(true, sts.toInt());
                     return;
@@ -92,12 +92,12 @@ void CollectDaemons::parcerNote(const QDomNode &domElement) {
             }
 
             if (strTag == "stacker") {
-                cIdUpdate = domElement.attribute("cid", "");
+                cIdUpdate = dom_Element.attribute("cid", "");
             }
         }
 
-        parcerNote(domNode);
-        domNode = domNode.nextSibling();
+        parcerNote(dom_Node);
+        dom_Node = dom_Node.nextSibling();
     }
 }
 
@@ -123,7 +123,7 @@ void CollectDaemons::errResponse() {
 }
 
 void CollectDaemons::setNominalData(QVariantMap data) {
-    nominalData = NominalData::fromVariant(data);
+    nominalData = NominalData::from_Variant(data);
 }
 
 QString CollectDaemons::getHtmlInfoBox(QString &nonCollectPayment,
@@ -458,7 +458,7 @@ bool CollectDaemons::parserCollectIntoOperation(const QString cid) {
                              .arg(cid);
 
     if (!selectCollect.exec(strCollect)) {
-        // if(Debugger) qDebug() << "Error getSumCount";
+        // if(Debugger) qDebug() << "Error getSum_Count";
         // if(Debugger) qDebug() << selectCollect.lastError();
         return false;
     }
@@ -697,7 +697,7 @@ bool CollectDaemons::getCheckText(QString &text, bool preCheck, QString dateP, Q
                    "%10"
                    "[p]Купюр мимо: %11 на сумму: %12\n")
                .arg(collectId.left(8),
-                    numTrm,
+                    num_Trm,
                     trnId,
                     dateCreate,
                     datePre,
@@ -841,7 +841,7 @@ void CollectDaemons::getXmlForSend(QString &xml,
                     .arg(totalSum);
     }
 
-    QString strDenomLog = QString("===================================================\n"
+    QString strDenom_Log = QString("===================================================\n"
                                   "%1"
                                   "%2"
                                   "%3"
@@ -852,7 +852,7 @@ void CollectDaemons::getXmlForSend(QString &xml,
                      senderName,
                      QString("Формирование инкассации CID-%2, SID-%3, "
                              "Pay_From-%4, Pay_To-%5...\n\n %1 \n")
-                         .arg(strDenomLog, cid, sid, trnFrom, trnTo));
+                         .arg(strDenom_Log, cid, sid, trnFrom, trnTo));
 }
 
 bool CollectDaemons::updateMoneyOut(QString collectionId, QString collectionStatus) {
@@ -876,7 +876,7 @@ bool CollectDaemons::getCollectionInfo(QString collectionId,
                                        QString &collectionIdNext,
                                        QString &idTrn,
                                        QString &dateCreate,
-                                       QString &denomXml) {
+                                       QString &denom_Xml) {
     QSqlQuery selectCollect(db);
 
     QString strQuery;
@@ -892,7 +892,7 @@ bool CollectDaemons::getCollectionInfo(QString collectionId,
     if (selectCollect.next()) {
         idTrn = selectCollect.value(recordCollect.indexOf("stack_id")).toString();
         dateCreate = selectCollect.value(recordCollect.indexOf("date_create")).toString();
-        denomXml = selectCollect.value(recordCollect.indexOf("denom")).toString();
+        denom_Xml = selectCollect.value(recordCollect.indexOf("denom")).toString();
         collectionIdNext = selectCollect.value(recordCollect.indexOf("collect_id_next")).toString();
     }
 
@@ -909,18 +909,18 @@ bool CollectDaemons::parsDenomilSlot(const QString &xmlDenom) {
     }
 
     // Объявляем XML объект
-    QDomDocument domDoc;
+    QDom_Document dom_Doc;
 
-    if (domDoc.setContent(xmlDenom.toUtf8())) {
+    if (dom_Doc.setContent(xmlDenom.toUtf8())) {
         // if(Debugger) qDebug() << "SetContent from collect";
-        QDomElement domElement = domDoc.documentElement();
+        QDom_Element dom_Element = dom_Doc.documentElement();
 
-        QDomNode domNode = domElement.firstChild();
-        QDomElement domElement1 = domNode.toElement();
+        QDom_Node dom_Node = dom_Element.firstChild();
+        QDom_Element dom_Element1 = dom_Node.toElement();
 
         for (int loop = 1; loop <= 9; loop++) {
-            int face = domElement1.attribute("face", "").toInt();
-            int count = domElement1.text().toInt();
+            int face = dom_Element1.attribute("face", "").toInt();
+            int count = dom_Element1.text().toInt();
 
             for (auto &b : nominalData.bills) {
                 if (face == b.face) {
@@ -929,12 +929,12 @@ bool CollectDaemons::parsDenomilSlot(const QString &xmlDenom) {
                 }
             }
 
-            domElement1 = domElement1.nextSiblingElement();
+            dom_Element1 = dom_Element1.nextSiblingElement();
         }
 
         for (int loop = 10; loop <= 15; loop++) {
-            int face = domElement1.attribute("face", "").replace("M", "").toInt();
-            int count = domElement1.text().toInt();
+            int face = dom_Element1.attribute("face", "").replace("M", "").toInt();
+            int count = dom_Element1.text().toInt();
 
             for (auto &c : nominalData.coins) {
                 if (face == c.face) {
@@ -943,7 +943,7 @@ bool CollectDaemons::parsDenomilSlot(const QString &xmlDenom) {
                 }
             }
 
-            domElement1 = domElement1.nextSiblingElement();
+            dom_Element1 = dom_Element1.nextSiblingElement();
         }
     } else {
         return false;
@@ -954,7 +954,7 @@ bool CollectDaemons::parsDenomilSlot(const QString &xmlDenom) {
     return true;
 }
 
-bool CollectDaemons::getMoneyOut(const QString &collectionId, int &numOut, double &sumOut) {
+bool CollectDaemons::getMoneyOut(const QString &collectionId, int &num_Out, double &sum_Out) {
     QSqlQuery selectMoneyOut(db);
 
     QString strQuery;
@@ -972,17 +972,17 @@ bool CollectDaemons::getMoneyOut(const QString &collectionId, int &numOut, doubl
     // if(Debugger) qDebug() << strQuery;
 
     QSqlRecord recordCollect = selectMoneyOut.record();
-    int numMoney = 0;
-    double sumMoney = 0;
+    int num_Money = 0;
+    double sum_Money = 0;
 
     while (selectMoneyOut.next()) {
         double sum = selectMoneyOut.value(recordCollect.indexOf("moneyout_value")).toDouble();
-        sumMoney += sum;
-        numMoney++;
+        sum_Money += sum;
+        num_Money++;
     }
 
-    numOut = numMoney;
-    sumOut = sumMoney;
+    num_Out = num_Money;
+    sum_Out = sum_Money;
 
     return true;
 }
@@ -1115,7 +1115,7 @@ bool CollectDaemons::sendCollection(QString &trnId,
     return true;
 }
 
-bool CollectDaemons::confirmCollection(QString collectionId) {
+bool CollectDaemons::confirm_Collection(QString collectionId) {
     QSqlQuery updateCollect(db);
     QString strUpdateCollect;
     strUpdateCollect = QString("UPDATE terminal_collect SET status='confirmed' "

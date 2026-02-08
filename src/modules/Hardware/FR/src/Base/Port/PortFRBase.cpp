@@ -10,16 +10,16 @@ template class PortFRBase<
 
 template QByteArray
 PortFRBase<SerialPrinterBase<PrinterBase<SerialDeviceBase<PortPollingDeviceBase<ProtoFR>>>>>::
-    performStatus(TStatusCodes &, char, int);
+    perform_Status(TStatusCodes &, char, int);
 template QByteArray
 PortFRBase<SerialPrinterBase<PrinterBase<SerialDeviceBase<PortPollingDeviceBase<ProtoFR>>>>>::
-    performStatus(TStatusCodes &, const char *, int);
+    perform_Status(TStatusCodes &, const char *, int);
 template QByteArray
 PortFRBase<PortPrinterBase<PrinterBase<TCPDeviceBase<PortPollingDeviceBase<ProtoFR>>>>>::
-    performStatus(TStatusCodes &, char, int);
+    perform_Status(TStatusCodes &, char, int);
 template QByteArray
 PortFRBase<PortPrinterBase<PrinterBase<TCPDeviceBase<PortPollingDeviceBase<ProtoFR>>>>>::
-    performStatus(TStatusCodes &, const char *, int);
+    perform_Status(TStatusCodes &, const char *, int);
 
 using namespace SDK::Driver;
 
@@ -90,7 +90,7 @@ template <class T> bool PortFRBase<T>::loadSectionNames(const TLoadSectionName &
     m_LastError = 0;
 
     setConfigParameter(CHardwareSDK::FR::SectionNames,
-                       QVariant::fromValue<TSectionNames>(sectionNames));
+                       QVariant::from_Value<TSectionNames>(sectionNames));
 
     return true;
 }
@@ -98,7 +98,7 @@ template <class T> bool PortFRBase<T>::loadSectionNames(const TLoadSectionName &
 //--------------------------------------------------------------------------------
 template <class T>
 template <class T2>
-QByteArray PortFRBase<T>::performStatus(TStatusCodes &aStatusCodes, T2 aCommand, int aIndex) {
+QByteArray PortFRBase<T>::perform_Status(TStatusCodes &aStatusCodes, T2 aCommand, int aIndex) {
     QByteArray data;
     TResult result = processCommand(aCommand, &data);
 
@@ -148,7 +148,7 @@ void PortFRBase<T>::makeReceipt(const QStringList &aReceipt, TReceiptBuffer &aBu
     makeReceipt(aReceipt, buffer);
 
     foreach (const QString &line, buffer) {
-        aBuffer << m_Codec->fromUnicode(line);
+        aBuffer << m_Codec->from_Unicode(line);
     }
 }
 

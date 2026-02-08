@@ -8,13 +8,13 @@
 #include <QtCore/QThread>
 #include <QtCore/QVariantMap>
 
-class SystemInfo : public QThread {
+class System_Info : public QThread {
     Q_OBJECT
 
 private:
     QVariantMap sysInfo;
 
-    void getSystemInfo() {
+    void getSystem_Info() {
         // "----------------- OS ----------------- ";
         QVariantMap osInfo =
             getWmicInfo(QString("os get caption, version, csname, csdversion, osarchitecture"));
@@ -34,41 +34,41 @@ private:
 
         // "----------------- RAM ----------------- ";
 
-        QVariantMap ramInfo = getWmicInfo(QString("path win32_physicalmemory get devicelocator, "
+        QVariantMap ram_Info = getWmicInfo(QString("path win32_physicalmemory get devicelocator, "
                                                   "manufacturer, capacity, speed, memorytype"),
                                           true);
 
-        int ramCapacityTotal = 0;
+        int ram_CapacityTotal = 0;
 
-        for (auto &r : ramInfo.value("data").toList()) {
+        for (auto &r : ram_Info.value("data").toList()) {
             QVariantMap ram = r.toMap();
             QString manufacturer = ram.value("manufacturer").toString();
             QString speed = ram.value("speed").toString();
             int memoryType = ram.value("memorytype").toInt();
-            //            int smBiosMemorytype =
+            //            int sm_BiosMemorytype =
             //            ram.value("smbiosmemorytype").toInt();
 
-            QString divider = ramInfo.value("manufacturer").toString() != "" ? "|" : "";
+            QString divider = ram_Info.value("manufacturer").toString() != "" ? "|" : "";
 
-            if (!ramInfo.value("manufacturer").toString().contains(manufacturer)) {
-                ramInfo["manufacturer"] =
-                    ramInfo.value("manufacturer").toString() + divider + manufacturer;
+            if (!ram_Info.value("manufacturer").toString().contains(manufacturer)) {
+                ram_Info["manufacturer"] =
+                    ram_Info.value("manufacturer").toString() + divider + manufacturer;
             }
 
-            if (!ramInfo.value("speed").toString().contains(speed)) {
-                ramInfo["speed"] = ramInfo.value("speed").toString() + divider + speed;
+            if (!ram_Info.value("speed").toString().contains(speed)) {
+                ram_Info["speed"] = ram_Info.value("speed").toString() + divider + speed;
             }
 
             int capacity = int(ram.value("capacity").toDouble() / (1024 * 1024));
 
-            ramInfo["memorytype"] = ramMemoryType(memoryType);
+            ram_Info["memorytype"] = ram_MemoryType(memoryType);
 
-            ramCapacityTotal += capacity;
+            ram_CapacityTotal += capacity;
         }
 
-        ramInfo["capacity"] = ramCapacityTotal;
+        ram_Info["capacity"] = ram_CapacityTotal;
 
-        sysInfo["ram"] = ramInfo;
+        sysInfo["ram"] = ram_Info;
 
         // "----------------- HDD ----------------- ";
 
@@ -88,7 +88,7 @@ private:
 
         QVariantMap lDiskInfo = getWmicInfo("logicaldisk get caption, size, freespace", true);
 
-        QVariantMap systemDisk;
+        QVariantMap system_Disk;
         double freespace = 0;
 
         for (auto &ld : lDiskInfo.value("data").toList()) {
@@ -104,9 +104,9 @@ private:
 
             // system disk
             if (lDiskCaption == QDir::rootPath().left(2)) {
-                systemDisk["caption"] = lDiskCaption;
-                systemDisk["size"] = QString::number(size, 'f', 1);
-                systemDisk["freespace"] = QString::number(lDiskFreeSpace, 'f', 1);
+                system_Disk["caption"] = lDiskCaption;
+                system_Disk["size"] = QString::number(size, 'f', 1);
+                system_Disk["freespace"] = QString::number(lDiskFreeSpace, 'f', 1);
             }
 
             freespace += lDiskFreeSpace;
@@ -116,7 +116,7 @@ private:
         diskInfo["size"] = qRound(diskInfo.value("size").toDouble() / (1024 * 1024 * 1024));
 
         sysInfo["disk"] = diskInfo;
-        sysInfo["system_disk"] = systemDisk;
+        sysInfo["system_disk"] = system_Disk;
     }
 
     QVariantMap getWmicInfo(QString cmd, const bool getList = false) {
@@ -178,7 +178,7 @@ private:
         return map;
     }
 
-    QString ramMemoryType(int type) {
+    QString ram_MemoryType(int type) {
         switch (type) {
         case 20:
             return "DDR";
@@ -199,11 +199,11 @@ private:
 
 protected:
     void run() {
-        getSystemInfo();
+        getSystem_Info();
 
-        emit emitSystemInfo(sysInfo);
+        emit emitSystem_Info(sysInfo);
     }
 
 signals:
-    void emitSystemInfo(QVariantMap data);
+    void emitSystem_Info(QVariantMap data);
 };

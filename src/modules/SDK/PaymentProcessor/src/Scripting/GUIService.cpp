@@ -14,37 +14,37 @@ namespace PaymentProcessor {
 namespace Scripting {
 
 //------------------------------------------------------------------------------
-GUIService::GUIService(ICore *aCore) : mCore(aCore), mGUIService(mCore->getGUIService()) {}
+GUIService::GUIService(ICore *aCore) : m_Core(aCore), m_GUIService(m_Core->getGUIService()) {}
 
 //------------------------------------------------------------------------------
 bool GUIService::show(const QString &aWidget, const QVariantMap &aParameters) {
-    if (mTopWidgetName != aWidget) {
-        mTopWidgetName = aWidget;
+    if (m_TopWidgetName != aWidget) {
+        m_TopWidgetName = aWidget;
 
         emit topSceneChange();
     }
 
-    return mGUIService->show(aWidget, aParameters);
+    return m_GUIService->show(aWidget, aParameters);
 }
 
 //------------------------------------------------------------------------------
 bool GUIService::showPopup(const QString &aWidget, const QVariantMap &aParameters) {
-    return mGUIService->showPopup(aWidget, aParameters);
+    return m_GUIService->showPopup(aWidget, aParameters);
 }
 
 //------------------------------------------------------------------------------
 bool GUIService::hidePopup(const QVariantMap &aParameters) {
-    return mGUIService->hidePopup(aParameters);
+    return m_GUIService->hidePopup(aParameters);
 }
 
 //------------------------------------------------------------------------------
 void GUIService::notify(const QString &aEvent, const QVariantMap &aParameters) {
-    return mGUIService->notify(aEvent, aParameters);
+    return m_GUIService->notify(aEvent, aParameters);
 }
 
 //------------------------------------------------------------------------------
 void GUIService::reset() {
-    mGUIService->reset();
+    m_GUIService->reset();
 }
 
 //------------------------------------------------------------------------------
@@ -54,32 +54,32 @@ void GUIService::reload(const QVariantMap &aParams) {
 
 //------------------------------------------------------------------------------
 QString GUIService::getTopScene() const {
-    return mTopWidgetName;
+    return m_TopWidgetName;
 }
 
 //------------------------------------------------------------------------------
 QVariantMap GUIService::getParametersUI() const {
-    return mGUIService->getUiSettings("ui");
+    return m_GUIService->getUiSettings("ui");
 }
 
 //------------------------------------------------------------------------------
 QVariantMap GUIService::getParametersAd() const {
-    return mGUIService->getUiSettings("ad");
+    return m_GUIService->getUiSettings("ad");
 }
 
 //------------------------------------------------------------------------------
 bool GUIService::isDisabled() const {
-    return mGUIService->isDisabled();
+    return m_GUIService->isDisabled();
 }
 
 //------------------------------------------------------------------------------
 int GUIService::getWidth() const {
-    return mGUIService->getScreenSize(0).width();
+    return m_GUIService->getScreenSize(0).width();
 }
 
 //------------------------------------------------------------------------------
 int GUIService::getHeight() const {
-    return mGUIService->getScreenSize(0).height();
+    return m_GUIService->getScreenSize(0).height();
 }
 
 //------------------------------------------------------------------------------

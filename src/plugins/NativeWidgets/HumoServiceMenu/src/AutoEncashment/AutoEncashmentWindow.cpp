@@ -45,18 +45,18 @@ AutoEncashmentWindow::AutoEncashmentWindow(HumoServiceBackend *aBackend, QWidget
     connect(ui.stackedWidget, SIGNAL(currentChanged(int)), this, SLOT(onPanelChanged(int)));
     connect(ui.btnBack, SIGNAL(clicked()), SLOT(onBack()));
 
-    mIdleTimer.setInterval(CAutoEncashmentWindow::AutoEncashmentIdleTimeout);
-    connect(&mIdleTimer, SIGNAL(timeout()), SLOT(onIdleTimeout()));
+    m_IdleTimer.setInterval(CAutoEncashmentWindow::AutoEncashmentIdleTimeout);
+    connect(&m_IdleTimer, SIGNAL(timeout()), SLOT(onIdleTimeout()));
 
-    mDateTimeTimer.setInterval(CAutoEncashmentWindow::DateTimeRefreshInterval);
-    connect(&mDateTimeTimer, SIGNAL(timeout()), SLOT(onDateTimeRefresh()));
+    m_DateTimeTimer.setInterval(CAutoEncashmentWindow::DateTimeRefreshInterval);
+    connect(&m_DateTimeTimer, SIGNAL(timeout()), SLOT(onDateTimeRefresh()));
 
-    PaymentManager *paymentManager = mBackend->getPaymentManager();
+    PaymentManager *paymentManager = m_Backend->getPaymentManager();
     connect(
         paymentManager, SIGNAL(receiptPrinted(qint64, bool)), SLOT(onReceiptPrinted(qint64, bool)));
 
-    mHistoryWindow = new EncashmentHistoryWindow(aBackend, this);
-    ui.verticalLayoutHistory->insertWidget(0, mHistoryWindow, 1);
+    m_HistoryWindow = new EncashmentHistoryWindow(aBackend, this);
+    ui.verticalLayoutHistory->insertWidget(0, m_HistoryWindow, 1);
 }
 
 //---------------------------------------------------------------------------
@@ -64,16 +64,16 @@ AutoEncashmentWindow::~AutoEncashmentWindow() {}
 
 //---------------------------------------------------------------------------
 bool AutoEncashmentWindow::initialize() {
-    mBackend->getTerminalInfo(mTerminalInfo);
+    m_Backend->getTerminalInfo(m_TerminalInfo);
 
     ui.lbTerminalNumber->setText(tr("#terminal_number") +
-                                 mTerminalInfo[CServiceTags::TerminalNumber].toString());
+                                 m_TerminalInfo[CServiceTags::TerminalNumber].toString());
     ui.lbVersion->setText(tr("#software_version") +
-                          mTerminalInfo[CServiceTags::SoftwareVersion].toString());
+                          m_TerminalInfo[CServiceTags::SoftwareVersion].toString());
     ui.stackedWidget->setCurrentIndex(0);
 
-    mIdleTimer.start();
-    mDateTimeTimer.start();
+    m_IdleTimer.start();
+    m_DateTimeTimer.start();
 
     activate();
 
@@ -90,7 +90,7 @@ bool AutoEncashmentWindow::shutdown() {
 //---------------------------------------------------------------------------
 bool AutoEncashmentWindow::activate() {
     connect(
-        mBackend->getHardwareManager(),
+        m_Backend->getHardwareManager(),
         SIGNAL(deviceStatusChanged(
             const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)),
         this,
@@ -105,7 +105,7 @@ bool AutoEncashmentWindow::activate() {
 //---------------------------------------------------------------------------
 bool AutoEncashmentWindow::deactivate() {
     disconnect(
-        mBackend->getHardwareManager(),
+        m_Backend->getHardwareManager(),
         SIGNAL(deviceStatusChanged(
             const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)),
         this,
@@ -133,22 +133,22 @@ void AutoEncashmentWindow::updateUI() {
     ui.btnEncashment->setEnabled(true);
 
     ui.btnEncashmentAndZReport->setEnabled(
-        mBackend->getHardwareManager()->isFiscalPrinterPresent(true));
+        m_Backend->getHardwareManager()->isFiscalPrinterPresent(true));
 
-    mBackend->getPaymentManager()->useHardwareFiscalPrinter(
-        mBackend->getHardwareManager()->isFiscalPrinterPresent(false));
+    m_Backend->getPaymentManager()->useHardwareFiscalPrinter(
+        m_Backend->getHardwareManager()->isFiscalPrinterPresent(false));
 }
 
 //---------------------------------------------------------------------------
 void AutoEncashmentWindow::onEncashment() {
-    mEncashmentWithZReport = false;
+    m_EncashmentWithZReport = false;
 
     doEncashment();
 }
 
 //---------------------------------------------------------------------------
 void AutoEncashmentWindow::onTestPrinter() {
-    auto paymentManager = mBackend->getPaymentManager();
+    auto paymentManager = m_Backend->getPaymentManager();
     bool isPrinterOK = paymentManager->canPrint(PPSDK::CReceiptType::Encashment);
 
     if (!isPrinterOK) {
@@ -162,18 +162,18 @@ void AutoEncashmentWindow::onTestPrinter() {
 
 //---------------------------------------------------------------------------
 void AutoEncashmentWindow::onEncashmentAndZReport() {
-    mEncashmentWithZReport = true;
+    m_EncashmentWithZReport = true;
 
     doEncashment();
 }
 
 //---------------------------------------------------------------------------
 void AutoEncashmentWindow::onEnterServiceMenu() {
-    mIdleTimer.stop();
+    m_IdleTimer.stop();
 
     QVariantMap params;
     params["name"] = "service_menu";
-    mBackend->sendEvent(SDK::PaymentProcessor::EEventType::StartScenario, params);
+    m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::StartScenario, params);
 
     deactivate();
 }
@@ -190,11 +190,11 @@ void AutoEncashmentWindow::onBack() {
 
 //---------------------------------------------------------------------------
 void AutoEncashmentWindow::onExit() {
-    mIdleTimer.stop();
+    m_IdleTimer.stop();
 
     QVariantMap params;
     params["signal"] = "close";
-    mBackend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, params);
+    m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, params);
 
     deactivate();
 }
@@ -206,14 +206,14 @@ void AutoEncashmentWindow::onDateTimeRefresh() {
 
 //---------------------------------------------------------------------------
 void AutoEncashmentWindow::onIdleTimeout() {
-    if (mInputBox) {
-        mInputBox->deleteLater();
-        mInputBox = nullptr;
+    if (m_InputBox) {
+        m_InputBox->deleteLater();
+        m_InputBox = nullptr;
     }
 
     GUI::MessageBox::hide();
 
-    mBackend->toLog("Timeout AutoEncashment in service_menu scenario.");
+    m_Backend->toLog("Timeout AutoEncashment in service_menu scenario.");
 
     onExit();
 }
@@ -224,7 +224,7 @@ void AutoEncashmentWindow::onPanelChanged(int aIndex) {
         return;
     }
 
-    mHistoryWindow->updateHistory();
+    m_HistoryWindow->updateHistory();
 }
 
 //---------------------------------------------------------------------------

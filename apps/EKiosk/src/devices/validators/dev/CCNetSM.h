@@ -337,7 +337,7 @@ public:
     QString SerialNumber;
     QString AssetNumber;
 
-    bool maxSumReject;
+    bool maxSum_Reject;
     int maxSum;
 
 private:
@@ -346,7 +346,7 @@ private:
     QDateTime preDateTime;
     bool execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdResponse);
     bool openPort();
-    QByteArray makeCustomRequest(int adr, int cmd, const QByteArray &data);
+    QByteArray makeCustom_Request(int adr, int cmd, const QByteArray &data);
     void ParsIdentification(QByteArray respData);
     int readPollInfo(QByteArray byte);
     void setBoolingDlgState(bool sts);

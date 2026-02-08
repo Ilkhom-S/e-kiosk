@@ -7,7 +7,7 @@
 void WebPageLogger::javaScriptConsoleMessage(const QString &message,
                                              int lineNumber,
                                              const QString &sourceID) {
-    LOG(mLog, LogLevel::Normal, QString("%1, [%2]: %3").arg(sourceID).arg(lineNumber).arg(message));
+    LOG(m_Log, LogLevel::Normal, QString("%1, [%2]: %3").arg(sourceID).arg(lineNumber).arg(message));
 }
 
 void WebPageLogger::javaScriptAlert(QWebFrame *frame, const QString &msg) {
@@ -17,5 +17,5 @@ void WebPageLogger::javaScriptAlert(QWebFrame *frame, const QString &msg) {
     popupParameters.insert("cancelable", "true");
     popupParameters.insert("message", "Alert: " + msg);
     popupParameters.insert("result", "");
-    mCoreProxy->getCore()->getGUIService()->showPopup("InfoPopup", popupParameters);
+    m_CoreProxy->getCore()->getGUIService()->showPopup("InfoPopup", popupParameters);
 }

@@ -48,12 +48,12 @@ public slots:
     void getNextProviderInfo();
 
 private:
-    QHash<int, QByteArray> mRoles;
+    QHash<int, QByteArray> m_Roles;
     virtual QHash<int, QByteArray> roleNames() const;
 
 private:
-    QList<qint64> mProvidersId;
-    QList<SProvider> mProviderList;
-    QPointer<QObject> mPaymentService;
-    QSharedPointer<GroupModel> mGroupModel;
+    QList<qint64> m_ProvidersId;
+    QList<SProvider> m_ProviderList;
+    QPointer<QObject> m_PaymentService;
+    QSharedPointer<GroupModel> m_GroupModel;
 };

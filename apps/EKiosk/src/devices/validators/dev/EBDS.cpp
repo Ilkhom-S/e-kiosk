@@ -20,11 +20,11 @@ EBDS::EBDS(QObject *parent) : BaseValidatorDevices(parent) {
     preDateTime = QDateTime::currentDateTime().addSecs(-1);
 
     validatorLogEnable = false;
-    mACK = false;
-    mEnabled = false;
+    m_ACK = false;
+    m_Enabled = false;
     hasDBError = false;
     escrowed = false;
-    maxSumReject = false;
+    maxSum_Reject = false;
     nominalSum = 0;
 }
 
@@ -44,7 +44,7 @@ void EBDS::sendStatusTo(int sts, QString comment) {
 bool EBDS::openPort() {
     if (devicesCreated) {
         is_open = false;
-        serialPort->setPortName(comName);
+        serialPort->setPortName(com_Name);
 
         if (serialPort->open(QIODevice::ReadWrite)) {
             is_open = false;
@@ -84,7 +84,7 @@ bool EBDS::isItYou() {
         QByteArray respData;
 
         if (execCommand(ValidatorCommands::Idintification, respData)) {
-            auto type = QString::fromUtf8(respData).trimmed();
+            auto type = QString::from_Utf8(respData).trimmed();
             if (!type.isEmpty()) {
                 parseIdentification(respData);
                 return true;
@@ -143,17 +143,17 @@ uchar EBDS::calcCRC(const QByteArray &aData) {
     return sum;
 }
 
-QByteArray EBDS::makeCustomRequest(const QByteArray &commandData) {
+QByteArray EBDS::makeCustom_Request(const QByteArray &commandData) {
     QByteArray request;
 
     request.append(EBDSConstruct::Prefix);
     request.append(char(4 + commandData.size()));
-    request.append(commandData[0] | char(mACK));
+    request.append(commandData[0] | char(m_ACK));
     request.append(commandData.mid(1));
     request.append(EBDSConstruct::Postfix);
     request.append(calcCRC(request));
 
-    mACK = !mACK;
+    m_ACK = !m_ACK;
 
     return request;
 }
@@ -163,11 +163,11 @@ QByteArray EBDS::pollRequest(const char aAction) {
 
     commandData += EBDSConstruct::Commands::Host2Validator;
 
-    commandData.append(mEnabled ? '\x7F' : '\x00');
+    commandData.append(m_Enabled ? '\x7F' : '\x00');
     commandData.append(EBDSConstruct::Byte1 | aAction);
     commandData.append(EBDSConstruct::Byte2);
 
-    return makeCustomRequest(commandData);
+    return makeCustom_Request(commandData);
 }
 
 bool EBDS::execCommand(int cmdType, QByteArray &cmdResponse) {
@@ -181,18 +181,18 @@ bool EBDS::execCommand(int cmdType, QByteArray &cmdResponse) {
 
             // перезагрузка купюроприёмника
             case ValidatorCommands::Reset:
-                cmdRequest = this->makeCustomRequest(EBDSConstruct::Commands::Reset);
+                cmdRequest = this->makeCustom_Request(EBDSConstruct::Commands::Reset);
                 this->toLogingValidator(0, cmdRequest, "Reset");
                 needAnswer = false;
                 break;
 
             case ValidatorCommands::GetNominalTable:
                 //                    cmdRequest =
-                //                    this->makeCustomRequest(EBDSConstruct::PABillValidator,EBDSConstruct::CCGetBillTable,0);
+                //                    this->makeCustom_Request(EBDSConstruct::PABillValidator,EBDSConstruct::CCGetBillTable,0);
                 break;
 
             case ValidatorCommands::SetEnabled: {
-                mEnabled = true;
+                m_Enabled = true;
                 cmdRequest = pollRequest();
                 this->toLogingValidator(0, cmdRequest, "SetEnabled");
             } break;
@@ -203,7 +203,7 @@ bool EBDS::execCommand(int cmdType, QByteArray &cmdResponse) {
                 break;
 
             case ValidatorCommands::Idintification:
-                cmdRequest = this->makeCustomRequest(EBDSConstruct::Commands::GetType);
+                cmdRequest = this->makeCustom_Request(EBDSConstruct::Commands::GetType);
                 this->toLogingValidator(0, cmdRequest, "Idintification");
                 break;
 
@@ -214,7 +214,7 @@ bool EBDS::execCommand(int cmdType, QByteArray &cmdResponse) {
                 break;
 
             case ValidatorCommands::SetDisabled: {
-                mEnabled = false;
+                m_Enabled = false;
                 cmdRequest = pollRequest();
                 this->toLogingValidator(0, cmdRequest, "SetDisabled");
             } break;
@@ -389,29 +389,29 @@ bool EBDS::CmdRestart() {
 }
 
 void EBDS::parseIdentification(QByteArray respData) {
-    partNumber = QString::fromUtf8(respData);
+    partNumber = QString::from_Utf8(respData);
 
     respData.clear();
-    QByteArray cmdRequest = this->makeCustomRequest(EBDSConstruct::Commands::GetVariantName);
+    QByteArray cmdRequest = this->makeCustom_Request(EBDSConstruct::Commands::GetVariantName);
     TResult result = processCommand(cmdRequest, respData, true);
 
     if (result == CommandResult::OK) {
-        partNumber += "/" + QString::fromUtf8(respData);
+        partNumber += "/" + QString::from_Utf8(respData);
     }
 
-    cmdRequest = this->makeCustomRequest(EBDSConstruct::Commands::GetVariantVersion);
+    cmdRequest = this->makeCustom_Request(EBDSConstruct::Commands::GetVariantVersion);
     result = processCommand(cmdRequest, respData, true);
 
     if (result == CommandResult::OK) {
-        partNumber += "/" + QString::fromUtf8(respData.mid(0, 9));
+        partNumber += "/" + QString::from_Utf8(respData.mid(0, 9));
     }
 
-    cmdRequest = this->makeCustomRequest(EBDSConstruct::Commands::GetSerialNumber);
+    cmdRequest = this->makeCustom_Request(EBDSConstruct::Commands::GetSerialNumber);
 
     result = processCommand(cmdRequest, respData, true);
 
     if (result == CommandResult::OK) {
-        serialNumber = QString::fromUtf8(respData);
+        serialNumber = QString::from_Utf8(respData);
     }
 }
 
@@ -449,7 +449,7 @@ void EBDS::CmdStartPoll() {
                                      QString("Возвращаем купюру %1 сум, из за ошибки БД")
                                          .arg(escrowNominal));
                         this->setReturnNominalState(true);
-                    } else if (maxSumReject && (nominalSum + escrowNominal > maxSum)) {
+                    } else if (maxSum_Reject && (nominalSum + escrowNominal > maxSum)) {
                         returnBill();
                         emit emitLog(0,
                                      "EBDS",
@@ -541,7 +541,7 @@ int EBDS::getNominal(QByteArray respData) {
     }
 
     int nominal = respData.mid(10, 3).toInt() * int(qPow(10, respData.mid(13, 3).toDouble()));
-    QString currency = QString::fromUtf8(respData.mid(7, 3));
+    QString currency = QString::from_Utf8(respData.mid(7, 3));
 
     if (nominal < 1000 || nominal > 200000 || !currency.startsWith("UZ", Qt::CaseInsensitive)) {
         emit emitLog(0, "EBDS", QString("Не поддерживаемая купюра %1").arg(nominal));

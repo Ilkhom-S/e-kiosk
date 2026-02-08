@@ -37,8 +37,8 @@ PluginService *PluginService::instance(IApplication *aApplication) {
 
 //------------------------------------------------------------------------------
 PluginService::PluginService(IApplication *aApplication)
-    : ILogable("Plugins"), mPluginLoader(nullptr) {
-    mApplication = aApplication;
+    : ILogable("Plugins"), m_PluginLoader(nullptr) {
+    m_Application = aApplication;
 }
 
 //------------------------------------------------------------------------------
@@ -46,14 +46,14 @@ PluginService::~PluginService() {}
 
 //------------------------------------------------------------------------------
 bool PluginService::initialize() {
-    mPluginLoader = new SDK::Plugin::PluginLoader(this);
+    m_PluginLoader = new SDK::Plugin::PluginLoader(this);
 
-    mPluginLoader->addDirectory(mApplication->getPluginPath());
-    mPluginLoader->addDirectory(mApplication->getUserPluginPath());
+    m_PluginLoader->addDirectory(m_Application->getPluginPath());
+    m_PluginLoader->addDirectory(m_Application->getUserPluginPath());
 
 #ifndef _DEBUG
     // Запустим фоновую проверку плагинов на наличие цифровой подписи
-    mPluginVerifierSynchronizer.addFuture(QtConcurrent::run([this]() { return verifyPlugins(); }));
+    m_PluginVerifierSynchronizer.addFuture(QtConcurrent::run([this]() { return verifyPlugins(); }));
 #endif
 
     return true;
@@ -76,16 +76,16 @@ bool PluginService::canShutdown() {
 bool PluginService::shutdown() {
     // Не выгружаем библиотеки на выходе из ПО в процессе перезагрузки системы. #48972
 #ifdef Q_OS_WIN
-    if (GetSystemMetrics(SM_SHUTTINGDOWN) == 0) {
+    if (GetSystem_Metrics(SM_SHUTTINGDOWN) == 0) {
 #endif
         toLog(LogLevel::Debug, "Destroy plugins loader...");
 
-        delete static_cast<SDK::Plugin::PluginLoader *>(mPluginLoader);
+        delete static_cast<SDK::Plugin::PluginLoader *>(m_PluginLoader);
 #ifdef Q_OS_WIN
     }
 #endif
 
-    mPluginLoader = nullptr;
+    m_PluginLoader = nullptr;
 
     toLog(LogLevel::Debug, "Plugin service shutdown OK.");
 
@@ -115,16 +115,16 @@ void PluginService::resetParameters(const QSet<QString> &) {}
 QString PluginService::getState() const {
     QStringList result;
 
-    if (mUnsignedPlugins.count()) {
-        result << QString("Unsigned : {%1}").arg(mUnsignedPlugins.join(";"));
+    if (m_UnsignedPlugins.count()) {
+        result << QString("Unsigned : {%1}").arg(m_UnsignedPlugins.join(";"));
     }
 
-    QStringList signedKeys = mSignedPlugins.keys();
+    QStringList signedKeys = m_SignedPlugins.keys();
     signedKeys.removeDuplicates();
 
     foreach (QString signerName, signedKeys) {
         QStringList pluginsForSigner;
-        for (auto it = mSignedPlugins.constBegin(); it != mSignedPlugins.constEnd(); ++it) {
+        for (auto it = m_SignedPlugins.constBegin(); it != m_SignedPlugins.constEnd(); ++it) {
             if (it.key() == signerName) {
                 pluginsForSigner << it.value();
             }
@@ -137,7 +137,7 @@ QString PluginService::getState() const {
 
 //------------------------------------------------------------------------------
 SDK::Plugin::IPluginLoader *PluginService::getPluginLoader() {
-    return mPluginLoader;
+    return m_PluginLoader;
 }
 
 //------------------------------------------------------------------------------
@@ -152,22 +152,22 @@ QString PluginService::getVersion() const {
 
 //------------------------------------------------------------------------------
 QString PluginService::getDirectory() const {
-    return mApplication->getWorkingDirectory();
+    return m_Application->getWorkingDirectory();
 }
 
 //------------------------------------------------------------------------------
 QString PluginService::getDataDirectory() const {
-    return mApplication->getUserDataPath();
+    return m_Application->getUserDataPath();
 }
 
 //------------------------------------------------------------------------------
 QString PluginService::getLogsDirectory() const {
-    return mApplication->getWorkingDirectory() + "/logs";
+    return m_Application->getWorkingDirectory() + "/logs";
 }
 
 //------------------------------------------------------------------------------
 QString PluginService::getPluginDirectory() const {
-    return mApplication->getPluginPath();
+    return m_Application->getPluginPath();
 }
 
 //------------------------------------------------------------------------------
@@ -198,7 +198,7 @@ bool PluginService::savePluginConfiguration(const QString & /*aInstancePath*/,
 //------------------------------------------------------------------------------
 SDK::Plugin::IExternalInterface *PluginService::getInterface(const QString &aInterface) {
     if (aInterface == SDK::PaymentProcessor::CInterfaces::ICore) {
-        return dynamic_cast<SDK::Plugin::IExternalInterface *>(mApplication->getCore());
+        return dynamic_cast<SDK::Plugin::IExternalInterface *>(m_Application->getCore());
     }
 
     throw SDK::PaymentProcessor::ServiceIsNotImplemented(aInterface);
@@ -207,22 +207,22 @@ SDK::Plugin::IExternalInterface *PluginService::getInterface(const QString &aInt
 //------------------------------------------------------------------------------
 void PluginService::verifyPlugins() {
 #ifdef Q_OS_WIN
-    mSignedPlugins.clear();
-    mUnsignedPlugins.clear();
+    m_SignedPlugins.clear();
+    m_UnsignedPlugins.clear();
 
     auto shortPath = [=](const QString &aFullPath) -> QString {
         // Удалим расширение
         QString result = aFullPath.left(aFullPath.length() - 4).toLower();
 
         // Удалим путь к плагину/экземпляру
-        return result.contains(mApplication->getUserPluginPath().toLower())
-                   ? result.mid(mApplication->getUserPluginPath().length()) + ".u"
-                   : result.mid(QString(mApplication->getWorkingDirectory() + QDir::separator() +
+        return result.contains(m_Application->getUserPluginPath().toLower())
+                   ? result.mid(m_Application->getUserPluginPath().length()) + ".u"
+                   : result.mid(QString(m_Application->getWorkingDirectory() + QDir::separator() +
                                         (result.contains("plugins") ? "plugins" : ""))
                                     .length());
     };
 
-    QStringList modules = mPluginLoader->getPluginPathList(QRegularExpression(".*"));
+    QStringList modules = m_PluginLoader->getPluginPathList(QRegularExpression(".*"));
 
     // Добавим проверку исполняемых файлов
 
@@ -233,7 +233,7 @@ void PluginService::verifyPlugins() {
 
     foreach (QString module, exeModules) {
         QString file = QString("%1%2%3.exe")
-                           .arg(mApplication->getWorkingDirectory())
+                           .arg(m_Application->getWorkingDirectory())
                            .arg(QDir::separator())
                            .arg(module);
 
@@ -254,14 +254,14 @@ void PluginService::verifyPlugins() {
 
             if (result) {
                 if (signer.name != CPluginService::HumoSignerName) {
-                    mSignedPlugins.insertMulti(signer.name, shortPath(fullPath));
+                    m_SignedPlugins.insertMulti(signer.name, shortPath(fullPath));
                 }
 
                 toLog(LogLevel::Normal, QString("Signed. Subject name: %1").arg(signer.name));
             } else {
                 toLog(LogLevel::Warning, QString("Signed. Subject name is unknown."));
 
-                mUnsignedPlugins.append(shortPath(fullPath));
+                m_UnsignedPlugins.append(shortPath(fullPath));
             }
         } else {
             toLog(LogLevel::Warning,
@@ -269,21 +269,21 @@ void PluginService::verifyPlugins() {
                                         ? "No signature was present in the subject."
                                         : "Could not verify signer in the subject."));
 
-            mUnsignedPlugins.append(shortPath(fullPath));
+            m_UnsignedPlugins.append(shortPath(fullPath));
         }
     }
 
     try {
-        auto *eventService = EventService::instance(mApplication);
+        auto *eventService = EventService::instance(m_Application);
 
-        if (mUnsignedPlugins.count()) {
+        if (m_UnsignedPlugins.count()) {
             eventService->sendEvent(SDK::PaymentProcessor::Event(
                 SDK::PaymentProcessor::EEventType::Warning,
                 getName(),
-                QString("Unsigned : {%1}").arg(mUnsignedPlugins.join(";"))));
+                QString("Unsigned : {%1}").arg(m_UnsignedPlugins.join(";"))));
         }
 
-        QStringList signedKeys = mSignedPlugins.keys();
+        QStringList signedKeys = m_SignedPlugins.keys();
         signedKeys.removeDuplicates();
 
         foreach (QString signerName, signedKeys) {
@@ -292,7 +292,7 @@ void PluginService::verifyPlugins() {
                 getName(),
                 QString("Signed by %1 : {%2}")
                     .arg(signerName)
-                    .arg(QStringList(mSignedPlugins.values(signerName)).join(";"))));
+                    .arg(QStringList(m_SignedPlugins.values(signerName)).join(";"))));
         }
     } catch (SDK::PaymentProcessor::ServiceIsNotImplemented &e) {
         toLog(LogLevel::Error, "Exception occurred while verify plugins.");

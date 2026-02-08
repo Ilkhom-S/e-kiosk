@@ -40,7 +40,7 @@ protected:
     virtual bool setFRParameters();
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt,
+    virtual bool perform_Fiscal(const QStringList &aReceipt,
                                const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
@@ -53,7 +53,7 @@ protected:
     TResult getFiscalTLVData(QByteArray &aData);
 
     /// Печать выплаты.
-    virtual bool performEncashment(const QStringList &aReceipt, double aAmount);
+    virtual bool perform_Encashment(const QStringList &aReceipt, double aAmount);
 
     /// Обработка ответа на предыдущей команды. Автоисправление некоторых ошибок.
     virtual bool processAnswer(const QByteArray &aCommand, char aError);
@@ -98,7 +98,7 @@ protected:
     bool getExtendedErrorCode(const QByteArray &aCommand);
 
     /// Версия ПО ФР, начиная с которой унифицирован порядок налоговых ставок.
-    int mFRBuildUnifiedTaxes;
+    int m_FRBuildUnifiedTaxes;
 };
 
 //--------------------------------------------------------------------------------

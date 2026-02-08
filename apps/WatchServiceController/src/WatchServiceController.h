@@ -59,24 +59,24 @@ private slots:
     void onStartServiceClickedDirect();
 
 private:
-    QSharedPointer<IWatchServiceClient> mClient;
+    QSharedPointer<IWatchServiceClient> m_Client;
 
-    LastCommand mLastCommand;
+    LastCommand m_LastCommand;
     bool
-        mPreviousConnectionState; // Track previous connection state to avoid unnecessary UI updates
+        m_PreviousConnectionState; // Track previous connection state to avoid unnecessary UI updates
 
-    QTimer mTimer;
+    QTimer m_Timer;
 
-    QSystemTrayIcon mIcon;
-    QMenu mMenu;
+    QSystemTrayIcon m_Icon;
+    QMenu m_Menu;
 
     // Pre-created icons to avoid layout issues during updates
-    QIcon mConnectedIcon;
-    QIcon mDisconnectedIcon;
+    QIcon m_ConnectedIcon;
+    QIcon m_DisconnectedIcon;
 
-    QList<QAction *> mStartServiceActions;
-    QAction *mStopServiceAction;
-    QAction *mCloseTrayIconAction;
+    QList<QAction *> m_StartServiceActions;
+    QAction *m_StopServiceAction;
+    QAction *m_CloseTrayIconAction;
 
 #ifdef Q_OS_MAC
     void setMacOSTrayIconAsTemplate();

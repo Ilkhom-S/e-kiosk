@@ -24,7 +24,7 @@ class PrinterTest : public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
 public:
-    PrinterTest(SDK::Driver::IDevice *mDevice, SDK::PaymentProcessor::ICore *aCore);
+    PrinterTest(SDK::Driver::IDevice *m_Device, SDK::PaymentProcessor::ICore *aCore);
 
     /// Возвращает имена и описания тестов.
     virtual QList<QPair<QString, QString>> getTestNames() const;
@@ -45,9 +45,9 @@ private slots:
     void onPrinted(bool aError);
 
 private:
-    ObjectPointer<SDK::Driver::IPrinter> mPrinter;
-    SDK::PaymentProcessor::ICore *mCore;
-    QFuture<bool> mTestResult;
+    ObjectPointer<SDK::Driver::IPrinter> m_Printer;
+    SDK::PaymentProcessor::ICore *m_Core;
+    QFuture<bool> m_TestResult;
 };
 
 //------------------------------------------------------------------------------

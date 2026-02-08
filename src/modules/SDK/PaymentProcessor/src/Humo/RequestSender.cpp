@@ -34,10 +34,10 @@ const int DefaultKeyPair = 0;
 
 //---------------------------------------------------------------------------
 RequestSender::RequestSender(NetworkTaskManager *aNetwork, ICryptEngine *aCryptEngine)
-    : mNetwork(aNetwork), mCryptEngine(aCryptEngine), mKeyPair(CRequestSender::DefaultKeyPair),
-      mOnlySecureConnection(true) {
+    : m_Network(aNetwork), m_CryptEngine(aCryptEngine), m_KeyPair(CRequestSender::DefaultKeyPair),
+      m_OnlySecureConnection(true) {
 #if defined(_DEBUG) || defined(DEBUG_INFO)
-    mOnlySecureConnection = false;
+    m_OnlySecureConnection = false;
 #endif // _DEBUG || DEBUG_INFO
 
     setResponseCreator(std::bind(&RequestSender::defaultResponseCreator, this, _1, _2));
@@ -53,47 +53,47 @@ RequestSender::~RequestSender() {}
 
 //---------------------------------------------------------------------------
 void RequestSender::setNetworkTaskManager(NetworkTaskManager *aNetwork) {
-    mNetwork = aNetwork;
+    m_Network = aNetwork;
 }
 
 //---------------------------------------------------------------------------
 void RequestSender::setResponseCreator(const TResponseCreator &aResponseCreator) {
-    mResponseCreator = aResponseCreator;
+    m_ResponseCreator = aResponseCreator;
 }
 
 //---------------------------------------------------------------------------
 void RequestSender::setRequestEncoder(const TRequestEncoder &aRequestEncoder) {
-    mRequestEncoder = aRequestEncoder;
+    m_RequestEncoder = aRequestEncoder;
 }
 
 //---------------------------------------------------------------------------
 void RequestSender::setResponseDecoder(const TResponseDecoder &aResponseDecoder) {
-    mResponseDecoder = aResponseDecoder;
+    m_ResponseDecoder = aResponseDecoder;
 }
 
 //---------------------------------------------------------------------------
 void RequestSender::setRequestSigner(const TRequestSigner &aRequestSigner) {
-    mRequestSigner = aRequestSigner;
+    m_RequestSigner = aRequestSigner;
 }
 
 //---------------------------------------------------------------------------
 void RequestSender::setResponseVerifier(const TResponseVerifier &aResponseVerifier) {
-    mResponseVerifier = aResponseVerifier;
+    m_ResponseVerifier = aResponseVerifier;
 }
 
 //---------------------------------------------------------------------------
 void RequestSender::setRequestModifier(const TRequestModifier &aRequestModifier) {
-    mRequestModifier = aRequestModifier;
+    m_RequestModifier = aRequestModifier;
 }
 
 //---------------------------------------------------------------------------
 void RequestSender::setCryptKeyPair(int aKeyPair) {
-    mKeyPair = aKeyPair;
+    m_KeyPair = aKeyPair;
 }
 
 //---------------------------------------------------------------------------
 void RequestSender::setOnlySecureConnectionEnabled(bool aOnlySecure) {
-    mOnlySecureConnection = aOnlySecure;
+    m_OnlySecureConnection = aOnlySecure;
 }
 
 //---------------------------------------------------------------------------
@@ -103,7 +103,7 @@ Response *RequestSender::request(NetworkTask::Type aType,
                                  ESignatureType aSignatureType,
                                  ESendError &aError,
                                  int aTimeout) {
-    if (aUrl.scheme().toLower() == "http" && mOnlySecureConnection) {
+    if (aUrl.scheme().toLower() == "http" && m_OnlySecureConnection) {
         aError = HttpIsNotSupported;
 
         return 0;
@@ -111,14 +111,14 @@ Response *RequestSender::request(NetworkTask::Type aType,
 
     aError = Ok;
 
-    if (mNetwork.isNull()) {
+    if (m_Network.isNull()) {
         aError = NoNetworkInterfaceSpecified;
 
         return 0;
     }
 
     // Подставляем серийный номер пары ключа в каждый запрос.
-    QString keyPairSerial = mCryptEngine->getKeyPairSerialNumber(mKeyPair);
+    QString keyPairSerial = m_CryptEngine->getKeyPairSerialNumber(m_KeyPair);
 
     if (keyPairSerial.isEmpty()) {
         aError = ClientCryptError;
@@ -142,13 +142,13 @@ Response *RequestSender::request(NetworkTask::Type aType,
     QByteArray signedRequest;
     QByteArray detachedSignature;
 
-    if (!mRequestEncoder(aRequest.toString(), std::ref(encodedRequest))) {
+    if (!m_RequestEncoder(aRequest.toString(), std::ref(encodedRequest))) {
         aError = EncodeError;
 
         return 0;
     }
 
-    if (!mRequestSigner(
+    if (!m_RequestSigner(
             encodedRequest, std::ref(signedRequest), aSignatureType, std::ref(detachedSignature))) {
         aError = ClientCryptError;
 
@@ -171,7 +171,7 @@ Response *RequestSender::request(NetworkTask::Type aType,
         return 0;
     }
 
-    if (!mRequestModifier(aRequest, std::ref(task->getRequestHeader()), std::ref(signedRequest))) {
+    if (!m_RequestModifier(aRequest, std::ref(task->getRequestHeader()), std::ref(signedRequest))) {
         aError = RequestModifyError;
 
         return 0;
@@ -179,7 +179,7 @@ Response *RequestSender::request(NetworkTask::Type aType,
 
     task->getDataStream()->write(signedRequest);
 
-    mNetwork->addTask(task.data());
+    m_Network->addTask(task.data());
 
     task->waitForFinished();
 
@@ -203,23 +203,23 @@ Response *RequestSender::request(NetworkTask::Type aType,
 
     if (aSignatureType == Detached) {
         responseSignature =
-            QByteArray::fromPercentEncoding(task->getResponseHeader()["X-signature"]);
+            QByteArray::from_PercentEncoding(task->getResponseHeader()["X-signature"]);
     }
 
-    if (!mResponseVerifier(
+    if (!m_ResponseVerifier(
             signedResponseData, std::ref(encodedResponseData), aSignatureType, responseSignature)) {
         aError = ServerCryptError;
 
         return 0;
     }
 
-    if (!mResponseDecoder(encodedResponseData, std::ref(responseData))) {
+    if (!m_ResponseDecoder(encodedResponseData, std::ref(responseData))) {
         aError = DecodeError;
 
         return 0;
     }
 
-    return mResponseCreator(aRequest, responseData);
+    return m_ResponseCreator(aRequest, responseData);
 }
 
 //---------------------------------------------------------------------------
@@ -257,7 +257,7 @@ bool RequestSender::defaultRequestEncoder(const QString &aRequest, QByteArray &a
         return false;
     }
 
-    aEncodedRequest = codec->fromUnicode(aRequest);
+    aEncodedRequest = codec->from_Unicode(aRequest);
     return true;
 #endif
 }
@@ -288,7 +288,7 @@ bool RequestSender::defaultRequestSigner(const QByteArray &aRequest,
 
     switch (aSignatureType) {
     case Solid: {
-        if (mCryptEngine->sign(mKeyPair, aRequest, aSignedRequest, error)) {
+        if (m_CryptEngine->sign(m_KeyPair, aRequest, aSignedRequest, error)) {
             aSignedRequest = aSignedRequest.toPercentEncoding();
 
             return true;
@@ -298,7 +298,7 @@ bool RequestSender::defaultRequestSigner(const QByteArray &aRequest,
     }
 
     case Detached: {
-        if (mCryptEngine->signDetach(mKeyPair, aRequest, aSignature, error)) {
+        if (m_CryptEngine->signDetach(m_KeyPair, aRequest, aSignature, error)) {
             aSignedRequest = aRequest;
             aSignature = aSignature.toPercentEncoding();
 
@@ -322,9 +322,9 @@ bool RequestSender::defaultResponseVerifier(const QByteArray &aSignedResponse,
 
     switch (aSignatureType) {
     case Solid:
-        return mCryptEngine->verify(mKeyPair, aSignedResponse, aResponse, error);
+        return m_CryptEngine->verify(m_KeyPair, aSignedResponse, aResponse, error);
     case Detached: {
-        if (mCryptEngine->verifyDetach(mKeyPair, aSignedResponse, aSignature, error)) {
+        if (m_CryptEngine->verifyDetach(m_KeyPair, aSignedResponse, aSignature, error)) {
             aResponse = aSignedResponse;
 
             return true;

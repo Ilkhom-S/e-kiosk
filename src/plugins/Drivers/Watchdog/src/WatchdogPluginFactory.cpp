@@ -3,9 +3,9 @@
 #include "WatchdogPluginFactory.h"
 
 WatchdogPluginFactory::WatchdogPluginFactory() {
-    mModuleName = "watchdogs";
-    mName = "Watchdogs";
-    mDescription = "Watchdog driver library.";
-    mAuthor = "Humo";
-    mVersion = "1.0";
+    m_ModuleName = "watchdogs";
+    m_Name = "Watchdogs";
+    m_Description = "Watchdog driver library.";
+    m_Author = "Humo";
+    m_Version = "1.0";
 }

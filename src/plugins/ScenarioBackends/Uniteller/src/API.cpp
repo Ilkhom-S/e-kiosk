@@ -37,30 +37,30 @@ namespace Uniteller {
 
 //---------------------------------------------------------------------------
 API::API(ILog *aLog, SDK::PaymentProcessor::ICore *aCore, quint16 aPort)
-    : mPort(aPort),
-      mTerminalSettings(static_cast<PPSDK::TerminalSettings *>(
+    : m_Port(aPort),
+      m_TerminalSettings(static_cast<PPSDK::TerminalSettings *>(
           aCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))),
-      mLoggedIn(false), mEnabled(false), mHaveContactlessReader(true), mLastError(0),
-      mGetStateTimerID(0), mLastReadyState(false) {
+      m_LoggedIn(false), m_Enabled(false), m_HaveContactlessReader(true), m_LastError(0),
+      m_GetStateTimerID(0), m_LastReadyState(false) {
     setLog(aLog);
 
-    // TODO connect to mSocket signals
-    connect(&mSocket, SIGNAL(connected()), this, SLOT(onConnected()));
-    connect(&mSocket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
-    connect(&mSocket,
+    // TODO connect to m_Socket signals
+    connect(&m_Socket, SIGNAL(connected()), this, SLOT(onConnected()));
+    connect(&m_Socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    connect(&m_Socket,
             SIGNAL(error(QAbstractSocket::SocketError)),
             this,
             SLOT(onError(QAbstractSocket::SocketError)));
-    connect(&mSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+    connect(&m_Socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
 
-    connect(&mCheckStateTimer, SIGNAL(timeout()), this, SLOT(onCheckStateTimeout()));
-    mCheckStateTimer.setInterval(1000);
-    mCheckStateTimer.start();
+    connect(&m_CheckStateTimer, SIGNAL(timeout()), this, SLOT(onCheckStateTimeout()));
+    m_CheckStateTimer.setInterval(1000);
+    m_CheckStateTimer.start();
 }
 
 //---------------------------------------------------------------------------
 void API::enable() {
-    mEnabled = true;
+    m_Enabled = true;
     doConnect();
 }
 
@@ -75,41 +75,41 @@ static QSharedPointer<API> API::getInstance(ILog *aLog,
 
 //---------------------------------------------------------------------------
 bool API::isReady() const {
-    return mLoggedIn;
+    return m_LoggedIn;
 }
 
 //---------------------------------------------------------------------------
 void API::setupRuntimePath(const QString &aRuntimePath) {
-    mRuntimePath = aRuntimePath;
+    m_RuntimePath = aRuntimePath;
 }
 
 //---------------------------------------------------------------------------
 void API::disable() {
-    mEnabled = false;
-    mSocket.close();
-    mSocket.waitForDisconnected(Uniteller::SocketTimeout);
+    m_Enabled = false;
+    m_Socket.close();
+    m_Socket.waitForDisconnected(Uniteller::SocketTimeout);
 }
 
 //--------------------------------------------------------------------------------
 void API::onCheckStateTimeout() {
-    if (mLastReadyState != isReady()) {
-        mLastReadyState = isReady();
+    if (m_LastReadyState != isReady()) {
+        m_LastReadyState = isReady();
 
-        emit state(mLastReadyState ? StatusCode::OK : StatusCode::Error, "Lost connection", true);
+        emit state(m_LastReadyState ? StatusCode::OK : StatusCode::Error, "Lost connection", true);
     }
 }
 
 //---------------------------------------------------------------------------
 void API::login() {
-    mTerminalID = getUPID(mRuntimePath);
+    m_TerminalID = getUPID(m_RuntimePath);
 
-    if (!mTerminalID.isEmpty()) {
-        toLog(LogLevel::Normal, QString("> Login. TerminalID: '%1'.").arg(mTerminalID));
+    if (!m_TerminalID.isEmpty()) {
+        toLog(LogLevel::Normal, QString("> Login. TerminalID: '%1'.").arg(m_TerminalID));
 
-        killTimer(mGetStateTimerID);
-        killTimer(mLoginCheckTimer);
+        killTimer(m_GetStateTimerID);
+        killTimer(m_LoginCheckTimer);
 
-        mLoggedIn = false;
+        m_LoggedIn = false;
 
         send(makeRequest(Uniteller::Class::Session, Uniteller::Login::CodeRequest));
     } else {
@@ -168,8 +168,8 @@ void API::getState() {
 
 //---------------------------------------------------------------------------
 void API::doConnect() const {
-    if (mEnabled) {
-        mSocket.connectToHost(QHostAddress::LocalHost, mPort);
+    if (m_Enabled) {
+        m_Socket.connectToHost(QHostAddress::LocalHost, m_Port);
     }
 }
 
@@ -178,40 +178,40 @@ void API::onConnected() {
     toLog(LogLevel::Normal, "Connected.");
 
     // Проверка на залогиненность
-    mLoginCheckTimer = startTimer(1000);
+    m_LoginCheckTimer = startTimer(1000);
 }
 
 //---------------------------------------------------------------------------
 void API::onDisconnected() {
     toLog(LogLevel::Normal, "Disconnected.");
 
-    killTimer(mGetStateTimerID);
-    killTimer(mLoginCheckTimer);
+    killTimer(m_GetStateTimerID);
+    killTimer(m_LoginCheckTimer);
 
-    mLoggedIn = false;
+    m_LoggedIn = false;
 }
 
 //---------------------------------------------------------------------------
 void API::timerEvent(QTimerEvent * /*unused*/) {
-    if (mEnabled && !mLoggedIn) {
+    if (m_Enabled && !m_LoggedIn) {
         login();
     }
 }
 
 //---------------------------------------------------------------------------
 void API::onError(QAbstractSocket::SocketError /*unused*/) {
-    QString e = mSocket.errorString();
-    if (mLastErrorString != e) {
-        mLastErrorString = e;
-        toLog(LogLevel::Error, QString("Connection error: %1.").arg(mLastErrorString));
+    QString e = m_Socket.errorString();
+    if (m_LastErrorString != e) {
+        m_LastErrorString = e;
+        toLog(LogLevel::Error, QString("Connection error: %1.").arg(m_LastErrorString));
     }
 
-    mLastError = -1;
+    m_LastError = -1;
 
-    emit error(mSocket.errorString());
+    emit error(m_Socket.errorString());
 
     // переподсоединяемся через 5 сек.
-    if (mEnabled) {
+    if (m_Enabled) {
         QTimer::singleShot(CUniteller::ReconnectTimeout, this, SLOT(doConnect()));
     }
 }
@@ -236,15 +236,15 @@ bool API::isErrorResponse(BaseResponsePtr aResponse) {
 bool API::isLoginResponse(BaseResponsePtr aResponse) {
     auto loginResponse = qSharedPointerDynamicCast<LoginResponse, BaseResponse>(aResponse);
     if (loginResponse) {
-        toLog(LogLevel::Normal, QString("< Login OK. TID: %1.").arg(loginResponse->mTerminalID));
+        toLog(LogLevel::Normal, QString("< Login OK. TID: %1.").arg(loginResponse->m_TerminalID));
 
         // корректно подсоединились к терминалу
         emit ready();
 
-        mLoggedIn = true;
-        mHaveContactlessReader = haveContactlessReader();
+        m_LoggedIn = true;
+        m_HaveContactlessReader = haveContactlessReader();
 
-        mGetStateTimerID = startTimer(CUniteller::PollTimeout);
+        m_GetStateTimerID = startTimer(CUniteller::PollTimeout);
         QMetaObject::invokeMethod(this, "getState", Qt::QueuedConnection);
     }
 
@@ -257,11 +257,11 @@ bool API::isPrintLineResponse(BaseResponsePtr aResponse) {
     if (printLineResponse) {
         toLog(LogLevel::Normal, QString("< Print line: %1.").arg(printLineResponse->getText()));
 
-        mCurrentReceipt << printLineResponse->getText();
+        m_CurrentReceipt << printLineResponse->getText();
 
         if (printLineResponse->isLast()) {
-            emit print(mCurrentReceipt);
-            mCurrentReceipt.clear();
+            emit print(m_CurrentReceipt);
+            m_CurrentReceipt.clear();
         }
     }
 
@@ -285,24 +285,24 @@ bool API::isGetStateResponse(BaseResponsePtr aResponse) {
         if (CUniteller::Host.contains(name, Qt::CaseInsensitive)) {
             // Проверяем только железки
         } else if (CUniteller::CardReader.contains(name, Qt::CaseInsensitive)) {
-            mDeviceState.insert("cardreader", stateResponse->state());
+            m_DeviceState.insert("cardreader", stateResponse->state());
         } else if (CUniteller::PinPad.contains(name, Qt::CaseInsensitive)) {
-            mDeviceState.insert("pinpad", stateResponse->state());
+            m_DeviceState.insert("pinpad", stateResponse->state());
         } else if (CUniteller::ContactlessReader.contains(name, Qt::CaseInsensitive)) {
-            if (mHaveContactlessReader) {
-                mDeviceState.insert("contactlessreader", stateResponse->state());
+            if (m_HaveContactlessReader) {
+                m_DeviceState.insert("contactlessreader", stateResponse->state());
             } else {
                 sendStatus = false;
             }
         } else {
-            mDeviceState.insert(name.toLower(), stateResponse->state());
+            m_DeviceState.insert(name.toLower(), stateResponse->state());
         }
 
         if (sendStatus) {
             emit state(stateResponse->state(), stateResponse->getName(), stateResponse->isLast());
         } else if (stateResponse->isLast()) {
             // если статус последний нужно перепослать любой
-            emit state(mDeviceState.begin().value(), mDeviceState.begin().key(), true);
+            emit state(m_DeviceState.begin().value(), m_DeviceState.begin().key(), true);
         }
     }
 
@@ -386,12 +386,12 @@ bool API::isAuthResponse(BaseResponsePtr aResponse) {
         toLog(LogLevel::Normal, QString("< Auth response. %1.").arg(authResponse->toString()));
 
         if (authResponse->isOK()) {
-            emit sellComplete(authResponse->mTransactionSumm / 100.0,
-                              authResponse->mCurrency,
-                              authResponse->mRRN,
-                              authResponse->mConfirmation);
+            emit sellComplete(authResponse->m_TransactionSumm / 100.0,
+                              authResponse->m_Currency,
+                              authResponse->m_RRN,
+                              authResponse->m_Confirmation);
         } else {
-            emit error(authResponse->mMessage);
+            emit error(authResponse->m_Message);
         }
     }
 
@@ -400,7 +400,7 @@ bool API::isAuthResponse(BaseResponsePtr aResponse) {
 
 //---------------------------------------------------------------------------
 void API::onReadyRead() {
-    QByteArray responseBuffer = mSocket.readAll();
+    QByteArray responseBuffer = m_Socket.readAll();
 
     QList<std::function<bool(API &, BaseResponsePtr)>> responseHandlers;
     responseHandlers << std::mem_fun_ref(&API::isErrorResponse)
@@ -420,8 +420,8 @@ void API::onReadyRead() {
         if (!response->isValid()) {
             toLog(LogLevel::Error,
                   QString("Receive unknown packet from EFTPOS. Class='%1' Code='%2'")
-                      .arg(response->mClass)
-                      .arg(response->mCode));
+                      .arg(response->m_Class)
+                      .arg(response->m_Code));
         } else {
             foreach (auto handler, responseHandlers) {
                 if (handler(*this, response)) {
@@ -438,7 +438,7 @@ static QByteArray API::makeRequest(char aClass, char aCode, const QByteArray &aD
 
     request.append(aClass);
     request.append(aCode);
-    request.append(mTerminalID.toLatin1());
+    request.append(m_TerminalID.toLatin1());
     QString dataLength = QString::number(aData.size(), 16);
     if (dataLength.size() == 1) {
         dataLength.insert(0, '0');
@@ -451,14 +451,14 @@ static QByteArray API::makeRequest(char aClass, char aCode, const QByteArray &aD
 
 //---------------------------------------------------------------------------
 void API::send(const QByteArray &aRequest) {
-    if (!mSocket.isOpen()) {
+    if (!m_Socket.isOpen()) {
         toLog(LogLevel::Error, "Error write. Socket not connected.");
     } else {
-        toLog(LogLevel::Debug, QString("Send command: %1").arg(QString::fromLatin1(aRequest)));
+        toLog(LogLevel::Debug, QString("Send command: %1").arg(QString::from_Latin1(aRequest)));
 
-        if (mSocket.write(aRequest) != aRequest.size()) {
+        if (m_Socket.write(aRequest) != aRequest.size()) {
             toLog(LogLevel::Error,
-                  QString("Error write data to socket. Error: %1").arg(mSocket.errorString()));
+                  QString("Error write data to socket. Error: %1").arg(m_Socket.errorString()));
         }
     }
 }

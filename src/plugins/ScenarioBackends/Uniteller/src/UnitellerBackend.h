@@ -89,10 +89,10 @@ private slots:
     void onPrintReceipt(const QStringList &aLines);
 
 private:
-    SDK::PaymentProcessor::ICore *mCore;
+    SDK::PaymentProcessor::ICore *m_Core;
 
-    QTimer mDummyTimer;
-    int mCountPINNumbers;
+    QTimer m_DummyTimer;
+    int m_CountPINNumbers;
 };
 
 //--------------------------------------------------------------------------
@@ -112,12 +112,12 @@ public:
     virtual void setConfiguration(const QVariantMap &aParameters) { Q_UNUSED(aParameters); }
 
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
-    virtual QString getConfigurationName() const { return mInstancePath; }
+    virtual QString getConfigurationName() const { return m_InstancePath; }
 
     /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
     /// программы).
     virtual bool saveConfiguration() {
-        return mEnvironment->saveConfiguration(CUnitellerBackend::PluginName, getConfiguration());
+        return m_Environment->saveConfiguration(CUnitellerBackend::PluginName, getConfiguration());
     }
 
     /// Проверяет успешно ли инициализировался плагин при создании.
@@ -130,11 +130,11 @@ public:
     virtual PPSDK::Scripting::IBackendScenarioObject *create(const QString &aClassName) const;
 
 private:
-    QString mInstancePath;
-    SDK::Plugin::IEnvironment *mEnvironment;
+    QString m_InstancePath;
+    SDK::Plugin::IEnvironment *m_Environment;
 
 private:
-    QSharedPointer<PPSDK::Scripting::IBackendScenarioObject> mObject;
+    QSharedPointer<PPSDK::Scripting::IBackendScenarioObject> m_Object;
 };
 
 } // namespace CUnitellerBackend

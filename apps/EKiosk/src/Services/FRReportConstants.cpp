@@ -15,5 +15,5 @@ const char PaymentAmount[] = "payment_amount";
 const char NonNullableAmount[] = "non_nullable_amount";
 
 const char FRDateTime[] = "fr_date_time";
-const char SystemDateTime[] = "system_date_time";
+const char System_DateTime[] = "system_date_time";
 } // namespace CFRReport

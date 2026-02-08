@@ -31,9 +31,9 @@ public slots:
 
 private:
     /// Указатель на ядро.
-    ICore *mCore;
+    ICore *m_Core;
     /// Указатель на сервис звука.
-    IAudioService *mAudioService;
+    IAudioService *m_AudioService;
 };
 
 //------------------------------------------------------------------------------

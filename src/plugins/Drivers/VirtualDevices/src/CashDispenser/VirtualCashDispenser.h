@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------------------------------
 namespace CVirtualDispenser {
 /// Задержка выдачи 1 предмета.
-const int ItemDispenseDelay = 300;
+const int Item_DispenseDelay = 300;
 } // namespace CVirtualDispenser
 
 //--------------------------------------------------------------------------------
@@ -35,13 +35,13 @@ protected:
     virtual void checkUnitStatus(TStatusCodes &aStatusCodes, int aUnit);
 
     /// Выдать.
-    virtual void performDispense(int aUnit, int aItems);
+    virtual void perform_Dispense(int aUnit, int aItems);
 
     /// Предмет, на котором сработает имитация замятия
-    int mJammedItem;
+    int m_JammedItem;
 
     /// Номер предмета, когда кассета почти пуста.
-    int mNearEndCount;
+    int m_NearEndCount;
 };
 
 //--------------------------------------------------------------------------------

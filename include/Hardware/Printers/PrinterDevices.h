@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <Hardware/Printers/CustomVKP80.h>
+#include <Hardware/Printers/Custom_VKP80.h>
 #include <Hardware/Printers/EpsonEUT400.h>
 #include <Hardware/Printers/POSPrinter.h>
 #include <Hardware/Printers/PortPOSPrinters.h>
@@ -15,14 +15,14 @@
 #include "../../src/modules/Hardware/Printers/src/POSPrinters/Citizen/CitizenCTS310II.h"
 #include "../../src/modules/Hardware/Printers/src/POSPrinters/Citizen/CitizenPPU231/CitizenPPU231.h"
 #include "../../src/modules/Hardware/Printers/src/POSPrinters/Citizen/CitizenPPU700/CitizenPPU700.h"
-#include "../../src/modules/Hardware/Printers/src/POSPrinters/Custom/CustomPrinters.h"
-#include "../../src/modules/Hardware/Printers/src/POSPrinters/Custom/CustomTG2480H.h"
-#include "../../src/modules/Hardware/Printers/src/POSPrinters/Custom/CustomVKP/CustomVKP80III.h"
+#include "../../src/modules/Hardware/Printers/src/POSPrinters/Custom/Custom_Printers.h"
+#include "../../src/modules/Hardware/Printers/src/POSPrinters/Custom/Custom_TG2480H.h"
+#include "../../src/modules/Hardware/Printers/src/POSPrinters/Custom/Custom_VKP/Custom_VKP80III.h"
 #include "../../src/modules/Hardware/Printers/src/PrimexNP2511/PrimexNP2511.h"
 #include "../../src/modules/Hardware/Printers/src/Star/EjectorStarPrinters.h"
 #include "../../src/modules/Hardware/Printers/src/Star/StarPrinters.h"
 #include "../../src/modules/Hardware/Printers/src/SwecoinTTP20XXBase/SwecoinTTP20XXBase.h"
-#include "../../src/modules/Hardware/Printers/src/SystemPrinter/SystemPrinter.h"
-#include "../../src/modules/Hardware/Printers/src/SystemPrinter/SystemPrinters.h"
+#include "../../src/modules/Hardware/Printers/src/System_Printer/System_Printer.h"
+#include "../../src/modules/Hardware/Printers/src/System_Printer/System_Printers.h"
 
 //--------------------------------------------------------------------------------

@@ -86,11 +86,11 @@ private:
     void loadKey(SDK::PaymentProcessor::SKeySettings &aKey);
 
 private:
-    IApplication *mApplication;
-    ILog *mLog;
-    QMap<int, SDK::PaymentProcessor::SKeySettings> mKeys;
+    IApplication *m_Application;
+    ILog *m_Log;
+    QMap<int, SDK::PaymentProcessor::SKeySettings> m_Keys;
 
-    SKeyPair mKeyPair;
+    SKeyPair m_KeyPair;
 };
 
 //---------------------------------------------------------------------------

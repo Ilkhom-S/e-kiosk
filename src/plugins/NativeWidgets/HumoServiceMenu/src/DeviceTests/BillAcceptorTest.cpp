@@ -11,9 +11,9 @@ const QString TestEscrow = QT_TRANSLATE_NOOP("BillAcceptorTest", "#test_escrow")
 
 //------------------------------------------------------------------------------
 BillAcceptorTest::BillAcceptorTest(IDevice *aDevice) {
-    mBillAcceptor = dynamic_cast<ICashAcceptor *>(aDevice);
+    m_BillAcceptor = dynamic_cast<ICashAcceptor *>(aDevice);
 
-    connect(&mErasingTimer, SIGNAL(timeout()), this, SLOT(onEraseMessage()));
+    connect(&m_ErasingTimer, SIGNAL(timeout()), this, SLOT(onEraseMessage()));
 }
 
 //------------------------------------------------------------------------------
@@ -24,48 +24,48 @@ QList<QPair<QString, QString>> BillAcceptorTest::getTestNames() const {
 
 //------------------------------------------------------------------------------
 bool BillAcceptorTest::run(const QString &aName) {
-    if ((aName != CBillAcceptorTest::TestEscrow) || !mBillAcceptor->isDeviceReady()) {
+    if ((aName != CBillAcceptorTest::TestEscrow) || !m_BillAcceptor->isDeviceReady()) {
         return false;
     }
 
-    mBillAcceptor->subscribe(
+    m_BillAcceptor->subscribe(
         SDK::Driver::ICashAcceptor::EscrowSignal, this, SLOT(onEscrow(SDK::Driver::SPar)));
-    mBillAcceptor->subscribe(
+    m_BillAcceptor->subscribe(
         SDK::Driver::ICashAcceptor::StatusSignal,
         this,
         SLOT(onStatusChanged(SDK::Driver::EWarningLevel::Enum, const QString &, int)));
 
-    mWorkingParList = mBillAcceptor->getParList();
-    TParList testParList(mWorkingParList);
+    m_WorkingParList = m_BillAcceptor->getParList();
+    TParList testParList(m_WorkingParList);
 
     for (int i = 0; i < testParList.size(); ++i) {
         testParList[i].enabled = true;
     }
 
-    if (!isParListEqual(testParList, mWorkingParList)) {
-        mBillAcceptor->setParList(testParList);
+    if (!isParListEqual(testParList, m_WorkingParList)) {
+        m_BillAcceptor->setParList(testParList);
     }
 
-    return mBillAcceptor->setEnable(true);
+    return m_BillAcceptor->setEnable(true);
 }
 
 //------------------------------------------------------------------------------
 void BillAcceptorTest::stop() {
-    mErasingTimer.stop();
+    m_ErasingTimer.stop();
 
-    mBillAcceptor->setEnable(false);
-    TParList testParList = mBillAcceptor->getParList();
+    m_BillAcceptor->setEnable(false);
+    TParList testParList = m_BillAcceptor->getParList();
 
-    if (!isParListEqual(testParList, mWorkingParList)) {
-        mBillAcceptor->setParList(mWorkingParList);
+    if (!isParListEqual(testParList, m_WorkingParList)) {
+        m_BillAcceptor->setParList(m_WorkingParList);
     }
 
-    mBillAcceptor->unsubscribe(SDK::Driver::ICashAcceptor::EscrowSignal, this);
+    m_BillAcceptor->unsubscribe(SDK::Driver::ICashAcceptor::EscrowSignal, this);
 }
 
 //------------------------------------------------------------------------------
 bool BillAcceptorTest::isReady() {
-    return mBillAcceptor && mBillAcceptor->isDeviceReady();
+    return m_BillAcceptor && m_BillAcceptor->isDeviceReady();
 }
 
 //------------------------------------------------------------------------------
@@ -77,20 +77,20 @@ bool BillAcceptorTest::hasResult() {
 void BillAcceptorTest::onEscrow(SPar aPar) {
     QString message = QString("%1 %2").arg(tr("#bill_is_escrowed")).arg(aPar.nominal);
 
-    for (int i = 0; i < mWorkingParList.size(); ++i) {
-        if ((mWorkingParList[i] == aPar) && !mWorkingParList[i].enabled) {
+    for (int i = 0; i < m_WorkingParList.size(); ++i) {
+        if ((m_WorkingParList[i] == aPar) && !m_WorkingParList[i].enabled) {
             message += QString(" (%1)").arg(tr("#disabled"));
         }
     }
 
-    mErasingTimer.stop();
+    m_ErasingTimer.stop();
 
     emit result("", message);
 
-    mErasingTimer.start(CBillAcceptorTest::EscrowMessageTimeout);
+    m_ErasingTimer.start(CBillAcceptorTest::EscrowMessageTimeout);
 
     // Выбрасываем купюру
-    mBillAcceptor->reject();
+    m_BillAcceptor->reject();
 }
 
 //------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ void BillAcceptorTest::onStatusChanged(EWarningLevel::Enum aWarningLevel,
                                        const QString &aTranslation,
                                        int aStatus) {
     if ((aStatus == ECashAcceptorStatus::Cheated) || (aWarningLevel == EWarningLevel::Error)) {
-        mErasingTimer.stop();
+        m_ErasingTimer.stop();
 
         emit result("", aTranslation);
     }

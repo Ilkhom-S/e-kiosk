@@ -31,20 +31,20 @@ template bool PollingExpector::wait<bool>(TBoolMethod aOnPoll,
 //--------------------------------------------------------------------------------
 ExpectorWorkingThread::ExpectorWorkingThread() {
     moveToThread(this);
-    mPolling.moveToThread(this);
-    mOwner = QThread::currentThread();
-    mPollingSensible = false;
+    m_Polling.moveToThread(this);
+    m_Owner = QThread::currentThread();
+    m_PollingSensible = false;
 
-    connect(&mPolling, SIGNAL(timeout()), SLOT(onPoll()), Qt::QueuedConnection);
+    connect(&m_Polling, SIGNAL(timeout()), SLOT(onPoll()), Qt::QueuedConnection);
 }
 
 //--------------------------------------------------------------------------------
 void ExpectorWorkingThread::run() {
-    MutexLocker::setMatchedThread(mOwner, currentThread());
+    MutexLocker::setMatchedThread(m_Owner, currentThread());
 
     QThread::exec();
 
-    MutexLocker::clearMatchedThread(mOwner);
+    MutexLocker::clearMatchedThread(m_Owner);
 }
 
 //--------------------------------------------------------------------------------
@@ -53,40 +53,40 @@ void ExpectorWorkingThread::process(TBoolMethod aOnPoll,
                                     TBoolMethod aErrorCondition,
                                     int aPollingInterval,
                                     bool aPollingSensible) {
-    mOnPoll = aOnPoll;
-    mPollingSensible = aPollingSensible;
-    mCondition = aCondition;
-    mErrorCondition = aErrorCondition;
-    mPolling.setInterval(aPollingInterval);
+    m_OnPoll = aOnPoll;
+    m_PollingSensible = aPollingSensible;
+    m_Condition = aCondition;
+    m_ErrorCondition = aErrorCondition;
+    m_Polling.setInterval(aPollingInterval);
 
     if (!isRunning()) {
         start();
     }
 
-    QMetaObject::invokeMethod(&mPolling, "start", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(&m_Polling, "start", Qt::QueuedConnection);
 }
 
 //--------------------------------------------------------------------------------
 void ExpectorWorkingThread::onPoll() {
-    bool result = !mOnPoll || mOnPoll();
+    bool result = !m_OnPoll || m_OnPoll();
 
-    if ((!result && mPollingSensible) || (mErrorCondition && mErrorCondition())) {
+    if ((!result && m_PollingSensible) || (m_ErrorCondition && m_ErrorCondition())) {
         emit finished(false);
 
-        mPolling.stop();
+        m_Polling.stop();
     }
 
-    if (mCondition()) {
+    if (m_Condition()) {
         emit finished(true);
 
-        mPolling.stop();
+        m_Polling.stop();
     }
 }
 
 //--------------------------------------------------------------------------------
-PollingExpector::PollingExpector() : mResult(false) {
-    moveToThread(&mWorkingThread);
-    connect(&mWorkingThread, SIGNAL(finished(bool)), SLOT(onFinished(bool)));
+PollingExpector::PollingExpector() : m_Result(false) {
+    moveToThread(&m_WorkingThread);
+    connect(&m_WorkingThread, SIGNAL(finished(bool)), SLOT(onFinished(bool)));
 }
 
 //--------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ bool PollingExpector::wait(std::function<bool()> aOnPoll,
                            TBoolMethod aCondition,
                            TBoolMethod aErrorCondition,
                            const SWaitingData &aWaitingData) {
-    mResult = false;
+    m_Result = false;
 
     if (!aCondition) {
         return false;
@@ -181,26 +181,26 @@ bool PollingExpector::wait(std::function<bool()> aOnPoll,
     }
 
     {
-        QMutexLocker locker(&mGuard);
+        QMutexLocker locker(&m_Guard);
 
-        mWorkingThread.process(aOnPoll,
+        m_WorkingThread.process(aOnPoll,
                                aCondition,
                                aErrorCondition,
                                aWaitingData.pollingInterval,
                                aWaitingData.pollingSensible);
-        mWaitCondition.wait(&mGuard, aWaitingData.timeout);
+        m_WaitCondition.wait(&m_Guard, aWaitingData.timeout);
     }
 
-    mWorkingThread.quit();
-    mWorkingThread.wait();
+    m_WorkingThread.quit();
+    m_WorkingThread.wait();
 
-    return mResult;
+    return m_Result;
 }
 
 //--------------------------------------------------------------------------------
 void PollingExpector::onFinished(bool aSuccess) {
-    mWaitCondition.wakeAll();
-    mResult = aSuccess;
+    m_WaitCondition.wakeAll();
+    m_Result = aSuccess;
 }
 
 //--------------------------------------------------------------------------------

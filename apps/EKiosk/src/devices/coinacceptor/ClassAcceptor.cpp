@@ -29,7 +29,7 @@ void ClassAcceptor::setValidator(QString name) {
         connect(CCTalkAcceptor,
                 SIGNAL(emitStatus(int, QString)),
                 this,
-                SLOT(getStatusFromAcceptor(int, QString)));
+                SLOT(getStatusFrom_Acceptor(int, QString)));
         connect(CCTalkAcceptor,
                 SIGNAL(emitLoging(int, QString, QString)),
                 SIGNAL(emitLoging(int, QString, QString)));
@@ -38,17 +38,17 @@ void ClassAcceptor::setValidator(QString name) {
     }
 }
 
-void ClassAcceptor::getStatusFromAcceptor(int sts, QString comment) {
+void ClassAcceptor::getStatusFrom_Acceptor(int sts, QString comment) {
     status = sts;
 
     emit emitStatusCoinAcceptor(status, comment);
 }
 
 void ClassAcceptor::setPortName(QString portName) {
-    comPort = portName;
+    com_Port = portName;
 
     if (validatorName == AcceptorModel::CCTalk) {
-        CCTalkAcceptor->setPortName(comPort);
+        CCTalkAcceptor->setPortName(com_Port);
     }
 }
 
@@ -131,14 +131,14 @@ void ClassAcceptor::run() {
         }
         break;
 
-    case AcceptorCommands::ComClear:
+    case AcceptorCommands::Com_Clear:
         break;
     }
 
     return;
 }
 
-bool ClassAcceptor::isItYou(QStringList &comList,
+bool ClassAcceptor::isItYou(QStringList &com_List,
                             QString &validator_name,
                             QString &com_str,
                             QString &validator_coment) {
@@ -163,13 +163,13 @@ bool ClassAcceptor::isItYou(QStringList &comList,
 
         this->setValidator(acceptorList.at(dev_count));
 
-        for (int com_count = 0; com_count < comList.count(); com_count++) {
-            this->setPortName(comList.at(com_count));
+        for (int com_count = 0; com_count < com_List.count(); com_count++) {
+            this->setPortName(com_List.at(com_count));
 
             if (validatorName == AcceptorModel::CCTalk) {
                 if (CCTalkAcceptor->isItYou()) {
                     nowValidatorName = validator_name = acceptorList.at(dev_count);
-                    nowPortName = com_str = comList.at(com_count);
+                    nowPortName = com_str = com_List.at(com_count);
                     nowComent = validator_coment = CCTalkAcceptor->PartNumber;
                     this->v_PartNumber = CCTalkAcceptor->PartNumber;
                     this->v_SerialNumber = CCTalkAcceptor->SerialNumber;

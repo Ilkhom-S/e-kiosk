@@ -9,11 +9,11 @@
 #include "TemplatePlugin.h"
 
 TemplatePluginFactory::TemplatePluginFactory() {
-    mName = "Template Plugin";
-    mDescription = "Minimal template plugin for plugin development";
-    mAuthor = "EKiosk Template";
-    mVersion = "1.0";
-    mModuleName = "template_plugin";
+    m_Name = "Template Plugin";
+    m_Description = "Minimal template plugin for plugin development";
+    m_Author = "EKiosk Template";
+    m_Version = "1.0";
+    m_ModuleName = "template_plugin";
 
     qDebug() << "TemplatePluginFactory created";
 }

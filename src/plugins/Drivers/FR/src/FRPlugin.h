@@ -12,12 +12,12 @@
 #include "../../../../modules/Hardware/FR/src/Spark/SparkFR.h"
 
 // ПРИМы
-#include "../../../../modules/Hardware/FR/src/Prim/Ejector/PrimEjectorFRBase.h"
-#include "../../../../modules/Hardware/FR/src/Prim/Online/PrimOnlineFR68.h"
-#include "../../../../modules/Hardware/FR/src/Prim/Online/PrimOnlineFRBase.h"
-#include "../../../../modules/Hardware/FR/src/Prim/Online/PrimOnlineFRSpecial.h"
-#include "../../../../modules/Hardware/FR/src/Prim/Presenter/PrimPresenterFR.h"
-#include "../../../../modules/Hardware/FR/src/Prim/PrimFRBase.h"
+#include "../../../../modules/Hardware/FR/src/Prim/Ejector/Prim_EjectorFRBase.h"
+#include "../../../../modules/Hardware/FR/src/Prim/Online/Prim_OnlineFR68.h"
+#include "../../../../modules/Hardware/FR/src/Prim/Online/Prim_OnlineFRBase.h"
+#include "../../../../modules/Hardware/FR/src/Prim/Online/Prim_OnlineFRSpecial.h"
+#include "../../../../modules/Hardware/FR/src/Prim/Presenter/Prim_PresenterFR.h"
+#include "../../../../modules/Hardware/FR/src/Prim/Prim_FRBase.h"
 
 // Штрихи
 #include "../../../../modules/Hardware/FR/src/Shtrih/Base/ShtrihKiosk.h"
@@ -57,7 +57,7 @@ protected:
             QCoreApplication::translate("ChequeParameters", "#without_taxes")); // Без налогов.
     }
 
-    template <> void addConfiguration<PrimSeriesType>(QVariantMap &aParameters) {
+    template <> void addConfiguration<Prim_SeriesType>(QVariantMap &aParameters) {
         using namespace CHardware::FR::Strings;
 
         aParameters.insert(

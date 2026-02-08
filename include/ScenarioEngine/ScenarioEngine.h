@@ -54,12 +54,12 @@ public:
     /// Экспортирует объект во все вновь открываемые сценарии. Движок не берёт
     /// на себя обязанности по очистке памяти после использования объекта.
     void injectScriptObject(const QString &aName, QObject *aObject) {
-        mScriptObjects << SScriptObject(aName, aObject);
+        m_ScriptObjects << SScriptObject(aName, aObject);
     }
 
     /// Экспортирует типовой объект во все вновь открываемые сценарии.
     template <typename T> void injectScriptObject(const QString &aName) {
-        mScriptObjects << SScriptObject(aName, &T::staticMetaObject);
+        m_ScriptObjects << SScriptObject(aName, &T::staticMetaObject);
     }
 
     /// Возвращает false, если какой либо из сценариев в стеке не может быть остановлен в текущий

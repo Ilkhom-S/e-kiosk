@@ -65,15 +65,15 @@ private:
     QString errorToString(EKeysUtilsError::Enum aCode) const;
 
 private:
-    SDK::PaymentProcessor::ICore *mCore;
-    SDK::PaymentProcessor::ICryptService *mCryptService;
-    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;
+    SDK::PaymentProcessor::ICore *m_Core;
+    SDK::PaymentProcessor::ICryptService *m_CryptService;
+    SDK::PaymentProcessor::TerminalSettings *m_TerminalSettings;
 
-    QString mSD;
-    QString mAP;
-    QString mOP;
+    QString m_SD;
+    QString m_AP;
+    QString m_OP;
 
-    bool mIsGenerated;
+    bool m_IsGenerated;
 };
 
 //---------------------------------------------------------------------------

@@ -34,7 +34,7 @@ OSMP::OSMP() {
 bool OSMP::isConnected() {
     QByteArray answer;
 
-    if (!performCommand(m_Data[EOSMPCommandId::Identification], &answer)) {
+    if (!perform_Command(m_Data[EOSMPCommandId::Identification], &answer)) {
         return false;
     }
 
@@ -45,7 +45,7 @@ bool OSMP::isConnected() {
     QRegularExpression regExp(QStringLiteral("WDT.*v([0-9\\.]+)"));
 
     // 2. Выполняем сопоставление (match автоматически конвертирует QByteArray в QString)
-    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
+    QRegularExpressionMatch match = regExp.match(QString::from_Utf8(answer));
 
     // 3. Проверяем наличие совпадения через hasMatch()
     // и сравниваем захваченную группу через captured(1)
@@ -54,7 +54,7 @@ bool OSMP::isConnected() {
     }
 
     if (!m_Connected) {
-        if (performCommand(COSMP::WrongDeviceCheck, &answer) && !answer.isEmpty()) {
+        if (perform_Command(COSMP::WrongDeviceCheck, &answer) && !answer.isEmpty()) {
             toLog(LogLevel::Error,
                   m_DeviceName + QStringLiteral(": Unknown device trying to impersonate the device "
                                                "based on OSMP protocol."));
@@ -77,16 +77,16 @@ bool OSMP::reset(const QString &aLine) {
     }
 
     if (aLine == SDK::Driver::LineTypes::Modem) {
-        return performCommand(m_Data[EOSMPCommandId::ResetModem]);
+        return perform_Command(m_Data[EOSMPCommandId::ResetModem]);
     } else if (aLine == SDK::Driver::LineTypes::Terminal) {
-        return performCommand(m_Data[EOSMPCommandId::RebootPC]);
+        return perform_Command(m_Data[EOSMPCommandId::RebootPC]);
     }
 
     return false;
 }
 
 //----------------------------------------------------------------------------
-bool OSMP::performCommand(const QByteArray &aCommand, QByteArray *aAnswer) {
+bool OSMP::perform_Command(const QByteArray &aCommand, QByteArray *aAnswer) {
     MutexLocker lock(&m_ExternalMutex);
 
     QByteArray data;
@@ -114,12 +114,12 @@ void OSMP::setPingEnable(bool aEnabled) {
 
     EOSMPCommandId::Enum commandId =
         aEnabled ? EOSMPCommandId::StartTimer : EOSMPCommandId::StopTimer;
-    performCommand(m_Data[commandId]);
+    perform_Command(m_Data[commandId]);
 }
 
 //-----------------------------------------------------------------------------
 void OSMP::onPing() {
-    performCommand(m_Data[EOSMPCommandId::Ping]);
+    perform_Command(m_Data[EOSMPCommandId::Ping]);
 }
 
 //--------------------------------------------------------------------------------

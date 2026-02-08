@@ -9,11 +9,11 @@
 #include "ProviderConstants.h"
 
 ProviderListModel::ProviderListModel(QObject *aParent, QSharedPointer<GroupModel> aGroupModel)
-    : QAbstractListModel(aParent), mGroupModel(aGroupModel) {
-    mRoles[IdRole] = "id";
-    mRoles[NameRole] = "name";
-    mRoles[InfoRole] = "info";
-    mRoles[ImageRole] = "image";
+    : QAbstractListModel(aParent), m_GroupModel(aGroupModel) {
+    m_Roles[IdRole] = "id";
+    m_Roles[NameRole] = "name";
+    m_Roles[InfoRole] = "info";
+    m_Roles[ImageRole] = "image";
 }
 
 //------------------------------------------------------------------------------
@@ -21,25 +21,25 @@ ProviderListModel::~ProviderListModel() {}
 
 //------------------------------------------------------------------------------
 QHash<int, QByteArray> ProviderListModel::roleNames() const {
-    return mRoles;
+    return m_Roles;
 }
 
 //------------------------------------------------------------------------------
 int ProviderListModel::rowCount(const QModelIndex & /*parent = QModelIndex()*/) const {
-    return mProviderList.size();
+    return m_ProviderList.size();
 }
 
 //------------------------------------------------------------------------------
 QVariant ProviderListModel::data(const QModelIndex &aIndex, int aRole) const {
-    if (aIndex.row() >= 0 && aIndex.row() < mProviderList.count()) {
+    if (aIndex.row() >= 0 && aIndex.row() < m_ProviderList.count()) {
         switch (aRole) {
         case IdRole:
         case ImageRole:
-            return mProviderList[aIndex.row()].id;
+            return m_ProviderList[aIndex.row()].id;
         case NameRole:
-            return mProviderList[aIndex.row()].name;
+            return m_ProviderList[aIndex.row()].name;
         case InfoRole:
-            return mProviderList[aIndex.row()].info;
+            return m_ProviderList[aIndex.row()].info;
         }
     }
 
@@ -48,16 +48,16 @@ QVariant ProviderListModel::data(const QModelIndex &aIndex, int aRole) const {
 
 //------------------------------------------------------------------------------
 void ProviderListModel::groupsUpdated() {
-    if (!mProvidersId.empty() || !mProviderList.empty())
+    if (!m_ProvidersId.empty() || !m_ProviderList.empty())
         return;
 
-    if (mGroupModel) {
-        auto providersId = mGroupModel->allProviders().toList();
+    if (m_GroupModel) {
+        auto providersId = m_GroupModel->allProviders().toList();
 
         // Исключаем повторную загрузку и индексацию
-        if (providersId.size() > mProviderList.size() + mProvidersId.size()) {
-            mProviderList.clear();
-            mProvidersId = providersId;
+        if (providersId.size() > m_ProviderList.size() + m_ProvidersId.size()) {
+            m_ProviderList.clear();
+            m_ProvidersId = providersId;
 
             QMetaObject::invokeMethod(this, "getNextProviderInfo", Qt::QueuedConnection);
         }
@@ -66,13 +66,13 @@ void ProviderListModel::groupsUpdated() {
 
 //------------------------------------------------------------------------------
 void ProviderListModel::getNextProviderInfo() {
-    if (!mProvidersId.isEmpty()) {
-        SProvider provider(mProvidersId.first());
+    if (!m_ProvidersId.isEmpty()) {
+        SProvider provider(m_ProvidersId.first());
 
         if (provider.id > 0 && provider.id != Providers::AutodetectID) {
             QObject *providerObject = nullptr;
 
-            if (QMetaObject::invokeMethod(mPaymentService.data(),
+            if (QMetaObject::invokeMethod(m_PaymentService.data(),
                                           "getProvider",
                                           Q_RETURN_ARG(QObject *, providerObject),
                                           Q_ARG(qint64, provider.id)) &&
@@ -98,29 +98,29 @@ void ProviderListModel::getNextProviderInfo() {
                 } else {
                     // Если не смогли добыть полное описание провайдера берем его имя из модели
                     // групп
-                    provider.name = mGroupModel->getProviderName(provider.id);
+                    provider.name = m_GroupModel->getProviderName(provider.id);
                     provider.info = provider.name.toLower();
                 }
 
                 providerObject->deleteLater();
             }
 
-            emit beginInsertRows(QModelIndex(), mProviderList.size(), mProviderList.size());
+            emit beginInsertRows(QModelIndex(), m_ProviderList.size(), m_ProviderList.size());
 
-            mProviderList << provider;
+            m_ProviderList << provider;
 
             emit endInsertRows();
         }
 
-        mProvidersId.removeAll(provider.id);
+        m_ProvidersId.removeAll(provider.id);
     }
 
-    if (!mProvidersId.isEmpty()) {
+    if (!m_ProvidersId.isEmpty()) {
         QMetaObject::invokeMethod(this, "getNextProviderInfo", Qt::QueuedConnection);
     }
 }
 
 //------------------------------------------------------------------------------
 void ProviderListModel::setPaymentService(QObject *aPaymentService) {
-    mPaymentService = aPaymentService;
+    m_PaymentService = aPaymentService;
 }

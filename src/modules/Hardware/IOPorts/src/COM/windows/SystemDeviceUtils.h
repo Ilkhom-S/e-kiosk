@@ -40,7 +40,7 @@ const int MaxUuidSize = UuidSize + 2 * (LineSize + 1);
 } // namespace CRegistrySerialPort
 
 //--------------------------------------------------------------------------------
-namespace SystemDeviceUtils {
+namespace System_DeviceUtils {
 /// Формирует список COM-портов.
 QStringList enumerateCOMPorts();
 
@@ -48,7 +48,7 @@ QStringList enumerateCOMPorts();
 QStringList getSerialDeviceNames();
 
 /// Формирует список пропертей для устройств по GUID-у.
-bool enumerateSystemDevices(const QUuid &aUuid,
+bool enumerateSystem_Devices(const QUuid &aUuid,
                             TWinDeviceProperties &aDeviceProperties,
                             DWORD aPathProperty,
                             bool aQuick = false);
@@ -85,7 +85,7 @@ int getMaxSize(const QStringList &aBuffer);
 
 /// Получить данные для регэкспа с экранированными символами.
 QString getScreenedData(const QString &aData);
-} // namespace SystemDeviceUtils
+} // namespace System_DeviceUtils
 
 bool operator!=(const COMMTIMEOUTS &aTimeouts_1, const COMMTIMEOUTS &aTimeouts_2);
 bool operator==(const DCB &aMine, const DCB &aTheirs);

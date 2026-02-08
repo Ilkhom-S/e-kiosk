@@ -13,39 +13,39 @@ namespace Scripting {
 
 //------------------------------------------------------------------------------
 Core::Core(ICore *aCore)
-    : mCore(aCore), mUserProperties(aCore->getUserProperties()), mPaymentService(aCore),
-      mFundsService(aCore), mPrinterService(aCore), mNetworkService(aCore), mGUIService(aCore),
-      mAdService(aCore), mDeviceService(aCore), mSettings(aCore), mHID(aCore) {
+    : m_Core(aCore), m_UserProperties(aCore->getUserProperties()), m_PaymentService(aCore),
+      m_FundsService(aCore), m_PrinterService(aCore), m_NetworkService(aCore), m_GUIService(aCore),
+      m_AdService(aCore), m_DeviceService(aCore), m_Settings(aCore), m_HID(aCore) {
     ISettingsService *settingsService = aCore->getSettingsService();
     auto terminalSettings = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
         settingsService->getAdapter(CAdapterNames::TerminalAdapter));
 
-    mPaymentService.setForcePayOffline(
+    m_PaymentService.setForcePayOffline(
         terminalSettings->getCommonSettings().skipCheckWhileNetworkError);
 
-    connect(&mUserProperties, SIGNAL(updated()), SIGNAL(userPropertiesUpdated()));
+    connect(&m_UserProperties, SIGNAL(updated()), SIGNAL(userPropertiesUpdated()));
 }
 
 //------------------------------------------------------------------------------
 void Core::installService(const QString &aName, QObject *aService) {
-    mServices[aName] = aService;
+    m_Services[aName] = aService;
 }
 
 //------------------------------------------------------------------------------
 void Core::setLog(ILog *aLog) {
-    mLog.setLog(aLog);
-    mHID.setLog(aLog);
+    m_Log.setLog(aLog);
+    m_HID.setLog(aLog);
 }
 
 //------------------------------------------------------------------------------
 ICore *Core::getCore() const {
-    return mCore;
+    return m_Core;
 }
 
 //------------------------------------------------------------------------------
 QObject *Core::getService(const QString &aName) {
-    if (mServices.contains(aName)) {
-        return mServices[aName];
+    if (m_Services.contains(aName)) {
+        return m_Services[aName];
     } else {
         return 0;
     }
@@ -53,57 +53,57 @@ QObject *Core::getService(const QString &aName) {
 
 //------------------------------------------------------------------------------
 QObject *Core::getPayment() {
-    return &mPaymentService;
+    return &m_PaymentService;
 }
 
 //------------------------------------------------------------------------------
 QObject *Core::getPrinter() {
-    return &mPrinterService;
+    return &m_PrinterService;
 }
 
 //------------------------------------------------------------------------------
 QObject *Core::getCharge() {
-    return &mFundsService;
+    return &m_FundsService;
 }
 
 //------------------------------------------------------------------------------
 QObject *Core::getHID() {
-    return &mHID;
+    return &m_HID;
 }
 
 //------------------------------------------------------------------------------
 QObject *Core::getNetwork() {
-    return &mNetworkService;
+    return &m_NetworkService;
 }
 
 //------------------------------------------------------------------------------
 QObject *Core::getGraphics() {
-    return &mGUIService;
+    return &m_GUIService;
 }
 
 //------------------------------------------------------------------------------
 QObject *Core::getAd() {
-    return &mAdService;
+    return &m_AdService;
 }
 
 //------------------------------------------------------------------------------
 QObject *Core::getHardware() {
-    return &mDeviceService;
+    return &m_DeviceService;
 }
 
 //------------------------------------------------------------------------------
 QObject *Core::getSettings() {
-    return &mSettings;
+    return &m_Settings;
 }
 
 //------------------------------------------------------------------------------
 QObject *Core::getLog() {
-    return &mLog;
+    return &m_Log;
 }
 
 //------------------------------------------------------------------------------
 QObject *Core::getUserProperties() {
-    return &mUserProperties;
+    return &m_UserProperties;
 }
 
 //------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ void Core::postEvent(int aEvent, QVariant aParameters) {
 
 //------------------------------------------------------------------------------
 void Core::onPostEvent(int aEvent, QVariant aParameters) const {
-    IEventService *service = mCore->getEventService();
+    IEventService *service = m_Core->getEventService();
 
     if (service) {
         service->sendEvent(Event(aEvent, "ScriptingCore::postEvent", aParameters));

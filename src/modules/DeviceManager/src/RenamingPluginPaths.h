@@ -68,9 +68,9 @@ public:
         insert("Common.Driver.Printer.Citizen PPU-700",
                "Common.Driver.Printer.COM.POS.CitizenPPU700");
         insert("Common.Driver.Printer.Custom Printer", "Common.Driver.Printer.COM.POS.Custom");
-        insert("Common.Driver.Printer.Custom VKP-80", "Common.Driver.Printer.COM.POS.CustomVKP80");
+        insert("Common.Driver.Printer.Custom VKP-80", "Common.Driver.Printer.COM.POS.Custom_VKP80");
         insert("Common.Driver.Printer.Custom VKP-80 III",
-               "Common.Driver.Printer.COM.POS.CustomVKP80III");
+               "Common.Driver.Printer.COM.POS.Custom_VKP80III");
         insert("Common.Driver.Printer.Star Printer", "Common.Driver.Printer.COM.STAR");
         insert("Common.Driver.Printer.Ejector Star Printer",
                "Common.Driver.Printer.COM.STAR.Ejector");

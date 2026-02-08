@@ -45,7 +45,7 @@ const char Return = '\x43';         /// Выбросить купюру.
 const char VersionRequest = '\x88'; /// Запрос версии прошивки.
 const char SetEnables = '\xC0';     /// Установить доступность номиналов.
 const char SetSecurities = '\xC1';  /// Установить уровень контроля купюр.
-const char SetCommMode = '\xC2';    /// Установить режим опроса валидатора.
+const char SetComm_Mode = '\xC2';    /// Установить режим опроса валидатора.
 const char SetInhibits = '\xC3';    /// Включить валидатор на прием купюр.
 const char SetDirections = '\xC4';  /// Установить допустимые направления подачи купюры.
 
@@ -63,7 +63,7 @@ public:
         append(SetInhibits, EAnswerType::Echo);
         append(SetDirections, EAnswerType::Echo);
         append(SetSecurities, EAnswerType::Echo);
-        append(SetCommMode, EAnswerType::Echo);
+        append(SetComm_Mode, EAnswerType::Echo);
         append(SetEnables, EAnswerType::Echo);
         append(StatusRequest, EAnswerType::Answer);
         append(GetBillTable, EAnswerType::Answer);

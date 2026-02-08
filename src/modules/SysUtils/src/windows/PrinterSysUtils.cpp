@@ -7,7 +7,7 @@
 #include <windows.h>
 #include <winspool.h>
 
-#include "SystemPrinterStatusCodes.h"
+#include "System_PrinterStatusCodes.h"
 
 typedef QList<ulong> TJobsStatus;
 
@@ -46,7 +46,7 @@ bool getPrinterStatusData(const QString &aPrinterName,
     aStatus = printerInfo->Status;
     aAttributes = printerInfo->Attributes;
 
-    if (!EnumJobs(
+    if (!Enum_Jobs(
             printer, 0, printerInfo->cJobs, 2, NULL, 0, (LPDWORD)&byteNeeded, (LPDWORD)&returned) &&
         GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
         ClosePrinter(printer);
@@ -58,7 +58,7 @@ bool getPrinterStatusData(const QString &aPrinterName,
     jobsInfoBuffer.reserve(byteNeeded);
     JOB_INFO_2 *jobStorage = reinterpret_cast<JOB_INFO_2 *>(jobsInfoBuffer.data());
 
-    bool enumJobsOK = EnumJobs(printer,
+    bool enum_JobsOK = Enum_Jobs(printer,
                                0,
                                printerInfo->cJobs,
                                2,
@@ -67,7 +67,7 @@ bool getPrinterStatusData(const QString &aPrinterName,
                                (LPDWORD)&byteUsed,
                                (LPDWORD)&returned);
 
-    if (enumJobsOK) {
+    if (enum_JobsOK) {
         for (DWORD i = 0; i < returned; ++i) {
             aJobsStatus.push_back(jobStorage[i].Status);
         }
@@ -75,7 +75,7 @@ bool getPrinterStatusData(const QString &aPrinterName,
 
     ClosePrinter(printer);
 
-    return enumJobsOK;
+    return enum_JobsOK;
 }
 
 //---------------------------------------------------------------------------
@@ -110,19 +110,19 @@ QVariantMap ISysUtils::getPrinterData(const QString &aPrinterName) {
     }
 
     result.insert(CDeviceData::Name,
-                  QString::fromWCharArray((const wchar_t *)printerInfo->pPrinterName));
+                  QString::from_WCharArray((const wchar_t *)printerInfo->pPrinterName));
     result.insert(CDeviceData::Port,
-                  QString::fromWCharArray((const wchar_t *)printerInfo->pPortName));
+                  QString::from_WCharArray((const wchar_t *)printerInfo->pPortName));
     result.insert(CDeviceData::Driver,
-                  QString::fromWCharArray((const wchar_t *)printerInfo->pDriverName));
+                  QString::from_WCharArray((const wchar_t *)printerInfo->pDriverName));
     result.insert(CDeviceData::Printers::Location,
-                  QString::fromWCharArray((const wchar_t *)printerInfo->pLocation));
+                  QString::from_WCharArray((const wchar_t *)printerInfo->pLocation));
     result.insert(CDeviceData::Printers::Comment,
-                  QString::fromWCharArray((const wchar_t *)printerInfo->pComment));
+                  QString::from_WCharArray((const wchar_t *)printerInfo->pComment));
     result.insert(CDeviceData::Printers::Server,
-                  QString::fromWCharArray((const wchar_t *)printerInfo->pServerName));
+                  QString::from_WCharArray((const wchar_t *)printerInfo->pServerName));
     result.insert(CDeviceData::Printers::Share,
-                  QString::fromWCharArray((const wchar_t *)printerInfo->pShareName));
+                  QString::from_WCharArray((const wchar_t *)printerInfo->pShareName));
 
     ClosePrinter(printer);
 

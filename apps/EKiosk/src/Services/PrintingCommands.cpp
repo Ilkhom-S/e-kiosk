@@ -26,7 +26,7 @@ const char ReceiptNameTemplate[] = "hhmmsszzz";
 
 //---------------------------------------------------------------------------
 void PrintCommand::setReceiptTemplate(const QString &aTemplateName) {
-    mReceiptTemplate = aTemplateName;
+    m_ReceiptTemplate = aTemplateName;
 }
 
 //---------------------------------------------------------------------------
@@ -47,7 +47,7 @@ QVariantMap PrintCommand::getPrintingParameters(SDK::Driver::IPrinter *aPrinter)
 PrintFiscalCommand::PrintFiscalCommand(const QString &aReceiptType,
                                        FiscalCommand::Enum aFiscalCommand,
                                        PrintingService *aService)
-    : PrintCommand(aReceiptType), mFiscalCommand(aFiscalCommand), mService(aService) {}
+    : PrintCommand(aReceiptType), m_FiscalCommand(aFiscalCommand), m_Service(aService) {}
 
 #if 0
 //---------------------------------------------------------------------------
@@ -195,15 +195,15 @@ DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParame
 bool PrintFiscalCommand::canFiscalPrint(DSDK::IPrinter *aPrinter, bool aRealCheck) {
     auto fr = dynamic_cast<DSDK::IFiscalPrinter *>(aPrinter);
 
-    return (mService->getFiscalRegister() && PrintCommand::canPrint(aPrinter, aRealCheck)) ||
-           (fr && fr->isFiscalReady(aRealCheck, mFiscalCommand));
+    return (m_Service->getFiscalRegister() && PrintCommand::canPrint(aPrinter, aRealCheck)) ||
+           (fr && fr->isFiscalReady(aRealCheck, m_FiscalCommand));
 }
 
 //---------------------------------------------------------------------------
 bool PrintFiscalCommand::getFiscalInfo(QVariantMap &aParameters,
                                        QStringList &aReceiptLines,
                                        bool aWaitResult) {
-    PPSDK::IFiscalRegister *fr = mService->getFiscalRegister();
+    PPSDK::IFiscalRegister *fr = m_Service->getFiscalRegister();
 
     if (!fr || !fr->hasCapability(PPSDK::ERequestType::Receipt) ||
         !fr->isReady(PPSDK::ERequestType::Receipt)) {
@@ -232,7 +232,7 @@ bool PrintFiscalCommand::getFiscalInfo(QVariantMap &aParameters,
 
         aParameters.insert(fiscalParameters);
 
-        mService->setFiscalNumber(paymentId, fiscalParameters);
+        m_Service->setFiscalNumber(paymentId, fiscalParameters);
     }
 
     if (OK) {
@@ -256,7 +256,7 @@ bool PrintPayment::canPrint(DSDK::IPrinter *aPrinter, bool aRealCheck) {
 
 //---------------------------------------------------------------------------
 bool PrintPayment::makeFiscalByFR(const QVariantMap &aParameters) {
-    QStringList receipt = mService->getReceipt(mReceiptTemplate, aParameters);
+    QStringList receipt = m_Service->getReceipt(m_ReceiptTemplate, aParameters);
     QVariantMap parameters(aParameters);
     QStringList fiscalPart;
 
@@ -287,7 +287,7 @@ bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
     actualParameters.insert(CPrintConstants::KKM::SerialNumber, KKMSerialNumber);
     actualParameters.insert("ONLINE_KKM", onlineKKM ? 1 : 0);
     actualParameters.insert(CPrintConstants::FiscalData, int(hasFiscalInfo));
-    QStringList receipt = mService->getReceipt(mReceiptTemplate, actualParameters);
+    QStringList receipt = m_Service->getReceipt(m_ReceiptTemplate, actualParameters);
 
     if (hasFiscalInfo) {
         receipt.append(fiscalPart);
@@ -299,8 +299,8 @@ bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
     if (!fiscalPrinting) {
         // Если есть фискальный сервис, но нет фискальной информации и запрещено печатать чеки без
         // ФП
-        if (!mService->enableBlankFiscalData() && mService->getFiscalRegister() && !hasFiscalInfo) {
-            mService->toLog(LogLevel::Error,
+        if (!m_Service->enableBlankFiscalData() && m_Service->getFiscalRegister() && !hasFiscalInfo) {
+            m_Service->toLog(LogLevel::Error,
                             QString("[%1] Not print receipt with blank fiscal data.")
                                 .arg(aParameters[PPSDK::CPayment::Parameters::ID].toLongLong()));
         } else {
@@ -314,8 +314,8 @@ bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
         result = fiscalPrinter->printFiscal(receipt, paymentData, &FDNumber);
 
         if (result) {
-            if (mFiscalFieldData.isEmpty()) {
-                mFiscalFieldData = aPrinter->getDeviceConfiguration()
+            if (m_FiscalFieldData.isEmpty()) {
+                m_FiscalFieldData = aPrinter->getDeviceConfiguration()
                                        .value(CHardwareSDK::FR::FiscalFieldData)
                                        .value<DSDK::TFiscalFieldData>();
             }
@@ -336,7 +336,7 @@ bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
     QString receiptName = QTime::currentTime().toString(CPrintCommands::ReceiptNameTemplate) + "_" +
                           aParameters["ID"].toString() +
                           (result ? "" : CPrintCommands::NotPrintedPostfix);
-    mService->saveReceiptContent(receiptName, receipt);
+    m_Service->saveReceiptContent(receiptName, receipt);
 
     return result;
 }
@@ -345,7 +345,7 @@ bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
 void PrintPayment::addFiscalPaymentData(const DSDK::TFiscalPaymentData &aFPData,
                                         QStringList &aData) {
     for (auto it = aFPData.begin(); it != aFPData.end(); ++it) {
-        DSDK::SFiscalFieldData FFData = mFiscalFieldData.value(it.key());
+        DSDK::SFiscalFieldData FFData = m_FiscalFieldData.value(it.key());
 
         QString key = FFData.translationPF;
         QString value =
@@ -374,22 +374,22 @@ bool PrintPayment::isFiscal(DSDK::IPrinter *aPrinter) {
 
 //---------------------------------------------------------------------------
 bool PrintBalance::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameters) {
-    QStringList receipt = mService->getReceipt(mReceiptType, expandFields(aParameters));
-    auto virtualFR = mService->getFiscalRegister();
+    QStringList receipt = m_Service->getReceipt(m_ReceiptType, expandFields(aParameters));
+    auto virtualFR = m_Service->getFiscalRegister();
     QStringList fiscalReceipt;
 
-    if (mFiscalMode && virtualFR && virtualFR->hasCapability(PPSDK::ERequestType::XReport) &&
+    if (m_FiscalMode && virtualFR && virtualFR->hasCapability(PPSDK::ERequestType::XReport) &&
         virtualFR->isReady(PPSDK::ERequestType::XReport) &&
         virtualFR->serviceRequest(
             PPSDK::ERequestType::XReport, fiscalReceipt, getPrintingParameters(aPrinter))) {
         receipt << fiscalReceipt;
     }
 
-    mService->saveReceiptContent(
+    m_Service->saveReceiptContent(
         QString("%1_balance").arg(QTime::currentTime().toString("hhmmsszzz")), receipt);
     auto fr = dynamic_cast<DSDK::IFiscalPrinter *>(aPrinter);
 
-    return mFiscalMode && fr && fr->isFiscalReady(false, mFiscalCommand) ? fr->printXReport(receipt)
+    return m_FiscalMode && fr && fr->isFiscalReady(false, m_FiscalCommand) ? fr->printXReport(receipt)
                                                                          : aPrinter->print(receipt);
 }
 
@@ -397,7 +397,7 @@ bool PrintBalance::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
 QVariantMap PrintBalance::expandFields(const QVariantMap &aParameters) {
     QVariantMap parameters;
 
-    auto currencySettings = mService->getCurrencySettings();
+    auto currencySettings = m_Service->getCurrencySettings();
 
     auto fillParameters = [&](const QString &aPrefix) {
         // монеты
@@ -432,25 +432,25 @@ QVariantMap PrintBalance::expandFields(const QVariantMap &aParameters) {
 //---------------------------------------------------------------------------
 PrintEncashment::PrintEncashment(const QString &aReceiptType, PrintingService *aService)
     : PrintBalance(aReceiptType, aService) {
-    mFiscalCommand = FiscalCommand::Encashment;
+    m_FiscalCommand = FiscalCommand::Encashment;
 }
 
 //---------------------------------------------------------------------------
 bool PrintEncashment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameters) {
     // Сохраняем чек перед печатью.
-    QStringList receipt = mService->getReceipt(mReceiptType, expandFields(aParameters));
-    auto virtualFR = mService->getFiscalRegister();
+    QStringList receipt = m_Service->getReceipt(m_ReceiptType, expandFields(aParameters));
+    auto virtualFR = m_Service->getFiscalRegister();
     QStringList fiscalReceipt;
 
     // Производим выплату фискального регистратора.
-    if (mFiscalMode && virtualFR && virtualFR->hasCapability(PPSDK::ERequestType::Encashment) &&
+    if (m_FiscalMode && virtualFR && virtualFR->hasCapability(PPSDK::ERequestType::Encashment) &&
         virtualFR->isReady(PPSDK::ERequestType::Encashment) &&
         virtualFR->serviceRequest(
             PPSDK::ERequestType::Encashment, fiscalReceipt, getPrintingParameters(aPrinter))) {
         receipt << fiscalReceipt;
     }
 
-    mService->saveReceiptContent(QString("%1_%2_encashment")
+    m_Service->saveReceiptContent(QString("%1_%2_encashment")
                                      .arg(QTime::currentTime().toString("hhmmsszzz"))
                                      .arg(aParameters["ENCASHMENT_NUMBER"].toString()),
                                  receipt);
@@ -460,7 +460,7 @@ bool PrintEncashment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParame
         return false;
     }
 
-    return (mFiscalMode && fr && fr->isFiscalReady(false, mFiscalCommand))
+    return (m_FiscalMode && fr && fr->isFiscalReady(false, m_FiscalCommand))
                ? fr->printEncashment(receipt)
                : (aPrinter && aPrinter->print(receipt));
 }
@@ -469,12 +469,12 @@ bool PrintEncashment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParame
 bool PrintZReport::canPrint(DSDK::IPrinter *aPrinter, bool aRealCheck) {
     auto fr = dynamic_cast<DSDK::IFiscalPrinter *>(aPrinter);
 
-    auto virtualFR = mService->getFiscalRegister();
+    auto virtualFR = m_Service->getFiscalRegister();
 
     return (virtualFR && virtualFR->hasCapability(PPSDK::ERequestType::ZReport) &&
             virtualFR->isReady(PPSDK::ERequestType::ZReport) &&
             PrintCommand::canPrint(aPrinter, aRealCheck)) ||
-           (fr && fr->isFiscalReady(aRealCheck, mFiscalCommand));
+           (fr && fr->isFiscalReady(aRealCheck, m_FiscalCommand));
 }
 
 //---------------------------------------------------------------------------
@@ -485,7 +485,7 @@ bool PrintZReport::print(DSDK::IPrinter *aPrinter, const QVariantMap & /*aParame
         return false;
     }
 
-    auto virtualFR = mService->getFiscalRegister();
+    auto virtualFR = m_Service->getFiscalRegister();
     QStringList fiscalReport;
 
     if (virtualFR && virtualFR->hasCapability(PPSDK::ERequestType::ZReport) &&
@@ -495,7 +495,7 @@ bool PrintZReport::print(DSDK::IPrinter *aPrinter, const QVariantMap & /*aParame
         if (!fiscalReport.isEmpty()) {
             result = aPrinter && aPrinter->print(fiscalReport);
 
-            mService->saveReceiptContent(QString("%1_Z_report%2")
+            m_Service->saveReceiptContent(QString("%1_Z_report%2")
                                              .arg(QTime::currentTime().toString("hhmmsszzz"))
                                              .arg(result ? "" : CPrintCommands::NotPrintedPostfix),
                                          fiscalReport);
@@ -504,7 +504,7 @@ bool PrintZReport::print(DSDK::IPrinter *aPrinter, const QVariantMap & /*aParame
 
     auto fr = dynamic_cast<DSDK::IFiscalPrinter *>(aPrinter);
 
-    return (fr && fr->isFiscalReady(false, mFiscalCommand) && fr->printZReport(mFull)) || result;
+    return (fr && fr->isFiscalReady(false, m_FiscalCommand) && fr->printZReport(m_Full)) || result;
 }
 
 //---------------------------------------------------------------------------
@@ -522,17 +522,17 @@ bool PrintReceipt::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
 
     QVariantMap actualParameters = aParameters;
     actualParameters.insert(CPrintConstants::KKM::SerialNumber, KKMSerialNumber);
-    QStringList receipt = mService->getReceipt(mReceiptTemplate, actualParameters);
+    QStringList receipt = m_Service->getReceipt(m_ReceiptTemplate, actualParameters);
 
     QString receiptFileName =
-        QString("%1_%2").arg(QTime::currentTime().toString("hhmmsszzz")).arg(mReceiptTemplate);
+        QString("%1_%2").arg(QTime::currentTime().toString("hhmmsszzz")).arg(m_ReceiptTemplate);
 
     if (aParameters.contains(SDK::PaymentProcessor::CPayment::Parameters::ID)) {
         receiptFileName += QString("_%1").arg(
             aParameters[SDK::PaymentProcessor::CPayment::Parameters::ID].toLongLong());
     }
 
-    mService->saveReceiptContent(receiptFileName, receipt);
+    m_Service->saveReceiptContent(receiptFileName, receipt);
 
     return aPrinter->print(receipt);
 }

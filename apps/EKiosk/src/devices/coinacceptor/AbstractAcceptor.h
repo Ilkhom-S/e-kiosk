@@ -34,8 +34,8 @@ enum Enum {
     SetSettingsEnable = 15,
     RequestSerialNumber = 16,
     Restart = 17,
-    ComClear = 18,
-    PerformSelfCheck = 19
+    Com_Clear = 18,
+    Perform_SelfCheck = 19
 };
 }; // namespace AcceptorCommands
 
@@ -207,7 +207,7 @@ enum E {
     CoinGoingBackwards = 17,
     CoinTooFast = 18,
     CoinTooSlow = 19,
-    CoinOnStringMechanismActivated = 20,
+    CoinOnStringMechanism_Activated = 20,
     DCEOptoTimeout = 21,
     DCEOptoNotSeen = 22,
     CreditSensorReachedTooEarly = 23,
@@ -219,8 +219,8 @@ enum E {
     AcceptGateOpenNotClosed = 29,
     AcceptGateClosedNotOpen = 30,
     DataBlockRequest = 31,
-    CoinReturnMechanismActivated = 32,
-    UnspecifiedAlarmCode = 33,
+    CoinReturnMechanism_Activated = 32,
+    UnspecifiedAlarm_Code = 33,
     NotAvailable = 34
 };
 } // namespace Errors
@@ -236,7 +236,7 @@ public:
     bool devicesCreated;
     bool is_open;
     int statusDevices;
-    QString comName;
+    QString com_Name;
     QString part_number;
 
     // Создаем устройство для работы с портами

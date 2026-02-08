@@ -13,13 +13,13 @@ const QString GenericTest = QT_TRANSLATE_NOOP("GenericDeviceTest", "#generic_tes
 } // namespace CGenericDeviceTest
 
 //------------------------------------------------------------------------------
-GenericDeviceTest::GenericDeviceTest(SDK::Driver::IDevice *aDevice) : mDevice(aDevice) {
-    connect(&mResult, SIGNAL(finished()), this, SLOT(onTestFinished()));
+GenericDeviceTest::GenericDeviceTest(SDK::Driver::IDevice *aDevice) : m_Device(aDevice) {
+    connect(&m_Result, SIGNAL(finished()), this, SLOT(onTestFinished()));
 }
 
 //------------------------------------------------------------------------------
 GenericDeviceTest::~GenericDeviceTest() {
-    mResult.waitForFinished();
+    m_Result.waitForFinished();
 }
 
 //------------------------------------------------------------------------------
@@ -29,8 +29,8 @@ bool GenericDeviceTest::run(const QString &aTestName) {
     }
 
     QFuture<void> future =
-        QtConcurrent::run(boost::bind(&SDK::Driver::IDevice::initialize, mDevice.data()));
-    mResult.setFuture(future);
+        QtConcurrent::run(boost::bind(&SDK::Driver::IDevice::initialize, m_Device.data()));
+    m_Result.setFuture(future);
 
     return true;
 }
@@ -50,7 +50,7 @@ bool GenericDeviceTest::hasResult() {
 
 //------------------------------------------------------------------------------
 void GenericDeviceTest::onTestFinished() {
-    emit result(mGenericTest, tr("#ok"));
+    emit result(m_GenericTest, tr("#ok"));
 }
 
 //------------------------------------------------------------------------------

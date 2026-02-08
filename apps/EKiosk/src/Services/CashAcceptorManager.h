@@ -91,10 +91,10 @@ private slots:
     void onChargeProviderStacked(const SDK::PaymentProcessor::SNote &aNote);
 
 private:
-    IApplication *mApplication;
-    IPaymentDatabaseUtils *mDatabase;
-    SDK::PaymentProcessor::IDeviceService *mDeviceService;
-    bool mDisableAmountOverflow;
+    IApplication *m_Application;
+    IPaymentDatabaseUtils *m_Database;
+    SDK::PaymentProcessor::IDeviceService *m_DeviceService;
+    bool m_DisableAmountOverflow;
 
     struct SPaymentData {
         qint64 paymentId;
@@ -112,15 +112,15 @@ private:
 
     /// Список всех валидаторов.
     typedef QList<SDK::Driver::ICashAcceptor *> TCashAcceptorList;
-    TCashAcceptorList mDeviceList;
+    TCashAcceptorList m_DeviceList;
 
-    QSharedPointer<SPaymentData> mPaymentData;
+    QSharedPointer<SPaymentData> m_PaymentData;
 
     /// Набор разрешенных номиналов.
-    SDK::Driver::TParList mWorkingParList;
+    SDK::Driver::TParList m_WorkingParList;
 
     /// Список всех провайдеров денежных средств
-    QList<SDK::PaymentProcessor::IChargeProvider *> mChargeProviders;
+    QList<SDK::PaymentProcessor::IChargeProvider *> m_ChargeProviders;
 };
 
 //---------------------------------------------------------------------------

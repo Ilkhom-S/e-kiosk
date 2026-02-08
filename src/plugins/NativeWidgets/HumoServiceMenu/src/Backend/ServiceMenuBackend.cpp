@@ -32,67 +32,67 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
 ServiceMenuBackend::ServiceMenuBackend(SDK::Plugin::IEnvironment *aFactory, ILog *aLog)
-    : mFactory(aFactory), mLog(aLog), mAutoEncashmentEnabled(false), mAuthorizationEnabled(true) {
-    mCore = dynamic_cast<SDK::PaymentProcessor::ICore *>(
-        mFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    : m_Factory(aFactory), m_Log(aLog), m_AutoEncashmentEnabled(false), m_AuthorizationEnabled(true) {
+    m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+        m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
     GUI::MessageBox::initialize();
 
-    mTerminalSettings = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
-        mCore->getSettingsService()->getAdapter(
+    m_TerminalSettings = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
+        m_Core->getSettingsService()->getAdapter(
             SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
 
-    connect(&mHeartbeatTimer, SIGNAL(timeout()), this, SLOT(sendHeartbeat()));
+    connect(&m_HeartbeatTimer, SIGNAL(timeout()), this, SLOT(sendHeartbeat()));
 }
 
 //------------------------------------------------------------------------
 ServiceMenuBackend::~ServiceMenuBackend() {
     GUI::MessageBox::shutdown();
 
-    foreach (SDK::Plugin::IPlugin *plugin, mWidgetPluginList) {
-        mFactory->getPluginLoader()->destroyPlugin(plugin);
+    foreach (SDK::Plugin::IPlugin *plugin, m_WidgetPluginList) {
+        m_Factory->getPluginLoader()->destroyPlugin(plugin);
     }
 
-    mWidgetPluginList.clear();
+    m_WidgetPluginList.clear();
 }
 
 //------------------------------------------------------------------------
 HardwareManager *ServiceMenuBackend::getHardwareManager() {
-    if (mHardwareManager.isNull()) {
-        mHardwareManager = QSharedPointer<HardwareManager>(new HardwareManager(mFactory, mCore));
-        mConfigList << mHardwareManager.data();
+    if (m_HardwareManager.isNull()) {
+        m_HardwareManager = QSharedPointer<HardwareManager>(new HardwareManager(m_Factory, m_Core));
+        m_ConfigList << m_HardwareManager.data();
     }
 
-    return mHardwareManager.data();
+    return m_HardwareManager.data();
 }
 
 //------------------------------------------------------------------------
 KeysManager *ServiceMenuBackend::getKeysManager() {
-    if (mKeysManager.isNull()) {
-        mKeysManager = QSharedPointer<KeysManager>(new KeysManager(mCore));
-        mConfigList << mKeysManager.data();
+    if (m_KeysManager.isNull()) {
+        m_KeysManager = QSharedPointer<KeysManager>(new KeysManager(m_Core));
+        m_ConfigList << m_KeysManager.data();
     }
 
-    return mKeysManager.data();
+    return m_KeysManager.data();
 }
 
 //------------------------------------------------------------------------
 NetworkManager *ServiceMenuBackend::getNetworkManager() {
-    if (mNetworkManager.isNull()) {
-        mNetworkManager = QSharedPointer<NetworkManager>(new NetworkManager(mCore));
-        mConfigList << mNetworkManager.data();
+    if (m_NetworkManager.isNull()) {
+        m_NetworkManager = QSharedPointer<NetworkManager>(new NetworkManager(m_Core));
+        m_ConfigList << m_NetworkManager.data();
     }
 
-    return mNetworkManager.data();
+    return m_NetworkManager.data();
 }
 
 //------------------------------------------------------------------------
 PaymentManager *ServiceMenuBackend::getPaymentManager() {
-    if (mPaymentManager.isNull()) {
-        mPaymentManager = QSharedPointer<PaymentManager>(new PaymentManager(mCore));
+    if (m_PaymentManager.isNull()) {
+        m_PaymentManager = QSharedPointer<PaymentManager>(new PaymentManager(m_Core));
     }
 
-    return mPaymentManager.data();
+    return m_PaymentManager.data();
 }
 
 //------------------------------------------------------------------------
@@ -102,45 +102,45 @@ void ServiceMenuBackend::toLog(const QString &aMessage) {
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::toLog(LogLevel::Enum aLevel, const QString &aMessage) {
-    mLog->write(aLevel, aMessage);
+    m_Log->write(aLevel, aMessage);
 }
 
 //------------------------------------------------------------------------
 SDK::PaymentProcessor::ICore *ServiceMenuBackend::getCore() const {
-    return mCore;
+    return m_Core;
 }
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::getTerminalInfo(QVariantMap &aTerminalInfo) {
     aTerminalInfo.clear();
-    aTerminalInfo[CServiceTags::TerminalNumber] = mTerminalSettings->getKeys()[0].ap;
-    aTerminalInfo[CServiceTags::SoftwareVersion] = mTerminalSettings->getAppEnvironment().version;
+    aTerminalInfo[CServiceTags::TerminalNumber] = m_TerminalSettings->getKeys()[0].ap;
+    aTerminalInfo[CServiceTags::SoftwareVersion] = m_TerminalSettings->getAppEnvironment().version;
 
     // TODO Исправить на константу
     aTerminalInfo[CServiceTags::TerminalLocked] =
         dynamic_cast<SDK::PaymentProcessor::ITerminalService *>(
-            mCore->getService("TerminalService"))
+            m_Core->getService("TerminalService"))
             ->isLocked();
 }
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType) {
     SDK::PaymentProcessor::Event e(aEventType, "");
-    mCore->getEventService()->sendEvent(e);
+    m_Core->getEventService()->sendEvent(e);
 }
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType,
                                    const QVariantMap &aParameters) {
-    SDK::PaymentProcessor::Event e(aEventType, "", QVariant::fromValue(aParameters));
-    mCore->getEventService()->sendEvent(e);
+    SDK::PaymentProcessor::Event e(aEventType, "", QVariant::from_Value(aParameters));
+    m_Core->getEventService()->sendEvent(e);
 }
 
 //------------------------------------------------------------------------
 bool ServiceMenuBackend::isConfigurationChanged() {
     bool result = false;
 
-    foreach (IConfigManager *manager, mConfigList) {
+    foreach (IConfigManager *manager, m_ConfigList) {
         if (manager->isConfigurationChanged()) {
             manager->resetConfiguration();
             result = true;
@@ -154,7 +154,7 @@ bool ServiceMenuBackend::isConfigurationChanged() {
 bool ServiceMenuBackend::saveConfiguration() {
     if (isConfigurationChanged()) {
         try {
-            mCore->getSettingsService()->saveConfiguration();
+            m_Core->getSettingsService()->saveConfiguration();
         } catch (const std::exception &e) {
             toLog(QString("Save configuration error (%1)").arg(e.what()));
         }
@@ -165,24 +165,24 @@ bool ServiceMenuBackend::saveConfiguration() {
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 }
 
 //------------------------------------------------------------------------
 QVariantMap ServiceMenuBackend::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::saveDispenserUnitState() {
-    mCashUnitsState = mCore->getFundsService()->getDispenser()->getCashUnitsState();
+    m_CashUnitsState = m_Core->getFundsService()->getDispenser()->getCashUnitsState();
 }
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::printDispenserDiffState() {
     PPSDK::TCashUnitsState curCashUnitsState =
-        mCore->getFundsService()->getDispenser()->getCashUnitsState();
-    if (mCashUnitsState != curCashUnitsState) {
+        m_Core->getFundsService()->getDispenser()->getCashUnitsState();
+    if (m_CashUnitsState != curCashUnitsState) {
         QVariantMap parameters;
 
         QStringList units;
@@ -191,7 +191,7 @@ void ServiceMenuBackend::printDispenserDiffState() {
         for (int i = 0; i < units.count(); i++) {
             PPSDK::SCashUnit beforeUnit, afterUnit;
 
-            const auto &beforeList = mCashUnitsState.values();
+            const auto &beforeList = m_CashUnitsState.values();
             if (beforeList.size()) {
                 if (beforeList.first().size() > i) {
                     beforeUnit = beforeList.first()[i];
@@ -230,7 +230,7 @@ void ServiceMenuBackend::printDispenserDiffState() {
         }
 
         QtConcurrent::run([=]() {
-            mCore->getPrinterService()->printReceipt(QString(""),
+            m_Core->getPrinterService()->printReceipt(QString(""),
                                                      parameters,
                                                      QString("dispenser_diff"),
                                                      DSDK::EPrintingModes::None,
@@ -244,14 +244,14 @@ void ServiceMenuBackend::printDispenserDiffState() {
 //------------------------------------------------------------------------
 void ServiceMenuBackend::needUpdateConfigs() {
     // TODO: убрать константу.
-    dynamic_cast<SDK::PaymentProcessor::ITerminalService *>(mCore->getService("TerminalService"))
+    dynamic_cast<SDK::PaymentProcessor::ITerminalService *>(m_Core->getService("TerminalService"))
         ->needUpdateConfigs();
 }
 
 //------------------------------------------------------------------------
 bool ServiceMenuBackend::hasAnyPassword() const {
     SDK::PaymentProcessor::SServiceMenuPasswords serviceMenuSettings =
-        mTerminalSettings->getServiceMenuPasswords();
+        m_TerminalSettings->getServiceMenuPasswords();
     bool admin =
         serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Service]
             .isEmpty();
@@ -268,42 +268,42 @@ bool ServiceMenuBackend::hasAnyPassword() const {
 //---------------------------------------------------------------------------
 bool ServiceMenuBackend::authorize(const QString &aPassword) {
     bool result = true;
-    mAccessRights.clear();
+    m_AccessRights.clear();
 
-    QString hash = QString::fromUtf8(
+    QString hash = QString::from_Utf8(
         QCryptographicHash::hash(aPassword.toLatin1(), QCryptographicHash::Md5).toHex());
     SDK::PaymentProcessor::SServiceMenuPasswords serviceMenuSettings =
-        mTerminalSettings->getServiceMenuPasswords();
+        m_TerminalSettings->getServiceMenuPasswords();
 
     // Роль администратора
     if (hash == serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Service]
                     .toLower()) {
-        mAccessRights << ServiceMenuBackend::Diagnostic << ServiceMenuBackend::SetupHardware
+        m_AccessRights << ServiceMenuBackend::Diagnostic << ServiceMenuBackend::SetupHardware
                       << ServiceMenuBackend::SetupNetwork << ServiceMenuBackend::SetupKeys
                       << ServiceMenuBackend::ViewPaymentSummary << ServiceMenuBackend::ViewPayments
                       << ServiceMenuBackend::PrintReceipts << ServiceMenuBackend::Encash
                       << ServiceMenuBackend::StopApplication << ServiceMenuBackend::RebootTerminal
                       << ServiceMenuBackend::LockTerminal;
 
-        mUserRole = CServiceTags::UserRole::RoleAdministrator;
+        m_UserRole = CServiceTags::UserRole::RoleAdministrator;
     }
     // Роль техника
     else if (hash ==
              serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Technician]
                  .toLower()) {
-        mAccessRights << ServiceMenuBackend::Diagnostic << ServiceMenuBackend::SetupHardware
+        m_AccessRights << ServiceMenuBackend::Diagnostic << ServiceMenuBackend::SetupHardware
                       << ServiceMenuBackend::SetupNetwork << ServiceMenuBackend::SetupKeys
                       << ServiceMenuBackend::StopApplication << ServiceMenuBackend::RebootTerminal
                       << ServiceMenuBackend::LockTerminal;
 
-        mUserRole = CServiceTags::UserRole::RoleTechnician;
+        m_UserRole = CServiceTags::UserRole::RoleTechnician;
     }
     // Роль инкассатора
     else if (hash ==
              serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Collection]
                  .toLower()) {
-        mAccessRights << ServiceMenuBackend::Encash;
-        mUserRole = CServiceTags::UserRole::RoleCollector;
+        m_AccessRights << ServiceMenuBackend::Encash;
+        m_UserRole = CServiceTags::UserRole::RoleCollector;
     } else {
         result = false;
     }
@@ -313,36 +313,36 @@ bool ServiceMenuBackend::authorize(const QString &aPassword) {
 
 //---------------------------------------------------------------------------
 ServiceMenuBackend::TAccessRights ServiceMenuBackend::getAccessRights() const {
-    return mAccessRights;
+    return m_AccessRights;
 }
 
 //---------------------------------------------------------------------------
 bool ServiceMenuBackend::isAuthorizationEnabled() const {
-    return mAuthorizationEnabled;
+    return m_AuthorizationEnabled;
 }
 
 //------------------------------------------------------------------------
 QList<QWidget *> ServiceMenuBackend::getExternalWidgets(bool aReset) {
-    QStringList plugins = mFactory->getPluginLoader()->getPluginList(
+    QStringList plugins = m_Factory->getPluginLoader()->getPluginList(
         QRegularExpression("PaymentProcessor\\.GraphicsItem\\..*\\ServiceMenuWidget"));
 
-    if (mWidgetPluginList.isEmpty()) {
+    if (m_WidgetPluginList.isEmpty()) {
         foreach (const QString &widget, plugins) {
-            SDK::Plugin::IPlugin *plugin = mFactory->getPluginLoader()->createPlugin(widget);
-            mWidgetPluginList << plugin;
+            SDK::Plugin::IPlugin *plugin = m_Factory->getPluginLoader()->createPlugin(widget);
+            m_WidgetPluginList << plugin;
         }
     }
 
     QList<QWidget *> widgetList;
 
-    foreach (SDK::Plugin::IPlugin *plugin, mWidgetPluginList) {
-        SDK::GUI::IGraphicsItem *itemObject = dynamic_cast<SDK::GUI::IGraphicsItem *>(plugin);
-        if (itemObject) {
+    foreach (SDK::Plugin::IPlugin *plugin, m_WidgetPluginList) {
+        SDK::GUI::IGraphicsItem *item_Object = dynamic_cast<SDK::GUI::IGraphicsItem *>(plugin);
+        if (item_Object) {
             if (aReset) {
-                itemObject->reset(QVariantMap());
+                item_Object->reset(QVariantMap());
             }
 
-            widgetList << itemObject->getNativeWidget();
+            widgetList << item_Object->getNativeWidget();
         }
     }
 
@@ -351,17 +351,17 @@ QList<QWidget *> ServiceMenuBackend::getExternalWidgets(bool aReset) {
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::startHeartbeat() {
-    mHeartbeatTimer.start(CServiceMenuBackend::HeartbeatTimeout);
+    m_HeartbeatTimer.start(CServiceMenuBackend::HeartbeatTimeout);
 }
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::stopHeartbeat() {
-    mHeartbeatTimer.stop();
+    m_HeartbeatTimer.stop();
 }
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::sendHeartbeat() {
-    mCore->getRemoteService()->sendHeartbeat();
+    m_Core->getRemoteService()->sendHeartbeat();
 }
 
 //------------------------------------------------------------------------

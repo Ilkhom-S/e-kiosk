@@ -22,26 +22,26 @@
 #include "PaymentManager.h"
 
 HumoServiceBackend::HumoServiceBackend(SDK::Plugin::IEnvironment *aFactory, ILog *aLog)
-    : mFactory(aFactory), mLog(aLog), mTerminalSettings(nullptr), mAutoEncashmentEnabled(false),
-      mAuthorizationEnabled(false) {
-    mCore = dynamic_cast<SDK::PaymentProcessor::ICore *>(
-        mFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    : m_Factory(aFactory), m_Log(aLog), m_TerminalSettings(nullptr), m_AutoEncashmentEnabled(false),
+      m_AuthorizationEnabled(false) {
+    m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+        m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
-    if (mCore) {
-        mTerminalSettings = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
-            mCore->getSettingsService()->getAdapter(
+    if (m_Core) {
+        m_TerminalSettings = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
+            m_Core->getSettingsService()->getAdapter(
                 SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
     }
 
     // Initialize managers
-    mHardwareManager = QSharedPointer<HardwareManager>(new HardwareManager(mFactory, mCore));
-    mKeysManager = QSharedPointer<KeysManager>(new KeysManager(mCore));
-    mNetworkManager = QSharedPointer<NetworkManager>(new NetworkManager(mCore));
-    mPaymentManager = QSharedPointer<PaymentManager>(new PaymentManager(mCore));
+    m_HardwareManager = QSharedPointer<HardwareManager>(new HardwareManager(m_Factory, m_Core));
+    m_KeysManager = QSharedPointer<KeysManager>(new KeysManager(m_Core));
+    m_NetworkManager = QSharedPointer<NetworkManager>(new NetworkManager(m_Core));
+    m_PaymentManager = QSharedPointer<PaymentManager>(new PaymentManager(m_Core));
 
     // Setup heartbeat timer
-    connect(&mHeartbeatTimer, &QTimer::timeout, this, &HumoServiceBackend::sendHeartbeat);
-    mHeartbeatTimer.setInterval(CHumoServiceBackend::HeartbeatTimeout);
+    connect(&m_HeartbeatTimer, &QTimer::timeout, this, &HumoServiceBackend::sendHeartbeat);
+    m_HeartbeatTimer.setInterval(CHumoServiceBackend::HeartbeatTimeout);
 }
 
 //--------------------------------------------------------------------------
@@ -57,12 +57,12 @@ bool HumoServiceBackend::authorize(const QString &aPassword) {
 
 //--------------------------------------------------------------------------
 HumoServiceBackend::TAccessRights HumoServiceBackend::getAccessRights() const {
-    return mAccessRights;
+    return m_AccessRights;
 }
 
 //--------------------------------------------------------------------------
 bool HumoServiceBackend::isAuthorizationEnabled() const {
-    return mAuthorizationEnabled;
+    return m_AuthorizationEnabled;
 }
 
 //--------------------------------------------------------------------------
@@ -73,22 +73,22 @@ bool HumoServiceBackend::isConfigurationChanged() {
 
 //--------------------------------------------------------------------------
 HardwareManager *HumoServiceBackend::getHardwareManager() {
-    return mHardwareManager.data();
+    return m_HardwareManager.data();
 }
 
 //--------------------------------------------------------------------------
 KeysManager *HumoServiceBackend::getKeysManager() {
-    return mKeysManager.data();
+    return m_KeysManager.data();
 }
 
 //--------------------------------------------------------------------------
 NetworkManager *HumoServiceBackend::getNetworkManager() {
-    return mNetworkManager.data();
+    return m_NetworkManager.data();
 }
 
 //--------------------------------------------------------------------------
 PaymentManager *HumoServiceBackend::getPaymentManager() {
-    return mPaymentManager.data();
+    return m_PaymentManager.data();
 }
 
 //--------------------------------------------------------------------------
@@ -98,14 +98,14 @@ void HumoServiceBackend::toLog(const QString &aMessage) {
 
 //--------------------------------------------------------------------------
 void HumoServiceBackend::toLog(LogLevel::Enum aLevel, const QString &aMessage) {
-    if (mLog) {
-        mLog->write(aLevel, aMessage);
+    if (m_Log) {
+        m_Log->write(aLevel, aMessage);
     }
 }
 
 //--------------------------------------------------------------------------
 SDK::PaymentProcessor::ICore *HumoServiceBackend::getCore() const {
-    return mCore;
+    return m_Core;
 }
 
 //--------------------------------------------------------------------------
@@ -121,8 +121,8 @@ void HumoServiceBackend::sendEvent(SDK::PaymentProcessor::EEventType::Enum aEven
 //--------------------------------------------------------------------------
 void HumoServiceBackend::sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType,
                                    const QVariantMap &aParameters) {
-    if (mCore) {
-        mCore->getEventService()->sendEvent(
+    if (m_Core) {
+        m_Core->getEventService()->sendEvent(
             SDK::PaymentProcessor::Event(aEventType, "HumoServiceBackend", aParameters));
     }
 }
@@ -135,12 +135,12 @@ bool HumoServiceBackend::saveConfiguration() {
 
 //--------------------------------------------------------------------------
 void HumoServiceBackend::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 }
 
 //--------------------------------------------------------------------------
 QVariantMap HumoServiceBackend::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //--------------------------------------------------------------------------
@@ -166,28 +166,28 @@ bool HumoServiceBackend::hasAnyPassword() const {
 
 //--------------------------------------------------------------------------
 QList<QWidget *> HumoServiceBackend::getExternalWidgets(bool aReset) {
-    QStringList plugins = mFactory->getPluginLoader()->getPluginList(
+    QStringList plugins = m_Factory->getPluginLoader()->getPluginList(
         QRegularExpression("PaymentProcessor\\.Application\\.ServiceMenu\\..*"));
 
-    if (mWidgetPluginList.isEmpty()) {
+    if (m_WidgetPluginList.isEmpty()) {
         foreach (const QString &widget, plugins) {
-            SDK::Plugin::IPlugin *plugin = mFactory->getPluginLoader()->createPlugin(widget);
+            SDK::Plugin::IPlugin *plugin = m_Factory->getPluginLoader()->createPlugin(widget);
             if (plugin) {
-                mWidgetPluginList << plugin;
+                m_WidgetPluginList << plugin;
             }
         }
     }
 
     QList<QWidget *> widgetList;
 
-    foreach (SDK::Plugin::IPlugin *plugin, mWidgetPluginList) {
-        SDK::GUI::IGraphicsItem *itemObject = dynamic_cast<SDK::GUI::IGraphicsItem *>(plugin);
-        if (itemObject) {
+    foreach (SDK::Plugin::IPlugin *plugin, m_WidgetPluginList) {
+        SDK::GUI::IGraphicsItem *item_Object = dynamic_cast<SDK::GUI::IGraphicsItem *>(plugin);
+        if (item_Object) {
             if (aReset) {
-                itemObject->reset(QVariantMap());
+                item_Object->reset(QVariantMap());
             }
 
-            QWidget *widget = itemObject->getNativeWidget();
+            QWidget *widget = item_Object->getNativeWidget();
             if (widget) {
                 widgetList << widget;
             }
@@ -199,15 +199,15 @@ QList<QWidget *> HumoServiceBackend::getExternalWidgets(bool aReset) {
 
 //--------------------------------------------------------------------------
 void HumoServiceBackend::startHeartbeat() {
-    if (!mHeartbeatTimer.isActive()) {
-        mHeartbeatTimer.start();
+    if (!m_HeartbeatTimer.isActive()) {
+        m_HeartbeatTimer.start();
     }
 }
 
 //--------------------------------------------------------------------------
 void HumoServiceBackend::stopHeartbeat() {
-    if (mHeartbeatTimer.isActive()) {
-        mHeartbeatTimer.stop();
+    if (m_HeartbeatTimer.isActive()) {
+        m_HeartbeatTimer.stop();
     }
 }
 

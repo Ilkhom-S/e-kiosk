@@ -32,14 +32,14 @@ struct SData {
 
 class Data : public CSpecification<char, SData> {
 public:
-    Data() { setDefault(SData(QString::fromUtf8("Неизвестная"), EType::Unknown)); }
+    Data() { setDefault(SData(QString::from_Utf8("Неизвестная"), EType::Unknown)); }
 
     void add(char aKey, const char *aDescription, EType::Enum aType = EType::Unknown) {
-        m_Buffer.insert(aKey, SData(QString::fromUtf8(aDescription), aType));
+        m_Buffer.insert(aKey, SData(QString::from_Utf8(aDescription), aType));
     }
 
     void add(char aKey, const char *aDescription, bool aExtraData) {
-        m_Buffer.insert(aKey, SData(QString::fromUtf8(aDescription), EType::FR, aExtraData));
+        m_Buffer.insert(aKey, SData(QString::from_Utf8(aDescription), EType::FR, aExtraData));
     }
 };
 } // namespace FRError

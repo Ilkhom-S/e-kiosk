@@ -8,8 +8,8 @@
 #include "Hardware/Dispensers/DispenserStatusCodes.h"
 
 VirtualPrinter::VirtualPrinter() {
-    mDeviceName = "Virtual printer";
-    mMaxBadAnswers = 0;
+    m_DeviceName = "Virtual printer";
+    m_MaxBadAnswers = 0;
 }
 
 //--------------------------------------------------------------------------------
@@ -18,15 +18,15 @@ bool VirtualPrinter::isDeviceReady(bool aOnline) {
         SleepHelper::msleep(CVirtualPrinter::Delay::OnlineReadyChecking);
     }
 
-    MutexLocker locker(&mExternalMutex);
+    MutexLocker locker(&m_ExternalMutex);
 
-    return mStatusCollection.isEmpty(SDK::Driver::EWarningLevel::Error);
+    return m_StatusCollection.isEmpty(SDK::Driver::EWarningLevel::Error);
 }
 
 //--------------------------------------------------------------------------------
 bool VirtualPrinter::print(const QStringList &aReceipt) {
     if (!isDeviceReady(false)) {
-        toLog(LogLevel::Normal, mDeviceName + ": Failed to print receipt");
+        toLog(LogLevel::Normal, m_DeviceName + ": Failed to print receipt");
         return false;
     }
 
@@ -51,7 +51,7 @@ bool VirtualPrinter::print(const QStringList &aReceipt) {
         SleepHelper::msleep(CVirtualPrinter::Delay::Printing);
         toLog(LogLevel::Normal, "Receipt has been printed successfully");
     } else {
-        toLog(LogLevel::Normal, mDeviceName + ": receipt is empty");
+        toLog(LogLevel::Normal, m_DeviceName + ": receipt is empty");
     }
 
     return true;

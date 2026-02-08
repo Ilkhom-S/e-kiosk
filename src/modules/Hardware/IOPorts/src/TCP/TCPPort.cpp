@@ -47,21 +47,21 @@ void TCPPort::initialize() {}
 
 //--------------------------------------------------------------------------------
 bool TCPPort::opened() {
-    return PERFORM_IN_THREAD(performOpened);
+    return PERFORM_IN_THREAD(perform_Opened);
 }
 
 //--------------------------------------------------------------------------------
-bool TCPPort::performOpened() {
+bool TCPPort::perform_Opened() {
     return m_Socket && (m_Socket->state() == QAbstractSocket::ConnectedState);
 }
 
 //--------------------------------------------------------------------------------
 bool TCPPort::open() {
-    return PERFORM_IN_THREAD(performOpen);
+    return PERFORM_IN_THREAD(perform_Open);
 }
 
 //--------------------------------------------------------------------------------
-bool TCPPort::performOpen() {
+bool TCPPort::perform_Open() {
     if (!m_Socket) {
         m_Socket = PSocket(new QTcpSocket());
 
@@ -127,7 +127,7 @@ bool TCPPort::close() {
     QMutexLocker locker(&m_SocketGuard);
 
     m_LastErrorLog.clear();
-    bool result = PERFORM_IN_THREAD(performClose);
+    bool result = PERFORM_IN_THREAD(perform_Close);
 
     SleepHelper::msleep(CTCPPort::CloseningPause);
 
@@ -135,7 +135,7 @@ bool TCPPort::close() {
 }
 
 //--------------------------------------------------------------------------------
-bool TCPPort::performClose() {
+bool TCPPort::perform_Close() {
     if (!m_Socket || (m_Socket->state() == QAbstractSocket::UnconnectedState)) {
         return true;
     }
@@ -185,18 +185,18 @@ void TCPPort::onErrorChanged(QAbstractSocket::SocketError aError) {
 
 //--------------------------------------------------------------------------------
 void TCPPort::onReadyRead() {
-    QMutexLocker locker(&m_DataFromGuard);
+    QMutexLocker locker(&m_DataFrom_Guard);
 
     m_DataFrom += m_Socket->readAll();
 }
 
 //--------------------------------------------------------------------------------
 bool TCPPort::checkReady() {
-    return PERFORM_IN_THREAD(performCheckReady);
+    return PERFORM_IN_THREAD(perform_CheckReady);
 }
 
 //--------------------------------------------------------------------------------
-bool TCPPort::performCheckReady() {
+bool TCPPort::perform_CheckReady() {
     return m_Socket && ((m_Socket->state() == QAbstractSocket::ConnectedState) || open());
 }
 
@@ -204,11 +204,11 @@ bool TCPPort::performCheckReady() {
 bool TCPPort::read(QByteArray &aData, int aTimeout, int aMinSize) {
     QMutexLocker locker(&m_SocketGuard);
 
-    return PERFORM_IN_THREAD(performRead, std::ref(aData), aTimeout, aMinSize);
+    return PERFORM_IN_THREAD(perform_Read, std::ref(aData), aTimeout, aMinSize);
 }
 
 //--------------------------------------------------------------------------------
-bool TCPPort::performRead(QByteArray &aData, int aTimeout, int aMinSize) {
+bool TCPPort::perform_Read(QByteArray &aData, int aTimeout, int aMinSize) {
     aData.clear();
 
     if (!checkReady()) {
@@ -221,7 +221,7 @@ bool TCPPort::performRead(QByteArray &aData, int aTimeout, int aMinSize) {
     while ((waitingTimer.elapsed() < aTimeout) && (aData.size() < aMinSize)) {
         m_Socket->waitForReadyRead(CTCPPort::ReadingTimeout);
 
-        QMutexLocker locker(&m_DataFromGuard);
+        QMutexLocker locker(&m_DataFrom_Guard);
         {
             aData += m_DataFrom;
 
@@ -245,11 +245,11 @@ bool TCPPort::performRead(QByteArray &aData, int aTimeout, int aMinSize) {
 bool TCPPort::write(const QByteArray &aData) {
     QMutexLocker locker(&m_SocketGuard);
 
-    return PERFORM_IN_THREAD(performWrite, std::ref(aData));
+    return PERFORM_IN_THREAD(perform_Write, std::ref(aData));
 }
 
 //--------------------------------------------------------------------------------
-bool TCPPort::performWrite(const QByteArray &aData) {
+bool TCPPort::perform_Write(const QByteArray &aData) {
     if (aData.isEmpty()) {
         toLog(LogLevel::Normal, m_ConnectedDeviceName + ": written data is empty.");
         return false;
@@ -274,8 +274,8 @@ bool TCPPort::performWrite(const QByteArray &aData) {
     if (bytesWritten != actualSize) {
         toLog(LogLevel::Normal,
               m_ConnectedDeviceName + QString(": %1 bytes instead of %2 bytes have been written.")
-                                         .arg(bytesWritten)
-                                         .arg(actualSize));
+                                          .arg(bytesWritten)
+                                          .arg(actualSize));
         return false;
     }
 

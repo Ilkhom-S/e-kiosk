@@ -94,10 +94,10 @@ public slots:
     void breakSale();
     void status();
 
-    bool encashmentOK() { return !mNeedEncashment; }
+    bool encashmentOK() { return !m_NeedEncashment; }
     void encashment(bool aOnDemand = true);
     /// Возвращает последнюю ошибку
-    bool isOK() { return mLastError.isEmpty(); }
+    bool isOK() { return m_LastError.isEmpty(); }
 
     /// Слот для задачи планировщика
     void onEncashTaskFinished(const QString &aName, bool aComplete);
@@ -152,42 +152,42 @@ private:
     void saveEncashmentReport();
 
 private:
-    SDK::PaymentProcessor::ICore *mCore;
-    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings{};
-    QString mTerminalID;
-    QDateTime mLoggedIn{};
-    bool mLastLineReceived;
+    SDK::PaymentProcessor::ICore *m_Core;
+    SDK::PaymentProcessor::TerminalSettings *m_TerminalSettings{};
+    QString m_TerminalID;
+    QDateTime m_LoggedIn{};
+    bool m_LastLineReceived;
 
-    QStringList mCurrentReceipt{};
+    QStringList m_CurrentReceipt{};
 
     bool isLoggedIn() const;
     bool isLoggedInExpired() const;
 
 private:
-    QString mLastError;
+    QString m_LastError;
 
 protected:
-    int mTimerEncashID;
+    int m_TimerEncashID;
     void timerEvent(QTimerEvent *aEvent);
 
 private:
-    bool mRuntimeInit;
-    EftpCreate mEftpCreate;
-    EftpDestroy mEftpDestroy;
-    EftpDo mEftpDo;
-    void *mPySelf; // Управляющий объект библиотеки
+    bool m_RuntimeInit;
+    EftpCreate m_EftpCreate;
+    EftpDestroy m_EftpDestroy;
+    EftpDo m_EftpDo;
+    void *m_PySelf; // Управляющий объект библиотеки
 
-    QFutureWatcher<TResponse> mResponseWatcher{};
-    APIState::Enum mTerminalState;
-    SDK::PaymentProcessor::TPaymentAmount mMaxAmount;
-    bool mNeedEncashment;
-    bool mNeedPrintAllEncashmentReports;
-    UcsDB::DatabaseUtils mDatabase;
-    QSharedPointer<Ucs::AuthResponse> mAuthResponse{};
-    QMap<int, UcsDB::Encashment> mEncashmentInPrint{};
+    QFutureWatcher<TResponse> m_ResponseWatcher{};
+    APIState::Enum m_TerminalState;
+    SDK::PaymentProcessor::TPaymentAmount m_MaxAmount;
+    bool m_NeedEncashment;
+    bool m_NeedPrintAllEncashmentReports;
+    UcsDB::DatabaseUtils m_Database;
+    QSharedPointer<Ucs::AuthResponse> m_AuthResponse{};
+    QMap<int, UcsDB::Encashment> m_EncashmentInPrint{};
 
 private:
-    UscEncashTask *mEncashmentTask;
+    UscEncashTask *m_EncashmentTask;
 };
 
 } // namespace Ucs

@@ -23,7 +23,7 @@ public:
     void setDBError(bool error);
 
     bool openPort();
-    bool isItYou(QStringList &comList,
+    bool isItYou(QStringList &com_List,
                  QString &validator_name,
                  QString &com_str,
                  QString &validator_coment);
@@ -45,13 +45,13 @@ public:
 
 public slots:
     void execCommand(int cmd);
-    void getStatusFromValidator(int sts, QString comment);
+    void getStatusFrom_Validator(int sts, QString comment);
 
 private:
     CCNetSm *CCNetValidator;
     EBDS *EBDSValidator;
 
-    QString comPort;
+    QString com_Port;
     QStringList portList;
     QString validatorName;
 

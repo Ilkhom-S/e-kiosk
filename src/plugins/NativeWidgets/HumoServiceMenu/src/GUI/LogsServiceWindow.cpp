@@ -16,7 +16,7 @@ LogsServiceWindow::LogsServiceWindow(HumoServiceBackend *aBackend, QWidget *aPar
     setupUi(this);
 
     connect(btnShowLog, SIGNAL(clicked()), this, SLOT(onShowLogButtonClicked()));
-    connect(lvLogsList, SIGNAL(itemSelectionChanged()), this, SLOT(logsSelectionChanged()));
+    connect(lvLogsList, SIGNAL(item_SelectionChanged()), this, SLOT(logsSelectionChanged()));
 
     connect(btnScrollHome, SIGNAL(clicked()), lvLog, SLOT(scrollToTop()));
     connect(btnScrollUp, SIGNAL(clicked()), this, SLOT(onScrollUpClicked()));
@@ -30,18 +30,18 @@ LogsServiceWindow::LogsServiceWindow(HumoServiceBackend *aBackend, QWidget *aPar
 
     connect(btnCloseLog, SIGNAL(clicked()), this, SLOT(onCloseLogClicked()));
 
-    lvLog->setModel(&mModel);
+    lvLog->setModel(&m_Model);
 
     QString logPath(QString("%1/../logs")
                         .arg(static_cast<SDK::PaymentProcessor::TerminalSettings *>(
-                                 mBackend->getCore()->getSettingsService()->getAdapter(
+                                 m_Backend->getCore()->getSettingsService()->getAdapter(
                                      SDK::PaymentProcessor::CAdapterNames::TerminalAdapter))
                                  ->getAppEnvironment()
                                  .userDataPath));
 
     QDir logDir(logPath, "*.log", QDir::Name, QDir::Files);
     foreach (QFileInfo fileInfo, logDir.entryInfoList()) {
-        mLogs.insert(fileInfo.fileName(), fileInfo.filePath());
+        m_Logs.insert(fileInfo.fileName(), fileInfo.filePath());
     }
 
     stackedWidget->setCurrentIndex(0);
@@ -50,7 +50,7 @@ LogsServiceWindow::LogsServiceWindow(HumoServiceBackend *aBackend, QWidget *aPar
 //------------------------------------------------------------------------
 bool LogsServiceWindow::activate() {
     lvLogsList->clear();
-    lvLogsList->insertItems(0, mLogs.keys());
+    lvLogsList->insertItems(0, m_Logs.keys());
     return true;
 }
 
@@ -72,14 +72,14 @@ bool LogsServiceWindow::shutdown() {
 //------------------------------------------------------------------------
 void LogsServiceWindow::onShowLogButtonClicked() {
     if (lvLogsList->selectedItems().size() > 0) {
-        QFile logFile(mLogs.value(lvLogsList->selectedItems().first()->text()));
+        QFile logFile(m_Logs.value(lvLogsList->selectedItems().first()->text()));
 
         if (logFile.open(QIODevice::ReadOnly)) {
             QTextStream stream(&logFile);
 
             QStringList splitted = stream.readAll().split("\r\n", Qt::SkipEmptyParts);
 
-            mModel.setStringList(splitted);
+            m_Model.setStringList(splitted);
             lvLog->scrollToTop();
 
             stackedWidget->setCurrentIndex(1);

@@ -230,7 +230,7 @@ bool StarPrinter::isConnected() {
     bool loading = !isAutoDetecting();
 
     // Qt 6: match() возвращает QRegularExpressionMatch
-    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
+    QRegularExpressionMatch match = regExp.match(QString::from_Utf8(answer));
 
     if (!m_IOPort->write(CSTAR::Commands::GetModelData) || !readIdentificationAnswer(answer) ||
         !match.hasMatch()) {
@@ -765,7 +765,7 @@ bool StarPrinter::printImage(const QImage &aImage, const Tags::TTypes & /*aTags*
             int index = i * CSTAR::ImageHeight + j;
 
             if (index < height) {
-                lineData << QByteArray::fromRawData((const char *)aImage.scanLine(index),
+                lineData << QByteArray::from_RawData((const char *)aImage.scanLine(index),
                                                     widthInBytes);
             } else {
                 lineData << QByteArray(widthInBytes, ASCII::NUL);
@@ -773,7 +773,7 @@ bool StarPrinter::printImage(const QImage &aImage, const Tags::TTypes & /*aTags*
         }
 
         QByteArray request(CSTAR::Commands::PrintImage);
-        request.append(ProtocolUtils::getBufferFromString(
+        request.append(ProtocolUtils::getBufferFrom_String(
             QString("%1").arg(qToBigEndian(ushort(width)), 4, 16, QChar(ASCII::Zero))));
 
         for (int j = 0; j < width; ++j) {

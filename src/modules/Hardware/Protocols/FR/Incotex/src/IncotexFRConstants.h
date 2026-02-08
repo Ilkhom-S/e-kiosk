@@ -160,7 +160,7 @@ extern const char Cut[];
 
 /// Регистры - не все, используемые.
 namespace Registers {
-const int SumInCash = 11;
+const int Sum_InCash = 11;
 } // namespace Registers
 
 namespace Errors {

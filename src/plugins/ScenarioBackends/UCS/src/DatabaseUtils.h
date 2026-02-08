@@ -39,8 +39,8 @@ private:
     bool initTables();
 
 private:
-    SDK::PaymentProcessor::IDatabaseService *mDatabase;
-    bool mReadOnly;
+    SDK::PaymentProcessor::IDatabaseService *m_Database;
+    bool m_ReadOnly;
 };
 
 } // namespace UcsDB

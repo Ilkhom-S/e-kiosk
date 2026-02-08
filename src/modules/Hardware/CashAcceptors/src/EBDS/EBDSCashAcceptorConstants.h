@@ -47,18 +47,18 @@ const char Control = 0x60;          /// Request CRC, Get Cash in Box, Soft Reset
 const char Extended = 0x70;         /// Extended message set.
 
 /// Для типа Control.
-const QByteArray Reset = QByteArray::fromRawData("\x60\xFF\xFF\xFF", 4); /// Сброс.
-const QByteArray GetType = QByteArray::fromRawData(
+const QByteArray Reset = QByteArray::from_RawData("\x60\xFF\xFF\xFF", 4); /// Сброс.
+const QByteArray GetType = QByteArray::from_RawData(
     "\x60\x00\x00\x04", 4); /// Тип купюроприемника (что это такое - только в MEI знают).
-const QByteArray GetSerialNumber = QByteArray::fromRawData("\x60\x00\x00\x05", 4); /// Серийник.
+const QByteArray GetSerialNumber = QByteArray::from_RawData("\x60\x00\x00\x05", 4); /// Серийник.
 const QByteArray GetBootSoftVersion =
-    QByteArray::fromRawData("\x60\x00\x00\x06", 4); /// Софт загрузчика интерфейсной платы.
+    QByteArray::from_RawData("\x60\x00\x00\x06", 4); /// Софт загрузчика интерфейсной платы.
 const QByteArray GetAppSoftVersion =
-    QByteArray::fromRawData("\x60\x00\x00\x07", 4); /// Софт приложения головы.
+    QByteArray::from_RawData("\x60\x00\x00\x07", 4); /// Софт приложения головы.
 const QByteArray GetVariantName =
-    QByteArray::fromRawData("\x60\x00\x00\x08", 4); /// Название билл-сета (вариант, по-канадски).
+    QByteArray::from_RawData("\x60\x00\x00\x08", 4); /// Название билл-сета (вариант, по-канадски).
 const QByteArray GetVariantVersion =
-    QByteArray::fromRawData("\x60\x00\x00\x09", 4); /// Версия билл-сета.
+    QByteArray::from_RawData("\x60\x00\x00\x09", 4); /// Версия билл-сета.
 
 /// Для типа Extended.
 extern const char GetPar[];

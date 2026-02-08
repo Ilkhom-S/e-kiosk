@@ -6,7 +6,7 @@
 namespace PluginParameterTranslations {
 extern const char PrintPageNumber[];
 extern const char RemotePaperSensor[];
-extern const char PaperJamSensor[];
+extern const char PaperJam_Sensor[];
 extern const char PaperWeightSensors[];
 extern const char FontSize[];
 extern const char LineSpacing[];

@@ -15,7 +15,7 @@ extern const char ModelName[];
 extern const char ProtocolName[];
 extern const char DetectingPriority[];
 extern const char Mask[];
-extern const char SystemName[];
+extern const char System_Name[];
 extern const char SearchingType[];
 extern const char RequiredResource[];
 extern const char Existence[];
@@ -50,7 +50,7 @@ extern const char Multiple[];
 
 /// Константы устройств приема денег.
 namespace CashAcceptor {
-extern const char SystemCurrencyId[];
+extern const char System_CurrencyId[];
 } // namespace CashAcceptor
 
 /// Константы фискального регистратора.
@@ -70,7 +70,7 @@ extern const char ZReportTime[];
 extern const char FiscalFieldData[];
 extern const char WithoutPrinting[];
 extern const char CanWithoutPrinting[];
-extern const char NullingSumInCash[];
+extern const char NullingSum_InCash[];
 } // namespace FR
 
 /// Константы принтера.

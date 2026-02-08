@@ -55,7 +55,7 @@ bool ProtocolUtils::checkBufferString(QString aData, QString *aLog) {
 }
 
 //--------------------------------------------------------------------------------
-QByteArray ProtocolUtils::getBufferFromString(QString aData) {
+QByteArray ProtocolUtils::getBufferFrom_String(QString aData) {
     aData = aData.replace("0x", "").replace(" ", "");
     QByteArray result;
 
@@ -71,7 +71,7 @@ QByteArray ProtocolUtils::getBufferFromString(QString aData) {
 }
 
 //--------------------------------------------------------------------------------
-ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromStrings(QStringList aDataList) {
+ProtocolUtils::TBufferList ProtocolUtils::getBufferListFrom_Strings(QStringList aDataList) {
     ProtocolUtils::TBufferList result;
 
     aDataList.removeAll("");
@@ -83,7 +83,7 @@ ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromStrings(QStringList a
         QRegularExpressionMatch match = regex.match(aDataList[i]);
         if (match.hasMatch() && (match.capturedTexts()[1].size() > 4)) {
             QString lineData = match.capturedTexts()[1];
-            result << ProtocolUtils::getBufferFromString(lineData);
+            result << ProtocolUtils::getBufferFrom_String(lineData);
         }
     }
 
@@ -91,12 +91,12 @@ ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromStrings(QStringList a
 }
 
 //--------------------------------------------------------------------------------
-ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromLog(const QString &aData) {
-    return getBufferListFromStrings(aData.split("\t"));
+ProtocolUtils::TBufferList ProtocolUtils::getBufferListFrom_Log(const QString &aData) {
+    return getBufferListFrom_Strings(aData.split("\t"));
 }
 
 //--------------------------------------------------------------------------------
-ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromFile(const QString &aFileName) {
+ProtocolUtils::TBufferList ProtocolUtils::getBufferListFrom_File(const QString &aFileName) {
     ProtocolUtils::TBufferList result;
 
     QFile file(aFileName);
@@ -109,7 +109,7 @@ ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromFile(const QString &a
     QString data = ts.readAll();
     file.close();
 
-    return getBufferListFromStrings(data.split("\r\n"));
+    return getBufferListFrom_Strings(data.split("\r\n"));
 }
 
 //--------------------------------------------------------------------------------

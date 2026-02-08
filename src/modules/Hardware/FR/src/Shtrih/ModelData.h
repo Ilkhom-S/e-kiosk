@@ -93,7 +93,7 @@ private:
                 const QDate &aDate = QDate(),
                 int aLinePrintingTimeout = 0);
 
-    QDate mDefaultFWDate;
+    QDate m_DefaultFWDate;
 };
 } // namespace Models
 

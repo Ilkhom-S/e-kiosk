@@ -60,12 +60,12 @@ private:
     QString makeJobName(const QString &aName = QString());
 
 private:
-    int mJobsCount;
-    int mPriority;
-    QString mJobName;
-    QString mNotifyApplication;
-    QString mNotifyParameters;
-    QSharedPointer<CopyManager_p> mCopyManager;
+    int m_JobsCount;
+    int m_Priority;
+    QString m_JobName;
+    QString m_NotifyApplication;
+    QString m_NotifyParameters;
+    QSharedPointer<CopyManager_p> m_CopyManager;
 };
 
 //---------------------------------------------------------------------------

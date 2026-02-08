@@ -9,29 +9,29 @@ namespace PaymentProcessor {
 namespace Humo {
 
 //---------------------------------------------------------------------------
-Request::Request() : mIsOk(true), mIsCriticalError(false) {}
+Request::Request() : m_IsOk(true), m_IsCriticalError(false) {}
 
 //---------------------------------------------------------------------------
 Request::~Request() {}
 
 //---------------------------------------------------------------------------
 bool Request::isOk() const {
-    return mIsOk;
+    return m_IsOk;
 }
 
 //---------------------------------------------------------------------------
 bool Request::isCriticalError() const {
-    return mIsCriticalError;
+    return m_IsCriticalError;
 }
 
 //---------------------------------------------------------------------------
 void Request::addParameter(const QString &aName,
                            const QVariant &aValue,
                            const QVariant &aLogValue /*= QVariant()*/) {
-    mParameters[aName] = aValue;
+    m_Parameters[aName] = aValue;
 
     if (!aLogValue.isNull()) {
-        mLogParameters[aName] = aLogValue;
+        m_LogParameters[aName] = aLogValue;
     }
 }
 
@@ -39,46 +39,46 @@ void Request::addParameter(const QString &aName,
 void Request::addRawParameter(const QString &aName,
                               const QVariant &aValue,
                               const QVariant &aLogValue /*= QVariant()*/) {
-    mRawParameters[aName] = aValue;
+    m_RawParameters[aName] = aValue;
 
     if (!aLogValue.isNull()) {
-        mRawLogParameters[aName] = aLogValue;
+        m_RawLogParameters[aName] = aLogValue;
     }
 }
 
 //---------------------------------------------------------------------------
 void Request::removeParameter(const QString &aName, bool aRAWParameter /*= false*/) {
     if (aRAWParameter) {
-        mRawParameters.remove(aName);
+        m_RawParameters.remove(aName);
     } else {
-        mParameters.remove(aName);
+        m_Parameters.remove(aName);
     }
 }
 
 //---------------------------------------------------------------------------
 QVariant Request::getParameter(const QString &aName, bool aRAWParameter /*= false*/) const {
-    return aRAWParameter ? mRawParameters.value(aName, QVariant())
-                         : mParameters.value(aName, QVariant());
+    return aRAWParameter ? m_RawParameters.value(aName, QVariant())
+                         : m_Parameters.value(aName, QVariant());
 }
 
 //---------------------------------------------------------------------------
 const QVariantMap &Request::getParameters(bool aRAWParameter /*= false*/) const {
-    return aRAWParameter ? mRawParameters : mParameters;
+    return aRAWParameter ? m_RawParameters : m_Parameters;
 }
 
 //---------------------------------------------------------------------------
 void Request::clear() {
-    mParameters.clear();
-    mLogParameters.clear();
-    mRawParameters.clear();
-    mRawLogParameters.clear();
+    m_Parameters.clear();
+    m_LogParameters.clear();
+    m_RawParameters.clear();
+    m_RawLogParameters.clear();
 }
 
 //---------------------------------------------------------------------------
 QString Request::toString() const {
     QString result;
 
-    for (auto it = mParameters.begin(); it != mParameters.end(); ++it) {
+    for (auto it = m_Parameters.begin(); it != m_Parameters.end(); ++it) {
         result += QString("%1=%2\r\n").arg(it.key()).arg(it.value().toString());
     }
 
@@ -89,19 +89,19 @@ QString Request::toString() const {
 QString Request::toLogString() const {
     QStringList result;
 
-    for (auto it = mParameters.begin(); it != mParameters.end(); ++it) {
+    for (auto it = m_Parameters.begin(); it != m_Parameters.end(); ++it) {
         result << QString("%1 = \"%2\"")
                       .arg(it.key())
-                      .arg(mLogParameters.contains(it.key())
-                               ? mLogParameters.value(it.key()).toString()
+                      .arg(m_LogParameters.contains(it.key())
+                               ? m_LogParameters.value(it.key()).toString()
                                : it.value().toString());
     }
 
-    for (auto it = mRawParameters.begin(); it != mRawParameters.end(); ++it) {
+    for (auto it = m_RawParameters.begin(); it != m_RawParameters.end(); ++it) {
         result << QString("RAW(%1) = \"%2\"")
                       .arg(it.key())
-                      .arg(mRawLogParameters.contains(it.key())
-                               ? mRawLogParameters.value(it.key()).toString()
+                      .arg(m_RawLogParameters.contains(it.key())
+                               ? m_RawLogParameters.value(it.key()).toString()
                                : it.value().toString());
     }
 

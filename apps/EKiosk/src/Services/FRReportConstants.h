@@ -13,7 +13,7 @@ extern const char PaymentAmount[];
 extern const char NonNullableAmount[];
 
 extern const char FRDateTime[];
-extern const char SystemDateTime[];
+extern const char System_DateTime[];
 } // namespace CFRReport
 
 //---------------------------------------------------------------------------

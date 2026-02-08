@@ -44,7 +44,7 @@ extern const char Win1252[];
 extern const char Base[];
 extern const char SPARK[];
 extern const char ATOL[];
-extern const char CustomKZT[];
+extern const char Custom_KZT[];
 } // namespace Codepages
 
 /// Константы порта.
@@ -171,7 +171,7 @@ extern const char Loop[];
 extern const char Hold[];
 extern const char Ejector[];
 extern const char RemotePaperSensor[];
-extern const char PaperJamSensor[];
+extern const char PaperJam_Sensor[];
 extern const char PaperWeightSensors[];
 extern const char DocumentCap[];
 extern const char BackFeed[];
@@ -228,7 +228,7 @@ extern const char EKLZRequestType[];
 extern const char EKLZData[];
 extern const char EKLZStatus[];
 extern const char CVCNumber[];
-extern const char ForcePerformZReport[];
+extern const char ForcePerform_ZReport[];
 extern const char PrinterModel[];
 extern const char CanZReportWithoutPrinting[];
 

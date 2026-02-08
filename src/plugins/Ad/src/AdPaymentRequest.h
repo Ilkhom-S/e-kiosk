@@ -39,14 +39,14 @@ public:
 
 protected:
     /// Платёж, ассоциированный с запросом.
-    AdPayment *mPayment;
+    AdPayment *m_Payment;
 
     /// Название запроса.
-    QString mName;
+    QString m_Name;
 
 private:
     /// Список полей, которые нельзя логировать.
-    QStringList mCryptedFields;
+    QStringList m_CryptedFields;
 };
 
 //---------------------------------------------------------------------------

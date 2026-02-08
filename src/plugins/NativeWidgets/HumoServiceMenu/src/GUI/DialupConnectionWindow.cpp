@@ -7,7 +7,7 @@
 DialupConnectionWindow::DialupConnectionWindow(QWidget *aParent) : QWidget(aParent) {
     setupUi(this);
 
-    lwModems->setItemDelegate(new ListDelegate(lwModems));
+    lwModems->setItem_Delegate(new ListDelegate(lwModems));
 
     connect(btnTest, SIGNAL(clicked()), SLOT(onTestConnection()));
     connect(btnNew, SIGNAL(clicked()), SLOT(switchToCreatePage()));
@@ -36,7 +36,7 @@ QString DialupConnectionWindow::getUserSelection() const {
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::fillModemList(const QList<QPair<QString, QString>> &aModems) {
+void DialupConnectionWindow::fillModem_List(const QList<QPair<QString, QString>> &aModems) {
     lwModems->clear();
     foreach (auto modem, aModems) {
         QListWidgetItem *item = new QListWidgetItem();
@@ -61,7 +61,7 @@ void DialupConnectionWindow::fillConnectionList(const QStringList &aConnections,
     QList<QListWidgetItem *> items = lwConnections->findItems(aCurrent, Qt::MatchFixedString);
 
     if (items.size()) {
-        lwConnections->setCurrentItem(items.first(), QItemSelectionModel::ClearAndSelect);
+        lwConnections->setCurrentItem(items.first(), QItem_SelectionModel::ClearAndSelect);
         items.first()->setSelected(true);
     } else {
         lwConnections->setCurrentRow(0);

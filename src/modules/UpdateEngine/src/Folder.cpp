@@ -101,7 +101,7 @@ void Folder::deploy(const TFileList &aFiles, const QString &aDestination) noexce
             Log(LogLevel::Warning, QString("Skip optional file %1...").arg(file.name()));
         } else {
             if (QFile::exists(destinationFileName)) {
-                if (mSkipExisting) {
+                if (m_SkipExisting) {
                     continue;
                 }
 

@@ -66,7 +66,7 @@ void MainWindow::init() {
     connect(adminDialog,
             SIGNAL(emit_execToMain(AdminCommand::AdminCmd)),
             this,
-            SLOT(getCommandFromAdmin(AdminCommand::AdminCmd)));
+            SLOT(getCommandFrom_Admin(AdminCommand::AdminCmd)));
     connect(adminDialog, SIGNAL(emit_unlockOpenAdminSts()), SLOT(unlockAdminOpenSts()));
 
     authRequest = new AuthRequest();
@@ -74,13 +74,13 @@ void MainWindow::init() {
             SIGNAL(emitResult(QString, QString, QString, QString)),
             SLOT(authResponse(QString, QString, QString, QString)));
 
-    systemInfo = new SystemInfo();
+    system_Info = new System_Info();
     connect(
-        systemInfo, SIGNAL(emitSystemInfo(QVariantMap)), this, SLOT(getSystemInfo(QVariantMap)));
+        system_Info, SIGNAL(emitSystem_Info(QVariantMap)), this, SLOT(getSystem_Info(QVariantMap)));
 
     // Отключаем проводник
     if (!testMode) {
-        getCommandFromAdmin(AdminCommand::aCmdHideExplorer);
+        getCommandFrom_Admin(AdminCommand::aCmdHideExplorer);
     }
 
     connObject = new ConnectionPart(this);
@@ -119,12 +119,12 @@ void MainWindow::init() {
     // Присваиваем базу
     searchDevices->setDbName(db);
 
-    searchDevices->setComListInfo(portList());
+    searchDevices->setCom_ListInfo(portList());
     searchDevices->takeBalanceSim = config.checkGetBalanceSim;
-    searchDevices->takeSimNumber = config.checkGetNumberSim;
+    searchDevices->takeSim_Number = config.checkGetNumberSim;
 
-    searchDevices->s_ussdRequestBalanseSim = config.simBalanceRequest;
-    searchDevices->s_ussdRequestNumberSim = config.simNumberRequest;
+    searchDevices->s_ussdRequestBalanseSim = config.sim_BalanceRequest;
+    searchDevices->s_ussdRequestNumberSim = config.sim_NumberRequest;
     searchDevices->s_indexBalanceParse = config.indexCheckBalance;
 
     // Тут надо проверять пользователя в базе
@@ -177,10 +177,10 @@ void MainWindow::init() {
         QVariantMap data;
         //        data["check_balance_sim"] = config.checkGetBalanceSim;
         //        data["check_number_sim"] = config.checkGetNumberSim;
-        //        data["ussd_balance_sim"] = config.simBalanceRequest;
-        //        data["ussd_number_sim"] = config.simNumberRequest;
+        //        data["ussd_balance_sim"] = config.sim_BalanceRequest;
+        //        data["ussd_number_sim"] = config.sim_NumberRequest;
         //        data["index_check_balance"] = config.indexCheckBalance;
-        //        data["modem_connection_up"] = isModemConnectionUp(connectionName);
+        //        data["modem_connection_up"] = isModem_ConnectionUp(connectionName);
 
         data["search_validator"] = config.searchValidator;
         data["search_coin_acceptor"] = config.searchCoinAcceptor;
@@ -194,7 +194,7 @@ void MainWindow::init() {
         registrationForm->coinAcceptorList = coinAcceptorList;
         registrationForm->printerList = printerList;
         registrationForm->winprinterList = getWinPrinterNames();
-        registrationForm->comPortList = portList();
+        registrationForm->com_PortList = portList();
 
         registrationForm->setDataListConnection(connectionList);
 
@@ -217,7 +217,7 @@ void MainWindow::init() {
     // Берем информацию о системе
     toLog(LoggerLevel::Info, senderName, "GET SYSINFO START");
 
-    systemInfo->start();
+    system_Info->start();
 }
 
 void MainWindow::checkConfigData(bool skipSearchDevice) {
@@ -297,7 +297,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
             SIGNAL(emitStatusReturnNominal(bool)));
     connect(clsValidator,
             SIGNAL(emitStatusValidator(int, QString)),
-            SLOT(incameStatusFromValidator(int, QString)));
+            SLOT(incameStatusFrom_Validator(int, QString)));
     connect(
         clsValidator, SIGNAL(emitLog(int, QString, QString)), SLOT(toLog(int, QString, QString)));
     connect(clsValidator,
@@ -314,7 +314,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
         clsCoinAcceptor, SIGNAL(showHideDialogAnimate(bool)), SIGNAL(emitStatusAnimateSum(bool)));
     connect(clsCoinAcceptor,
             SIGNAL(emitStatusCoinAcceptor(int, QString)),
-            SLOT(incameStatusFromCoinAcceptor(int, QString)));
+            SLOT(incameStatusFrom_CoinAcceptor(int, QString)));
     connect(clsCoinAcceptor,
             SIGNAL(emitLoging(int, QString, QString)),
             SLOT(toLog(int, QString, QString)));
@@ -476,7 +476,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
     connect(statusDaemons,
             SIGNAL(emit_cmdToMain(QVariantList)),
             this,
-            SLOT(getCommandFromServer(QVariantList)));
+            SLOT(getCommandFrom_Server(QVariantList)));
     connect(statusDaemons, SIGNAL(emit_hashToCheck(QString)), this, SLOT(checkHash(QString)));
     connect(statusDaemons,
             SIGNAL(emit_hashUpdateToCheck(QString, QString)),
@@ -542,16 +542,16 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
     connect(mainPage, SIGNAL(emit_otpSend(QString)), sendOtp, SLOT(sendOtpRequest(QString)));
 
     // Демон для подтверждения смс кода (otp)
-    confirmOtp = new ConfirmOtp(this);
-    confirmOtp->setUrl(config.serverAddress);
-    connect(confirmOtp,
-            SIGNAL(emit_ConfirmOtpResult(QString)),
+    confirm_Otp = new Confirm_Otp(this);
+    confirm_Otp->setUrl(config.serverAddress);
+    connect(confirm_Otp,
+            SIGNAL(emit_Confirm_OtpResult(QString)),
             mainPage,
-            SLOT(confirmOtpResult(QString)));
+            SLOT(confirm_OtpResult(QString)));
     connect(mainPage,
             SIGNAL(emit_otpConfirm(QString, QString)),
-            confirmOtp,
-            SLOT(confirmOtpRequest(QString, QString)));
+            confirm_Otp,
+            SLOT(confirm_OtpRequest(QString, QString)));
 
     // Демон для отправки команды
     commandConfirm = new CommandConfirm(this);
@@ -618,7 +618,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
     connect(statusCoinAcceptorTimer, SIGNAL(timeout()), this, SLOT(coinAcceptorStatusGetOnMain()));
 
     incasaciyaForm = new IncasaciyaForm(this);
-    connect(incasaciyaForm, SIGNAL(execCommand(int)), SLOT(getCommandFromIncash(int)));
+    connect(incasaciyaForm, SIGNAL(execCommand(int)), SLOT(getCommandFrom_Incash(int)));
     connect(incasaciyaForm, SIGNAL(openDialog()), SLOT(openAdminAuthEditDialog()));
 
     // Таймер для проверок блокировок
@@ -658,7 +658,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
     QString connectionName;
 
     // Начинаем искать устройства
-    searchDevices->modemConUp = isModemConnectionUp(connectionName);
+    searchDevices->modem_ConUp = isModem_ConnectionUp(connectionName);
     searchDevices->searchValidator = config.searchValidator;
     searchDevices->searchCoinAcceptor = config.searchCoinAcceptor;
     searchDevices->searchPrinter = config.searchPrinter;
@@ -694,7 +694,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
 
     if (skipSearchDevice) {
         // Вытаскиваем данные об устройствах из базы
-        getDeviceFromDB();
+        getDeviceFrom_DB();
 
         // Тут надо сделать инициализацию устройств
         devicesInitialization();
@@ -702,7 +702,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
         // В начале надо проверить соединение с сервером
         connectionCheck();
     } else {
-        searchDevices->prtWinName = getWinprinterFromDB();
+        searchDevices->prtWinName = getWinprinterFrom_DB();
         searchDevices->start();
     }
 }
@@ -716,7 +716,7 @@ void MainWindow::deviceSearchStart(QVariantMap data) {
 
     QString connectionName;
 
-    searchDevices->modemConUp = isModemConnectionUp(connectionName);
+    searchDevices->modem_ConUp = isModem_ConnectionUp(connectionName);
     searchDevices->searchValidator = config.searchValidator;
     searchDevices->searchCoinAcceptor = config.searchCoinAcceptor;
     searchDevices->searchPrinter = config.searchPrinter;
@@ -751,7 +751,7 @@ void MainWindow::connectionResult(bool result) {
         // Только при первом запуске
         if (oneGetServices) {
             connect(&servicesTimer, &QTimer::timeout, this, [&] {
-                if (systemInfoGot) {
+                if (system_InfoGot) {
                     servicesTimer.stop();
                     getServicesRequest();
                 }
@@ -787,14 +787,14 @@ void MainWindow::connectionResult(bool result) {
         // Удаление поиска устройств
         deleteSearchParam();
 
-        loadingGprs->setSimInfo(
+        loadingGprs->setSim_Info(
             QString("Оператор: \"%3\"               Сигнал %1: %2%               "
                     "Номер: \"%4\"               Баланс: %5")
-                .arg(config.modemData.comment,
-                     config.modemData.rate,
-                     config.modemData.provider,
-                     config.modemData.number,
-                     config.modemData.balance));
+                .arg(config.modem_Data.comment,
+                     config.modem_Data.rate,
+                     config.modem_Data.provider,
+                     config.modem_Data.number,
+                     config.modem_Data.balance));
 
         // Начинаем активизировать таймер проверки соединения
         connObject->startCheckConnection();
@@ -817,7 +817,7 @@ void MainWindow::startToConnection() {
     // Чтобы не было конфликтов проверяем не находится ли оно в состоянии поднятия
     // соединения
     if (connObject->conState != Connection::conStateUpping &&
-        connObject->conState != Connection::GetSimData &&
+        connObject->conState != Connection::GetSim_Data &&
         connObject->conState != Connection::SendingSMS) {
         // Запускаем соединение
         connObject->connectNet();
@@ -827,7 +827,7 @@ void MainWindow::startToConnection() {
         case Connection::conStateUpping: {
             text = "Соединение занято... идет поднятия соединения";
         } break;
-        case Connection::GetSimData: {
+        case Connection::GetSim_Data: {
             text = "Модем занят... идет опрос данных SIM карты";
         } break;
         case Connection::SendingSMS: {
@@ -838,8 +838,8 @@ void MainWindow::startToConnection() {
         toLog(LoggerLevel::Warning, "CONNECTION", text);
     }
 
-    QStringList vrmLst;
-    vrmLst << text;
+    QStringList vrm_Lst;
+    vrm_Lst << text;
     auto data = QVariantMap({{"message", text}});
 
     if (adminDialog->isVisible()) {
@@ -848,7 +848,7 @@ void MainWindow::startToConnection() {
 }
 
 void MainWindow::getServicesRequest() {
-    getServices->setAuthData(config.terminalData.token, systemHashGet(), ConstData::version);
+    getServices->setAuthData(config.terminalData.token, system_HashGet(), ConstData::version);
     getServices->sendGetServicesQuery();
 }
 
@@ -860,8 +860,8 @@ void MainWindow::getServicesReturn(bool result) {
 
         // Конфигурация получина успешно
         // Берём данные об услугах
-        mainPage->services = getServicesFromDB();
-        mainPage->categories = getCategoriesFromDB();
+        mainPage->services = getServicesFrom_DB();
+        mainPage->categories = getCategoriesFrom_DB();
         mainPage->favoriteServicesInit();
         mainPage->interfaceCacheClear();
 
@@ -961,7 +961,7 @@ void MainWindow::deleteSearchParam() {
     }
 }
 
-bool MainWindow::isModemConnectionUp(QString &connectionName) {
+bool MainWindow::isModem_ConnectionUp(QString &connectionName) {
     QStringList lstCon;
     bool isConnectionUp = connObject->getNowConnectionState(lstCon);
 
@@ -1010,7 +1010,7 @@ void MainWindow::connectionError(QString errNum, QString errComment) {
         // При ошибке 756 делаем перезапуск АСО
 
         // Перезагружаем модем
-        // rebootModemEntries();
+        // rebootModem_Entries();
 
         /// Проверяем счетчик перезагрузок
         int countReboot = rebootCount();
@@ -1029,7 +1029,7 @@ void MainWindow::connectionError(QString errNum, QString errComment) {
             afterRestartRas = true;
 
             // Перезагружаем модем
-            rebootModemEntries();
+            rebootModem_Entries();
 
             countRepEntires = 0;
             countOtherErrRas = 0;
@@ -1037,13 +1037,13 @@ void MainWindow::connectionError(QString errNum, QString errComment) {
     } break;
     case 692: {
         // Перезагружаем модем
-        rebootModemEntries();
+        rebootModem_Entries();
     } break;
     default: {
         if (countRepEntires >= 2) {
 
             // Перезагружаем модем
-            rebootModemEntries();
+            rebootModem_Entries();
 
             countRepEntires = 0;
 
@@ -1062,7 +1062,7 @@ void MainWindow::connectionError(QString errNum, QString errComment) {
     }
 }
 
-void MainWindow::rebootModemEntries() {
+void MainWindow::rebootModem_Entries() {
     // Тут будем перезагружать модем
     if (config.WDData.port.contains("COM")) {
         // Присваем порт
@@ -1093,12 +1093,12 @@ void MainWindow::rebootEntries(int errInit) {
     }
 }
 
-void MainWindow::getSystemInfo(QVariantMap data) {
-    config.systemInfo = data;
-    systemInfoGot = true;
+void MainWindow::getSystem_Info(QVariantMap data) {
+    config.system_Info = data;
+    system_InfoGot = true;
 
     toLog(LoggerLevel::Info, senderName, "GET SYSINFO FINISHED");
-    QJsonDocument json = QJsonDocument::fromVariant(config.systemInfo);
+    QJsonDocument json = QJsonDocument::from_Variant(config.system_Info);
     toLog(LoggerLevel::Info, senderName, QString(json.toJson(QJsonDocument::Compact)));
 }
 
@@ -1175,28 +1175,28 @@ bool MainWindow::checkUserInBase() {
 
     QSqlRecord record = userSql.record();
 
-    QString vrmLogin = "";
-    QString vrmToken = "";
-    QString vrmSecretLogin = "";
-    QString vrmSecretPass = "";
+    QString vrm_Login = "";
+    QString vrm_Token = "";
+    QString vrm_SecretLogin = "";
+    QString vrm_SecretPass = "";
 
     if (userSql.next()) {
-        vrmLogin = userSql.value(record.indexOf("login")).toString();
-        vrmToken = userSql.value(record.indexOf("token")).toString();
-        vrmSecretLogin = userSql.value(record.indexOf("secret_login")).toString();
-        vrmSecretPass = userSql.value(record.indexOf("secret_pass")).toString();
+        vrm_Login = userSql.value(record.indexOf("login")).toString();
+        vrm_Token = userSql.value(record.indexOf("token")).toString();
+        vrm_SecretLogin = userSql.value(record.indexOf("secret_login")).toString();
+        vrm_SecretPass = userSql.value(record.indexOf("secret_pass")).toString();
     }
 
-    if (vrmLogin.trimmed() == "" || vrmToken.trimmed() == "") {
+    if (vrm_Login.trimmed() == "" || vrm_Token.trimmed() == "") {
         // Некорректные данные о пользователе
         return false;
     }
 
     // Расшифровка данных и запись их в переменные
-    config.terminalData.login = decodeStr(vrmLogin, config.coddingKey);
-    config.terminalData.token = decodeStr(vrmToken, config.coddingKey);
-    config.terminalData.secretLogin = decodeStr(vrmSecretLogin, config.coddingKey);
-    config.terminalData.secretPass = decodeStr(vrmSecretPass, config.coddingKey);
+    config.terminalData.login = decodeStr(vrm_Login, config.coddingKey);
+    config.terminalData.token = decodeStr(vrm_Token, config.coddingKey);
+    config.terminalData.secretLogin = decodeStr(vrm_SecretLogin, config.coddingKey);
+    config.terminalData.secretPass = decodeStr(vrm_SecretPass, config.coddingKey);
 
     return true;
 }
@@ -1364,7 +1364,7 @@ void MainWindow::createDialUpConnection(QVariantMap data) {
         adminDialog->showMsgDialog(title, text);
 
         // Вставляем список
-        getCommandFromAdmin(AdminCommand::aCmdRasConnlist);
+        getCommandFrom_Admin(AdminCommand::aCmdRasConnlist);
     }
 
     if (registrationForm && registrationForm->isVisible()) {
@@ -1386,7 +1386,7 @@ void MainWindow::createDialUpConnection(QVariantMap data) {
 }
 
 void MainWindow::startToConnect(QString connection) {
-    //    fromReg = true;
+    //    from_Reg = true;
 
     config.vpnName = connection;
 
@@ -1397,7 +1397,7 @@ void MainWindow::startToConnect(QString connection) {
 
         QString connectionName;
 
-        if (isModemConnectionUp(connectionName)) {
+        if (isModem_ConnectionUp(connectionName)) {
             // Тут надо сообщить регистрации что соединение поднято
             registrationForm->setStatusText(1, tr("Соединение с %1 поднято").arg(connectionName));
 
@@ -1410,7 +1410,7 @@ void MainWindow::startToConnect(QString connection) {
 }
 
 void MainWindow::sendAuthRequest(QString login, QString otp) {
-    auto hash = systemHashGet();
+    auto hash = system_HashGet();
 
     authRequest->version = ConstData::version;
 
@@ -1473,9 +1473,9 @@ void MainWindow::authResponse(QString resultCode, QString login, QString token, 
     }
 }
 
-QString MainWindow::systemHashGet() const {
-    auto disk = config.systemInfo.value("disk").toMap();
-    auto mboard = config.systemInfo.value("mboard").toMap();
+QString MainWindow::system_HashGet() const {
+    auto disk = config.system_Info.value("disk").toMap();
+    auto mboard = config.system_Info.value("mboard").toMap();
 
     QString diskModel = disk.value("model").toString();
     QString diskSerial = disk.value("serialnumber").toString();
@@ -1570,12 +1570,12 @@ void MainWindow::openAdminDialog() {
     QStringList pList = portList();
 
     // Вставляем список купюрников
-    QString vrmValidatorInfo =
+    QString vrm_ValidatorInfo =
         QString("firmware: %1\n"
                 "serial: %2")
             .arg(config.validatorData.partNumber, config.validatorData.serialNumber);
 
-    data["validator_info"] = vrmValidatorInfo;          // Info
+    data["validator_info"] = vrm_ValidatorInfo;          // Info
     data["validator_list"] = billValidatorList;         // ListValidator
     data["validator_name"] = config.validatorData.name; // Name
     data["validator_port_list"] = pList;                // List Com Portov
@@ -1584,12 +1584,12 @@ void MainWindow::openAdminDialog() {
     adminDialog->setDataToAdmin(AdminCommand::aCmdValidatorInform, data);
 
     // Вставляем список монетоприемников
-    QString vrmCoinAcceptorInfo =
+    QString vrm_CoinAcceptorInfo =
         QString("model:  %1\n"
                 "serial:   %2")
             .arg(config.coinAcceptorData.partNumber, config.coinAcceptorData.serialNumber);
 
-    data["coin_acceptor_info"] = vrmCoinAcceptorInfo;          // Info
+    data["coin_acceptor_info"] = vrm_CoinAcceptorInfo;          // Info
     data["coin_acceptor_list"] = coinAcceptorList;             // ListValidator
     data["coin_acceptor_name"] = config.coinAcceptorData.name; // Name
     data["coin_acceptor_port_list"] = pList;                   // List Com Portov
@@ -1608,12 +1608,12 @@ void MainWindow::openAdminDialog() {
     adminDialog->setDataToAdmin(AdminCommand::aCmdPrinterInform, data);
 
     // Вставляем список модемов
-    data["modem_comment"] = config.modemData.comment; // Info
-    data["modem_name"] = config.modemData.name;       // Name
+    data["modem_comment"] = config.modem_Data.comment; // Info
+    data["modem_name"] = config.modem_Data.name;       // Name
     data["modem_port_list"] = pList;                  // List Com Portov
-    data["modem_port"] = config.modemData.port;       // Active Port
+    data["modem_port"] = config.modem_Data.port;       // Active Port
 
-    adminDialog->setDataToAdmin(AdminCommand::aCmdModemInform, data);
+    adminDialog->setDataToAdmin(AdminCommand::aCmdModem_Inform, data);
 
     // Вставляем список в информацию о сторожевике
     data["watchdog_comment"] = config.WDData.comment; // Info
@@ -1630,18 +1630,18 @@ void MainWindow::openAdminDialog() {
     data["search_modem"] = config.searchModem;
     data["search_watchdog"] = config.searchWD;
 
-    adminDialog->setDataToAdmin(AdminCommand::aCmdSearchParamRef, data);
+    adminDialog->setDataToAdmin(AdminCommand::aCmdSearchParam_Ref, data);
 
     // Вставляем информацию о сим карте
-    data["modem_sim_provider"] = config.modemData.provider;
-    data["modem_sim_number"] = config.modemData.number;
-    data["modem_sim_rate"] = config.modemData.rate + "%";
-    data["modem_sim_balance"] = config.modemData.balance;
+    data["modem_sim_provider"] = config.modem_Data.provider;
+    data["modem_sim_number"] = config.modem_Data.number;
+    data["modem_sim_rate"] = config.modem_Data.rate + "%";
+    data["modem_sim_balance"] = config.modem_Data.balance;
 
-    adminDialog->setDataToAdmin(AdminCommand::aCmdSimInfoData, data);
+    adminDialog->setDataToAdmin(AdminCommand::aCmdSim_InfoData, data);
 
     // Вставляем список соединений
-    getCommandFromAdmin(AdminCommand::aCmdRasConnlist);
+    getCommandFrom_Admin(AdminCommand::aCmdRasConnlist);
 
     // Интервал перезагрузки ПО при RAS ошибках
     data["ras_error_interval_reboot"] = config.timerRasReb;
@@ -1658,11 +1658,11 @@ void MainWindow::openAdminDialog() {
     // Параметры модема
     data["check_balance_sim"] = config.checkGetBalanceSim;
     data["check_number_sim"] = config.checkGetNumberSim;
-    data["ussd_balance_sim"] = config.simBalanceRequest;
+    data["ussd_balance_sim"] = config.sim_BalanceRequest;
     data["index_check_balance"] = config.indexCheckBalance;
-    data["ussd_number_sim"] = config.simNumberRequest;
+    data["ussd_number_sim"] = config.sim_NumberRequest;
 
-    adminDialog->setDataToAdmin(AdminCommand::aCmdModemInfData, data);
+    adminDialog->setDataToAdmin(AdminCommand::aCmdModem_InfData, data);
 
     // Общие параметры чека
     data["show_print_dialog"] = config.showPrintDialog;
@@ -1679,7 +1679,7 @@ void MainWindow::openAdminDialog() {
     data["sms_err_printer"] = config.smsErrPrinter;
     data["sms_err_balance_agent"] = config.smsErrBalanceAgent;
     data["sms_value_balance_agent"] = config.smsValueBalanceAgent;
-    data["sms_err_sim_balance"] = config.smsErrSimBalance;
+    data["sms_err_sim_balance"] = config.smsErrSim_Balance;
     data["sms_err_lock_terminal"] = config.smsErrLockTerminal;
     data["sms_err_connection"] = config.smsErrConnection;
 
@@ -1692,7 +1692,7 @@ void MainWindow::openAdminDialog() {
     data["prt_win_left_margin"] = config.winPrtChekLeftMargin;
     data["prt_win_right_margin"] = config.winPrtChekRightMargin;
     data["prt_win_top_margin"] = config.winPrtChekTopMargin;
-    data["prt_win_bottom_margin"] = config.winPrtChekBottomMargin;
+    data["prt_win_bottom_margin"] = config.winPrtChekBottom_Margin;
 
     adminDialog->setDataToAdmin(AdminCommand::aCmdWinPrinterParam, data);
 
@@ -1713,12 +1713,12 @@ void MainWindow::openAdminDialog() {
     data["login"] = config.terminalData.login;
     data["secret_login"] = config.terminalData.secretLogin;
 
-    adminDialog->setDataToAdmin(AdminCommand::aCmdAvtorizationTrmP, data);
+    adminDialog->setDataToAdmin(AdminCommand::aCmdAvtorizationTrm_P, data);
 
     // Остальные настройки
-    data["status_validator_jam_in_box"] = config.statusValidatorJamInBox;
-    data["status_validator_jam_in_box_value_counter"] = config.statusValidatorJamInBoxValueCounter;
-    data["status_validator_jam_in_box_lockers"] = config.statusValidatorJamInBoxLockers;
+    data["status_validator_jam_in_box"] = config.statusValidatorJam_InBox;
+    data["status_validator_jam_in_box_value_counter"] = config.statusValidatorJam_InBoxValueCounter;
+    data["status_validator_jam_in_box_lockers"] = config.statusValidatorJam_InBoxLockers;
     data["default_lang"] = config.langDefault;
     data["auto_update_status"] = config.autoUpdateStatus;
     data["exist_counter_printer_chek"] = config.existCounterPrinterChek;
@@ -1730,7 +1730,7 @@ void MainWindow::openAdminDialog() {
     adminDialog->openThis();
 }
 
-void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
+void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
     QProcess proc;
 
     switch (cmd) {
@@ -1852,13 +1852,13 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
             clsPrinter->printerOpen();
         }
 
-        QStringList vrmLst;
+        QStringList vrm_Lst;
         int prtStatus = printerStatusList().toInt();
 
         if (prtStatus != 0) {
             auto data = QVariantMap({{"message", printerStatus.at(prtStatus)}});
             adminDialog->setDataToAdmin(AdminCommand::aCmdInfrmationPanel, data);
-            toLog(LoggerLevel::Error, "PRINTER", QString("Статус (%1)").arg(vrmLst.at(0)));
+            toLog(LoggerLevel::Error, "PRINTER", QString("Статус (%1)").arg(vrm_Lst.at(0)));
             return;
         }
 
@@ -1880,7 +1880,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
     } break;
     case AdminCommand::aCmdRestartModem: {
         // Тут будем перезагружать модем
-        rebootModemEntries();
+        rebootModem_Entries();
     } break;
     case AdminCommand::aCmdRestartApp: {
         QVariantMap data;
@@ -1916,7 +1916,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
         auto msg = QVariantMap({{"message", "Изменения успешно сохранены..."}});
         adminDialog->setDataToAdmin(AdminCommand::aCmdInfrmationPanel, msg);
     } break;
-    case AdminCommand::aCmdSaveDeviceParamR: {
+    case AdminCommand::aCmdSaveDeviceParam_R: {
         auto data = adminDialog->settings;
 
         for (auto &key : data.keys()) {
@@ -1932,7 +1932,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
         auto printerName = data.value("printer_name").toString();
         auto printerPort = data.value("printer_port").toString();
         auto printerComment = data.value("printer_comment").toString();
-        auto modemPort = data.value("modem_port").toString();
+        auto modem_Port = data.value("modem_port").toString();
         auto watchdogPort = data.value("watchdog_port").toString();
 
         // если выбран принтер KM1X, то в коммент добавим скорость порта
@@ -1943,7 +1943,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
         // Тут надо в базу записать устройства
         saveDevice(1, validatorName, validatorPort, config.validatorData.comment, 1);
         saveDevice(2, printerName, printerPort, printerComment, 1);
-        saveDevice(3, config.modemData.name, modemPort, config.modemData.comment, 1);
+        saveDevice(3, config.modem_Data.name, modem_Port, config.modem_Data.comment, 1);
         saveDevice(4, config.WDData.name, watchdogPort, config.WDData.comment, 1);
         saveDevice(5, coinAcceptorName, coinAcceptorPort, config.coinAcceptorData.comment, 1);
 
@@ -1988,7 +1988,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
         QString connectionName;
         QString text;
 
-        if (isModemConnectionUp(connectionName)) {
+        if (isModem_ConnectionUp(connectionName)) {
             text = QString("1- ( %1 ) активно...\t").arg(connectionName);
         } else {
             text = "Нет активных соединений...";
@@ -2002,14 +2002,14 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
         /// Тут по идеи демон который проверяет соединение должен его поднять
         startToConnection();
     } break;
-    case AdminCommand::aCmdGetSimInfo: {
-        if (connObject->conState != Connection::GetSimData) {
+    case AdminCommand::aCmdGetSim_Info: {
+        if (connObject->conState != Connection::GetSim_Data) {
             QVariantMap data;
 
             // Проверяем поднято ли соединение
             QString connectionName;
 
-            if (isModemConnectionUp(connectionName)) {
+            if (isModem_ConnectionUp(connectionName)) {
                 data["message"] =
                     QString("Подождите идет разрыв соединения %1...").arg(connectionName);
 
@@ -2028,74 +2028,74 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
             adminDialog->setDataToAdmin(AdminCommand::aCmdConnectInfo, data);
 
             // Тут надо опрашивать модем
-            if (config.modemData.port != "") {
+            if (config.modem_Data.port != "") {
                 // Занимаем модем
-                connObject->conState = Connection::GetSimData;
+                connObject->conState = Connection::GetSim_Data;
 
-                clsModem->setPort(config.modemData.port);
+                clsModem->setPort(config.modem_Data.port);
 
-                bool nowSimPresent = false;
+                bool nowSim_Present = false;
                 QString signalQuality;
                 QString operatorName;
-                QString modemComment;
-                QString simNumber;
-                QString simBalance;
-                bool modemP = false;
+                QString modem_Comment;
+                QString sim_Number;
+                QString sim_Balance;
+                bool modem_P = false;
 
-                if (clsModem->isItYou(modemComment)) {
-                    modemP = true;
+                if (clsModem->isItYou(modem_Comment)) {
+                    modem_P = true;
                     // toDebuging("--- EXIT MODEM isItYou ---");
-                    nowSimPresent = clsModem->nowSimPresent;
-                    signalQuality = clsModem->nowModemQuality;
+                    nowSim_Present = clsModem->nowSim_Present;
+                    signalQuality = clsModem->nowModem_Quality;
                     operatorName = clsModem->nowProviderSim;
-                    modemComment = clsModem->nowModemComment;
+                    modem_Comment = clsModem->nowModem_Comment;
 
                     // Присваиваем программе
-                    config.modemData.comment = modemComment.replace("'", "").replace(".", "");
-                    config.modemData.found = true;
-                    config.modemData.present = nowSimPresent;
-                    config.modemData.provider = operatorName;
-                    config.modemData.rate = signalQuality;
+                    config.modem_Data.comment = modem_Comment.replace("'", "").replace(".", "");
+                    config.modem_Data.found = true;
+                    config.modem_Data.present = nowSim_Present;
+                    config.modem_Data.provider = operatorName;
+                    config.modem_Data.rate = signalQuality;
                 }
 
                 // Проверяем номер и баланс если есть ответ от модема
-                if (modemP) {
-                    clsModem->ussdRequestNumberSim = config.simNumberRequest;
-                    clsModem->execCommand(ModemProtocolCommands::GetSimNumber, false);
-                    simNumber = clsModem->nowNumberSim;
-                    // toDebuging("--- Now Number Sim --- " + simNumber);
+                if (modem_P) {
+                    clsModem->ussdRequestNumberSim = config.sim_NumberRequest;
+                    clsModem->execCommand(Modem_ProtocolCommands::GetSim_Number, false);
+                    sim_Number = clsModem->nowNumberSim;
+                    // toDebuging("--- Now Number Sim --- " + sim_Number);
 
                     // Баланс
                     // Присваиваем данные
-                    clsModem->ussdRequestBalanseSim = config.simBalanceRequest;
+                    clsModem->ussdRequestBalanseSim = config.sim_BalanceRequest;
                     clsModem->indexBalanceParse = config.indexCheckBalance;
-                    clsModem->execCommand(ModemProtocolCommands::GetBalance, false);
-                    simBalance = clsModem->nowBalanceSim;
-                    // toDebuging("--- Now Balance Sim --- " + simBalance);
+                    clsModem->execCommand(Modem_ProtocolCommands::GetBalance, false);
+                    sim_Balance = clsModem->nowBalanceSim;
+                    // toDebuging("--- Now Balance Sim --- " + sim_Balance);
 
-                    config.modemData.number = simNumber;
-                    config.modemData.balance = simBalance;
+                    config.modem_Data.number = sim_Number;
+                    config.modem_Data.balance = sim_Balance;
 
                     // Отправляем на сервер данные мониторинга
                     statusDaemons->firstSend = true;
                     oneSendStatus = true;
 
                     // Показываем в админке
-                    data["modem_sim_provider"] = config.modemData.provider;
-                    data["modem_sim_number"] = config.modemData.number;
-                    data["modem_sim_rate"] = config.modemData.rate + "%";
-                    data["modem_sim_balance"] = config.modemData.balance;
+                    data["modem_sim_provider"] = config.modem_Data.provider;
+                    data["modem_sim_number"] = config.modem_Data.number;
+                    data["modem_sim_rate"] = config.modem_Data.rate + "%";
+                    data["modem_sim_balance"] = config.modem_Data.balance;
 
-                    adminDialog->setDataToAdmin(AdminCommand::aCmdSimInfoData, data);
+                    adminDialog->setDataToAdmin(AdminCommand::aCmdSim_InfoData, data);
 
                     toLog(LoggerLevel::Info,
                           "CONNECTION",
                           "Параметры опроса SIM карты\n\n"
                           "- Провайдер        - " +
-                              config.modemData.provider + "\n- Номер SIM карты  - " +
-                              config.modemData.number + "\n- Уровень сигнала  - " +
-                              config.modemData.rate + "%" + "\n- Баланс SIM карты - " +
-                              config.modemData.balance);
+                              config.modem_Data.provider + "\n- Номер SIM карты  - " +
+                              config.modem_Data.number + "\n- Уровень сигнала  - " +
+                              config.modem_Data.rate + "%" + "\n- Баланс SIM карты - " +
+                              config.modem_Data.balance);
                 }
 
                 // Освобождаем модем
@@ -2166,7 +2166,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
 
         adminDialog->showMsgDialog("Сохранение параметров", "Настройки успешно сохранены.");
     } break;
-    case AdminCommand::aCmdSaveTrmNumSett: {
+    case AdminCommand::aCmdSaveTrm_Num_Sett: {
         auto data = adminDialog->settings;
 
         auto login = data.value("login").toString();
@@ -2325,7 +2325,7 @@ void MainWindow::coinDuplicateGet(int coin) {
     saveLockDuplicateNominal(true);
 }
 
-void MainWindow::incameStatusFromValidator(int sts, QString comment) {
+void MainWindow::incameStatusFrom_Validator(int sts, QString comment) {
     config.validatorData.state = sts;
 
     if (sts >= 1 && sts < 30) {
@@ -2343,8 +2343,8 @@ void MainWindow::incameStatusFromValidator(int sts, QString comment) {
             openValidatorBox();
 
             auto dt = QDateTime::currentDateTime();
-            int offset = dt.offsetFromUtc();
-            dt.setOffsetFromUtc(offset);
+            int offset = dt.offsetFrom_Utc();
+            dt.setOffsetFrom_Utc(offset);
 
             if (saveBillValidatorEvent("CASHBOX-OPENED", dt.toString(Qt::ISODateWithMs))) {
                 bValidatorEventCheck();
@@ -2370,7 +2370,7 @@ void MainWindow::incameStatusFromValidator(int sts, QString comment) {
     }
 }
 
-void MainWindow::incameStatusFromCoinAcceptor(int sts, QString comment) {
+void MainWindow::incameStatusFrom_CoinAcceptor(int sts, QString comment) {
     config.coinAcceptorData.state = sts;
 
     if (sts >= 1 && sts < 35) {
@@ -2503,7 +2503,7 @@ void MainWindow::deviceSearchResult(
     case SearchDev::search_modem: {
         switch (result) {
         case SearchDev::start_search: {
-            sDevicesForm->setModemSearchText(SearchDev::start_search,
+            sDevicesForm->setModem_SearchText(SearchDev::start_search,
                                              interfaceText("modem_info_searching"));
             toLog(LoggerLevel::Info, senderName, interfaceText("modem_info_searching"));
         } break;
@@ -2511,11 +2511,11 @@ void MainWindow::deviceSearchResult(
             auto inf = interfaceText("modem_info_found")
                            .replace("[v1]", QString("%1 %2").arg(devName, devComment))
                            .replace("[v2]", devPort);
-            sDevicesForm->setModemSearchText(SearchDev::device_found, inf);
+            sDevicesForm->setModem_SearchText(SearchDev::device_found, inf);
             toLog(LoggerLevel::Info, senderName, inf);
         } break;
         case SearchDev::device_notfound: {
-            sDevicesForm->setModemSearchText(SearchDev::device_notfound,
+            sDevicesForm->setModem_SearchText(SearchDev::device_notfound,
                                              interfaceText("modem_info_notfound"));
             toLog(LoggerLevel::Error, senderName, interfaceText("modem_info_notfound"));
         } break;
@@ -2548,22 +2548,22 @@ void MainWindow::deviceSearchResult(
 void MainWindow::deviceSearchFinished() {
     QString toLogingData = "\n\n";
     toLogingData += "- Уровень сигнала модема   = " + searchDevices->signalQuality + "%" + "\n";
-    toLogingData += "- Коментарий к модему      = " + searchDevices->modemComment + "\n";
+    toLogingData += "- Коментарий к модему      = " + searchDevices->modem_Comment + "\n";
     toLogingData +=
-        "- Сим карта присутствует   = " + QString("%1").arg(searchDevices->nowSimPresent) + "\n";
+        "- Сим карта присутствует   = " + QString("%1").arg(searchDevices->nowSim_Present) + "\n";
     toLogingData += "- Оператор сим карты       = " + searchDevices->operatorName + "\n";
-    toLogingData += "- Баланс сим карты         = " + searchDevices->simBalance + "\n";
-    toLogingData += "- Номер сим каты           = " + searchDevices->simNumber + "\n";
+    toLogingData += "- Баланс сим карты         = " + searchDevices->sim_Balance + "\n";
+    toLogingData += "- Номер сим каты           = " + searchDevices->sim_Number + "\n";
 
     toLog(LoggerLevel::Info, "MODEM", toLogingData);
 
-    config.modemData.rate = searchDevices->signalQuality;
-    config.modemData.comment = searchDevices->modemComment.replace("'", "");
-    config.modemData.provider = searchDevices->operatorName;
-    config.modemData.simPresent = searchDevices->nowSimPresent;
-    config.modemData.balance = searchDevices->simBalance;
-    config.modemData.number = searchDevices->simNumber;
-    config.modemData.found = searchDevices->modemFound;
+    config.modem_Data.rate = searchDevices->signalQuality;
+    config.modem_Data.comment = searchDevices->modem_Comment.replace("'", "");
+    config.modem_Data.provider = searchDevices->operatorName;
+    config.modem_Data.sim_Present = searchDevices->nowSim_Present;
+    config.modem_Data.balance = searchDevices->sim_Balance;
+    config.modem_Data.number = searchDevices->sim_Number;
+    config.modem_Data.found = searchDevices->modem_Found;
 
     config.validatorData.partNumber = searchDevices->validatorPartNum.replace("'", "");
     config.validatorData.serialNumber = searchDevices->validatorSerialNum;
@@ -2579,7 +2579,7 @@ void MainWindow::deviceSearchFinished() {
     toLog(LoggerLevel::Info, senderName, "Поиск устройств окончен");
 
     // Вытаскиваем данные об устройствах из базы
-    getDeviceFromDB();
+    getDeviceFrom_DB();
 
     // Тут надо сделать инициализацию устройств
     devicesInitialization();
@@ -2633,7 +2633,7 @@ void MainWindow::devicesInitialization() {
     clsPrinter->WpLeftMargin = config.winPrtChekLeftMargin;
     clsPrinter->WpRightMargin = config.winPrtChekRightMargin;
     clsPrinter->WpTopMargin = config.winPrtChekTopMargin;
-    clsPrinter->WpBottomMargin = config.winPrtChekBottomMargin;
+    clsPrinter->WpBottom_Margin = config.winPrtChekBottom_Margin;
 
     payDaemons->printerModel = config.printerData.name;
 
@@ -2729,7 +2729,7 @@ void MainWindow::deviceTest(int device, QString name, QString port, QString comm
     }
 }
 
-bool MainWindow::getDeviceFromDB() {
+bool MainWindow::getDeviceFrom_DB() {
     QSqlQuery select(db);
 
     QString strSelect = QString("SELECT * FROM terminal_devices");
@@ -2755,7 +2755,7 @@ bool MainWindow::getDeviceFromDB() {
             config.validatorData.comment = comment.replace("'", "");
 
             if (state == "0") {
-                incameStatusFromValidator(VStatus::Errors::NotAvailable, "Валидатор не найден");
+                incameStatusFrom_Validator(VStatus::Errors::NotAvailable, "Валидатор не найден");
             }
         } break;
         case 2: {
@@ -2768,8 +2768,8 @@ bool MainWindow::getDeviceFromDB() {
             }
         } break;
         case 3: {
-            config.modemData.name = name;
-            config.modemData.port = port;
+            config.modem_Data.name = name;
+            config.modem_Data.port = port;
         } break;
         case 4: {
             config.WDData.name = name;
@@ -2782,7 +2782,7 @@ bool MainWindow::getDeviceFromDB() {
             config.coinAcceptorData.comment = comment.replace("'", "");
 
             if (state == "0") {
-                this->incameStatusFromCoinAcceptor(CCtalkStatus::Errors::NotAvailable,
+                this->incameStatusFrom_CoinAcceptor(CCtalkStatus::Errors::NotAvailable,
                                                    "Монетоприемник не найден");
             }
         } break;
@@ -2792,7 +2792,7 @@ bool MainWindow::getDeviceFromDB() {
     return true;
 }
 
-QString MainWindow::getWinprinterFromDB() {
+QString MainWindow::getWinprinterFrom_DB() {
     QSqlQuery select(db);
 
     QString strSelect = QString("SELECT * FROM terminal_devices WHERE id = 2");
@@ -2873,8 +2873,8 @@ QString MainWindow::printerStatusList() const {
     if ((config.printerData.state & PrinterState::FiscalMemoryNearEnd) != 0) {
         status << PrinterState::Param::FiscalMemoryNearEnd;
     }
-    if ((config.printerData.state & PrinterState::MechanismPositionError) != 0) {
-        status << PrinterState::Param::MechanismPositionError;
+    if ((config.printerData.state & PrinterState::Mechanism_PositionError) != 0) {
+        status << PrinterState::Param::Mechanism_PositionError;
     }
     //    if(config.printerData.state & PrinterState::NoStatus)
     //        status << PrinterState::Param::NoStatus;
@@ -2976,26 +2976,26 @@ void MainWindow::toSendMonitoringStatus() {
         sData.printer.port = config.printerData.port;
 
         // Информация о модеме
-        sData.modem.name = config.modemData.name;
-        config.modemData.comment = config.modemData.comment.replace("'", "");
+        sData.modem.name = config.modem_Data.name;
+        config.modem_Data.comment = config.modem_Data.comment.replace("'", "");
 
-        if (config.modemData.comment != "") {
-            sData.modem.name += " " + config.modemData.comment;
+        if (config.modem_Data.comment != "") {
+            sData.modem.name += " " + config.modem_Data.comment;
         }
 
-        sData.modem.port = config.modemData.port;
-        sData.modem.balance = config.modemData.balance;
-        sData.modem.number = config.modemData.number;
-        sData.modem.provider = config.modemData.provider;
-        sData.modem.signal = config.modemData.rate;
-        sData.modem.comment = config.modemData.comment;
+        sData.modem.port = config.modem_Data.port;
+        sData.modem.balance = config.modem_Data.balance;
+        sData.modem.number = config.modem_Data.number;
+        sData.modem.provider = config.modem_Data.provider;
+        sData.modem.signal = config.modem_Data.rate;
+        sData.modem.comment = config.modem_Data.comment;
 
-        sData.systemInfo = config.systemInfo;
+        sData.system_Info = config.system_Info;
         toLog(LoggerLevel::Info, senderName, "SYSINFO MONITORING");
-        QJsonDocument json = QJsonDocument::fromVariant(sData.systemInfo);
+        QJsonDocument json = QJsonDocument::from_Variant(sData.system_Info);
         toLog(LoggerLevel::Info, senderName, QString(json.toJson(QJsonDocument::Compact)));
 
-        //        if(config.modemData.Name != "")
+        //        if(config.modem_Data.Name != "")
         //            sData.connection = "0";
 
         if (config.vpnName.toUpper() != "LOCAL CONNECTION") {
@@ -3129,7 +3129,7 @@ void MainWindow::openValidatorBox() {
     }
 }
 
-void MainWindow::getCommandFromIncash(int cmd) {
+void MainWindow::getCommandFrom_Incash(int cmd) {
     incasaciyaForm->close();
 
     switch (cmd) {
@@ -3210,8 +3210,8 @@ void MainWindow::setLockList() {
     lockList[Lock::ErrorInterface].lock = false;
     lockList[Lock::ErrorInterface].comment = "Заблокирован из за проблемы с интерфейсом";
 
-    lockList[Lock::LockFromServer].lock = false;
-    lockList[Lock::LockFromServer].comment = "Заблокирован по сигналу с сервера";
+    lockList[Lock::LockFrom_Server].lock = false;
+    lockList[Lock::LockFrom_Server].comment = "Заблокирован по сигналу с сервера";
 
     lockList[Lock::ErrorDevice].lock = false;
     lockList[Lock::ErrorDevice].comment = "Заблокирован по ошибке определения устройств";
@@ -3257,7 +3257,7 @@ Lock::Data MainWindow::getLock() {
     return Lock::Ok;
 }
 
-void MainWindow::getCommandFromServer(QVariantList cmdList) {
+void MainWindow::getCommandFrom_Server(QVariantList cmdList) {
 
     // Идет обновление
     if (downManager->bisyNow) {
@@ -3433,7 +3433,7 @@ void MainWindow::commandExecution(CommandInit::Cmd cmd, QVariantMap meta) {
             commandStatusUpdate(trn, "executed");
         }
 
-        getCommandFromAdmin(AdminCommand::aCmdRestartASO);
+        getCommandFrom_Admin(AdminCommand::aCmdRestartASO);
         return;
     } break;
     case CommandInit::cTurnOffTerminal: {
@@ -3533,12 +3533,12 @@ void MainWindow::validatorFirmwareResult(QString state) {
 
     if (state == "error") {
         // Перезагружаем программу
-        getCommandFromAdmin(AdminCommand::aCmdRestartApp);
+        getCommandFrom_Admin(AdminCommand::aCmdRestartApp);
     }
 
     if (state == "success") {
         // Перезагружаем программу
-        getCommandFromAdmin(AdminCommand::aCmdRestartApp);
+        getCommandFrom_Admin(AdminCommand::aCmdRestartApp);
     }
 }
 
@@ -3678,7 +3678,7 @@ void MainWindow::getTerminalInfo(QVariantMap map) {
 
     applyAuthToModules();
 
-    clsPrinter->setFirmPatern(terminalInfo["address"].toString());
+    clsPrinter->setFirm_Patern(terminalInfo["address"].toString());
 
     QString xmlName = QString("aso_%1.xml").arg(terminalInfo["path_name"].toString());
 
@@ -3689,7 +3689,7 @@ void MainWindow::getTerminalInfo(QVariantMap map) {
 
 void MainWindow::applyAuthToModules() {
     auto token = config.terminalData.token;
-    auto uuid = systemHashGet();
+    auto uuid = system_HashGet();
     auto login = config.terminalData.login;
     auto version = ConstData::version;
 
@@ -3703,10 +3703,10 @@ void MainWindow::applyAuthToModules() {
     sendLogInfo->setAuthData(token, uuid, version);
     getBalanceAgent->setAuthData(token, uuid, version);
     sendOtp->setAuthData(token, uuid, version);
-    confirmOtp->setAuthData(token, uuid, version);
+    confirm_Otp->setAuthData(token, uuid, version);
     jsonRequest->setAuthData(token, uuid);
 
-    payDaemons->numTrm = login;
+    payDaemons->num_Trm = login;
     payDaemons->startTimer(30);
     statusDaemons->startTimer(300);
 }
@@ -3899,7 +3899,7 @@ void MainWindow::getSmsSendStatus(bool state, QStringList lstId) {
     }
 }
 
-QVariantList MainWindow::getServicesInputsFromDB() {
+QVariantList MainWindow::getServicesInputsFrom_DB() {
     QSqlQuery querySql(db);
 
     QString sqlQuery = "SELECT * FROM terminal_services_inputs si LEFT JOIN "
@@ -3941,7 +3941,7 @@ QVariantList MainWindow::getServicesInputsFromDB() {
     return {};
 }
 
-QVariantList MainWindow::getServicesFieldsFromDB() {
+QVariantList MainWindow::getServicesFieldsFrom_DB() {
     QSqlQuery querySql(db);
 
     QString sqlQuery = "SELECT * FROM terminal_services_inputs si WHERE "
@@ -3968,11 +3968,11 @@ QVariantList MainWindow::getServicesFieldsFromDB() {
     return {};
 }
 
-QVariantList MainWindow::getServicesFromDB() {
+QVariantList MainWindow::getServicesFrom_DB() {
     QSqlQuery querySql(db);
 
-    QVariantList servicesInputs = getServicesInputsFromDB();
-    QVariantList servicesFields = getServicesFieldsFromDB();
+    QVariantList servicesInputs = getServicesInputsFrom_DB();
+    QVariantList servicesFields = getServicesFieldsFrom_DB();
 
     QString sqlQuery = "SELECT * FROM terminal_services ORDER BY que ASC;";
 
@@ -4035,7 +4035,7 @@ QVariantList MainWindow::getServicesFromDB() {
     return {};
 }
 
-QVariantList MainWindow::getCategoriesFromDB() {
+QVariantList MainWindow::getCategoriesFrom_DB() {
     QSqlQuery querySql(db);
 
     QString sqlQuery = "SELECT * FROM terminal_categories ORDER BY que ASC;";
@@ -4116,8 +4116,8 @@ void MainWindow::insertSmsContentInf() {
                 QString::number(SmsSend::OK) + ", " + QString::number(SmsSend::Unlock) + ");");
 
     for (int i = 1; i <= 6; i++) {
-        QString vrmQuery = userQuery.arg(i);
-        if (!userSql.exec(vrmQuery)) {
+        QString vrm_Query = userQuery.arg(i);
+        if (!userSql.exec(vrm_Query)) {
             toLog(LoggerLevel::Error, "DB_CONNECT", "Ошибка при вставке смс контента...");
             return;
         }
@@ -4290,8 +4290,8 @@ bool MainWindow::clearDataBase() {
 
     QDate dateTo = QDate::currentDate();
     dateTo = dateTo.addDays(-20);
-    QString vrmDateTo = dateTo.toString("yyyy-MM-dd");
-    QString vrmDateFrom = QString("%1-01-01").arg(QDate::currentDate().year() - 1);
+    QString vrm_DateTo = dateTo.toString("yyyy-MM-dd");
+    QString vrm_DateFrom = QString("%1-01-01").arg(QDate::currentDate().year() - 1);
 
     QString lstSql1;
     QString lstSql2;
@@ -4306,11 +4306,11 @@ bool MainWindow::clearDataBase() {
                       "terminal_collect as c WHERE c.collect_id "
                       "= terminal_operation.operation_collect_id AND c.status = "
                       "\"confirmed\");")
-                  .arg(vrmDateFrom, vrmDateTo);
+                  .arg(vrm_DateFrom, vrm_DateTo);
 
     lstSql2 = QString("DELETE FROM terminal_collect WHERE status = 'confirmed'"
                       " AND date_create BETWEEN \"%1 00:00:00\" AND \"%2 23:59:59\";")
-                  .arg(vrmDateFrom, vrmDateTo);
+                  .arg(vrm_DateFrom, vrm_DateTo);
 
     lstSql3 = QString("DELETE FROM terminal_commands WHERE status = 'confirmed';");
 
@@ -4375,8 +4375,8 @@ void MainWindow::settingsSave() {
     settings.setValue("check_balance_sim", config.checkGetBalanceSim);
     settings.setValue("check_number_sim", config.checkGetNumberSim);
     settings.setValue("vpn_point", config.vpnName);
-    settings.setValue("ussd_balance_sim", config.simBalanceRequest);
-    settings.setValue("ussd_number_sim", config.simNumberRequest);
+    settings.setValue("ussd_balance_sim", config.sim_BalanceRequest);
+    settings.setValue("ussd_number_sim", config.sim_NumberRequest);
     settings.setValue("index_check_balance", config.indexCheckBalance);
     settings.setValue("show_print_dialog", config.showPrintDialog);
 
@@ -4401,7 +4401,7 @@ void MainWindow::settingsSave() {
     settings.setValue("prt_win_left_margin", config.winPrtChekLeftMargin);
     settings.setValue("prt_win_right_margin", config.winPrtChekRightMargin);
     settings.setValue("prt_win_top_margin", config.winPrtChekTopMargin);
-    settings.setValue("prt_win_bottom_margin", config.winPrtChekBottomMargin);
+    settings.setValue("prt_win_bottom_margin", config.winPrtChekBottom_Margin);
 
     settings.setValue("exist_counter_printer_chek", config.existCounterPrinterChek);
     settings.setValue("exist_counter_chek", config.existCounterChek);
@@ -4414,14 +4414,14 @@ void MainWindow::settingsSave() {
     settings.setValue("sms_err_printer", config.smsErrPrinter);
     settings.setValue("sms_err_balance_agent", config.smsErrBalanceAgent);
     settings.setValue("sms_value_balance_agent", config.smsValueBalanceAgent);
-    settings.setValue("sms_err_sim_balance", config.smsErrSimBalance);
+    settings.setValue("sms_err_sim_balance", config.smsErrSim_Balance);
     settings.setValue("sms_err_lock_terminal", config.smsErrLockTerminal);
     settings.setValue("sms_err_connection", config.smsErrConnection);
 
-    settings.setValue("status_validator_jam_in_box", config.statusValidatorJamInBox);
+    settings.setValue("status_validator_jam_in_box", config.statusValidatorJam_InBox);
     settings.setValue("status_validator_jam_in_box_value_counter",
-                      config.statusValidatorJamInBoxValueCounter);
-    settings.setValue("status_validator_jam_in_box_lockers", config.statusValidatorJamInBoxLockers);
+                      config.statusValidatorJam_InBoxValueCounter);
+    settings.setValue("status_validator_jam_in_box_lockers", config.statusValidatorJam_InBoxLockers);
 
     settings.setValue("auto_update_status", config.autoUpdateStatus);
     settings.setValue("tpl", config.tpl);
@@ -4436,8 +4436,8 @@ void MainWindow::settingsGet() {
     config.checkGetBalanceSim = settings.value("check_balance_sim").toBool();
     config.checkGetNumberSim = settings.value("check_number_sim").toBool();
     config.vpnName = settings.value("vpn_point").toString();
-    config.simBalanceRequest = settings.value("ussd_balance_sim").toString();
-    config.simNumberRequest = settings.value("ussd_number_sim").toString();
+    config.sim_BalanceRequest = settings.value("ussd_balance_sim").toString();
+    config.sim_NumberRequest = settings.value("ussd_number_sim").toString();
     config.indexCheckBalance = settings.value("index_check_balance").toInt();
     config.showPrintDialog = settings.value("show_print_dialog").toBool();
 
@@ -4467,7 +4467,7 @@ void MainWindow::settingsGet() {
     config.winPrtChekLeftMargin = settings.value("prt_win_left_margin").toInt();
     config.winPrtChekRightMargin = settings.value("prt_win_right_margin").toInt();
     config.winPrtChekTopMargin = settings.value("prt_win_top_margin").toInt();
-    config.winPrtChekBottomMargin = settings.value("prt_win_bottom_margin").toInt();
+    config.winPrtChekBottom_Margin = settings.value("prt_win_bottom_margin").toInt();
 
     config.existCounterPrinterChek = settings.value("exist_counter_printer_chek").toBool();
     config.existCounterChek = settings.value("exist_counter_chek").toBool();
@@ -4480,14 +4480,14 @@ void MainWindow::settingsGet() {
     config.smsErrPrinter = settings.value("sms_err_printer").toBool();
     config.smsErrBalanceAgent = settings.value("sms_err_balance_agent").toBool();
     config.smsValueBalanceAgent = settings.value("sms_value_balance_agent").toDouble();
-    config.smsErrSimBalance = settings.value("sms_err_sim_balance").toBool();
+    config.smsErrSim_Balance = settings.value("sms_err_sim_balance").toBool();
     config.smsErrLockTerminal = settings.value("sms_err_lock_terminal").toBool();
     config.smsErrConnection = settings.value("sms_err_connection").toBool();
 
-    config.statusValidatorJamInBox = settings.value("status_validator_jam_in_box").toBool();
-    config.statusValidatorJamInBoxValueCounter =
+    config.statusValidatorJam_InBox = settings.value("status_validator_jam_in_box").toBool();
+    config.statusValidatorJam_InBoxValueCounter =
         settings.value("status_validator_jam_in_box_value_counter").toInt();
-    config.statusValidatorJamInBoxLockers =
+    config.statusValidatorJam_InBoxLockers =
         settings.value("status_validator_jam_in_box_lockers").toBool();
     config.lockDuplicateNominal = settings.value("lock_duplicate_nominal", false).toBool();
 
@@ -4554,7 +4554,7 @@ QVariantMap MainWindow::nominalData() {
         return {};
     }
 
-    auto json = QJsonDocument::fromJson(file.readAll());
+    auto json = QJsonDocument::from_Json(file.readAll());
     auto data = json.toVariant().toMap();
 
     file.close();
@@ -4578,7 +4578,7 @@ void MainWindow::wsQuery(const QString query, const QVariantMap data) {
     auto queryData = data;
     queryData.insert("query", query);
 
-    auto json = QJsonDocument::fromVariant(queryData);
+    auto json = QJsonDocument::from_Variant(queryData);
     auto bytes = json.toJson(QJsonDocument::Compact);
 
     if (webSocket.isValid()) {
@@ -4651,16 +4651,16 @@ QString MainWindow::versionFull() {
 }
 
 qint32 MainWindow::generateEncodeKey() {
-    QString vrmCodeData = "YTBnMFdXUjRXV3BM";
-    QByteArray vrmCodeData = QByteArray::fromBase64(vrmCodeData.toLatin1());
-    vrmCodeData = "";
-    vrmCodeData.append(vrmCodeData);
-    vrmCodeData.clear();
-    vrmCodeData = QByteArray::fromBase64(vrmCodeData.toLatin1());
-    QString vrmStrCodeData;
-    vrmStrCodeData.append(vrmCodeData);
+    QString vrm_CodeData = "YTBnMFdXUjRXV3BM";
+    QByteArray vrm_CodeData = QByteArray::from_Base64(vrm_CodeData.toLatin1());
+    vrm_CodeData = "";
+    vrm_CodeData.append(vrm_CodeData);
+    vrm_CodeData.clear();
+    vrm_CodeData = QByteArray::from_Base64(vrm_CodeData.toLatin1());
+    QString vrm_StrCodeData;
+    vrm_StrCodeData.append(vrm_CodeData);
 
-    return vrmStrCodeData.toInt();
+    return vrm_StrCodeData.toInt();
 }
 
 #ifdef Q_OS_WIN32
@@ -4669,21 +4669,21 @@ QStringList MainWindow::getWinPrinterNames() {
     QStringList printerNames;
 
     DWORD size;
-    DWORD numPrinters;
+    DWORD num_Printers;
     PRINTER_INFO_2W *printerInfos = NULL;
-    EnumPrintersW(
-        PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, NULL, 2, NULL, 0, &size, &numPrinters);
+    Enum_PrintersW(
+        PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, NULL, 2, NULL, 0, &size, &num_Printers);
     printerInfos = (PRINTER_INFO_2W *)malloc(size);
 
-    if (EnumPrintersW(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS,
+    if (Enum_PrintersW(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS,
                       NULL,
                       2,
                       (LPBYTE)printerInfos,
                       size,
                       &size,
-                      &numPrinters)) {
-        for (uint i = 0; i < numPrinters; i++) {
-            printerName = QString::fromUtf16(
+                      &num_Printers)) {
+        for (uint i = 0; i < num_Printers; i++) {
+            printerName = QString::from_Utf16(
                 reinterpret_cast<const char16_t *>(printerInfos[i].pPrinterName));
             printerNames.append(printerName);
         }
@@ -4754,8 +4754,8 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     logClean->terminate();
     logClean->wait();
 
-    systemInfo->terminate();
-    systemInfo->wait();
+    system_Info->terminate();
+    system_Info->wait();
 
     // Остнавливаем опрос купюроприемника
     statusValidatorTimer->stop();

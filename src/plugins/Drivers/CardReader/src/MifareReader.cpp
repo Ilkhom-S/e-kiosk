@@ -14,20 +14,20 @@ const char SAM2Header[] = "\x04\x01\x01";
 } // namespace CMifareReader
 
 //------------------------------------------------------------------------------
-MifareReader::MifareReader() : mReady(false) {
+MifareReader::MifareReader() : m_Ready(false) {
     // данные USB-функционала
-    mDetectingData->set(CUSBVendors::ACS, CMifareReader::DetectingData().getProductData());
+    m_DetectingData->set(CUSBVendors::ACS, CMifareReader::DetectingData().getProductData());
 
-    mPDODetecting = true;
-    mPortUsing = false;
+    m_PDODetecting = true;
+    m_PortUsing = false;
 
     // данные устройства
-    mDeviceName = CMifareReader::UnknownModel;
-    mReader.setLog(mLog);
-    mStatusCodesSpecification =
+    m_DeviceName = CMifareReader::UnknownModel;
+    m_Reader.setLog(m_Log);
+    m_StatusCodesSpecification =
         DeviceStatusCode::PSpecifications(new CardReaderStatusCode::CSpecifications());
 
-    mPollingInterval = 500;
+    m_PollingInterval = 500;
 }
 
 //--------------------------------------------------------------------------------
@@ -37,33 +37,33 @@ QStringList MifareReader::getModelList() {
 
 //------------------------------------------------------------------------------
 bool MifareReader::release() {
-    mReader.disconnect(true);
+    m_Reader.disconnect(true);
 
     return TMifareReader::release();
 }
 
 //------------------------------------------------------------------------------
 bool MifareReader::getStatus(TStatusCodes &aStatusCodes) {
-    QStringList readerList = mReader.getReaderList();
-    mReady =
-        std::find_if(readerList.begin(), readerList.end(), [&](const QString &systemName) -> bool {
-            return mReader.connect(systemName);
+    QStringList readerList = m_Reader.getReaderList();
+    m_Ready =
+        std::find_if(readerList.begin(), readerList.end(), [&](const QString &system_Name) -> bool {
+            return m_Reader.connect(system_Name);
         }) != readerList.end();
 
-    if (!mReady) {
+    if (!m_Ready) {
         return false;
     }
 
     QByteArray answer;
 
-    if (!mReader.communicate(CMifareReader::GetVersionRequest, answer) || (answer.size() < 30) ||
+    if (!m_Reader.communicate(CMifareReader::GetVersionRequest, answer) || (answer.size() < 30) ||
         !answer.startsWith(CMifareReader::SAM2Header)) {
         aStatusCodes.insert(CardReaderStatusCode::Error::SAM);
     }
 
-    aStatusCodes.unite(mReader.getStatusCodes());
-    mReady = std::find_if(aStatusCodes.begin(), aStatusCodes.end(), [&](int aStatusCode) -> bool {
-                 return mStatusCodesSpecification->value(aStatusCode).warningLevel ==
+    aStatusCodes.unite(m_Reader.getStatusCodes());
+    m_Ready = std::find_if(aStatusCodes.begin(), aStatusCodes.end(), [&](int aStatusCode) -> bool {
+                 return m_StatusCodesSpecification->value(aStatusCode).warningLevel ==
                         EWarningLevel::Error;
              }) == aStatusCodes.end();
 
@@ -72,22 +72,22 @@ bool MifareReader::getStatus(TStatusCodes &aStatusCodes) {
 
 //------------------------------------------------------------------------------
 bool MifareReader::isDeviceReady() const {
-    return mReady;
+    return m_Ready;
 }
 
 //------------------------------------------------------------------------------
 void MifareReader::eject() {
-    mReader.disconnect(true);
+    m_Reader.disconnect(true);
 }
 
 //------------------------------------------------------------------------------
 bool MifareReader::reset(QByteArray &aAnswer) {
-    return mReader.reset(aAnswer);
+    return m_Reader.reset(aAnswer);
 }
 
 //------------------------------------------------------------------------------
 bool MifareReader::communicate(const QByteArray &aSendMessage, QByteArray &aReceiveMessage) {
-    return mReader.communicate(aSendMessage, aReceiveMessage);
+    return m_Reader.communicate(aSendMessage, aReceiveMessage);
 }
 
 //------------------------------------------------------------------------------

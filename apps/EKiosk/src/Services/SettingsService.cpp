@@ -31,16 +31,16 @@ SettingsService *SettingsService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 SettingsService::SettingsService(IApplication *aApplication)
-    : mApplication(aApplication), mSettingsManager(nullptr), mRestoreConfiguration(false) {}
+    : m_Application(aApplication), m_SettingsManager(nullptr), m_RestoreConfiguration(false) {}
 
 //---------------------------------------------------------------------------
 SettingsService::~SettingsService() {}
 
 //---------------------------------------------------------------------------
 bool SettingsService::initialize() {
-    mSettingsManager = new SettingsManager(mApplication->getUserDataPath());
+    m_SettingsManager = new SettingsManager(m_Application->getUserDataPath());
 
-    mSettingsManager->setLog(mApplication->getLog());
+    m_SettingsManager->setLog(m_Application->getLog());
 
     //---------------------------------------------------------------------------
     // Регистрируем все конфиги.
@@ -51,7 +51,7 @@ bool SettingsService::initialize() {
     // если ключ присутствует и в system.ini, и в user.ini, будет использоваться значение из
     // user.ini. Такой подход обеспечивает гибкость и удобство конфигурирования.
     QList<SSettingsSource> settingsSources;
-    settingsSources << SSettingsSource(ISysUtils::rmBOM(mApplication->getWorkingDirectory() +
+    settingsSources << SSettingsSource(ISysUtils::rm_BOM(m_Application->getWorkingDirectory() +
                                                         "/data/system.ini"),
                                        AdapterNames::TerminalAdapter,
                                        true)
@@ -71,7 +71,7 @@ bool SettingsService::initialize() {
                     << SSettingsSource("user.ini", AdapterNames::UserAdapter, true)
 
                     << SSettingsSource("numcapacity.xml", AdapterNames::Directory, true)
-                    << SSettingsSource(mApplication->getWorkingDirectory() + "/data/directory.xml",
+                    << SSettingsSource(m_Application->getWorkingDirectory() + "/data/directory.xml",
                                        AdapterNames::Directory,
                                        true)
                     << SSettingsSource("config.xml", AdapterNames::Extensions, true)
@@ -80,7 +80,7 @@ bool SettingsService::initialize() {
 
     // Загрузка всех operators.xml
     foreach (auto file,
-             QDir(mApplication->getUserDataPath())
+             QDir(m_Application->getUserDataPath())
                  .entryInfoList(QStringList() << "operators*.xml", QDir::Files, QDir::Name)) {
         // Вставляем в property_tree как ссылку на файл
         settingsSources << SSettingsSource(
@@ -88,61 +88,61 @@ bool SettingsService::initialize() {
     }
 
     // Загружаем настройки.
-    mSettingsManager->loadSettings(settingsSources);
+    m_SettingsManager->loadSettings(settingsSources);
 
     // Инициализируем все адаптеры настроек.
     SDK::PaymentProcessor::TerminalSettings *terminalSettings =
-        new SDK::PaymentProcessor::TerminalSettings(mSettingsManager->getProperties());
-    terminalSettings->setLog(mApplication->getLog());
+        new SDK::PaymentProcessor::TerminalSettings(m_SettingsManager->getProperties());
+    terminalSettings->setLog(m_Application->getLog());
     terminalSettings->initialize();
 
     // Устанавливаем переменные окружения.
     SDK::PaymentProcessor::SAppEnvironment environment;
     environment.userDataPath = IApplication::toAbsolutePath(
-        mApplication->getSettings().value(CSettings::UserDataPath).toString());
+        m_Application->getSettings().value(CSettings::UserDataPath).toString());
     environment.contentPath = IApplication::toAbsolutePath(
-        mApplication->getSettings().value(CSettings::ContentPath).toString());
+        m_Application->getSettings().value(CSettings::ContentPath).toString());
     environment.interfacePath = IApplication::toAbsolutePath(
-        mApplication->getSettings().value(CSettings::InterfacePath).toString());
+        m_Application->getSettings().value(CSettings::InterfacePath).toString());
     environment.adPath = IApplication::toAbsolutePath(
-        mApplication->getSettings().value(CSettings::AdPath).toString());
+        m_Application->getSettings().value(CSettings::AdPath).toString());
     environment.version = Humo::getVersion();
 
     terminalSettings->setAppEnvironment(environment);
 
     SDK::PaymentProcessor::DealerSettings *dealerSettings =
-        new SDK::PaymentProcessor::DealerSettings(mSettingsManager->getProperties());
-    dealerSettings->setLog(mApplication->getLog());
+        new SDK::PaymentProcessor::DealerSettings(m_SettingsManager->getProperties());
+    dealerSettings->setLog(m_Application->getLog());
     dealerSettings->initialize();
 
     SDK::PaymentProcessor::Directory *directory =
-        new SDK::PaymentProcessor::Directory(mSettingsManager->getProperties());
-    directory->setLog(mApplication->getLog());
+        new SDK::PaymentProcessor::Directory(m_SettingsManager->getProperties());
+    directory->setLog(m_Application->getLog());
 
     SDK::PaymentProcessor::ExtensionsSettings *extensionsSettings =
-        new SDK::PaymentProcessor::ExtensionsSettings(mSettingsManager->getProperties());
-    extensionsSettings->setLog(mApplication->getLog());
+        new SDK::PaymentProcessor::ExtensionsSettings(m_SettingsManager->getProperties());
+    extensionsSettings->setLog(m_Application->getLog());
 
     SDK::PaymentProcessor::UserSettings *userSettings =
-        new SDK::PaymentProcessor::UserSettings(mSettingsManager->getProperties());
-    userSettings->setLog(mApplication->getLog());
+        new SDK::PaymentProcessor::UserSettings(m_SettingsManager->getProperties());
+    userSettings->setLog(m_Application->getLog());
 
-    mSettingsAdapters.insert(AdapterNames::TerminalAdapter, terminalSettings);
-    mSettingsAdapters.insert(AdapterNames::DealerAdapter, dealerSettings);
-    mSettingsAdapters.insert(AdapterNames::UserAdapter, userSettings);
-    mSettingsAdapters.insert(AdapterNames::Directory, directory);
-    mSettingsAdapters.insert(AdapterNames::Extensions, extensionsSettings);
+    m_SettingsAdapters.insert(AdapterNames::TerminalAdapter, terminalSettings);
+    m_SettingsAdapters.insert(AdapterNames::DealerAdapter, dealerSettings);
+    m_SettingsAdapters.insert(AdapterNames::UserAdapter, userSettings);
+    m_SettingsAdapters.insert(AdapterNames::Directory, directory);
+    m_SettingsAdapters.insert(AdapterNames::Extensions, extensionsSettings);
 
     return true;
 }
 
 //------------------------------------------------------------------------------
 void SettingsService::finishInitialize() {
-    if (mRestoreConfiguration) {
-        EventService::instance(mApplication)
+    if (m_RestoreConfiguration) {
+        EventService::instance(m_Application)
             ->sendEvent(PPSDK::EEventType::RestoreConfiguration, QVariant());
 
-        mRestoreConfiguration = false;
+        m_RestoreConfiguration = false;
     }
 }
 
@@ -153,12 +153,12 @@ bool SettingsService::canShutdown() {
 
 //---------------------------------------------------------------------------
 bool SettingsService::shutdown() {
-    foreach (SDK::PaymentProcessor::ISettingsAdapter *adapter, mSettingsAdapters) {
+    foreach (SDK::PaymentProcessor::ISettingsAdapter *adapter, m_SettingsAdapters) {
         delete adapter;
     }
 
-    mSettingsAdapters.clear();
-    delete mSettingsManager;
+    m_SettingsAdapters.clear();
+    delete m_SettingsManager;
     return true;
 }
 
@@ -183,22 +183,22 @@ void SettingsService::resetParameters(const QSet<QString> &) {}
 
 //---------------------------------------------------------------------------
 SettingsManager *SettingsService::getSettingsManager() const {
-    return mSettingsManager;
+    return m_SettingsManager;
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::ISettingsAdapter *SettingsService::getAdapter(const QString &aAdapterName) {
-    return mSettingsAdapters.contains(aAdapterName) ? mSettingsAdapters[aAdapterName] : 0;
+    return m_SettingsAdapters.contains(aAdapterName) ? m_SettingsAdapters[aAdapterName] : 0;
 }
 
 //---------------------------------------------------------------------------
 bool SettingsService::saveConfiguration() {
-    return mSettingsManager->saveSettings();
+    return m_SettingsManager->saveSettings();
 }
 
 //---------------------------------------------------------------------------
 QList<SDK::PaymentProcessor::ISettingsAdapter *> SettingsService::enumerateAdapters() const {
-    return mSettingsAdapters.values();
+    return m_SettingsAdapters.values();
 }
 
 //---------------------------------------------------------------------------

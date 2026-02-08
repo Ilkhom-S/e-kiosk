@@ -12,23 +12,23 @@
 #include <QtCore/QString>
 #include <QtCore5Compat/QTextCodec>
 
-class QGsmCodec : public QTextCodec {
+class QGsm_Codec : public QTextCodec {
 public:
-    explicit QGsmCodec(bool noLoss = false);
-    ~QGsmCodec();
+    explicit QGsm_Codec(bool noLoss = false);
+    ~QGsm_Codec();
 
     QByteArray name() const;
     int mibEnum() const;
 
-    static char singleFromUnicode(QChar ch);
+    static char singleFrom_Unicode(QChar ch);
     static QChar singleToUnicode(char ch);
 
-    static unsigned short twoByteFromUnicode(QChar ch);
+    static unsigned short twoByteFrom_Unicode(QChar ch);
     static QChar twoByteToUnicode(unsigned short ch);
 
 protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
-    QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
+    QByteArray convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const;
 
 private:
     bool noLoss;

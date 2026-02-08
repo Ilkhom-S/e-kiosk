@@ -39,8 +39,8 @@ public:
     QString getURL(const QString &aFileName, const QString &aDefaultUrl) const;
 
 private:
-    QString mHash;
-    int mSize;
+    QString m_Hash;
+    int m_Size;
 };
 
 //---------------------------------------------------------------------------

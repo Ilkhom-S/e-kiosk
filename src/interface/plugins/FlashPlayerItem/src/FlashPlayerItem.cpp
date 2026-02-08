@@ -5,20 +5,20 @@
 #include <QtWebKitWidgets/QWebFrame>
 
 FlashPlayerItem::FlashPlayerItem(QDeclarativeItem *aParent) : QDeclarativeItem(aParent) {
-    setFlag(QGraphicsItem::ItemHasNoContents, false);
+    setFlag(QGraphicsItem::Item_HasNoContents, false);
 
     QWebSettings *defaultSettings = QWebSettings::globalSettings();
     defaultSettings->setAttribute(QWebSettings::JavascriptEnabled, true);
     defaultSettings->setAttribute(QWebSettings::PluginsEnabled, true);
 
-    mWebView = new QGraphicsWebView(this);
+    m_WebView = new QGraphicsWebView(this);
 
-    connect(mWebView->page()->mainFrame(),
+    connect(m_WebView->page()->mainFrame(),
             SIGNAL(javaScriptWindowObjectCleared()),
             this,
             SLOT(populateJavaScriptWindowObject()));
 
-    mHtmlWrapper = "<body marginwidth='0' marginheight='0'> \
+    m_HtmlWrapper = "<body marginwidth='0' marginheight='0'> \
 								 <embed width='%1' height='%2' name='plugin' src='%3' wmode='transparent' type='application/x-shockwave-flash'> \
 								 <script>function click(aParameters) { handler.onClicked(aParameters); }</script></body>";
 }
@@ -28,34 +28,34 @@ FlashPlayerItem::~FlashPlayerItem() {}
 
 //--------------------------------------------------------------------------
 QString FlashPlayerItem::getMovie() const {
-    return mMovie;
+    return m_Movie;
 }
 
 //--------------------------------------------------------------------------
 void FlashPlayerItem::setMovie(const QString &aMovie) {
-    mMovie = aMovie;
+    m_Movie = aMovie;
 
-    QString html = QString(mHtmlWrapper)
-                       .arg(QString::number(mGeometry.width()))
-                       .arg(QString::number(mGeometry.height()))
-                       .arg(mMovie);
+    QString html = QString(m_HtmlWrapper)
+                       .arg(QString::number(m_Geometry.width()))
+                       .arg(QString::number(m_Geometry.height()))
+                       .arg(m_Movie);
 
-    mWebView->setHtml(html);
+    m_WebView->setHtml(html);
 }
 
 //--------------------------------------------------------------------------
 void FlashPlayerItem::geometryChanged(const QRectF &aNewGeometry, const QRectF &aOldGeometry) {
     if (aNewGeometry != aOldGeometry) {
-        mWebView->setGeometry(QRectF(0., 0., aNewGeometry.width(), aNewGeometry.height()));
-        mGeometry = aNewGeometry;
+        m_WebView->setGeometry(QRectF(0., 0., aNewGeometry.width(), aNewGeometry.height()));
+        m_Geometry = aNewGeometry;
 
-        if (!mMovie.isEmpty()) {
-            QString html = QString(mHtmlWrapper)
-                               .arg(QString::number(mGeometry.width()))
-                               .arg(QString::number(mGeometry.height()))
-                               .arg(mMovie);
+        if (!m_Movie.isEmpty()) {
+            QString html = QString(m_HtmlWrapper)
+                               .arg(QString::number(m_Geometry.width()))
+                               .arg(QString::number(m_Geometry.height()))
+                               .arg(m_Movie);
 
-            mWebView->page()->mainFrame()->setHtml(html);
+            m_WebView->page()->mainFrame()->setHtml(html);
         }
     }
 
@@ -64,7 +64,7 @@ void FlashPlayerItem::geometryChanged(const QRectF &aNewGeometry, const QRectF &
 
 //--------------------------------------------------------------------------
 void FlashPlayerItem::populateJavaScriptWindowObject() {
-    mWebView->page()->mainFrame()->addToJavaScriptWindowObject("handler", this);
+    m_WebView->page()->mainFrame()->addToJavaScriptWindowObject("handler", this);
 }
 
 //--------------------------------------------------------------------------

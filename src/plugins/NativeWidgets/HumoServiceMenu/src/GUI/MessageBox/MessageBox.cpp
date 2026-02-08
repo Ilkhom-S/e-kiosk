@@ -7,24 +7,24 @@
 namespace GUI {
 
 //------------------------------------------------------------------------
-MessageBox *MessageBox::mInstance = 0;
+MessageBox *MessageBox::m_Instance = 0;
 
 //------------------------------------------------------------------------
-MessageBox::MessageBox() : mSignalReceiver(nullptr) {
-    connect(&mWaitTimer, SIGNAL(timeout()), this, SLOT(hideWindow()));
+MessageBox::MessageBox() : m_SignalReceiver(nullptr) {
+    connect(&m_WaitTimer, SIGNAL(timeout()), this, SLOT(hideWindow()));
 }
 
 //------------------------------------------------------------------------
 void MessageBox::initialize() {
-    delete mInstance;
-    mInstance = new MessageBox();
+    delete m_Instance;
+    m_Instance = new MessageBox();
 }
 
 //------------------------------------------------------------------------
 void MessageBox::shutdown() {
-    mInstance->hideWindow();
-    delete mInstance;
-    mInstance = 0;
+    m_Instance->hideWindow();
+    delete m_Instance;
+    m_Instance = 0;
 }
 
 //------------------------------------------------------------------------
@@ -97,11 +97,11 @@ void MessageBox::setParentWidget(QWidget *aParent) {
 int MessageBox::showPopup(const QString &aText,
                           SDK::GUI::MessageBoxParams::Enum aIcon,
                           SDK::GUI::MessageBoxParams::Enum aButton) {
-    mWindow->setup(aText, aIcon, aButton);
+    m_Window->setup(aText, aIcon, aButton);
     if (aIcon == SDK::GUI::MessageBoxParams::Question) {
-        return mWindow->exec();
+        return m_Window->exec();
     } else {
-        mWindow->show();
+        m_Window->show();
     }
 
     return 0;
@@ -122,15 +122,15 @@ void MessageBox::updatePopup(const QVariantMap &aParameters) {
 
 //------------------------------------------------------------------------
 void MessageBox::setReceiver(QObject *aReceiver) {
-    mSignalReceiver = aReceiver;
+    m_SignalReceiver = aReceiver;
 }
 
 //------------------------------------------------------------------------
 void MessageBox::emitPopupSignal(const QVariantMap &aParameters) {
-    if (mSignalReceiver) {
+    if (m_SignalReceiver) {
         QObject::connect(this,
                          SIGNAL(clicked(const QVariantMap &)),
-                         mSignalReceiver,
+                         m_SignalReceiver,
                          SLOT(onClicked(const QVariantMap &)),
                          Qt::UniqueConnection);
         emit clicked(aParameters);
@@ -139,25 +139,25 @@ void MessageBox::emitPopupSignal(const QVariantMap &aParameters) {
 
 //------------------------------------------------------------------------
 void MessageBox::updateParentWidget(QWidget *aParent) {
-    if (mWindow.isNull()) {
-        mWindow = QPointer<MessageWindow>(new MessageWindow(aParent));
+    if (m_Window.isNull()) {
+        m_Window = QPointer<MessageWindow>(new MessageWindow(aParent));
     }
 }
 
 //------------------------------------------------------------------------
 void MessageBox::hideWindow() {
-    mWaitTimer.stop();
+    m_WaitTimer.stop();
 
-    if (mSignalReceiver) {
+    if (m_SignalReceiver) {
         QObject::disconnect(this,
                             SIGNAL(clicked(const QVariantMap &)),
-                            mSignalReceiver,
+                            m_SignalReceiver,
                             SLOT(onClicked(const QVariantMap &)));
-        mSignalReceiver = 0;
+        m_SignalReceiver = 0;
     }
 
-    if (!mWaitTimer.isActive()) {
-        mWindow->hide();
+    if (!m_WaitTimer.isActive()) {
+        m_Window->hide();
     }
 }
 } // namespace GUI

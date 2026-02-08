@@ -7,11 +7,11 @@
 #include <SDK/Plugins/PluginFactory.h>
 
 IOPortsPluginFactory::IOPortsPluginFactory() {
-    mName = "IO ports";
-    mDescription = "IO ports driver library (serial, parallel and other).";
-    mAuthor = "Humo";
-    mVersion = "1.0";
-    mModuleName = "ioports"; // Название dll/so модуля без расширения
+    m_Name = "IO ports";
+    m_Description = "IO ports driver library (serial, parallel and other).";
+    m_Author = "Humo";
+    m_Version = "1.0";
+    m_ModuleName = "ioports"; // Название dll/so модуля без расширения
 }
 
 //------------------------------------------------------------------------------

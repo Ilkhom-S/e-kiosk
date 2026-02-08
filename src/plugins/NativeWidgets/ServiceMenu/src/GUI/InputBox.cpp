@@ -6,7 +6,7 @@
 
 //---------------------------------------------------------------------------
 InputBox::InputBox(QWidget *parent, ValidatorFunction aValidator)
-    : QWidget(parent), mValidator(aValidator) {
+    : QWidget(parent), m_Validator(aValidator) {
     ui.setupUi(this);
 
     connect(ui.btnOK, SIGNAL(clicked()), this, SLOT(onOK()));
@@ -63,7 +63,7 @@ void InputBox::showEvent(QShowEvent *aEvent) {
 
 //---------------------------------------------------------------------------
 void InputBox::onTextChanged() {
-    ui.btnOK->setEnabled(mValidator(ui.lineEdit->text()));
+    ui.btnOK->setEnabled(m_Validator(ui.lineEdit->text()));
 }
 
 //---------------------------------------------------------------------------

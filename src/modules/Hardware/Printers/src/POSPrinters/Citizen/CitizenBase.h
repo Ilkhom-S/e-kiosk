@@ -8,12 +8,12 @@
 template <class T> class CitizenBase : public T {
 public:
     CitizenBase() {
-        this->mRussianCodePage = '\x07';
+        this->m_RussianCodePage = '\x07';
 
         // теги
-        this->mParameters = POSPrinters::CommonParameters;
-        this->mParameters.tagEngine.appendCommon(Tags::Type::DoubleWidth, "\x1B\x21", "\x20");
-        this->mParameters.tagEngine.appendCommon(Tags::Type::DoubleHeight, "\x1B\x21", "\x10");
+        this->m_Parameters = POSPrinters::CommonParameters;
+        this->m_Parameters.tagEngine.appendCommon(Tags::Type::DoubleWidth, "\x1B\x21", "\x20");
+        this->m_Parameters.tagEngine.appendCommon(Tags::Type::DoubleHeight, "\x1B\x21", "\x10");
     }
 };
 

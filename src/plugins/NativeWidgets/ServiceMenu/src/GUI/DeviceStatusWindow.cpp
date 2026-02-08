@@ -21,13 +21,13 @@ QWidget *DeviceStatusWindow::createWidget() {
 
     ui.setupUi(widget);
 
-    ui.lblDeviceType->setText(mType);
+    ui.lblDeviceType->setText(m_Type);
 
     QVariantMap deviceParams(
-        mBackend->getHardwareManager()->getConfiguration()[mConfigurationName].toMap());
+        m_Backend->getHardwareManager()->getConfiguration()[m_ConfigurationName].toMap());
     ui.lblDeviceModel->setText(deviceParams["model_name"].toString());
 
-    ui.btnRunTest->setEnabled(mDeviceTest ? mDeviceTest->isReady() : false);
+    ui.btnRunTest->setEnabled(m_DeviceTest ? m_DeviceTest->isReady() : false);
 
     connect(ui.btnRunTest, SIGNAL(clicked()), this, SLOT(onDeviceRunTest()));
 
@@ -48,8 +48,8 @@ void DeviceStatusWindow::updateDeviceStatus(const QString &aNewStatus,
     ui.lblDeviceStatus->setStyleSheet("color:" + aStatusColor + ";");
     ui.lblDeviceType->setStyleSheet("color:" + aStatusColor + ";");
 
-    if (!mDeviceTest.isNull()) {
-        ui.btnRunTest->setEnabled(mDeviceTest->isReady());
+    if (!m_DeviceTest.isNull()) {
+        ui.btnRunTest->setEnabled(m_DeviceTest->isReady());
     }
 }
 

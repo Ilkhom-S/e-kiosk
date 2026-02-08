@@ -27,7 +27,7 @@ protected:
     virtual bool reset();
 
     /// Выдать.
-    virtual void performDispense(int aUnit, int aItems);
+    virtual void perform_Dispense(int aUnit, int aItems);
 
     /// Выполнить команду.
     TResult processCommand(char aCommand, QByteArray *aAnswer = nullptr);
@@ -41,7 +41,7 @@ protected:
                            const TDeviceCodeSpecifications &aSensorSpecifications);
 
     /// Протокол.
-    Puloon mProtocol;
+    Puloon m_Protocol;
 };
 
 //--------------------------------------------------------------------------------

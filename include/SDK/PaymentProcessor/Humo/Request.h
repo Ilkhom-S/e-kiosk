@@ -53,14 +53,14 @@ public:
     virtual QString toLogString() const;
 
 protected:
-    bool mIsOk;
-    bool mIsCriticalError;
+    bool m_IsOk;
+    bool m_IsCriticalError;
 
     // Параметры, добавляемые методом addParam
-    QVariantMap mParameters;
-    QVariantMap mLogParameters;
-    QVariantMap mRawParameters;
-    QVariantMap mRawLogParameters;
+    QVariantMap m_Parameters;
+    QVariantMap m_LogParameters;
+    QVariantMap m_RawParameters;
+    QVariantMap m_RawLogParameters;
 };
 
 //------------------------------------------------------------------------------

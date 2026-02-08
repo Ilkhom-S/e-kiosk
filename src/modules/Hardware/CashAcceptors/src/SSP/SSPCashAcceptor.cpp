@@ -323,12 +323,12 @@ bool SSPCashAcceptor::loadParTable() {
 }
 
 //---------------------------------------------------------------------------
-bool SSPCashAcceptor::performUpdateFirmware(const QByteArray &aBuffer) {
-    if (!performBaudRateChanging(true)) {
+bool SSPCashAcceptor::perform_UpdateFirmware(const QByteArray &aBuffer) {
+    if (!perform_BaudRateChanging(true)) {
         return false;
     }
 
-    if (!performBaudRateChanging(false)) {
+    if (!perform_BaudRateChanging(false)) {
         return false;
     }
 
@@ -336,7 +336,7 @@ bool SSPCashAcceptor::performUpdateFirmware(const QByteArray &aBuffer) {
 }
 
 //---------------------------------------------------------------------------
-bool SSPCashAcceptor::performBaudRateChanging(bool aUp) {
+bool SSPCashAcceptor::perform_BaudRateChanging(bool aUp) {
     CSSP::EBaudRate::Enum upBaudRate = (m_DeviceName == CSSP::Models::NV200Spectral)
                                            ? CSSP::EBaudRate::BR115200
                                            : CSSP::EBaudRate::BR38400;

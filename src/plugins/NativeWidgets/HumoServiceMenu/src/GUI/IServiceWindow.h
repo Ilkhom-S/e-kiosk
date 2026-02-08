@@ -19,10 +19,10 @@ public:
 //------------------------------------------------------------------------
 class ServiceWindowBase : public IServiceWindow {
 public:
-    ServiceWindowBase(HumoServiceBackend *aBackend) : mBackend(aBackend) {}
+    ServiceWindowBase(HumoServiceBackend *aBackend) : m_Backend(aBackend) {}
 
 protected:
-    HumoServiceBackend *mBackend;
+    HumoServiceBackend *m_Backend;
 };
 
 //------------------------------------------------------------------------

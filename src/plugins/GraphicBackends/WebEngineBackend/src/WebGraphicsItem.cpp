@@ -24,17 +24,17 @@ const char InitializeHandlerSignature[] = "initialize()";
 } // namespace CWebGraphicsItem
 
 //---------------------------------------------------------------------------
-WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo,
+WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
                                  SDK::PaymentProcessor::Scripting::Core *aCore,
                                  ILog *aLog)
-    : mCoreProxy(aCore), mLog(aLog), mItemLoaded(false), mContext(aInfo.context) {
+    : m_CoreProxy(aCore), m_Log(aLog), m_Item_Loaded(false), m_Context(aInfo.context) {
     // Создаем WebEngine виджет для отображения веб-контента
-    mWebView = QSharedPointer<QWebEngineView>(new QWebEngineView());
+    m_WebView = QSharedPointer<QWebEngineView>(new QWebEngineView());
 
-    mWebView->setPage(new WebPageLogger(this, mCoreProxy, mLog));
+    m_WebView->setPage(new WebPageLogger(this, m_CoreProxy, m_Log));
 
     // Настраиваем параметры безопасности и функциональности WebEngine
-    auto *settings = mWebView->settings();
+    auto *settings = m_WebView->settings();
     settings->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     settings->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
     settings->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
@@ -46,30 +46,30 @@ WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo,
     // settings->setAttribute(QWebEngineSettings::DeveloperExtrasEnabled,
     //                      aInfo.parameters.value(CWebGraphicsItem::DebugKey).toString() ==
     //                      "true");
-    mWebView->setWindowFlags(Qt::FramelessWindowHint);
+    m_WebView->setWindowFlags(Qt::FramelessWindowHint);
 
     // Добавляем горячую клавишу F5 для обновления страницы
     QKeySequence keysRefresh(QKeySequence::Refresh);
     QAction *actionRefresh = new QAction(this);
     actionRefresh->setShortcut(keysRefresh);
-    mWebView->addAction(actionRefresh);
+    m_WebView->addAction(actionRefresh);
     connect(actionRefresh, &QAction::triggered, this, &WebGraphicsItem::onLoadFinished);
 
     // Скрываем контекстное меню 'Обновить'
-    mWebView->page()->action(QWebEnginePage::Reload)->setVisible(false);
+    m_WebView->page()->action(QWebEnginePage::Reload)->setVisible(false);
 
     // Подключаем сигналы WebEngine для обработки загрузки и JavaScript взаимодействия
-    connect(mWebView.get(), &QWebEngineView::loadFinished, this, &WebGraphicsItem::onLoadFinished);
-    connect(mWebView.get(), &QWebEngineView::urlChanged, this, &WebGraphicsItem::onUrlChanged);
+    connect(m_WebView.get(), &QWebEngineView::loadFinished, this, &WebGraphicsItem::onLoadFinished);
+    connect(m_WebView.get(), &QWebEngineView::urlChanged, this, &WebGraphicsItem::onUrlChanged);
 
     // Получаем разрешение из конфига виджета (секция [web]).
     if (!aInfo.parameters.contains(CWebGraphicsItem::WidthKey) ||
         !aInfo.parameters.contains(CWebGraphicsItem::HeightKey)) {
-        LOG(mLog, LogLevel::Error, "Widget dimensions (width or height) missing.");
+        LOG(m_Log, LogLevel::Error, "Widget dimensions (width or height) missing.");
         return;
     }
 
-    mWebView->setGeometry(QRect(0,
+    m_WebView->setGeometry(QRect(0,
                                 0,
                                 aInfo.parameters[CWebGraphicsItem::WidthKey].toInt(),
                                 aInfo.parameters[CWebGraphicsItem::HeightKey].toInt()));
@@ -78,24 +78,24 @@ WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo,
     QString path = aInfo.parameters.value(CWebGraphicsItem::StartPageKey, "");
     if (path.startsWith("http")) {
         // Загружаем удаленный адрес
-        mWebView->load(QUrl(path));
+        m_WebView->load(QUrl(path));
     } else {
         // Загружаем локальный контент
         path = aInfo.directory + "/" + path;
         QFile content(path);
 
         if (!content.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            LOG(mLog, LogLevel::Error, QString("Failed to load html content file '%1'.").arg(path));
-            mError = QString("Failed to load content file: %1").arg(path);
+            LOG(m_Log, LogLevel::Error, QString("Failed to load html content file '%1'.").arg(path));
+            m_Error = QString("Failed to load content file: %1").arg(path);
             return;
         }
 
         QTextStream stream(&content);
         QString htmlContent = stream.readAll();
-        QUrl baseUrl = QUrl::fromLocalFile(aInfo.directory + "/");
-        mWebView->setHtml(htmlContent, baseUrl);
+        QUrl baseUrl = QUrl::from_LocalFile(aInfo.directory + "/");
+        m_WebView->setHtml(htmlContent, baseUrl);
     }
-    mUrl = path;
+    m_Url = path;
 }
 
 //---------------------------------------------------------------------------
@@ -106,7 +106,7 @@ WebGraphicsItem::~WebGraphicsItem() {
 
 //------------------------------------------------------------------------------
 void WebGraphicsItem::onRefresh() {
-    mWebView->load(QUrl(mUrl));
+    m_WebView->load(QUrl(m_Url));
 }
 
 //------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ void WebGraphicsItem::onRefresh() {
 /// @param aOk true если страница загружена успешно
 void WebGraphicsItem::onLoadFinished(bool aOk) {
     if (aOk) {
-        mItemLoaded = true;
+        m_Item_Loaded = true;
 
         // Настраиваем JavaScript объекты для взаимодействия с платежной системой
         // В WebEngine JavaScript объекты добавляются через runJavaScript
@@ -124,10 +124,10 @@ void WebGraphicsItem::onLoadFinished(bool aOk) {
                                   "console.log('WebEngine container initialized');")
                               .arg(CWebGraphicsItem::ContainerScriptObject);
 
-        mWebView->page()->runJavaScript(jsSetup);
+        m_WebView->page()->runJavaScript(jsSetup);
 
         // Инициализируем JavaScript обработчики если они существуют
-        mWebView->page()->runJavaScript(
+        m_WebView->page()->runJavaScript(
             QString("if (typeof initialize === 'function') { "
                     "    try { initialize(); console.log('JavaScript initialized successfully'); } "
                     "    catch(e) { console.error('Initialize error:', e); } "
@@ -136,16 +136,16 @@ void WebGraphicsItem::onLoadFinished(bool aOk) {
                     "}"));
 
         // Обрабатываем отложенные сигналы
-        while (!mSignalQueue.isEmpty()) {
-            auto signalData = mSignalQueue.takeFirst();
+        while (!m_SignalQueue.isEmpty()) {
+            auto signalData = m_SignalQueue.takeFirst();
             QString signalName = signalData.first;
             QList<QVariant> args = signalData.second;
 
             // Вызываем JavaScript обработчики для сигналов
             if (signalName == "onShow") {
-                mWebView->page()->runJavaScript("if (typeof onShow === 'function') { onShow(); }");
+                m_WebView->page()->runJavaScript("if (typeof onShow === 'function') { onShow(); }");
             } else if (signalName == "onHide") {
-                mWebView->page()->runJavaScript("if (typeof onHide === 'function') { onHide(); }");
+                m_WebView->page()->runJavaScript("if (typeof onHide === 'function') { onHide(); }");
             } else if (signalName == "onReset") {
                 // Для reset передаем параметры как JSON
                 if (!args.isEmpty() && args.first().canConvert<QVariantMap>()) {
@@ -157,7 +157,7 @@ void WebGraphicsItem::onLoadFinished(bool aOk) {
                         paramsJson += QString("\"%1\":\"%2\"").arg(it.key(), it.value().toString());
                     }
                     paramsJson += "}";
-                    mWebView->page()->runJavaScript(
+                    m_WebView->page()->runJavaScript(
                         QString("if (typeof onReset === 'function') { onReset(%1); }")
                             .arg(paramsJson));
                 }
@@ -173,19 +173,19 @@ void WebGraphicsItem::onLoadFinished(bool aOk) {
                         paramsJson += QString("\"%1\":\"%2\"").arg(it.key(), it.value().toString());
                     }
                     paramsJson += "}";
-                    mWebView->page()->runJavaScript(
+                    m_WebView->page()->runJavaScript(
                         QString("if (typeof onNotify === 'function') { onNotify('%1', %2); }")
                             .arg(reason, paramsJson));
                 }
             }
         }
 
-        LOG(mLog,
+        LOG(m_Log,
             LogLevel::Normal,
             "WebEngine page loaded and JavaScript initialized successfully");
     } else {
-        mError = "Failed to load web page";
-        LOG(mLog, LogLevel::Error, mError);
+        m_Error = "Failed to load web page";
+        LOG(m_Log, LogLevel::Error, m_Error);
     }
 }
 
@@ -193,58 +193,58 @@ void WebGraphicsItem::onLoadFinished(bool aOk) {
 /// Обработчик изменения URL страницы.
 /// @param aUrl Новый URL страницы
 void WebGraphicsItem::onUrlChanged(const QUrl &aUrl) {
-    mUrl = aUrl.toString();
-    LOG(mLog, LogLevel::Normal, QString("WebEngine URL changed to: %1").arg(mUrl));
+    m_Url = aUrl.toString();
+    LOG(m_Log, LogLevel::Normal, QString("WebEngine URL changed to: %1").arg(m_Url));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::show() {
-    mItemLoaded ? emit onShow()
-                : mSignalQueue.push_back(qMakePair(QString("onShow"), QList<QVariant>()));
+    m_Item_Loaded ? emit onShow()
+                : m_SignalQueue.push_back(qMakePair(QString("onShow"), QList<QVariant>()));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::hide() {
-    mItemLoaded ? emit onHide()
-                : mSignalQueue.push_back(qMakePair(QString("onHide"), QList<QVariant>()));
+    m_Item_Loaded ? emit onHide()
+                : m_SignalQueue.push_back(qMakePair(QString("onHide"), QList<QVariant>()));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::reset(const QVariantMap &aParameters) {
-    mItemLoaded
+    m_Item_Loaded
         ? emit onReset(aParameters)
-        : mSignalQueue.push_back(qMakePair(QString("onReset"), QList<QVariant>() << aParameters));
+        : m_SignalQueue.push_back(qMakePair(QString("onReset"), QList<QVariant>() << aParameters));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::notify(const QString &aReason, const QVariantMap &aParameters) {
-    mItemLoaded ? emit onNotify(aReason, aParameters)
-                : mSignalQueue.push_back(
+    m_Item_Loaded ? emit onNotify(aReason, aParameters)
+                : m_SignalQueue.push_back(
                       qMakePair(QString("onNotify"), QList<QVariant>() << aReason << aParameters));
 }
 
 //---------------------------------------------------------------------------
 QQuickItem *WebGraphicsItem::getWidget() const {
     // FIXME !!!
-    return nullptr; // mWebView.data();
+    return nullptr; // m_WebView.data();
 }
 
 //---------------------------------------------------------------------------
 QWidget *WebGraphicsItem::getNativeWidget() const {
-    return mWebView.data();
+    return m_WebView.data();
 }
 
 //---------------------------------------------------------------------------
 bool WebGraphicsItem::isValid() const {
-    return !mWebView.isNull();
+    return !m_WebView.isNull();
 }
 
 //---------------------------------------------------------------------------
 QString WebGraphicsItem::getError() const {
-    return mError;
+    return m_Error;
 }
 
 //---------------------------------------------------------------------------
 QVariantMap WebGraphicsItem::getContext() const {
-    return mContext;
+    return m_Context;
 }

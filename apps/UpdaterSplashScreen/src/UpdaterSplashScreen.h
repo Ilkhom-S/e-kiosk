@@ -3,7 +3,7 @@
 #pragma once
 
 #include <QtCore/QFile>
-#include <QtCore/QFileSystemWatcher>
+#include <QtCore/QFileSystem_Watcher>
 #include <QtWidgets/QWidget>
 
 #include "ui_updatersplashscreen.h"
@@ -25,7 +25,7 @@ private:
 private:
     Ui::mainWindow ui;
     QString m_progressFile;
-    QFileSystemWatcher m_watcher;
+    QFileSystem_Watcher m_watcher;
     QFile m_file;
 
     QString m_status;

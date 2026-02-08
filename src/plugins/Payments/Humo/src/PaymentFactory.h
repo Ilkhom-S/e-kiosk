@@ -64,7 +64,7 @@ public:
     virtual QList<SPinCard> getPinCardList(qint64 aProvider);
 
 private:
-    PinLoader *mPinLoader;
+    PinLoader *m_PinLoader;
 };
 
 //------------------------------------------------------------------------------

@@ -24,9 +24,9 @@ private slots:
     void printEncashment(int aIndex);
 
 protected:
-    ServiceMenuBackend *mBackend;
-    QList<QWidget *> mWidgets;
-    QSignalMapper *mSignalMapper;
+    ServiceMenuBackend *m_Backend;
+    QList<QWidget *> m_Widgets;
+    QSignalMapper *m_SignalMapper;
 };
 
 //------------------------------------------------------------------------

@@ -36,40 +36,40 @@ const QString UseAutoOrderProviders = "ui/auto_order_operator";
 
 //------------------------------------------------------------------------------
 Utils::Utils(QQmlEngine *aEngine, const QString &aInterfacePath, const QString &aUserPath)
-    : mEngine(aEngine), mInterfacePath(aInterfacePath), mUserPath(aUserPath),
-      mUseCommonSounds(true), mUseNarratorSounds(false), mUseAutoOrderProviders(false) {
+    : m_Engine(aEngine), m_InterfacePath(aInterfacePath), m_UserPath(aUserPath),
+      m_UseCommonSounds(true), m_UseNarratorSounds(false), m_UseAutoOrderProviders(false) {
     // Получаем директорию с файлами интерфейса.
-    QObject *application = mEngine->rootContext()->contextProperty("Core").value<QObject *>();
+    QObject *application = m_Engine->rootContext()->contextProperty("Core").value<QObject *>();
 
     Q_ASSERT(application);
 
     loadConfiguration();
 
-    mTranslator = QSharedPointer<Translator>(new Translator(mInterfacePath));
-    connect(mTranslator.data(), SIGNAL(languageChanged()), this, SIGNAL(updateTranslator()));
+    m_Translator = QSharedPointer<Translator>(new Translator(m_InterfacePath));
+    connect(m_Translator.data(), SIGNAL(languageChanged()), this, SIGNAL(updateTranslator()));
 
     // Модель для интерфейса
-    mGroupModel = QSharedPointer<GroupModel>(new GroupModel());
-    mGroupModel->setStatistic(getStatistic());
+    m_GroupModel = QSharedPointer<GroupModel>(new GroupModel());
+    m_GroupModel->setStatistic(getStatistic());
 
-    mRootGroupModel = QSharedPointer<GroupModel>(new GroupModel());
-    mRootGroupModel->setElementFilter(QStringList() << "group");
+    m_RootGroupModel = QSharedPointer<GroupModel>(new GroupModel());
+    m_RootGroupModel->setElementFilter(QStringList() << "group");
 
     // Модели и фильтры для поиска
-    mProviderListModel =
-        QSharedPointer<ProviderListModel>(new ProviderListModel(this, mGroupModel));
+    m_ProviderListModel =
+        QSharedPointer<ProviderListModel>(new ProviderListModel(this, m_GroupModel));
     connect(
-        mGroupModel.data(), SIGNAL(modelReset()), mProviderListModel.data(), SLOT(groupsUpdated()));
-    mProviderListModel->setPaymentService(
+        m_GroupModel.data(), SIGNAL(modelReset()), m_ProviderListModel.data(), SLOT(groupsUpdated()));
+    m_ProviderListModel->setPaymentService(
         application ? application->property("payment").value<QObject *>() : nullptr);
-    mProviderListFilter = QSharedPointer<ProviderListFilter>(new ProviderListFilter(this));
-    mProviderListFilter->setSourceModel(mProviderListModel.data());
-    mProviderListFilter->setDynamicSortFilter(true);
+    m_ProviderListFilter = QSharedPointer<ProviderListFilter>(new ProviderListFilter(this));
+    m_ProviderListFilter->setSourceModel(m_ProviderListModel.data());
+    m_ProviderListFilter->setDynamicSortFilter(true);
 
-    mSkin = QSharedPointer<Skin>(new Skin(application, mInterfacePath, mUserPath));
+    m_Skin = QSharedPointer<Skin>(new Skin(application, m_InterfacePath, m_UserPath));
 
-    mGuiService = application->property("graphics").value<QObject *>();
-    connect(mGuiService,
+    m_GuiService = application->property("graphics").value<QObject *>();
+    connect(m_GuiService,
             SIGNAL(skinReload(const QVariantMap &)),
             this,
             SLOT(onReloadSkin(const QVariantMap &)));
@@ -201,17 +201,18 @@ QString Utils::format(const QString &aSource, const QString &aFormat) const {
     if (!result.isEmpty()) {
         QRegularExpression rx("\\[(\\d+)\\]");
         QList<QPair<int, QString>> replacements;
-        
+
         // Find all matches
         QRegularExpressionMatchIterator it = rx.globalMatch(result);
         while (it.hasNext()) {
             QRegularExpressionMatch match = it.next();
             int srcIndex = match.captured(1).toInt() - 1;
-            QString replacement = (srcIndex >= 0 && srcIndex < aSource.size()) ? 
-                                QString(aSource.at(srcIndex)) : QString();
+            QString replacement = (srcIndex >= 0 && srcIndex < aSource.size())
+                                      ? QString(aSource.at(srcIndex))
+                                      : QString();
             replacements.append(qMakePair(match.capturedStart(), replacement));
         }
-        
+
         // Replace from the end to avoid position shifts
         for (int i = replacements.size() - 1; i >= 0; --i) {
             const auto &replacement = replacements.at(i);
@@ -233,10 +234,10 @@ QString Utils::readFile(const QString &aPath) const {
 
     if (file.open(QIODevice::ReadOnly)) {
         QByteArray contents = file.readAll();
-        QMap<QString, QTextCodec *>::iterator codec = mCodecCache.find(aPath);
+        QMap<QString, QTextCodec *>::iterator codec = m_CodecCache.find(aPath);
 
-        if (codec == mCodecCache.end()) {
-            codec = mCodecCache.insert(aPath, QTextCodec::codecForHtml(contents));
+        if (codec == m_CodecCache.end()) {
+            codec = m_CodecCache.insert(aPath, QTextCodec::codecForHtml(contents));
         }
 
         result = (*codec)->toUnicode(contents);
@@ -271,27 +272,27 @@ QString Utils::toPlain(const QString &aSource) const {
 
 //------------------------------------------------------------------------------
 QObject *Utils::getTranslator() {
-    return mTranslator.data();
+    return m_Translator.data();
 }
 
 //------------------------------------------------------------------------------
 QObject *Utils::getGroupModel() {
-    return mGroupModel.data();
+    return m_GroupModel.data();
 }
 
 //------------------------------------------------------------------------------
 QObject *Utils::getRootGroupModel() {
-    return mRootGroupModel.data();
+    return m_RootGroupModel.data();
 }
 
 //------------------------------------------------------------------------------
 QObject *Utils::getProviderList() {
-    return mProviderListFilter.data();
+    return m_ProviderListFilter.data();
 }
 
 //------------------------------------------------------------------------------
 QObject *Utils::getSkin() {
-    return mSkin.data();
+    return m_Skin.data();
 }
 
 // Файлы для воспроизведения должны лежать в соответствующих папках: common, narrator, etc
@@ -304,11 +305,11 @@ void Utils::playSound(const QString &aFileName) const {
     QString key = QString("sound/use_%1").arg(path.last());
     QString filePath;
 
-    if (key == CUtils::UseCommonSounds && mUseCommonSounds) {
-        filePath = mInterfacePath + QDir::separator() + "sounds" + QDir::separator() + aFileName;
-    } else if (key == CUtils::UseNarratorSounds && mUseNarratorSounds) {
-        filePath = mInterfacePath + QDir::separator() + "sounds" + QDir::separator() +
-                   mTranslator->getLanguage() + QDir::separator() + aFileName;
+    if (key == CUtils::UseCommonSounds && m_UseCommonSounds) {
+        filePath = m_InterfacePath + QDir::separator() + "sounds" + QDir::separator() + aFileName;
+    } else if (key == CUtils::UseNarratorSounds && m_UseNarratorSounds) {
+        filePath = m_InterfacePath + QDir::separator() + "sounds" + QDir::separator() +
+                   m_Translator->getLanguage() + QDir::separator() + aFileName;
     } else {
         // Звук отключен
         return;
@@ -323,14 +324,14 @@ void Utils::playSound(const QString &aFileName) const {
 }
 
 //------------------------------------------------------------------------------
-QString Utils::fromBase64(const QString &aSource) const {
-    return QTextCodec::codecForName("UTF-8")->toUnicode(QByteArray::fromBase64(aSource.toLatin1()));
+QString Utils::from_Base64(const QString &aSource) const {
+    return QTextCodec::codecForName("UTF-8")->toUnicode(QByteArray::from_Base64(aSource.toLatin1()));
 }
 
 //------------------------------------------------------------------------------
-QString Utils::fromUrlEncoding(const QString &aSource) const {
+QString Utils::from_UrlEncoding(const QString &aSource) const {
     return QTextCodec::codecForName("windows-1251")
-        ->toUnicode(QByteArray::fromPercentEncoding(aSource.toLatin1()));
+        ->toUnicode(QByteArray::from_PercentEncoding(aSource.toLatin1()));
 }
 
 //------------------------------------------------------------------------------
@@ -351,7 +352,7 @@ QVariantMap Utils::str2json(const QString &aString) const {
 
     QJsonParseError ok;
     QString str = aString;
-    QJsonDocument result = QJsonDocument::fromJson(str.replace("'", "\"").toUtf8(), &ok);
+    QJsonDocument result = QJsonDocument::from_Json(str.replace("'", "\"").toUtf8(), &ok);
 
     if (ok.error == QJsonParseError::NoError) {
         return result.object().toVariantMap();
@@ -364,9 +365,9 @@ QVariantMap Utils::str2json(const QString &aString) const {
 
 //------------------------------------------------------------------------------
 void Utils::onReloadSkin(const QVariantMap &aParams) {
-    if (mSkin->needReload(aParams)) {
-        QMetaObject::invokeMethod(mGuiService, "reset", Qt::DirectConnection);
-        mSkin->reload(aParams);
+    if (m_Skin->needReload(aParams)) {
+        QMetaObject::invokeMethod(m_GuiService, "reset", Qt::DirectConnection);
+        m_Skin->reload(aParams);
     }
 }
 
@@ -374,8 +375,8 @@ void Utils::onReloadSkin(const QVariantMap &aParams) {
 QMap<qint64, quint32> Utils::getStatistic() {
     QMap<qint64, quint32> result;
 
-    if (mUseAutoOrderProviders) {
-        QObject *application = mEngine->rootContext()->contextProperty("Core").value<QObject *>();
+    if (m_UseAutoOrderProviders) {
+        QObject *application = m_Engine->rootContext()->contextProperty("Core").value<QObject *>();
         QObject *paymentService =
             application ? application->property("payment").value<QObject *>() : nullptr;
 
@@ -404,7 +405,7 @@ void Utils::loadConfiguration() {
 
     // Загружаем значения по умолчанию
     {
-        QSettings defaultSettings(mInterfacePath + QDir::separator() + CUtils::DefaultConf,
+        QSettings defaultSettings(m_InterfacePath + QDir::separator() + CUtils::DefaultConf,
                                   QSettings::IniFormat);
         defaultSettings.setIniCodec("UTF-8");
 
@@ -415,7 +416,7 @@ void Utils::loadConfiguration() {
 
     // Загружаем пользовательские настройки
     {
-        QSettings userSettings(mUserPath + QDir::separator() + CUtils::UserConf,
+        QSettings userSettings(m_UserPath + QDir::separator() + CUtils::UserConf,
                                QSettings::IniFormat);
         userSettings.setIniCodec("UTF-8");
 
@@ -424,11 +425,11 @@ void Utils::loadConfiguration() {
         }
     }
 
-    mUseCommonSounds = configuration.value(CUtils::UseCommonSounds, mUseCommonSounds).toBool();
-    mUseNarratorSounds =
-        configuration.value(CUtils::UseNarratorSounds, mUseNarratorSounds).toBool();
-    mUseAutoOrderProviders =
-        configuration.value(CUtils::UseAutoOrderProviders, mUseAutoOrderProviders).toBool();
+    m_UseCommonSounds = configuration.value(CUtils::UseCommonSounds, m_UseCommonSounds).toBool();
+    m_UseNarratorSounds =
+        configuration.value(CUtils::UseNarratorSounds, m_UseNarratorSounds).toBool();
+    m_UseAutoOrderProviders =
+        configuration.value(CUtils::UseAutoOrderProviders, m_UseAutoOrderProviders).toBool();
 }
 
 //------------------------------------------------------------------------------

@@ -29,26 +29,26 @@ TParameterList defaultParameters(const QStringList &aModels, const QString &aDef
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList PrimParametersBase(const QStringList &aModels) {
+template <class T> TParameterList Prim_ParametersBase(const QStringList &aModels) {
     return defaultParameters<T>(aModels, CComponents::FiscalRegistrator)
            << setProtocol(ProtocolNames::FR::PRIM) << setAutoCloseSessionAbility()
-           << setDocumentCap() << setNullingSumInCash();
+           << setDocumentCap() << setNullingSum_InCash();
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList PrimParameters(const QStringList &aModels) {
-    return PrimParametersBase<T>(aModels) << setLineSpacing(15, 55, 25, 5);
+template <class T> TParameterList Prim_Parameters(const QStringList &aModels) {
+    return Prim_ParametersBase<T>(aModels) << setLineSpacing(15, 55, 25, 5);
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList PresenterPrimParameters(const QStringList &aModels) {
-    return PrimParameters<T>(aModels) << setLoopEnabled() << setBackFeed(PPT::ForNonFiscalDocuments)
+template <class T> TParameterList PresenterPrim_Parameters(const QStringList &aModels) {
+    return Prim_Parameters<T>(aModels) << setLoopEnabled() << setBackFeed(PPT::ForNonFiscalDocuments)
                                       << setPrinterModel("Epson EU-422");
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList EjectorPrimParameters(const QStringList &aModels) {
-    return PrimParametersBase<T>(aModels)
+template <class T> TParameterList EjectorPrim_Parameters(const QStringList &aModels) {
+    return Prim_ParametersBase<T>(aModels)
            << setLineSpacing(15, 55, 25, 5, PPT::ForNonFiscalDocuments)
            << setLoopEnabled(PPT::ForNonFiscalDocuments, false) << setRemoteSensor(true)
            << setPresentationLength()
@@ -75,7 +75,7 @@ template <class T> TParameterList ShtrihParameters(const QStringList &aModels) {
     return defaultParameters<T>(aModels, CComponents::FiscalRegistrator)
            << setProtocol(ProtocolNames::FR::Shtrih)
            << setModifiedValues(CHardwareSDK::ModelName, modelNames) << setWeightSensorsEnabled()
-           << setNullingSumInCash();
+           << setNullingSum_InCash();
 }
 
 //------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ template <class T>
 TParameterList
 AtolParameters(const QStringList &aModels, const QString &aDeviceType, const QString &aProtocol) {
     return defaultParameters<T>(aModels, aDeviceType)
-           << setProtocol(aProtocol) << setNullingSumInCash()
+           << setProtocol(aProtocol) << setNullingSum_InCash()
            << setModifiedValues(CHardwareSDK::ProtocolName, "ATOL", ProtocolNames::FR::ATOL2);
 }
 
@@ -208,7 +208,7 @@ TParameterList PaymasterParameters(const QStringList &aModels, const QString &aP
                               CAtolOnlinePrinters::Default)
            << setRemoteSensor(true)
            << setModifiedValues(CHardwareSDK::ModelName, "Sensis Paymaster", "Sensis Kaznachej")
-           << setJamSensorEnabled();
+           << setJam_SensorEnabled();
 }
 
 //------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ template <class T> TParameterList KasbiParameters(const QStringList &aModels) {
 template <class T> TParameterList AFPParameters(const QStringList &aModels) {
     return modifyPriority(defaultParameters<T>(aModels, CComponents::FiscalRegistrator),
                           EDetectingPriority::High)
-           << setNullingSumInCash() << setProtocol(ProtocolNames::FR::AFP);
+           << setNullingSum_InCash() << setProtocol(ProtocolNames::FR::AFP);
 }
 
 //------------------------------------------------------------------------------
@@ -272,13 +272,13 @@ template <class T> TParameterList AFPParameters(const QStringList &aModels) {
 
 //------------------------------------------------------------------------------
 BEGIN_REGISTER_PLUGIN
-COMMON_FR_PLUGIN(PrimFRBase, PrimParameters)
-COMMON_FR_PLUGIN(PrimPresenterFRBase, PresenterPrimParameters)
-COMMON_FR_PLUGIN(PrimEjectorFRBase, EjectorPrimParameters)
-COMMON_FR_PLUGIN(PrimOnlineFRBase, PrimParameters)
-COMMON_FR_PLUGIN(PrimOnlineFR68, PrimParametersBase)
-SINGLE_FR_PLUGIN(PrimPresenterOnlineFR, PresenterPrimParameters, Iskra PRIM 21 - FA)
-SINGLE_FR_PLUGIN(PrimEjectorOnlineFR, EjectorPrimParameters, Iskra PRIM 21 - FA)
+COMMON_FR_PLUGIN(Prim_FRBase, Prim_Parameters)
+COMMON_FR_PLUGIN(Prim_PresenterFRBase, PresenterPrim_Parameters)
+COMMON_FR_PLUGIN(Prim_EjectorFRBase, EjectorPrim_Parameters)
+COMMON_FR_PLUGIN(Prim_OnlineFRBase, Prim_Parameters)
+COMMON_FR_PLUGIN(Prim_OnlineFR68, Prim_ParametersBase)
+SINGLE_FR_PLUGIN(Prim_PresenterOnlineFR, PresenterPrim_Parameters, Iskra PRIM 21 - FA)
+SINGLE_FR_PLUGIN(Prim_EjectorOnlineFR, EjectorPrim_Parameters, Iskra PRIM 21 - FA)
 
 COMMON_ATOL2_PLUGIN(AtolFR, FiscalRegistrator, AtolLSParameters)
 COMMON_ATOL2_PLUGIN(AtolFRSingle, FiscalRegistrator, AtolParameters)

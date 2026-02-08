@@ -36,7 +36,7 @@ bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &
         return false;
     }
 
-    QByteArray data = ProtocolUtils::getBufferFromString(record);
+    QByteArray data = ProtocolUtils::getBufferFrom_String(record);
 
     int length = uchar(data[0]);
     int recordLength = data.size() - 5;

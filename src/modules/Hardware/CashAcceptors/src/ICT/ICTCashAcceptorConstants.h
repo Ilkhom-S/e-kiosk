@@ -88,7 +88,7 @@ public:
         }
     }
 
-    bool contains(char aCode) { return mBuffer.contains(aCode); }
+    bool contains(char aCode) { return m_Buffer.contains(aCode); }
 
     // TODO: при рефакторинге - сделать статус PowerUp, завязать на статус-код и сделать фильтр 2-го
     // уровня

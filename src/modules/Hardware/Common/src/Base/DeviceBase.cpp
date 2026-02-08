@@ -291,11 +291,11 @@ template <class T> bool DeviceBase<T>::isPluginMismatch() {
     }
 
     QString version = this->getConfigParameter(CPluginParameters::PPVersion).toString();
-    auto trimBuild = [&](const QString &aVersion) -> QString {
+    auto trim_Build = [&](const QString &aVersion) -> QString {
         return aVersion.split(" build ").first().simplified();
     };
 
-    return trimBuild(version) != trimBuild(this->m_Version);
+    return trim_Build(version) != trim_Build(this->m_Version);
 }
 
 //---------------------------------------------------------------------------

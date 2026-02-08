@@ -269,7 +269,7 @@ bool LibUSBPort::write(const QByteArray &aData) {
     int parts = qCeil(double(aData.size()) / partSize);
 
     for (int i = 0; i < parts; ++i) {
-        if (!performWrite(aData.mid(i * partSize, partSize))) {
+        if (!perform_Write(aData.mid(i * partSize, partSize))) {
             return false;
         }
     }
@@ -278,7 +278,7 @@ bool LibUSBPort::write(const QByteArray &aData) {
 }
 
 //--------------------------------------------------------------------------------
-bool LibUSBPort::performWrite(const QByteArray &aData) {
+bool LibUSBPort::perform_Write(const QByteArray &aData) {
     int bytesWritten = 0;
     int actualSize = aData.size();
     int timeout = CLibUSBPort::writingTimeout(actualSize);

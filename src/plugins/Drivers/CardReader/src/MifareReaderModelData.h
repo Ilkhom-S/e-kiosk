@@ -89,7 +89,7 @@ protected:
              bool aCCID = true,
              bool aVerified = false) {
         append(aPID, SModelData(aModel, aSAM, aCCID, aVerified));
-        mProductData.insert(aPID, CUSBDevice::SProductData(aModel, aVerified));
+        m_ProductData.insert(aPID, CUSBDevice::SProductData(aModel, aVerified));
     }
 };
 } // namespace CMifareReader

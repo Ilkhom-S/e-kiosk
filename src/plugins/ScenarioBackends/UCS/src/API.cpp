@@ -50,28 +50,28 @@ namespace Ucs {
 
 //---------------------------------------------------------------------------
 API::API(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
-    : ILogable(aLog), mCore(aCore),
-      mTerminalSettings(static_cast<PPSDK::TerminalSettings *>(
+    : ILogable(aLog), m_Core(aCore),
+      m_TerminalSettings(static_cast<PPSDK::TerminalSettings *>(
           aCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))),
-      mTerminalID(CUcs::DefaultTerminalID), mLastLineReceived(false), mTimerEncashID(0),
-      mRuntimeInit(false), mPySelf(nullptr), mEftpCreate(nullptr), mEftpDestroy(nullptr),
-      mEftpDo(nullptr), mTerminalState(APIState::None), mMaxAmount(0.0), mNeedEncashment(false),
-      mNeedPrintAllEncashmentReports(false),
-      mDatabase(mCore->getDatabaseService(), ILog::getInstance(Ucs::LogName)),
-      mEncashmentTask(new UscEncashTask(Ucs::EncashmentTask, getLog()->getName(), QString())) {
+      m_TerminalID(CUcs::DefaultTerminalID), m_LastLineReceived(false), m_TimerEncashID(0),
+      m_RuntimeInit(false), m_PySelf(nullptr), m_EftpCreate(nullptr), m_EftpDestroy(nullptr),
+      m_EftpDo(nullptr), m_TerminalState(APIState::None), m_MaxAmount(0.0), m_NeedEncashment(false),
+      m_NeedPrintAllEncashmentReports(false),
+      m_Database(m_Core->getDatabaseService(), ILog::getInstance(Ucs::LogName)),
+      m_EncashmentTask(new UscEncashTask(Ucs::EncashmentTask, getLog()->getName(), QString())) {
     toLog(LogLevel::Normal, QString("UCS API created."));
 
-    connect(&mResponseWatcher, SIGNAL(finished()), this, SLOT(onResponseFinished()));
+    connect(&m_ResponseWatcher, SIGNAL(finished()), this, SLOT(onResponseFinished()));
 
     killOldUCSProcess();
 
     // Заводим задачу в планировщике на ежесуточную инкассацию
 
-    connect(mEncashmentTask,
+    connect(m_EncashmentTask,
             SIGNAL(finished(const QString &, bool)),
             this,
             SLOT(onEncashTaskFinished(const QString &, bool)));
-    mCore->getSchedulerService()->registerTaskType(Ucs::EncashmentTask, mEncashmentTask);
+    m_Core->getSchedulerService()->registerTaskType(Ucs::EncashmentTask, m_EncashmentTask);
 }
 
 //---------------------------------------------------------------------------
@@ -83,7 +83,7 @@ static QSharedPointer<API> API::getInstance(SDK::PaymentProcessor::ICore *aCore,
 
 //---------------------------------------------------------------------------
 bool API::setupRuntime(const QString &aRuntimePath) {
-    if (mRuntimeInit) {
+    if (m_RuntimeInit) {
         return true;
     }
 
@@ -94,32 +94,32 @@ bool API::setupRuntime(const QString &aRuntimePath) {
         return false;
     }
 
-    mEftpCreate = (EftpCreate)lib.resolve("eftp_create");
-    if (!mEftpCreate) {
+    m_EftpCreate = (EftpCreate)lib.resolve("eftp_create");
+    if (!m_EftpCreate) {
         toLog(LogLevel::Error, QString("Could not load resolve function 'eftp_create'"));
         return false;
     }
 
-    mEftpDestroy = (EftpDestroy)lib.resolve("eftp_destroy");
-    if (!mEftpDestroy) {
+    m_EftpDestroy = (EftpDestroy)lib.resolve("eftp_destroy");
+    if (!m_EftpDestroy) {
         toLog(LogLevel::Error, QString("Could not load resolve function 'eftp_destroy'"));
         return false;
     }
 
-    mEftpDo = (EftpDo)lib.resolve("eftp_do");
-    if (!mEftpDo) {
+    m_EftpDo = (EftpDo)lib.resolve("eftp_do");
+    if (!m_EftpDo) {
         toLog(LogLevel::Error, QString("Could not load resolve function 'eftp_do'"));
         return false;
     }
 
-    mRuntimeInit = true;
+    m_RuntimeInit = true;
 
-    mTimerEncashID = startTimer(CUcs::PollTimeout);
+    m_TimerEncashID = startTimer(CUcs::PollTimeout);
 
     // первый раз статус дергаем сразу после запуска
     QTimer::singleShot(CUcs::ReconnectTimeout, this, SLOT(status()));
 
-    connect(mCore->getPrinterService(),
+    connect(m_Core->getPrinterService(),
             SIGNAL(receiptPrinted(int, bool)),
             this,
             SLOT(onReceiptPrinted(int, bool)));
@@ -129,23 +129,23 @@ bool API::setupRuntime(const QString &aRuntimePath) {
 
 //---------------------------------------------------------------------------
 bool API::isReady() const {
-    return mRuntimeInit;
+    return m_RuntimeInit;
 }
 
 //---------------------------------------------------------------------------
 bool API::enable(PPSDK::TPaymentAmount aAmount) {
-    if (mTerminalState != APIState::None) {
+    if (m_TerminalState != APIState::None) {
         toLog(LogLevel::Error,
               QString("API is busy (state=%1). Could not enable charge provider.")
-                  .arg(mTerminalState));
+                  .arg(m_TerminalState));
 
         return false;
     }
 
-    mTerminalState = APIState::Sale;
+    m_TerminalState = APIState::Sale;
 
-    mMaxAmount = aAmount;
-    mCurrentReceipt.clear();
+    m_MaxAmount = aAmount;
+    m_CurrentReceipt.clear();
 
     eftpCleanup();
 
@@ -154,23 +154,23 @@ bool API::enable(PPSDK::TPaymentAmount aAmount) {
 
 //---------------------------------------------------------------------------
 void API::disable() {
-    mTerminalState = APIState::None;
-    mLoggedIn = QDateTime();
+    m_TerminalState = APIState::None;
+    m_LoggedIn = QDateTime();
 
-    mCurrentReceipt.clear();
+    m_CurrentReceipt.clear();
 
     eftpCleanup();
 
-    if (mNeedEncashment && mNeedPrintAllEncashmentReports) {
+    if (m_NeedEncashment && m_NeedPrintAllEncashmentReports) {
         encashment(false);
     }
 }
 
 //---------------------------------------------------------------------------
 void API::eftpCleanup() {
-    if (mPySelf) {
-        mEftpDestroy(mPySelf);
-        mPySelf = nullptr;
+    if (m_PySelf) {
+        m_EftpDestroy(m_PySelf);
+        m_PySelf = nullptr;
 
         toLog(LogLevel::Debug, "EFTP Object destroyed.");
     }
@@ -178,7 +178,7 @@ void API::eftpCleanup() {
 
 //---------------------------------------------------------------------------
 void API::onResponseFinished() {
-    TResponse result = mResponseWatcher.result();
+    TResponse result = m_ResponseWatcher.result();
 
     QByteArray responseBuffer = result.response;
 
@@ -210,21 +210,21 @@ void API::onResponseFinished() {
         }
 
         // Переносим статус API из полученного сырого буфера в обработанный результат
-        response->mAPIState = result.state;
+        response->m_APIState = result.state;
 
         toLog(LogLevel::Debug,
               QString("BASE RESPONSE packet from EFTPOS. Class='%1' Code='%2'")
-                  .arg(response->mClass)
-                  .arg(response->mCode));
+                  .arg(response->m_Class)
+                  .arg(response->m_Code));
 
         if (!response->isValid()) {
             toLog(LogLevel::Error,
                   QString("Receive unknown packet from EFTPOS. Class='%1' Code='%2'")
-                      .arg(response->mClass)
-                      .arg(response->mCode));
+                      .arg(response->m_Class)
+                      .arg(response->m_Code));
 
             toLog(LogLevel::Error,
-                  QString("Raw response: %1").arg(QString::fromLatin1(responseBuffer.toHex())));
+                  QString("Raw response: %1").arg(QString::from_Latin1(responseBuffer.toHex())));
         } else {
             foreach (auto handler, responseHandlers) {
                 if (handler(*this, response)) {
@@ -238,22 +238,22 @@ void API::onResponseFinished() {
 
 //---------------------------------------------------------------------------
 void API::onReceiptPrinted(int aJobIndex, bool aError) {
-    if (mEncashmentInPrint.contains(aJobIndex)) {
-        auto encashment = mEncashmentInPrint.value(aJobIndex);
+    if (m_EncashmentInPrint.contains(aJobIndex)) {
+        auto encashment = m_EncashmentInPrint.value(aJobIndex);
 
         if (!aError) {
             toLog(LogLevel::Normal,
                   QString("Encashment [%1] printed.")
                       .arg(encashment.date.toString("yyyy.MM.dd hh:mm:ss")));
 
-            mDatabase.markAsPrinted(encashment);
+            m_Database.markAsPrinted(encashment);
         } else {
             toLog(LogLevel::Error,
                   QString("Encashment [%1] print FAILED.")
                       .arg(encashment.date.toString("yyyy.MM.dd hh:mm:ss")));
         }
 
-        mEncashmentInPrint.remove(aJobIndex);
+        m_EncashmentInPrint.remove(aJobIndex);
     }
 }
 
@@ -264,17 +264,17 @@ void API::login() {
         return;
     }
 
-    mLoggedIn = QDateTime();
-    mTerminalState = APIState::Login;
+    m_LoggedIn = QDateTime();
+    m_TerminalState = APIState::Login;
 
     toLog(LogLevel::Normal, QString("> Login."));
 
     QByteArray buffer;
-    buffer.append(mTerminalID);
+    buffer.append(m_TerminalID);
     buffer.append("01"); // Length
     buffer.append("1");  // Info Code
 
-    mResponseWatcher.setFuture(QtConcurrent::run(
+    m_ResponseWatcher.setFuture(QtConcurrent::run(
         this, &API::send, makeRequest(Ucs::Class::Session, Ucs::Login::CodeRequest, buffer), true));
 }
 
@@ -285,7 +285,7 @@ void API::encashment(bool aOnDemand) {
 
 //---------------------------------------------------------------------------
 void API::doEncashment(bool aOnDemand, bool aSkipPrintReceipt) {
-    if (!mNeedEncashment && aOnDemand) {
+    if (!m_NeedEncashment && aOnDemand) {
         emit encashmentComplete();
         return;
     }
@@ -293,24 +293,24 @@ void API::doEncashment(bool aOnDemand, bool aSkipPrintReceipt) {
     if (!aOnDemand) {
         toLog(LogLevel::Normal, "Start manual encashment.");
 
-        mNeedEncashment = true;
-        mNeedPrintAllEncashmentReports = !aSkipPrintReceipt;
+        m_NeedEncashment = true;
+        m_NeedPrintAllEncashmentReports = !aSkipPrintReceipt;
     }
 
-    if (mTerminalState != APIState::None && mTerminalState != APIState::Encashment) {
+    if (m_TerminalState != APIState::None && m_TerminalState != APIState::Encashment) {
         toLog(LogLevel::Normal, "Wait for starting manual encashment...");
         return;
     }
 
-    mTerminalState = APIState::Encashment;
+    m_TerminalState = APIState::Encashment;
 
     toLog(LogLevel::Normal, QString("> Encashment."));
 
     QByteArray buffer;
-    buffer.append(mTerminalID);
+    buffer.append(m_TerminalID);
     buffer.append("00"); // Length
 
-    mResponseWatcher.setFuture(
+    m_ResponseWatcher.setFuture(
         QtConcurrent::run(this,
                           &API::send,
                           makeRequest(Ucs::Class::Service, Ucs::Encashment::CodeRequest, buffer),
@@ -319,38 +319,38 @@ void API::doEncashment(bool aOnDemand, bool aSkipPrintReceipt) {
 
 //---------------------------------------------------------------------------
 void API::sale(double aAmount) {
-    mTerminalState = APIState::Sale;
+    m_TerminalState = APIState::Sale;
 
     toLog(LogLevel::Normal, QString("> Sale."));
 
     QByteArray buffer;
-    buffer.append(mTerminalID);
+    buffer.append(m_TerminalID);
     buffer.append("0C"); // Length
     buffer.append(
         QString("%1").arg(qFloor((aAmount * 1000 + 0.001) / 10.0), 12, 10, QChar('0')).toLatin1());
 
-    mResponseWatcher.setFuture(QtConcurrent::run(
+    m_ResponseWatcher.setFuture(QtConcurrent::run(
         this,
         &API::send,
         aAmount ? makeRequest(Ucs::Class::AuthRequest, Ucs::Sale::CodeRequest, buffer)
                 : QByteArray(),
-        mLastLineReceived));
+        m_LastLineReceived));
 }
 
 //---------------------------------------------------------------------------
 void API::breakSale() {
     toLog(LogLevel::Normal, "> Break sale.");
 
-    mTerminalState = APIState::Sale;
+    m_TerminalState = APIState::Sale;
 
-    mResponseWatcher.setFuture(QtConcurrent::run(
+    m_ResponseWatcher.setFuture(QtConcurrent::run(
         this, &API::send, makeRequest(Ucs::Class::Session, Ucs::Break::CodeRequest), true));
 }
 
 //---------------------------------------------------------------------------
 void API::status() {
-    if (mTerminalState != APIState::None) {
-        toLog(LogLevel::Debug, QString("Skip get status. State=%1.").arg(mTerminalState));
+    if (m_TerminalState != APIState::None) {
+        toLog(LogLevel::Debug, QString("Skip get status. State=%1.").arg(m_TerminalState));
 
         return;
     }
@@ -364,15 +364,15 @@ void API::status() {
     if (CUcs::UseStatus != 0) {
         toLog(LogLevel::Normal, "> Request status.");
 
-        mTerminalState = APIState::Status;
+        m_TerminalState = APIState::Status;
 
         QByteArray buffer;
-        buffer.append(mTerminalID);
+        buffer.append(m_TerminalID);
         buffer.append("05");   // Length
         buffer.append("1");    // Last message
         buffer.append("JOU0"); // Processing Method
 
-        mResponseWatcher.setFuture(QtConcurrent::run(
+        m_ResponseWatcher.setFuture(QtConcurrent::run(
             this,
             &API::send,
             makeRequest(Ucs::Class::Session, Ucs::Information::CodeRequest, buffer),
@@ -392,14 +392,14 @@ void API::onEncashTaskFinished(const QString &aName, bool aComplete) {
 
 //---------------------------------------------------------------------------
 void API::printAllEncashments() {
-    mNeedPrintAllEncashmentReports = false;
+    m_NeedPrintAllEncashmentReports = false;
 
-    auto *printingService = mCore->getPrinterService();
+    auto *printingService = m_Core->getPrinterService();
     QVariantMap parameters;
 
     toLog(LogLevel::Normal, "Start print all unprinted encashment.");
 
-    foreach (UcsDB::Encashment encashment, mDatabase.getAllNotPrinted()) {
+    foreach (UcsDB::Encashment encashment, m_Database.getAllNotPrinted()) {
         parameters["EMV_DATA"] = encashment.receipt.join("[br]");
 
         int job = printingService->printReceipt(
@@ -410,7 +410,7 @@ void API::printAllEncashments() {
                   QString("Encashment [%1] print started.")
                       .arg(encashment.date.toString("yyyy.MM.dd hh:mm:ss")));
 
-            mEncashmentInPrint[job] = encashment;
+            m_EncashmentInPrint[job] = encashment;
         } else {
             toLog(LogLevel::Error,
                   QString("Failed start encashment [%1] print.")
@@ -426,7 +426,7 @@ void API::killOldUCSProcess() {
     unsigned long cProcesses;
     QSet<unsigned long> lprocess;
 
-    if (EnumProcesses(processes, sizeof(processes), &cbNeeded)) {
+    if (Enum_Processes(processes, sizeof(processes), &cbNeeded)) {
         cProcesses = cbNeeded / sizeof(processes[0]);
 
         for (unsigned int i = 0; i < cProcesses; i++) {
@@ -440,7 +440,7 @@ void API::killOldUCSProcess() {
             GetModuleBaseName(hProcess, 0, buffer, MAX_PATH);
             CloseHandle(hProcess);
 
-            QString processPath = QString::fromWCharArray(buffer);
+            QString processPath = QString::from_WCharArray(buffer);
 
             if (processPath.toLower().contains("ucs_")) {
                 hProcess = OpenProcess(PROCESS_ALL_ACCESS, 0, processes[i]);
@@ -465,7 +465,7 @@ void API::killOldUCSProcess() {
         }
     } else {
         toLog(LogLevel::Error,
-              QString("Error call EnumProcesses: #%1.").arg(GetLastError(), 0, 16));
+              QString("Error call Enum_Processes: #%1.").arg(GetLastError(), 0, 16));
     }
 }
 
@@ -478,20 +478,20 @@ bool API::isErrorResponse(BaseResponsePtr aResponse) {
 
         toLog(LogLevel::Error, QString("< Error: 0x%1 (%2)").arg(errorResponse->getError()).arg(e));
 
-        mTerminalState = APIState::None;
+        m_TerminalState = APIState::None;
 
         emit error(e);
 
-        mLastError = errorResponse->getError();
+        m_LastError = errorResponse->getError();
 
-        if (mLastError == "10") // необходима инкассация
+        if (m_LastError == "10") // необходима инкассация
         {
             // Инкассировать будем в новой сессии библиотеки
             eftpCleanup();
 
-            mTerminalState = APIState::None;
-            mNeedEncashment = true;
-            mNeedPrintAllEncashmentReports = false;
+            m_TerminalState = APIState::None;
+            m_NeedEncashment = true;
+            m_NeedPrintAllEncashmentReports = false;
 
             QTimer::singleShot(CUcs::ExecuteEncashmentTimeout, this, SLOT(encashment()));
         }
@@ -509,20 +509,20 @@ bool API::isLoginResponse(BaseResponsePtr aResponse) {
                   .arg(loginResponse->getTerminalID())
                   .arg(loginResponse->needEncashment()));
 
-        mNeedEncashment = loginResponse->needEncashment();
-        mTerminalID = loginResponse->getTerminalID();
+        m_NeedEncashment = loginResponse->needEncashment();
+        m_TerminalID = loginResponse->getTerminalID();
 
-        if (mTerminalID != CUcs::DefaultTerminalID && loginResponse->getStatusCode() == "0" &&
-            !mNeedEncashment) {
-            mLoggedIn = QDateTime::currentDateTime();
+        if (m_TerminalID != CUcs::DefaultTerminalID && loginResponse->getStatusCode() == "0" &&
+            !m_NeedEncashment) {
+            m_LoggedIn = QDateTime::currentDateTime();
         }
 
         // Логин с валидными параметрами создадим с новым объектом библиотеки
         eftpCleanup();
 
-        mTerminalState = APIState::None;
+        m_TerminalState = APIState::None;
 
-        if (mNeedEncashment) {
+        if (m_NeedEncashment) {
             toLog(LogLevel::Normal, "Encashment required.");
 
             QTimer::singleShot(CUcs::ExecuteEncashmentTimeout, this, SLOT(encashment()));
@@ -540,24 +540,24 @@ bool API::isPrintLineResponse(BaseResponsePtr aResponse) {
     if (printLineResponse) {
         toLog(LogLevel::Normal, QString("< Print line: %1.").arg(printLineResponse->getText()));
 
-        mCurrentReceipt << printLineResponse->getText();
+        m_CurrentReceipt << printLineResponse->getText();
 
-        if (aResponse->mAPIState == APIState::Encashment) {
+        if (aResponse->m_APIState == APIState::Encashment) {
             if (printLineResponse->isLast()) {
                 saveEncashmentReport();
             }
         } else {
             if (printLineResponse->isLast()) {
-                mLastLineReceived = true;
+                m_LastLineReceived = true;
                 printReceipt();
 
-                if (mAuthResponse) {
-                    emit saleComplete(mAuthResponse->mTransactionSum / 100.0,
-                                      mAuthResponse->mCurrency,
-                                      mAuthResponse->mRRN,
-                                      mAuthResponse->mConfirmation);
+                if (m_AuthResponse) {
+                    emit saleComplete(m_AuthResponse->m_TransactionSum / 100.0,
+                                      m_AuthResponse->m_Currency,
+                                      m_AuthResponse->m_RRN,
+                                      m_AuthResponse->m_Confirmation);
 
-                    mAuthResponse.clear();
+                    m_AuthResponse.clear();
                 }
             }
         }
@@ -575,7 +575,7 @@ bool API::isConsoleResponse(BaseResponsePtr aResponse) {
 
         emit message(consoleResponse->getMessage());
 
-        if (mTerminalState == APIState::Encashment) {
+        if (m_TerminalState == APIState::Encashment) {
             toLog(LogLevel::Normal, "Wait encashment result.");
 
             QTimer::singleShot(100, this, SLOT(encashment()));
@@ -590,7 +590,7 @@ bool API::isEnchashmentResponse(BaseResponsePtr aResponse) {
     auto encashmentResponse =
         qSharedPointerDynamicCast<EncashmentResponse, BaseResponse>(aResponse);
     if (encashmentResponse) {
-        mNeedEncashment = false;
+        m_NeedEncashment = false;
 
         toLog(LogLevel::Normal, QString("< Encashment response OK."));
     }
@@ -604,11 +604,11 @@ bool API::isInitialResponse(BaseResponsePtr aResponse) {
     if (initialResponse) {
         toLog(LogLevel::Normal, "< Initial response: OK.");
 
-        if (mTerminalState == APIState::Status) {
+        if (m_TerminalState == APIState::Status) {
             // Wait 3-8 response
-            mResponseWatcher.setFuture(QtConcurrent::run(this, &API::send, QByteArray(), true));
+            m_ResponseWatcher.setFuture(QtConcurrent::run(this, &API::send, QByteArray(), true));
         } else {
-            mTerminalState = APIState::Sale;
+            m_TerminalState = APIState::Sale;
 
             emit readyToCard();
         }
@@ -626,7 +626,7 @@ bool API::isBreakResponse(BaseResponsePtr aResponse) {
 
         // TODO - надо как-то реагировать на невозможность отмены транзакции!
         if (breakResponse->isComplete()) {
-            mTerminalState = APIState::None;
+            m_TerminalState = APIState::None;
 
             emit breakComplete();
         }
@@ -642,7 +642,7 @@ bool API::isPINRequiredResponse(BaseResponsePtr aResponse) {
     if (pinRequiredResponse) {
         toLog(LogLevel::Normal, "< PIN required.");
 
-        mTerminalState = APIState::Sale;
+        m_TerminalState = APIState::Sale;
 
         emit pinRequired();
     }
@@ -657,7 +657,7 @@ bool API::isOnlineRequiredResponse(BaseResponsePtr aResponse) {
     if (onlineRequiredResponse) {
         toLog(LogLevel::Normal, "< Online required.");
 
-        mTerminalState = APIState::Sale;
+        m_TerminalState = APIState::Sale;
 
         emit onlineRequired();
     }
@@ -672,7 +672,7 @@ bool API::isAuthResponse(BaseResponsePtr aResponse) {
         toLog(LogLevel::Normal, QString("< Auth response. %1.").arg(authResponse->toString()));
 
         if (authResponse->isOK()) {
-            mAuthResponse = authResponse;
+            m_AuthResponse = authResponse;
 
             emit hold();
         }
@@ -699,11 +699,11 @@ bool API::isMessageResponse(BaseResponsePtr aResponse) {
     if (msgResponse) {
         toLog(LogLevel::Normal, "< Status message.");
 
-        mNeedEncashment = msgResponse->needEncashment();
+        m_NeedEncashment = msgResponse->needEncashment();
 
         disable();
 
-        if (mNeedEncashment) {
+        if (m_NeedEncashment) {
             toLog(LogLevel::Normal, "Encashment required.");
 
             QTimer::singleShot(CUcs::ExecuteEncashmentTimeout, this, SLOT(encashment()));
@@ -717,10 +717,10 @@ bool API::isMessageResponse(BaseResponsePtr aResponse) {
 void API::printReceipt() {
     QVariantMap parameters;
     parameters["EMV_DATA"] =
-        mCurrentReceipt.join("").replace("||", "|\n|").replace("\n", "[br]").replace("|", "");
+        m_CurrentReceipt.join("").replace("||", "|\n|").replace("\n", "[br]").replace("|", "");
 
     auto *scriptingCore = static_cast<SDK::PaymentProcessor::Scripting::Core *>(
-        dynamic_cast<SDK::GUI::IGraphicsHost *>(mCore->getGUIService())
+        dynamic_cast<SDK::GUI::IGraphicsHost *>(m_Core->getGUIService())
             ->getInterface<QObject>(SDK::PaymentProcessor::Scripting::CProxyNames::Core));
 
     auto *ps = static_cast<SDK::PaymentProcessor::Scripting::PrinterService *>(
@@ -732,36 +732,36 @@ void API::printReceipt() {
 //---------------------------------------------------------------------------
 void API::saveEncashmentReport() {
     toLog(LogLevel::Normal,
-          QString("Encashment report complete.\n%1").arg(mCurrentReceipt.join("\n")));
+          QString("Encashment report complete.\n%1").arg(m_CurrentReceipt.join("\n")));
 
     UcsDB::Encashment enc;
 
     enc.date = QDateTime::currentDateTime();
-    qSwap(enc.receipt, mCurrentReceipt);
+    qSwap(enc.receipt, m_CurrentReceipt);
 
-    mDatabase.save(enc);
+    m_Database.save(enc);
 
     emit encashmentComplete();
 
-    if (mNeedPrintAllEncashmentReports) {
+    if (m_NeedPrintAllEncashmentReports) {
         printAllEncashments();
     } else {
         QVariantMap parameters;
 
         parameters["EMV_DATA"] = enc.receipt.join("\n");
 
-        mCore->getPrinterService()->saveReceipt(parameters, "emv_encashment");
+        m_Core->getPrinterService()->saveReceipt(parameters, "emv_encashment");
     }
 }
 
 //---------------------------------------------------------------------------
 bool API::isLoggedIn() const {
-    return mTerminalID != CUcs::DefaultTerminalID && !mLoggedIn.isNull();
+    return m_TerminalID != CUcs::DefaultTerminalID && !m_LoggedIn.isNull();
 }
 
 //---------------------------------------------------------------------------
 bool API::isLoggedInExpired() const {
-    return !isLoggedIn() || mLoggedIn.addMSecs(CUcs::LoginTimeout) < QDateTime::currentDateTime();
+    return !isLoggedIn() || m_LoggedIn.addMSecs(CUcs::LoginTimeout) < QDateTime::currentDateTime();
 }
 
 //---------------------------------------------------------------------------
@@ -783,22 +783,22 @@ static QByteArray API::makeRequest(char aClass, char aCode, const QByteArray &aD
 
 //---------------------------------------------------------------------------
 void API::timerEvent(QTimerEvent *aEvent) {
-    if (mTimerEncashID == aEvent->timerId()) {
+    if (m_TimerEncashID == aEvent->timerId()) {
         status();
     }
 }
 
 //---------------------------------------------------------------------------
 API::TResponse API::send(const QByteArray &aRequest, bool aWaitOperationComplete /*= true*/) {
-    if (!mRuntimeInit) {
+    if (!m_RuntimeInit) {
         toLog(LogLevel::Error, "USC runtime was not loaded. Send command error.");
         return {};
     }
 
-    if (!mPySelf) {
-        mPySelf = mEftpCreate("");
+    if (!m_PySelf) {
+        m_PySelf = m_EftpCreate("");
 
-        if (!mPySelf) {
+        if (!m_PySelf) {
             toLog(LogLevel::Error, "Could not create EFTP Object. Request aborted.");
             return {};
         }
@@ -806,9 +806,9 @@ API::TResponse API::send(const QByteArray &aRequest, bool aWaitOperationComplete
         toLog(LogLevel::Debug, "EFTP Object created.");
     }
 
-    toLog(LogLevel::Debug, QString("REQUEST: %1").arg(QString::fromLatin1(aRequest)));
+    toLog(LogLevel::Debug, QString("REQUEST: %1").arg(QString::from_Latin1(aRequest)));
 
-    mLastError.clear();
+    m_LastError.clear();
 
     auto readTo1B = [&](const QByteArray &aBuffer, QTextCodec *aCodec) -> QString {
         QString result;
@@ -822,7 +822,7 @@ API::TResponse API::send(const QByteArray &aRequest, bool aWaitOperationComplete
     };
 
     QByteArray responseBuffer(CUcs::ReceiveBufferSize, 0);
-    int result = mEftpDo(mPySelf,
+    int result = m_EftpDo(m_PySelf,
                          aRequest.isEmpty() ? 0 : (char *)aRequest.data(),
                          responseBuffer.data(),
                          NULL,
@@ -836,7 +836,7 @@ API::TResponse API::send(const QByteArray &aRequest, bool aWaitOperationComplete
     if (aWaitOperationComplete && result == 0) {
         do {
             QByteArray responseBuffer2(CUcs::ReceiveBufferSize, 0);
-            result = mEftpDo(mPySelf, 0, responseBuffer2.data(), NULL, NULL);
+            result = m_EftpDo(m_PySelf, 0, responseBuffer2.data(), NULL, NULL);
 
             toLog(LogLevel::Debug,
                   QString("RESPONSE (loop): [%1, %2]")
@@ -849,18 +849,18 @@ API::TResponse API::send(const QByteArray &aRequest, bool aWaitOperationComplete
         } while (result == 0);
     }
 
-    // Создаем объект TResponse тут, т.к. метод disable() сбрасывает mTerminalState
-    TResponse response(result, mTerminalState, responseBuffer);
+    // Создаем объект TResponse тут, т.к. метод disable() сбрасывает m_TerminalState
+    TResponse response(result, m_TerminalState, responseBuffer);
 
     if (aWaitOperationComplete) {
-        if (mTerminalState == APIState::Sale && result == 9) {
+        if (m_TerminalState == APIState::Sale && result == 9) {
             emit doComplete(true);
         }
-        if (mTerminalState == APIState::Encashment) {
-            mNeedEncashment = false;
+        if (m_TerminalState == APIState::Encashment) {
+            m_NeedEncashment = false;
         }
 
-        mLastLineReceived = false;
+        m_LastLineReceived = false;
 
         disable();
     }

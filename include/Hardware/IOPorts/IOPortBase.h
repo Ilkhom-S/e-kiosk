@@ -46,7 +46,7 @@ protected:
     void adjustData(const QStringList &aMine, const QStringList &aOther);
 
     /// Имя системного порта.
-    QString m_SystemName;
+    QString m_System_Name;
 
     /// Тип порта.
     SDK::Driver::EPortTypes::Enum m_Type;

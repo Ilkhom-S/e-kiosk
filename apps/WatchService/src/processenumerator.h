@@ -27,11 +27,11 @@ public:
     bool kill(PID aPid, quint32 &aErrorCode) const;
 
 protected:
-    /// Выполняет перечисление процессов (заполняет mList)
+    /// Выполняет перечисление процессов (заполняет m_List)
     void enumerate();
 
 protected:
-    QMap<PID, ProcessInfo> mProcesses;
+    QMap<PID, ProcessInfo> m_Processes;
 
     /// Остановка процесса грубым способом
     bool killInternal(PID aPid, quint32 &aErrorCode) const;

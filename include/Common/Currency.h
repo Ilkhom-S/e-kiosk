@@ -13,42 +13,42 @@ class Nominal {
 public:
     typedef int RawType;
 
-    explicit Nominal(int aValue) : mNominal(aValue * 100) {}
-    explicit Nominal(double aValue) : mNominal(qFloor((aValue * 1000 + 0.001) / 10.0)) {}
+    explicit Nominal(int aValue) : m_Nominal(aValue * 100) {}
+    explicit Nominal(double aValue) : m_Nominal(qFloor((aValue * 1000 + 0.001) / 10.0)) {}
 
-    static Nominal fromRawValue(RawType aRawValue) {
+    static Nominal from_RawValue(RawType aRawValue) {
         Nominal n(0);
-        n.mNominal = aRawValue;
+        n.m_Nominal = aRawValue;
         return n;
     }
 
-    operator int() const { return mNominal / 100; }
+    operator int() const { return m_Nominal / 100; }
     operator double() const { return toDouble(); }
 
-    RawType rawValue() const { return mNominal; }
-    double toDouble() const { return mNominal / 100.; }
+    RawType rawValue() const { return m_Nominal; }
+    double toDouble() const { return m_Nominal / 100.; }
 
-    bool operator==(const Nominal &aNominal) const { return this->mNominal == aNominal.mNominal; }
-    bool operator<(const Nominal &aNominal) const { return this->mNominal < aNominal.mNominal; }
-    bool operator>=(const Nominal &aNominal) const { return this->mNominal >= aNominal.mNominal; }
+    bool operator==(const Nominal &aNominal) const { return this->m_Nominal == aNominal.m_Nominal; }
+    bool operator<(const Nominal &aNominal) const { return this->m_Nominal < aNominal.m_Nominal; }
+    bool operator>=(const Nominal &aNominal) const { return this->m_Nominal >= aNominal.m_Nominal; }
 
     const Nominal &operator=(int aNominal) {
-        mNominal = aNominal * 100;
+        m_Nominal = aNominal * 100;
         return *this;
     }
     const Nominal &operator=(double aNominal) {
-        mNominal = qFloor(aNominal * 100);
+        m_Nominal = qFloor(aNominal * 100);
         return *this;
     }
 
-    QString toString(bool aTrimZeroFraction = true) const {
-        return (mNominal % 100) == 0 && aTrimZeroFraction
-                   ? QString::number(mNominal / 100)
-                   : QString::number(mNominal / 100., 'f', 2);
+    QString toString(bool aTrim_ZeroFraction = true) const {
+        return (m_Nominal % 100) == 0 && aTrim_ZeroFraction
+                   ? QString::number(m_Nominal / 100)
+                   : QString::number(m_Nominal / 100., 'f', 2);
     }
 
 private:
-    RawType mNominal;
+    RawType m_Nominal;
 };
 
 } // end namespace Currency

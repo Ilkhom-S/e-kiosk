@@ -14,7 +14,7 @@ bool AV268_PRINTER::openPort() {
         is_open = false;
 
         // Даем девайсу название порта
-        serialPort->setPortName(comName);
+        serialPort->setPortName(com_Name);
 
         if (serialPort->open(QIODevice::ReadWrite)) {
             // Устанавливаем параметры открытия порта
@@ -108,7 +108,7 @@ bool AV268_PRINTER::getStatus(int &aStatus) {
             aStatus |= PrinterState::PrintingHeadError;
             // if(Debugger) qDebug() << "AV268::getStatus(): Printing head open";
         }
-        code = status & CMDAV268::PrinterSystemError;
+        code = status & CMDAV268::PrinterSystem_Error;
         if (code > 0) {
             // System error
             aStatus |= PrinterState::PrinterError;

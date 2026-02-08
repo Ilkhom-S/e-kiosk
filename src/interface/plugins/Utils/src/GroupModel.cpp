@@ -38,7 +38,7 @@ const char JSON[] = "json";
 } // namespace CGroupModel
 
 //------------------------------------------------------------------------------
-static QString rmBom(const QString &aFile) {
+static QString rm_Bom(const QString &aFile) {
     QFile file(aFile);
 
     if (file.open(QIODevice::ReadWrite)) {
@@ -49,7 +49,7 @@ static QString rmBom(const QString &aFile) {
         const uchar *dd = (const uchar *)data.constData();
         if (data.size() >= 3 && dd[0] == 0xef && dd[1] == 0xbb && dd[2] == 0xbf) {
             file.resize(0);
-            file.write(QString::fromUtf8(data.remove(0, 3)).toUtf8());
+            file.write(QString::from_Utf8(data.remove(0, 3)).toUtf8());
         }
     }
 
@@ -57,31 +57,31 @@ static QString rmBom(const QString &aFile) {
 };
 
 //------------------------------------------------------------------------------
-GroupModel::GroupModel() : mRootElement(-1), mCurrentCategory(0) {
-    mRoles[IdRole] = CGroupModel::Attributes::Id;
-    mRoles[NameRole] = CGroupModel::Attributes::Name;
-    mRoles[TitleRole] = CGroupModel::Attributes::Title;
-    mRoles[DescriptionRole] = CGroupModel::Attributes::Description;
-    mRoles[TypeRole] = CGroupModel::Attributes::Type;
-    mRoles[ImageRole] = CGroupModel::Attributes::Image;
-    mRoles[IsGroupRole] = CGroupModel::Attributes::IsGroup;
-    mRoles[JSONRole] = CGroupModel::Attributes::JSON;
+GroupModel::GroupModel() : m_RootElement(-1), m_CurrentCategory(0) {
+    m_Roles[IdRole] = CGroupModel::Attributes::Id;
+    m_Roles[NameRole] = CGroupModel::Attributes::Name;
+    m_Roles[TitleRole] = CGroupModel::Attributes::Title;
+    m_Roles[DescriptionRole] = CGroupModel::Attributes::Description;
+    m_Roles[TypeRole] = CGroupModel::Attributes::Type;
+    m_Roles[ImageRole] = CGroupModel::Attributes::Image;
+    m_Roles[IsGroupRole] = CGroupModel::Attributes::IsGroup;
+    m_Roles[JSONRole] = CGroupModel::Attributes::JSON;
 }
 
 //------------------------------------------------------------------------------
 QHash<int, QByteArray> GroupModel::roleNames() const {
-    return mRoles;
+    return m_Roles;
 }
 
 //------------------------------------------------------------------------------
 QObject *GroupModel::get(int aIndex) {
-    if (mNodes.isEmpty() || aIndex < 0) {
+    if (m_Nodes.isEmpty() || aIndex < 0) {
         return nullptr;
     }
 
-    ItemObject *iObject = new ItemObject(*mNodes.at(aIndex), this);
+    Item_Object *iObject = new Item_Object(*m_Nodes.at(aIndex), this);
 
-    mNodesObject << iObject;
+    m_NodesObject << iObject;
 
     return iObject;
 }
@@ -91,12 +91,12 @@ int GroupModel::getMaxNameLength() const {
     int result = 0;
 
     // Настройками можно выставить  ширину группы принудительно
-    if (mGroupsWidth.contains(mRootElement)) {
+    if (m_GroupsWidth.contains(m_RootElement)) {
         // Ширина одной колонки 60 символов, максимальная ширина - 240 символов
-        return (int)(241.f / mGroupsWidth.value(mRootElement));
+        return (int)(241.f / m_GroupsWidth.value(m_RootElement));
     }
 
-    foreach (auto item, mNodes) {
+    foreach (auto item, m_Nodes) {
         int length = item->getName().length();
         result = result > length ? result : length;
     }
@@ -106,22 +106,22 @@ int GroupModel::getMaxNameLength() const {
 
 //------------------------------------------------------------------------------
 int GroupModel::rowCount(const QModelIndex &) const {
-    return mNodes.count();
+    return m_Nodes.count();
 }
 
 //------------------------------------------------------------------------------
 QString GroupModel::getSource() const {
-    return mSource;
+    return m_Source;
 }
 
 //------------------------------------------------------------------------------
-bool GroupModel::loadContent(const QString &aFileName, QDomDocument &aDocument) {
+bool GroupModel::loadContent(const QString &aFileName, QDom_Document &aDocument) {
     aDocument.clear();
 
     QFileInfo fileInfo(aFileName);
 
     // Загрузка или догрузка контента в дерево групп
-    auto loadXml = [this](const QString &aFileName, QDomDocument &aDocument) -> bool {
+    auto loadXml = [this](const QString &aFileName, QDom_Document &aDocument) -> bool {
         QFile file(aFileName);
         if (!file.open(QIODevice::ReadOnly)) {
             Log(Log::Error) << QString("GroupModel: Error open file %1.").arg(aFileName);
@@ -141,12 +141,12 @@ bool GroupModel::loadContent(const QString &aFileName, QDomDocument &aDocument) 
 
         // Загружаем настройки размеров для групп
         {
-            QSettings ini(rmBom(QString(aFileName).replace(".xml", ".ini")), QSettings::IniFormat);
+            QSettings ini(rm_Bom(QString(aFileName).replace(".xml", ".ini")), QSettings::IniFormat);
             ini.setIniCodec("UTF-8");
             ini.beginGroup("columns");
 
             foreach (QString key, ini.allKeys()) {
-                mGroupsWidth.insert(key.toLongLong(), ini.value(key).toInt());
+                m_GroupsWidth.insert(key.toLongLong(), ini.value(key).toInt());
             }
         }
 
@@ -158,7 +158,7 @@ bool GroupModel::loadContent(const QString &aFileName, QDomDocument &aDocument) 
         return false;
     }
 
-    mSource = aFileName;
+    m_Source = aFileName;
 
     // Затем грузим все остальные пользовательские группы и встраиваем их в текущее дерево хитрой
     // функцией
@@ -166,7 +166,7 @@ bool GroupModel::loadContent(const QString &aFileName, QDomDocument &aDocument) 
     filters << fileInfo.fileName().replace(".xml", "*.xml", Qt::CaseInsensitive);
 
     foreach (auto file, fileInfo.dir().entryInfoList(filters, QDir::Files, QDir::Name)) {
-        QDomDocument localDoc;
+        QDom_Document localDoc;
 
         if (!file.fileName().compare(fileInfo.fileName(), Qt::CaseInsensitive)) {
             continue;
@@ -184,17 +184,17 @@ bool GroupModel::loadContent(const QString &aFileName, QDomDocument &aDocument) 
 }
 
 //------------------------------------------------------------------------------
-void GroupModel::mergeGroups(QDomElement aTargetGroup, QDomElement aSourceGroup) {
-    // auto getAttr = [](const QDomElement & aElement, )
-    auto ID = [](QDomElement aElement) -> qint64 {
+void GroupModel::mergeGroups(QDom_Element aTargetGroup, QDom_Element aSourceGroup) {
+    // auto getAttr = [](const QDom_Element & aElement, )
+    auto ID = [](QDom_Element aElement) -> qint64 {
         return aElement.attribute("id", "0").toLongLong();
     };
 
     auto findGroup =
-        [&](const QDomElement &aElement, qint64 aID, QDomElement &aGroupElement) -> bool {
-        for (QDomNode n = aElement.firstChild(); !n.isNull(); n = n.nextSibling()) {
+        [&](const QDom_Element &aElement, qint64 aID, QDom_Element &aGroupElement) -> bool {
+        for (QDom_Node n = aElement.firstChild(); !n.isNull(); n = n.nextSibling()) {
             if (n.nodeName() == "group") {
-                QDomElement element = n.toElement();
+                QDom_Element element = n.toElement();
                 if (ID(element) == aID) {
                     aGroupElement = element;
                     return true;
@@ -204,17 +204,17 @@ void GroupModel::mergeGroups(QDomElement aTargetGroup, QDomElement aSourceGroup)
         return false;
     };
 
-    auto copyAttr = [](const QDomElement &aSource, QDomElement &aDestination) {
+    auto copyAttr = [](const QDom_Element &aSource, QDom_Element &aDestination) {
         for (int i = 0; i < aSource.attributes().size(); i++) {
-            QDomAttr attr = aSource.attributes().item(i).toAttr();
+            QDom_Attr attr = aSource.attributes().item(i).toAttr();
             aDestination.setAttribute(attr.name(), attr.value());
         }
     };
 
-    QDomElement element = aSourceGroup.lastChildElement();
+    QDom_Element element = aSourceGroup.lastChildElement();
     while (!element.isNull()) {
         if (element.nodeName() == "group") {
-            QDomElement target;
+            QDom_Element target;
             if (findGroup(aTargetGroup, ID(element), target)) {
                 copyAttr(element, target);
                 mergeGroups(target, element);
@@ -222,13 +222,13 @@ void GroupModel::mergeGroups(QDomElement aTargetGroup, QDomElement aSourceGroup)
             } else {
                 // вставляем в начало списка
                 auto nextElement = element.previousSiblingElement();
-                aTargetGroup.insertBefore(element, QDomNode());
+                aTargetGroup.insertBefore(element, QDom_Node());
                 element = nextElement;
             }
         } else {
             // вставляем в начало списка
             auto nextElement = element.previousSiblingElement();
-            aTargetGroup.insertBefore(element, QDomNode());
+            aTargetGroup.insertBefore(element, QDom_Node());
             element = nextElement;
         }
     }
@@ -236,35 +236,35 @@ void GroupModel::mergeGroups(QDomElement aTargetGroup, QDomElement aSourceGroup)
 
 //------------------------------------------------------------------------------
 void GroupModel::setSource(QString aSource) {
-    if (mSource == aSource) {
+    if (m_Source == aSource) {
         return;
     }
 
-    if (!loadContent(aSource, mDocument)) {
+    if (!loadContent(aSource, m_Document)) {
         return;
     }
 
     emit beginResetModel();
 
-    mGroups.clear();
+    m_Groups.clear();
 
     // Корневая группа
-    mGroups[0] = mDocument.documentElement();
+    m_Groups[0] = m_Document.documentElement();
 
-    QDomNodeList groups = mDocument.elementsByTagName(CGroupModel::Group);
+    QDom_NodeList groups = m_Document.elementsByTagName(CGroupModel::Group);
     for (int i = 0; i < groups.count(); i++) {
         Item item(groups.at(i));
 
         qint64 id = item.getId();
 
-        mGroups[id] = groups.at(i);
-        mCategories[id] = getCategory(groups.at(i));
+        m_Groups[id] = groups.at(i);
+        m_Categories[id] = getCategory(groups.at(i));
     }
 
     // Заполняем категории для каждого провайдера
-    mProviderCategorys[Providers::AutodetectID] = 101;
+    m_ProviderCategorys[Providers::AutodetectID] = 101;
 
-    QDomNodeList providers = mDocument.elementsByTagName(CGroupModel::Operator);
+    QDom_NodeList providers = m_Document.elementsByTagName(CGroupModel::Operator);
     for (int i = 0; i < providers.count(); i++) {
         Item item(providers.at(i));
 
@@ -273,7 +273,7 @@ void GroupModel::setSource(QString aSource) {
         qint64 category = getCategory(providers.at(i));
 
         if (category) {
-            mProviderCategorys.insert(id, category);
+            m_ProviderCategorys.insert(id, category);
         }
     }
 
@@ -284,22 +284,22 @@ void GroupModel::setSource(QString aSource) {
 
 //------------------------------------------------------------------------------
 QStringList GroupModel::getElementFilter() {
-    return mElementFilter;
+    return m_ElementFilter;
 }
 
 //------------------------------------------------------------------------------
 void GroupModel::setElementFilter(QStringList aFilter) {
-    mElementFilter = aFilter;
+    m_ElementFilter = aFilter;
 
     emit beginResetModel();
 
-    setRootElementInternal(mRootElement);
+    setRootElementInternal(m_RootElement);
 
     emit endResetModel();
 }
 
 //------------------------------------------------------------------------------
-qint64 GroupModel::getCategory(QDomNode aNode) {
+qint64 GroupModel::getCategory(QDom_Node aNode) {
     if (aNode.isNull()) {
         // Не нашли вышестоящей корневой группы
         return 0;
@@ -316,57 +316,57 @@ qint64 GroupModel::getCategory(QDomNode aNode) {
 
 //------------------------------------------------------------------------------
 qint64 GroupModel::getRootElement() const {
-    return mRootElement;
+    return m_RootElement;
 }
 
 //------------------------------------------------------------------------------
 void GroupModel::clearNodes() {
-    while (!mNodesObject.isEmpty()) {
-        auto item = mNodesObject.takeFirst();
+    while (!m_NodesObject.isEmpty()) {
+        auto item = m_NodesObject.takeFirst();
         if (item) {
             item->deleteLater();
         }
     }
 
-    mNodes.clear();
+    m_Nodes.clear();
 }
 
 //------------------------------------------------------------------------------
-const GroupModel::ItemList &GroupModel::getItemList(qint64 aGroupID) {
-    if (mNodesCache.contains(aGroupID)) {
-        return mNodesCache[aGroupID];
+const GroupModel::Item_List &GroupModel::getItem_List(qint64 aGroupID) {
+    if (m_NodesCache.contains(aGroupID)) {
+        return m_NodesCache[aGroupID];
     }
 
-    ItemList result;
-    QDomNodeList nodes = mGroups[aGroupID].childNodes();
+    Item_List result;
+    QDom_NodeList nodes = m_Groups[aGroupID].childNodes();
 
     for (int i = 0; i < nodes.count(); i++) {
         result << QSharedPointer<Item>(new Item(nodes.at(i)));
     }
 
-    mNodesCache.insert(aGroupID, result);
+    m_NodesCache.insert(aGroupID, result);
 
     // заполняем order сразу и больше не трогаем
-    if (!mProvidersStatistic.isEmpty()) {
-        for (int i = 0; i < mNodesCache[aGroupID].size(); i++) {
-            ItemPtr &item = mNodesCache[aGroupID][i];
+    if (!m_ProvidersStatistic.isEmpty()) {
+        for (int i = 0; i < m_NodesCache[aGroupID].size(); i++) {
+            Item_Ptr &item = m_NodesCache[aGroupID][i];
 
             if (item->is(CGroupModel::Operator)) {
-                item->setOrder(mProvidersStatistic.value(item->getId(), 0));
+                item->setOrder(m_ProvidersStatistic.value(item->getId(), 0));
             } else if (item->is(CGroupModel::Group) || item->is(CGroupModel::GroupLink)) {
                 item->setOrder(getGroupOrder(item->getId()));
             }
         }
     }
 
-    return mNodesCache[aGroupID];
+    return m_NodesCache[aGroupID];
 }
 
 //------------------------------------------------------------------------------
 void GroupModel::setRootElementInternal(qint64 aRootElement) {
     clearNodes();
 
-    QStringList filter = mElementFilter;
+    QStringList filter = m_ElementFilter;
 
     if (filter.isEmpty()) {
         if (!aRootElement) {
@@ -377,35 +377,35 @@ void GroupModel::setRootElementInternal(qint64 aRootElement) {
         }
     }
 
-    int currentCount = mNodes.count();
+    int currentCount = m_Nodes.count();
 
-    foreach (auto item, getItemList(aRootElement)) {
+    foreach (auto item, getItem_List(aRootElement)) {
         if (filter.contains(item->getElementName())) {
-            mNodes.push_back(item);
+            m_Nodes.push_back(item);
         }
     }
 
-    if (aRootElement && !mProvidersStatistic.isEmpty()) {
+    if (aRootElement && !m_ProvidersStatistic.isEmpty()) {
         qStableSort(
-            mNodes.begin(), mNodes.end(), [](const ItemPtr &aItemA, const ItemPtr &aItemB) -> bool {
-                return aItemA->getOrder() > aItemB->getOrder();
+            m_Nodes.begin(), m_Nodes.end(), [](const Item_Ptr &aItem_A, const Item_Ptr &aItem_B) -> bool {
+                return aItem_A->getOrder() > aItem_B->getOrder();
             });
     }
 
-    if (mNodes.count() > currentCount) {
+    if (m_Nodes.count() > currentCount) {
         emit rowCountChanged();
     }
 
-    mRootElement = aRootElement;
+    m_RootElement = aRootElement;
 }
 
 //------------------------------------------------------------------------------
 quint32 GroupModel::getGroupOrder(qint64 aGroupID) {
-    auto lessOrder = [](const ItemPtr &aItemA, const ItemPtr &aItemB) -> bool {
-        return aItemA->getOrder() < aItemB->getOrder();
+    auto lessOrder = [](const Item_Ptr &aItem_A, const Item_Ptr &aItem_B) -> bool {
+        return aItem_A->getOrder() < aItem_B->getOrder();
     };
 
-    auto items = getItemList(aGroupID);
+    auto items = getItem_List(aGroupID);
 
     auto it = std::max_element(items.begin(), items.end(), lessOrder);
 
@@ -414,15 +414,15 @@ quint32 GroupModel::getGroupOrder(qint64 aGroupID) {
 
 //------------------------------------------------------------------------------
 void GroupModel::setRootElement(qint64 aRootElement) {
-    if (aRootElement != mRootElement && mGroups.contains(aRootElement)) {
+    if (aRootElement != m_RootElement && m_Groups.contains(aRootElement)) {
         emit beginResetModel();
 
         setRootElementInternal(aRootElement);
 
         emit endResetModel();
 
-        if (mGroups.contains(aRootElement) && mCurrentCategory != mCategories[aRootElement]) {
-            mCurrentCategory = mCategories[aRootElement];
+        if (m_Groups.contains(aRootElement) && m_CurrentCategory != m_Categories[aRootElement]) {
+            m_CurrentCategory = m_Categories[aRootElement];
             emit categoryChanged();
         }
     }
@@ -430,34 +430,34 @@ void GroupModel::setRootElement(qint64 aRootElement) {
 
 //------------------------------------------------------------------------------
 qint64 GroupModel::getCategory() const {
-    return mCurrentCategory;
+    return m_CurrentCategory;
 }
 
 //------------------------------------------------------------------------------
 QString GroupModel::getCategoryName() const {
-    return mGroups[mCurrentCategory].toElement().attribute("name");
+    return m_Groups[m_CurrentCategory].toElement().attribute("name");
 }
 
 //------------------------------------------------------------------------------
 QVariant GroupModel::data(const QModelIndex &aIndex, int aRole) const {
-    if (aIndex.row() >= 0 && aIndex.row() < mNodes.count()) {
+    if (aIndex.row() >= 0 && aIndex.row() < m_Nodes.count()) {
         switch (aRole) {
         case IdRole:
-            return mNodes[aIndex.row()]->getId();
+            return m_Nodes[aIndex.row()]->getId();
         case NameRole:
-            return mNodes[aIndex.row()]->getName();
+            return m_Nodes[aIndex.row()]->getName();
         case TitleRole:
-            return mNodes[aIndex.row()]->getTitle();
+            return m_Nodes[aIndex.row()]->getTitle();
         case DescriptionRole:
-            return mNodes[aIndex.row()]->getDescription();
+            return m_Nodes[aIndex.row()]->getDescription();
         case TypeRole:
-            return mNodes[aIndex.row()]->getType();
+            return m_Nodes[aIndex.row()]->getType();
         case ImageRole:
-            return mNodes[aIndex.row()]->getImage();
+            return m_Nodes[aIndex.row()]->getImage();
         case IsGroupRole:
-            return mNodes[aIndex.row()]->isGroup();
+            return m_Nodes[aIndex.row()]->isGroup();
         case JSONRole:
-            return mNodes[aIndex.row()]->getJSON();
+            return m_Nodes[aIndex.row()]->getJSON();
         }
     }
 
@@ -466,8 +466,8 @@ QVariant GroupModel::data(const QModelIndex &aIndex, int aRole) const {
 
 //------------------------------------------------------------------------------
 qint64 GroupModel::findCategory(qint64 aProviderId) const {
-    if (mProviderCategorys.contains(aProviderId)) {
-        return mProviderCategorys[aProviderId];
+    if (m_ProviderCategorys.contains(aProviderId)) {
+        return m_ProviderCategorys[aProviderId];
     }
 
     return 0;
@@ -480,12 +480,12 @@ bool GroupModel::isProviderInCategory(qint64 aProvider, qint64 aCategory) const 
 
 //------------------------------------------------------------------------------
 QSet<qint64> GroupModel::allProviders() const {
-    return mProviderCategorys.keys().toSet();
+    return m_ProviderCategorys.keys().toSet();
 }
 
 //------------------------------------------------------------------------------
 QString GroupModel::getProviderName(qint64 aProviderId) const {
-    QDomNodeList providers = mDocument.elementsByTagName(CGroupModel::Operator);
+    QDom_NodeList providers = m_Document.elementsByTagName(CGroupModel::Operator);
 
     for (int i = 0; i < providers.count(); i++) {
         Item item(providers.at(i));
@@ -500,119 +500,119 @@ QString GroupModel::getProviderName(qint64 aProviderId) const {
 
 //------------------------------------------------------------------------------
 void GroupModel::setStatistic(QMap<qint64, quint32> &aStatistic) {
-    mProvidersStatistic.swap(aStatistic);
+    m_ProvidersStatistic.swap(aStatistic);
 }
 
 //------------------------------------------------------------------------------
-Item::Item(const QDomNode &aNode)
-    : mAttributes(aNode.attributes()),
-      mIsGroup(aNode.nodeName().contains(CGroupModel::Group, Qt::CaseInsensitive) == true),
-      mElementName(aNode.nodeName().toLower()), mOrder(0) {}
+Item::Item(const QDom_Node &aNode)
+    : m_Attributes(aNode.attributes()),
+      m_IsGroup(aNode.nodeName().contains(CGroupModel::Group, Qt::CaseInsensitive) == true),
+      m_ElementName(aNode.nodeName().toLower()), m_Order(0) {}
 
 //------------------------------------------------------------------------------
 QString Item::getElementName() const {
-    return mElementName;
+    return m_ElementName;
 }
 
 //------------------------------------------------------------------------------
 qint64 Item::getId() const {
-    qint64 id = mAttributes.namedItem(CGroupModel::Attributes::Id).nodeValue().toLongLong();
-    qint64 extId = mAttributes.namedItem(CGroupModel::Attributes::ExtId).nodeValue().toLongLong();
+    qint64 id = m_Attributes.namedItem(CGroupModel::Attributes::Id).nodeValue().toLongLong();
+    qint64 extId = m_Attributes.namedItem(CGroupModel::Attributes::ExtId).nodeValue().toLongLong();
 
     return extId ? extId : id;
 }
 
 //------------------------------------------------------------------------------
 QString Item::getName() const {
-    return mAttributes.namedItem(CGroupModel::Attributes::Name).nodeValue();
+    return m_Attributes.namedItem(CGroupModel::Attributes::Name).nodeValue();
 }
 
 //------------------------------------------------------------------------------
 QString Item::getTitle() const {
-    return mAttributes.namedItem(CGroupModel::Attributes::Title).nodeValue();
+    return m_Attributes.namedItem(CGroupModel::Attributes::Title).nodeValue();
 }
 
 //------------------------------------------------------------------------------
 QString Item::getDescription() const {
-    return mAttributes.namedItem(CGroupModel::Attributes::Description).nodeValue();
+    return m_Attributes.namedItem(CGroupModel::Attributes::Description).nodeValue();
 }
 
 //------------------------------------------------------------------------------
 QString Item::getType() const {
-    return mAttributes.namedItem(CGroupModel::Attributes::Type).nodeValue().toLower();
+    return m_Attributes.namedItem(CGroupModel::Attributes::Type).nodeValue().toLower();
 }
 
 //------------------------------------------------------------------------------
 QString Item::getImage() const {
-    return mAttributes.namedItem(CGroupModel::Attributes::Image).nodeValue();
+    return m_Attributes.namedItem(CGroupModel::Attributes::Image).nodeValue();
 }
 
 //------------------------------------------------------------------------------
 bool Item::isGroup() const {
-    return mIsGroup;
+    return m_IsGroup;
 }
 
 //------------------------------------------------------------------------------
 QString Item::getJSON() const {
-    return mAttributes.namedItem(CGroupModel::Attributes::JSON).nodeValue();
+    return m_Attributes.namedItem(CGroupModel::Attributes::JSON).nodeValue();
 }
 
 //------------------------------------------------------------------------------
 void Item::setOrder(quint32 aOrder) {
-    mOrder = aOrder;
+    m_Order = aOrder;
 }
 
 //------------------------------------------------------------------------------
 quint32 Item::getOrder() const {
-    return mOrder;
+    return m_Order;
 }
 
 //------------------------------------------------------------------------------
 bool Item::is(const QString &aElementName) const {
-    return mElementName == aElementName;
+    return m_ElementName == aElementName;
 }
 
 //------------------------------------------------------------------------------
-ItemObject::ItemObject(const Item &aItem, QObject *aParent) : QObject(aParent), mItem(aItem) {}
+Item_Object::Item_Object(const Item &aItem, QObject *aParent) : QObject(aParent), m_Item(aItem) {}
 
 //------------------------------------------------------------------------------
-qint64 ItemObject::getId() const {
-    return mItem.getId();
+qint64 Item_Object::getId() const {
+    return m_Item.getId();
 }
 
 //------------------------------------------------------------------------------
-QString ItemObject::getName() const {
-    return mItem.getName();
+QString Item_Object::getName() const {
+    return m_Item.getName();
 }
 
 //------------------------------------------------------------------------------
-QString ItemObject::getTitle() const {
-    return mItem.getTitle();
+QString Item_Object::getTitle() const {
+    return m_Item.getTitle();
 }
 
 //------------------------------------------------------------------------------
-QString ItemObject::getDescription() const {
-    return mItem.getDescription();
+QString Item_Object::getDescription() const {
+    return m_Item.getDescription();
 }
 
 //------------------------------------------------------------------------------
-QString ItemObject::getType() const {
-    return mItem.getType();
+QString Item_Object::getType() const {
+    return m_Item.getType();
 }
 
 //------------------------------------------------------------------------------
-QString ItemObject::getImage() const {
-    return mItem.getImage();
+QString Item_Object::getImage() const {
+    return m_Item.getImage();
 }
 
 //------------------------------------------------------------------------------
-QString ItemObject::getJSON() const {
-    return mItem.getJSON();
+QString Item_Object::getJSON() const {
+    return m_Item.getJSON();
 }
 
 //------------------------------------------------------------------------------
-bool ItemObject::isGroup() const {
-    return mItem.isGroup();
+bool Item_Object::isGroup() const {
+    return m_Item.isGroup();
 }
 
 //------------------------------------------------------------------------------

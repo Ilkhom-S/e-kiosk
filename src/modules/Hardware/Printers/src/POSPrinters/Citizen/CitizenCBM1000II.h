@@ -20,28 +20,28 @@ template <class T> CitizenCBM1000II<T>::CitizenCBM1000II() {
     using namespace SDK::Driver::IOPort::COM;
 
     // статусы ошибок
-    this->mParameters.errors.clear();
+    this->m_Parameters.errors.clear();
 
-    this->mParameters.errors[1][1].insert('\x08', DeviceStatusCode::Error::Unknown);
+    this->m_Parameters.errors[1][1].insert('\x08', DeviceStatusCode::Error::Unknown);
 
-    this->mParameters.errors[2][1].insert('\x04', DeviceStatusCode::Error::CoverIsOpened);
-    this->mParameters.errors[2][1].insert('\x20', PrinterStatusCode::Error::PaperEnd);
-    this->mParameters.errors[2][1].insert('\x40', DeviceStatusCode::Error::Unknown);
+    this->m_Parameters.errors[2][1].insert('\x04', DeviceStatusCode::Error::CoverIsOpened);
+    this->m_Parameters.errors[2][1].insert('\x20', PrinterStatusCode::Error::PaperEnd);
+    this->m_Parameters.errors[2][1].insert('\x40', DeviceStatusCode::Error::Unknown);
 
-    this->mParameters.errors[3][1].insert('\x08', PrinterStatusCode::Error::Cutter);
-    this->mParameters.errors[3][1].insert('\x60', DeviceStatusCode::Error::Unknown);
+    this->m_Parameters.errors[3][1].insert('\x08', PrinterStatusCode::Error::Cutter);
+    this->m_Parameters.errors[3][1].insert('\x60', DeviceStatusCode::Error::Unknown);
 
-    this->mParameters.errors[4][1].insert('\x0C', PrinterStatusCode::Warning::PaperNearEnd);
-    this->mParameters.errors[4][1].insert('\x60', PrinterStatusCode::Error::PaperEnd);
+    this->m_Parameters.errors[4][1].insert('\x0C', PrinterStatusCode::Warning::PaperNearEnd);
+    this->m_Parameters.errors[4][1].insert('\x60', PrinterStatusCode::Error::PaperEnd);
 
     // параметры моделей
-    this->mDeviceName = "Citizen CBM-1000II";
-    this->mModelID = '\x30';
+    this->m_DeviceName = "Citizen CBM-1000II";
+    this->m_ModelID = '\x30';
     this->setConfigParameter(CHardware::Printer::FeedingAmount, 3);
 
     // модели
-    this->mModelData.data().clear();
-    this->mModelData.add(this->mModelID, true, this->mDeviceName);
+    this->m_ModelData.data().clear();
+    this->m_ModelData.add(this->m_ModelID, true, this->m_DeviceName);
 
     this->setConfigParameter(CHardware::Printer::FeedingAmount, 5);
 }
@@ -71,7 +71,7 @@ public:
         using namespace SDK::Driver::IOPort::COM;
 
         // параметры порта
-        mPortParameters.insert(EParameters::BaudRate,
+        m_PortParameters.insert(EParameters::BaudRate,
                                POSPrinters::TSerialDevicePortParameter()
                                    << EBaudRate::BR38400 << EBaudRate::BR19200 << EBaudRate::BR4800
                                    << EBaudRate::BR9600);

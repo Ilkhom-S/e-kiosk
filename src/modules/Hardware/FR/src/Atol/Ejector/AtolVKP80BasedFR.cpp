@@ -132,7 +132,7 @@ bool AtolVKP80BasedFR<T>::processReceipt(const QStringList &aReceipt, bool aProc
 
 //--------------------------------------------------------------------------------
 template <class T>
-bool AtolVKP80BasedFR<T>::performFiscal(const QStringList &aReceipt,
+bool AtolVKP80BasedFR<T>::perform_Fiscal(const QStringList &aReceipt,
                                         const SPaymentData &aPaymentData,
                                         quint32 *aFDNumber) {
     char ejectorMode =
@@ -140,7 +140,7 @@ bool AtolVKP80BasedFR<T>::performFiscal(const QStringList &aReceipt,
         (char(m_PrintingMode == EPrintingModes::Continuous) * m_EjectorSettings.nextMask);
     setEjectorMode(ejectorMode);
 
-    return AtolEjectorFR<T>::performFiscal(aReceipt, aPaymentData, aFDNumber);
+    return AtolEjectorFR<T>::perform_Fiscal(aReceipt, aPaymentData, aFDNumber);
 }
 
 //--------------------------------------------------------------------------------
@@ -158,10 +158,10 @@ template <class T> bool AtolVKP80BasedFR<T>::processXReport() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool AtolVKP80BasedFR<T>::performZReport(bool aPrintDeferredReports) {
+template <class T> bool AtolVKP80BasedFR<T>::perform_ZReport(bool aPrintDeferredReports) {
     setEjectorMode(m_EjectorSettings.ZReport);
 
-    return AtolEjectorFR<T>::performZReport(aPrintDeferredReports);
+    return AtolEjectorFR<T>::perform_ZReport(aPrintDeferredReports);
 }
 
 //--------------------------------------------------------------------------------

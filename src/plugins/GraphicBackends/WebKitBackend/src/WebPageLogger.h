@@ -18,7 +18,7 @@ public:
     WebPageLogger::WebPageLogger(QObject *aParent,
                                  SDK::PaymentProcessor::Scripting::Core *aCoreProxy,
                                  ILog *aLog)
-        : QWebPage(aParent), mCoreProxy(aCoreProxy), mLog(aLog) {}
+        : QWebPage(aParent), m_CoreProxy(aCoreProxy), m_Log(aLog) {}
     ~WebPageLogger() {}
 
 protected:
@@ -27,6 +27,6 @@ protected:
     virtual void javaScriptAlert(QWebFrame *frame, const QString &msg);
 
 private:
-    SDK::PaymentProcessor::Scripting::Core *mCoreProxy;
-    ILog *mLog;
+    SDK::PaymentProcessor::Scripting::Core *m_CoreProxy;
+    ILog *m_Log;
 };

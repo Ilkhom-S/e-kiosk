@@ -243,11 +243,11 @@ public:
     CPayTypeDescription() {
         using namespace SDK::Driver::EPayTypes;
 
-        append(Cash, QString::fromUtf8("НАЛИЧНЫМИ"));
-        append(EMoney, QString::fromUtf8("КАРТОЙ"));
-        append(PrePayment, QString::fromUtf8("АВАНС"));
-        append(PostPayment, QString::fromUtf8("КРЕДИТ"));
-        append(CounterOffer, QString::fromUtf8("ВСТРЕЧНОЕ ПРЕДОСТАВЛЕНИЕ"));
+        append(Cash, QString::from_Utf8("НАЛИЧНЫМИ"));
+        append(EMoney, QString::from_Utf8("КАРТОЙ"));
+        append(PrePayment, QString::from_Utf8("АВАНС"));
+        append(PostPayment, QString::from_Utf8("КРЕДИТ"));
+        append(CounterOffer, QString::from_Utf8("ВСТРЕЧНОЕ ПРЕДОСТАВЛЕНИЕ"));
     }
 };
 

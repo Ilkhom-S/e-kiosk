@@ -10,20 +10,20 @@
 
 TemplatePlugin::TemplatePlugin(SDK::Plugin::IEnvironment *aEnvironment,
                                const QString &aInstancePath)
-    : mEnvironment(aEnvironment), mInstancePath(aInstancePath),
-      mHelloMessage("Hello from Template Plugin!") {
+    : m_Environment(aEnvironment), m_InstancePath(aInstancePath),
+      m_HelloMessage("Hello from Template Plugin!") {
 
     // Логируем создание плагина
     qDebug() << "TemplatePlugin created with instance path:" << aInstancePath;
 
     // Пример инициализации: проверка окружения
-    if (!mEnvironment) {
+    if (!m_Environment) {
         qWarning() << "TemplatePlugin: Environment is null!";
         return;
     }
 
     // Пример: получение логгера из окружения
-    // ILog *log = mEnvironment->getLog("TemplatePlugin");
+    // ILog *log = m_Environment->getLog("TemplatePlugin");
     // log->write(LogLevel::Normal, "Plugin initialized");
 
     // Здесь можно добавить дополнительную инициализацию:
@@ -57,14 +57,14 @@ QString TemplatePlugin::getPluginName() const {
 // Возвращает имя файла конфигурации.
 /// @return QString с именем конфигурации
 QString TemplatePlugin::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //---------------------------------------------------------------------------
 // Возвращает текущую конфигурацию.
 /// @return QVariantMap с параметрами плагина
 QVariantMap TemplatePlugin::getConfiguration() const {
-    return mConfiguration;
+    return m_Configuration;
 }
 
 //---------------------------------------------------------------------------
@@ -72,14 +72,14 @@ QVariantMap TemplatePlugin::getConfiguration() const {
 /// @param aConfiguration Новые параметры конфигурации
 /// Вызывается при изменении настроек через интерфейс или загрузке из файла.
 void TemplatePlugin::setConfiguration(const QVariantMap &aConfiguration) {
-    mConfiguration = aConfiguration;
+    m_Configuration = aConfiguration;
 
     // Логируем изменение конфигурации
     qDebug() << "TemplatePlugin configuration set:" << aConfiguration;
 
     // Пример обработки параметров конфигурации:
     if (aConfiguration.contains("helloMessage")) {
-        mHelloMessage = aConfiguration.value("helloMessage").toString();
+        m_HelloMessage = aConfiguration.value("helloMessage").toString();
     }
 
     // Здесь можно добавить валидацию параметров:
@@ -93,7 +93,7 @@ void TemplatePlugin::setConfiguration(const QVariantMap &aConfiguration) {
 /// @return true если сохранение успешно
 bool TemplatePlugin::saveConfiguration() {
     // В реальном плагине здесь сохраняем в постоянное хранилище
-    // Пример: mEnvironment->savePluginConfiguration(mInstancePath, mConfiguration);
+    // Пример: m_Environment->savePluginConfiguration(m_InstancePath, m_Configuration);
 
     qDebug() << "TemplatePlugin saveConfiguration called";
 
@@ -118,8 +118,8 @@ bool TemplatePlugin::isReady() const {
     // - Проверка соединений
     // - Проверка конфигурации
 
-    bool environmentValid = (mEnvironment != nullptr);
-    bool configurationValid = !mConfiguration.isEmpty();
+    bool environmentValid = (m_Environment != nullptr);
+    bool configurationValid = !m_Configuration.isEmpty();
 
     return environmentValid && configurationValid;
 }
@@ -128,7 +128,7 @@ bool TemplatePlugin::isReady() const {
 // Возвращает приветственное сообщение.
 /// @return QString с сообщением
 QString TemplatePlugin::getHelloMessage() const {
-    return mHelloMessage;
+    return m_HelloMessage;
 }
 
 //---------------------------------------------------------------------------
@@ -144,15 +144,15 @@ void TemplatePlugin::doWork() {
     // - Обмен данными
 
     // Пример: вызов метода окружения
-    // if (mEnvironment) {
-    //     ILog *log = mEnvironment->getLog("TemplatePlugin");
+    // if (m_Environment) {
+    //     ILog *log = m_Environment->getLog("TemplatePlugin");
     //     log->write(LogLevel::Normal, "Work completed");
     // }
 
     // Пример: доступ к сервисам ядра для выполнения работы
     // try {
     //     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore*>(
-    //         mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    //         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
     //     if (core) {
     //         // Использование сетевых сервисов
     //         // auto networkService = core->getNetworkService();
@@ -180,15 +180,15 @@ void TemplatePlugin::handleError(const QString &errorMessage) {
     // - Переход в безопасное состояние
 
     // Пример: логирование через окружение
-    // if (mEnvironment) {
-    //     ILog *log = mEnvironment->getLog("TemplatePlugin");
+    // if (m_Environment) {
+    //     ILog *log = m_Environment->getLog("TemplatePlugin");
     //     log->write(LogLevel::Error, QString("Plugin error: %1").arg(errorMessage));
     // }
 
     // Пример: отправка уведомлений через ядро
     // try {
     //     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore*>(
-    //         mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    //         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
     //     if (core) {
     //         // Отправка уведомления о ошибке
     //         // core->sendNotification("Plugin Error", errorMessage);
@@ -214,7 +214,7 @@ SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
 
 /// Возвращает параметры плагина.
 /// @return QVector с параметрами плагина
-QVector<SDK::Plugin::SPluginParameter> EnumParameters() {
+QVector<SDK::Plugin::SPluginParameter> Enum_Parameters() {
     return QVector<SDK::Plugin::SPluginParameter>() << SDK::Plugin::SPluginParameter(
                SDK::Plugin::Parameters::Debug,
                SDK::Plugin::SPluginParameter::Bool,
@@ -232,5 +232,5 @@ REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
                                          "Template",
                                          "TemplatePlugin"),
                                 &CreatePlugin,
-                                &EnumParameters,
+                                &Enum_Parameters,
                                 TemplatePlugin);

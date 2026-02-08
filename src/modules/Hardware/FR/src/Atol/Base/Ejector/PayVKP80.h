@@ -10,8 +10,8 @@ class PayVKP80 : public AtolVKP80BasedFR<AtolSerialFR> {
 
 public:
     PayVKP80() {
-        mDeviceName = CAtolFR::Models::PayVKP80K;
-        mSupportedModels = QStringList() << mDeviceName;
+        m_DeviceName = CAtolFR::Models::PayVKP80K;
+        m_SupportedModels = QStringList() << m_DeviceName;
     }
 };
 

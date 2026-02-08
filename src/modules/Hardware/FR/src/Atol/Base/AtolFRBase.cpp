@@ -59,7 +59,7 @@ AtolFRBase::AtolFRBase() {
     m_CommandData.add(Encashment, 10 * 1000);
     m_CommandData.add(CancelDocument, 20 * 1000);
     m_CommandData.add(ZReport, 30 * 1000);
-    m_CommandData.add(ExitFromMode, 10 * 1000);
+    m_CommandData.add(ExitFrom_Mode, 10 * 1000);
     m_CommandData.add(OpenFRSession, 10 * 1000);
 
     // ошибки
@@ -86,7 +86,7 @@ QDateTime AtolFRBase::getDateTime() {
     if (getLongStatus(data)) {
         QString dateDataTime = data.mid(3, 6).toHex().prepend("20");
 
-        return QDateTime::fromString(dateDataTime, CAtolFR::DateTimeFormat);
+        return QDateTime::from_String(dateDataTime, CAtolFR::DateTimeFormat);
     }
 
     return QDateTime();
@@ -212,7 +212,7 @@ bool AtolFRBase::isConnected() {
 
 //--------------------------------------------------------------------------------
 bool AtolFRBase::getPrintingSettings() {
-    if ((m_DeviceName == CAtolFR::Models::TriumF) || (m_DeviceName == CAtolFR::Models::FelixRF) ||
+    if ((m_DeviceName == CAtolFR::Models::Trium_F) || (m_DeviceName == CAtolFR::Models::FelixRF) ||
         (m_DeviceName == CAtolFR::Models::Felix02K) ||
         (m_DeviceName == CAtolFR::Models::Mercury140F) ||
         (m_DeviceName == CAtolFR::Models::Mercury130) ||
@@ -273,7 +273,7 @@ TResult AtolFRBase::execCommand(const QByteArray &aCommand,
 
     QByteArray commandData = aCommand + aCommandData;
     QByteArray answer;
-    m_LastCommandResult = performCommand(commandData, answer, m_CommandData[aCommand].timeout);
+    m_LastCommandResult = perform_Command(commandData, answer, m_CommandData[aCommand].timeout);
 
     if ((m_LastCommandResult != CommandResult::Transport) && aAnswer) {
         *aAnswer = answer;
@@ -498,7 +498,7 @@ bool AtolFRBase::getCommonStatus(TStatusCodes &aStatusCodes) {
         return false;
     }
 
-    QByteArray data = performStatus(aStatusCodes, CAtolFR::Commands::GetLongStatus, 9);
+    QByteArray data = perform_Status(aStatusCodes, CAtolFR::Commands::GetLongStatus, 9);
 
     if (data == CFR::Result::Fail) {
         return false;
@@ -551,7 +551,7 @@ bool AtolFRBase::getStatus(TStatusCodes &aStatusCodes) {
 
 //--------------------------------------------------------------------------------
 void AtolFRBase::execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine) {
-    QByteArray data = m_Codec->fromUnicode(aTagLexeme.data);
+    QByteArray data = m_Codec->from_Unicode(aTagLexeme.data);
 
     if (aTagLexeme.tags.contains(Tags::Type::DoubleWidth)) {
         Tags::TTypes types;
@@ -571,7 +571,7 @@ void AtolFRBase::execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine) {
 }
 
 //--------------------------------------------------------------------------------
-bool AtolFRBase::performFiscal(const QStringList &aReceipt,
+bool AtolFRBase::perform_Fiscal(const QStringList &aReceipt,
                                const SPaymentData &aPaymentData,
                                quint32 * /*aFDNumber*/) {
     if (!enterInnerMode(CAtolFR::InnerModes::Register) ||
@@ -681,7 +681,7 @@ bool AtolFRBase::printDeferredZReports() {
 }
 
 //--------------------------------------------------------------------------------
-bool AtolFRBase::performZReport(bool aPrintDeferredReports) {
+bool AtolFRBase::perform_ZReport(bool aPrintDeferredReports) {
     toLog(LogLevel::Normal, "AtolFR: Processing Z-report");
 
     bool printDeferredZReportSuccess = true;
@@ -762,12 +762,12 @@ bool AtolFRBase::closeDocument(EPayTypes::Enum aPayType) {
 //--------------------------------------------------------------------------------
 bool AtolFRBase::sale(const SUnitData &aUnitData) {
     if (!aUnitData.name.isEmpty()) {
-        printLine(m_Codec->fromUnicode(aUnitData.name));
+        printLine(m_Codec->from_Unicode(aUnitData.name));
     }
 
     if (!aUnitData.VAT) {
         QString withoutTaxes = getConfigParameter(CHardware::FR::Strings::WithoutTaxes).toString();
-        printLine(m_Codec->fromUnicode(withoutTaxes));
+        printLine(m_Codec->from_Unicode(withoutTaxes));
     }
 
     int taxGroup = (aUnitData.section == -1) ? m_TaxData[aUnitData.VAT].group : aUnitData.section;
@@ -843,7 +843,7 @@ bool AtolFRBase::getLastSessionDT(QDateTime &aLastSessionDT) {
     }
 
     QString dateDataTime = data.mid(1, 6).toHex().insert(4, "20");
-    aLastSessionDT = QDateTime::fromString(dateDataTime, CAtolFR::SessionDTFormat);
+    aLastSessionDT = QDateTime::from_String(dateDataTime, CAtolFR::SessionDTFormat);
 
     return aLastSessionDT.isValid();
 }
@@ -915,7 +915,7 @@ bool AtolFRBase::setFRParameter(const CAtolFR::FRParameters::SData &aData, const
     if (aValue.typeId() == QMetaType::QByteArray)
         commandData.append(aValue.toByteArray());
     else if (aValue.typeId() == QMetaType::QString)
-        commandData.append(m_Codec->fromUnicode(aValue.toString()));
+        commandData.append(m_Codec->from_Unicode(aValue.toString()));
     else
         commandData.append(char(aValue.toInt()));
 
@@ -932,7 +932,7 @@ bool AtolFRBase::setFRParameter(const CAtolFR::FRParameters::SData &aData, const
 //--------------------------------------------------------------------------------
 bool AtolFRBase::setFRParameters() {
     if (!setFRParameter(CAtolFR::FRParameters::TaxType,
-                        CAtolFR::CustomSaleTax) || // тип налога - на каждую покупку
+                        CAtolFR::Custom_SaleTax) || // тип налога - на каждую покупку
         !setFRParameter(CAtolFR::FRParameters::Cut,
                         true) || // автоотрезка фискального чека - да. Нефискальный - режем сами
         !setFRParameter(CAtolFR::FRParameters::PrintNotFiscalData,
@@ -949,15 +949,15 @@ bool AtolFRBase::setFRParameters() {
 
     char FRReportMode = data[0];
     char reportMode = CAtolFR::ReportMode;
-    QString nullingSumInCash = getConfigParameter(CHardwareSDK::FR::NullingSumInCash).toString();
+    QString nullingSum_InCash = getConfigParameter(CHardwareSDK::FR::NullingSum_InCash).toString();
 
-    if (nullingSumInCash == CHardwareSDK::Values::Auto) {
-        reportMode &= ~CAtolFR::NullingSumInCashMask;
-        reportMode |= FRReportMode & CAtolFR::NullingSumInCashMask;
-    } else if (nullingSumInCash == CHardwareSDK::Values::Use) {
-        reportMode |= CAtolFR::NullingSumInCashMask;
-    } else if (nullingSumInCash == CHardwareSDK::Values::NotUse) {
-        reportMode &= ~CAtolFR::NullingSumInCashMask;
+    if (nullingSum_InCash == CHardwareSDK::Values::Auto) {
+        reportMode &= ~CAtolFR::NullingSum_InCashMask;
+        reportMode |= FRReportMode & CAtolFR::NullingSum_InCashMask;
+    } else if (nullingSum_InCash == CHardwareSDK::Values::Use) {
+        reportMode |= CAtolFR::NullingSum_InCashMask;
+    } else if (nullingSum_InCash == CHardwareSDK::Values::NotUse) {
+        reportMode &= ~CAtolFR::NullingSum_InCashMask;
     }
 
     if (m_OperatorPresence) {
@@ -1193,7 +1193,7 @@ bool AtolFRBase::exitInnerMode(bool aForce) {
 
     toLog(LogLevel::Normal, "AtolFR: Exiting from mode");
 
-    if (!processCommand(CAtolFR::Commands::ExitFromMode)) {
+    if (!processCommand(CAtolFR::Commands::ExitFrom_Mode)) {
         return false;
     }
 
@@ -1263,7 +1263,7 @@ bool AtolFRBase::execZReport(bool aAuto) {
 
     bool cannotAutoZReport =
         !m_CanProcessZBuffer ||
-        (m_OperatorPresence && !getConfigParameter(CHardware::FR::ForcePerformZReport).toBool());
+        (m_OperatorPresence && !getConfigParameter(CHardware::FR::ForcePerform_ZReport).toBool());
 
     if (aAuto && cannotAutoZReport) {
         toLog(LogLevel::Error,
@@ -1316,8 +1316,8 @@ bool AtolFRBase::execZReport(bool aAuto) {
         outData.insert(CFiscalPrinter::FRDateTime, FRDateTime.toString(CFR::DateTimeLogFormat));
     }
 
-    QString systemDateTime = QDateTime::currentDateTime().toString(CFR::DateTimeLogFormat);
-    outData.insert(CFiscalPrinter::SystemDateTime, systemDateTime);
+    QString system_DateTime = QDateTime::currentDateTime().toString(CFR::DateTimeLogFormat);
+    outData.insert(CFiscalPrinter::System_DateTime, system_DateTime);
 
     // делаем закрытие смены и ждем смены состояний
     m_NeedCloseSession = false;
@@ -1361,7 +1361,7 @@ ESessionState::Enum AtolFRBase::getSessionState() {
     }
 
     QString dateTimeData = data.mid(3, 6).toHex().prepend("20");
-    QDateTime currentDT = QDateTime::fromString(dateTimeData, CAtolFR::DateTimeFormat);
+    QDateTime currentDT = QDateTime::from_String(dateTimeData, CAtolFR::DateTimeFormat);
     QDateTime lastSessionDT;
 
     if (!currentDT.isValid() || !getLastSessionDT(lastSessionDT)) {
@@ -1424,7 +1424,7 @@ bool AtolFRBase::getLongStatus(QByteArray &aData) {
 
 //--------------------------------------------------------------------------------
 bool AtolFRBase::getShortStatus(TStatusCodes &aStatusCodes) {
-    QByteArray data = performStatus(aStatusCodes, CAtolFR::Commands::GetShortStatus, 2);
+    QByteArray data = perform_Status(aStatusCodes, CAtolFR::Commands::GetShortStatus, 2);
 
     if (data == CFR::Result::Fail) {
         return false;

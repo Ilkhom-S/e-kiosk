@@ -69,7 +69,7 @@ struct Data {
     QStringList action;
     bool actionState;
     QString connection;
-    QVariantMap systemInfo;
+    QVariantMap system_Info;
 
     Validator validator;
     CoinAcceptor coinAcceptor;
@@ -95,7 +95,7 @@ public:
     bool firstSend;
 
 private:
-    void parcerNote(const QDomNode &domElement);
+    void parcerNote(const QDom_Node &dom_Element);
 
     double gbl_overdraft;
     double gbl_balance;
@@ -110,7 +110,7 @@ private:
 private slots:
     void resendRequest();
     void r_RequestRepeet();
-    void setDataNote(const QDomNode &domElement);
+    void setDataNote(const QDom_Node &dom_Element);
 
 signals:
     void getRequestParam();

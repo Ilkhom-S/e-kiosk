@@ -13,12 +13,12 @@
 using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
-IntegratedDrivers::IntegratedDrivers() : mDeviceManager(nullptr) {}
+IntegratedDrivers::IntegratedDrivers() : m_DeviceManager(nullptr) {}
 
 //------------------------------------------------------------------------------
 void IntegratedDrivers::initialize(DeviceManager *aDeviceManager) {
-    mData.clear();
-    mDeviceManager = aDeviceManager;
+    m_Data.clear();
+    m_DeviceManager = aDeviceManager;
 
     QList<TPaths> commonPaths;
     auto getDeviceType = [](const QString &aPath) -> QString {
@@ -26,8 +26,8 @@ void IntegratedDrivers::initialize(DeviceManager *aDeviceManager) {
         return (pathParts.size() > 1) ? pathParts[2] : "";
     };
 
-    QStringList driverPathList = mDeviceManager->getDriverList();
-    TModelList modelList = mDeviceManager->getModelList("");
+    QStringList driverPathList = m_DeviceManager->getDriverList();
+    TModelList modelList = m_DeviceManager->getModelList("");
 
     foreach (const QString &path, driverPathList) {
         QSet<QString> models = QSet<QString>(modelList[path].begin(), modelList[path].end());
@@ -74,7 +74,7 @@ void IntegratedDrivers::initialize(DeviceManager *aDeviceManager) {
 
         foreach (const TPaths &localPaths,
                  QSet<TPaths>(pathsByModel.values().begin(), pathsByModel.values().end())) {
-            mData.insert(pathPart + QString::number(index++),
+            m_Data.insert(pathPart + QString::number(index++),
                          SData(localPaths, pathsByModel.keys(localPaths)));
         }
     }
@@ -82,15 +82,15 @@ void IntegratedDrivers::initialize(DeviceManager *aDeviceManager) {
 
 //------------------------------------------------------------------------------
 void IntegratedDrivers::checkDriverPath(QString &aDriverPath, const QVariantMap &aConfig) {
-    if (!mData.contains(aDriverPath)) {
+    if (!m_Data.contains(aDriverPath)) {
         return;
     }
 
     QStringList paths =
-        QList<QString>(mData[aDriverPath].paths.begin(), mData[aDriverPath].paths.end());
+        QList<QString>(m_Data[aDriverPath].paths.begin(), m_Data[aDriverPath].paths.end());
 
     for (int i = 0; i < paths.size(); ++i) {
-        TParameterList parameters = mDeviceManager->getDriverParameters(paths[i]);
+        TParameterList parameters = m_DeviceManager->getDriverParameters(paths[i]);
 
         for (auto jt = aConfig.begin(); jt != aConfig.end(); ++jt) {
             auto parameterIt = std::find_if(parameters.begin(),
@@ -123,7 +123,7 @@ void IntegratedDrivers::checkDriverPath(QString &aDriverPath, const QVariantMap 
 
 //------------------------------------------------------------------------------
 void IntegratedDrivers::filterModelList(TModelList &aModelList) const {
-    for (auto it = mData.begin(); it != mData.end(); ++it) {
+    for (auto it = m_Data.begin(); it != m_Data.end(); ++it) {
         for (auto jt = it->paths.begin(); jt != it->paths.end(); ++jt) {
             aModelList.remove(*jt);
         }
@@ -135,15 +135,15 @@ void IntegratedDrivers::filterModelList(TModelList &aModelList) const {
 //------------------------------------------------------------------------------
 void IntegratedDrivers::filterDriverParameters(const QString &aDriverPath,
                                                TParameterList &aParameterList) const {
-    if (!mData.contains(aDriverPath)) {
+    if (!m_Data.contains(aDriverPath)) {
         return;
     }
 
-    TPaths paths = mData[aDriverPath].paths;
+    TPaths paths = m_Data[aDriverPath].paths;
     aParameterList.clear();
 
     for (auto it = paths.begin(); it != paths.end(); ++it) {
-        TParameterList parameters = mDeviceManager->getDriverParameters(*it);
+        TParameterList parameters = m_DeviceManager->getDriverParameters(*it);
 
         for (auto jt = parameters.begin(); jt != parameters.end(); ++jt) {
             auto parameterIt = std::find_if(aParameterList.begin(),
@@ -171,7 +171,7 @@ void IntegratedDrivers::filterDriverParameters(const QString &aDriverPath,
     if (parameterIt != aParameterList.end()) {
         parameterIt->possibleValues.clear();
 
-        foreach (const QString &model, mData[aDriverPath].models) {
+        foreach (const QString &model, m_Data[aDriverPath].models) {
             parameterIt->possibleValues.insert(model, model);
         }
     }
@@ -179,7 +179,7 @@ void IntegratedDrivers::filterDriverParameters(const QString &aDriverPath,
 
 //------------------------------------------------------------------------------
 void IntegratedDrivers::filterDriverList(QStringList &aDriverList) const {
-    for (auto it = mData.begin(); it != mData.end(); ++it) {
+    for (auto it = m_Data.begin(); it != m_Data.end(); ++it) {
         for (auto jt = it->paths.begin(); jt != it->paths.end(); ++jt) {
             aDriverList.removeAll(*jt);
         }

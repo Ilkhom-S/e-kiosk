@@ -41,7 +41,7 @@ QString QAtUtils::quote(const QString &str) {
 /*!
         Convert the byte array, \a binary, into a hexadecimal string.
 
-        \sa fromHex()
+        \sa from_Hex()
 */
 QString QAtUtils::toHex(const QByteArray &binary) {
     QString str = "";
@@ -60,7 +60,7 @@ QString QAtUtils::toHex(const QByteArray &binary) {
 
         \sa toHex()
 */
-QByteArray QAtUtils::fromHex(const QString &hex) {
+QByteArray QAtUtils::from_Hex(const QString &hex) {
     QByteArray bytes;
     uint ch;
     int posn;
@@ -140,7 +140,7 @@ QString QAtUtils::encodeNumber(const QString &value, bool keepPlus) {
     }
 }
 
-static int FromHexDigit(uint ch) {
+static int From_HexDigit(uint ch) {
     if (ch >= '0' && ch <= '9') {
         return (int)(ch - '0');
     } else if (ch >= 'A' && ch <= 'F') {
@@ -152,7 +152,7 @@ static int FromHexDigit(uint ch) {
     }
 }
 
-static int FromOctalDigit(uint ch) {
+static int From_OctalDigit(uint ch) {
     if (ch >= '0' && ch <= '7') {
         return (int)(ch - '0');
     } else {
@@ -184,7 +184,7 @@ QString QAtUtils::nextString(const QString &buf, uint &posn) {
                 // Hex-quoted character.
                 if (posn >= (uint)buf.length())
                     break;
-                digit = FromHexDigit(buf[posn].unicode());
+                digit = From_HexDigit(buf[posn].unicode());
                 if (digit == -1) {
                     result += (QChar)'\\';
                     continue;
@@ -193,7 +193,7 @@ QString QAtUtils::nextString(const QString &buf, uint &posn) {
                     ch = (uint)digit;
                     ++posn;
                 } else {
-                    digit2 = FromHexDigit(buf[posn + 1].unicode());
+                    digit2 = From_HexDigit(buf[posn + 1].unicode());
                     if (digit2 == -1) {
                         ch = (uint)digit;
                         ++posn;
@@ -206,7 +206,7 @@ QString QAtUtils::nextString(const QString &buf, uint &posn) {
                 // Octal-quoted character.
                 if (posn >= (uint)buf.length())
                     break;
-                digit = FromOctalDigit(buf[posn].unicode());
+                digit = From_OctalDigit(buf[posn].unicode());
                 if (digit == -1) {
                     result += (QChar)'\\';
                     continue;
@@ -215,7 +215,7 @@ QString QAtUtils::nextString(const QString &buf, uint &posn) {
                     ch = (uint)digit;
                     ++posn;
                 } else {
-                    digit2 = FromOctalDigit(buf[posn + 1].unicode());
+                    digit2 = From_OctalDigit(buf[posn + 1].unicode());
                     if (digit2 == -1) {
                         ch = (uint)digit;
                         ++posn;
@@ -224,7 +224,7 @@ QString QAtUtils::nextString(const QString &buf, uint &posn) {
                             ch = (uint)(digit * 8 + digit2);
                             posn += 2;
                         } else {
-                            digit3 = FromOctalDigit(buf[posn + 2].unicode());
+                            digit3 = From_OctalDigit(buf[posn + 2].unicode());
                             if (digit3 == -1) {
                                 ch = (uint)(digit * 8 + digit2);
                                 posn += 2;
@@ -277,32 +277,32 @@ void QAtUtils::skipField(const QString &str, uint &posn) {
     }
 }
 
-class QGsmHexCodec : public QTextCodec {
+class QGsm_HexCodec : public QTextCodec {
 public:
-    QGsmHexCodec();
-    ~QGsmHexCodec();
+    QGsm_HexCodec();
+    ~QGsm_HexCodec();
 
     QByteArray name() const;
     int mibEnum() const;
 
 protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
-    QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
+    QByteArray convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const;
 };
 
-QGsmHexCodec::QGsmHexCodec() {}
+QGsm_HexCodec::QGsm_HexCodec() {}
 
-QGsmHexCodec::~QGsmHexCodec() {}
+QGsm_HexCodec::~QGsm_HexCodec() {}
 
-QByteArray QGsmHexCodec::name() const {
+QByteArray QGsm_HexCodec::name() const {
     return QByteArray("gsm-hex");
 }
 
-int QGsmHexCodec::mibEnum() const {
+int QGsm_HexCodec::mibEnum() const {
     return 61239;
 }
 
-QString QGsmHexCodec::convertToUnicode(const char *in, int length, ConverterState *) const {
+QString QGsm_HexCodec::convertToUnicode(const char *in, int length, ConverterState *) const {
     QString str;
     int nibble = 0;
     int value = 0;
@@ -325,13 +325,13 @@ QString QGsmHexCodec::convertToUnicode(const char *in, int length, ConverterStat
             value += digit;
             if (!secondByte) {
                 if (value != 0x1B) {
-                    str += QGsmCodec::twoByteToUnicode((unsigned short)value);
+                    str += QGsm_Codec::twoByteToUnicode((unsigned short)value);
                 } else {
                     secondByte = true;
                 }
             } else {
                 value += 0x1B00;
-                str += QGsmCodec::twoByteToUnicode((unsigned short)value);
+                str += QGsm_Codec::twoByteToUnicode((unsigned short)value);
                 secondByte = false;
             }
             nibble = 0;
@@ -340,10 +340,10 @@ QString QGsmHexCodec::convertToUnicode(const char *in, int length, ConverterStat
     return str;
 }
 
-QByteArray QGsmHexCodec::convertFromUnicode(const QChar *in, int length, ConverterState *) const {
+QByteArray QGsm_HexCodec::convertFrom_Unicode(const QChar *in, int length, ConverterState *) const {
     QByteArray buf;
     while (length-- > 0) {
-        unsigned short ch = QGsmCodec::twoByteFromUnicode(*in++);
+        unsigned short ch = QGsm_Codec::twoByteFrom_Unicode(*in++);
         if (ch >= 256) {
             buf += hexchars[(ch >> 12) & 0x0F];
             buf += hexchars[(ch >> 8) & 0x0F];
@@ -364,7 +364,7 @@ public:
 
 protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
-    QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
+    QByteArray convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const;
 };
 
 QUcs2HexCodec::QUcs2HexCodec() {}
@@ -405,7 +405,7 @@ QString QUcs2HexCodec::convertToUnicode(const char *in, int length, ConverterSta
     return str;
 }
 
-QByteArray QUcs2HexCodec::convertFromUnicode(const QChar *in, int length, ConverterState *) const {
+QByteArray QUcs2HexCodec::convertFrom_Unicode(const QChar *in, int length, ConverterState *) const {
     QByteArray buf;
     while (length-- > 0) {
         uint ch = in->unicode();
@@ -429,7 +429,7 @@ public:
 
 protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
-    QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
+    QByteArray convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const;
 };
 
 // Convert IBM437 character codes 0x00 - 0xFF into Unicode.
@@ -458,7 +458,7 @@ static ushort const cp437ToUnicode[256] = {
     0x207f, 0x00b2, 0x25a0, 0x00a0};
 
 // Convert Unicode 0x0000 - 0x00FF into IBM437.
-static unsigned char const cp437FromUnicode[256] = {
+static unsigned char const cp437From_Unicode[256] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
     0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x7f, 0x1b, 0x1a, 0x1d, 0x1e, 0x1f,
     0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
@@ -533,7 +533,7 @@ QString QCodePage437Codec::convertToUnicode(const char *in, int length, Converte
 }
 
 QByteArray
-QCodePage437Codec::convertFromUnicode(const QChar *in, int length, ConverterState *) const {
+QCodePage437Codec::convertFrom_Unicode(const QChar *in, int length, ConverterState *) const {
     QByteArray result;
     unsigned int ch;
     char *out;
@@ -544,7 +544,7 @@ QCodePage437Codec::convertFromUnicode(const QChar *in, int length, ConverterStat
         ch = in[posn].unicode();
         if (ch >= 0x0100)
             non437 = true;
-        else if (cp437FromUnicode[ch] == '?' && ch != '?')
+        else if (cp437From_Unicode[ch] == '?' && ch != '?')
             non437 = true;
     }
     if (non437) {
@@ -573,7 +573,7 @@ QCodePage437Codec::convertFromUnicode(const QChar *in, int length, ConverterStat
     result.resize(length);
     out = result.data();
     while (length-- > 0) {
-        *out++ = (char)cp437FromUnicode[in->unicode()];
+        *out++ = (char)cp437From_Unicode[in->unicode()];
         ++in;
     }
     return result;
@@ -590,7 +590,7 @@ public:
 
 protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
-    QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
+    QByteArray convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const;
 };
 
 // Convert IBM850 character codes 0x00 - 0xFF into Unicode.
@@ -620,7 +620,7 @@ static ushort const cp850ToUnicode[256] = {
 };
 
 // Convert Unicode 0x0000 - 0x00FF into IBM850.
-static unsigned char const cp850FromUnicode[256] = {
+static unsigned char const cp850From_Unicode[256] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
     0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x7f, 0x1b, 0x1a, 0x1d, 0x1e, 0x1f,
     0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
@@ -694,7 +694,7 @@ QString QCodePage850Codec::convertToUnicode(const char *in, int length, Converte
 }
 
 QByteArray
-QCodePage850Codec::convertFromUnicode(const QChar *in, int length, ConverterState *) const {
+QCodePage850Codec::convertFrom_Unicode(const QChar *in, int length, ConverterState *) const {
     QByteArray result;
     unsigned int ch;
     char *out;
@@ -704,7 +704,7 @@ QCodePage850Codec::convertFromUnicode(const QChar *in, int length, ConverterStat
         ch = in->unicode();
         ++in;
         if (ch < 0x0100) {
-            *out++ = (char)cp850FromUnicode[ch];
+            *out++ = (char)cp850From_Unicode[ch];
         } else {
             // Perform a binary search on the sparse mapping table.
             int left = 0;
@@ -731,7 +731,7 @@ QCodePage850Codec::convertFromUnicode(const QChar *in, int length, ConverterStat
 
 /*!
         Returns the text codec for the GSM character set identifier \a
-   gsmCharset. The returned object should not be deleted.
+   gsm_Charset. The returned object should not be deleted.
 
         The following standard GSM character sets from 3GPP TS 27.007 are
    recognized:
@@ -771,10 +771,10 @@ QCodePage850Codec::convertFromUnicode(const QChar *in, int length, ConverterStat
    QTextCodec::codecForName().
         \endtable
 
-        \sa QTextCodec, QGsmCodec
+        \sa QTextCodec, QGsm_Codec
 */
-QTextCodec *QAtUtils::codec(const QString &gsmCharset) {
-    QString cs = gsmCharset.toLower();
+QTextCodec *QAtUtils::codec(const QString &gsm_Charset) {
+    QString cs = gsm_Charset.toLower();
     QTextCodec *codec = 0;
 
     // Convert the name into an appropriate codec.
@@ -782,14 +782,14 @@ QTextCodec *QAtUtils::codec(const QString &gsmCharset) {
         // 7-bit GSM character set.
         static QTextCodec *gsm = 0;
         if (!gsm)
-            gsm = new QGsmCodec();
+            gsm = new QGsm_Codec();
         codec = gsm;
     } else if (cs == "gsm-noloss") {
         // 7-bit GSM character set, with no loss of quality.
-        static QTextCodec *gsmNoLoss = 0;
-        if (!gsmNoLoss)
-            gsmNoLoss = new QGsmCodec(true);
-        codec = gsmNoLoss;
+        static QTextCodec *gsm_NoLoss = 0;
+        if (!gsm_NoLoss)
+            gsm_NoLoss = new QGsm_Codec(true);
+        codec = gsm_NoLoss;
     } else if (cs == "hex") {
         // Direct hex character set.  The underlying character set could
         // be anything according to the specification, but we need to pick
@@ -797,7 +797,7 @@ QTextCodec *QAtUtils::codec(const QString &gsmCharset) {
         // likely value.
         static QTextCodec *hex = 0;
         if (!hex)
-            hex = new QGsmHexCodec();
+            hex = new QGsm_HexCodec();
         codec = hex;
     } else if (cs == "ucs2") {
         // Hex-encoded UCS2 character set.
@@ -850,7 +850,7 @@ QTextCodec *QAtUtils::codec(const QString &gsmCharset) {
         codec = QTextCodec::codecForName("ISO-" + cs.toLatin1());
     } else {
         // Not one of the standard GSM charset specifiers.  Look it up as-is.
-        codec = QTextCodec::codecForName(gsmCharset.toLatin1());
+        codec = QTextCodec::codecForName(gsm_Charset.toLatin1());
     }
 
     // Return the codec that we found, or bail out with Latin1 if unknown.
@@ -870,14 +870,14 @@ QString QAtUtils::quote(const QString &str, QTextCodec *codec) {
     // Convert the string into raw bytes.
     QByteArray bytes;
     if (codec)
-        bytes = codec->fromUnicode(str);
+        bytes = codec->from_Unicode(str);
     else
         bytes = str.toLatin1();
 
     // Determine if we need to apply quoting to the string.
     if (bytes.indexOf('"') == -1 && bytes.indexOf('\\') == -1 && bytes.indexOf('\r') == -1 &&
         bytes.indexOf('\n') == -1) {
-        return QString::fromLatin1(bytes.data(), bytes.length());
+        return QString::from_Latin1(bytes.data(), bytes.length());
     }
 
     // Create a new string for the quoted form.  The result is suitable

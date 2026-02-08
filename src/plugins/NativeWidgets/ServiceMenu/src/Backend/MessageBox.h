@@ -59,8 +59,8 @@ public:
     void updatePopup(const QVariantMap &aParameters);
     void setReceiver(QObject *aReceiver);
     void emitPopupSignal(const QVariantMap &aParameters);
-    void startWaitTimer() { mWaitTimer.start(CMessageBox::WaitWindowTimeout); }
-    void stopWaitTimer() { mWaitTimer.stop(); }
+    void startWaitTimer() { m_WaitTimer.start(CMessageBox::WaitWindowTimeout); }
+    void stopWaitTimer() { m_WaitTimer.stop(); }
 
 public slots:
     void hideWindow();
@@ -72,13 +72,13 @@ private:
     MessageBox(SDK::PaymentProcessor::IGUIService *aGUIService);
     ~MessageBox() {}
 
-    static MessageBox *getInstance() { return mInstance; }
+    static MessageBox *getInstance() { return m_Instance; }
 
 private:
-    static MessageBox *mInstance;
-    SDK::PaymentProcessor::IGUIService *mGUIService;
-    QPointer<QObject> mSignalReceiver;
-    QTimer mWaitTimer;
+    static MessageBox *m_Instance;
+    SDK::PaymentProcessor::IGUIService *m_GUIService;
+    QPointer<QObject> m_SignalReceiver;
+    QTimer m_WaitTimer;
 };
 
 //------------------------------------------------------------------------------

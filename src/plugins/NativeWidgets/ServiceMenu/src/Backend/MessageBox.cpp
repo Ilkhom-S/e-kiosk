@@ -2,25 +2,25 @@
 
 #include "MessageBox.h"
 
-MessageBox *MessageBox::mInstance = 0;
+MessageBox *MessageBox::m_Instance = 0;
 
 //------------------------------------------------------------------------
 MessageBox::MessageBox(SDK::PaymentProcessor::IGUIService *aGUIService)
-    : mGUIService(aGUIService), mSignalReceiver(0) {
-    connect(&mWaitTimer, SIGNAL(timeout()), this, SLOT(hideWindow()));
+    : m_GUIService(aGUIService), m_SignalReceiver(0) {
+    connect(&m_WaitTimer, SIGNAL(timeout()), this, SLOT(hideWindow()));
 }
 
 //------------------------------------------------------------------------
 void MessageBox::initialize(SDK::PaymentProcessor::IGUIService *aGUIService) {
-    delete mInstance;
-    mInstance = new MessageBox(aGUIService);
+    delete m_Instance;
+    m_Instance = new MessageBox(aGUIService);
 }
 
 //------------------------------------------------------------------------
 void MessageBox::shutdown() {
-    mInstance->hideWindow();
-    delete mInstance;
-    mInstance = 0;
+    m_Instance->hideWindow();
+    delete m_Instance;
+    m_Instance = 0;
 }
 
 //------------------------------------------------------------------------
@@ -99,7 +99,7 @@ void MessageBox::showPopup(const QString &aText,
     params[SDK::GUI::CMessageBox::Button] = aButton;
     params[SDK::GUI::CMessageBox::Scaled] = true;
 
-    mGUIService->showPopup(SDK::GUI::CMessageBox::SceneName, params);
+    m_GUIService->showPopup(SDK::GUI::CMessageBox::SceneName, params);
 }
 
 //------------------------------------------------------------------------
@@ -112,7 +112,7 @@ bool MessageBox::showModal(const QString &aText, SDK::GUI::MessageBoxParams::Enu
     params[SDK::GUI::CMessageBox::Button] = SDK::GUI::MessageBoxParams::OK;
     params[SDK::GUI::CMessageBox::Scaled] = true;
 
-    QVariantMap returnParams = mGUIService->showModal(SDK::GUI::CMessageBox::SceneName, params);
+    QVariantMap returnParams = m_GUIService->showModal(SDK::GUI::CMessageBox::SceneName, params);
 
     bool result =
         returnParams[SDK::GUI::CMessageBox::Button].toInt() == SDK::GUI::MessageBoxParams::OK;
@@ -128,20 +128,20 @@ void MessageBox::showNotify(const QString &aText, int aTimeout) {
 
 //------------------------------------------------------------------------
 void MessageBox::updatePopup(const QVariantMap &aParameters) {
-    mGUIService->notify("", aParameters);
+    m_GUIService->notify("", aParameters);
 }
 
 //------------------------------------------------------------------------
 void MessageBox::setReceiver(QObject *aReceiver) {
-    mSignalReceiver = aReceiver;
+    m_SignalReceiver = aReceiver;
 }
 
 //------------------------------------------------------------------------
 void MessageBox::emitPopupSignal(const QVariantMap &aParameters) {
-    if (mSignalReceiver) {
+    if (m_SignalReceiver) {
         QObject::connect(this,
                          SIGNAL(clicked(const QVariantMap &)),
-                         mSignalReceiver,
+                         m_SignalReceiver,
                          SLOT(onClicked(const QVariantMap &)),
                          Qt::UniqueConnection);
         emit clicked(aParameters);
@@ -150,18 +150,18 @@ void MessageBox::emitPopupSignal(const QVariantMap &aParameters) {
 
 //------------------------------------------------------------------------
 void MessageBox::hideWindow() {
-    mWaitTimer.stop();
+    m_WaitTimer.stop();
 
-    if (mSignalReceiver) {
+    if (m_SignalReceiver) {
         QObject::disconnect(this,
                             SIGNAL(clicked(const QVariantMap &)),
-                            mSignalReceiver,
+                            m_SignalReceiver,
                             SLOT(onClicked(const QVariantMap &)));
-        mSignalReceiver = 0;
+        m_SignalReceiver = 0;
     }
 
-    if (!mWaitTimer.isActive()) {
-        mGUIService->hidePopup();
+    if (!m_WaitTimer.isActive()) {
+        m_GUIService->hidePopup();
     }
 }
 

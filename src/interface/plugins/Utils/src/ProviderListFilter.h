@@ -34,8 +34,8 @@ signals:
     void emptyChanged();
 
 private:
-    QString mFilter;
-    QStringList mFilterLexemList;
+    QString m_Filter;
+    QStringList m_FilterLexem_List;
 };
 
 //------------------------------------------------------------------------------
@@ -47,14 +47,14 @@ class ProviderObject : public QObject {
 
 public:
     ProviderObject(QObject *aParent, qint64 aId, const QString &aName)
-        : QObject(aParent), mId(aId), mName(aName) {}
+        : QObject(aParent), m_Id(aId), m_Name(aName) {}
 
 public:
-    qint64 getId() const { return mId; }
+    qint64 getId() const { return m_Id; }
 
-    QString getName() const { return mName; }
+    QString getName() const { return m_Name; }
 
 private:
-    qint64 mId;
-    QString mName;
+    qint64 m_Id;
+    QString m_Name;
 };

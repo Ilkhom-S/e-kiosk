@@ -400,18 +400,18 @@ template <class T> void CashAcceptorBase<T>::employParList() {
 
 //--------------------------------------------------------------------------------
 template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
-    if (!this->containsConfigParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId)) {
+    if (!this->containsConfigParameter(CHardwareSDK::CashAcceptor::System_CurrencyId)) {
         this->toLog(LogLevel::Error, this->m_DeviceName + ": No system currency id in parameters!");
         return ECurrencyError::Config;
     }
 
-    int systemCurrencyId =
-        this->getConfigParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId).toInt();
+    int system_CurrencyId =
+        this->getConfigParameter(CHardwareSDK::CashAcceptor::System_CurrencyId).toInt();
 
-    if (!CurrencyCodes.data().values().contains(systemCurrencyId)) {
+    if (!CurrencyCodes.data().values().contains(system_CurrencyId)) {
         this->toLog(LogLevel::Error,
                     this->m_DeviceName +
-                        ": Unknown system currency id = " + QString::number(systemCurrencyId));
+                        ": Unknown system currency id = " + QString::number(system_CurrencyId));
         return ECurrencyError::Config;
     }
 
@@ -458,7 +458,7 @@ template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
         if (CurrencyCodes.data().keys().contains(it.value().currency)) {
             billset = true;
 
-            if (CurrencyCodes.isAccorded(it.value().currency, systemCurrencyId)) {
+            if (CurrencyCodes.isAccorded(it.value().currency, system_CurrencyId)) {
                 compatibility = true;
 
                 if (it.value().nominal > 0) {
@@ -472,7 +472,7 @@ template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
                                 .arg(this->m_DeviceName)
                                 .arg(it.value().nominal, 5)
                                 .arg(it.value().currency)
-                                .arg(systemCurrencyId));
+                                .arg(system_CurrencyId));
             }
         } else if (it.value().nominal) {
             this->toLog(LogLevel::Error,

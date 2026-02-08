@@ -55,7 +55,7 @@ private:
     void updatePinList(qint64 aProvider, const QList<SPinCard> &aCards);
 
 private:
-    PaymentFactoryBase *mPaymentFactoryBase;
+    PaymentFactoryBase *m_PaymentFactoryBase;
 
     bool m_IsStopping;
     QTimer m_PinTimer;
@@ -85,7 +85,7 @@ private:
     };
 
     /// Список пиновых операторов. Ключ - идентификатор оператора
-    QMap<qint64, SProviderPins> mPinProviders;
+    QMap<qint64, SProviderPins> m_PinProviders;
 };
 
 //------------------------------------------------------------------------------

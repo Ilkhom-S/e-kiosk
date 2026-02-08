@@ -18,7 +18,7 @@ private slots:
         qDebug() << "Build ABI:" << QSysInfo::buildAbi();
     }
 
-    void testPlatformDetection() {
+    void testPlatform_Detection() {
         // Test that the module correctly detects the platform
         QStringList stack;
         DumpCallstack(stack, nullptr);
@@ -59,7 +59,7 @@ private slots:
                 const auto &frame = st[i];
                 QString frameStr = QString("0x%1 (%2)")
                                        .arg((quintptr)frame.address(), 0, 16)
-                                       .arg(QString::fromStdString(frame.name()));
+                                       .arg(QString::from_StdString(frame.name()));
                 manualStack.append(frameStr);
             }
 
@@ -95,7 +95,7 @@ private slots:
         }
     }
 
-    void testExceptionHandlerPlatformCompatibility() {
+    void testExceptionHandlerPlatform_Compatibility() {
         // Test that exception handler functions work on current platform
 #ifdef Q_OS_WIN
         qDebug() << "Testing Windows exception handler compatibility";
@@ -138,7 +138,7 @@ private slots:
         }
     }
 
-    void testStackTraceFromSignalHandler() {
+    void testStackTraceFrom_SignalHandler() {
         // Test that stack traces work even in signal handler context (simulated)
         QStringList normalStack;
         DumpCallstack(normalStack, nullptr);
@@ -189,10 +189,10 @@ private slots:
 
     void testMultipleRapidCalls() {
         // Test rapid successive calls to ensure no state corruption
-        const int numCalls = 50;
-        QVector<QStringList> stacks(numCalls);
+        const int num_Calls = 50;
+        QVector<QStringList> stacks(num_Calls);
 
-        for (int i = 0; i < numCalls; ++i) {
+        for (int i = 0; i < num_Calls; ++i) {
             DumpCallstack(stacks[i], nullptr);
             QVERIFY(stacks[i].size() > 0);
 
@@ -202,7 +202,7 @@ private slots:
 
         // All stacks should be similar in size (same call depth)
         int firstSize = stacks[0].size();
-        for (int i = 1; i < numCalls; ++i) {
+        for (int i = 1; i < num_Calls; ++i) {
             QVERIFY(qAbs(stacks[i].size() - firstSize) <= 2); // Allow small variations
         }
     }

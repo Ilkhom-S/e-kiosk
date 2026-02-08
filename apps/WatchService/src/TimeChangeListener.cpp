@@ -16,16 +16,16 @@ const int CheckTimerTimeout = 100; // ms
 } // namespace CTimeChangeListener
 
 #ifdef Q_OS_WIN
-HHOOK TimeChangeListener::mHook;
+HHOOK TimeChangeListener::m_Hook;
 #endif
-QMutex TimeChangeListener::mHookMutex;
+QMutex TimeChangeListener::m_HookMutex;
 
 //------------------------------------------------------------------------
-TimeChangeListener::TimeChangeListener(QObject *aParent) : QObject(aParent), mTimeOffset(0) {
+TimeChangeListener::TimeChangeListener(QObject *aParent) : QObject(aParent), m_TimeOffset(0) {
     gListener = this;
 
 #ifdef Q_OS_WIN
-    mHook =
+    m_Hook =
         ::SetWindowsHookEx(WH_GETMESSAGE, &TimeChangeListener::MsgProc, 0, ::GetCurrentThreadId());
 #endif
 
@@ -35,33 +35,33 @@ TimeChangeListener::TimeChangeListener(QObject *aParent) : QObject(aParent), mTi
 //------------------------------------------------------------------------
 TimeChangeListener::~TimeChangeListener() {
 #ifdef Q_OS_WIN
-    ::UnhookWindowsHookEx(mHook);
+    ::UnhookWindowsHookEx(m_Hook);
 #endif
 }
 
 //------------------------------------------------------------------------
 void TimeChangeListener::timerEvent(QTimerEvent *aEvent) {
-    QMutexLocker locker(&mHookMutex);
+    QMutexLocker locker(&m_HookMutex);
 
 #ifndef Q_OS_WIN
-    mLastCheckTime = checkTimeOffset();
+    m_LastCheckTime = checkTimeOffset();
 #else
-    mLastCheckTime = QDateTime::currentDateTime();
+    m_LastCheckTime = QDateTime::currentDateTime();
 #endif
 }
 
 //------------------------------------------------------------------------
 QDateTime TimeChangeListener::checkTimeOffset() {
-    QMutexLocker locker(&mHookMutex);
+    QMutexLocker locker(&m_HookMutex);
 
     QDateTime currentTime = QDateTime::currentDateTime();
 
-    if (mTimeOffset == 0) {
-        qint64 offset = mLastCheckTime.msecsTo(currentTime);
+    if (m_TimeOffset == 0) {
+        qint64 offset = m_LastCheckTime.msecsTo(currentTime);
 
         if (qAbs(offset) > CTimeChangeListener::CheckTimerTimeout) {
             // время поменяли!
-            mTimeOffset = offset;
+            m_TimeOffset = offset;
 
             QMetaObject::invokeMethod(this, "emitTimeChanged", Qt::QueuedConnection);
         }
@@ -72,10 +72,10 @@ QDateTime TimeChangeListener::checkTimeOffset() {
 
 //------------------------------------------------------------------------
 void TimeChangeListener::emitTimeChanged() {
-    if (mTimeOffset) {
-        QMutexLocker locker(&mHookMutex);
+    if (m_TimeOffset) {
+        QMutexLocker locker(&m_HookMutex);
 
-        emit timeChanged(mTimeOffset);
+        emit timeChanged(m_TimeOffset);
 
         // Use new Qt5/6 compatible signal/slot syntax with lambda
         QTimer::singleShot(2000, this, [this]() { cleanTimeOffset(); });
@@ -84,7 +84,7 @@ void TimeChangeListener::emitTimeChanged() {
 
 //------------------------------------------------------------------------
 void TimeChangeListener::cleanTimeOffset() {
-    mTimeOffset = 0;
+    m_TimeOffset = 0;
 }
 
 #ifdef Q_OS_WIN
@@ -94,6 +94,6 @@ LRESULT CALLBACK TimeChangeListener::MsgProc(int aCode, WPARAM aWParam, LPARAM a
         gListener->checkTimeOffset();
     }
 
-    return ::CallNextHookEx(mHook, aCode, aWParam, aLParam);
+    return ::CallNextHookEx(m_Hook, aCode, aWParam, aLParam);
 }
 #endif // Q_OS_WIN

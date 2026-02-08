@@ -133,7 +133,7 @@ protected:
     bool checkAmountsOnPayment(const SDK::Driver::SPaymentData &aPaymentData);
 
     /// Проверить сумму в кассе на платеже.
-    bool checkSumInCash(const SDK::Driver::SPaymentData &aPaymentData);
+    bool checkSum_InCash(const SDK::Driver::SPaymentData &aPaymentData);
 
     /// Проверить налоги на платеже.
     bool checkTaxesOnPayment(const SDK::Driver::SPaymentData &aPaymentData);
@@ -183,7 +183,7 @@ protected:
     virtual bool processXReport() = 0;
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList & /*aReceipt*/,
+    virtual bool perform_Fiscal(const QStringList & /*aReceipt*/,
                                const SDK::Driver::SPaymentData & /*aPaymentData*/,
                                uint * /*aFDNumber = nullptr*/) {
         return false;
@@ -220,14 +220,14 @@ protected:
     virtual bool execZReport(bool /*aAuto*/) { return false; }
 
     /// Печать Z-отчета.
-    virtual bool performZReport(bool aPrintDeferredReports) = 0;
+    virtual bool perform_ZReport(bool aPrintDeferredReports) = 0;
 
     /// Печать X-отчета. Параметром задаётся набор дополнительных строк для печати (например
     /// баланс).
-    virtual bool performXReport(const QStringList &aReceipt);
+    virtual bool perform_XReport(const QStringList &aReceipt);
 
     /// Печать выплаты.
-    virtual bool performEncashment(const QStringList &aReceipt, double aAmount);
+    virtual bool perform_Encashment(const QStringList &aReceipt, double aAmount);
 
     /// Составной фискальный документ.
     bool complexFiscalDocument(TBoolMethod aMethod, const QString &aLog);

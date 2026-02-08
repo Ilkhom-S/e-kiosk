@@ -88,7 +88,7 @@ public:
     bool checkCashier(QString &aCashier);
 
     /// Проверить корректность СНО на платеже.
-    bool checkTaxSystemOnPayment(SDK::Driver::SPaymentData &aPaymentData);
+    bool checkTaxSystem_OnPayment(SDK::Driver::SPaymentData &aPaymentData);
 
     /// Проверить корректность флага агента на платеже.
     bool checkAgentFlagOnPayment(SDK::Driver::SPaymentData &aPaymentData);

@@ -4,19 +4,19 @@ SendOtp::SendOtp(QObject *parent) : SendRequest(parent) {
     senderName = "SEND_OTP";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
+    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
 }
 
 void SendOtp::resendRequest() {
     emit emit_SendOtpResult("", "");
 }
 
-void SendOtp::setDataNote(const QDomNode &domElement) {
+void SendOtp::setDataNote(const QDom_Node &dom_Element) {
     resultCode = "";
     otpId = "";
 
     // Парсим данные
-    parcerNote(domElement);
+    parcerNote(dom_Element);
 
     if (resultCode != "") {
         // Тут отправляем сигнал с балансом
@@ -28,27 +28,27 @@ void SendOtp::setDataNote(const QDomNode &domElement) {
     return;
 }
 
-void SendOtp::parcerNote(const QDomNode &domElement) {
+void SendOtp::parcerNote(const QDom_Node &dom_Element) {
     // Необходимо отпарсить документ
-    QDomNode domNode = domElement.firstChild();
+    QDom_Node dom_Node = dom_Element.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!dom_Node.isNull()) {
+        if (dom_Node.isElement()) {
 
-            QDomElement domElement = domNode.toElement();
-            QString strTag = domElement.tagName();
+            QDom_Element dom_Element = dom_Node.toElement();
+            QString strTag = dom_Element.tagName();
 
             if (strTag == "resultCode") {
-                resultCode = domElement.text();
+                resultCode = dom_Element.text();
             }
 
             if (strTag == "otp_id") {
-                otpId = domElement.text();
+                otpId = dom_Element.text();
             }
         }
 
-        parcerNote(domNode);
-        domNode = domNode.nextSibling();
+        parcerNote(dom_Node);
+        dom_Node = dom_Node.nextSibling();
     }
 }
 

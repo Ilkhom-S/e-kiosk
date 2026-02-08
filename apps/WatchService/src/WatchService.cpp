@@ -33,7 +33,7 @@ const char Exclusive[] = "exclusive";
 //----------------------------------------------------------------------------
 namespace CWatchService {
 const char ExtensionsSection[] = "extensions";
-const char UseCustomBackground[] = "use_custom_background";
+const char UseCustom_Background[] = "use_custom_background";
 const char DisableStatusBar[] = "disable_status_bar";
 
 const int ReInitializeTimeout = 7 * 1000;
@@ -83,16 +83,16 @@ int SModule::getFirstPingTimeout() const {
 //----------------------------------------------------------------------------
 WatchService::WatchService()
     : ILogable(BasicApplication::getInstance()->getLog()->getName()),
-      mSplashScreen(getLog()->getName()), mCloseAction(ECloseAction::None),
-      mScreenProtectionEnabled(true), mFirstRun(true), mInitializeFailedCounter(0) {
+      m_SplashScreen(getLog()->getName()), m_CloseAction(ECloseAction::None),
+      m_ScreenProtectionEnabled(true), m_FirstRun(true), m_InitializeFailedCounter(0) {
     // Use new Qt5/6 compatible signal/slot syntax
-    connect(this, &WatchService::screenUnprotected, &mSplashScreen, &SplashScreen::showFullScreen);
-    connect(this, &WatchService::screenProtected, &mSplashScreen, &SplashScreen::hide);
-    connect(this, &WatchService::stateChanged, &mSplashScreen, &SplashScreen::setState);
-    connect(this, &WatchService::stateReset, &mSplashScreen, &SplashScreen::removeStates);
-    connect(&mSplashScreen, &SplashScreen::clicked, this, &WatchService::onScreenActivity);
-    connect(&mTimer, &QTimer::timeout, this, &WatchService::onCheckModules);
-    connect(&mScreenActivityTimer, &QTimer::timeout, this, &WatchService::onScreenActivityTimeout);
+    connect(this, &WatchService::screenUnprotected, &m_SplashScreen, &SplashScreen::showFullScreen);
+    connect(this, &WatchService::screenProtected, &m_SplashScreen, &SplashScreen::hide);
+    connect(this, &WatchService::stateChanged, &m_SplashScreen, &SplashScreen::setState);
+    connect(this, &WatchService::stateReset, &m_SplashScreen, &SplashScreen::removeStates);
+    connect(&m_SplashScreen, &SplashScreen::clicked, this, &WatchService::onScreenActivity);
+    connect(&m_Timer, &QTimer::timeout, this, &WatchService::onCheckModules);
+    connect(&m_ScreenActivityTimer, &QTimer::timeout, this, &WatchService::onScreenActivityTimeout);
 
     initialize();
 }
@@ -105,22 +105,22 @@ void WatchService::initialize() {
     emit screenUnprotected();
 
     // Настраиваем защитный экран
-    QString customBackground = BasicApplication::getInstance()
+    QString custom_Background = BasicApplication::getInstance()
                                    ->getSettings()
                                    .value(QString(CWatchService::ExtensionsSection) + "/" +
-                                          CWatchService::UseCustomBackground)
+                                          CWatchService::UseCustom_Background)
                                    .toString();
-    if (!customBackground.isEmpty()) {
-        if (!QDir::isAbsolutePath(customBackground)) {
-            customBackground = QDir::cleanPath(
+    if (!custom_Background.isEmpty()) {
+        if (!QDir::isAbsolutePath(custom_Background)) {
+            custom_Background = QDir::cleanPath(
                 QDir::toNativeSeparators(BasicApplication::getInstance()->getWorkingDirectory() +
-                                         QDir::separator() + customBackground));
+                                         QDir::separator() + custom_Background));
         }
 
-        mSplashScreen.setCustomBackground(customBackground);
+        m_SplashScreen.setCustom_Background(custom_Background);
 
         toLog(LogLevel::Normal,
-              QString("Using custom background image: %1.").arg(customBackground));
+              QString("Using custom background image: %1.").arg(custom_Background));
     }
 
     // FIXME: временно для #21549
@@ -130,7 +130,7 @@ void WatchService::initialize() {
 
     if (statusBarDisabled)
     {
-            mSplashScreen.setStatusBarEnabled(false);
+            m_SplashScreen.setStatusBarEnabled(false);
 
             toLog(LogLevel::Normal, "Status bar disabled.");
     }*/
@@ -140,29 +140,29 @@ void WatchService::initialize() {
     // Загружаем конфигурацию
     loadConfiguration();
 
-    if (mModules.isEmpty()) {
+    if (m_Modules.isEmpty()) {
         toLog(LogLevel::Error, "Module list is empty, it is nothing to watch.");
 
         return;
     }
 
     // В случае перезагрузки с параметрами, пропихиваем их в модули
-    if (!mRestartParameters.isEmpty()) {
-        for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
-            it->params = mRestartParameters;
+    if (!m_RestartParameters.isEmpty()) {
+        for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
+            it->params = m_RestartParameters;
         }
     }
 
     // Поднимаем сервер
-    mServer = QSharedPointer<IMessageQueueServer>(
+    m_Server = QSharedPointer<IMessageQueueServer>(
         createMessageQueueServer(CWatchService::MessageQueue, getLog()));
 
-    mServer->subscribeOnMessageReceived(this);
+    m_Server->subscribeOnMessageReceived(this);
 
-    if (!mServer->init()) {
+    if (!m_Server->init()) {
         toLog(LogLevel::Fatal, "Cannot init service server.");
 
-        if (mInitializeFailedCounter >= CWatchService::ReInitializeFailMaxCount) {
+        if (m_InitializeFailedCounter >= CWatchService::ReInitializeFailMaxCount) {
             toLog(LogLevel::Fatal, "Reinitialize fail counter reached. Reboot system.");
 
             doReboot();
@@ -171,36 +171,36 @@ void WatchService::initialize() {
             QTimer::singleShot(
                 CWatchService::ReInitializeTimeout, this, [this]() { reinitialize(); });
 
-            mInitializeFailedCounter++;
+            m_InitializeFailedCounter++;
         }
     } else {
         // Запускаем таймер
-        mTimer.setInterval(CWatchService::CheckInterval);
-        mTimer.start();
+        m_Timer.setInterval(CWatchService::CheckInterval);
+        m_Timer.start();
 
         // Запускаем таймер проверки использования памяти
-        mCheckMemoryTimer = QSharedPointer<QTimer>(new QTimer(this));
+        m_CheckMemoryTimer = QSharedPointer<QTimer>(new QTimer(this));
         connect(
-            mCheckMemoryTimer.data(), &QTimer::timeout, this, &WatchService::checkProcessMemory);
-        mCheckMemoryTimer->start(CWatchService::CheckMemoryUsageTimeout * 60 * 1000);
+            m_CheckMemoryTimer.data(), &QTimer::timeout, this, &WatchService::checkProcessMemory);
+        m_CheckMemoryTimer->start(CWatchService::CheckMemoryUsageTimeout * 60 * 1000);
 
-        mFirstRun = false;
+        m_FirstRun = false;
 
-        mTimeChangeListener = QSharedPointer<TimeChangeListener>(new TimeChangeListener(this));
-        connect(mTimeChangeListener.data(),
+        m_TimeChangeListener = QSharedPointer<TimeChangeListener>(new TimeChangeListener(this));
+        connect(m_TimeChangeListener.data(),
                 &TimeChangeListener::timeChanged,
                 this,
                 &WatchService::onTimeChanged);
 
         // Сбрасываем
-        mRestartParameters.clear();
+        m_RestartParameters.clear();
 
 #if 0 // #40592 Пока выключаем данную опцию
-		if (!mForbiddenModules.isEmpty())
+		if (!m_ForbiddenModules.isEmpty())
 		{
-			mCheckForbiddenTimer = QSharedPointer<QTimer>(new QTimer(this));
-			connect(mCheckForbiddenTimer.data(), &QTimer::timeout, this, &WatchService::checkForbiddenModules);
-			mCheckForbiddenTimer->start(mCheckForbiddenTimeout);
+			m_CheckForbiddenTimer = QSharedPointer<QTimer>(new QTimer(this));
+			connect(m_CheckForbiddenTimer.data(), &QTimer::timeout, this, &WatchService::checkForbiddenModules);
+			m_CheckForbiddenTimer->start(m_CheckForbiddenTimeout);
 
 			QMetaObject::invokeMethod(this, "checkForbiddenModules", Qt::QueuedConnection);
 		}
@@ -210,15 +210,15 @@ void WatchService::initialize() {
     connect(qApp,
             &QApplication::commitDataRequest,
             this,
-            &WatchService::closeBySystemRequest,
+            &WatchService::closeBySystem_Request,
             Qt::DirectConnection);
 }
 
 //----------------------------------------------------------------------------
-void WatchService::closeBySystemRequest(QSessionManager &aSessionManager) {
+void WatchService::closeBySystem_Request(QSessionManager &aSessionManager) {
     QByteArray msg;
 
-    if (mCloseAction == ECloseAction::None) {
+    if (m_CloseAction == ECloseAction::None) {
         // блокируем остановку системы.
         aSessionManager.cancel();
 
@@ -239,13 +239,13 @@ void WatchService::closeBySystemRequest(QSessionManager &aSessionManager) {
 void WatchService::reinitialize() {
     toLog(LogLevel::Normal, "Reinitialize...");
 
-    mTimer.stop();
-    mCheckMemoryTimer.clear();
-    mTimeChangeListener.clear();
+    m_Timer.stop();
+    m_CheckMemoryTimer.clear();
+    m_TimeChangeListener.clear();
 
-    if (mServer) {
-        mServer->stop();
-        mServer.clear();
+    if (m_Server) {
+        m_Server->stop();
+        m_Server.clear();
     }
 
     initialize();
@@ -258,13 +258,13 @@ void WatchService::loadConfiguration() {
 
     toLog(LogLevel::Normal, "Loading configuration.");
 
-    mModules.clear();
+    m_Modules.clear();
 
     QSettings &settings = BasicApplication::getInstance()->getSettings();
 
     QMap<QString, QString> moduleOptions;
 
-    if (mFirstRun) {
+    if (m_FirstRun) {
         foreach (const QString &arg, QCoreApplication::arguments()) {
             QRegularExpression re("-(\\w+)_options=(.+)");
             QRegularExpressionMatch match = re.match(arg);
@@ -312,7 +312,7 @@ void WatchService::loadConfiguration() {
                 qMax(settings.value(group + "/kill_timeout", defaultKillTimeout()).toInt(),
                      defaultKillTimeout());
 
-            mModules[info.name] = info;
+            m_Modules[info.name] = info;
 
             toLog(LogLevel::Normal,
                   QString("Module with name %1 (%2) has been added to the watch service list.")
@@ -322,14 +322,14 @@ void WatchService::loadConfiguration() {
     }
 
 #if 0 // #40592 Пока выключаем данную опцию
-	QSettings userSettings(ISysUtils::rmBOM(BasicApplication::getInstance()->getWorkingDirectory() + "/user/user.ini"), QSettings::IniFormat);
+	QSettings userSettings(ISysUtils::rm_BOM(BasicApplication::getInstance()->getWorkingDirectory() + "/user/user.ini"), QSettings::IniFormat);
 	userSettings.setIniCodec("UTF-8");
 
 	if (userSettings.value("watchdog/taboo_enabled").toString() == "true")
 	{
 		settings.beginGroup("taboo");
-		mForbiddenModules = settings.value("applications", "").toStringList();
-		mCheckForbiddenTimeout = settings.value("check_timeout", 60000).toInt();
+		m_ForbiddenModules = settings.value("applications", "").toStringList();
+		m_CheckForbiddenTimeout = settings.value("check_timeout", 60000).toInt();
 		settings.endGroup();
 	}
 #endif
@@ -342,7 +342,7 @@ void WatchService::onMessageReceived(QByteArray aMessage) {
 
 //----------------------------------------------------------------------------
 void WatchService::checkAutoStartModules() {
-    for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+    for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
         if (it->autoStart && !it->needToStart) {
             it->needToStart = true;
             it->restartCount = 0;
@@ -354,14 +354,14 @@ void WatchService::checkAutoStartModules() {
 
 //----------------------------------------------------------------------------
 void WatchService::messageReceived(const QByteArray &aMessage) {
-    QStringList paramList = QString::fromUtf8(aMessage.data(), aMessage.size()).split(";");
-    if (!paramList.isEmpty()) {
+    QStringList param_List = QString::from_Utf8(aMessage.data(), aMessage.size()).split(";");
+    if (!param_List.isEmpty()) {
         QString sender;
         QString type;
         QString params;
         QString module;
 
-        foreach (QString param, paramList) {
+        foreach (QString param, param_List) {
             if (param.indexOf(CWatchService::Fields::Sender) != -1) {
                 sender = param.right(param.length() - param.indexOf("=") - 1);
             } else if (param.indexOf(CWatchService::Fields::Type) != -1) {
@@ -375,14 +375,14 @@ void WatchService::messageReceived(const QByteArray &aMessage) {
 
         // Запуск модуля
         if (type == CWatchService::Commands::StartModule) {
-            TModules::iterator it = mModules.find(module);
-            if (it != mModules.end()) {
+            TModules::iterator it = m_Modules.find(module);
+            if (it != m_Modules.end()) {
                 bool exclusive = false;
 
                 if (it.value().startMode == "exclusive") {
                     exclusive = true;
 
-                    for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+                    for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
                         it->previousNeedToStart = it->needToStart;
                         it->needToStart = false;
                     }
@@ -407,8 +407,8 @@ void WatchService::messageReceived(const QByteArray &aMessage) {
         }
         // Выключение модуля
         else if (type == CWatchService::Commands::CloseModule) {
-            TModules::iterator it = mModules.find(module);
-            if (it != mModules.end()) {
+            TModules::iterator it = m_Modules.find(module);
+            if (it != m_Modules.end()) {
                 it.value().needToStart = false;
 
                 it.value().commandStack.push_back(CWatchService::Commands::CloseModule);
@@ -441,13 +441,13 @@ void WatchService::messageReceived(const QByteArray &aMessage) {
                       .arg(sender)
                       .arg(params));
 
-            mRestartParameters = params;
+            m_RestartParameters = params;
 
-            for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+            for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
                 it->needToStart = false;
             }
 
-            mCloseAction = ECloseAction::Restart;
+            m_CloseAction = ECloseAction::Restart;
 
             closeModules();
         }
@@ -457,7 +457,7 @@ void WatchService::messageReceived(const QByteArray &aMessage) {
                   QString("Module %1 has sent close all logs command. Notifies modules...")
                       .arg(sender));
 
-            mServer->sendMessage(QString("sender=%1;type=%2")
+            m_Server->sendMessage(QString("sender=%1;type=%2")
                                      .arg(CWatchService::Name)
                                      .arg(CWatchService::Commands::CloseLogs)
                                      .toUtf8());
@@ -469,11 +469,11 @@ void WatchService::messageReceived(const QByteArray &aMessage) {
             toLog(LogLevel::Normal,
                   QString("Module %1 has sent close command. Closing modules...").arg(sender));
 
-            for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+            for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
                 it->needToStart = false;
             }
 
-            mCloseAction = ECloseAction::None;
+            m_CloseAction = ECloseAction::None;
 
             doCloseModules(sender);
         }
@@ -482,11 +482,11 @@ void WatchService::messageReceived(const QByteArray &aMessage) {
             toLog(LogLevel::Normal,
                   QString("Module %1 has sent exit command. Closing service...").arg(sender));
 
-            for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+            for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
                 it->needToStart = false;
             }
 
-            mCloseAction = ECloseAction::Exit;
+            m_CloseAction = ECloseAction::Exit;
 
 #if 0 // #40592 Пока выключаем данную опцию
 			startTerminatedModules();
@@ -506,11 +506,11 @@ void WatchService::messageReceived(const QByteArray &aMessage) {
             toLog(LogLevel::Normal,
                   QString("Module %1 has sent shutdown command. Closing modules...").arg(sender));
 
-            for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+            for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
                 it->needToStart = false;
             }
 
-            mCloseAction = ECloseAction::Shutdown;
+            m_CloseAction = ECloseAction::Shutdown;
 
             closeModules();
         } else if (type == CWatchService::Commands::ShowSplashScreen) {
@@ -533,8 +533,8 @@ void WatchService::messageReceived(const QByteArray &aMessage) {
             emit stateReset(sender);
         }
 
-        TModules::iterator it = mModules.find(sender);
-        if (it != mModules.end()) {
+        TModules::iterator it = m_Modules.find(sender);
+        if (it != m_Modules.end()) {
             it.value().lastAnswer = aMessage;
             it.value().touch();
         }
@@ -546,7 +546,7 @@ void WatchService::sendCommandToUknownModule(const QString &aCommand, const QStr
     toLog(LogLevel::Normal,
           QString("Sending %1 command to unknown module %2.").arg(aCommand).arg(aModule));
 
-    mServer->sendMessage(
+    m_Server->sendMessage(
         QString("sender=watch_service;target=%1;type=%2").arg(aModule).arg(aCommand).toUtf8());
 }
 
@@ -555,7 +555,7 @@ void WatchService::onTimeChanged(qint64 aTimeOffset) {
     toLog(LogLevel::Normal,
           QString("System time changed. Offset %2 sec.").arg(aTimeOffset / 100., 0, 'f', 3));
 
-    for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+    for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
         it->initDate = it->initDate.addMSecs(aTimeOffset);
         it->lastUpdate = it->lastUpdate.addMSecs(aTimeOffset);
     }
@@ -565,7 +565,7 @@ void WatchService::onTimeChanged(qint64 aTimeOffset) {
 void WatchService::onCheckModules() {
     checkScreenProtection();
 
-    for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+    for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
         if (!it->commandStack.isEmpty()) {
             if (it->commandStack.first() == CWatchService::Commands::StartModule) {
                 it->needToStart = true;
@@ -601,8 +601,8 @@ void WatchService::onCheckModules() {
                         // Если завершил работу модуль с эксклюзивными правами, то восстановим
                         // работу остальных модулей...
                         if (it->startMode.toLower() == "exclusive") {
-                            for (TModules::iterator restoreIt = mModules.begin();
-                                 restoreIt != mModules.end();
+                            for (TModules::iterator restoreIt = m_Modules.begin();
+                                 restoreIt != m_Modules.end();
                                  ++restoreIt) {
                                 if ((it.key() != restoreIt.key()) &&
                                     (restoreIt->startMode.toLower() != "exclusive")) {
@@ -676,7 +676,7 @@ void WatchService::onCheckModules() {
 void WatchService::onModuleFinished(int aExitCode, QProcess::ExitStatus aExitStatus) {
     bool noModulesRunning = true;
 
-    for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+    for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
         if ((it->process) && (it->process->state() == QProcess::Running)) {
             noModulesRunning = false;
 
@@ -692,7 +692,7 @@ void WatchService::onModuleFinished(int aExitCode, QProcess::ExitStatus aExitSta
 
     QProcess *process = dynamic_cast<QProcess *>(sender());
     if (process) {
-        for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+        for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
             if (it.value().process == process) {
                 toLog(LogLevel::Warning,
                       QString("Module %1 has %2 with exit code %3.")
@@ -702,7 +702,7 @@ void WatchService::onModuleFinished(int aExitCode, QProcess::ExitStatus aExitSta
 
                 if (aExitCode != CWatchService::ContinueExecutionExitCode) {
                     // Уведомляем о закрытии модуля
-                    mServer->sendMessage(QString("type=%1;sender=%2")
+                    m_Server->sendMessage(QString("type=%1;sender=%2")
                                              .arg(CWatchService::Notification::ModuleClosed)
                                              .arg(it.key())
                                              .toUtf8());
@@ -723,7 +723,7 @@ bool WatchService::canRun(const SModule &aModule) {
         return true;
     }
 
-    for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+    for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
         if (aModule.startMode == "exclusive") {
             if ((it->process) && (it->process->state() == QProcess::Running)) {
                 return false;
@@ -753,7 +753,7 @@ bool WatchService::canTerminate(const SModule &aModule) {
         return true;
     }
 
-    for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+    for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
         if (it->closePriority < aModule.closePriority) {
             if ((it->process) && (it->process->state() == QProcess::Running)) {
                 return false;
@@ -773,13 +773,13 @@ void WatchService::closeModules() {
 void WatchService::doCloseModules(QString aSender) {
     toLog(LogLevel::Normal, "Closing modules.");
 
-    if (mTimer.isActive()) {
-        mTimer.stop();
+    if (m_Timer.isActive()) {
+        m_Timer.stop();
     }
 
     bool canClose = true;
 
-    for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+    for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
         if (!closeModule(*it)) {
             toLog(LogLevel::Warning, QString("Cannot close module: %1.").arg(it.key()));
 
@@ -793,10 +793,10 @@ void WatchService::doCloseModules(QString aSender) {
 
     if (aSender == CWatchService::Modules::Updater) {
         // Выгружаем 'свободные' модули только по команде от апдейтера.
-        mServer->sendMessage("sender=watch_service;type=close");
+        m_Server->sendMessage("sender=watch_service;type=close");
     } else {
         // Иначе выгружаем сам апдейтер, т.к. он может быть запущен не из под WatchService
-        mServer->sendMessage(QString("sender=watch_service;target=%1;type=close")
+        m_Server->sendMessage(QString("sender=watch_service;target=%1;type=close")
                                  .arg(CWatchService::Modules::Updater)
                                  .toUtf8());
     }
@@ -815,12 +815,12 @@ void WatchService::modulesClosed() {
 
 //----------------------------------------------------------------------------
 void WatchService::checkScreenProtection() {
-    if (!mScreenProtectionEnabled && (mSplashScreen.isVisible())) {
+    if (!m_ScreenProtectionEnabled && (m_SplashScreen.isVisible())) {
         emit screenProtected();
     }
 
-    if (mScreenProtectionEnabled) {
-        for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+    if (m_ScreenProtectionEnabled) {
+        for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
             if ((it->process) && (it->process->state() == QProcess::Running) &&
                 (it->initDate < it->lastUpdate)) {
                 if (it->gui) {
@@ -865,7 +865,7 @@ bool WatchService::closeModule(SModule &aModule, bool aIgnorePriority) {
 
             toLog(LogLevel::Normal, QString("Sending close event to module %1.").arg(aModule.name));
 
-            mServer->sendMessage(
+            m_Server->sendMessage(
                 QString("sender=watch_service;target=%1;type=close").arg(aModule.name).toUtf8());
 
             return false;
@@ -885,28 +885,28 @@ bool WatchService::closeModule(SModule &aModule, bool aIgnorePriority) {
 
 //----------------------------------------------------------------------------
 void WatchService::onScreenActivity(int aArea) {
-    mScreenActivityTimer.start(CWatchService::ScreenActivityTimeout);
+    m_ScreenActivityTimer.start(CWatchService::ScreenActivityTimeout);
 
-    if (mServer) {
-        mClickSequence += QString("%1").arg(aArea);
-        QString hash = QCryptographicHash::hash(mClickSequence.toLatin1(), QCryptographicHash::Md5)
+    if (m_Server) {
+        m_ClickSequence += QString("%1").arg(aArea);
+        QString hash = QCryptographicHash::hash(m_ClickSequence.toLatin1(), QCryptographicHash::Md5)
                            .toHex()
                            .toLower();
-        mServer->sendMessage(
+        m_Server->sendMessage(
             QString("sender=watch_service;type=screen_activity;%1").arg(hash).toLatin1());
-        toLog(LogLevel::Normal, QString("Clicked sequence: %1.").arg(mClickSequence));
+        toLog(LogLevel::Normal, QString("Clicked sequence: %1.").arg(m_ClickSequence));
     }
 }
 
 //----------------------------------------------------------------------------
 void WatchService::onScreenActivityTimeout() {
-    mScreenActivityTimer.stop();
-    mClickSequence.clear();
+    m_ScreenActivityTimer.stop();
+    m_ClickSequence.clear();
 }
 
 //----------------------------------------------------------------------------
 void WatchService::enableScreenProtection(bool aEnabled) {
-    mScreenProtectionEnabled = aEnabled;
+    m_ScreenProtectionEnabled = aEnabled;
 
     checkScreenProtection();
 }
@@ -947,32 +947,32 @@ QString WatchService::translateError(QProcess::ProcessError aError) {
 
 //----------------------------------------------------------------------------
 void WatchService::closeAction() {
-    if (mCloseAction == ECloseAction::None) {
+    if (m_CloseAction == ECloseAction::None) {
         toLog(LogLevel::Normal, "Setting 5 min timeout to run modules again.");
 
         QTimer::singleShot(5 * 60 * 1000, this, [this]() { reinitialize(); });
-    } else if (mCloseAction == ECloseAction::Restart) {
+    } else if (m_CloseAction == ECloseAction::Restart) {
         toLog(LogLevel::Normal, "Restarting service...");
 
-        mCloseAction = ECloseAction::None;
+        m_CloseAction = ECloseAction::None;
 
         reinitialize();
-    } else if (mCloseAction == ECloseAction::Reboot) {
+    } else if (m_CloseAction == ECloseAction::Reboot) {
         toLog(LogLevel::Normal, "Rebooting system...");
 
         /// TODO : отслеживать провал перезагрузки
-        ISysUtils::systemReboot();
+        ISysUtils::system_Reboot();
 
         QCoreApplication::instance()->quit();
-    } else if (mCloseAction == ECloseAction::Exit) {
+    } else if (m_CloseAction == ECloseAction::Exit) {
         toLog(LogLevel::Normal, "Stopping service...");
 
         QCoreApplication::instance()->quit();
-    } else if (mCloseAction == ECloseAction::Shutdown) {
+    } else if (m_CloseAction == ECloseAction::Shutdown) {
         toLog(LogLevel::Normal, "Shutting down the terminal...");
 
         /// TODO : отслеживать провал выключения
-        ISysUtils::systemShutdown();
+        ISysUtils::system_Shutdown();
 
         QCoreApplication::instance()->quit();
     }
@@ -1019,7 +1019,7 @@ void WatchService::startModule(SModule &aModule) {
 
 //----------------------------------------------------------------------------
 void WatchService::checkProcessMemory() {
-    for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+    for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
         SModule &module = *it;
 
         if (module.process && module.process->state() == QProcess::Running) {
@@ -1058,11 +1058,11 @@ void WatchService::checkProcessMemory() {
 
 //----------------------------------------------------------------------------
 void WatchService::doReboot() {
-    for (TModules::iterator it = mModules.begin(); it != mModules.end(); ++it) {
+    for (TModules::iterator it = m_Modules.begin(); it != m_Modules.end(); ++it) {
         it->needToStart = false;
     }
 
-    mCloseAction = ECloseAction::Reboot;
+    m_CloseAction = ECloseAction::Reboot;
 
     closeModules();
 }
@@ -1079,7 +1079,7 @@ void WatchService::checkForbiddenModules()
 {
 	ProcessEnumerator processes;
 
-	foreach(auto moduleName, mForbiddenModules)
+	foreach(auto moduleName, m_ForbiddenModules)
 	{
 		for (auto it = processes.begin(); it != processes.end(); )
 		{
@@ -1094,9 +1094,9 @@ void WatchService::checkForbiddenModules()
 				quint32 error = 0;
 				if (processes.kill(it->pid, error))
 				{
-					if (!mTerminatedModules.contains(it->path, Qt::CaseInsensitive))
+					if (!m_TerminatedModules.contains(it->path, Qt::CaseInsensitive))
 					{
-						mTerminatedModules.push_back(it->path);
+						m_TerminatedModules.push_back(it->path);
 					}
 				}
 				else
@@ -1113,15 +1113,15 @@ void WatchService::checkForbiddenModules()
 //----------------------------------------------------------------------------
 void WatchService::startTerminatedModules()
 {
-	mCheckMemoryTimer->stop();
+	m_CheckMemoryTimer->stop();
 
-	foreach(auto program, mTerminatedModules)
+	foreach(auto program, m_TerminatedModules)
 	{
 		toLog(LogLevel::Normal, QString("Restart process '%1'.").arg(program));
 
 		QProcess::startDetached(program);
 	}
 
-	mTerminatedModules.clear();
+	m_TerminatedModules.clear();
 }
 #endif

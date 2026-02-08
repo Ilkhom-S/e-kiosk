@@ -23,7 +23,7 @@ const char PaymentAmount[] = "payment_amount";
 /// Дата и время ФР.
 const char FRDateTime[] = "fr_date_time";
 /// Системная дата и время.
-const char SystemDateTime[] = "system_date_time";
+const char System_DateTime[] = "system_date_time";
 } // namespace CFiscalPrinter
 
 } // namespace Driver

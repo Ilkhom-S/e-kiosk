@@ -24,7 +24,7 @@ HookService *HookService::instance(IApplication *aApplication) {
 }
 
 //---------------------------------------------------------------------------
-HookService::HookService(IApplication *aApplication) : mApplication(aApplication) {}
+HookService::HookService(IApplication *aApplication) : m_Application(aApplication) {}
 
 //---------------------------------------------------------------------------
 HookService::~HookService() {}
@@ -32,19 +32,19 @@ HookService::~HookService() {}
 //---------------------------------------------------------------------------
 bool HookService::initialize() {
     QStringList hookers =
-        PluginService::instance(mApplication)
+        PluginService::instance(m_Application)
             ->getPluginLoader()
             ->getPluginList(QRegularExpression(
                 QString("%1\\.%2\\..*").arg(PPSDK::Application, PPSDK::CComponents::Hook)));
 
     foreach (const QString &path, hookers) {
         SDK::Plugin::IPlugin *plugin =
-            PluginService::instance(mApplication)->getPluginLoader()->createPlugin(path);
+            PluginService::instance(m_Application)->getPluginLoader()->createPlugin(path);
         if (plugin) {
             if (plugin->isReady()) {
-                mHooks << plugin;
+                m_Hooks << plugin;
             } else {
-                PluginService::instance(mApplication)->getPluginLoader()->destroyPlugin(plugin);
+                PluginService::instance(m_Application)->getPluginLoader()->destroyPlugin(plugin);
             }
         }
     }
@@ -62,9 +62,9 @@ bool HookService::canShutdown() {
 
 //---------------------------------------------------------------------------
 bool HookService::shutdown() {
-    while (!mHooks.isEmpty()) {
-        PluginService::instance(mApplication)->getPluginLoader()->destroyPlugin(mHooks.first());
-        mHooks.takeFirst();
+    while (!m_Hooks.isEmpty()) {
+        PluginService::instance(m_Application)->getPluginLoader()->destroyPlugin(m_Hooks.first());
+        m_Hooks.takeFirst();
     }
 
     return true;
@@ -104,7 +104,7 @@ bool HookService::invokeHook(const QString &aMetodName,
                              QGenericArgument aVal9) {
     bool result = false;
 
-    foreach (SDK::Plugin::IPlugin *plugin, mHooks) {
+    foreach (SDK::Plugin::IPlugin *plugin, m_Hooks) {
         QObject *pluginObject = dynamic_cast<QObject *>(plugin);
 
         if (pluginObject != nullptr) {

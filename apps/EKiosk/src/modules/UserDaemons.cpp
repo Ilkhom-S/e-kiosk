@@ -4,20 +4,20 @@ UserDaemons::UserDaemons(QObject *parent) : SendRequest(parent) {
     senderName = "USER_DAEMONS";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
+    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
 }
 
 void UserDaemons::resendRequest() {
     emit emit_UserData("---");
 }
 
-void UserDaemons::setDataNote(const QDomNode &domElement) {
+void UserDaemons::setDataNote(const QDom_Node &dom_Element) {
     resultCode = false;
     getData = false;
     balance = "";
 
     // Парсим данные
-    parcerNote(domElement);
+    parcerNote(dom_Element);
 
     if (balance != "") {
         // Тут отправляем сигнал с балансом
@@ -28,24 +28,24 @@ void UserDaemons::setDataNote(const QDomNode &domElement) {
     emit emit_UserData("---");
 }
 
-void UserDaemons::parcerNote(const QDomNode &domElement) {
-    QDomNode domNode = domElement.firstChild();
+void UserDaemons::parcerNote(const QDom_Node &dom_Element) {
+    QDom_Node dom_Node = dom_Element.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
-            QDomElement domElement = domNode.toElement();
-            QString strTag = domElement.tagName();
+    while (!dom_Node.isNull()) {
+        if (dom_Node.isElement()) {
+            QDom_Element dom_Element = dom_Node.toElement();
+            QString strTag = dom_Element.tagName();
 
             // Данные о дилере
             if (strTag == "info") {
-                if (domElement.attribute("result", "") == "0") {
-                    balance = domElement.attribute("balance", "");
+                if (dom_Element.attribute("result", "") == "0") {
+                    balance = dom_Element.attribute("balance", "");
                 }
             }
         }
 
-        parcerNote(domNode);
-        domNode = domNode.nextSibling();
+        parcerNote(dom_Node);
+        dom_Node = dom_Node.nextSibling();
     }
 }
 

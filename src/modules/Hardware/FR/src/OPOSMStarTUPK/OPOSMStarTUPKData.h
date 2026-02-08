@@ -106,7 +106,7 @@ public:
 };
 
 const QSet<QString> NotProcessResult = QSet<QString>()
-                                       << "Open" << "ClaimDevice" << "Close" << "Release";
+                                       << "Open" << "Claim_Device" << "Close" << "Release";
 } // namespace COPOSMStarTUPK
 
 //--------------------------------------------------------------------------------

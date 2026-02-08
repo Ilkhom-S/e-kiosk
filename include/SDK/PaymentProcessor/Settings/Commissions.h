@@ -81,19 +81,19 @@ protected:
     bool operator<(const Commission &aOther) const;
 
     /// Конструирование готового объекта по переданным настройкам.
-    static Commission fromSettings(const TPtree &aSettings);
+    static Commission from_Settings(const TPtree &aSettings);
 
-    static Commission fromVariant(const QVariant &aCommissions);
+    static Commission from_Variant(const QVariant &aCommissions);
 
 private:
-    double mValue;
-    double mAbove;
-    double mBelow;
-    double mMinCharge;
-    double mMaxCharge;
-    Type mType;
-    RoundType mRound;
-    Base mBase;
+    double m_Value;
+    double m_Above;
+    double m_Below;
+    double m_MinCharge;
+    double m_MaxCharge;
+    Type m_Type;
+    RoundType m_Round;
+    Base m_Base;
 };
 
 //----------------------------------------------------------------------------
@@ -114,12 +114,12 @@ protected:
 
     CommissionList &operator<<(const Commission &aCommission);
 
-    static CommissionList fromSettings(const TPtree &aSettings);
+    static CommissionList from_Settings(const TPtree &aSettings);
 
-    static CommissionList fromVariant(const QVariant &aCommissions);
+    static CommissionList from_Variant(const QVariant &aCommissions);
 
 private:
-    TCommissions mCommissions;
+    TCommissions m_Commissions;
 };
 
 //----------------------------------------------------------------------------
@@ -136,15 +136,15 @@ protected:
 
     CommissionByTimeList &operator<<(const Commission &aCommission);
 
-    static CommissionByTimeList fromSettings(const TPtree &aSettings);
+    static CommissionByTimeList from_Settings(const TPtree &aSettings);
 
-    static CommissionByTimeList fromVariant(const QVariant &aCommissions);
+    static CommissionByTimeList from_Variant(const QVariant &aCommissions);
 
 private:
-    QTime mBegin;
-    QTime mEnd;
+    QTime m_Begin;
+    QTime m_End;
 
-    CommissionList mCommissions;
+    CommissionList m_Commissions;
 };
 
 //----------------------------------------------------------------------------
@@ -158,15 +158,15 @@ protected:
 
     bool query(double aSum, Commission &aCommission) const;
 
-    static CommissionByDayList fromSettings(const TPtree &aSettings);
+    static CommissionByDayList from_Settings(const TPtree &aSettings);
 
-    static CommissionByDayList fromVariant(const QVariant &aCommissions);
+    static CommissionByDayList from_Variant(const QVariant &aCommissions);
 
 private:
-    QSet<Commission::Day> mDays;
+    QSet<Commission::Day> m_Days;
 
-    QList<CommissionByTimeList> mCommissionsByTime;
-    CommissionList mCommissions;
+    QList<CommissionByTimeList> m_CommissionsByTime;
+    CommissionList m_Commissions;
 };
 
 //----------------------------------------------------------------------------
@@ -187,17 +187,17 @@ public:
     /// Производит рассчёт комиссии в зависимости от сумм платежа.
     double getValue(double aAmount, double aAmountAll);
 
-    static ProcessingCommission fromSettings(const TPtree &aSettings);
+    static ProcessingCommission from_Settings(const TPtree &aSettings);
 
-    static ProcessingCommission fromVariant(const QVariant &aCommissions);
+    static ProcessingCommission from_Variant(const QVariant &aCommissions);
 
     /// Проверка на пустую комиссию
     bool isNull() const;
 
 private:
-    Type mType;
-    double mValue;
-    double mMinValue;
+    Type m_Type;
+    double m_Value;
+    double m_MinValue;
 };
 
 //----------------------------------------------------------------------------
@@ -241,13 +241,13 @@ public:
     bool contains(qint64 aProvider, bool aCheckProcessing = false);
 
     /// Чтение комиссий из настроек.
-    static Commissions fromSettings(const TPtree &aSettings);
+    static Commissions from_Settings(const TPtree &aSettings);
 
     /// Чтение комиссий из настроек.
-    static Commissions fromVariant(const QVariantList &aCommissions);
+    static Commissions from_Variant(const QVariantList &aCommissions);
 
     /// Дополнить комиссии недостающими элементами из настроек
-    void appendFromSettings(const TPtree &aSettings);
+    void appendFrom_Settings(const TPtree &aSettings);
 
     /// Сбросить состояние
     void clear();
@@ -257,10 +257,10 @@ protected:
     SComplexCommissions loadCommissions(const QVariant &aCommissions);
 
 private:
-    bool mIsValid;
-    QMap<qint64, SComplexCommissions> mProviderCommissions;
-    QMap<qint64, ProcessingCommission> mProcessingCommissions;
-    SComplexCommissions mDefaultCommissions;
+    bool m_IsValid;
+    QMap<qint64, SComplexCommissions> m_ProviderCommissions;
+    QMap<qint64, ProcessingCommission> m_ProcessingCommissions;
+    SComplexCommissions m_DefaultCommissions;
 };
 
 //----------------------------------------------------------------------------

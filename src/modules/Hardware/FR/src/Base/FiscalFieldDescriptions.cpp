@@ -90,7 +90,7 @@ QString Data::getTextLog(int aField) const {
 }
 
 //---------------------------------------------------------------------------
-QString Data::getLogFromList(const TFields &aFields) const {
+QString Data::getLogFrom_List(const TFields &aFields) const {
     QStringList data;
 
     foreach (int field, aFields) {

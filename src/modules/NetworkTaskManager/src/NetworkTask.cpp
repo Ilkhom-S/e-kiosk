@@ -11,7 +11,7 @@
 
 NetworkTask::NetworkTask()
     : m_Type(Get), m_Timeout(0), m_Error(NotReady), m_HttpError(0), m_Processing(false),
-      mParentThread(QThread::currentThread()), m_Flags(None), mSize(0), mCurrentSize(0) {
+      m_ParentThread(QThread::currentThread()), m_Flags(None), m_Size(0), m_CurrentSize(0) {
     m_Timer.setParent(this);
     m_Timer.setSingleShot(true);
 
@@ -23,7 +23,7 @@ NetworkTask::~NetworkTask() {}
 
 //------------------------------------------------------------------------
 NetworkTaskManager *NetworkTask::getManager() const {
-    return mManager;
+    return m_Manager;
 }
 
 //------------------------------------------------------------------------
@@ -92,7 +92,7 @@ QString NetworkTask::errorString() {
     switch (getError()) {
     case NoError:
         return "no error";
-    case StreamWriteError:
+    case Stream_WriteError:
         return "stream write error";
     case UnknownOperation:
         return "unknown operation specified";
@@ -120,7 +120,7 @@ QString NetworkTask::errorString() {
 
 //------------------------------------------------------------------------
 void NetworkTask::setProcessing(NetworkTaskManager *aManager, bool aProcessing) {
-    mManager = aManager;
+    m_Manager = aManager;
     m_Processing = aProcessing;
 
     if (aProcessing) {
@@ -136,8 +136,8 @@ void NetworkTask::setProcessing(NetworkTaskManager *aManager, bool aProcessing) 
     } else {
         m_Timer.stop();
 
-        if (mParentThread != nullptr && mParentThread->isRunning()) {
-            this->moveToThread(mParentThread);
+        if (m_ParentThread != nullptr && m_ParentThread->isRunning()) {
+            this->moveToThread(m_ParentThread);
         }
 
         if (m_Verifier) {
@@ -252,12 +252,12 @@ IVerifier *NetworkTask::getVerifier() const {
 
 //------------------------------------------------------------------------
 void NetworkTask::setDataStream(DataStream *aDataStream) {
-    mDataStream = QSharedPointer<DataStream>(aDataStream);
+    m_DataStream = QSharedPointer<DataStream>(aDataStream);
 }
 
 //------------------------------------------------------------------------
 DataStream *NetworkTask::getDataStream() const {
-    return mDataStream.data();
+    return m_DataStream.data();
 }
 
 //------------------------------------------------------------------------
@@ -269,12 +269,12 @@ void NetworkTask::onTimeout() {
 
 //------------------------------------------------------------------------
 NetworkTask::TByteMap &NetworkTask::getRequestHeader() {
-    return mRequestHeader;
+    return m_RequestHeader;
 }
 
 //------------------------------------------------------------------------
 NetworkTask::TByteMap &NetworkTask::getResponseHeader() {
-    return mResponseHeader;
+    return m_ResponseHeader;
 }
 
 //------------------------------------------------------------------------
@@ -290,30 +290,30 @@ void NetworkTask::waitForFinished() {
 
 //------------------------------------------------------------------------
 void NetworkTask::setSize(qint64 aCurrent, qint64 aTotal) {
-    mCurrentSize = aCurrent;
-    mSize = aTotal;
+    m_CurrentSize = aCurrent;
+    m_Size = aTotal;
 
     emit onProgress(aCurrent, aTotal);
 }
 
 //------------------------------------------------------------------------
 qint64 NetworkTask::getSize() const {
-    return mSize;
+    return m_Size;
 }
 
 //------------------------------------------------------------------------
 qint64 NetworkTask::getCurrentSize() const {
-    return mCurrentSize;
+    return m_CurrentSize;
 }
 
 //------------------------------------------------------------------------
 void NetworkTask::setTag(const QVariant &aTag) {
-    mTag = aTag;
+    m_Tag = aTag;
 }
 
 //------------------------------------------------------------------------
 const QVariant &NetworkTask::getTag() const {
-    return mTag;
+    return m_Tag;
 }
 
 //------------------------------------------------------------------------
@@ -321,9 +321,9 @@ QDateTime NetworkTask::getServerDate() const {
     QDateTime date;
 
     // Проверим на наличие серверной даты в ответе
-    if (mResponseHeader.contains("Date")) {
+    if (m_ResponseHeader.contains("Date")) {
         // Пример: Mon, 05 Sep 2011 10:43:11 GMT
-        QString dateString = QString::fromLatin1(mResponseHeader["Date"]);
+        QString dateString = QString::from_Latin1(m_ResponseHeader["Date"]);
         dateString.replace(0, dateString.indexOf(",") + 2, "");
         dateString.chop(4);
 
@@ -340,7 +340,7 @@ QDateTime NetworkTask::getServerDate() const {
             .replace("Nov", "11")
             .replace("Dec", "12");
 
-        date = QDateTime::fromString(dateString, "dd MM yyyy hh:mm:ss");
+        date = QDateTime::from_String(dateString, "dd MM yyyy hh:mm:ss");
         // QTimeZone::UTC is available in Qt 5.2+, which is the practical minimum
         date.setTimeZone(QTimeZone::UTC);
     }

@@ -13,15 +13,15 @@ class Atol2FRBase : public AtolFRBase {
 protected:
     /// Выполнить команду.
     virtual TResult
-    performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
-        mProtocol.setPort(mIOPort);
-        mProtocol.setLog(mLog);
+    perform_Command(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
+        m_Protocol.setPort(m_IOPort);
+        m_Protocol.setLog(m_Log);
 
-        return mProtocol.processCommand(aCommandData, aAnswer, aTimeout);
+        return m_Protocol.processCommand(aCommandData, aAnswer, aTimeout);
     }
 
     /// Протокол.
-    Atol2FRProtocol mProtocol;
+    Atol2FRProtocol m_Protocol;
 };
 
 //--------------------------------------------------------------------------------

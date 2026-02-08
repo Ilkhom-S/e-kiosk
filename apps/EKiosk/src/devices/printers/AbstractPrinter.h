@@ -72,7 +72,7 @@ const int ControlPaperEnd = 0x4000;
 
 /// Внутренний механизм не приведен в рабочее положение - рычаги не
 /// опущены/подняты, др.
-const int MechanismPositionError = 0x8000;
+const int Mechanism_PositionError = 0x8000;
 
 /// Ошибка отрезчика
 const int CutterError = 0x10000;
@@ -110,7 +110,7 @@ const QString FiscalMemoryError = "11";
 const QString EKLZError = "12";
 const QString EKLZNearEnd = "13";
 const QString ControlPaperEnd = "14";
-const QString MechanismPositionError = "15";
+const QString Mechanism_PositionError = "15";
 const QString CutterError = "16";
 const QString ElectronicError = "17";
 const QString FiscalMemoryNearEnd = "18";
@@ -170,7 +170,7 @@ public:
     bool devicesCreated;
     bool is_open;
 
-    QString comName;
+    QString com_Name;
     QString company_name;
     int statusDevices;
     bool smallCheck;
@@ -199,7 +199,7 @@ public:
                      QByteArray &dataResponse,
                      int timeSleep);
     QByteArray encodingString(const QString &text, const QByteArray charCode);
-    void setFirmPattern(const QString firm_name);
+    void setFirm_Pattern(const QString firm_name);
     void setCheckWidth(int width);
     void setCheckSmall(bool smallCheck);
     void setLeftMargin(int left_margin);

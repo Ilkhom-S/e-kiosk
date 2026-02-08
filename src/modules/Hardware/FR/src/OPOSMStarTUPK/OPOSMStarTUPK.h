@@ -74,12 +74,12 @@ protected:
     virtual bool updateParameters();
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt,
+    virtual bool perform_Fiscal(const QStringList &aReceipt,
                                const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Печать Z отчета.
-    virtual bool performZReport(bool aPrintDeferredReports);
+    virtual bool perform_ZReport(bool aPrintDeferredReports);
 
     /// Локальная печать X-отчета.
     virtual bool processXReport();
@@ -92,10 +92,10 @@ protected:
 
     /// Печать X-отчета. Параметром задаётся набор дополнительных строк для печати (например
     /// баланс).
-    virtual bool performXReport(const QStringList &aReceipt);
+    virtual bool perform_XReport(const QStringList &aReceipt);
 
     /// Печать выплаты.
-    virtual bool performEncashment(const QStringList &aReceipt, double aAmount);
+    virtual bool perform_Encashment(const QStringList &aReceipt, double aAmount);
 
     // TODO: посмотреть, можно ли это сделать закрытием чека - фискального или нефискального или
     // есть просто отрезка.
@@ -140,19 +140,19 @@ protected:
 
     /// Нативный интерфейс драйвера.
     typedef OposFiscalPrinter_CCO::IOPOSFiscalPrinter_1_12 TNativeDriver;
-    TNativeDriver *mNativeDriver;
+    TNativeDriver *m_NativeDriver;
 
     /// Флаг ошибки NAND-флеш памяти.
-    bool mMemoryError;
+    bool m_MemoryError;
 
     /// Последняя операция.
-    QList<TBoolMethod> mLastHandledOperations;
+    QList<TBoolMethod> m_LastHandledOperations;
 
     /// Обрабатываемые ошибки.
-    QList<COPOSMStarTUPK::SErrorData> mErrors;
+    QList<COPOSMStarTUPK::SErrorData> m_Errors;
 
     /// Версия прошивки.
-    int mFWVersion;
+    int m_FWVersion;
 };
 
 /// Перевод денежных сумм из представления с плавающей точкой в формат ФР.

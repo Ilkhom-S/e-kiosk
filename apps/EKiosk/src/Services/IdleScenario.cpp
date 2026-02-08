@@ -31,16 +31,16 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
 IdleScenario::IdleScenario(IApplication *aApplication)
-    : Scenario("Idle", aApplication->getLog()), mApplication(aApplication), mCommand(Command::None),
-      mActive(false), mNoGui(false), mInterfaceLockedTimer(0) {
-    mApplication->getCore()->getEventService()->subscribe(
+    : Scenario("Idle", aApplication->getLog()), m_Application(aApplication), m_Command(Command::None),
+      m_Active(false), m_NoGui(false), m_InterfaceLockedTimer(0) {
+    m_Application->getCore()->getEventService()->subscribe(
         this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
 }
 
 //---------------------------------------------------------------------------
 IdleScenario::~IdleScenario() {
     // Показываем маскирующий экран.
-    auto watchServiceClient = TerminalService::instance(mApplication)->getClient();
+    auto watchServiceClient = TerminalService::instance(m_Application)->getClient();
     watchServiceClient->showSplashScreen();
 }
 
@@ -51,10 +51,10 @@ bool IdleScenario::initialize(const QList<GUI::SScriptObject> & /*aScriptObjects
 
 //---------------------------------------------------------------------------
 void IdleScenario::start(const QVariantMap &aContext) {
-    mNoGui = aContext.value("no_gui").toBool();
+    m_NoGui = aContext.value("no_gui").toBool();
 
-    QString startScenario = mApplication->getArguments().value("-start_scenario").toString();
-    QString args = mApplication->getArguments().value("-args").toString();
+    QString startScenario = m_Application->getArguments().value("-start_scenario").toString();
+    QString args = m_Application->getArguments().value("-args").toString();
 
     toLog(LogLevel::Debug, QString("start_scenario=%1, args=%2").arg(startScenario).arg(args));
 
@@ -63,51 +63,51 @@ void IdleScenario::start(const QVariantMap &aContext) {
         parameters.insert("name", startScenario);
         parameters.insert("args", args);
 
-        EventService::instance(mApplication)
+        EventService::instance(m_Application)
             ->sendEvent(PPSDK::EEventType::StartScenario, parameters);
     } else {
         // Показываем экран блокировки
-        GUIService::instance(mApplication)->show("SplashScreen", QVariantMap());
+        GUIService::instance(m_Application)->show("SplashScreen", QVariantMap());
 
-        if (!mNoGui) {
+        if (!m_NoGui) {
             updateState(CGUISignals::StartGUI, QVariantMap());
         } else {
-            EventService::instance(mApplication)
+            EventService::instance(m_Application)
                 ->sendEvent(PPSDK::Event(PPSDK::EEventType::PauseGraphics));
             toLog(LogLevel::Normal, QString("DISABLED GUI by interface.ini"));
         }
     }
 
-    mActive = true;
+    m_Active = true;
 
     // Прячем маскирующий экран.
-    auto watchServiceClient = TerminalService::instance(mApplication)->getClient();
+    auto watchServiceClient = TerminalService::instance(m_Application)->getClient();
     watchServiceClient->hideSplashScreen();
 }
 
 //---------------------------------------------------------------------------
 void IdleScenario::pause() {
-    mActive = false;
+    m_Active = false;
 
-    if (mNoGui) {
-        EventService::instance(mApplication)
+    if (m_NoGui) {
+        EventService::instance(m_Application)
             ->sendEvent(PPSDK::Event(PPSDK::EEventType::StartGraphics));
     }
 }
 
 //---------------------------------------------------------------------------
 void IdleScenario::resume(const QVariantMap & /*aContext*/) {
-    if (!mNoGui) {
+    if (!m_NoGui) {
         // Показываем экран блокировки
-        GUIService::instance(mApplication)->show("SplashScreen", QVariantMap());
+        GUIService::instance(m_Application)->show("SplashScreen", QVariantMap());
     } else {
-        EventService::instance(mApplication)
+        EventService::instance(m_Application)
             ->sendEvent(PPSDK::Event(PPSDK::EEventType::PauseGraphics));
     }
 
     updateState("resume", QVariantMap());
 
-    mActive = true;
+    m_Active = true;
 }
 
 //---------------------------------------------------------------------------
@@ -130,28 +130,28 @@ void IdleScenario::onTimeout() {}
 
 //---------------------------------------------------------------------------
 void IdleScenario::execCommand() {
-    switch (mCommand) {
+    switch (m_Command) {
     case Command::Autoencashment: {
         // Запускаем автоинкассацию.
         QVariantMap parameters;
         parameters["name"] = "autoencashment";
-        EventService::instance(mApplication)
+        EventService::instance(m_Application)
             ->sendEvent(PPSDK::EEventType::StartScenario, parameters);
         break;
     }
     }
 
-    mCommand = Command::None;
+    m_Command = Command::None;
 }
 
 //---------------------------------------------------------------------------
 void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParameters) {
-    auto guiService = GUIService::instance(mApplication);
+    auto guiService = GUIService::instance(m_Application);
 
     // Запускаем сервисное меню.
     if (aSignal == CGUISignals::ScreenPasswordUpdated) {
         QString sequence = aParameters.value("password").toString();
-        auto password = SettingsService::instance(mApplication)
+        auto password = SettingsService::instance(m_Application)
                             ->getAdapter<PPSDK::TerminalSettings>()
                             ->getServiceMenuPasswords();
 
@@ -160,7 +160,7 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
                 .toLower() == password.passwords[PPSDK::CServiceMenuPasswords::Screen].toLower()) {
             QVariantMap parameters;
             parameters["name"] = "service_menu";
-            EventService::instance(mApplication)
+            EventService::instance(m_Application)
                 ->sendEvent(PPSDK::EEventType::StartScenario, parameters);
         }
 
@@ -168,13 +168,13 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
     }
 
     // Проверяем наличие необработанной команды.
-    if (mCommand != Command::None) {
+    if (m_Command != Command::None) {
         execCommand();
         return;
     }
 
     // Проверяем наличие устройств с ошибкой.
-    auto terminalService = TerminalService::instance(mApplication);
+    auto terminalService = TerminalService::instance(m_Application);
     auto faultyDevices = terminalService->getFaultyDevices();
     auto faultyDeviceNames = faultyDevices.keys();
 
@@ -221,7 +221,7 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
                            findFaultyDeviceType(SDK::Driver::CComponents::FiscalRegistrator);
     bool hasCardReaderError = findFaultyDeviceType(SDK::Driver::CComponents::CardReader);
 
-    auto settings = SettingsService::instance(mApplication)
+    auto settings = SettingsService::instance(m_Application)
                         ->getAdapter<PPSDK::TerminalSettings>()
                         ->getCommonSettings();
 
@@ -281,15 +281,15 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
         // Критичных ошибок нет. Запускаем главное меню.
         guiService->disable(false);
 
-        EventService::instance(mApplication)
+        EventService::instance(m_Application)
             ->sendEvent(PPSDK::EEventType::StartScenario, QVariantMap());
-        EventService::instance(mApplication)
+        EventService::instance(m_Application)
             ->sendEvent(SDK::PaymentProcessor::Event(
                 SDK::PaymentProcessor::EEventType::OK, getName(), "OK"));
 
-        if (mInterfaceLockedTimer) {
-            killTimer(mInterfaceLockedTimer);
-            mInterfaceLockedTimer = 0;
+        if (m_InterfaceLockedTimer) {
+            killTimer(m_InterfaceLockedTimer);
+            m_InterfaceLockedTimer = 0;
 
             toLog(LogLevel::Normal, "Interface lock timer killed.");
         }
@@ -301,9 +301,9 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
               QString("GUI locked by: %1.").arg(QStringList(parameters.keys()).join(",")));
 
         // Создаём отложенное выставление сигнала о блокировке интерфейса
-        if (mInterfaceLockedTimer == 0 &&
+        if (m_InterfaceLockedTimer == 0 &&
             !terminalService->isTerminalError(PPSDK::ETerminalError::InterfaceLocked)) {
-            mInterfaceLockedTimer = startTimer(1 * 60 * 1000);
+            m_InterfaceLockedTimer = startTimer(1 * 60 * 1000);
 
             toLog(LogLevel::Normal, "Interface lock timer started.");
         }
@@ -316,7 +316,7 @@ void IdleScenario::onEvent(const PPSDK::Event &aEvent) {
 
     switch (aEvent.getType()) {
     case PPSDK::EEventType::Autoencashment:
-        mCommand = Command::Autoencashment;
+        m_Command = Command::Autoencashment;
         break;
 
     default:
@@ -325,30 +325,30 @@ void IdleScenario::onEvent(const PPSDK::Event &aEvent) {
 
     // Если команду невозможно выполнить в текущем сценарии - забудем о ней R.I.P.
     if (processed) {
-        if (GUIService::instance(mApplication)->canDisable()) {
-            GUIService::instance(mApplication)->disable(true);
+        if (GUIService::instance(m_Application)->canDisable()) {
+            GUIService::instance(m_Application)->disable(true);
         } else {
             toLog(LogLevel::Warning,
                   QString("Can't execute IdleScenario command '%1'.")
                       .arg(metaObject()
                                ->enumerator(metaObject()->indexOfEnumerator("Command"))
-                               .valueToKey(mCommand)));
+                               .valueToKey(m_Command)));
 
-            mCommand = Command::None;
+            m_Command = Command::None;
         }
     }
 }
 
 //---------------------------------------------------------------------------
 void IdleScenario::timerEvent(QTimerEvent *aEvent) {
-    if (aEvent && aEvent->timerId() == mInterfaceLockedTimer) {
+    if (aEvent && aEvent->timerId() == m_InterfaceLockedTimer) {
         toLog(LogLevel::Normal, "Interface lock timer triggered.");
 
-        killTimer(mInterfaceLockedTimer);
-        mInterfaceLockedTimer = 0;
+        killTimer(m_InterfaceLockedTimer);
+        m_InterfaceLockedTimer = 0;
 
         // Терминал заблокирован.
-        auto terminalService = TerminalService::instance(mApplication);
+        auto terminalService = TerminalService::instance(m_Application);
         terminalService->setTerminalError(PPSDK::ETerminalError::InterfaceLocked, true);
     }
 }

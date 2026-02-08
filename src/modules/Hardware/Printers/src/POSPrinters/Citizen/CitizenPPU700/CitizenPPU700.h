@@ -13,7 +13,7 @@ extern const char GetFirmware[];     /// Получение версии про�
 extern const char GetSerialNumber[]; /// Получение серийного номера.
 
 const QByteArray GetMemorySwitch5 =
-    QByteArray::fromRawData("\x1D\x28\x45\x02\x00\x04\x05", 7); /// Получить значение мем-свича 5.
+    QByteArray::from_RawData("\x1D\x28\x45\x02\x00\x04\x05", 7); /// Получить значение мем-свича 5.
 } // namespace Command
 
 /// Мем-свичи.
@@ -47,7 +47,7 @@ protected:
     virtual bool getNULStoppedAnswer(QByteArray &aAnswer, int aTimeout) const;
 
     /// Доступны дополнительные мем-свичи.
-    bool mOptionMSW;
+    bool m_OptionMSW;
 };
 
 //--------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ public:
     SerialCitizenPPU700() {
         using namespace SDK::Driver::IOPort::COM;
 
-        this->mPortParameters.insert(EParameters::BaudRate,
+        this->m_PortParameters.insert(EParameters::BaudRate,
                                      POSPrinters::TSerialDevicePortParameter()
                                          << EBaudRate::BR38400 << EBaudRate::BR19200
                                          << EBaudRate::BR4800 << EBaudRate::BR9600);
@@ -73,8 +73,8 @@ template <class T> class CitizenPPU700II : public CitizenPPU700<T> {
 
 public:
     CitizenPPU700II() {
-        this->mDeviceName = "Citizen PPU-700II";
-        this->mOptionMSW = true;
+        this->m_DeviceName = "Citizen PPU-700II";
+        this->m_OptionMSW = true;
     }
 };
 
@@ -82,7 +82,7 @@ public:
 class LibUSBCitizenPPU700II : public CitizenPPU700II<TLibUSBPrinterBase> {
 public:
     LibUSBCitizenPPU700II() {
-        this->mDetectingData->set(CUSBVendors::Citizen1, this->mDeviceName, 0x201e);
+        this->m_DetectingData->set(CUSBVendors::Citizen1, this->m_DeviceName, 0x201e);
     }
 };
 

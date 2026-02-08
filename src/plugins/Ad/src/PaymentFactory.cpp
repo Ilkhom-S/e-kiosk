@@ -73,7 +73,7 @@ SDK::PaymentProcessor::IPayment *PaymentFactory::createPayment(const QString &aT
         AdPayment *adPayment = new AdPayment(this);
 
         adPayment->setParameter(SDK::PaymentProcessor::IPayment::SParameter(
-            "AD_ID", getAdClientInstance(mFactory)->getAd(CPaymentFactory::ContentName).id, true));
+            "AD_ID", getAdClientInstance(m_Factory)->getAd(CPaymentFactory::ContentName).id, true));
 
         return adPayment;
     }
@@ -89,12 +89,12 @@ void PaymentFactory::releasePayment(SDK::PaymentProcessor::IPayment *aPayment) {
 //------------------------------------------------------------------------------
 PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider &aProvider) {
     if (aProvider.processor.type == CProcessorType::Ad) {
-        QMutexLocker lock(&mMutex);
+        QMutexLocker lock(&m_Mutex);
 
         PPSDK::SProvider provider = aProvider;
 
         QFile json(QString("%1/%2.json")
-                       .arg(getAdClientInstance(mFactory)->getContent(CPaymentFactory::ContentName))
+                       .arg(getAdClientInstance(m_Factory)->getContent(CPaymentFactory::ContentName))
                        .arg(CPaymentFactory::ContentName));
         if (json.open(QIODevice::ReadOnly)) {
             QStringDecoder decoder("UTF-8");

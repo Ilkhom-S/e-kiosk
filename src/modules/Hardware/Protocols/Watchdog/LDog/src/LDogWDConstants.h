@@ -28,7 +28,7 @@ typedef QList<TReplaceData> TReplaceDataList;
 
 /// Список данных для маскирования.
 const TReplaceDataList ReplaceDataList =
-    TReplaceDataList() << TReplaceData('\x40', QByteArray::fromRawData("\x40\x00", 2))
+    TReplaceDataList() << TReplaceData('\x40', QByteArray::from_RawData("\x40\x00", 2))
                        << TReplaceData('\x0D', MaskedPostfix);
 
 /// Таймауты, [мс].

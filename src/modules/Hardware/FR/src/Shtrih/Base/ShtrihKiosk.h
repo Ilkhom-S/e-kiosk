@@ -10,8 +10,8 @@ class ShtrihKioskFRK : public ShtrihRetractorFR {
 
 public:
     ShtrihKioskFRK() {
-        mDeviceName = CShtrihFR::Models::CData()[CShtrihFR::Models::ID::ShtrihKioskFRK_2].name;
-        mSupportedModels = QStringList() << mDeviceName;
+        m_DeviceName = CShtrihFR::Models::CData()[CShtrihFR::Models::ID::ShtrihKioskFRK_2].name;
+        m_SupportedModels = QStringList() << m_DeviceName;
         setConfigParameter(CHardware::Printer::PresenterEnable, true);
     }
 

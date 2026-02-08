@@ -16,7 +16,7 @@ using namespace SDK::Driver::IOPort::COM;
 //--------------------------------------------------------------------------------
 AsyncSerialPortLin::AsyncSerialPortLin() : m_PortFd(-1), m_Exist(false), m_MaxReadingSize(0) {
     m_Type = EPortTypes::COM;
-    m_SystemNames = enumerateSystemNames();
+    m_System_Names = enumerateSystem_Names();
     setOpeningTimeout(CAsyncSerialPort::OpeningTimeout);
 }
 
@@ -51,7 +51,7 @@ bool AsyncSerialPortLin::release() {
 void AsyncSerialPortLin::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     IOPortBase::setDeviceConfiguration(aConfiguration);
 
-    if (!m_Exist && !m_SystemName.isEmpty()) {
+    if (!m_Exist && !m_System_Name.isEmpty()) {
         checkExistence();
     }
 }
@@ -66,7 +66,7 @@ bool AsyncSerialPortLin::open() {
         return false;
     }
 
-    return performOpen();
+    return perform_Open();
 }
 
 //--------------------------------------------------------------------------------
@@ -244,21 +244,21 @@ void AsyncSerialPortLin::changePerformingTimeout(const QString &aContext,
 
 //--------------------------------------------------------------------------------
 bool AsyncSerialPortLin::checkExistence() {
-    if (m_SystemName.isEmpty()) {
+    if (m_System_Name.isEmpty()) {
         return false;
     }
 
-    m_Exist = QFile::exists(m_SystemName);
+    m_Exist = QFile::exists(m_System_Name);
     return m_Exist;
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortLin::performOpen() {
-    if (m_SystemName.isEmpty()) {
+bool AsyncSerialPortLin::perform_Open() {
+    if (m_System_Name.isEmpty()) {
         return false;
     }
 
-    m_PortFd = ::open(m_SystemName.toLocal8Bit().constData(), O_RDWR | O_NOCTTY | O_NDELAY);
+    m_PortFd = ::open(m_System_Name.toLocal8Bit().constData(), O_RDWR | O_NOCTTY | O_NDELAY);
     if (m_PortFd < 0) {
         return false;
     }
@@ -308,7 +308,7 @@ bool AsyncSerialPortLin::isExist() {
 }
 
 //--------------------------------------------------------------------------------
-QStringList AsyncSerialPortLin::enumerateSystemNames() {
+QStringList AsyncSerialPortLin::enumerateSystem_Names() {
     QDir devDir("/dev");
     QStringList filters;
     filters << "ttyS*" << "ttyUSB*" << "ttyACM*";

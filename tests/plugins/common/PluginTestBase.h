@@ -14,46 +14,46 @@
 class PluginTestBase {
 
 public:
-    PluginTestBase(const QString &pluginPath) : mPluginPath(pluginPath) {}
+    PluginTestBase(const QString &pluginPath) : m_PluginPath(pluginPath) {}
 
     // Load plugin and return factory
     SDK::Plugin::IPluginFactory *loadPluginFactory() {
-        if (mLoader.isLoaded()) {
-            return mFactory;
+        if (m_Loader.isLoaded()) {
+            return m_Factory;
         }
 
-        mLoader.setFileName(mPluginPath);
-        QObject *rootObject = mLoader.instance();
+        m_Loader.setFileName(m_PluginPath);
+        QObject *rootObject = m_Loader.instance();
 
         if (!rootObject) {
-            qWarning() << "Failed to load plugin:" << mLoader.errorString();
+            qWarning() << "Failed to load plugin:" << m_Loader.errorString();
             return nullptr;
         }
 
-        mFactory = qobject_cast<SDK::Plugin::IPluginFactory *>(rootObject);
-        if (!mFactory) {
+        m_Factory = qobject_cast<SDK::Plugin::IPluginFactory *>(rootObject);
+        if (!m_Factory) {
             qWarning() << "Plugin does not implement IPluginFactory";
             return nullptr;
         }
 
         // Initialize with mock kernel
-        if (!mFactory->initialize(&mMockKernel, QFileInfo(mPluginPath).absolutePath())) {
+        if (!m_Factory->initialize(&m_MockKernel, QFileInfo(m_PluginPath).absolutePath())) {
             qWarning() << "Failed to initialize plugin factory";
             return nullptr;
         }
 
-        return mFactory;
+        return m_Factory;
     }
 
     // Get mock kernel for advanced testing
-    MockKernel &getMockKernel() { return mMockKernel; }
+    MockKernel &getMockKernel() { return m_MockKernel; }
 
     // Get mock plugin loader
-    MockPluginLoader *getMockPluginLoader() { return mMockKernel.getMockPluginLoader(); }
+    MockPluginLoader *getMockPluginLoader() { return m_MockKernel.getMockPluginLoader(); }
 
 private:
-    QString mPluginPath;
-    QPluginLoader mLoader;
-    SDK::Plugin::IPluginFactory *mFactory = nullptr;
-    MockKernel mMockKernel;
+    QString m_PluginPath;
+    QPluginLoader m_Loader;
+    SDK::Plugin::IPluginFactory *m_Factory = nullptr;
+    MockKernel m_MockKernel;
 };

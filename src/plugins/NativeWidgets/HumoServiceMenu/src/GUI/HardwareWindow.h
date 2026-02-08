@@ -135,7 +135,7 @@ signals:
     void devicesFound(const QString &aConfigName);
 
     /// Срабатывает при смене текущей формы (список устройств/выбор типа устройства).
-    void currentFormChanged(int aIndex);
+    void currentForm_Changed(int aIndex);
 
 public slots:
     /// Поиск устройств.
@@ -197,21 +197,21 @@ private slots:
 private:
     typedef QList<QSharedPointer<DeviceSlot>> TDeviceSlotList;
 
-    Ui::frmHardwareWindow ui;
+    Ui::frm_HardwareWindow ui;
 
-    HumoServiceBackend *mBackend;
+    HumoServiceBackend *m_Backend;
 
     // Мапа тип устройства -> локализация
-    QMap<QString, QString> mTypes;
+    QMap<QString, QString> m_Types;
 
-    EditorPane mEditor;
+    EditorPane m_Editor;
 
-    TDeviceSlotList mSlots;
-    TDeviceList mDeviceList;
+    TDeviceSlotList m_Slots;
+    TDeviceList m_DeviceList;
 
-    QFutureWatcher<void> mApplyingWatcher;
+    QFutureWatcher<void> m_ApplyingWatcher;
 
-    SlotCreationMode mCreationMode;
+    SlotCreationMode m_CreationMode;
 };
 
 //---------------------------------------------------------------------------

@@ -9,7 +9,7 @@ namespace PaymentProcessor {
 namespace Scripting {
 
 //------------------------------------------------------------------------------
-AdService::AdService(ICore *aCore) : mCore(aCore), mAdSource(nullptr) {}
+AdService::AdService(ICore *aCore) : m_Core(aCore), m_AdSource(nullptr) {}
 
 //------------------------------------------------------------------------------
 void AdService::addEvent(const QString &aEvent, const QVariantMap &aParameters) {
@@ -35,11 +35,11 @@ QString AdService::getReceiptFooter() {
 
 //------------------------------------------------------------------------------
 SDK::GUI::IAdSource *AdService::getAdSource() {
-    if (!mAdSource) {
-        mAdSource = mCore->getGUIService()->getAdSource();
+    if (!m_AdSource) {
+        m_AdSource = m_Core->getGUIService()->getAdSource();
     }
 
-    return mAdSource;
+    return m_AdSource;
 }
 
 //------------------------------------------------------------------------------

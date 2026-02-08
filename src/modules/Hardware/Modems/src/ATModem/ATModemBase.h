@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "ATGSMModemConstants.h"
+#include "ATGSMModem_Constants.h"
 #include "Hardware/Common/ProtoDevices.h"
 #include "Hardware/Common/SerialDeviceBase.h"
 //--------------------------------------------------------------------------------
-class ATModemBase : public SerialDeviceBase<PortDeviceBase<DeviceBase<ProtoModem>>> {
+class ATModem_Base : public SerialDeviceBase<PortDeviceBase<DeviceBase<ProtoModem>>> {
 public:
-    ATModemBase();
+    ATModem_Base();
 
     /// Сброс.
     virtual bool reset();
@@ -39,7 +39,7 @@ protected:
     bool checkAT(int aTimeout);
 
     /// Таймаут запроса конфигурации модема
-    int mModemConfigTimeout;
+    int m_Modem_ConfigTimeout;
 };
 
 //--------------------------------------------------------------------------------

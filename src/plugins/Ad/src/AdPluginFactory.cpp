@@ -7,9 +7,9 @@
 #include "AdPluginImpl.h"
 
 AdPluginFactory::AdPluginFactory() {
-    mModuleName = "ad_plugin";
-    mName = "Ad Plugin";
-    mDescription = "Advertisement management plugin for EKiosk";
-    mAuthor = "HUMO";
-    mVersion = "1.0";
+    m_ModuleName = "ad_plugin";
+    m_Name = "Ad Plugin";
+    m_Description = "Advertisement management plugin for EKiosk";
+    m_Author = "HUMO";
+    m_Version = "1.0";
 }

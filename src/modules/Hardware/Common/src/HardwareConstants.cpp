@@ -41,7 +41,7 @@ const char Win1252[] = "Win-1252 (Western Europe)";
 const char Base[] = "Base";
 const char SPARK[] = "SPARK";
 const char ATOL[] = "ATOL";
-const char CustomKZT[] = "CP866 (Kazakhstan)";
+const char Custom_KZT[] = "CP866 (Kazakhstan)";
 } // namespace Codepages
 
 /// Константы порта.
@@ -168,7 +168,7 @@ const char Loop[] = "loop";
 const char Hold[] = "hold";
 const char Ejector[] = "ejector";
 const char RemotePaperSensor[] = "remote_paper_sensor";
-const char PaperJamSensor[] = "paper_jam_sensor";
+const char PaperJam_Sensor[] = "paper_jam_sensor";
 const char PaperWeightSensors[] = "paper_weight_sensors";
 const char DocumentCap[] = "document_cap";
 const char BackFeed[] = "back_feed";
@@ -225,7 +225,7 @@ const char EKLZRequestType[] = "EKLZ_request_type";
 const char EKLZData[] = "EKLZ_data";
 const char EKLZStatus[] = "EKLZ_status";
 const char CVCNumber[] = "cvc_number";
-const char ForcePerformZReport[] = "force_perform_z_report";
+const char ForcePerform_ZReport[] = "force_perform_z_report";
 const char PrinterModel[] = "printer_model";
 const char CanZReportWithoutPrinting[] = "can_z_report_without_printing";
 

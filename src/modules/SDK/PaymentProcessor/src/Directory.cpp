@@ -25,14 +25,14 @@ QString Directory::getAdapterName() {
 
 //---------------------------------------------------------------------------
 Directory::Directory(TPtree &aProperties)
-    : mProperties(aProperties.get_child(CAdapterNames::Directory, aProperties)) {
-    mRanges.reserve(20000);
+    : m_Properties(aProperties.get_child(CAdapterNames::Directory, aProperties)) {
+    m_Ranges.reserve(20000);
     TPtree empty;
     SRange range;
 
-    BOOST_FOREACH (const TPtree::value_type &record, mProperties.get_child("numcapacity", empty)) {
+    BOOST_FOREACH (const TPtree::value_type &record, m_Properties.get_child("numcapacity", empty)) {
         if (record.first == "<xmlattr>") {
-            mRangesTimestamp = QDateTime::fromString(record.second.get_value<QString>("stamp"));
+            m_RangesTimestamp = QDateTime::from_String(record.second.get_value<QString>("stamp"));
         } else {
             range.cids.clear();
             range.ids.clear();
@@ -47,7 +47,7 @@ Directory::Directory(TPtree &aProperties)
                             qint64 id = idTag.second.get_value<qint64>();
 
                             range.ids << id;
-                            mOverlappedIDs
+                            m_OverlappedIDs
                                 << id; // Запоминаем ID операторов с виртуальными ёмкостями
                         } else if (idTag.first == "cid") {
                             range.cids << idTag.second.get_value<qint64>();
@@ -57,9 +57,9 @@ Directory::Directory(TPtree &aProperties)
 
                 if (range.ids.size()) {
                     // Диапазон виртуальный, если есть хоть один ID
-                    mOverlappedRanges << range;
+                    m_OverlappedRanges << range;
                 } else if (range.cids.size()) {
-                    mRanges << range;
+                    m_Ranges << range;
                 } else {
                     toLog(LogLevel::Error,
                           QString("Skipping broken range \"%1-%2\"").arg(range.from).arg(range.to));
@@ -70,11 +70,11 @@ Directory::Directory(TPtree &aProperties)
         }
     }
 
-    mOverlappedIDs.squeeze();
-    mRanges.squeeze();
-    mOverlappedRanges.squeeze();
-    std::sort(mRanges.begin(), mRanges.end());
-    std::sort(mOverlappedRanges.begin(), mOverlappedRanges.end());
+    m_OverlappedIDs.squeeze();
+    m_Ranges.squeeze();
+    m_OverlappedRanges.squeeze();
+    std::sort(m_Ranges.begin(), m_Ranges.end());
+    std::sort(m_OverlappedRanges.begin(), m_OverlappedRanges.end());
 }
 
 //---------------------------------------------------------------------------
@@ -86,7 +86,7 @@ QList<SConnectionTemplate> Directory::getConnectionTemplates() const {
     TPtree empty;
 
     BOOST_FOREACH (const TPtree::value_type &record,
-                   mProperties.get_child("directory.connections", empty)) {
+                   m_Properties.get_child("directory.connections", empty)) {
         try {
             SConnectionTemplate connection;
 
@@ -115,14 +115,14 @@ QList<SRange> Directory::getRangesForNumber(qint64 aNumber) const {
 
     // Сначала ищем в виртуальных диапазонах
     QVector<SRange>::const_iterator begin =
-        std::lower_bound(mOverlappedRanges.begin(), mOverlappedRanges.end(), aNumber);
+        std::lower_bound(m_OverlappedRanges.begin(), m_OverlappedRanges.end(), aNumber);
     QVector<SRange>::const_iterator end =
-        std::upper_bound(mOverlappedRanges.begin(), mOverlappedRanges.end(), aNumber);
+        std::upper_bound(m_OverlappedRanges.begin(), m_OverlappedRanges.end(), aNumber);
 
     // Если нет в виртуальных, то ищем в обычных
     if (begin == end) {
-        begin = std::lower_bound(mRanges.begin(), mRanges.end(), aNumber);
-        end = std::upper_bound(mRanges.begin(), mRanges.end(), aNumber);
+        begin = std::lower_bound(m_Ranges.begin(), m_Ranges.end(), aNumber);
+        end = std::upper_bound(m_Ranges.begin(), m_Ranges.end(), aNumber);
     }
 
     std::copy(begin, end, std::back_inserter(ranges));
@@ -132,7 +132,7 @@ QList<SRange> Directory::getRangesForNumber(qint64 aNumber) const {
 
 //---------------------------------------------------------------------------
 QSet<qint64> Directory::getOverlappedIDs() const {
-    return mOverlappedIDs;
+    return m_OverlappedIDs;
 }
 
 //---------------------------------------------------------------------------

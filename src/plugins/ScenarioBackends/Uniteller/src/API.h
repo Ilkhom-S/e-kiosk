@@ -44,12 +44,12 @@ public:
                                            SDK::PaymentProcessor::ICore *aCore,
                                            quint16 aPort = Uniteller::DefaultPort);
 
-    void setTerminalID(const QString &aTerminalID) { mTerminalID = aTerminalID; }
+    void setTerminalID(const QString &aTerminalID) { m_TerminalID = aTerminalID; }
 
     bool isReady() const;
 
     /// Возвращает последнюю ошибку
-    int getLastError() const { return mLastError; }
+    int getLastError() const { return m_LastError; }
 
     void setupRuntimePath(const QString &aRuntimePath);
 
@@ -112,25 +112,25 @@ private:
     virtual void timerEvent(QTimerEvent *aEvent);
 
 private:
-    quint16 mPort{};
-    QTcpSocket mSocket{};
-    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings{};
-    QString mTerminalID;
-    bool mLoggedIn;
+    quint16 m_Port{};
+    QTcpSocket m_Socket{};
+    SDK::PaymentProcessor::TerminalSettings *m_TerminalSettings{};
+    QString m_TerminalID;
+    bool m_LoggedIn;
 
-    QStringList mCurrentReceipt{};
+    QStringList m_CurrentReceipt{};
 
 private:
-    bool mEnabled;
-    bool mHaveContactlessReader;
-    int mLastError;
-    QString mLastErrorString;
-    int mGetStateTimerID;
-    QMap<QString, int> mDeviceState{}; // Объединенное состояние для всех устройств
-    QTimer mCheckStateTimer{};
-    int mLoginCheckTimer{};
-    bool mLastReadyState;
-    QString mRuntimePath;
+    bool m_Enabled;
+    bool m_HaveContactlessReader;
+    int m_LastError;
+    QString m_LastErrorString;
+    int m_GetStateTimerID;
+    QMap<QString, int> m_DeviceState{}; // Объединенное состояние для всех устройств
+    QTimer m_CheckStateTimer{};
+    int m_LoginCheckTimer{};
+    bool m_LastReadyState;
+    QString m_RuntimePath;
 };
 
 } // namespace Uniteller

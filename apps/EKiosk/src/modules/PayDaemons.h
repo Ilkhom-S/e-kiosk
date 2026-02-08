@@ -19,7 +19,7 @@ public:
     QString kassir;
     QString phone;
     QString printerModel;
-    QString numTrm;
+    QString num_Trm;
 
     void startTimer(const int sec);
 
@@ -39,9 +39,9 @@ private:
     bool getPaymentMap(QString &payment, int &count_pay, double &all_sum);
     bool
     updateOperationStatus(const QString &id_trm, const QString &status, const QString &dateConfirm);
-    void parcerNote(const QDomNode &domElement);
+    void parcerNote(const QDom_Node &dom_Element);
 
-    void confirmPayments();
+    void confirm_Payments();
 
     QTimer *payTimer;
     QTimer *restatTimer;
@@ -58,7 +58,7 @@ private:
     QString getCollectionId();
 
 private slots:
-    void setDataNote(const QDomNode &domElement);
+    void setDataNote(const QDom_Node &dom_Element);
     void getErrResponse();
 
 public slots:

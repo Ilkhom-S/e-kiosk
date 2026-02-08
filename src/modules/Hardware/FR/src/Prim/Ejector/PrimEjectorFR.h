@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "../Presenter/PrimPresenterFR.h"
+#include "../Presenter/Prim_PresenterFR.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PrimEjectorFR : public PrimPresenterFR<T> {
+template <class T> class Prim_EjectorFR : public Prim_PresenterFR<T> {
     SET_SUBSERIES("Ejector")
 
 public:
-    PrimEjectorFR();
+    Prim_EjectorFR();
 
 protected:
     /// Инициализация устройства.
@@ -43,10 +43,10 @@ protected:
     bool processEjectorAction(const QString &aAction);
 
     /// Старый номер билда?
-    bool mOldBuildNumber;
+    bool m_OldBuildNumber;
 
     /// Количество неисправимых статусов в LPC22 когда надо послать специальную команду.
-    int mLPC22RetractorErrorCount;
+    int m_LPC22RetractorErrorCount;
 };
 
 //--------------------------------------------------------------------------------

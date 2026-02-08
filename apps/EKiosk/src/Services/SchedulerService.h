@@ -95,30 +95,30 @@ private:
         /// Записываем в item результат выполнения таска
         void complete(bool aComplete);
 
-        QString name() const { return mName; }
-        QString type() const { return mType; }
-        QString params() const { return mParams; }
-        QDateTime lastExecute() const { return mLastExecute; }
-        bool onlyOnce() const { return mOnlyOnce; }
+        QString name() const { return m_Name; }
+        QString type() const { return m_Type; }
+        QString params() const { return m_Params; }
+        QDateTime lastExecute() const { return m_LastExecute; }
+        bool onlyOnce() const { return m_OnlyOnce; }
 
-        int failCount() const { return mFailExecuteCounter; }
+        int failCount() const { return m_FailExecuteCounter; }
 
     private:
-        QString mType;   // Тип задачи
-        QString mParams; // Параметры задачи
-        QString mName;   // Имя задачи
-        QTime mTime;     // Время запуска задачи
-        int mPeriod; // Переодичность запуска задачи в секундах, действует если не задано конкретное
+        QString m_Type;   // Тип задачи
+        QString m_Params; // Параметры задачи
+        QString m_Name;   // Имя задачи
+        QTime m_Time;     // Время запуска задачи
+        int m_Period; // Переодичность запуска задачи в секундах, действует если не задано конкретное
                      // время
-        bool mTriggeredOnStart; // Запускать первый раз сразу при старте
-        int mTimeThreshold;     // Максимальный разброс времени при запуске задачи в секундах
-        int mRepeatCountIfFail; // Количество повторов в случае ошибки
-        int mRetryTimeout;      // Таймаут повторного запуска в случае неуспеха в cекундах
-        bool mOnlyOnce;         // Запускать задачу только один раз
+        bool m_TriggeredOnStart; // Запускать первый раз сразу при старте
+        int m_TimeThreshold;     // Максимальный разброс времени при запуске задачи в секундах
+        int m_RepeatCountIfFail; // Количество повторов в случае ошибки
+        int m_RetryTimeout;      // Таймаут повторного запуска в случае неуспеха в cекундах
+        bool m_OnlyOnce;         // Запускать задачу только один раз
 
     private:
-        QDateTime mLastExecute;  // Время последнего запуска задачи
-        int mFailExecuteCounter; // Счетчик неудачных запусков задачи
+        QDateTime m_LastExecute;  // Время последнего запуска задачи
+        int m_FailExecuteCounter; // Счетчик неудачных запусков задачи
     };
 
 private:
@@ -145,12 +145,12 @@ private slots:
     void onTaskComplete(const QString &aName, bool aComplete);
 
 private:
-    IApplication *mApplication;
-    QThread mThread;
+    IApplication *m_Application;
+    QThread m_Thread;
 
-    QMap<QString, Item> mItems;
-    QMap<QString, SDK::PaymentProcessor::ITask *> mWorkingTasks;
-    QReadWriteLock mLock;
+    QMap<QString, Item> m_Items;
+    QMap<QString, SDK::PaymentProcessor::ITask *> m_WorkingTasks;
+    QReadWriteLock m_Lock;
 };
 
 //---------------------------------------------------------------------------

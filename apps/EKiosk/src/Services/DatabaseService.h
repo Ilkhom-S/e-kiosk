@@ -73,16 +73,16 @@ public:
 #pragma endregion
 
     /// Получение нужной части интерфейса базы данных.
-    template <typename T> T *getDatabaseUtils() { return dynamic_cast<T *>(mDbUtils.data()); }
+    template <typename T> T *getDatabaseUtils() { return dynamic_cast<T *>(m_DbUtils.data()); }
 
 protected:
     virtual ~DatabaseService();
 
 private:
-    IApplication *mApplication;
-    IDatabaseProxy *mDatabase;
-    QSharedPointer<IDatabaseUtils> mDbUtils;
-    int mErrorCounter;
+    IApplication *m_Application;
+    IDatabaseProxy *m_Database;
+    QSharedPointer<IDatabaseUtils> m_DbUtils;
+    int m_ErrorCounter;
 };
 
 //---------------------------------------------------------------------------

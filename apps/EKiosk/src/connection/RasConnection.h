@@ -87,7 +87,7 @@ enum conSate {
     conStateUpping = 2,
     conStateError = 3,
     SendingSMS = 4,
-    GetSimData = 5
+    GetSim_Data = 5
 };
 namespace TypePing {
 
@@ -116,7 +116,7 @@ public:
 
     int createNewDialupConnection(
         QString conName, QString devName, QString phone, QString login, QString pass);
-    bool HasInstalledModems(QStringList &lstModemList);
+    bool HasInstalledModems(QStringList &lstModem_List);
 
     RasConnection(QObject *parent = 0);
 

@@ -10,8 +10,8 @@
 namespace CBITS {
 
 //---------------------------------------------------------------------------
-CopyManager::CopyManager(ILog *aLog) : ILogable(aLog), mJobsCount(0), mPriority(CBITS::HIGH) {
-    mCopyManager = QSharedPointer<CopyManager_p>(new CopyManager_p(aLog));
+CopyManager::CopyManager(ILog *aLog) : ILogable(aLog), m_JobsCount(0), m_Priority(CBITS::HIGH) {
+    m_CopyManager = QSharedPointer<CopyManager_p>(new CopyManager_p(aLog));
 }
 
 //---------------------------------------------------------------------------
@@ -19,12 +19,12 @@ CopyManager::~CopyManager() {}
 
 //---------------------------------------------------------------------------
 void CopyManager::shutdown() {
-    mCopyManager.clear();
+    m_CopyManager.clear();
 }
 
 //---------------------------------------------------------------------------
 bool CopyManager::isReady() const {
-    return mCopyManager && mCopyManager->isReady();
+    return m_CopyManager && m_CopyManager->isReady();
 }
 
 //---------------------------------------------------------------------------
@@ -32,7 +32,7 @@ QMap<QString, SJob> CopyManager::getJobs(const QString &aFilter) {
     QMap<QString, SJob> result;
 
     if (isReady()) {
-        auto allJobs = mCopyManager->getJobs();
+        auto allJobs = m_CopyManager->getJobs();
 
         foreach (auto key, QStringList(allJobs.keys()).filter(aFilter, Qt::CaseInsensitive)) {
             result.insert(key, allJobs.value(key));
@@ -45,8 +45,8 @@ QMap<QString, SJob> CopyManager::getJobs(const QString &aFilter) {
 //---------------------------------------------------------------------------
 bool CopyManager::createJob(const QString &aName, SJob &aJob, int aPriority) {
     if (isReady()) {
-        mPriority = aPriority;
-        return mCopyManager->createJob(makeJobName(aName), aJob, aPriority);
+        m_Priority = aPriority;
+        return m_CopyManager->createJob(makeJobName(aName), aJob, aPriority);
     }
 
     return false;
@@ -54,15 +54,15 @@ bool CopyManager::createJob(const QString &aName, SJob &aJob, int aPriority) {
 
 //---------------------------------------------------------------------------
 bool CopyManager::setNotify(const QString &aApplicationPath, const QString &aParameters) {
-    mNotifyApplication = aApplicationPath;
-    mNotifyParameters = aParameters;
+    m_NotifyApplication = aApplicationPath;
+    m_NotifyParameters = aParameters;
     return true;
 }
 
 //---------------------------------------------------------------------------
 bool CopyManager::addTask(const QUrl &aUrl, const QString &aFileName) {
     if (isReady()) {
-        switch (mCopyManager->addTask(aUrl, aFileName)) {
+        switch (m_CopyManager->addTask(aUrl, aFileName)) {
         case AddTaskResult::OK:
             return true;
         case AddTaskResult::Error:
@@ -74,9 +74,9 @@ bool CopyManager::addTask(const QUrl &aUrl, const QString &aFileName) {
 
             toLog(LoggerLevel::Normal, QString("BITS: Job %1 resumed.").arg(makeJobName()));
 
-            mJobsCount++;
+            m_JobsCount++;
             SJob newJob;
-            return mCopyManager->createJob(makeJobName(), newJob, mPriority) &&
+            return m_CopyManager->createJob(makeJobName(), newJob, m_Priority) &&
                    addTask(aUrl, aFileName);
         }
         }
@@ -88,7 +88,7 @@ bool CopyManager::addTask(const QUrl &aUrl, const QString &aFileName) {
 //---------------------------------------------------------------------------
 bool CopyManager::openJob(const SJob &aJob) {
     if (isReady()) {
-        return mCopyManager->openJob(aJob);
+        return m_CopyManager->openJob(aJob);
     }
 
     return false;
@@ -96,17 +96,17 @@ bool CopyManager::openJob(const SJob &aJob) {
 
 //---------------------------------------------------------------------------
 bool CopyManager::internalResume() {
-    return mCopyManager->setJobNotify(mNotifyApplication, mNotifyParameters) &&
-           mCopyManager->resume();
+    return m_CopyManager->setJobNotify(m_NotifyApplication, m_NotifyParameters) &&
+           m_CopyManager->resume();
 }
 
 //---------------------------------------------------------------------------
 QString CopyManager::makeJobName(const QString &aName /*= QString()*/) {
     if (!aName.isEmpty()) {
-        mJobName = aName;
+        m_JobName = aName;
     }
 
-    return mJobName + QString("#%1").arg(mJobsCount, 2, 10, QChar('0'));
+    return m_JobName + QString("#%1").arg(m_JobsCount, 2, 10, QChar('0'));
 }
 
 //---------------------------------------------------------------------------
@@ -123,7 +123,7 @@ bool CopyManager::resume() {
 //---------------------------------------------------------------------------
 bool CopyManager::cancel() {
     if (isReady()) {
-        return mCopyManager->cancel();
+        return m_CopyManager->cancel();
     }
 
     return false;
@@ -132,7 +132,7 @@ bool CopyManager::cancel() {
 //---------------------------------------------------------------------------
 bool CopyManager::complete() {
     if (isReady()) {
-        return mCopyManager->complete();
+        return m_CopyManager->complete();
     }
 
     return false;

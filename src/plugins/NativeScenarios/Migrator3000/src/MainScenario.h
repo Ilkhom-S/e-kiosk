@@ -141,24 +141,24 @@ private slots:
 
 private:
 private:
-    QVariantMap mContext;
-    QString mLastSignal;
-    SDK::PaymentProcessor::ICore *mCore;
-    SDK::PaymentProcessor::ISettingsService *mSettingsService;
-    SDK::PaymentProcessor::INetworkService *mNetworkService;
-    SDK::PaymentProcessor::ITerminalService *mTerminalService;
-    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;
-    SDK::PaymentProcessor::ICryptService *mCryptService;
-    SDK::PaymentProcessor::Scripting::Core *mScriptingCore;
-    SDK::PaymentProcessor::IDeviceService *mDeviceService;
+    QVariantMap m_Context;
+    QString m_LastSignal;
+    SDK::PaymentProcessor::ICore *m_Core;
+    SDK::PaymentProcessor::ISettingsService *m_SettingsService;
+    SDK::PaymentProcessor::INetworkService *m_NetworkService;
+    SDK::PaymentProcessor::ITerminalService *m_TerminalService;
+    SDK::PaymentProcessor::TerminalSettings *m_TerminalSettings;
+    SDK::PaymentProcessor::ICryptService *m_CryptService;
+    SDK::PaymentProcessor::Scripting::Core *m_ScriptingCore;
+    SDK::PaymentProcessor::IDeviceService *m_DeviceService;
 
-    QFutureWatcher<bool> mTaskWatcher;
+    QFutureWatcher<bool> m_TaskWatcher;
 
-    QStringList mFoundedDevices;
-    int mMonitoringComandId;
+    QStringList m_FoundedDevices;
+    int m_MonitoringComandId;
 
     //
-    QString mKiosk2InstallPath;
+    QString m_Kiosk2InstallPath;
 };
 
 } // namespace Migrator3000

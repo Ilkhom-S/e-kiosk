@@ -10,37 +10,37 @@ class Log {
 public:
     enum LogLevel { Debug, Normal, Warning, Error };
 
-    Log(LogLevel aLevel) : mLevel(aLevel) {}
+    Log(LogLevel aLevel) : m_Level(aLevel) {}
 
     ~Log() {
         QObject *logger = initialize();
 
         if (logger) {
-            switch (mLevel) {
+            switch (m_Level) {
             case Debug:
-                QMetaObject::invokeMethod(logger, "debug", Q_ARG(const QString &, mMessage));
+                QMetaObject::invokeMethod(logger, "debug", Q_ARG(const QString &, m_Message));
                 break;
             case Normal:
-                QMetaObject::invokeMethod(logger, "normal", Q_ARG(const QString &, mMessage));
+                QMetaObject::invokeMethod(logger, "normal", Q_ARG(const QString &, m_Message));
                 break;
             case Warning:
-                QMetaObject::invokeMethod(logger, "warning", Q_ARG(const QString &, mMessage));
+                QMetaObject::invokeMethod(logger, "warning", Q_ARG(const QString &, m_Message));
                 break;
             case Error:
-                QMetaObject::invokeMethod(logger, "error", Q_ARG(const QString &, mMessage));
+                QMetaObject::invokeMethod(logger, "error", Q_ARG(const QString &, m_Message));
                 break;
             }
         } else {
-            switch (mLevel) {
+            switch (m_Level) {
             case Debug:
-                qDebug() << mMessage;
+                qDebug() << m_Message;
                 break;
             case Normal:
-                qDebug() << mMessage;
+                qDebug() << m_Message;
                 break;
             case Warning:
             case Error:
-                qWarning() << mMessage;
+                qWarning() << m_Message;
                 break;
             }
         }
@@ -57,13 +57,13 @@ public:
     }
 
     Log &operator<<(const QString &aString) {
-        mMessage.append(aString);
+        m_Message.append(aString);
         return *this;
     }
 
 private:
-    QString mMessage;
-    LogLevel mLevel;
+    QString m_Message;
+    LogLevel m_Level;
 };
 
 //------------------------------------------------------------------------------

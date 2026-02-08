@@ -15,32 +15,32 @@
 #include "MessageBox/MessageBox.h"
 
 HardwareServiceWindow::HardwareServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend), mWindow(new HardwareWindow(aBackend)) {
+    : QFrame(aParent), ServiceWindowBase(aBackend), m_Window(new HardwareWindow(aBackend)) {
     setupUi(this);
 
-    mWindow->setParent(this);
-    mWindow->setSlotCreationMode(HardwareWindow::OpenEditorAfterCreation);
+    m_Window->setParent(this);
+    m_Window->setSlotCreationMode(HardwareWindow::OpenEditorAfterCreation);
 
     wContainer->setCurrentWidget(wMainPage);
 
     wMainPage->setLayout(new QHBoxLayout);
-    wMainPage->layout()->addWidget(mWindow);
+    wMainPage->layout()->addWidget(m_Window);
 
     wEditorPage->setLayout(new QHBoxLayout);
 
-    connect(mWindow, SIGNAL(detectionStarted()), SLOT(onDetectionStarted()));
-    connect(mWindow, SIGNAL(detectionFinished()), SLOT(onDetectionFinished()));
-    connect(mWindow, SIGNAL(applyingStarted()), SLOT(onApplyingStarted()));
-    connect(mWindow, SIGNAL(applyingFinished()), SLOT(onApplyingFinished()));
-    connect(mWindow,
+    connect(m_Window, SIGNAL(detectionStarted()), SLOT(onDetectionStarted()));
+    connect(m_Window, SIGNAL(detectionFinished()), SLOT(onDetectionFinished()));
+    connect(m_Window, SIGNAL(applyingStarted()), SLOT(onApplyingStarted()));
+    connect(m_Window, SIGNAL(applyingFinished()), SLOT(onApplyingFinished()));
+    connect(m_Window,
             SIGNAL(editSlot(DeviceSlot *, EditorPane *)),
             SLOT(onEditSlot(DeviceSlot *, EditorPane *)));
-    connect(mWindow, SIGNAL(removeSlot(DeviceSlot *)), SLOT(onRemoveSlot(DeviceSlot *)));
+    connect(m_Window, SIGNAL(removeSlot(DeviceSlot *)), SLOT(onRemoveSlot(DeviceSlot *)));
 }
 
 //------------------------------------------------------------------------
 bool HardwareServiceWindow::activate() {
-    mWindow->setConfiguration(mBackend->getHardwareManager()->getConfiguration());
+    m_Window->setConfiguration(m_Backend->getHardwareManager()->getConfiguration());
 
     return true;
 }
@@ -48,15 +48,15 @@ bool HardwareServiceWindow::activate() {
 //------------------------------------------------------------------------
 bool HardwareServiceWindow::deactivate() {
     wContainer->setCurrentWidget(wMainPage);
-    mBackend->getHardwareManager()->setConfigurations(mWindow->getConfiguration().keys());
-    mBackend->saveConfiguration();
+    m_Backend->getHardwareManager()->setConfigurations(m_Window->getConfiguration().keys());
+    m_Backend->saveConfiguration();
 
     return true;
 }
 
 //------------------------------------------------------------------------
 bool HardwareServiceWindow::initialize() {
-    if (!mWindow->initialize()) {
+    if (!m_Window->initialize()) {
         return false;
     }
 
@@ -65,7 +65,7 @@ bool HardwareServiceWindow::initialize() {
 
 //------------------------------------------------------------------------
 bool HardwareServiceWindow::shutdown() {
-    mWindow->shutdown();
+    m_Window->shutdown();
 
     return true;
 }
@@ -84,10 +84,10 @@ void HardwareServiceWindow::onDetectionStarted() {
 
 //------------------------------------------------------------------------
 void HardwareServiceWindow::onDetectionFinished() {
-    mBackend->getHardwareManager()->setConfigurations(mWindow->getConfiguration().keys());
+    m_Backend->getHardwareManager()->setConfigurations(m_Window->getConfiguration().keys());
 
     // Обновляем статусы найденных железок
-    mBackend->getHardwareManager()->updateStatuses();
+    m_Backend->getHardwareManager()->updateStatuses();
 
     GUI::MessageBox::hide();
 }
@@ -102,14 +102,14 @@ void HardwareServiceWindow::onEditSlot(DeviceSlot *aSlot, EditorPane *aPane) {
 
     if (aSlot->getType() == SDK::Driver::CComponents::Modem) {
         GUI::MessageBox::wait(tr("#closing_connection"));
-        mBackend->getNetworkManager()->closeConnection();
+        m_Backend->getNetworkManager()->closeConnection();
         GUI::MessageBox::hide();
     }
 }
 
 //------------------------------------------------------------------------
 void HardwareServiceWindow::onRemoveSlot(DeviceSlot *aSlot) {
-    mWindow->removeDeviceSlot(aSlot, true);
+    m_Window->removeDeviceSlot(aSlot, true);
 }
 
 //------------------------------------------------------------------------
@@ -123,15 +123,15 @@ void HardwareServiceWindow::onEditFinished() {
 
         if (editor->isChanged()) {
             editor->getSlot()->setParameterValues(editor->getParameterValues());
-            mWindow->checkDeviceSlot(editor->getSlot());
+            m_Window->checkDeviceSlot(editor->getSlot());
 
-            mBackend->toLog(QString("UPDATE device: %1").arg(editor->getSlot()->getModel()));
+            m_Backend->toLog(QString("UPDATE device: %1").arg(editor->getSlot()->getModel()));
         } else if (editor->getSlot()->getModel().isEmpty()) {
-            mWindow->removeDeviceSlot(editor->getSlot());
+            m_Window->removeDeviceSlot(editor->getSlot());
         }
 
         if (deviceType == SDK::Driver::CComponents::Modem) {
-            mBackend->getNetworkManager()->openConnection();
+            m_Backend->getNetworkManager()->openConnection();
         }
     }
 
@@ -149,7 +149,7 @@ void HardwareServiceWindow::onApplyingFinished() {
 
     // Для переинициализации свежедобавленного устройства. В противном случае не работает тест
     // купюроприемника.
-    mWindow->setConfiguration(mBackend->getHardwareManager()->getConfiguration());
+    m_Window->setConfiguration(m_Backend->getHardwareManager()->getConfiguration());
 }
 
 //------------------------------------------------------------------------
@@ -157,9 +157,9 @@ void HardwareServiceWindow::onClicked(const QVariantMap & /*aParameters*/) {
     GUI::MessageBox::hide();
     GUI::MessageBox::wait(tr("#waiting_stop_search"));
 
-    mWindow->abortDetection();
+    m_Window->abortDetection();
 
-    mBackend->toLog(QString("Button clicked: %1").arg(tr("#stop_search")));
+    m_Backend->toLog(QString("Button clicked: %1").arg(tr("#stop_search")));
 }
 
 //------------------------------------------------------------------------

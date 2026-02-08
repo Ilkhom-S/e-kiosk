@@ -72,14 +72,14 @@ public:
 #pragma endregion
 
 private:
-    bool mIsReady;
+    bool m_IsReady;
 
-    QString mInstancePath;
-    SDK::Plugin::IEnvironment *mEnvironment;
-    QVariantMap mParameters;
+    QString m_InstancePath;
+    SDK::Plugin::IEnvironment *m_Environment;
+    QVariantMap m_Parameters;
 
-    MainServiceWindow *mMainServiceWindow;
-    QSharedPointer<ServiceMenuBackend> mBackend;
+    MainServiceWindow *m_MainServiceWindow;
+    QSharedPointer<ServiceMenuBackend> m_Backend;
 };
 
 //--------------------------------------------------------------------------

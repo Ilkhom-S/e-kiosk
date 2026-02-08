@@ -19,7 +19,7 @@ enum conSate {
     conStateUpping = 2,
     conStateError = 3,
     SendingSMS = 4,
-    GetSimData = 5
+    GetSim_Data = 5
 };
 } // namespace Connection
 
@@ -45,7 +45,7 @@ public:
     bool restartWindows(bool restart);
     int createNewDialupConnection(
         QString conName, QString devName, QString phone, QString login, QString pass);
-    bool hasInstalledModems(QStringList &lstModemList);
+    bool hasInstalledModems(QStringList &lstModem_List);
     int conState;
     QTimer *daemonTimer;
 

@@ -16,12 +16,12 @@
 #include "SetupServiceWindow.h"
 
 MainHumoServiceMenuWindow::MainHumoServiceMenuWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), mBackend(aBackend), mCurrentPageIndex(0) {
+    : QWidget(aParent), m_Backend(aBackend), m_CurrentPageIndex(0) {
     setupUi(this);
 
     // Setup timers
-    connect(&mIdleTimer, &QTimer::timeout, this, &MainHumoServiceMenuWindow::onIdleTimeout);
-    connect(&mDateTimeTimer, &QTimer::timeout, this, &MainHumoServiceMenuWindow::onDateTimeRefresh);
+    connect(&m_IdleTimer, &QTimer::timeout, this, &MainHumoServiceMenuWindow::onIdleTimeout);
+    connect(&m_DateTimeTimer, &QTimer::timeout, this, &MainHumoServiceMenuWindow::onDateTimeRefresh);
 
     // Setup connections
     connect(btnCloseServiceMenu,
@@ -80,22 +80,22 @@ MainHumoServiceMenuWindow::MainHumoServiceMenuWindow(HumoServiceBackend *aBacken
 //--------------------------------------------------------------------------
 bool MainHumoServiceMenuWindow::initialize() {
     // Get terminal info
-    mBackend->getTerminalInfo(mTerminalInfo);
+    m_Backend->getTerminalInfo(m_TerminalInfo);
 
     // Apply configuration
     applyConfiguration();
 
     // Start timers
-    mDateTimeTimer.start(1000);      // Update every second
-    mIdleTimer.start(5 * 60 * 1000); // 5 minutes idle timeout
+    m_DateTimeTimer.start(1000);      // Update every second
+    m_IdleTimer.start(5 * 60 * 1000); // 5 minutes idle timeout
 
     return true;
 }
 
 //--------------------------------------------------------------------------
 void MainHumoServiceMenuWindow::shutdown() {
-    mIdleTimer.stop();
-    mDateTimeTimer.stop();
+    m_IdleTimer.stop();
+    m_DateTimeTimer.stop();
 }
 
 //--------------------------------------------------------------------------
@@ -118,14 +118,14 @@ bool MainHumoServiceMenuWindow::closeHumoServiceMenu(bool aExitByNotify,
 
 //--------------------------------------------------------------------------
 void MainHumoServiceMenuWindow::onCurrentPageChanged(int aIndex) {
-    mCurrentPageIndex = aIndex;
+    m_CurrentPageIndex = aIndex;
     applyAccessRights();
 }
 
 //--------------------------------------------------------------------------
 void MainHumoServiceMenuWindow::onProceedLogin() {
     QString password = lePassword->text();
-    if (mBackend->authorize(password)) {
+    if (m_Backend->authorize(password)) {
         // Switch to main page
         twServiceScreens->setCurrentIndex(1);
         lePassword->clear();
@@ -150,7 +150,7 @@ void MainHumoServiceMenuWindow::onRebootApplication() {
                               tr("Reboot Application"),
                               tr("Are you sure you want to reboot the application?")) ==
         QMessageBox::Yes) {
-        mBackend->sendEvent(SDK::PaymentProcessor::EEventType::Restart);
+        m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::Restart);
     }
 }
 
@@ -159,7 +159,7 @@ void MainHumoServiceMenuWindow::onStopApplication() {
     if (QMessageBox::question(
             this, tr("Stop Application"), tr("Are you sure you want to stop the application?")) ==
         QMessageBox::Yes) {
-        mBackend->sendEvent(SDK::PaymentProcessor::EEventType::CloseApplication);
+        m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::CloseApplication);
     }
 }
 
@@ -168,7 +168,7 @@ void MainHumoServiceMenuWindow::onRebootTerminal() {
     if (QMessageBox::question(
             this, tr("Reboot Terminal"), tr("Are you sure you want to reboot the terminal?")) ==
         QMessageBox::Yes) {
-        mBackend->sendEvent(SDK::PaymentProcessor::EEventType::Reboot);
+        m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::Reboot);
     }
 }
 
@@ -218,56 +218,56 @@ void MainHumoServiceMenuWindow::applyConfiguration() {
     }
 
     // Clear service window list
-    qDeleteAll(mServiceWindowList);
-    mServiceWindowList.clear();
+    qDeleteAll(m_ServiceWindowList);
+    m_ServiceWindowList.clear();
 
     // Add main service tabs
-    HumoServiceBackend::TAccessRights rights = mBackend->getAccessRights();
+    HumoServiceBackend::TAccessRights rights = m_Backend->getAccessRights();
 
     // Setup tab
     if (rights.contains(HumoServiceBackend::SetupHardware) ||
         rights.contains(HumoServiceBackend::SetupNetwork) ||
-        rights.contains(HumoServiceBackend::SetupKeys) || !mBackend->hasAnyPassword()) {
-        SetupServiceWindow *setupWindow = new SetupServiceWindow(mBackend, this);
+        rights.contains(HumoServiceBackend::SetupKeys) || !m_Backend->hasAnyPassword()) {
+        SetupServiceWindow *setupWindow = new SetupServiceWindow(m_Backend, this);
         setupWindow->initialize();
         twServiceScreens->addTab(setupWindow, tr("#setup"));
-        mServiceWindowList.append(setupWindow);
+        m_ServiceWindowList.append(setupWindow);
     }
 
     // Diagnostics tab
-    if (rights.contains(HumoServiceBackend::Diagnostic) || !mBackend->hasAnyPassword()) {
-        DiagnosticsServiceWindow *diagnosticsWindow = new DiagnosticsServiceWindow(mBackend, this);
+    if (rights.contains(HumoServiceBackend::Diagnostic) || !m_Backend->hasAnyPassword()) {
+        DiagnosticsServiceWindow *diagnosticsWindow = new DiagnosticsServiceWindow(m_Backend, this);
         diagnosticsWindow->initialize();
         twServiceScreens->addTab(diagnosticsWindow, tr("#diagnostics"));
-        mServiceWindowList.append(diagnosticsWindow);
+        m_ServiceWindowList.append(diagnosticsWindow);
     }
 
     // Payments tab
-    if (rights.contains(HumoServiceBackend::ViewPayments) || !mBackend->hasAnyPassword()) {
-        PaymentServiceWindow *paymentWindow = new PaymentServiceWindow(mBackend, this);
+    if (rights.contains(HumoServiceBackend::ViewPayments) || !m_Backend->hasAnyPassword()) {
+        PaymentServiceWindow *paymentWindow = new PaymentServiceWindow(m_Backend, this);
         paymentWindow->initialize();
         twServiceScreens->addTab(paymentWindow, tr("#payments"));
-        mServiceWindowList.append(paymentWindow);
+        m_ServiceWindowList.append(paymentWindow);
     }
 
     // Logs tab
-    if (rights.contains(HumoServiceBackend::ViewLogs) || !mBackend->hasAnyPassword()) {
-        LogsServiceWindow *logsWindow = new LogsServiceWindow(mBackend, this);
+    if (rights.contains(HumoServiceBackend::ViewLogs) || !m_Backend->hasAnyPassword()) {
+        LogsServiceWindow *logsWindow = new LogsServiceWindow(m_Backend, this);
         logsWindow->initialize();
         twServiceScreens->addTab(logsWindow, tr("#logs"));
-        mServiceWindowList.append(logsWindow);
+        m_ServiceWindowList.append(logsWindow);
     }
 
     // Encashment tab
-    if (rights.contains(HumoServiceBackend::Encash) || !mBackend->hasAnyPassword()) {
-        EncashmentServiceWindow *encashmentWindow = new EncashmentServiceWindow(mBackend, this);
+    if (rights.contains(HumoServiceBackend::Encash) || !m_Backend->hasAnyPassword()) {
+        EncashmentServiceWindow *encashmentWindow = new EncashmentServiceWindow(m_Backend, this);
         encashmentWindow->initialize();
         twServiceScreens->addTab(encashmentWindow, tr("#encashment"));
-        mServiceWindowList.append(encashmentWindow);
+        m_ServiceWindowList.append(encashmentWindow);
     }
 
     // Add external widgets from plugins
-    foreach (QWidget *widget, mBackend->getExternalWidgets()) {
+    foreach (QWidget *widget, m_Backend->getExternalWidgets()) {
         twServiceScreens->addTab(widget, widget->property("widget_name").toString());
     }
 }
@@ -302,7 +302,7 @@ void MainHumoServiceMenuWindow::onAbstractButtonClicked() {
     message += ".";
 
     // TODO: Add logging if needed
-    // mBackend->toLog(message);
+    // m_Backend->toLog(message);
 }
 
 //--------------------------------------------------------------------------

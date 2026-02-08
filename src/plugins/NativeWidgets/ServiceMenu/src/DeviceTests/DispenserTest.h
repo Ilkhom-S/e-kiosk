@@ -48,10 +48,10 @@ private slots:
     void onRejected(int aCashUnit, int aCount);
 
 private:
-    ObjectPointer<SDK::Driver::IDispenser> mDispenser;
-    QString mConfigurationName;
-    SDK::PaymentProcessor::ICore *mCore;
-    QStringList mResults;
+    ObjectPointer<SDK::Driver::IDispenser> m_Dispenser;
+    QString m_ConfigurationName;
+    SDK::PaymentProcessor::ICore *m_Core;
+    QStringList m_Results;
 };
 
 //------------------------------------------------------------------------------

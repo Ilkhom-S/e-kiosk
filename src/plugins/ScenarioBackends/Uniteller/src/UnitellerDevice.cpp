@@ -24,7 +24,7 @@ const char DeviceName[] = "Uniteller";
 } // namespace Uniteller
 
 //--------------------------------------------------------------------------------
-UnitellerDevice::UnitellerDevice() : mCore(nullptr) {
+UnitellerDevice::UnitellerDevice() : m_Core(nullptr) {
     toLog(LogLevel::Normal,
           QString("UnitellerDevice main thread %1.").arg((quint32)QThread::currentThreadId()));
 }
@@ -64,7 +64,7 @@ void UnitellerDevice::setLog(ILog *aLog) {
     if (!ILogable::getLog() && aLog->getName() == Uniteller::LogName) {
         ILogable::setLog(aLog);
 
-        QSharedPointer<Uniteller::API> api = Uniteller::API::getInstance(aLog, mCore);
+        QSharedPointer<Uniteller::API> api = Uniteller::API::getInstance(aLog, m_Core);
         connect(api.data(), SIGNAL(ready()), this, SLOT(onReady()));
         connect(api.data(),
                 SIGNAL(state(int, const QString &, bool)),
@@ -91,7 +91,7 @@ bool UnitellerDevice::unsubscribe(const char *aSignal, QObject *aReceiver) {
 
 //--------------------------------------------------------------------------------
 bool UnitellerDevice::release() {
-    QSharedPointer<Uniteller::API> api = Uniteller::API::getInstance(getLog(), mCore);
+    QSharedPointer<Uniteller::API> api = Uniteller::API::getInstance(getLog(), m_Core);
 
     api->breakSell();
     api->disable();
@@ -116,13 +116,13 @@ void UnitellerDevice::onReady() {
 
 //--------------------------------------------------------------------------------
 void UnitellerDevice::onState(int aState, const QString &aDeviceName, bool aLast) {
-    mStates.push_back(qMakePair(aState, aDeviceName));
+    m_States.push_back(qMakePair(aState, aDeviceName));
 
     if (aLast) {
         EWarningLevel::Enum state = EWarningLevel::OK;
         QString message;
 
-        foreach (auto status, mStates) {
+        foreach (auto status, m_States) {
             if (status.second == "Host") {
                 status.second = "Uniteller server";
             }
@@ -155,7 +155,7 @@ void UnitellerDevice::onState(int aState, const QString &aDeviceName, bool aLast
                    message.isEmpty() ? specifications[DeviceStatusCode::OK::OK].translation
                                      : message,
                    EStatus::Actual);
-        mStates.clear();
+        m_States.clear();
     }
 }
 
@@ -189,23 +189,23 @@ void UnitellerDevice::onEjected() {}
 void UnitellerDevice::sendStatus(EWarningLevel::Enum aLevel, const QString &aMessage, int aStatus) {
     QString s = QString("%1%2%3").arg(aLevel).arg(aMessage).arg(aStatus);
 
-    if (s != mLastGeneralizedStatus) {
+    if (s != m_LastGeneralizedStatus) {
         emit status(aLevel, aMessage, aStatus);
     }
 
-    mLastGeneralizedStatus = s;
+    m_LastGeneralizedStatus = s;
 }
 
 //--------------------------------------------------------------------------------
 bool UnitellerDevice::isDeviceReady() const {
-    QSharedPointer<Uniteller::API> api = Uniteller::API::getInstance(getLog(), mCore);
+    QSharedPointer<Uniteller::API> api = Uniteller::API::getInstance(getLog(), m_Core);
 
     return api && api->isReady();
 }
 
 //--------------------------------------------------------------------------------
 bool UnitellerDevice::find() {
-    if (Uniteller::API::getInstance(getLog(), mCore)->isReady()) {
+    if (Uniteller::API::getInstance(getLog(), m_Core)->isReady()) {
         setConfigParameter(CAllHardware::ModelName, Uniteller::DeviceName);
 
         return true;
@@ -216,30 +216,30 @@ bool UnitellerDevice::find() {
 
 //--------------------------------------------------------------------------------
 QVariantMap UnitellerDevice::getDeviceConfiguration() const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mConfiguration;
+    return m_Configuration;
 }
 
 //--------------------------------------------------------------------------------
 void UnitellerDevice::setConfigParameter(const QString &aName, const QVariant &aValue) {
-    QWriteLocker lock(&mConfigurationGuard);
+    QWriteLocker lock(&m_ConfigurationGuard);
 
-    mConfiguration.insert(aName, aValue);
+    m_Configuration.insert(aName, aValue);
 }
 
 //--------------------------------------------------------------------------------
 QVariant UnitellerDevice::getConfigParameter(const QString &aName) const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mConfiguration.value(aName);
+    return m_Configuration.value(aName);
 }
 
 //--------------------------------------------------------------------------------
 bool UnitellerDevice::containsConfigParameter(const QString &aName) const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mConfiguration.contains(aName);
+    return m_Configuration.contains(aName);
 }
 
 //------------------------------------------------------------------------------
@@ -247,7 +247,7 @@ void UnitellerDevice::eject() {}
 
 //------------------------------------------------------------------------------
 void UnitellerDevice::setCore(SDK::PaymentProcessor::ICore *aCore) {
-    mCore = aCore;
+    m_Core = aCore;
 }
 
 //--------------------------------------------------------------------------------

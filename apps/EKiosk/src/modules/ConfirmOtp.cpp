@@ -1,54 +1,54 @@
-#include "ConfirmOtp.h"
+#include "Confirm_Otp.h"
 
-ConfirmOtp::ConfirmOtp(QObject *parent) : SendRequest(parent) {
+Confirm_Otp::Confirm_Otp(QObject *parent) : SendRequest(parent) {
     senderName = "SEND_OTP";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
+    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
 }
 
-void ConfirmOtp::resendRequest() {
-    emit emit_ConfirmOtpResult("");
+void Confirm_Otp::resendRequest() {
+    emit emit_Confirm_OtpResult("");
 }
 
-void ConfirmOtp::setDataNote(const QDomNode &domElement) {
+void Confirm_Otp::setDataNote(const QDom_Node &dom_Element) {
     resultCode = "";
 
     // Парсим данные
-    parcerNote(domElement);
+    parcerNote(dom_Element);
 
     if (resultCode != "") {
         // Тут отправляем сигнал с балансом
-        emit emit_ConfirmOtpResult(resultCode);
+        emit emit_Confirm_OtpResult(resultCode);
         return;
     }
 
-    emit emit_ConfirmOtpResult("");
+    emit emit_Confirm_OtpResult("");
     return;
 }
 
-void ConfirmOtp::parcerNote(const QDomNode &domElement) {
+void Confirm_Otp::parcerNote(const QDom_Node &dom_Element) {
     // Необходимо отпарсить документ
-    QDomNode domNode = domElement.firstChild();
+    QDom_Node dom_Node = dom_Element.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!dom_Node.isNull()) {
+        if (dom_Node.isElement()) {
 
-            QDomElement domElement = domNode.toElement();
-            QString strTag = domElement.tagName();
+            QDom_Element dom_Element = dom_Node.toElement();
+            QString strTag = dom_Element.tagName();
 
             if (strTag == "resultCode") {
-                resultCode = domElement.text();
+                resultCode = dom_Element.text();
             }
         }
 
-        parcerNote(domNode);
-        domNode = domNode.nextSibling();
+        parcerNote(dom_Node);
+        dom_Node = dom_Node.nextSibling();
     }
 }
 
-void ConfirmOtp::confirmOtpRequest(QString otpId, QString otpValue) {
-    QString header_xml = getHeaderRequest(Request::Type::ConfirmOtp);
+void Confirm_Otp::confirm_OtpRequest(QString otpId, QString otpValue) {
+    QString header_xml = getHeaderRequest(Request::Type::Confirm_Otp);
 
     QString footer_xml = getFooterRequest();
 

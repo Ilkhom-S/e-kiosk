@@ -167,12 +167,12 @@ int ConnectionPart::createNewDialupConnection(
 #endif
 }
 
-bool ConnectionPart::hasInstalledModems(QStringList &lstModemList) {
+bool ConnectionPart::hasInstalledModems(QStringList &lstModem_List) {
 #ifdef Q_OS_WIN
-    bool result = rasConn->HasInstalledModems(lstModemList);
+    bool result = rasConn->HasInstalledModems(lstModem_List);
     return result;
 #else
-    Q_UNUSED(lstModemList);
+    Q_UNUSED(lstModem_List);
     return false;
 #endif
 }

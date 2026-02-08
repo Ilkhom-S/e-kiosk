@@ -1,20 +1,20 @@
 /* @file Протокол ФР ПРИМ. */
 
-#include "PrimFR.h"
+#include "Prim_FR.h"
 
 #include <numeric>
 
 #include "Hardware/Common/HardwareConstants.h"
 #include "Hardware/Common/LoggingType.h"
-#include "PrimFRConstants.h"
+#include "Prim_FRConstants.h"
 
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-PrimFRProtocol::PrimFRProtocol() : m_Differential(ASCII::Space), m_LastCommandResult(0) {}
+Prim_FRProtocol::Prim_FRProtocol() : m_Differential(ASCII::Space), m_LastCommandResult(0) {}
 
 //--------------------------------------------------------------------------------
-ushort PrimFRProtocol::calcCRC(const QByteArray &aData) {
+ushort Prim_FRProtocol::calcCRC(const QByteArray &aData) {
     return ushort(
         std::accumulate(aData.begin(), aData.end(), 0, [&](ushort arg1, char arg2) -> ushort {
             return arg1 + uchar(arg2);
@@ -23,29 +23,29 @@ ushort PrimFRProtocol::calcCRC(const QByteArray &aData) {
 
 //--------------------------------------------------------------------------------
 TResult
-PrimFRProtocol::check(const QByteArray &aRequest, const QByteArray &aAnswer, bool aPrinterMode) {
-    if (aAnswer.size() < CPrimFR::MinAnswerSize) {
+Prim_FRProtocol::check(const QByteArray &aRequest, const QByteArray &aAnswer, bool aPrinterMode) {
+    if (aAnswer.size() < CPrim_FR::MinAnswerSize) {
         toLog(LogLevel::Error,
               QString("PRIM: The length of the packet is less than %1 byte")
-                  .arg(CPrimFR::MinAnswerSize));
+                  .arg(CPrim_FR::MinAnswerSize));
         return CommandResult::Protocol;
     }
 
-    if (aAnswer[0] != CPrimFR::Prefix) {
+    if (aAnswer[0] != CPrim_FR::Prefix) {
         toLog(LogLevel::Error,
               QString("PRIM: Invalid prefix = %1, need = %2")
                   .arg(toHexLog(aAnswer[0]))
-                  .arg(toHexLog(CPrimFR::Prefix)));
+                  .arg(toHexLog(CPrim_FR::Prefix)));
         return CommandResult::Protocol;
     }
 
     char postfix = aAnswer.right(5)[0];
 
-    if (postfix != CPrimFR::Postfix) {
+    if (postfix != CPrim_FR::Postfix) {
         toLog(LogLevel::Error,
               QString("PRIM: Invalid postfix = %1, need = %2")
                   .arg(toHexLog(postfix))
-                  .arg(toHexLog(CPrimFR::Postfix)));
+                  .arg(toHexLog(CPrim_FR::Postfix)));
         return CommandResult::Protocol;
     }
 
@@ -93,19 +93,19 @@ PrimFRProtocol::check(const QByteArray &aRequest, const QByteArray &aAnswer, boo
 
 //--------------------------------------------------------------------------------
 TResult
-PrimFRProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
+Prim_FRProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
     QByteArray request;
 
-    request.append(CPrimFR::Prefix);
-    request.append(CPrimFR::Password);
+    request.append(CPrim_FR::Prefix);
+    request.append(CPrim_FR::Password);
 
     m_Differential = (m_Differential == uchar(ASCII::Full)) ? ASCII::Space : ++m_Differential;
 
     request.append(m_Differential);
     request.append(aCommandData);
 
-    request.append(CPrimFR::Separator);
-    request.append(CPrimFR::Postfix);
+    request.append(CPrim_FR::Separator);
+    request.append(CPrim_FR::Postfix);
     request.append(QString("%1")
                        .arg(qToBigEndian(calcCRC(request)), 4, 16, QChar(ASCII::Zero))
                        .toUpper()
@@ -122,7 +122,7 @@ PrimFRProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnsw
     do {
         if (index) {
             toLog(LogLevel::Normal, "PRIM: Command still working, sleep");
-            SleepHelper::msleep(CPrimFR::CommandInProgressPause);
+            SleepHelper::msleep(CPrim_FR::CommandInProgressPause);
         }
 
         char answer;
@@ -132,34 +132,34 @@ PrimFRProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnsw
             return result;
         }
 
-        if (~answer & CPrimFR::CommandResultMask::PrinterError) {
+        if (~answer & CPrim_FR::CommandResultMask::PrinterError) {
             toLog(LogLevel::Normal, "PRIM: Printer error");
         }
 
-        if (~answer & CPrimFR::CommandResultMask::PrinterMode) {
+        if (~answer & CPrim_FR::CommandResultMask::PrinterMode) {
             toLog(LogLevel::Normal, "PRIM: Printer mode");
             aAnswer = QByteArray(1, answer);
 
             return CommandResult::NoAnswer;
         }
 
-        if (~answer & CPrimFR::CommandResultMask::CommandVerified) {
+        if (~answer & CPrim_FR::CommandResultMask::CommandVerified) {
             toLog(LogLevel::Normal, "PRIM: Command is not verified");
             return CommandResult::Transport;
         }
 
-        if (answer & CPrimFR::CommandResultMask::CommandComplete) {
+        if (answer & CPrim_FR::CommandResultMask::CommandComplete) {
             toLog(LogLevel::Normal, "PRIM: Command done, trying to read");
             return execCommand(
-                request, aAnswer, CPrimFR::DefaultTimeout, EPrimFRCommandConditions::NAKRepeat);
+                request, aAnswer, CPrim_FR::DefaultTimeout, EPrim_FRCommandConditions::NAKRepeat);
         }
-    } while (++index < CPrimFR::RepeatingCount::CommandInProgress);
+    } while (++index < CPrim_FR::RepeatingCount::CommandInProgress);
 
     return CommandResult::Transport;
 }
 
 //--------------------------------------------------------------------------------
-TResult PrimFRProtocol::getCommandResult(char &aAnswer, bool aOnline) {
+TResult Prim_FRProtocol::getCommandResult(char &aAnswer, bool aOnline) {
     if (!aOnline && m_LastCommandResult) {
         aAnswer = m_LastCommandResult;
 
@@ -170,29 +170,29 @@ TResult PrimFRProtocol::getCommandResult(char &aAnswer, bool aOnline) {
     m_RTProtocol.setLog(getLog());
 
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::ReadWrite));
+    configuration.insert(CHardware::Port::IOLogging, QVariant().from_Value(ELoggingType::ReadWrite));
     m_Port->setDeviceConfiguration(configuration);
 
     TResult result = m_RTProtocol.processCommand(0, aAnswer);
     m_LastCommandResult = result ? aAnswer : 0;
 
-    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::None));
+    configuration.insert(CHardware::Port::IOLogging, QVariant().from_Value(ELoggingType::None));
     m_Port->setDeviceConfiguration(configuration);
 
     return result;
 }
 
 //--------------------------------------------------------------------------------
-TResult PrimFRProtocol::execCommand(const QByteArray &aRequest,
+TResult Prim_FRProtocol::execCommand(const QByteArray &aRequest,
                                     QByteArray &aAnswer,
                                     int aTimeout,
-                                    EPrimFRCommandConditions::Enum aConditions) {
+                                    EPrim_FRCommandConditions::Enum aConditions) {
     int index = 0;
     QByteArray request(aRequest);
     TResult result = CommandResult::OK;
 
     do {
-        if (index || (aConditions == EPrimFRCommandConditions::NAKRepeat)) {
+        if (index || (aConditions == EPrim_FRCommandConditions::NAKRepeat)) {
             request = QByteArray(1, ASCII::NAK);
         }
 
@@ -207,20 +207,20 @@ TResult PrimFRProtocol::execCommand(const QByteArray &aRequest,
             return CommandResult::NoAnswer;
         }
 
-        result = check(aRequest, aAnswer, aConditions == EPrimFRCommandConditions::PrinterMode);
+        result = check(aRequest, aAnswer, aConditions == EPrim_FRCommandConditions::PrinterMode);
 
         if (result) {
             aAnswer = aAnswer.mid(2, aAnswer.size() - 8);
 
             return CommandResult::OK;
         }
-    } while (++index < CPrimFR::RepeatingCount::Protocol);
+    } while (++index < CPrim_FR::RepeatingCount::Protocol);
 
     return result;
 }
 
 //--------------------------------------------------------------------------------
-bool PrimFRProtocol::readData(QByteArray &aData, int aTimeout) {
+bool Prim_FRProtocol::readData(QByteArray &aData, int aTimeout) {
     QTime clockTimer;
     clockTimer.start();
 
@@ -232,11 +232,11 @@ bool PrimFRProtocol::readData(QByteArray &aData, int aTimeout) {
         }
 
         aData.append(data);
-    } while (((aData.size() < CPrimFR::MinAnswerSize) ||
-              !aData.right(6).startsWith(CPrimFR::AnswerEndMark)) &&
+    } while (((aData.size() < CPrim_FR::MinAnswerSize) ||
+              !aData.right(6).startsWith(CPrim_FR::AnswerEndMark)) &&
              (clockTimer.elapsed() < aTimeout));
 
-    int index = aData.lastIndexOf(CPrimFR::Postfix);
+    int index = aData.lastIndexOf(CPrim_FR::Postfix);
 
     if (index != -1) {
         aData = aData.left(index + 5);

@@ -20,9 +20,9 @@ public:
     bool findNumber(const QString &aFirstColumnValue, QMap<QString, QString> &aParameters);
 
 private:
-    QString mFilePath;
+    QString m_FilePath;
 
-    QList<QPair<QString, QString>> mColumns;
+    QList<QPair<QString, QString>> m_Columns;
 };
 
 //------------------------------------------------------------------------------

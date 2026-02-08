@@ -16,13 +16,13 @@ Component::Component(const QString &aId,
                      const TFileList &aFiles,
                      const QStringList &aActions,
                      const QString &aURL)
-    : mPostActions(aActions), mURL(aURL), mId(aId), m_Version(aVersion), mSkipExisting(false),
-      mOptional(false) {
+    : m_PostActions(aActions), m_URL(aURL), m_Id(aId), m_Version(aVersion), m_SkipExisting(false),
+      m_Optional(false) {
     QRegularExpression removeFirstSlash("^/+");
 
     // Удяляем слэши в начали пути.
     foreach (auto file, aFiles) {
-        mFiles.insert(File(
+        m_Files.insert(File(
             QString(file.name()).remove(removeFirstSlash), file.hash(), file.url(), file.size()));
     }
 }
@@ -32,12 +32,12 @@ Component::~Component() {}
 
 //---------------------------------------------------------------------------
 TFileList Component::getFiles() const {
-    return mFiles;
+    return m_Files;
 }
 
 //---------------------------------------------------------------------------
 QString Component::getId() const {
-    return mId;
+    return m_Id;
 }
 
 //---------------------------------------------------------------------------
@@ -47,7 +47,7 @@ QString Component::getVersion() const {
 
 //---------------------------------------------------------------------------
 QString Component::getTemporaryFolder() const {
-    QDir dir(QDir::tempPath() + QDir::separator() + "Humo." + mId + "." + m_Version + ".temp");
+    QDir dir(QDir::tempPath() + QDir::separator() + "Humo." + m_Id + "." + m_Version + ".temp");
 
     if (!dir.exists()) {
         if (!dir.mkpath(dir.path())) {
@@ -72,8 +72,8 @@ QString Component::getURL(const File &aFile, const QString &aDefaultUrl) const {
 
 //---------------------------------------------------------------------------
 QString Component::getURL(const QString &aFileName, const QString &aDefaultUrl) const {
-    if (!mURL.isEmpty()) {
-        return mURL + "/" + aFileName;
+    if (!m_URL.isEmpty()) {
+        return m_URL + "/" + aFileName;
     }
 
     return aDefaultUrl + "/" + aFileName;
@@ -81,27 +81,27 @@ QString Component::getURL(const QString &aFileName, const QString &aDefaultUrl) 
 
 //---------------------------------------------------------------------------
 QStringList Component::getPostActions() const {
-    return mPostActions;
+    return m_PostActions;
 }
 
 //---------------------------------------------------------------------------
 void Component::setSkipExisting(bool aSkipExisting) {
-    mSkipExisting = aSkipExisting;
+    m_SkipExisting = aSkipExisting;
 }
 
 //---------------------------------------------------------------------------
 bool Component::skipExisting() const {
-    return mSkipExisting;
+    return m_SkipExisting;
 }
 
 //---------------------------------------------------------------------------
 void Component::setOptional(bool aOptional) {
-    mOptional = aOptional;
+    m_Optional = aOptional;
 }
 
 //---------------------------------------------------------------------------
 bool Component::optional() const {
-    return mOptional;
+    return m_Optional;
 }
 
 //---------------------------------------------------------------------------

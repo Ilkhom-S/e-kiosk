@@ -69,13 +69,13 @@ private:
     void connectAllAbstractButtons(QWidget *aParentWidget);
 
 private:
-    int mCurrentPageIndex;
-    QTimer mIdleTimer;
-    QTimer mDateTimeTimer;
-    QVariantMap mTerminalInfo;
+    int m_CurrentPageIndex;
+    QTimer m_IdleTimer;
+    QTimer m_DateTimeTimer;
+    QVariantMap m_TerminalInfo;
 
-    QList<IServiceWindow *> mServiceWindowList;
-    HumoServiceBackend *mBackend;
+    QList<IServiceWindow *> m_ServiceWindowList;
+    HumoServiceBackend *m_Backend;
     QButtonGroup *digitGroup;
 };
 

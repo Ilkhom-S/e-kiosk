@@ -59,7 +59,7 @@ void CCNetProtocol::pack(QByteArray &aCommandData) {
         aCommandData.insert(2, ASCII::NUL);
         aCommandData.insert(
             5,
-            QByteArray::fromHex(
+            QByteArray::from_Hex(
                 QString("%1").arg(length + 2, 4, 16, QChar(ASCII::Zero)).toLatin1()));
     }
 

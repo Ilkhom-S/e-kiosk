@@ -7,11 +7,11 @@
 #include <SDK/Plugins/PluginFactory.h>
 
 BillAcceptorPluginFactory::BillAcceptorPluginFactory() {
-    mName = "BillAcceptor";
-    mDescription = "BillAcceptor driver library, CCNet protocol";
-    mAuthor = "Humo";
-    mVersion = "1.0";
-    mModuleName = "bill_acceptors"; // Название dll/so модуля без расширения
+    m_Name = "BillAcceptor";
+    m_Description = "BillAcceptor driver library, CCNet protocol";
+    m_Author = "Humo";
+    m_Version = "1.0";
+    m_ModuleName = "bill_acceptors"; // Название dll/so модуля без расширения
 }
 
 //------------------------------------------------------------------------------

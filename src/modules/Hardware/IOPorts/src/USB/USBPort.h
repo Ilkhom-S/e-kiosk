@@ -40,11 +40,11 @@ protected:
     virtual bool checkReady();
 
     /// Открыть порт.
-    virtual bool performOpen();
+    virtual bool perform_Open();
 
     /// Прочитать данные.
     virtual bool processReading(QByteArray &aData, int aTimeout);
 
     /// Мьютекс для защиты общих данных.
-    static QMutex mSystemPropertyMutex;
+    static QMutex m_System_PropertyMutex;
 };

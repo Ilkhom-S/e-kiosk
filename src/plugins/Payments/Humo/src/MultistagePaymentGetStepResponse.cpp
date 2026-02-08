@@ -2,7 +2,7 @@
 
 #include "MultistagePaymentGetStepResponse.h"
 
-#include <QtXml/QDomDocument>
+#include <QtXml/QDom_Document>
 
 #include "MultistagePaymentGetStepRequest.h"
 #include "PaymentRequest.h"
@@ -13,7 +13,7 @@ using namespace SDK::PaymentProcessor::Humo;
 MultistagePaymentGetStepResponse::MultistagePaymentGetStepResponse(const Request &aRequest,
                                                                    const QString &aResponseString)
     : PaymentResponse(aRequest, aResponseString) {
-    mIsOk = false;
+    m_IsOk = false;
 
     const PaymentRequest *paymentRequest = dynamic_cast<const PaymentRequest *>(&aRequest);
     if (!paymentRequest) {
@@ -29,40 +29,40 @@ MultistagePaymentGetStepResponse::MultistagePaymentGetStepResponse(const Request
         return;
     }
 
-    mStep = step.toString();
+    m_Step = step.toString();
 
     QVariant fields = getParameter(CMultistage::Protocol::Fields);
-    if (fields.isNull() && mStep != CMultistage::Protocol::FinalStepValue) {
+    if (fields.isNull() && m_Step != CMultistage::Protocol::FinalStepValue) {
         return;
     }
 
     if (fields.isNull()) {
-        mFields = "";
-        mIsOk = true;
+        m_Fields = "";
+        m_IsOk = true;
     } else {
-        mFields =
-            QString::fromLocal8Bit(QByteArray::fromPercentEncoding(fields.toString().toLatin1()))
+        m_Fields =
+            QString::from_Local8Bit(QByteArray::from_PercentEncoding(fields.toString().toLatin1()))
                 .trimmed();
 
-        QDomDocument doc("mydocument");
-        auto result = doc.setContent(mFields);
-        mIsOk = mFields.isEmpty() ? true : static_cast<bool>(result);
+        QDom_Document doc("mydocument");
+        auto result = doc.setContent(m_Fields);
+        m_IsOk = m_Fields.isEmpty() ? true : static_cast<bool>(result);
     }
 }
 
 //---------------------------------------------------------------------------
 bool MultistagePaymentGetStepResponse::isOk() {
-    return ((getError() == EServerError::Ok) && mIsOk) ? true : false;
+    return ((getError() == EServerError::Ok) && m_IsOk) ? true : false;
 }
 
 //---------------------------------------------------------------------------
 QString MultistagePaymentGetStepResponse::getMultistageStep() const {
-    return mStep;
+    return m_Step;
 }
 
 //---------------------------------------------------------------------------
 QString MultistagePaymentGetStepResponse::getStepFields() const {
-    return mFields;
+    return m_Fields;
 }
 
 //---------------------------------------------------------------------------

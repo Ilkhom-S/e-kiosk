@@ -36,49 +36,49 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
 
 //--------------------------------------------------------------------------
 AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mMainWidget(0), mEnvironment(aFactory), mInstancePath(aInstancePath),
-      mAutoEncashmentWindow(0), mIsReady(false) {
+    : m_MainWidget(0), m_Environment(aFactory), m_InstancePath(aInstancePath),
+      m_AutoEncashmentWindow(0), m_IsReady(false) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
-        mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+        m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
     if (core) {
-        mBackend = QSharedPointer<HumoServiceBackend>(new HumoServiceBackend(
-            mEnvironment, mEnvironment->getLog(CHumoServiceBackend::LogName)));
+        m_Backend = QSharedPointer<HumoServiceBackend>(new HumoServiceBackend(
+            m_Environment, m_Environment->getLog(CHumoServiceBackend::LogName)));
     } else {
-        mEnvironment->getLog("HumoService")->write(LogLevel::Error, "Failed to get ICore");
+        m_Environment->getLog("HumoService")->write(LogLevel::Error, "Failed to get ICore");
     }
 
-    mIsReady = core != 0;
+    m_IsReady = core != 0;
 
-    if (mIsReady) {
-        mMainWidget = new QGraphicsProxyWidget();
+    if (m_IsReady) {
+        m_MainWidget = new QGraphicsProxyWidget();
 
-        mAutoEncashmentWindow = new AutoEncashmentWindow(mBackend.data());
-        mAutoEncashmentWindow->initialize();
+        m_AutoEncashmentWindow = new AutoEncashmentWindow(m_Backend.data());
+        m_AutoEncashmentWindow->initialize();
 
-        mMainWidget->setWidget(mAutoEncashmentWindow);
-        mMainWidget->setScale(qMin(core->getGUIService()->getScreenSize(0).width() /
-                                       qreal(mAutoEncashmentWindow->width()),
+        m_MainWidget->setWidget(m_AutoEncashmentWindow);
+        m_MainWidget->setScale(qMin(core->getGUIService()->getScreenSize(0).width() /
+                                       qreal(m_AutoEncashmentWindow->width()),
                                    core->getGUIService()->getScreenSize(0).height() /
-                                       qreal(mAutoEncashmentWindow->height())));
+                                       qreal(m_AutoEncashmentWindow->height())));
 
         qreal newWidgetWidth =
-            core->getGUIService()->getScreenSize(0).width() / mMainWidget->scale();
-        mMainWidget->setMinimumWidth(newWidgetWidth);
-        mMainWidget->setMaximumWidth(newWidgetWidth);
+            core->getGUIService()->getScreenSize(0).width() / m_MainWidget->scale();
+        m_MainWidget->setMinimum_Width(newWidgetWidth);
+        m_MainWidget->setMaximum_Width(newWidgetWidth);
 
         qreal newWidgetHeight =
-            core->getGUIService()->getScreenSize(0).height() / mMainWidget->scale();
-        mMainWidget->setMinimumHeight(newWidgetHeight);
-        mMainWidget->setMaximumHeight(newWidgetHeight);
+            core->getGUIService()->getScreenSize(0).height() / m_MainWidget->scale();
+        m_MainWidget->setMinimum_Height(newWidgetHeight);
+        m_MainWidget->setMaximum_Height(newWidgetHeight);
     }
 }
 
 //--------------------------------------------------------------------------
 AutoEncashment::~AutoEncashment() {
-    if (mMainWidget) {
-        mAutoEncashmentWindow->shutdown();
-        mMainWidget->deleteLater();
+    if (m_MainWidget) {
+        m_AutoEncashmentWindow->shutdown();
+        m_MainWidget->deleteLater();
     }
 }
 
@@ -89,17 +89,17 @@ QString AutoEncashment::getPluginName() const {
 
 //--------------------------------------------------------------------------
 QVariantMap AutoEncashment::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //--------------------------------------------------------------------------
 void AutoEncashment::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 }
 
 //--------------------------------------------------------------------------
 QString AutoEncashment::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //--------------------------------------------------------------------------
@@ -109,7 +109,7 @@ bool AutoEncashment::saveConfiguration() {
 
 //--------------------------------------------------------------------------
 bool AutoEncashment::isReady() const {
-    return mIsReady;
+    return m_IsReady;
 }
 
 //---------------------------------------------------------------------------
@@ -123,15 +123,15 @@ void AutoEncashment::notify(const QString & /*aReason*/, const QVariantMap & /*a
 
 //---------------------------------------------------------------------------
 void AutoEncashment::reset(const QVariantMap & /*aParameters*/) {
-    if (mAutoEncashmentWindow) {
-        mAutoEncashmentWindow->shutdown();
-        mAutoEncashmentWindow->initialize();
+    if (m_AutoEncashmentWindow) {
+        m_AutoEncashmentWindow->shutdown();
+        m_AutoEncashmentWindow->initialize();
     }
 }
 
 //---------------------------------------------------------------------------
 QQuickItem *AutoEncashment::getWidget() const {
-    // return mMainWidget;
+    // return m_MainWidget;
     // FIXME
     return nullptr;
 }
@@ -144,7 +144,7 @@ QVariantMap AutoEncashment::getContext() const {
 
 //---------------------------------------------------------------------------
 bool AutoEncashment::isValid() const {
-    return mMainWidget != 0;
+    return m_MainWidget != 0;
 }
 
 //---------------------------------------------------------------------------

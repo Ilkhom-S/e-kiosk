@@ -26,7 +26,7 @@ public:
     enum Command { None, Autoencashment };
 
 public:
-    IdleScenario(IApplication *mApplication);
+    IdleScenario(IApplication *m_Application);
     virtual ~IdleScenario();
 
     /// Запуск сценария.
@@ -73,12 +73,12 @@ protected:
     void timerEvent(QTimerEvent *aEvent);
 
 private:
-    IApplication *mApplication;
-    QString mDefaultScenario;
-    Command mCommand;
-    bool mActive;
-    bool mNoGui;
-    int mInterfaceLockedTimer;
+    IApplication *m_Application;
+    QString m_DefaultScenario;
+    Command m_Command;
+    bool m_Active;
+    bool m_NoGui;
+    int m_InterfaceLockedTimer;
 };
 
 //---------------------------------------------------------------------------

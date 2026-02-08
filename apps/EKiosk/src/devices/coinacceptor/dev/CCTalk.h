@@ -33,8 +33,8 @@ enum perekl { ApZero = 0x00, ApOne = 0x01, ApTwo = 0x02, ApThree = 0x03, ApFour 
 
 enum ControllerCommands {
     ApReset = 0x01,
-    ApRequestCommStatus = 0x02,
-    ApClearCommStatus = 0x03,
+    ApRequestComm_Status = 0x02,
+    ApClearComm_Status = 0x03,
     ApRequestCommsRevision = 0x04,
     ApStoreEncyptionCode = 0x88,
     ApSwitchEncryptionCode = 0x89,
@@ -57,7 +57,7 @@ enum ControllerCommands {
     ApModifyMasterInhibitStatus = 0xE4,
     ApRequestInhibitStatus = 0xE6,
     ApModifyInhibitStatus = 0xE7,
-    APPerformSelfCheck = 0xE8,
+    APPerform_SelfCheck = 0xE8,
     ApRequestSoftwareRevision = 0xF1,
     ApRequestSerialNumber = 0xF2,
     ApRequestProductCode = 0xF4,
@@ -92,7 +92,7 @@ const char CreditSequenceError = 0x10;
 const char CoinGoingBackwards = 0x11;
 const char CoinTooFast = 0x12;
 const char CoinTooSlow = 0x13;
-const char CoinOnStringMechanismActivated = 0x14;
+const char CoinOnStringMechanism_Activated = 0x14;
 const char DCEOptoTimeout = 0x15;
 const char DCEOptoNotSeen = 0x16;
 const char CreditSensorReachedTooEarly = 0x17;
@@ -104,8 +104,8 @@ const char MaxCoinMeterPulsesExceeded = 0x1C;
 const char AcceptGateOpenNotClosed = 0x1D;
 const char AcceptGateClosedNotOpen = 0x1E;
 const char DataBlockRequest = 0xFD;
-const char CoinReturnMechanismActivated = 0xFE;
-const char UnspecifiedAlarmCode = 0xFF;
+const char CoinReturnMechanism_Activated = 0xFE;
+const char UnspecifiedAlarm_Code = 0xFF;
 } // namespace States
 } // namespace CCTalkConstruct
 
@@ -145,7 +145,7 @@ private:
     bool execCommand(int cmdType, QByteArray &cmdResponse, QByteArray data = QByteArray());
     bool openPort();
 
-    QByteArray makeCustomRequest(int cmd, const QByteArray &cmdResponse);
+    QByteArray makeCustom_Request(int cmd, const QByteArray &cmdResponse);
 
     int readPollInfo(QByteArray byte);
     void setBoolingDlgState(bool sts);

@@ -111,7 +111,7 @@ void MessageQueueClient::parseInputBuffer(QByteArray &aBuffer) {
 //----------------------------------------------------------------------------
 void MessageQueueClient::pingServer() {
     sendMessage(MessageQueueConstants::PingMessage);
-    m_AnswerTimer.start(MessageQueueConstants::AnswerFromServerTime);
+    m_AnswerTimer.start(MessageQueueConstants::AnswerFrom_ServerTime);
 }
 
 //----------------------------------------------------------------------------

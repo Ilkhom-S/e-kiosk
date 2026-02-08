@@ -45,7 +45,7 @@ void CheckConnection::slotConnectedOk() {
     if (stsTimer->isActive())
         stsTimer->stop();
 
-    m_pTcpSocket->disconnectFromHost();
+    m_pTcpSocket->disconnectFrom_Host();
 
     emit this->emit_Ping(true);
 }
@@ -64,7 +64,7 @@ void CheckConnection::connectToHost(QString ipAddress) {
     stsTimer->start(29000);
 
     if (m_pTcpSocket->state() == QAbstractSocket::ConnectedState) {
-        m_pTcpSocket->disconnectFromHost();
+        m_pTcpSocket->disconnectFrom_Host();
     }
 
     m_pTcpSocket->connectToHost(ipAddress, 80);
@@ -154,8 +154,8 @@ void CheckConnection::replyFinished(QNetworkReply *reply) {
     if (error_id == QNetworkReply::NoError) {
         auto replyData = reply->readAll();
 
-        auto json = QJsonDocument::fromJson(replyData);
-        emit emit_toLoging(0, "PING", QString("REPLY: %1").arg(QString::fromUtf8(replyData)));
+        auto json = QJsonDocument::from_Json(replyData);
+        emit emit_toLoging(0, "PING", QString("REPLY: %1").arg(QString::from_Utf8(replyData)));
 
         auto resp = json.toVariant().toMap();
 

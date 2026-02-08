@@ -35,8 +35,8 @@ protected:
     QString getAddFields();
 
 protected:
-    PaymentFactory *mFactory;
-    DealerLocalData mLocalData;
+    PaymentFactory *m_Factory;
+    DealerLocalData m_LocalData;
 };
 
 //---------------------------------------------------------------------------

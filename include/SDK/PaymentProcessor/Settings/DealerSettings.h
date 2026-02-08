@@ -52,7 +52,7 @@ struct SPersonalSettings {
     QString bankPhone;
     QString bankContractNumber;
 
-    QMap<QString, QString> mPrintingParameters;
+    QMap<QString, QString> m_PrintingParameters;
 };
 
 //---------------------------------------------------------------------------
@@ -146,7 +146,7 @@ private:
     bool loadOperatorsXML(const QString &aFileName);
 
     /// Загружает оператора из буфера
-    bool loadProvidersFromBuffer(const std::string &aBuffer, SProvider &aProvider);
+    bool loadProvidersFrom_Buffer(const std::string &aBuffer, SProvider &aProvider);
 
     /// Загружает комиссии.
     bool loadCommissions();
@@ -158,24 +158,24 @@ private:
     TCustomers::iterator findCustomer(const QVariantMap &aParameters);
 
 private:
-    TPtree &mProperties;
+    TPtree &m_Properties;
 
-    QReadWriteLock mProvidersLock;
-    QMap<qint64, std::string> mProviderRawBuffer;
-    TProviderList mProviders;
+    QReadWriteLock m_ProvidersLock;
+    QMap<qint64, std::string> m_ProviderRawBuffer;
+    TProviderList m_Providers;
 
-    QMultiMap<qint64, qint64> mProviderGateways;
-    QMultiMap<QString, qint64> mProvidersProcessingIndex;
-    SPersonalSettings mPersonalSettings;
+    QMultiMap<qint64, qint64> m_ProviderGateways;
+    QMultiMap<QString, qint64> m_ProvidersProcessingIndex;
+    SPersonalSettings m_PersonalSettings;
 
-    Commissions mCommissions;
-    Commissions mExternalCommissions;
+    Commissions m_Commissions;
+    Commissions m_ExternalCommissions;
 
     /// Чёрно-белый список клиентов.
-    TCustomers mCustomers;
+    TCustomers m_Customers;
 
     /// Флаг состояния.
-    bool mIsValid;
+    bool m_IsValid;
 };
 
 //---------------------------------------------------------------------------

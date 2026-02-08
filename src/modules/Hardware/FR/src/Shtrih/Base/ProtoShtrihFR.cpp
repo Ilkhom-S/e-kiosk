@@ -91,7 +91,7 @@ template <class T> QDateTime ProtoShtrihFR<T>::getDateTime() {
     if (getLongStatus(data)) {
         QString dateTime = hexToBCD(data.mid(25, 6)).insert(4, "20");
 
-        return QDateTime::fromString(dateTime, CShtrihFR::DateTimeFormat);
+        return QDateTime::from_String(dateTime, CShtrihFR::DateTimeFormat);
     }
 
     return QDateTime();
@@ -162,7 +162,7 @@ template <class T> bool ProtoShtrihFR<T>::checkTax(TVAT aVAT, CFR::Taxes::SData 
 
 //--------------------------------------------------------------------------------
 template <class T>
-bool ProtoShtrihFR<T>::performFiscal(const QStringList &aReceipt,
+bool ProtoShtrihFR<T>::perform_Fiscal(const QStringList &aReceipt,
                                      const SPaymentData &aPaymentData,
                                      quint32 * /*aFDNumber*/) {
     EDocumentState::Enum documentState = getDocumentState();
@@ -208,7 +208,7 @@ template <class T> bool ProtoShtrihFR<T>::cancelFiscal() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool ProtoShtrihFR<T>::getStatus(TStatusCodes &aStatusCodes) {
-    QByteArray data = performStatus(aStatusCodes, CShtrihFR::Commands::GetLongStatus, 16);
+    QByteArray data = perform_Status(aStatusCodes, CShtrihFR::Commands::GetLongStatus, 16);
 
     if (data == CFR::Result::Fail) {
         return false;
@@ -247,7 +247,7 @@ void ProtoShtrihFR<T>::appendStatusCodes(ushort aFlags, TStatusCodes &aStatusCod
 
     // рычаг чековой ленты
     if ((~aFlags & CShtrihFR::Statuses::PaperLeverNotDropped) && isPaperLeverExist()) {
-        aStatusCodes.insert(DeviceStatusCode::Error::MechanismPosition);
+        aStatusCodes.insert(DeviceStatusCode::Error::Mechanism_Position);
         toLog(LogLevel::Error, "ShtrihFR: Paper lever error");
     }
 
@@ -564,7 +564,7 @@ bool ProtoShtrihFR<T>::sale(const SUnitData &aUnitData, EPayOffTypes::Enum aPayO
     commandData.append(getHexReverted(aUnitData.sum, 5, 2)); // сумма
     commandData.append(section);                             // отдел
     commandData.append(getHexReverted(taxIndex, 4));         // налоги
-    commandData.append(m_Codec->fromUnicode(name));           // текст продажи
+    commandData.append(m_Codec->from_Unicode(name));           // текст продажи
 
     char command = CShtrihFR::PayOffType::Data[aPayOffType].command;
 
@@ -582,7 +582,7 @@ bool ProtoShtrihFR<T>::sale(const SUnitData &aUnitData, EPayOffTypes::Enum aPayO
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool ProtoShtrihFR<T>::performZReport(bool /*aPrintDeferredReports*/) {
+template <class T> bool ProtoShtrihFR<T>::perform_ZReport(bool /*aPrintDeferredReports*/) {
     return execZReport(false);
 }
 
@@ -593,7 +593,7 @@ template <class T> void ProtoShtrihFR<T>::parseDeviceData(const QByteArray &aDat
     FRInfo.version = aData.mid(3, 2).insert(1, ASCII::Dot);
     FRInfo.build = revert(aData.mid(5, 2)).toHex().toUShort(0, 16);
     QString FRDate = hexToBCD(aData.mid(7, 3)).insert(4, "20");
-    FRInfo.date = QDate::fromString(FRDate, CFR::DateFormat);
+    FRInfo.date = QDate::from_String(FRDate, CFR::DateFormat);
 
     m_OldFirmware = (m_ModelData.build && (FRInfo.build != m_ModelData.build)) ||
                    ((m_ModelData.date < QDate::currentDate()) && (FRInfo.date < m_ModelData.date));
@@ -639,11 +639,11 @@ template <class T> void ProtoShtrihFR<T>::setFRParameters() {
         return;
     }
 
-    QString nullingSumInCash = getConfigParameter(CHardwareSDK::FR::NullingSumInCash).toString();
+    QString nullingSum_InCash = getConfigParameter(CHardwareSDK::FR::NullingSum_InCash).toString();
 
-    if (nullingSumInCash != CHardwareSDK::Values::Auto) {
+    if (nullingSum_InCash != CHardwareSDK::Values::Auto) {
         // 0. автообнуление денежной наличности при закрытии смены
-        setFRParameter(m_Parameters.autoNulling, nullingSumInCash == CHardwareSDK::Values::Use);
+        setFRParameter(m_Parameters.autoNulling, nullingSum_InCash == CHardwareSDK::Values::Use);
     }
 
     // 1. Печать рекламного текста (шапка чека, клише) - да
@@ -743,7 +743,7 @@ bool ProtoShtrihFR<T>::setFRParameter(const CShtrihFR::FRParameters::SData &aDat
     if (aValue.typeId() == QMetaType::QByteArray)
         commandData.append(aValue.toByteArray());
     else if (aValue.typeId() == QMetaType::QString)
-        commandData.append(m_Codec->fromUnicode(aValue.toString()));
+        commandData.append(m_Codec->from_Unicode(aValue.toString()));
     else
         commandData.append(char(aValue.toInt()));
 
@@ -890,8 +890,8 @@ QVariantMap ProtoShtrihFR<T>::getSessionOutData(const QByteArray &aLongStatusDat
 
     result.insert(CFiscalPrinter::FRDateTime, getDateTime().toString(CFR::DateTimeLogFormat));
 
-    QDateTime systemDateTime = QDateTime::currentDateTime();
-    result.insert(CFiscalPrinter::SystemDateTime, systemDateTime.toString(CFR::DateTimeLogFormat));
+    QDateTime system_DateTime = QDateTime::currentDateTime();
+    result.insert(CFiscalPrinter::System_DateTime, system_DateTime.toString(CFR::DateTimeLogFormat));
 
     ushort lastClosedSession = 1 + revert(aLongStatusData.mid(36, 2)).toHex().toUShort(0, 16);
     result.insert(CFiscalPrinter::ZReportNumber, lastClosedSession);

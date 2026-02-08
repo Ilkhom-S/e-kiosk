@@ -5,11 +5,11 @@
 namespace GUI {
 
 //---------------------------------------------------------------------------
-Scenario::Scenario(const QString &aName, ILog *aLog) : mName(aName), mDefaultTimeout(0) {
+Scenario::Scenario(const QString &aName, ILog *aLog) : m_Name(aName), m_DefaultTimeout(0) {
     setLog(aLog);
-    connect(&mTimeoutTimer, SIGNAL(timeout()), SLOT(onTimeout()));
+    connect(&m_TimeoutTimer, SIGNAL(timeout()), SLOT(onTimeout()));
 
-    mTimeoutTimer.setSingleShot(true);
+    m_TimeoutTimer.setSingleShot(true);
 }
 
 //---------------------------------------------------------------------------
@@ -17,21 +17,21 @@ Scenario::~Scenario() {}
 
 //---------------------------------------------------------------------------
 QString Scenario::getName() const {
-    return mName;
+    return m_Name;
 }
 
 //---------------------------------------------------------------------------
 void Scenario::resetTimeout() {
-    if (mTimeoutTimer.interval() > 0) {
-        mTimeoutTimer.start();
+    if (m_TimeoutTimer.interval() > 0) {
+        m_TimeoutTimer.start();
     }
 }
 
 //---------------------------------------------------------------------------
 void Scenario::setStateTimeout(int aSec) {
     if (aSec > 0) {
-        mTimeoutTimer.setInterval(aSec * 1000);
-        mTimeoutTimer.start();
+        m_TimeoutTimer.setInterval(aSec * 1000);
+        m_TimeoutTimer.start();
     }
 }
 

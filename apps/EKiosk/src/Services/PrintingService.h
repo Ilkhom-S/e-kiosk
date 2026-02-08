@@ -115,7 +115,7 @@ public:
 
 #pragma endregion
 
-    bool enableBlankFiscalData() const { return mEnableBlankFiscalData; }
+    bool enableBlankFiscalData() const { return m_EnableBlankFiscalData; }
 
 public:
     /// Получить объект фискального регистратора
@@ -160,7 +160,7 @@ private:
     bool loadReceiptTemplate(const QFileInfo &aFileInfo);
 
     /// Печать чека, возвращает индекс задания, поставленного в очередь.
-    int performPrint(PrintCommand *aCommand,
+    int perform_Print(PrintCommand *aCommand,
                      const QVariantMap &aParameters,
                      QStringList aReceiptTemplate = QStringList());
 
@@ -215,22 +215,22 @@ private:
     typedef QMap<QString, QString> TStaticParameters;
     typedef QMap<QString, QStringList> TCachedReceipts;
 
-    TStaticParameters mStaticParameters;
-    TCachedReceipts mCachedReceipts;
+    TStaticParameters m_StaticParameters;
+    TCachedReceipts m_CachedReceipts;
 
-    IApplication *mApplication;
-    IHardwareDatabaseUtils *mDatabaseUtils;
-    SDK::PaymentProcessor::IDeviceService *mDeviceService;
+    IApplication *m_Application;
+    IHardwareDatabaseUtils *m_DatabaseUtils;
+    SDK::PaymentProcessor::IDeviceService *m_DeviceService;
 
     /// Список всех доступных принтеров.
-    QList<SDK::Driver::IPrinter *> mPrinterDevices;
+    QList<SDK::Driver::IPrinter *> m_PrinterDevices;
 
     /// Список доступных в данный момент принтеров.
-    QSet<SDK::Driver::IPrinter *> mAvailablePrinters;
-    QMutex mAvailablePrintersMutex;
-    QWaitCondition mPrintersAvailable;
+    QSet<SDK::Driver::IPrinter *> m_AvailablePrinters;
+    QMutex m_AvailablePrintersMutex;
+    QWaitCondition m_PrintersAvailable;
 
-    QFutureWatcher<bool> mFutureWatcher;
+    QFutureWatcher<bool> m_FutureWatcher;
 
     struct Task {
         int index;
@@ -238,21 +238,21 @@ private:
         QVariantMap parameters;
     };
 
-    QQueue<Task> mQueue;
-    std::function<bool(int, PrintCommand *, QVariantMap)> mPrintingFunction;
+    QQueue<Task> m_Queue;
+    std::function<bool(int, PrintCommand *, QVariantMap)> m_PrintingFunction;
 
     /// Режим непрерывной печати чеков.
-    DSDK::EPrintingModes::Enum mPrintingMode;
-    bool mServiceOperation;
-    bool mRandomReceiptsID;
-    mutable std::mt19937 mRandomGenerator;
-    bool mEnableBlankFiscalData;
+    DSDK::EPrintingModes::Enum m_PrintingMode;
+    bool m_ServiceOperation;
+    bool m_Random_ReceiptsID;
+    mutable std::mt19937 m_Random_Generator;
+    bool m_EnableBlankFiscalData;
 
     /// Индекс следующего задания на печать
-    QAtomicInt mNextReceiptIndex;
+    QAtomicInt m_NextReceiptIndex;
 
     /// Список доступных фискальных регистраторов.
-    SDK::PaymentProcessor::IFiscalRegister *mFiscalRegister;
+    SDK::PaymentProcessor::IFiscalRegister *m_FiscalRegister;
 };
 
 //---------------------------------------------------------------------------

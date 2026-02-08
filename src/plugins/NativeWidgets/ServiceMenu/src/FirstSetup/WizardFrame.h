@@ -73,13 +73,13 @@ private:
 
     typedef QMap<QString, CacheItem> TPageMap;
 
-    TPageMap mPages;
-    QSignalMapper mSignalMapper;
+    TPageMap m_Pages;
+    QSignalMapper m_SignalMapper;
 
-    QString mCurrentContext;
-    WizardPageBase *mCurrentPage;
+    QString m_CurrentContext;
+    WizardPageBase *m_CurrentPage;
 
-    ServiceMenuBackend *mBackend;
+    ServiceMenuBackend *m_Backend;
 };
 
 //----------------------------------------------------------------------------

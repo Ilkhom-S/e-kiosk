@@ -1,61 +1,61 @@
 /* @file Константы, коды команд и ответов протокола ФР ПРИМ. */
 
-#include "PrimFRConstants.h"
+#include "Prim_FRConstants.h"
 
 /// Формат представления даты и времени в ответе на запрос статуса ФН-а.
-const char CPrimFR::FRDateTimeFormat[] = "ddMMyyyyhhmm";
+const char CPrim_FR::FRDateTimeFormat[] = "ddMMyyyyhhmm";
 
 /// Количество чеков.
-const char CPrimFR::ChecksQuantity[] = "01";
+const char CPrim_FR::ChecksQuantity[] = "01";
 
 /// ID прошивки для ПРИМ-21 03 на базе принтера Custom VKP-80.
-const char CPrimFR::FirmarePRIM21_03[] = "LPC22";
+const char CPrim_FR::FirmarePRIM21_03[] = "LPC22";
 
 /// Артикул товара/услуги.
-const char CPrimFR::ServiceMarking[] = "1";
+const char CPrim_FR::ServiceMarking[] = "1";
 
 /// Количество наименований товара/услуги.
-const char CPrimFR::ServiceQuantity[] = "1";
+const char CPrim_FR::ServiceQuantity[] = "1";
 
 /// Единица измерения товара/услуги.
-const char CPrimFR::MeasurementUnit[] = " ";
+const char CPrim_FR::MeasurementUnit[] = " ";
 
 /// Индекс секции.
-const char CPrimFR::SectionIndex[] = "01";
+const char CPrim_FR::SectionIndex[] = "01";
 
 /// Идентификатор секции.
-const char CPrimFR::SectionID[] = "TERMINAL";
+const char CPrim_FR::SectionID[] = "TERMINAL";
 
 /// Идентификатор (фамилия) оператора.
-const char CPrimFR::OperatorID[] = " ";
+const char CPrim_FR::OperatorID[] = " ";
 
 /// Шрифт.
-const char CPrimFR::Font[] = "00";
+const char CPrim_FR::Font[] = "00";
 
 /// Количество копий.
-const char CPrimFR::Copies[] = "01";
+const char CPrim_FR::Copies[] = "01";
 
 /// Шаг сетки строк
-const char CPrimFR::LineGrid[] = "00";
+const char CPrim_FR::LineGrid[] = "00";
 
 /// Название платежной карты. платежных карт у нас нет, но в посылку надо что-то положить.
-const char CPrimFR::PaymentCardName[] = " ";
+const char CPrim_FR::PaymentCardName[] = " ";
 
 /// Не печатать документ.
-const char CPrimFR::DontPrintFD[] = "00";
+const char CPrim_FR::DontPrintFD[] = "00";
 
 /// Название налоговой ставки куда будет складываться последний снятый Z отчет.
-const char CPrimFR::LastTaxRateName[] = "Z-report number";
+const char CPrim_FR::LastTaxRateName[] = "Z-report number";
 
 /// Версия ПО ФР, где присутствуют презентер и ретрактор.
-const char CPrimFR::SoftVersionPresenter[] = "LPC22";
+const char CPrim_FR::SoftVersionPresenter[] = "LPC22";
 
 /// Текст на чеке перед выходом из незапланированного режима принтера
-const char CPrimFR::EndPrinterModeText[] = "           PRINTER MODE";
+const char CPrim_FR::EndPrinterModeText[] = "           PRINTER MODE";
 
 /// Команды.
-namespace CPrimFR {
+namespace CPrim_FR {
 namespace Commands {
 const char SetFiscalMode[] = "\x1B\x1B";
 } // namespace Commands
-} // namespace CPrimFR
+} // namespace CPrim_FR

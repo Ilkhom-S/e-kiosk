@@ -5,7 +5,7 @@
 #include <QtCore/QStringDecoder>
 
 #include <Hardware/FR/SparkCodec.h>
-#include <Hardware/Printers/CustomKZTCodec.h>
+#include <Hardware/Printers/Custom_KZTCodec.h>
 #include <memory>
 
 #include "Hardware/FR/AtolCodec.h"

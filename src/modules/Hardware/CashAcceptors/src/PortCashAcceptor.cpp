@@ -754,7 +754,7 @@ template <class T> void PortCashAcceptor<T>::updateFirmware(const QByteArray &aB
         return;
     }
 
-    bool result = performUpdateFirmware(aBuffer);
+    bool result = perform_UpdateFirmware(aBuffer);
 
     if (result) {
         this->m_ForceWaitResetCompleting = true;
@@ -766,7 +766,7 @@ template <class T> void PortCashAcceptor<T>::updateFirmware(const QByteArray &aB
 }
 
 //---------------------------------------------------------------------------
-template <class T> bool PortCashAcceptor<T>::performUpdateFirmware(const QByteArray & /*aBuffer*/) {
+template <class T> bool PortCashAcceptor<T>::perform_UpdateFirmware(const QByteArray & /*aBuffer*/) {
     return false;
 }
 
@@ -821,13 +821,13 @@ void PortCashAcceptor<T>::postPollingAction(const TStatusCollection &aNewStatusC
     bool checkDisabled = this->isDisabled();
     bool enabling = this->getConfigParameter(CHardware::CashAcceptor::ProcessEnabling).toBool();
     bool disabling = this->getConfigParameter(CHardware::CashAcceptor::ProcessDisabling).toBool();
-    bool exitFromError = !aOldStatusCollection.isEmpty(EWarningLevel::Error) &&
+    bool exitFrom_Error = !aOldStatusCollection.isEmpty(EWarningLevel::Error) &&
                          aNewStatusCollection.isEmpty(EWarningLevel::Error);
     bool beforeRejected =
         this->m_StatusHistory.lastValue(2).statuses.contains(ECashAcceptorStatus::Rejected);
 
     bool term1 = (enabled || checkEnabled) && disabling;
-    bool term2 = (enabled && checkDisabled && !disabling) && !exitFromError;
+    bool term2 = (enabled && checkDisabled && !disabling) && !exitFrom_Error;
     bool term3 = (!enabled || checkDisabled) && enabling &&
                  !(beforeRejected && !this->m_Statuses.isEmpty(ECashAcceptorStatus::Disabled));
 
@@ -847,7 +847,7 @@ void PortCashAcceptor<T>::postPollingAction(const TStatusCollection &aNewStatusC
                         .arg(toBool(checkDisabled))
                         .arg(toBool(disabling))
                         .arg(toBool(term2))
-                        .arg(toBool(exitFromError))
+                        .arg(toBool(exitFrom_Error))
                         .arg(toBool(term3))
                         .arg(toBool(beforeRejected))
                         .arg(toPred(this->m_Statuses.isEmpty(ECashAcceptorStatus::Disabled))));

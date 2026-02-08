@@ -49,7 +49,7 @@ public:
     QStringList printerList;
     QStringList winprinterList;
 
-    QStringList comPortList;
+    QStringList com_PortList;
     QStringList connectionList;
     QStringList dialupDevice;
 
@@ -87,7 +87,7 @@ private:
                     const QString &port,
                     const QString &comment,
                     int state);
-    bool getDeviceFromDB(QVariantMap &devices);
+    bool getDeviceFrom_DB(QVariantMap &devices);
     bool isValidConnectionType();
     bool isValidAuthInput();
 
@@ -103,13 +103,13 @@ private slots:
     void showCoinAcceptorData(bool show);
     void showPrinterData(bool show);
     void showWatchdogData(bool show);
-    void showModemData(bool show);
+    void showModem_Data(bool show);
 
     void searchValidatorToggle(bool value);
     void searchCointAcceptorToggle(bool value);
     void searchPrinterToggle(bool value);
     void searchWatchdogToggle(bool value);
-    void searchModemToggle(bool value);
+    void searchModem_Toggle(bool value);
 
     void validatorTest();
     void validatorSave();
@@ -123,8 +123,8 @@ private slots:
     void watchdogTest();
     void watchdogSave();
 
-    void modemTest();
-    void modemSave();
+    void modem_Test();
+    void modem_Save();
 
     void tplCheck();
     void tplTJKSet();
@@ -144,7 +144,7 @@ private slots:
     void sendCharacter(QChar character);
 
     void secretPassView(bool show);
-    void secretPassConfirmView(bool show);
+    void secretPassConfirm_View(bool show);
 
     void btnBackClicked();
     void btnNextClicked();

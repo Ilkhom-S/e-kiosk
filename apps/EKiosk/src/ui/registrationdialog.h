@@ -24,7 +24,7 @@ public:
     void setValidatorText(QString status);
     void setPrinterText(QString status);
     void setWatchdogText(QString status);
-    void setModemText(QString status);
+    void setModem_Text(QString status);
     void logForTest(int sts, QString log);
     void LoadingAnim(bool start);
 
@@ -36,7 +36,7 @@ private:
     keyPud *KeyPud;
     CreateDialupConnection *createDialupConnection;
 
-    QString gblNumTrm;
+    QString gblNum_Trm;
     QString gblLogin;
     QString gblPass;
 
@@ -49,7 +49,7 @@ private:
     QMovie *movie;
 
 private slots:
-    void on_btnNumTrmRegClear_clicked();
+    void on_btnNum_Trm_RegClear_clicked();
     void tabToRegistration1();
     void tabToRegistration2();
 
@@ -69,7 +69,7 @@ private slots:
 
 signals:
     void emitRegistrationData(QVariantMap data);
-    void emitStartTest(QString numTrm,
+    void emitStartTest(QString num_Trm,
                        QString pLogin,
                        QString pPass,
                        QString secretLogin,

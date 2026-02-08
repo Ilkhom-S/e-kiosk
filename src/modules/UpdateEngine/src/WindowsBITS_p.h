@@ -62,11 +62,11 @@ private:
     QString getJobError();
 
 private:
-    static QSet<Qt::HANDLE> mThreadInitialized;
+    static QSet<Qt::HANDLE> m_ThreadInitialized;
 
 private:
-    CComPtr<IBackgroundCopyManager> mQueueMgr;
-    CComPtr<IBackgroundCopyJob> mCurrentJob;
+    CCom_Ptr<IBackgroundCopyManager> m_QueueMgr;
+    CCom_Ptr<IBackgroundCopyJob> m_CurrentJob;
 };
 
 //---------------------------------------------------------------------------

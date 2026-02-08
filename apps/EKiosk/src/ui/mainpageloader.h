@@ -162,9 +162,9 @@ private:
 
     void clearNominalData();
     void getCommissionMap();
-    void getSumToFromMinusCommis(double amountFrom);
-    double getMoneyToFromAll(int cmsType, double from, double value);
-    double getRatioFromIn(double from, double to);
+    void getSum_ToFrom_MinusCommis(double amountFrom);
+    double getMoneyToFrom_All(int cmsType, double from, double value);
+    double getRatioFrom_In(double from, double to);
 
     void playSound(QString fileName);
     void playSoundRepeet(int page);
@@ -187,7 +187,7 @@ private:
     QVariantList _precheckItems;
 
     QVariantMap fieldsData;
-    QVariantMap paramPrecheck;
+    QVariantMap param_Precheck;
     QVariantMap extraInfo;
     QVariantMap extraInfoGet();
 
@@ -196,7 +196,7 @@ private:
     void orzuTranshCreate();
 
 private slots:
-    void btnGotoInputSumClc();
+    void btnGotoInputSum_Clc();
 
 public slots:
     void populateJavaScriptWindowObject();
@@ -208,7 +208,7 @@ public slots:
     void gotoPageInsertNominal(QString account, QString accountDesign, int serviceId);
     void gotoPageServices(int categoryId);
     void gotoPageCategories();
-    void gotoPageInputFromPayment(const int serviceId = 0);
+    void gotoPageInputFrom_Payment(const int serviceId = 0);
     void paymentConfirm();
     void userInfoCheck(QString account, QString idPrv);
     void langSet(QString lng);
@@ -221,7 +221,7 @@ public slots:
     setCheckOnlineResult(QString resultCode, QString status, QString message, QVariantList items);
     void sendReceiptResult(QString resultCode, QString trn, QString status);
     void sendOtpResult(QString resultCode, QString otpId);
-    void confirmOtpResult(QString resultCode);
+    void confirm_OtpResult(QString resultCode);
     void notifyRouteSet(QString value);
     void jsonResponseError(QString error, QString requestName);
     void jsonResponseSuccess(QVariantMap response, QString requestName);

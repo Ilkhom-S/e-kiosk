@@ -32,7 +32,7 @@ bool ShtrihSerialFR::updateParameters() {
     }
 
     m_NonNullableAmount = 0;
-    QByteArray commandData(1, CShtrihFRBase::TotalFMSumType);
+    QByteArray commandData(1, CShtrihFRBase::TotalFMSum_Type);
     QByteArray answer;
 
     if (m_Fiscalized &&
@@ -102,7 +102,7 @@ void ShtrihSerialFR::parseDeviceData(const QByteArray &aData) {
     FMInfo.version = aData.mid(18, 2).insert(1, ASCII::Dot);
     FMInfo.build = ProtocolUtils::revert(aData.mid(20, 2)).toHex().toUShort(0, 16);
     QString FMDate = ProtocolUtils::hexToBCD(aData.mid(22, 3)).insert(4, "20");
-    FMInfo.date = QDate::fromString(FMDate, CFR::DateFormat);
+    FMInfo.date = QDate::from_String(FMDate, CFR::DateFormat);
 
     setDeviceParameter(CDeviceData::Version, FMInfo.version, CDeviceData::FM::Firmware, true);
     setDeviceParameter(CDeviceData::Build, FMInfo.build, CDeviceData::FM::Firmware);
@@ -138,16 +138,16 @@ void ShtrihSerialFR::parseDeviceData(const QByteArray &aData) {
                                .toUpper()
                                .simplified();
 
-        QRegularExpression regexp(QString::fromWCharArray(L"([A-Я ]+)([^A-Я]+)"));
+        QRegularExpression regexp(QString::from_WCharArray(L"([A-Я ]+)([^A-Я]+)"));
         typedef QPair<QString, QString> TEKLZItem;
         typedef QList<TEKLZItem> TEKLZData;
         TEKLZData totalEKLZData;
         int offset = 0;
 
         while (regexp.match(EKLZData, offset).capturedStart() != -1) {
-            QStringList itemData = regexp.capturedTexts();
-            totalEKLZData << TEKLZItem(itemData[1].simplified(), itemData[2].simplified());
-            offset += itemData[0].size();
+            QStringList item_Data = regexp.capturedTexts();
+            totalEKLZData << TEKLZItem(item_Data[1].simplified(), item_Data[2].simplified());
+            offset += item_Data[0].size();
         }
 
         auto getData = [&](const QString &aLexeme) -> QString {
@@ -158,13 +158,13 @@ void ShtrihSerialFR::parseDeviceData(const QByteArray &aData) {
             return (it == totalEKLZData.end()) ? "" : it->second;
         };
 
-        m_RNM = CFR::RNMToString(getData(QString::fromWCharArray(L"рег")).toLatin1());
+        m_RNM = CFR::RNMToString(getData(QString::from_WCharArray(L"рег")).toLatin1());
 
-        QString EKLZActivationData = getData(QString::fromWCharArray(L"актив"))
+        QString EKLZActivationData = getData(QString::from_WCharArray(L"актив"))
                                          .split(" ")[0]
                                          .replace("/", "")
                                          .insert(4, "20");
-        QDate EKLZActivizationDate = QDate::fromString(EKLZActivationData, CFR::DateFormat);
+        QDate EKLZActivizationDate = QDate::from_String(EKLZActivationData, CFR::DateFormat);
 
         setDeviceParameter(CDeviceData::EKLZ::ActivizationDate,
                            EKLZActivizationDate.toString(CFR::DateLogFormat));
@@ -205,7 +205,7 @@ void ShtrihSerialFR::appendStatusCodes(ushort aFlags, TStatusCodes &aStatusCodes
 
     // рычаг контрольной ленты
     if ((~aFlags & CShtrihFR::Statuses::ControlLeverNotDropped) && isControlLeverExist()) {
-        aStatusCodes.insert(DeviceStatusCode::Error::MechanismPosition);
+        aStatusCodes.insert(DeviceStatusCode::Error::Mechanism_Position);
         toLog(LogLevel::Error, "ShtrihFR: Control lever error");
     }
 
@@ -286,7 +286,7 @@ bool ShtrihSerialFR::getStatus(TStatusCodes &aStatusCodes) {
         return false;
     }
 
-    QByteArray data = performStatus(aStatusCodes, CShtrihFR::Commands::GetShortStatus, 11);
+    QByteArray data = perform_Status(aStatusCodes, CShtrihFR::Commands::GetShortStatus, 11);
 
     if (data == CFR::Result::Fail) {
         return false;

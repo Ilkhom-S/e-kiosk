@@ -16,9 +16,9 @@ public:
     virtual QString getStepFields() const;
 
 private:
-    QString mFields;
-    QString mStep;
-    bool mIsOk;
+    QString m_Fields;
+    QString m_Step;
+    bool m_IsOk;
 };
 
 //---------------------------------------------------------------------------

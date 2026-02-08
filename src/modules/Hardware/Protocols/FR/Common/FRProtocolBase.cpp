@@ -8,17 +8,17 @@
 using namespace SDK::Driver::IOPort::COM;
 
 //--------------------------------------------------------------------------------
-FRProtocolBase::FRProtocolBase() : mSessionOpened(true), mNeedCloseSession(false) {
+FRProtocolBase::FRProtocolBase() : m_SessionOpened(true), m_NeedCloseSession(false) {
     // данные порта
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
     // кодек
-    mCodec = CodecByName[CHardware::Codepages::CP866];
+    m_Codec = CodecByName[CHardware::Codepages::CP866];
 }
 
 //--------------------------------------------------------------------------------
 bool FRProtocolBase::isSessionOpened() {
-    return mSessionOpened;
+    return m_SessionOpened;
 }
 
 //--------------------------------------------------------------------------------

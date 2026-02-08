@@ -48,7 +48,7 @@ public:
     /// Инициализация сценария. Вызывается из скрипта.
     virtual bool initialize(const QList<SScriptObject> &aScriptObjects);
 
-    virtual void setStateHook(const QList<SExternalStateHook> &aHook) { mHooks << aHook; }
+    virtual void setStateHook(const QList<SExternalStateHook> &aHook) { m_Hooks << aHook; }
 
     /// Обработка сигнала из активного состояния с дополнительными аргументами.
     virtual void signalTriggered(const QString &aSignal,
@@ -130,31 +130,31 @@ private:
     typedef QMap<QString, SState> TStateList;
 
 private:
-    QString mPath;     /// Путь к сценарию.
-    QString mBasePath; /// Путь к скрипту родительского сценария (если применяется наследование).
+    QString m_Path;     /// Путь к сценарию.
+    QString m_BasePath; /// Путь к скрипту родительского сценария (если применяется наследование).
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QSharedPointer<QJSEngine> mScriptEngine; /// Скриптовый движок для обработчиков.
+    QSharedPointer<QJSEngine> m_ScriptEngine; /// Скриптовый движок для обработчиков.
 #else
-    QSharedPointer<QScriptEngine> mScriptEngine; /// Скриптовый движок для обработчиков.
+    QSharedPointer<QScriptEngine> m_ScriptEngine; /// Скриптовый движок для обработчиков.
 #endif
-    QSharedPointer<QStateMachine> mStateMachine; /// Конечный автомат.
-    TStateList mStates;                          /// Набор состояний.
-    QSignalMapper mEnterSignalMapper;
-    QSignalMapper mExitSignalMapper;
-    QString mCurrentState;        /// Имя текущего состояния.
-    QString mInitialState;        /// Начальное состояние.
-    QVariantMap mSignalArguments; /// Параметры сигналов.
-    QVariantMap mContext;         /// Контекст.
-    QString mScriptPath;          /// Путь к файлу скрипты.
+    QSharedPointer<QStateMachine> m_StateMachine; /// Конечный автомат.
+    TStateList m_States;                          /// Набор состояний.
+    QSignalMapper m_EnterSignalMapper;
+    QSignalMapper m_ExitSignalMapper;
+    QString m_CurrentState;        /// Имя текущего состояния.
+    QString m_InitialState;        /// Начальное состояние.
+    QVariantMap m_SignalArguments; /// Параметры сигналов.
+    QVariantMap m_Context;         /// Контекст.
+    QString m_ScriptPath;          /// Путь к файлу скрипты.
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QJSValue mTimeoutHandler; /// Обработчик таймаута.
+    QJSValue m_TimeoutHandler; /// Обработчик таймаута.
 #else
-    QScriptValue mTimeoutHandler; /// Обработчик таймаута.
+    QScriptValue m_TimeoutHandler; /// Обработчик таймаута.
 #endif
-    QMultiMap<QString, QString> mTransitions; /// Список возможных переходов для состояния.
-    bool mIsPaused;                           /// Флаг для пропуска переходов в сценариях "на паузе"
+    QMultiMap<QString, QString> m_Transitions; /// Список возможных переходов для состояния.
+    bool m_IsPaused;                           /// Флаг для пропуска переходов в сценариях "на паузе"
 
-    QList<Scenario::SExternalStateHook> mHooks;
+    QList<Scenario::SExternalStateHook> m_Hooks;
 };
 
 } // namespace GUI

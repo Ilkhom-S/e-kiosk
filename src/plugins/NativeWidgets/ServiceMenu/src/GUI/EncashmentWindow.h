@@ -33,15 +33,15 @@ protected:
     virtual void updateUI() = 0;
 
 protected:
-    QString mMessageSuccess;
-    QString mMessageError;
-    bool mEncashmentWithZReport;
-    qint64 mLastPrintJob;
+    QString m_MessageSuccess;
+    QString m_MessageError;
+    bool m_EncashmentWithZReport;
+    qint64 m_LastPrintJob;
 
 protected:
-    QTimer mIdleTimer;
-    InputBox *mInputBox;
-    EncashmentHistoryWindow *mHistoryWindow;
+    QTimer m_IdleTimer;
+    InputBox *m_InputBox;
+    EncashmentHistoryWindow *m_HistoryWindow;
 };
 
 //---------------------------------------------------------------------------

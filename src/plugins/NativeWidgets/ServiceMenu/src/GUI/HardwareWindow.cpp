@@ -33,48 +33,48 @@ static const char *Types[] = {
 
 //------------------------------------------------------------------------
 HardwareWindow::HardwareWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), mBackend(aBackend), mCreationMode(Default) {
+    : QWidget(aParent), m_Backend(aBackend), m_CreationMode(Default) {
     ui.setupUi(this);
 
     connect(ui.btnDetect, SIGNAL(clicked()), SLOT(detectDevices()));
     connect(ui.btnAdd, SIGNAL(clicked()), SLOT(onShowAddSlotDialog()));
     connect(ui.btnCancel, SIGNAL(clicked()), SLOT(onShowSlots()));
     connect(ui.btnOk, SIGNAL(clicked()), SLOT(onCreateSlot()));
-    connect(ui.lwTypes, SIGNAL(itemClicked(QListWidgetItem *)), SLOT(onTypeSelected()));
+    connect(ui.lwTypes, SIGNAL(item_Clicked(QListWidgetItem *)), SLOT(onTypeSelected()));
 
-    connect(mBackend->getHardwareManager(),
+    connect(m_Backend->getHardwareManager(),
             SIGNAL(deviceDetected(const QString &)),
             this,
             SLOT(onDeviceFound(const QString &)));
 
-    connect(mBackend->getHardwareManager(),
+    connect(m_Backend->getHardwareManager(),
             SIGNAL(detectionStopped()),
             this,
             SLOT(onDetectionFinished()));
 
     connect(
-        mBackend->getHardwareManager(),
+        m_Backend->getHardwareManager(),
         SIGNAL(deviceStatusChanged(
             const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)),
         this,
         SLOT(onDeviceStatusChanged(
             const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)));
 
-    connect(&mApplyingWatcher, SIGNAL(finished()), this, SIGNAL(applyingFinished()));
+    connect(&m_ApplyingWatcher, SIGNAL(finished()), this, SIGNAL(applyingFinished()));
 
     ui.lwTypes->clear();
 
     QString lastType;
-    QStringList driverList = mBackend->getHardwareManager()->getDriverList();
+    QStringList driverList = m_Backend->getHardwareManager()->getDriverList();
 
     foreach (QString driver, driverList) {
         QString type = driver.section(".", 2, 2);
-        QStringList modelList = mBackend->getHardwareManager()->getModelList()[driver];
+        QStringList modelList = m_Backend->getHardwareManager()->getModelList()[driver];
 
-        mTypes[type] = QCoreApplication::translate("Hardware::Types", type.toLatin1());
+        m_Types[type] = QCoreApplication::translate("Hardware::Types", type.toLatin1());
 
         if (lastType != type) {
-            QListWidgetItem *item = new QListWidgetItem(mTypes[type]);
+            QListWidgetItem *item = new QListWidgetItem(m_Types[type]);
             item->setTextAlignment(Qt::AlignCenter);
             ui.lwTypes->addItem(item);
         }
@@ -87,7 +87,7 @@ HardwareWindow::HardwareWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
             item.driver = driver;
             item.type = type;
 
-            mDeviceList.insert(item);
+            m_DeviceList.insert(item);
         }
     }
 
@@ -99,7 +99,7 @@ HardwareWindow::HardwareWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
     ui.slotsWidget->layout()->setAlignment(Qt::AlignTop);
 
     ui.stackedWidget->setCurrentWidget(ui.wAllDevicesPage);
-    connect(ui.stackedWidget, SIGNAL(currentChanged(int)), SIGNAL(currentFormChanged(int)));
+    connect(ui.stackedWidget, SIGNAL(currentChanged(int)), SIGNAL(currentForm_Changed(int)));
 }
 
 //------------------------------------------------------------------------
@@ -114,7 +114,7 @@ bool HardwareWindow::initialize() {
 void HardwareWindow::shutdown() {
     removeAllDeviceSlots(true);
 
-    mApplyingWatcher.waitForFinished();
+    m_ApplyingWatcher.waitForFinished();
 }
 
 //------------------------------------------------------------------------
@@ -131,14 +131,14 @@ void HardwareWindow::setConfiguration(const QVariantMap &aConfiguration) {
         slot->setParameterValues(aConfiguration[item].toMap());
     }
 
-    mBackend->getHardwareManager()->updateStatuses();
+    m_Backend->getHardwareManager()->updateStatuses();
 }
 
 //------------------------------------------------------------------------
 QVariantMap HardwareWindow::getConfiguration() const {
     QVariantMap configuration;
 
-    foreach (const TDeviceSlotList::value_type &slot, mSlots) {
+    foreach (const TDeviceSlotList::value_type &slot, m_Slots) {
         if (!slot->getConfigurationName().isEmpty()) {
             configuration[slot.data()->getConfigurationName()] = slot.data()->getParameterValues();
         }
@@ -151,10 +151,10 @@ QVariantMap HardwareWindow::getConfiguration() const {
 DeviceSlot *HardwareWindow::addDeviceSlot(const QString &aConfigurationName,
                                           bool aUserSlot,
                                           const QString &aType) {
-    mSlots << QSharedPointer<DeviceSlot>(
-        new DeviceSlot(mBackend, aConfigurationName, aUserSlot, aType));
+    m_Slots << QSharedPointer<DeviceSlot>(
+        new DeviceSlot(m_Backend, aConfigurationName, aUserSlot, aType));
 
-    DeviceSlot *currentSlot = mSlots.last().data();
+    DeviceSlot *currentSlot = m_Slots.last().data();
 
     ui.slotsWidget->layout()->addWidget(currentSlot->getWidget());
 
@@ -166,9 +166,9 @@ DeviceSlot *HardwareWindow::addDeviceSlot(const QString &aConfigurationName,
 
 //------------------------------------------------------------------------
 EditorPane *HardwareWindow::getEditor(DeviceSlot *aSlot) {
-    mEditor.setSlot(this, aSlot);
+    m_Editor.setSlot(this, aSlot);
 
-    return &mEditor;
+    return &m_Editor;
 }
 
 //------------------------------------------------------------------------
@@ -180,7 +180,7 @@ void HardwareWindow::onShowSlots() {
 void HardwareWindow::onCreateSlot() {
     QString type;
 
-    for (QMap<QString, QString>::iterator it = mTypes.begin(); it != mTypes.end(); ++it) {
+    for (QMap<QString, QString>::iterator it = m_Types.begin(); it != m_Types.end(); ++it) {
         if (it.value() == ui.lwTypes->currentItem()->text()) {
             type = it.key();
 
@@ -192,7 +192,7 @@ void HardwareWindow::onCreateSlot() {
 
     ui.stackedWidget->setCurrentIndex(0);
 
-    if (mCreationMode == OpenEditorAfterCreation) {
+    if (m_CreationMode == OpenEditorAfterCreation) {
         emit editSlot(slot, getEditor(slot));
     }
 }
@@ -203,19 +203,19 @@ void HardwareWindow::detectDevices() {
 
     removeAllDeviceSlots();
 
-    mBackend->getNetworkManager()->closeConnection();
-    mBackend->getHardwareManager()->detect();
+    m_Backend->getNetworkManager()->closeConnection();
+    m_Backend->getHardwareManager()->detect();
 }
 
 //------------------------------------------------------------------------
 void HardwareWindow::abortDetection() {
-    mBackend->getHardwareManager()->stopDetection();
+    m_Backend->getHardwareManager()->stopDetection();
 }
 
 //------------------------------------------------------------------------
 void HardwareWindow::onDetectionFinished() {
     emit detectionFinished();
-    mBackend->getNetworkManager()->openConnection();
+    m_Backend->getNetworkManager()->openConnection();
 }
 
 //------------------------------------------------------------------------
@@ -225,7 +225,7 @@ void HardwareWindow::onDeviceFound(const QString &aConfigName) {
     // железок одного типа и модели.
     DeviceSlot *slot = 0;
 
-    foreach (const TDeviceSlotList::value_type &item, mSlots) {
+    foreach (const TDeviceSlotList::value_type &item, m_Slots) {
         if (item.data()->getType() == aConfigName.section(".", 2, 2)) {
             if (item.data()->getModel() == aConfigName.section(".", 3)) {
                 slot = item.data();
@@ -239,7 +239,7 @@ void HardwareWindow::onDeviceFound(const QString &aConfigName) {
         slot = addDeviceSlot(aConfigName);
     }
 
-    slot->setParameterValues(mBackend->getHardwareManager()->getDeviceConfiguration(aConfigName));
+    slot->setParameterValues(m_Backend->getHardwareManager()->getDeviceConfiguration(aConfigName));
     slot->updateConfigurationName(aConfigName);
 
     toLog(QString("FOUND new device: %1").arg(slot->getModel()));
@@ -286,15 +286,15 @@ void HardwareWindow::removeDeviceSlot(DeviceSlot *aSlot, bool aUpdateConfig) {
     if (aUpdateConfig) {
         QVariantMap newConfig(getConfiguration());
         newConfig.remove(aSlot->getConfigurationName());
-        mBackend->getHardwareManager()->releaseDevice(aSlot->getConfigurationName());
-        mBackend->getHardwareManager()->setConfigurations(newConfig.keys());
+        m_Backend->getHardwareManager()->releaseDevice(aSlot->getConfigurationName());
+        m_Backend->getHardwareManager()->setConfigurations(newConfig.keys());
     }
 
     TDeviceSlotList::iterator it;
 
-    for (it = mSlots.begin(); it != mSlots.end(); ++it) {
+    for (it = m_Slots.begin(); it != m_Slots.end(); ++it) {
         if (it->data() == aSlot) {
-            mSlots.erase(it);
+            m_Slots.erase(it);
 
             break;
         }
@@ -304,8 +304,8 @@ void HardwareWindow::removeDeviceSlot(DeviceSlot *aSlot, bool aUpdateConfig) {
 //------------------------------------------------------------------------
 void HardwareWindow::removeAllDeviceSlots(bool aIncludeUserSlots) {
     if (aIncludeUserSlots) {
-        while (!mSlots.isEmpty()) {
-            removeDeviceSlot(mSlots.first().data());
+        while (!m_Slots.isEmpty()) {
+            removeDeviceSlot(m_Slots.first().data());
         }
     } else {
         bool onlyUserSlots = false;
@@ -315,7 +315,7 @@ void HardwareWindow::removeAllDeviceSlots(bool aIncludeUserSlots) {
 
             TDeviceSlotList::iterator it;
 
-            for (it = mSlots.begin(); it != mSlots.end(); ++it) {
+            for (it = m_Slots.begin(); it != m_Slots.end(); ++it) {
                 if (!it->data()->isUserSlot()) {
                     onlyUserSlots = false;
 
@@ -332,7 +332,7 @@ void HardwareWindow::removeAllDeviceSlots(bool aIncludeUserSlots) {
 QStringList HardwareWindow::getModels(const QString &aType) {
     QStringList result;
 
-    const TDeviceByType &index = mDeviceList.get<TypeTag>();
+    const TDeviceByType &index = m_DeviceList.get<TypeTag>();
 
     TDeviceByType::iterator i = index.lower_bound(aType);
     TDeviceByType::iterator j = index.upper_bound(aType);
@@ -348,12 +348,12 @@ QStringList HardwareWindow::getModels(const QString &aType) {
 //------------------------------------------------------------------------
 SDK::Plugin::TParameterList HardwareWindow::getModelParameters(const QString &aType,
                                                                const QString &aModel) {
-    const TDeviceByTypeModel &index = mDeviceList.get<TypeModelTag>();
+    const TDeviceByTypeModel &index = m_DeviceList.get<TypeModelTag>();
 
     TDeviceByTypeModel::iterator it = index.find(boost::make_tuple(aType, aModel));
 
-    if (it != mDeviceList.get<TypeModelTag>().end()) {
-        return mBackend->getHardwareManager()->getDriverParameters((*it).driver);
+    if (it != m_DeviceList.get<TypeModelTag>().end()) {
+        return m_Backend->getHardwareManager()->getDriverParameters((*it).driver);
     }
 
     return SDK::Plugin::TParameterList();
@@ -361,45 +361,45 @@ SDK::Plugin::TParameterList HardwareWindow::getModelParameters(const QString &aT
 
 //------------------------------------------------------------------------
 HardwareManager *HardwareWindow::getHardwareManager() const {
-    return mBackend->getHardwareManager();
+    return m_Backend->getHardwareManager();
 }
 
 //------------------------------------------------------------------------
 SDK::PaymentProcessor::ICore *HardwareWindow::getCore() const {
-    return mBackend->getCore();
+    return m_Backend->getCore();
 }
 
 //------------------------------------------------------------------------
 void HardwareWindow::toLog(const QString &aMessage) {
-    mBackend->toLog(aMessage);
+    m_Backend->toLog(aMessage);
 }
 
 //------------------------------------------------------------------------
 void HardwareWindow::setSlotCreationMode(SlotCreationMode aMode) {
-    mCreationMode = aMode;
+    m_CreationMode = aMode;
 }
 
 //------------------------------------------------------------------------
 void HardwareWindow::checkDeviceSlot(DeviceSlot *aSlot) {
     emit applyingStarted();
 
-    mApplyingWatcher.setFuture(
+    m_ApplyingWatcher.setFuture(
         QtConcurrent::run([this, aSlot]() { checkDeviceSlotConcurrent(aSlot); }));
 }
 
 //------------------------------------------------------------------------
 void HardwareWindow::checkDeviceSlotConcurrent(DeviceSlot *aSlot) {
     if (!aSlot->getConfigurationName().isEmpty()) {
-        mBackend->getHardwareManager()->releaseDevice(aSlot->getConfigurationName());
+        m_Backend->getHardwareManager()->releaseDevice(aSlot->getConfigurationName());
     }
 
-    const TDeviceByModel &index = mDeviceList.get<ModelTag>();
+    const TDeviceByModel &index = m_DeviceList.get<ModelTag>();
     TDeviceByModel::iterator it = index.find(aSlot->getModel());
 
-    if (it != mDeviceList.get<ModelTag>().end()) {
+    if (it != m_DeviceList.get<ModelTag>().end()) {
         QString result;
 
-        QMetaObject::invokeMethod(mBackend->getHardwareManager(),
+        QMetaObject::invokeMethod(m_Backend->getHardwareManager(),
                                   "createDevice",
                                   Qt::BlockingQueuedConnection,
                                   Q_RETURN_ARG(QString, result),
@@ -409,8 +409,8 @@ void HardwareWindow::checkDeviceSlotConcurrent(DeviceSlot *aSlot) {
         aSlot->updateConfigurationName(result);
     }
 
-    mBackend->getHardwareManager()->setConfigurations(getConfiguration().keys());
-    mBackend->getHardwareManager()->updateStatuses();
+    m_Backend->getHardwareManager()->setConfigurations(getConfiguration().keys());
+    m_Backend->getHardwareManager()->updateStatuses();
 }
 
 //------------------------------------------------------------------------
@@ -420,7 +420,7 @@ void HardwareWindow::onDeviceStatusChanged(const QString &aConfigurationName,
                                            SDK::Driver::EWarningLevel::Enum aLevel) {
     TDeviceSlotList::iterator it;
 
-    for (it = mSlots.begin(); it != mSlots.end(); ++it) {
+    for (it = m_Slots.begin(); it != m_Slots.end(); ++it) {
         if (it->data()->getConfigurationName() == aConfigurationName) {
             it->data()->updateDeviceStatus(aNewStatus, aStatusColor, aLevel);
             break;

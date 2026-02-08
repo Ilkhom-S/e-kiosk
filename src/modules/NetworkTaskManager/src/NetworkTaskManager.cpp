@@ -243,7 +243,7 @@ void NetworkTaskManager::onTaskReadyRead() {
                                               // первого пакета данных
                     {
                         QString contentRange =
-                            QString::fromLatin1(reply->rawHeader("Content-Range"));
+                            QString::from_Latin1(reply->rawHeader("Content-Range"));
 
                         if (contentRange.isEmpty()) {
                             // Если запрашивали кусок данных, а пришел файл
@@ -285,7 +285,7 @@ void NetworkTaskManager::onTaskReadyRead() {
 
                     if (!task->getDataStream()->write(replyData)) {
                         toLog(LogLevel::Error, "Cannot save received data to the stream.");
-                        task->setError(NetworkTask::StreamWriteError);
+                        task->setError(NetworkTask::Stream_WriteError);
                         reply->abort();
                     }
 

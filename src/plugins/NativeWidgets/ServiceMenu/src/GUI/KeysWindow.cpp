@@ -19,7 +19,7 @@
 #include "ServiceTags.h"
 
 KeysWindow::KeysWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), mBackend(aBackend) {
+    : QFrame(aParent), m_Backend(aBackend) {
     setupUi(this);
 
     foreach (QLineEdit *le, findChildren<QLineEdit *>()) {
@@ -29,15 +29,15 @@ KeysWindow::KeysWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
     connect(btnCreate, SIGNAL(clicked()), SLOT(onCreateButtonClicked()));
     connect(btnRepeat, SIGNAL(clicked()), SLOT(onRepeatButtonClicked()));
     connect(cbKeypairChange, SIGNAL(stateChanged(int)), this, SLOT(onCheckedKeyPairChanged(int)));
-    connect(&mGenerateTaskWatcher, SIGNAL(finished()), SLOT(onGenerateTaskFinished()));
+    connect(&m_GenerateTaskWatcher, SIGNAL(finished()), SLOT(onGenerateTaskFinished()));
 
-    cbKeypairChange->setEnabled(mBackend->getKeysManager()->allowAnyKeyPair());
+    cbKeypairChange->setEnabled(m_Backend->getKeysManager()->allowAnyKeyPair());
 }
 
 //------------------------------------------------------------------------
 KeysWindow::~KeysWindow() {
-    if (mGenerateTaskWatcher.isRunning()) {
-        mGenerateTaskWatcher.waitForFinished();
+    if (m_GenerateTaskWatcher.isRunning()) {
+        m_GenerateTaskWatcher.waitForFinished();
     }
 }
 
@@ -59,17 +59,17 @@ void KeysWindow::initialize(bool aHasRuToken, bool aRutokenOK) {
 
 //------------------------------------------------------------------------
 bool KeysWindow::save() {
-    if (mGenerateTaskWatcher.isRunning()) {
+    if (m_GenerateTaskWatcher.isRunning()) {
         return false;
     }
 
-    return mBackend->getKeysManager()->saveKey();
+    return m_Backend->getKeysManager()->saveKey();
 }
 
 //------------------------------------------------------------------------
 void KeysWindow::doGenerate() {
-    mGenerateTaskWatcher.setFuture(QtConcurrent::run(boost::bind(
-        &KeysManager::generateKey, mBackend->getKeysManager(), boost::ref(mTaskParameters))));
+    m_GenerateTaskWatcher.setFuture(QtConcurrent::run(boost::bind(
+        &KeysManager::generateKey, m_Backend->getKeysManager(), boost::ref(m_TaskParameters))));
 }
 
 //------------------------------------------------------------------------
@@ -91,7 +91,7 @@ void KeysWindow::onCreateButtonClicked() {
     if (cbKeypairChange->checkState() == Qt::Checked && !keyPair.isEmpty()) {
         int num = keyPair.toInt();
 
-        if (mBackend->getKeysManager()->getLoadedKeys().contains(num)) {
+        if (m_Backend->getKeysManager()->getLoadedKeys().contains(num)) {
             rewriteExistNumber = MessageBox::question(tr("#keypair_already_exist"));
         }
     } else {
@@ -102,12 +102,12 @@ void KeysWindow::onCreateButtonClicked() {
         return;
     }
 
-    mTaskParameters.clear();
+    m_TaskParameters.clear();
 
-    mTaskParameters[CServiceTags::Login] = login->text();
-    mTaskParameters[CServiceTags::Password] = password->text();
-    mTaskParameters[CServiceTags::KeyPairNumber] = keyPair;
-    mTaskParameters[CServiceTags::KeyPairDescription] = description->text();
+    m_TaskParameters[CServiceTags::Login] = login->text();
+    m_TaskParameters[CServiceTags::Password] = password->text();
+    m_TaskParameters[CServiceTags::KeyPairNumber] = keyPair;
+    m_TaskParameters[CServiceTags::KeyPairDescription] = description->text();
 
     emit beginGenerating();
 }
@@ -127,16 +127,16 @@ void KeysWindow::onCheckedKeyPairChanged(int aState) {
 
 //------------------------------------------------------------------------
 void KeysWindow::onGenerateTaskFinished() {
-    if (mGenerateTaskWatcher.result()) {
-        lbAp->setText(mBackend->getKeysManager()->getAP());
-        lbSd->setText(mBackend->getKeysManager()->getSD());
-        lbOp->setText(mBackend->getKeysManager()->getOP());
+    if (m_GenerateTaskWatcher.result()) {
+        lbAp->setText(m_Backend->getKeysManager()->getAP());
+        lbSd->setText(m_Backend->getKeysManager()->getSD());
+        lbOp->setText(m_Backend->getKeysManager()->getOP());
 
         swPages->setCurrentWidget(wResultsPage);
 
         emit endGenerating();
     } else {
-        emit error(mTaskParameters[CServiceTags::Error].toString());
+        emit error(m_TaskParameters[CServiceTags::Error].toString());
     }
 }
 

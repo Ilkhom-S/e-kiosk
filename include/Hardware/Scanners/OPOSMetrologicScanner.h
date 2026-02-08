@@ -17,10 +17,10 @@ namespace COPOSScanners {
 const int Prefix = 4;
 
 /// Таймаут Claim-а, [мс]. Связи с реальностью почти не имеет.
-const int ClaimTimeout = 20 * 60 * 1000;
+const int Claim_Timeout = 20 * 60 * 1000;
 
 /// Количество попыток для Claim-а при определенных ошибках.
-const int ClaimAttempts = 10;
+const int Claim_Attempts = 10;
 } // namespace COPOSScanners
 
 //--------------------------------------------------------------------------------

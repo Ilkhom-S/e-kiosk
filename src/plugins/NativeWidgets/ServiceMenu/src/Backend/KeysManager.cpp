@@ -14,10 +14,10 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
-KeysManager::KeysManager(SDK::PaymentProcessor::ICore *aCore) : mCore(aCore), mIsGenerated(false) {
-    mCryptService = mCore->getCryptService();
-    mTerminalSettings = static_cast<PPSDK::TerminalSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
+KeysManager::KeysManager(SDK::PaymentProcessor::ICore *aCore) : m_Core(aCore), m_IsGenerated(false) {
+    m_CryptService = m_Core->getCryptService();
+    m_TerminalSettings = static_cast<PPSDK::TerminalSettings *>(
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 }
 
 //------------------------------------------------------------------------
@@ -29,21 +29,21 @@ bool KeysManager::generateKey(QVariantMap &aKeysParam) {
     QString password(aKeysParam[CServiceTags::Password].toString());
     QString description(aKeysParam[CServiceTags::KeyPairDescription].toString());
     QString keyPairNumber(aKeysParam[CServiceTags::KeyPairNumber].toString());
-    QString url(mTerminalSettings->getKeygenURL());
+    QString url(m_TerminalSettings->getKeygenURL());
 
     if (url.isEmpty()) {
         aKeysParam[CServiceTags::Error] = "#url_is_empty";
-        mIsGenerated = false;
+        m_IsGenerated = false;
     }
 
-    EKeysUtilsError::Enum result = static_cast<EKeysUtilsError::Enum>(mCryptService->generateKey(
-        keyPairNumber.toInt(), login, password, url, mSD, mAP, mOP, description));
+    EKeysUtilsError::Enum result = static_cast<EKeysUtilsError::Enum>(m_CryptService->generateKey(
+        keyPairNumber.toInt(), login, password, url, m_SD, m_AP, m_OP, description));
 
     aKeysParam[CServiceTags::Error] = errorToString(result);
 
-    mIsGenerated = result == EKeysUtilsError::Ok;
+    m_IsGenerated = result == EKeysUtilsError::Ok;
 
-    return mIsGenerated;
+    return m_IsGenerated;
 }
 
 //------------------------------------------------------------------------
@@ -52,7 +52,7 @@ bool KeysManager::formatToken() {
 
     if (status.available) {
         if (!status.initialized) {
-            return mCryptService->getCryptEngine()->initializeToken(CCrypt::ETypeEngine::RuToken);
+            return m_CryptService->getCryptEngine()->initializeToken(CCrypt::ETypeEngine::RuToken);
         }
 
         return true;
@@ -63,54 +63,54 @@ bool KeysManager::formatToken() {
 
 //------------------------------------------------------------------------
 QList<int> KeysManager::getLoadedKeys() const {
-    return mCryptService->getLoadedKeys();
+    return m_CryptService->getLoadedKeys();
 }
 
 //------------------------------------------------------------------------
 bool KeysManager::isDefaultKeyOP(const QString &aOP) {
-    PPSDK::ICryptService::SKeyInfo key = mCryptService->getKeyInfo(0);
+    PPSDK::ICryptService::SKeyInfo key = m_CryptService->getKeyInfo(0);
 
     return key.isValid() && key.op == aOP;
 }
 
 //------------------------------------------------------------------------
 CCrypt::TokenStatus KeysManager::tokenStatus() const {
-    return mCryptService->getCryptEngine()->getTokenStatus(CCrypt::ETypeEngine::RuToken);
+    return m_CryptService->getCryptEngine()->getTokenStatus(CCrypt::ETypeEngine::RuToken);
 }
 
 //------------------------------------------------------------------------
 bool KeysManager::saveKey() {
-    return mCryptService->saveKey();
+    return m_CryptService->saveKey();
 }
 
 //------------------------------------------------------------------------
 bool KeysManager::allowAnyKeyPair() const {
-    return mTerminalSettings->getServiceMenuSettings().allowAnyKeyPair;
+    return m_TerminalSettings->getServiceMenuSettings().allowAnyKeyPair;
 }
 
 //------------------------------------------------------------------------
 bool KeysManager::isConfigurationChanged() const {
-    return mIsGenerated;
+    return m_IsGenerated;
 }
 
 //------------------------------------------------------------------------
 void KeysManager::resetConfiguration() {
-    mIsGenerated = false;
+    m_IsGenerated = false;
 }
 
 //------------------------------------------------------------------------
 QString KeysManager::getSD() const {
-    return mSD;
+    return m_SD;
 }
 
 //------------------------------------------------------------------------
 QString KeysManager::getAP() const {
-    return mAP;
+    return m_AP;
 }
 
 //------------------------------------------------------------------------
 QString KeysManager::getOP() const {
-    return mOP;
+    return m_OP;
 }
 
 //------------------------------------------------------------------------

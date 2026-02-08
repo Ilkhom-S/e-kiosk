@@ -63,18 +63,18 @@ REGISTER_PLUGIN_WITH_PARAMETERS(
 //------------------------------------------------------------------------------
 UnitellerChargeProvider::UnitellerChargeProvider(SDK::Plugin::IEnvironment *aFactory,
                                                  const QString &aInstancePath)
-    : ILogable(aFactory->getLog(Uniteller::LogName)), mFactory(aFactory),
-      mInstancePath(aInstancePath),
-      mCore(dynamic_cast<SDK::PaymentProcessor::ICore *>(
+    : ILogable(aFactory->getLog(Uniteller::LogName)), m_Factory(aFactory),
+      m_InstancePath(aInstancePath),
+      m_Core(dynamic_cast<SDK::PaymentProcessor::ICore *>(
           aFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore))),
-      mApi(Uniteller::API::getInstance(aFactory->getLog(Uniteller::LogName), mCore)),
-      mMaxAmount(0.0) {
+      m_Api(Uniteller::API::getInstance(aFactory->getLog(Uniteller::LogName), m_Core)),
+      m_MaxAmount(0.0) {
     qRegisterMetaType<SDK::PaymentProcessor::SNote>("SDK::PaymentProcessor::SNote");
 
-    mDealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
+    m_DealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
 
-    connect(mApi.data(),
+    connect(m_Api.data(),
             SIGNAL(sellComplete(double, int, const QString &, const QString &)),
             SLOT(onSellComplete(double, int, const QString &, const QString &)));
 }
@@ -89,20 +89,20 @@ QString UnitellerChargeProvider::getPluginName() const {
 
 //------------------------------------------------------------------------------
 QVariantMap UnitellerChargeProvider::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //------------------------------------------------------------------------------
 void UnitellerChargeProvider::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 
-    mApi->setupRuntimePath(aParameters.value(CUnitellerChargeProvider::RuntimePath).toString());
-    mApi->enable();
+    m_Api->setupRuntimePath(aParameters.value(CUnitellerChargeProvider::RuntimePath).toString());
+    m_Api->enable();
 }
 
 //------------------------------------------------------------------------------
 QString UnitellerChargeProvider::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //------------------------------------------------------------------------------
@@ -134,35 +134,35 @@ bool UnitellerChargeProvider::unsubscribe(const char *aSignal, QObject *aReceive
 
 //------------------------------------------------------------------------------
 QString UnitellerChargeProvider::getMethod() {
-    return mApi->isReady() ? "card_uniteller" : QString();
+    return m_Api->isReady() ? "card_uniteller" : QString();
 }
 
 //------------------------------------------------------------------------------
 bool UnitellerChargeProvider::enable(PPSDK::TPaymentAmount aMaxAmount) {
-    if (!mApi->isReady()) {
+    if (!m_Api->isReady()) {
         toLog(LogLevel::Error, "enable(): API not ready.");
         return false;
     }
 
-    mMaxAmount = aMaxAmount;
-    quint64 paymentId = mCore->getPaymentService()->getActivePayment();
+    m_MaxAmount = aMaxAmount;
+    quint64 paymentId = m_Core->getPaymentService()->getActivePayment();
 
     QString initialSession =
-        mCore->getPaymentService()
+        m_Core->getPaymentService()
             ->getPaymentField(paymentId,
                               SDK::PaymentProcessor::CPayment::Parameters::InitialSession)
             .value.toString();
 
     // Откусываем от номера сессии первые 2 символа, т.к. EFTPOS 3.0 такой большой номер заказа не
     // осилит.
-    mApi->sell(aMaxAmount, initialSession.right(18), "");
+    m_Api->sell(aMaxAmount, initialSession.right(18), "");
 
     return true;
 }
 
 //------------------------------------------------------------------------------
 bool UnitellerChargeProvider::disable() {
-    if (!mApi->isReady()) {
+    if (!m_Api->isReady()) {
         toLog(LogLevel::Error, "disable(): API not ready.");
         return false;
     }
@@ -181,8 +181,8 @@ void UnitellerChargeProvider::onSellComplete(double aAmount,
               .arg(aRRN)
               .arg(aConfirmationCode));
 
-    mCore->getPaymentService()->updatePaymentField(
-        mCore->getPaymentService()->getActivePayment(),
+    m_Core->getPaymentService()->updatePaymentField(
+        m_Core->getPaymentService()->getActivePayment(),
         PPSDK::IPayment::SParameter("PAY_TOOL", 2, true, false, true));
 
     emit stacked(PPSDK::SNote(PPSDK::EAmountType::BankCard, aAmount, aCurrency, aRRN));

@@ -15,9 +15,9 @@ bool CitizenCBM1000_PRINTER::openPort() {
         // Если девайс для работы с портом обявлен
         is_open = false;
         // Даем девайсу название порта
-        // if(Debugger)  qDebug() << "devicePort->setDeviceName(comName); - " <<
-        // comName;
-        serialPort->setPortName(comName);
+        // if(Debugger)  qDebug() << "devicePort->setDeviceName(com_Name); - " <<
+        // com_Name;
+        serialPort->setPortName(com_Name);
 
         if (serialPort->open(QIODevice::ReadWrite)) {
             // Если Девайсу удалось открыть порт
@@ -140,7 +140,7 @@ bool CitizenCBM1000_PRINTER::getStatus(int &aStatus) {
             aStatus |= PrinterState::PrintingHeadError;
             // if(Debugger) qDebug() << "AV268::getStatus(): Printing head open";
         }
-        code = status & CMDCitizenCBM1000::PrinterSystemError;
+        code = status & CMDCitizenCBM1000::PrinterSystem_Error;
         if (code > 0) {
             // System error
             aStatus |= PrinterState::PrinterError;

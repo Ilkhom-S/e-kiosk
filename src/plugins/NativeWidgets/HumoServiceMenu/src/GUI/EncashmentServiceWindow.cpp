@@ -30,7 +30,7 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
 EncashmentServiceWindow::EncashmentServiceWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : EncashmentWindow(aBackend, aParent), mBackend(aBackend) {
+    : EncashmentWindow(aBackend, aParent), m_Backend(aBackend) {
     ui.setupUi(this);
 
     // TODO Заполнять значениями
@@ -40,29 +40,29 @@ EncashmentServiceWindow::EncashmentServiceWindow(HumoServiceBackend *aBackend, Q
 
     /// Найдем файл настроек для диспенсеров
     PPSDK::TerminalSettings *s = static_cast<PPSDK::TerminalSettings *>(
-        mBackend->getCore()->getSettingsService()->getAdapter(
+        m_Backend->getCore()->getSettingsService()->getAdapter(
             SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
 
-    mPayloadSettingsPath =
+    m_PayloadSettingsPath =
         QString("%1/%2")
             .arg(s->getAppEnvironment().userDataPath)
             .arg(QString("%1_%2").arg(s->getKeys().value(0).ap).arg(PayloadSettings));
 
-    if (QFile::exists(mPayloadSettingsPath)) {
-        QSettings settings(ISysUtils::rmBOM(mPayloadSettingsPath), QSettings::IniFormat);
+    if (QFile::exists(m_PayloadSettingsPath)) {
+        QSettings settings(ISysUtils::rm_BOM(m_PayloadSettingsPath), QSettings::IniFormat);
 
         foreach (QString deviceGuid, settings.childGroups()) {
-            mPayloadSettings.insert(
+            m_PayloadSettings.insert(
                 deviceGuid, settings.value(QString("%1/%2").arg(deviceGuid).arg("payload")));
         }
 
         /// Кнопка активна, если есть что загрузить в диспенсеры
-        ui.btnPayload->setVisible(!mPayloadSettings.isEmpty());
+        ui.btnPayload->setVisible(!m_PayloadSettings.isEmpty());
         connect(ui.btnPayload, SIGNAL(clicked()), this, SLOT(doPayload()));
     }
 
-    mHistoryWindow = new EncashmentHistoryWindow(aBackend, this);
-    ui.gridLayoutEncashment->addWidget(mHistoryWindow, 2, 0);
+    m_HistoryWindow = new EncashmentHistoryWindow(aBackend, this);
+    ui.gridLayoutEncashment->addWidget(m_HistoryWindow, 2, 0);
 }
 
 //------------------------------------------------------------------------
@@ -80,16 +80,16 @@ bool EncashmentServiceWindow::shutdown() {
 //----------------------------------------------------------------------------
 void EncashmentServiceWindow::updateUI() {
     // Указываем сервису платежей, есть ли у нас аппаратный ФР
-    mBackend->getPaymentManager()->useHardwareFiscalPrinter(
-        mBackend->getHardwareManager()->isFiscalPrinterPresent(false));
+    m_Backend->getPaymentManager()->useHardwareFiscalPrinter(
+        m_Backend->getHardwareManager()->isFiscalPrinterPresent(false));
 
     // Настраиваем интерфейс в зависимости от типа принтера
-    bool isFiscalPrinter = mBackend->getHardwareManager()->isFiscalPrinterPresent(true);
+    bool isFiscalPrinter = m_Backend->getHardwareManager()->isFiscalPrinterPresent(true);
 
     ui.btnPrintZReport->setEnabled(
-        isFiscalPrinter && mBackend->getPaymentManager()->canPrint(PPSDK::CReceiptType::ZReport));
+        isFiscalPrinter && m_Backend->getPaymentManager()->canPrint(PPSDK::CReceiptType::ZReport));
     ui.btnPrintBalance->setEnabled(
-        mBackend->getPaymentManager()->canPrint(PPSDK::CReceiptType::Balance));
+        m_Backend->getPaymentManager()->canPrint(PPSDK::CReceiptType::Balance));
 
     updateInfo();
 }
@@ -99,7 +99,7 @@ bool EncashmentServiceWindow::activate() {
     EncashmentWindow::activate();
 
     connect(
-        mBackend->getHardwareManager(),
+        m_Backend->getHardwareManager(),
         SIGNAL(deviceStatusChanged(
             const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)),
         this,
@@ -108,7 +108,7 @@ bool EncashmentServiceWindow::activate() {
 
     updateUI();
 
-    mHistoryWindow->updateHistory();
+    m_HistoryWindow->updateHistory();
 
     connect(ui.btnEncash, SIGNAL(clicked()), this, SLOT(doEncashment()));
     connect(ui.btnPrintBalance, SIGNAL(clicked()), this, SLOT(onPrintBalance()));
@@ -122,7 +122,7 @@ bool EncashmentServiceWindow::deactivate() {
     EncashmentWindow::deactivate();
 
     disconnect(
-        mBackend->getHardwareManager(),
+        m_Backend->getHardwareManager(),
         SIGNAL(deviceStatusChanged(
             const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)),
         this,
@@ -151,7 +151,7 @@ void EncashmentServiceWindow::onDeviceStatusChanged(const QString &aConfigName,
 
 //------------------------------------------------------------------------
 void EncashmentServiceWindow::updateInfo() {
-    QVariantMap cashInfo = mBackend->getPaymentManager()->getBalanceInfo();
+    QVariantMap cashInfo = m_Backend->getPaymentManager()->getBalanceInfo();
 
     int noteCount = cashInfo[CServiceTags::NoteCount].toInt();
     int coinCount = cashInfo[CServiceTags::CoinCount].toInt();
@@ -164,26 +164,26 @@ void EncashmentServiceWindow::updateInfo() {
 
     ui.btnEncash->setEnabled(true);
 
-    mHistoryWindow->updateHistory();
+    m_HistoryWindow->updateHistory();
 }
 
 //------------------------------------------------------------------------
 void EncashmentServiceWindow::onPrintBalance() {
-    mMessageError = tr("#balance_print_failed");
+    m_MessageError = tr("#balance_print_failed");
 
-    if (mBackend->getPaymentManager()->canPrint(PPSDK::CReceiptType::Balance)) {
-        mMessageSuccess = tr("#balance_printed");
-        mBackend->getPaymentManager()->printBalance();
+    if (m_Backend->getPaymentManager()->canPrint(PPSDK::CReceiptType::Balance)) {
+        m_MessageSuccess = tr("#balance_printed");
+        m_Backend->getPaymentManager()->printBalance();
     } else {
         // TODO Дополнять статусом принтера
-        GUI::MessageBox::critical(mMessageError);
+        GUI::MessageBox::critical(m_MessageError);
     }
 }
 
 //---------------------------------------------------------------------------
 void EncashmentServiceWindow::doPayload() {
     PPSDK::TCashUnitsState cashUnitState =
-        mBackend->getCore()->getFundsService()->getDispenser()->getCashUnitsState();
+        m_Backend->getCore()->getFundsService()->getDispenser()->getCashUnitsState();
 
     bool unitUpdateOK = false;
 
@@ -199,7 +199,7 @@ void EncashmentServiceWindow::doPayload() {
         // обнулить все кассеты payload=0
         // обнулить первую кассету payload=1:0
         for (QString &unitPayload :
-             mPayloadSettings.value(device.split("_").last()).toString().split("|")) {
+             m_PayloadSettings.value(device.split("_").last()).toString().split("|")) {
             if (unitPayload.isEmpty()) {
                 continue;
             }
@@ -220,14 +220,14 @@ void EncashmentServiceWindow::doPayload() {
             }
         }
 
-        unitUpdateOK = mBackend->getCore()->getFundsService()->getDispenser()->setCashUnitsState(
+        unitUpdateOK = m_Backend->getCore()->getFundsService()->getDispenser()->setCashUnitsState(
             device, cashUnits);
     }
 
     // Все кассеты обновились успешно
     if (unitUpdateOK) {
         ui.btnPayload->setVisible(false);
-        QFile::remove(mPayloadSettingsPath);
+        QFile::remove(m_PayloadSettingsPath);
     }
 }
 

@@ -206,14 +206,14 @@ bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
         while (i.hasNext()) {
             i.next();
             response << QString("%1: %2")
-                            .arg(QString::fromLatin1(i.key()))
-                            .arg(QString::fromLatin1(i.value()));
+                            .arg(QString::from_Latin1(i.key()))
+                            .arg(QString::from_Latin1(i.value()));
         }
 
         toLog(LogLevel::Trace,
               QString("HEADER:\n%1\nBODY:\n%2")
                   .arg(response.join("\n"))
-                  .arg(QString::fromLatin1(answer.left(80))));
+                  .arg(QString::from_Latin1(answer.left(80))));
     };
 
     if (task->getError() != NetworkTask::NoError) {
@@ -229,7 +229,7 @@ bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
         toLog(LogLevel::Error,
               QString("Server answer verify failed '%1'.\nServer response: '%2'.")
                   .arg(aHost.second)
-                  .arg(QString::fromUtf8(answer).left(1024)));
+                  .arg(QString::from_Utf8(answer).left(1024)));
 
         traceLog();
 

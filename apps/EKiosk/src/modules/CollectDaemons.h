@@ -25,7 +25,7 @@ struct NominalData {
     double coinSum = 0;
     double coinDivider = 100;
 
-    static NominalData fromVariant(const QVariantMap &v) {
+    static NominalData from_Variant(const QVariantMap &v) {
         NominalData nominalData;
         nominalData.billCurrency = v.value("bill_currency").toString();
         nominalData.coinCurrency = v.value("coin_currency").toString();
@@ -115,17 +115,17 @@ private:
                         QString &collectionIdNext,
                         QString &dateCreate,
                         QString xmlDenom);
-    bool confirmCollection(QString collectionId);
+    bool confirm_Collection(QString collectionId);
 
     QString getDenominalXml();
     bool getDatePrevCollection(QString &date, QString collectionId);
     bool getTrnOperation(const QString collectId, const QString &cmd, QString &trn);
-    bool getMoneyOut(const QString &collectionId, int &numOut, double &sumOut);
+    bool getMoneyOut(const QString &collectionId, int &num_Out, double &sum_Out);
     bool getCollectionInfo(QString collectionId,
                            QString &collectionIdNext,
                            QString &idTrn,
                            QString &dateCreate,
-                           QString &denomXml);
+                           QString &denom_Xml);
     bool parsDenomilSlot(const QString &xmlDenom);
     bool updateMoneyOut(QString collectionId, QString collectionStatus);
     void getXmlForSend(QString &xml,
@@ -138,7 +138,7 @@ private:
                        double moneyOutSum,
                        QString trnFrom,
                        QString trnTo);
-    void parcerNote(const QDomNode &domElement);
+    void parcerNote(const QDom_Node &dom_Element);
 
     QString getCollectIdByDate(QString date);
 
@@ -146,7 +146,7 @@ private:
 
     QString cIdUpdate;
 
-    QString numTrm;
+    QString num_Trm;
     QString login;
     QString pass;
     QString requestXml;
@@ -159,7 +159,7 @@ private slots:
     void sendCollectRequest();
     void getRequestParam();
     void errResponse();
-    void setDataNote(const QDomNode &domElement);
+    void setDataNote(const QDom_Node &dom_Element);
 
 signals:
     void lockUnlockAvtorization(bool lock, int sts);

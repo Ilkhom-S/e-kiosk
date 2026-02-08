@@ -9,7 +9,7 @@
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
-#include <QtXml/QDomNode>
+#include <QtXml/QDom_Node>
 
 namespace Request {
 
@@ -28,7 +28,7 @@ enum e_type {
     CheckOnline = 11,
     SendReceipt = 12,
     SendOtp = 13,
-    ConfirmOtp = 14
+    Confirm_Otp = 14
 };
 } // namespace Type
 
@@ -45,7 +45,7 @@ const QString SendLogInfo = "ASO_LOGINFO";
 const QString CheckOnline = "ONLINE_CHECK";
 const QString SendReceipt = "SEND_RECEIPT";
 const QString SendOtp = "SEND_OTP";
-const QString ConfirmOtp = "CONFIRM_OTP";
+const QString Confirm_Otp = "CONFIRM_OTP";
 } // namespace CommentType
 } // namespace Request
 
@@ -78,7 +78,7 @@ public:
     QNetworkReply *reply;
     QNetworkAccessManager pManager;
 
-    QString headerParamInit;
+    QString headerParam_Init;
     QTimer *abortTimer;
 
     QString serverUrl;
@@ -114,7 +114,7 @@ public slots:
 signals:
     void emit_QHttpAbort();
     void emit_Loging(int status, QString title, QString text);
-    void emit_DomElement(const QDomNode &domElement);
+    void emit_Dom_Element(const QDom_Node &dom_Element);
     void emit_ErrResponse();
     void emit_abortTimer(int msec);
     void send_req_data();

@@ -9,20 +9,20 @@
 //------------------------------------------------------------------------
 class VirtualButton {
 public:
-    VirtualButton() : mKey(Qt::Key_unknown), mShiftKey(Qt::Key_unknown) {}
+    VirtualButton() : m_Key(Qt::Key_unknown), m_ShiftKey(Qt::Key_unknown) {}
     VirtualButton(Qt::Key aKey, const QString &aText, Qt::Key aShiftKey, const QString &aShiftText)
-        : mKey(aKey), mText(aText), mShiftKey(aShiftKey), mShiftText(aShiftText) {}
+        : m_Key(aKey), m_Text(aText), m_ShiftKey(aShiftKey), m_ShiftText(aShiftText) {}
 
 public:
-    Qt::Key getKey(bool aShifted) { return aShifted ? mShiftKey : mKey; }
-    QString getText(bool aShifted) { return aShifted ? mShiftText : mText; }
+    Qt::Key getKey(bool aShifted) { return aShifted ? m_ShiftKey : m_Key; }
+    QString getText(bool aShifted) { return aShifted ? m_ShiftText : m_Text; }
 
 private:
-    Qt::Key mKey;
-    QString mText;
+    Qt::Key m_Key;
+    QString m_Text;
 
-    Qt::Key mShiftKey;
-    QString mShiftText;
+    Qt::Key m_ShiftKey;
+    QString m_ShiftText;
 };
 
 //------------------------------------------------------------------------
@@ -43,11 +43,11 @@ public:
 private slots:
     void onButtonClicked();
     void onShiftClicked() {
-        mShifted = ui.KEY_SHIFT->isChecked();
+        m_Shifted = ui.KEY_SHIFT->isChecked();
         updateKeys();
     }
     void onLanguageClicked() {
-        mAltMode = !mAltMode;
+        m_AltMode = !m_AltMode;
         updateKeys();
     }
 
@@ -60,11 +60,11 @@ private:
 
 private:
     typedef QMap<QString, VirtualButton> TKeyMap;
-    TKeyMap mKeyMap;
-    TKeyMap mAltKeyMap;
+    TKeyMap m_KeyMap;
+    TKeyMap m_AltKeyMap;
 
-    bool mShifted;
-    bool mAltMode;
+    bool m_Shifted;
+    bool m_AltMode;
 };
 
 //------------------------------------------------------------------------

@@ -120,7 +120,7 @@ public:
     bool hasAnyPassword() const;
 
     /// С какими правами зашли в сервисное меню
-    QString getUserRole() const { return mUserRole; }
+    QString getUserRole() const { return m_UserRole; }
 
     QList<QWidget *> getExternalWidgets(bool aReset = true);
 
@@ -131,33 +131,33 @@ private slots:
     void sendHeartbeat();
 
 private:
-    SDK::PaymentProcessor::ICore *mCore;
-    SDK::Plugin::IEnvironment *mFactory;
-    QSharedPointer<HardwareManager> mHardwareManager;
-    QSharedPointer<KeysManager> mKeysManager;
-    QSharedPointer<NetworkManager> mNetworkManager;
-    QSharedPointer<PaymentManager> mPaymentManager;
+    SDK::PaymentProcessor::ICore *m_Core;
+    SDK::Plugin::IEnvironment *m_Factory;
+    QSharedPointer<HardwareManager> m_HardwareManager;
+    QSharedPointer<KeysManager> m_KeysManager;
+    QSharedPointer<NetworkManager> m_NetworkManager;
+    QSharedPointer<PaymentManager> m_PaymentManager;
 
-    QList<IConfigManager *> mConfigList;
+    QList<IConfigManager *> m_ConfigList;
 
-    QList<SDK::Plugin::IPlugin *> mWidgetPluginList;
+    QList<SDK::Plugin::IPlugin *> m_WidgetPluginList;
 
-    ILog *mLog;
-    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;
+    ILog *m_Log;
+    SDK::PaymentProcessor::TerminalSettings *m_TerminalSettings;
 
-    TAccessRights mAccessRights;
-    QString mUserRole;
+    TAccessRights m_AccessRights;
+    QString m_UserRole;
 
-    QVariantMap mParameters;
+    QVariantMap m_Parameters;
 
-    bool mAutoEncashmentEnabled;
-    bool mAuthorizationEnabled;
+    bool m_AutoEncashmentEnabled;
+    bool m_AuthorizationEnabled;
 
     /// Состояние кассет диспенсера на момент входа в СМ
-    SDK::PaymentProcessor::TCashUnitsState mCashUnitsState;
+    SDK::PaymentProcessor::TCashUnitsState m_CashUnitsState;
 
     /// Таймер отправки харбитов
-    QTimer mHeartbeatTimer;
+    QTimer m_HeartbeatTimer;
 };
 
 //---------------------------------------------------------------------------

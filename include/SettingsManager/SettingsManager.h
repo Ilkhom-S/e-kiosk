@@ -58,7 +58,7 @@ public:
 private:
     bool readXML(const QString &aFileName, TPtree &aTree);
     bool writeXML(const QString &aFileName, const TPtree &aTree);
-    void writeXMLNode(class QXmlStreamWriter &aWriter, const TPtree &aNode);
+    void writeXMLNode(class QXmlStream_Writer &aWriter, const TPtree &aNode);
 
     /// Данные ini-файлов попадают в секцию с именем файла.
     bool readINI(const QString &aFileName, TPtree &aTree);

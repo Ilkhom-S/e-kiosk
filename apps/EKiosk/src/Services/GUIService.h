@@ -115,7 +115,7 @@ protected:
 
 public:
     /// Проверка возможность остановки графического интерфейса
-    bool canDisable() const { return mScenarioEngine.canStop(); }
+    bool canDisable() const { return m_ScenarioEngine.canStop(); }
 
     /// Остановка интерфейса.
     void disable(bool aDisable);
@@ -158,36 +158,36 @@ private:
     void loadScriptObjects();
 
 private:
-    IApplication *mApplication;
-    PluginService *mPluginService;
-    SDK::PaymentProcessor::IEventService *mEventManager;
+    IApplication *m_Application;
+    PluginService *m_PluginService;
+    SDK::PaymentProcessor::IEventService *m_EventManager;
 
-    SDK::PaymentProcessor::Scripting::Core *mScriptingCore;
-    QMap<QString, QWeakPointer<QObject>> mBackendScenarioObjects;
+    SDK::PaymentProcessor::Scripting::Core *m_ScriptingCore;
+    QMap<QString, QWeakPointer<QObject>> m_BackendScenarioObjects;
 
-    GUI::GraphicsEngine mGraphicsEngine;
-    GUI::ScenarioEngine mScenarioEngine;
+    GUI::GraphicsEngine m_GraphicsEngine;
+    GUI::ScenarioEngine m_ScenarioEngine;
 
-    QList<SDK::Plugin::IPlugin *> mBackendPluginList;
+    QList<SDK::Plugin::IPlugin *> m_BackendPluginList;
 
-    QVariantMap mModalResult;
-    QString mDefaultScenario;
+    QVariantMap m_ModalResult;
+    QString m_DefaultScenario;
 
-    bool mDisabled;
-    int mWidth;
-    int mHeight;
+    bool m_Disabled;
+    int m_Width;
+    int m_Height;
 
     // Секции из interface.ini
-    QVariantMap mConfig;
+    QVariantMap m_Config;
 
     /// Список поставщиков рекламы
-    QList<SDK::GUI::IAdSource *> mAdSourceList;
+    QList<SDK::GUI::IAdSource *> m_AdSourceList;
 
     // Клавиша - сценарий
-    QVariantMap mExternalScenarios;
+    QVariantMap m_ExternalScenarios;
 
     /// Для проверки положения главного окна
-    QTimer mCheckTopmostTimer;
+    QTimer m_CheckTopmostTimer;
 };
 
 //---------------------------------------------------------------------------

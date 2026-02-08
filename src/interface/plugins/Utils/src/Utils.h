@@ -58,10 +58,10 @@ public slots:
     QString toPlain(const QString &aSource) const;
 
     /// Перекодировать из base64 в utf8
-    QString fromBase64(const QString &aSource) const;
+    QString from_Base64(const QString &aSource) const;
 
     /// Перекодировать из urlenc(win-1251) в utf8
-    QString fromUrlEncoding(const QString &aSource) const;
+    QString from_UrlEncoding(const QString &aSource) const;
 
     /// Проигрывание звука
     void playSound(const QString &aFileName) const;
@@ -114,24 +114,24 @@ private:
     QMap<qint64, quint32> getStatistic();
 
 private:
-    QQmlEngine *mEngine;
-    mutable QMap<QString, QTextCodec *> mCodecCache;
+    QQmlEngine *m_Engine;
+    mutable QMap<QString, QTextCodec *> m_CodecCache;
 
-    QSharedPointer<Skin> mSkin;
-    QSharedPointer<Translator> mTranslator;
-    QSharedPointer<GroupModel> mGroupModel;               /// Модель иконок внутри корневых групп
-    QSharedPointer<GroupModel> mRootGroupModel;           /// Модель иконок корневых групп
-    QSharedPointer<ProviderListModel> mProviderListModel; /// Сквозной список провайдеров для поиска
-    QSharedPointer<ProviderListFilter> mProviderListFilter; /// Фильтр для поиска провайдеров
+    QSharedPointer<Skin> m_Skin;
+    QSharedPointer<Translator> m_Translator;
+    QSharedPointer<GroupModel> m_GroupModel;               /// Модель иконок внутри корневых групп
+    QSharedPointer<GroupModel> m_RootGroupModel;           /// Модель иконок корневых групп
+    QSharedPointer<ProviderListModel> m_ProviderListModel; /// Сквозной список провайдеров для поиска
+    QSharedPointer<ProviderListFilter> m_ProviderListFilter; /// Фильтр для поиска провайдеров
 
-    QString mInterfacePath;
-    QString mUserPath;
+    QString m_InterfacePath;
+    QString m_UserPath;
 
-    bool mUseCommonSounds;
-    bool mUseNarratorSounds;
-    bool mUseAutoOrderProviders;
+    bool m_UseCommonSounds;
+    bool m_UseNarratorSounds;
+    bool m_UseAutoOrderProviders;
 
-    QPointer<QObject> mGuiService;
+    QPointer<QObject> m_GuiService;
 };
 
 //------------------------------------------------------------------------------

@@ -24,13 +24,13 @@ private:
     QString getImagePath(const QString &aImageId) const;
 
 private:
-    QString mLogoPath;
-    QString mUserLogoPath;
-    const Skin *mSkin;
-    QString mInterfacePath;
+    QString m_LogoPath;
+    QString m_UserLogoPath;
+    const Skin *m_Skin;
+    QString m_InterfacePath;
 
-    QHash<QString, QImage> mBackgrounds;
-    QHash<QString, QImage> mLogos;
+    QHash<QString, QImage> m_Backgrounds;
+    QHash<QString, QImage> m_Logos;
 };
 
 //------------------------------------------------------------------------------

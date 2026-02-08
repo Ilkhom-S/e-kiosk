@@ -54,7 +54,7 @@ protected:
     virtual bool checkStatuses(TStatusData &aData);
 
     /// Обновить прошивку.
-    virtual bool performUpdateFirmware(const QByteArray &aBuffer);
+    virtual bool perform_UpdateFirmware(const QByteArray &aBuffer);
 
     /// Фоновая логика при появлении определенных состояний устройства.
     virtual void postPollingAction(const TStatusCollection &aNewStatusCollection,

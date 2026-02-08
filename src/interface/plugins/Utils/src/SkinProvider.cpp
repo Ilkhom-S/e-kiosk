@@ -15,12 +15,12 @@ SkinProvider::SkinProvider(const QString &aInterfacePath,
                            const QString &aContentPath,
                            const QString &aUserPath,
                            const Skin *aSkin)
-    : QQuickImageProvider(QQmlImageProviderBase::Image), mLogoPath(aContentPath + "/logo"),
-      mUserLogoPath(aUserPath + "/logo"), mInterfacePath(aInterfacePath), mSkin(aSkin) {}
+    : QQuickImageProvider(QQmlImageProviderBase::Image), m_LogoPath(aContentPath + "/logo"),
+      m_UserLogoPath(aUserPath + "/logo"), m_InterfacePath(aInterfacePath), m_Skin(aSkin) {}
 
 //------------------------------------------------------------------------------
 QImage SkinProvider::requestImage(const QString &aId, QSize *aSize, const QSize &aRequestedSize) {
-    QString skinName = mSkin->getName();
+    QString skinName = m_Skin->getName();
 
     if (!aId.contains("logoprovider")) {
         QString path = getImagePath(aId);
@@ -49,21 +49,21 @@ QImage SkinProvider::requestImage(const QString &aId, QSize *aSize, const QSize 
         QString background = aId.section("/", 2, 2);
         QString label = aId.section("/", 3);
 
-        QHash<QString, QImage>::iterator ilogo = mLogos.find(aId);
-        if (ilogo != mLogos.end()) {
+        QHash<QString, QImage>::iterator ilogo = m_Logos.find(aId);
+        if (ilogo != m_Logos.end()) {
             return *ilogo;
         }
 
         QHash<QString, QImage>::iterator bimage =
-            background.isEmpty() ? mBackgrounds.end() : mBackgrounds.find(background);
+            background.isEmpty() ? m_Backgrounds.end() : m_Backgrounds.find(background);
 
         // Загружаем фон
-        if (bimage == mBackgrounds.end() && !background.isEmpty()) {
+        if (bimage == m_Backgrounds.end() && !background.isEmpty()) {
             QString path = getImagePath(background);
             QImage img;
 
             if (img.load(path)) {
-                bimage = mBackgrounds.insert(background, img);
+                bimage = m_Backgrounds.insert(background, img);
             } else {
                 Log(Log::Error)
                     << QString("SkinProvider: failed to load logo background '%1' from '%2'.")
@@ -73,15 +73,15 @@ QImage SkinProvider::requestImage(const QString &aId, QSize *aSize, const QSize 
         }
 
         // Сперва логотипы киберплата, затем пользователские
-        QImage logo(mLogoPath + QDir::separator() + id + ".png");
+        QImage logo(m_LogoPath + QDir::separator() + id + ".png");
         if (logo.isNull()) {
-            logo = QImage(mUserLogoPath + QDir::separator() + id + ".png");
+            logo = QImage(m_UserLogoPath + QDir::separator() + id + ".png");
         }
 
         QImage image(aRequestedSize.isValid() ? aRequestedSize : logo.size(),
                      QImage::Format_ARGB32);
 
-        if (bimage != mBackgrounds.end()) {
+        if (bimage != m_Backgrounds.end()) {
             image = *bimage;
         } else {
             image.fill(qRgba(0, 0, 0, 0));
@@ -135,7 +135,7 @@ QImage SkinProvider::requestImage(const QString &aId, QSize *aSize, const QSize 
         painter.end();
         *aSize = image.size();
 
-        mLogos.insert(aId, image);
+        m_Logos.insert(aId, image);
 
         return image;
     }
@@ -145,7 +145,7 @@ QImage SkinProvider::requestImage(const QString &aId, QSize *aSize, const QSize 
 
 //------------------------------------------------------------------------------
 QString SkinProvider::getImagePath(const QString &aImageId) const {
-    QVariantMap skinConfig = mSkin->getConfiguration();
+    QVariantMap skinConfig = m_Skin->getConfiguration();
     QVariantMap::const_iterator it = skinConfig.find(aImageId);
 
     return it != skinConfig.end() ? it->toString() : "";

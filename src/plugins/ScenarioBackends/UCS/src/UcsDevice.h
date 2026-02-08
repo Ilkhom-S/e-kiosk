@@ -113,8 +113,8 @@ private slots:
 
 private:
     /// Параметры устройства.
-    QVariantMap mConfiguration;
-    mutable QReadWriteLock mConfigurationGuard;
+    QVariantMap m_Configuration;
+    mutable QReadWriteLock m_ConfigurationGuard;
 
     /// Установка параметра устройства.
     void setConfigParameter(const QString &aName, const QVariant &aValue);
@@ -126,12 +126,12 @@ private:
     bool containsConfigParameter(const QString &aName) const;
 
 private:
-    QString mLastGeneralizedStatus;
+    QString m_LastGeneralizedStatus;
     void sendStatus(SDK::Driver::EWarningLevel::Enum, const QString &, int);
 
 private:
-    SDK::PaymentProcessor::ICore *mCore;
-    QList<QPair<int, QString>> mStates;
+    SDK::PaymentProcessor::ICore *m_Core;
+    QList<QPair<int, QString>> m_States;
 };
 
 //--------------------------------------------------------------------------------

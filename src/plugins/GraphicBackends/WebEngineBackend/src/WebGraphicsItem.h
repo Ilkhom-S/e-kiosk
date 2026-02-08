@@ -13,7 +13,7 @@
 #include <SDK/PaymentProcessor/Scripting/Core.h>
 
 // GUI SDK
-#include <SDK/GUI/GraphicsItemInfo.h>
+#include <SDK/GUI/GraphicsItem_Info.h>
 #include <SDK/GUI/IGraphicsItem.h>
 
 //---------------------------------------------------------------------------
@@ -28,7 +28,7 @@ public:
     /// @param aInfo Информация о графическом элементе (размеры, параметры, контекст)
     /// @param aCore Указатель на ядро скриптинга платежной системы для JavaScript взаимодействия
     /// @param aLog Указатель на логгер для записи диагностической информации
-    WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo,
+    WebGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
                     SDK::PaymentProcessor::Scripting::Core *aCore,
                     ILog *aLog);
 
@@ -92,14 +92,14 @@ private slots:
     void onRefresh();
 
 private:
-    ILog *mLog;                              ///< Логгер для диагностики
-    QString mUrl;                            ///< Текущий URL страницы
-    QString mError;                          ///< Описание последней ошибки
-    QSharedPointer<QWebEngineView> mWebView; ///< WebEngine виджет для отображения веб-контента
+    ILog *m_Log;                              ///< Логгер для диагностики
+    QString m_Url;                            ///< Текущий URL страницы
+    QString m_Error;                          ///< Описание последней ошибки
+    QSharedPointer<QWebEngineView> m_WebView; ///< WebEngine виджет для отображения веб-контента
     SDK::PaymentProcessor::Scripting::Core
-        *mCoreProxy;      ///< Прокси для взаимодействия с платежной системой
-    bool mItemLoaded;     ///< Флаг готовности виджета
-    QVariantMap mContext; ///< Контекст виджета для сохранения состояния
+        *m_CoreProxy;      ///< Прокси для взаимодействия с платежной системой
+    bool m_Item_Loaded;     ///< Флаг готовности виджета
+    QVariantMap m_Context; ///< Контекст виджета для сохранения состояния
     QList<QPair<QString, QList<QVariant>>>
-        mSignalQueue; ///< Очередь сигналов для отложенной обработки
+        m_SignalQueue; ///< Очередь сигналов для отложенной обработки
 };

@@ -111,11 +111,11 @@ signals:
                              SDK::Driver::EWarningLevel::Enum aLevel);
 
 private:
-    SDK::PaymentProcessor::ICore *mCore;
-    SDK::PaymentProcessor::IDeviceService *mDeviceService;
-    SDK::Plugin::IEnvironment *mFactory;
+    SDK::PaymentProcessor::ICore *m_Core;
+    SDK::PaymentProcessor::IDeviceService *m_DeviceService;
+    SDK::Plugin::IEnvironment *m_Factory;
 
-    QVariantMap mCurrentConfiguration;
+    QVariantMap m_CurrentConfiguration;
 };
 
 //---------------------------------------------------------------------------

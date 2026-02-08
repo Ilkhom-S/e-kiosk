@@ -43,12 +43,12 @@ private:
     void operator=(const Directory &);
 
 private:
-    TPtree &mProperties;
+    TPtree &m_Properties;
 
-    QVector<SRange> mRanges;
-    QVector<SRange> mOverlappedRanges;
-    QSet<qint64> mOverlappedIDs;
-    QDateTime mRangesTimestamp;
+    QVector<SRange> m_Ranges;
+    QVector<SRange> m_OverlappedRanges;
+    QSet<qint64> m_OverlappedIDs;
+    QDateTime m_RangesTimestamp;
 };
 
 } // namespace PaymentProcessor

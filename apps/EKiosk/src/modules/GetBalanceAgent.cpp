@@ -4,21 +4,21 @@ GetBalanceAgent::GetBalanceAgent(QObject *parent) : SendRequest(parent) {
     senderName = "AGENT_BALANCE";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
+    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
 }
 
 void GetBalanceAgent::resendRequest() {
     emit emit_BalanceAgent("---", "---");
 }
 
-void GetBalanceAgent::setDataNote(const QDomNode &domElement) {
+void GetBalanceAgent::setDataNote(const QDom_Node &dom_Element) {
     resultCode = false;
     getData = false;
     balance = "resultCode";
     overdraft = "resultCode";
 
     // Парсим данные
-    parcerNote(domElement);
+    parcerNote(dom_Element);
 
     if (balance != "resultCode" && overdraft != "resultCode") {
         // Тут отправляем сигнал с балансом
@@ -29,29 +29,29 @@ void GetBalanceAgent::setDataNote(const QDomNode &domElement) {
     emit emit_BalanceAgent("---", "---");
 }
 
-void GetBalanceAgent::parcerNote(const QDomNode &domElement) {
+void GetBalanceAgent::parcerNote(const QDom_Node &dom_Element) {
     // Необходимо отпарсить документ
-    QDomNode domNode = domElement.firstChild();
+    QDom_Node dom_Node = dom_Element.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!dom_Node.isNull()) {
+        if (dom_Node.isElement()) {
 
-            QDomElement domElement = domNode.toElement();
-            QString strTag = domElement.tagName();
+            QDom_Element dom_Element = dom_Node.toElement();
+            QString strTag = dom_Element.tagName();
 
-            // if(Debugger) qDebug() << strTag + " " + domElement.text();
+            // if(Debugger) qDebug() << strTag + " " + dom_Element.text();
 
             // Данные о дилере
             if (strTag == "balance") {
-                balance = domElement.text();
+                balance = dom_Element.text();
             }
 
             if (strTag == "overdraft") {
-                overdraft = domElement.text();
+                overdraft = dom_Element.text();
             }
         }
-        parcerNote(domNode);
-        domNode = domNode.nextSibling();
+        parcerNote(dom_Node);
+        dom_Node = dom_Node.nextSibling();
     }
 }
 

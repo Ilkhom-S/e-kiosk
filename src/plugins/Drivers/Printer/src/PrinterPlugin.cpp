@@ -43,31 +43,31 @@ template <class T> TParameterList CitizenCPP8001Parameters(const QString &aModel
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList CustomParameters(const QStringList &aModels) {
+template <class T> TParameterList Custom_Parameters(const QStringList &aModels) {
     return commonParameters<T>(aModels)
-           << setRemoteSensor(true) << setLineSpacing(45, 85, 55, 5) << setJamSensorEnabled();
+           << setRemoteSensor(true) << setLineSpacing(45, 85, 55, 5) << setJam_SensorEnabled();
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList CommonCustomVKP80Parameters(const QString &aModel) {
+template <class T> TParameterList CommonCustom_VKP80Parameters(const QString &aModel) {
     return singleParameters<T>(aModel)
            << setRemoteSensor(true) << setPresentationLength("", 2) << setLeftReceiptTimeout()
-           << setLineSpacing(45, 85, 55, 5) << setJamSensorEnabled();
+           << setLineSpacing(45, 85, 55, 5) << setJam_SensorEnabled();
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList CustomVKP80IIIParameters(const QString &aModel) {
-    return CommonCustomVKP80Parameters<T>(aModel) << setLeftReceiptAction(
+template <class T> TParameterList Custom_VKP80IIIParameters(const QString &aModel) {
+    return CommonCustom_VKP80Parameters<T>(aModel) << setLeftReceiptAction(
                PrinterSettings::PreviousAndNotTakenReceipts, true, true, PrinterValues::Retract);
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList CustomVKP80Parameters(const QString &aModel) {
-    return CommonCustomVKP80Parameters<T>(aModel)
+template <class T> TParameterList Custom_VKP80Parameters(const QString &aModel) {
+    return CommonCustom_VKP80Parameters<T>(aModel)
            << setLoopEnabled("", false)
            << setLeftReceiptAction(PrinterSettings::PreviousReceipt, true, true, Values::Auto)
            << setLeftReceiptAction(PrinterSettings::NotTakenReceipt, true, true, Values::Auto)
-           << setCustomCodepage();
+           << setCustom_Codepage();
 }
 
 //------------------------------------------------------------------------------
@@ -102,14 +102,14 @@ template <class T> TParameterList EjectorStarParameters(const QStringList &aMode
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList SystemPrintersParameters(const QString &aModel) {
+template <class T> TParameterList System_PrintersParameters(const QString &aModel) {
     return modifyPriority(singleParameters<T>(aModel), EDetectingPriority::Fallback)
            << setLineSpacing(60, 120, 100, 10) << setFontSize(6, 18, 12, 1);
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList SystemPrinterParameters(const QString &aModel) {
-    return SystemPrintersParameters<T>(aModel) << setPaginationDisabled() << setLeftMargin();
+template <class T> TParameterList System_PrinterParameters(const QString &aModel) {
+    return System_PrintersParameters<T>(aModel) << setPaginationDisabled() << setLeftMargin();
 }
 
 //------------------------------------------------------------------------------
@@ -135,16 +135,16 @@ BEGIN_REGISTER_PLUGIN
 
 // Comment out Serial printers to focus on LibUSB printers for macOS
 // SINGLE_PRINTER_PLUGIN(TSerialPOSPrinter, DefaultPOSPrinterParameters, Default POS Printer)
-// COMMON_PRINTER_PLUGIN(SerialCustomPrinter, CustomParameters)
-// CUSTOM_PRINTER_PLUGIN(SerialCustomTG2480H, CustomParameters, Custom TG2480H)
-CUSTOM_PRINTER_PLUGIN(LibUSBCustomTG2480H, CustomParameters, Custom TG2480H)
+// COMMON_PRINTER_PLUGIN(SerialCustom_Printer, Custom_Parameters)
+// CUSTOM_PRINTER_PLUGIN(SerialCustom_TG2480H, Custom_Parameters, Custom TG2480H)
+CUSTOM_PRINTER_PLUGIN(LibUSBCustom_TG2480H, Custom_Parameters, Custom TG2480H)
 // SINGLE_PRINTER_PLUGIN(SerialCitizenCBM1000II, CitizenCBM1000IIParameters, Citizen CBM - 1000II)
 // SINGLE_PRINTER_PLUGIN(CitizenCPP8001, CitizenCPP8001Parameters, Citizen CPP - 8001)
 // SINGLE_PRINTER_PLUGIN(SerialCitizenCTS2000, CitizenCTS2000Parameters, Citizen CTS - 2000)
-// SINGLE_PRINTER_PLUGIN(SerialCustomVKP80, CustomVKP80Parameters, Custom VKP - 80)
-SINGLE_PRINTER_PLUGIN(LibUSBCustomVKP80, CustomVKP80Parameters, Custom VKP - 80)
-// SINGLE_PRINTER_PLUGIN(SerialCustomVKP80III, CustomVKP80IIIParameters, Custom VKP - 80 III)
-// SINGLE_PRINTER_PLUGIN(LibUSBCustomVKP80III, CustomVKP80IIIParameters, Custom VKP-80 III)
+// SINGLE_PRINTER_PLUGIN(SerialCustom_VKP80, Custom_VKP80Parameters, Custom VKP - 80)
+SINGLE_PRINTER_PLUGIN(LibUSBCustom_VKP80, Custom_VKP80Parameters, Custom VKP - 80)
+// SINGLE_PRINTER_PLUGIN(SerialCustom_VKP80III, Custom_VKP80IIIParameters, Custom VKP - 80 III)
+// SINGLE_PRINTER_PLUGIN(LibUSBCustom_VKP80III, Custom_VKP80IIIParameters, Custom VKP-80 III)
 // SINGLE_PRINTER_PLUGIN(SerialCitizenPPU700, CitizenPPU700Parameters,
 //                       Citizen PPU - 700) // TODO: добавить параметры как у Custom VKP-80
 // SINGLE_PRINTER_PLUGIN(SerialCitizenPPU700II, CitizenPPU700Parameters, Citizen PPU - 700II)
@@ -156,9 +156,9 @@ SINGLE_PRINTER_PLUGIN(LibUSBCitizenPPU700II, CitizenPPU700Parameters, Citizen PP
 // COMMON_PRINTER_PLUGIN(StarPrinter, StarParameters)
 // COMMON_PRINTER_PLUGIN(EjectorStarPrinter, EjectorStarParameters)
 // COMMON_PRINTER_PLUGIN(AV268, commonParameters)
-// SINGLE_PRINTER_PLUGIN(SystemPrinter, SystemPrinterParameters, System)
-// SINGLE_PRINTER_PLUGIN(SunphorPOS58IV, SystemPrintersParameters, Sunphor POS58IV)
-// SINGLE_PRINTER_PLUGIN(ICTGP83, SystemPrintersParameters, ICT GP83)
+// SINGLE_PRINTER_PLUGIN(System_Printer, System_PrinterParameters, System)
+// SINGLE_PRINTER_PLUGIN(SunphorPOS58IV, System_PrintersParameters, Sunphor POS58IV)
+// SINGLE_PRINTER_PLUGIN(ICTGP83, System_PrintersParameters, ICT GP83)
 END_REGISTER_PLUGIN
 
 //------------------------------------------------------------------------------

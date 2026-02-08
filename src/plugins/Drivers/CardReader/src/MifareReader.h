@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 namespace CMifareReader {
 /// Запрос получения версии карты.
-const QByteArray GetVersionRequest = QByteArray::fromRawData("\x80\x60\x00\x00\x00", 5);
+const QByteArray GetVersionRequest = QByteArray::from_RawData("\x80\x60\x00\x00\x00", 5);
 
 /// Заголовок ответа на запрос версии карты.
 extern const char SAM2Header[];
@@ -56,13 +56,13 @@ protected:
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
     /// Список найденных в системе ридеров
-    QStringList mDetectedReaders;
+    QStringList m_DetectedReaders;
 
     /// Адаптер для работы с PS/CS API
-    PCSCReader mReader;
+    PCSCReader m_Reader;
 
     /// Готов ли к работе (инициализировался успешно, ошибок нет).
-    bool mReady;
+    bool m_Ready;
 };
 
 //------------------------------------------------------------------------------

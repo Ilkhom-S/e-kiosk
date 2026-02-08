@@ -41,8 +41,8 @@ private slots:
     void onData(const QVariantMap &aData);
 
 private:
-    ObjectPointer<SDK::Driver::IHID> mHID;
-    QList<QPair<QString, QString>> mTestNames;
+    ObjectPointer<SDK::Driver::IHID> m_HID;
+    QList<QPair<QString, QString>> m_TestNames;
 };
 
 //------------------------------------------------------------------------------

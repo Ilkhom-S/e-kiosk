@@ -131,28 +131,28 @@ private slots:
     void onConfigurationChanged();
 
 private:
-    SDK::Plugin::IPluginLoader *mPluginLoader;
+    SDK::Plugin::IPluginLoader *m_PluginLoader;
 
     /// Список свободных системных зависимых устройств
-    QSet<QString> m_FreeSystemNames;
+    QSet<QString> m_FreeSystem_Names;
 
     /// Таблица принадлежности драйвера и системного имени зависимого устройства
-    QMultiMap<QString, QString> mRDSystemNames;
+    QMultiMap<QString, QString> m_RDSystem_Names;
 
     /// Таблица имен требуемых ресурсов.
-    QMap<QString, QString> mRequiredResources;
+    QMap<QString, QString> m_RequiredResources;
 
     /// Таблица зависимостей.
     TDeviceDependencyMap m_DeviceDependencyMap;
 
     /// Таблица драйверов для конкретного устройства.
-    QMap<QString, QStringList> mDriverList;
+    QMap<QString, QStringList> m_DriverList;
 
     /// Флаг остановки поиска устройств.
     char m_StopFlag;
 
     /// Таблица всех возможных значений параметров устройств.
-    QMap<QString, SDK::Plugin::TParameterList> mDriverParameters;
+    QMap<QString, SDK::Plugin::TParameterList> m_DriverParameters;
 
     /// Список типов найденных устройств.
     QSet<QString> m_DetectedDeviceTypes;

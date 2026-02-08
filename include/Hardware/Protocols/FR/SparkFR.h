@@ -14,7 +14,7 @@ public:
 
 private:
     /// Выполнить команду.
-    TResult performCommand(const QByteArray &aCommandData, QByteArray &aAnswerData, int aTimeout);
+    TResult perform_Command(const QByteArray &aCommandData, QByteArray &aAnswerData, int aTimeout);
 
     /// Подсчет контрольной суммы пакета данных.
     char calcCRC(const QByteArray &aData);

@@ -58,8 +58,8 @@ public:
     void updatePopup(const QVariantMap &aParameters);
     void setReceiver(QObject *aReceiver);
     void emitPopupSignal(const QVariantMap &aParameters);
-    void startWaitTimer() { mWaitTimer.start(CMessageBox::WaitWindowTimeout); }
-    void stopWaitTimer() { mWaitTimer.stop(); }
+    void startWaitTimer() { m_WaitTimer.start(CMessageBox::WaitWindowTimeout); }
+    void stopWaitTimer() { m_WaitTimer.stop(); }
 
     void updateParentWidget(QWidget *aParent);
 
@@ -73,16 +73,16 @@ private:
     MessageBox();
     ~MessageBox() {}
 
-    static MessageBox *getInstance() { return mInstance; }
+    static MessageBox *getInstance() { return m_Instance; }
 
 private:
-    static MessageBox *mInstance;
+    static MessageBox *m_Instance;
 
 private:
-    QPointer<QObject> mSignalReceiver;
-    QTimer mWaitTimer;
-    QPointer<MessageWindow> mWindow;
-    QWidget *mParentWidget;
+    QPointer<QObject> m_SignalReceiver;
+    QTimer m_WaitTimer;
+    QPointer<MessageWindow> m_Window;
+    QWidget *m_ParentWidget;
 };
 
 } // namespace GUI

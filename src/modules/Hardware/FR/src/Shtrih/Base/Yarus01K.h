@@ -10,8 +10,8 @@ class Yarus01K : public ShtrihRetractorFR {
 
 public:
     Yarus01K() {
-        mDeviceName = CShtrihFR::Models::CData()[CShtrihFR::Models::ID::Yarus01K].name;
-        mSupportedModels = QStringList() << mDeviceName;
+        m_DeviceName = CShtrihFR::Models::CData()[CShtrihFR::Models::ID::Yarus01K].name;
+        m_SupportedModels = QStringList() << m_DeviceName;
     }
 };
 

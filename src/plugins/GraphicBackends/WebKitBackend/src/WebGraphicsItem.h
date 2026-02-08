@@ -14,7 +14,7 @@
 #include <SDK/PaymentProcessor/Scripting/Core.h>
 
 // GUI SDK
-#include <SDK/GUI/GraphicsItemInfo.h>
+#include <SDK/GUI/GraphicsItem_Info.h>
 #include <SDK/GUI/IGraphicsItem.h>
 
 //---------------------------------------------------------------------------
@@ -23,9 +23,9 @@ class WebGraphicsItem : public QObject, public SDK::GUI::IGraphicsItem, protecte
     Q_OBJECT
 
 public:
-    WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo,
+    WebGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
                     SDK::PaymentProcessor::Scripting::Core *aCore,
-                    ILog *mLog);
+                    ILog *m_Log);
 
     /// Вызывается перед отображением виджета.
     virtual void show();
@@ -66,15 +66,15 @@ private slots:
     void onRefresh();
 
 private:
-    ILog *mLog;
-    QString mUrl;
-    QString mError;
-    QSharedPointer<QGraphicsWebView> mWebView;
-    SDK::PaymentProcessor::Scripting::Core *mCoreProxy;
-    SDK::PaymentProcessor::EEventType mEventTypeMetaInfo;
-    bool mItemLoaded;
-    QVariantMap mContext;
-    QList<QPair<QString, QList<QVariant>>> mSignalQueue;
+    ILog *m_Log;
+    QString m_Url;
+    QString m_Error;
+    QSharedPointer<QGraphicsWebView> m_WebView;
+    SDK::PaymentProcessor::Scripting::Core *m_CoreProxy;
+    SDK::PaymentProcessor::EEventType m_EventTypeMetaInfo;
+    bool m_Item_Loaded;
+    QVariantMap m_Context;
+    QList<QPair<QString, QList<QVariant>>> m_SignalQueue;
 };
 
 //---------------------------------------------------------------------------

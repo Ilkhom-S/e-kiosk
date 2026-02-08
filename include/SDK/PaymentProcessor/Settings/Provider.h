@@ -14,18 +14,18 @@ namespace PaymentProcessor {
 /// Структура описывает одно поле с данными, необходимое для формирования платежа.
 struct SProviderField {
     /// Структура описывает элемент списка возможных значения для поля типа "список".
-    struct SEnumItem {
+    struct SEnum_Item {
         QString title;
         QString value;
         QString id;
         int sort;
 
-        QList<SEnumItem> subItems;
+        QList<SEnum_Item> subItems;
 
-        SEnumItem() : sort(0) {}
+        SEnum_Item() : sort(0) {}
     };
 
-    typedef QList<SEnumItem> TEnumItems;
+    typedef QList<SEnum_Item> TEnum_Items;
 
     /// Подсистемы для маскирования поля
     enum SecuritySubsystem { Default, Display, Log, Printer };
@@ -58,7 +58,7 @@ struct SProviderField {
     QString backButton;
     QString forwardButton;
 
-    TEnumItems enumItems; /// Возможные значения для спискового поля.
+    TEnum_Items enum_Items; /// Возможные значения для спискового поля.
 
     QString defaultValue; /// Значение по умолчанию.
 

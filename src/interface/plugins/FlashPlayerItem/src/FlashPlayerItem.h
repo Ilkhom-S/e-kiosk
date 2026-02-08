@@ -32,10 +32,10 @@ signals:
     void clicked(const QVariant &aParameters);
 
 private:
-    QGraphicsWebView *mWebView;
-    QString mMovie;
-    QString mHtmlWrapper;
-    QRectF mGeometry;
+    QGraphicsWebView *m_WebView;
+    QString m_Movie;
+    QString m_HtmlWrapper;
+    QRectF m_Geometry;
 };
 
 //--------------------------------------------------------------------------

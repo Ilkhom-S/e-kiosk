@@ -38,7 +38,7 @@ bool CCNetCashcodeGX::checkConnectionAbility() {
 }
 
 //---------------------------------------------------------------------------------
-TResult CCNetCashcodeGX::performCommand(const QByteArray &aCommand,
+TResult CCNetCashcodeGX::perform_Command(const QByteArray &aCommand,
                                         const QByteArray &aCommandData,
                                         QByteArray *aAnswer) {
     if (m_IOPort->getType() == SDK::Driver::EPortTypes::VirtualCOM) {
@@ -47,7 +47,7 @@ TResult CCNetCashcodeGX::performCommand(const QByteArray &aCommand,
         // m_IOPort->setDeviceConfiguration(configuration);
     }
 
-    return CCNetCashAcceptorBase::performCommand(aCommand, aCommandData, aAnswer);
+    return CCNetCashAcceptorBase::perform_Command(aCommand, aCommandData, aAnswer);
 }
 
 //--------------------------------------------------------------------------------
@@ -94,13 +94,13 @@ bool CCNetCashcodeGX::processUpdating(const QByteArray &aBuffer, int aSectionSiz
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetCashcodeGX::performBaudRateChanging(const TPortParameters &aPortParameters) {
+bool CCNetCashcodeGX::perform_BaudRateChanging(const TPortParameters &aPortParameters) {
     int baudRate = aPortParameters[EParameters::BaudRate];
     QString hexBaudRate =
         QString("%1").arg(qToBigEndian(uint(baudRate)) >> 8, 6, 16, QChar(ASCII::Zero));
 
     return processCommand(CCCNet::Commands::UpdatingFirmware::SetBaudRate,
-                          ProtocolUtils::getBufferFromString(hexBaudRate)) &&
+                          ProtocolUtils::getBufferFrom_String(hexBaudRate)) &&
            m_IOPort->setParameters(aPortParameters);
 }
 

@@ -26,9 +26,9 @@ public:
     virtual void setGlobalLevel(LogLevel::Enum aMaxLogLevel);
 
 protected:
-    QMap<QString, std::shared_ptr<ILog>> mLogs;
-    QMutex mMutex;
-    LogLevel::Enum mMaxLogLevel;
+    QMap<QString, std::shared_ptr<ILog>> m_Logs;
+    QMutex m_Mutex;
+    LogLevel::Enum m_MaxLogLevel;
 };
 
 //---------------------------------------------------------------------------

@@ -21,7 +21,7 @@ protected:
 
     /// Выполнить команду.
     virtual TResult
-    performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout);
+    perform_Command(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout);
 
     /// Обработка ответа на предыдущей команды. Автоисправление некоторых ошибок.
     virtual bool processAnswer(const QByteArray &aCommand, char aError);
@@ -39,7 +39,7 @@ protected:
     void getEKLZStatus(TStatusCodes &aStatusCodes);
 
     /// Можно ли смысл запрашивать статус ЭКЛЗ.
-    bool canPerformEKLZRequest();
+    bool canPerform_EKLZRequest();
 
     /// Установить флаги по ошибке в ответе.
     virtual void setErrorFlags(const QByteArray &aCommand, char aError);

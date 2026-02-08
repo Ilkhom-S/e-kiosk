@@ -166,7 +166,7 @@ const uchar PaperNearEnd = 0x01;          /// Бумага почти закон
 const uchar PrintingHeadTemperatureError =
     0x08;                            /// Температурная ошибка печатающей головки принтера
 const uchar PowerSupplyError = 0x20; /// Ошибка питания принтера
-const uchar PaperJamError = 0x08;    /// Бумага зажевалась
+const uchar PaperJam_Error = 0x08;    /// Бумага зажевалась
 const uchar PrinterIsOK = 0x00;      /// Нет ошибок
 
 // Параметры шрифта
@@ -186,7 +186,7 @@ const uchar PrinterFontUnderline = 0x2D;    /// Подчеркнутый
 
 const uchar PrinterCommandSetBarCodeHeightSecondByte = 0x68; /// Высота штрих-кода
 const uchar PrinterCommandPrintBarCodeSecondByte = 0x6B;     /// Печать штрих-кода
-const uchar PrinterCommandSetBarCodeSystemThirdByte = 0x49;  /// Система штрих-кода CODE128
+const uchar PrinterCommandSetBarCodeSystem_ThirdByte = 0x49;  /// Система штрих-кода CODE128
 const uchar PrinterCommandSetBarCodeHRIPositionSecondByte = 0x48;
 const uchar PrinterCommandSetBarCodeFontSizeSecondByte = 0x66;
 const uchar PrinterCommandSetBarCodeWidthSecondByte = 0x77;

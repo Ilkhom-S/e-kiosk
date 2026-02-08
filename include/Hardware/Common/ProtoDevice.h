@@ -53,7 +53,7 @@ protected slots:
 
     /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
     /// initialize().
-    virtual bool performRelease() { return true; };
+    virtual bool perform_Release() { return true; };
 };
 
 //--------------------------------------------------------------------------------

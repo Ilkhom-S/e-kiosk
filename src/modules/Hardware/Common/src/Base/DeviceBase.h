@@ -29,15 +29,15 @@ extern const char StatusSeparator[];
 
 //--------------------------------------------------------------------------------
 #define START_IN_WORKING_THREAD(aFunction)                                                         \
-    if ((!this->mOperatorPresence || (this->getConfigParameter(CHardware::CallingType) !=          \
+    if ((!this->m_OperatorPresence || (this->getConfigParameter(CHardware::CallingType) !=          \
                                       CHardware::CallingTypes::Internal)) &&                       \
         !this->isWorkingThread()) {                                                                \
-        if (this->mThread.isRunning()) {                                                           \
+        if (this->m_Thread.isRunning()) {                                                           \
             QMetaObject::invokeMethod(this, #aFunction, Qt::QueuedConnection);                     \
         } else {                                                                                   \
             this->connect(                                                                         \
-                &this->mThread, SIGNAL(started()), this, SLOT(aFunction()), Qt::UniqueConnection); \
-            this->mThread.start();                                                                 \
+                &this->m_Thread, SIGNAL(started()), this, SLOT(aFunction()), Qt::UniqueConnection); \
+            this->m_Thread.start();                                                                 \
         }                                                                                          \
         return;                                                                                    \
     }
@@ -182,67 +182,67 @@ protected:
     int m_MaxBadAnswers;
 
     /// Признак принудительного включения буфера статусов.
-    bool mForceStatusBufferEnabled;
+    bool m_ForceStatusBufferEnabled;
 
     /// Версия драйвера.
-    QString mVersion;
+    QString m_Version;
 
     /// После polling устройства эмитить статусы и выполнять device-specific действия.
-    bool mPostPollingAction;
+    bool m_PostPollingAction;
 
     /// Теоретически исправимые после пере инициализации ошибки.
-    TStatusCodes mRecoverableErrors;
+    TStatusCodes m_RecoverableErrors;
 
     /// Неустойчивые пограничные состояния (не-ошибки), в которых нельзя исправлять исправимые
     /// ошибки.
-    TStatusCodes mUnsafeStatusCodes;
+    TStatusCodes m_UnsafeStatusCodes;
 
     /// Устройство протестировано на совместимость.
-    bool mVerified;
+    bool m_Verified;
 
     /// Модель соответствует своему плагину.
-    bool mModelCompatibility;
+    bool m_ModelCompatibility;
 
     /// Мьютекс для блокировки polling при выполнении внешних операций.
-    QRecursiveMutex mExternalMutex;
+    QRecursiveMutex m_ExternalMutex;
 
     /// Мьютекс для блокировки запросов к логическим ресурсам (контейнеры и т.п.).
-    mutable QRecursiveMutex mResourceMutex;
+    mutable QRecursiveMutex m_ResourceMutex;
 
     /// Экземпляр класса-описателя статусов устройства.
-    DeviceStatusCode::PSpecifications mStatusCodesSpecification;
+    DeviceStatusCode::PSpecifications m_StatusCodesSpecification;
 
     /// Кэш состояний устройства. Фильтрованы только несуществующие, но не несущественные статусы,
     /// применен буфер статусов.
-    TStatusCollection mStatusCollection;
+    TStatusCollection m_StatusCollection;
 
     /// История состояний устройства. Фильтрованы несуществующие статусы, применен буфер статусов.
     typedef HistoryList<TStatusCollection> TStatusCollectionList;
-    TStatusCollectionList mStatusCollectionHistory;
+    TStatusCollectionList m_StatusCollectionHistory;
 
     /// Уровень тревожности для последнего отправленного в пп набора статусов.
-    SDK::Driver::EWarningLevel::Enum mLastWarningLevel;
+    SDK::Driver::EWarningLevel::Enum m_LastWarningLevel;
 
     /// Устройство подключено.
-    bool mConnected;
+    bool m_Connected;
 
     /// Статус-коды для фильтрации 3-го уровня.
-    TStatusCollection mExcessStatusCollection;
+    TStatusCollection m_ExcessStatusCollection;
 
     /// Флаг старой прошивки.
-    bool mOldFirmware;
+    bool m_OldFirmware;
 
     /// Флаг необходимости перезагрузки устройства по питанию.
-    bool mNeedReboot;
+    bool m_NeedReboot;
 
     /// Количество повторов при инициализации.
-    int mInitializeRepeatCount;
+    int m_InitializeRepeatCount;
 
     /// Может находиться авто поиском.
-    bool mAutoDetectable;
+    bool m_AutoDetectable;
 
     /// Статусы, наличие которых в ответе на статус запускает работу буфера статусов.
-    TStatusCodes mReplaceableStatuses;
+    TStatusCodes m_ReplaceableStatuses;
 };
 
 //---------------------------------------------------------------------------

@@ -7,11 +7,11 @@
 #include <SDK/Plugins/PluginFactory.h>
 
 PrintersPluginFactory::PrintersPluginFactory() {
-    mName = "Printers";
-    mDescription = "Printer driver library.";
-    mAuthor = "Humo";
-    mVersion = "1.0";
-    mModuleName = "printers"; // Название dll/so модуля без расширения
+    m_Name = "Printers";
+    m_Description = "Printer driver library.";
+    m_Author = "Humo";
+    m_Version = "1.0";
+    m_ModuleName = "printers"; // Название dll/so модуля без расширения
 }
 
 //------------------------------------------------------------------------------

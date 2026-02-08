@@ -7,7 +7,7 @@
 #include "Hardware/FR/FRErrorDescription.h"
 
 //--------------------------------------------------------------------------------
-namespace CPrimFR {
+namespace CPrim_FR {
 /// Данные команды и ответа для взаимодействия с протоколом
 typedef QList<QByteArray> TData;
 
@@ -36,6 +36,6 @@ public:
     }
 };
 } // namespace Errors
-} // namespace CPrimFR
+} // namespace CPrim_FR
 
 //--------------------------------------------------------------------------------

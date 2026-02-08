@@ -76,17 +76,17 @@ protected:
 
 private:
     /// Указатель на ядро.
-    ICore *mCore;
+    ICore *m_Core;
     /// Указатель на сервис принтера.
-    IPrinterService *mPrinterService;
+    IPrinterService *m_PrinterService;
     /// Указатель на сервис платежей.
-    IPaymentService *mPaymentService;
+    IPaymentService *m_PaymentService;
     /// Тип информации о задании.
     typedef QPair<qint64, QString> TJobInfo;
     /// Карта напечатанных заданий.
-    QMap<int, TJobInfo> mPrintedJobs;
+    QMap<int, TJobInfo> m_PrintedJobs;
     /// Синхронизатор проверок.
-    QFutureSynchronizer<void> mCheckSynchronizer;
+    QFutureSynchronizer<void> m_CheckSynchronizer;
 };
 
 //------------------------------------------------------------------------------

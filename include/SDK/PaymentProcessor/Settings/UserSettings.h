@@ -29,7 +29,7 @@ public:
     bool useStackerID() const;
 
 private:
-    TPtree &mProperties;
+    TPtree &m_Properties;
 
 private:
     Q_DISABLE_COPY(UserSettings);

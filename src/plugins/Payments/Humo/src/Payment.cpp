@@ -42,14 +42,14 @@ const char TemporarySession[] = "temporary_session";
 //------------------------------------------------------------------------------
 Payment::Payment(PaymentFactory *aFactory)
     : PaymentBase(aFactory, aFactory->getCore()),
-      mRequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
-    mRequestSender.setResponseCreator(boost::bind(
+      m_RequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
+    m_RequestSender.setResponseCreator(boost::bind(
         &Payment::createResponse, this, boost::placeholders::_1, boost::placeholders::_2));
 }
 
 //------------------------------------------------------------------------------
 PaymentFactory *Payment::getPaymentFactory() const {
-    return dynamic_cast<PaymentFactory *>(mFactory);
+    return dynamic_cast<PaymentFactory *>(m_Factory);
 }
 
 //------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ Response *Payment::createResponse(const Request &aRequest, const QString &aRespo
 
 //------------------------------------------------------------------------------
 Response *Payment::sendRequest(const QUrl &aUrl, Request &aRequest) {
-    mRequestSender.setCryptKeyPair(mProviderSettings.processor.keyPair);
+    m_RequestSender.setCryptKeyPair(m_ProviderSettings.processor.keyPair);
 
     toLog(LogLevel::Normal,
           QString("Payment %1. Sending request to url %2. ").arg(getID()).arg(aUrl.toString()) +
@@ -87,7 +87,7 @@ Response *Payment::sendRequest(const QUrl &aUrl, Request &aRequest) {
     RequestSender::ESendError error;
 
     std::unique_ptr<Response> response(
-        mRequestSender.post(aUrl, aRequest, RequestSender::Solid, error));
+        m_RequestSender.post(aUrl, aRequest, RequestSender::Solid, error));
     if (!response) {
         toLog(LogLevel::Error,
               QString("Payment %1. Failed to send request: %2.")
@@ -123,12 +123,12 @@ Response *Payment::sendRequest(const QUrl &aUrl, Request &aRequest) {
 //---------------------------------------------------------------------------
 bool Payment::isCriticalError(int aError) const {
     switch (aError) {
-    case EServerError::BadSumFormat:
+    case EServerError::BadSum_Format:
     case EServerError::BadNumberFormat:
     case EServerError::BadAccountFormat:
     case EServerError::OperatorNumberReject:
     case EServerError::ErrorDate:
-    case EServerError::MaxSumExceeded: {
+    case EServerError::MaxSum_Exceeded: {
         return true;
     }
 
@@ -146,16 +146,16 @@ bool Payment::check(bool aFakeCheck) {
               QString("Payment %1. %2, operator: %3 (%4), session: %5.")
                   .arg(getID())
                   .arg(CPayment::Requests::FakeCheck)
-                  .arg(mProviderSettings.id)
-                  .arg(mProviderSettings.name)
+                  .arg(m_ProviderSettings.id)
+                  .arg(m_ProviderSettings.name)
                   .arg(getSession()));
     } else {
         toLog(LogLevel::Normal,
               QString("Payment %1. %2, operator: %3 (%4), session: %5, amount_all: %6, amount: %7.")
                   .arg(getID())
                   .arg(CPayment::Requests::Check)
-                  .arg(mProviderSettings.id)
-                  .arg(mProviderSettings.name)
+                  .arg(m_ProviderSettings.id)
+                  .arg(m_ProviderSettings.name)
                   .arg(getSession())
                   .arg(getAmountAll())
                   .arg(getAmount()));
@@ -170,7 +170,7 @@ bool Payment::check(bool aFakeCheck) {
         return false;
     }
 
-    QUrl url(mProviderSettings.processor.requests[CPayment::Requests::Check].url);
+    QUrl url(m_ProviderSettings.processor.requests[CPayment::Requests::Check].url);
     if (!url.isValid()) {
         toLog(LogLevel::Error, QString("Payment %1. Can't find url for operation.").arg(getID()));
 
@@ -209,8 +209,8 @@ bool Payment::pay() {
           QString("Payment %1. %2, operator: %3 (%4), session: %5, amount_all: %6, amount: %7.")
               .arg(getID())
               .arg(CPayment::Requests::Pay)
-              .arg(mProviderSettings.id)
-              .arg(mProviderSettings.name)
+              .arg(m_ProviderSettings.id)
+              .arg(m_ProviderSettings.name)
               .arg(getSession())
               .arg(getAmountAll())
               .arg(getAmount()));
@@ -223,7 +223,7 @@ bool Payment::pay() {
         return false;
     }
 
-    QUrl url(mProviderSettings.processor.requests[CPayment::Requests::Pay].url);
+    QUrl url(m_ProviderSettings.processor.requests[CPayment::Requests::Pay].url);
     if (!url.isValid()) {
         toLog(LogLevel::Error, QString("Payment %1. Can't find url for operation.").arg(getID()));
 
@@ -254,8 +254,8 @@ bool Payment::status() {
           QString("Payment %1. %2, operator: %3 (%4), session: %5.")
               .arg(getID())
               .arg(CPayment::Requests::Status)
-              .arg(mProviderSettings.id)
-              .arg(mProviderSettings.name)
+              .arg(m_ProviderSettings.id)
+              .arg(m_ProviderSettings.name)
               .arg(getSession()));
 
     QScopedPointer<Request> request(createRequest(CPayment::Requests::Status));
@@ -266,7 +266,7 @@ bool Payment::status() {
         return false;
     }
 
-    QUrl url(mProviderSettings.processor.requests[CPayment::Requests::Status].url);
+    QUrl url(m_ProviderSettings.processor.requests[CPayment::Requests::Status].url);
     if (!url.isValid()) {
         toLog(LogLevel::Error, QString("Payment %1. Can't find url for operation.").arg(getID()));
 
@@ -324,11 +324,11 @@ void Payment::setProcessError() {
 }
 
 //------------------------------------------------------------------------------
-void Payment::performTransaction() {
+void Payment::perform_Transaction() {
     toLog(LogLevel::Normal, QString("Payment %1. Processing...").arg(getID()));
 
     if (check(false)) {
-        performTransactionPay();
+        perform_TransactionPay();
 
         return;
     }
@@ -386,7 +386,7 @@ void Payment::performTransaction() {
 }
 
 //------------------------------------------------------------------------------
-void Payment::performTransactionPay() {
+void Payment::perform_TransactionPay() {
     // Если дошли до этапа оплаты, сохраняем данные в базу, чтобы предотвратить задвоение платежа.
     setParameter(SParameter(PPSDK::CPayment::Parameters::Step, CPayment::Steps::Pay, true));
 
@@ -479,7 +479,7 @@ void Payment::process() {
                         PPSDK::CPayment::Parameters::Session, createPaymentSession(), true));
                 }
 
-                performTransaction();
+                perform_Transaction();
             } else {
                 if (!status()) {
                     setProcessError();
@@ -619,7 +619,7 @@ bool Payment::remove() {
 }
 
 //------------------------------------------------------------------------------
-bool Payment::performStep(int aStep) {
+bool Payment::perform_Step(int aStep) {
     bool result = false;
 
     switch (aStep) {

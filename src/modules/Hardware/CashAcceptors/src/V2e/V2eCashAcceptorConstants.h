@@ -57,7 +57,7 @@ const char Return = '\x81';         /// Вернуть.
 const char Reset = '\x36';          /// Сброс.
 const char SetBillEnables = '\x41'; /// Включить на прием денег.
 const char GetParTable = '\xE5';    /// Получить таблицу номиналов.
-const char SetCommMode = '\x40';    /// Установить режим (polling/interrupt) и доступность эскроу.
+const char SetComm_Mode = '\x40';    /// Установить режим (polling/interrupt) и доступность эскроу.
 const char SetOrientation = '\x43'; /// Установить ориентацию купюры.
 const char Retransmit = '\x77';     /// Переспросить ответ.
 const char Uninhibited = '\xF1';    /// Попытаться выйти из Inhibit-а.
@@ -102,21 +102,21 @@ public:
             4, 0, BillAcceptorStatusCode::BillOperation::Stacking, "Bill on stacker conveyor");
 
         /// Группа дополнительных девайс-кодов.
-        mErrors.addStatus('\x07',
+        m_Errors.addStatus('\x07',
                           BillAcceptorStatusCode::Reject::Verification); // TODO: vs Identification?
-        mErrors.addStatus('\x08', BillAcceptorStatusCode::Reject::InhibitNote);
-        mErrors.addStatus('\x0B', BillAcceptorStatusCode::Reject::DoubleCorrelation);
-        mErrors.addStatus('\x0C', BillAcceptorStatusCode::Reject::MagneticSensor);
-        mErrors.addStatus('\x0D',
+        m_Errors.addStatus('\x08', BillAcceptorStatusCode::Reject::InhibitNote);
+        m_Errors.addStatus('\x0B', BillAcceptorStatusCode::Reject::DoubleCorrelation);
+        m_Errors.addStatus('\x0C', BillAcceptorStatusCode::Reject::MagneticSensor);
+        m_Errors.addStatus('\x0D',
                           BillAcceptorStatusCode::Reject::Length,
                           "Bill is unable to pass through chamber");
-        mErrors.addStatus('\x0E', BillAcceptorStatusCode::OperationError::Accept);
-        mErrors.addStatus('\x0F',
+        m_Errors.addStatus('\x0E', BillAcceptorStatusCode::OperationError::Accept);
+        m_Errors.addStatus('\x0F',
                           BillAcceptorStatusCode::OperationError::Return); // TODO: vs Reject?
-        mErrors.addStatus(
+        m_Errors.addStatus(
             '\x10', BillAcceptorStatusCode::Reject::InhibitNote, "All bills are inhibited");
-        mErrors.addStatus('\x11', BillAcceptorStatusCode::OperationError::Stack);
-        mErrors.addStatus(
+        m_Errors.addStatus('\x11', BillAcceptorStatusCode::OperationError::Stack);
+        m_Errors.addStatus(
             '\x12', BillAcceptorStatusCode::Busy::Returned, "Bill rejected by controller");
     }
 
@@ -127,7 +127,7 @@ public:
         BitmapDeviceCodeSpecification::getSpecification(aBuffer, aSpecifications);
 
         if ((aBuffer.size() > 1) && (aBuffer[1] & 0x10)) {
-            mErrors.getSpecification(QByteArray(1, aBuffer[1]), aSpecifications);
+            m_Errors.getSpecification(QByteArray(1, aBuffer[1]), aSpecifications);
         }
     }
 
@@ -148,7 +148,7 @@ public:
 
 protected:
     /// Спецификация дополнительных девайс-кодов.
-    CommonDeviceCodeSpecification mErrors;
+    CommonDeviceCodeSpecification m_Errors;
 };
 } // namespace CV2e
 //--------------------------------------------------------------------------------

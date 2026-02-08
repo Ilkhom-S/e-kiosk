@@ -32,14 +32,14 @@ PPApplication::PPApplication(const QString &aName,
                              int &aArgumentCount,
                              char **aArguments)
     : BasicQtApplication<SafeQApplication>(aName, aVersion, aArgumentCount, aArguments),
-      mProtection("PaymentProcessorProtection") {
+      m_Protection("PaymentProcessorProtection") {
     CatchUnhandledExceptions();
 
     // Производим проверку на наличие еще одной запущенной копии приложения.
-    mProtection.attach();
+    m_Protection.attach();
 
-    if (!mProtection.create(1)) {
-        mProtection.detach();
+    if (!m_Protection.create(1)) {
+        m_Protection.detach();
 
         ILog::getInstance(aName)->write(LogLevel::Warning,
                                         "Another instance of application was terminated.");
@@ -60,28 +60,28 @@ PPApplication::PPApplication(const QString &aName,
     ILog::getInstance("MessageQueueClient")->setDestination(appDest);
     ILog::getInstance("Plugins")->setDestination(appDest);
 
-    mServiceController = new ServiceController(this);
+    m_ServiceController = new ServiceController(this);
 
-    connect(mServiceController, SIGNAL(exit(int)), SLOT(exit(int)));
+    connect(m_ServiceController, SIGNAL(exit(int)), SLOT(exit(int)));
     connect(this, SIGNAL(screenshot()), SLOT(onScreenshot()));
 
     // Парсим параметры командной строки.
     foreach (const QString &parameter, BasicQtApplication::getArguments()) {
-        mArguments.insert(parameter.section('=', 0, 0), parameter.section('=', 1, 1));
+        m_Arguments.insert(parameter.section('=', 0, 0), parameter.section('=', 1, 1));
     }
 
     connect(qApp,
             SIGNAL(commitDataRequest(QSessionManager &)),
             this,
-            SLOT(closeBySystemRequest(QSessionManager &)),
+            SLOT(closeBySystem_Request(QSessionManager &)),
             Qt::DirectConnection);
 }
 
 //------------------------------------------------------------------------
 PPApplication::~PPApplication() {
-    mProtection.detach();
+    m_Protection.detach();
 
-    delete mServiceController;
+    delete m_ServiceController;
 }
 
 //------------------------------------------------------------------------
@@ -92,13 +92,13 @@ int PPApplication::exec() {
     // блокируем скринсеййвер
     ISysUtils::disableScreenSaver();
 
-    if (mServiceController->initializeServices()) {
+    if (m_ServiceController->initializeServices()) {
         return BasicQtApplication::exec();
     } else {
         LOG(getLog(), LogLevel::Error, "Failed to initialize PaymentProcessor.");
 
         // Выводим подробный отчет о запуске сервисов.
-        mServiceController->dumpFailureReport();
+        m_ServiceController->dumpFailureReport();
 
         return ExitCode::Error;
     }
@@ -106,7 +106,7 @@ int PPApplication::exec() {
 
 //------------------------------------------------------------------------
 SDK::PaymentProcessor::ICore *PPApplication::getCore() {
-    return mServiceController;
+    return m_ServiceController;
 }
 
 //------------------------------------------------------------------------
@@ -120,28 +120,28 @@ void PPApplication::qtMessageHandler(QtMsgType /*aType*/,
 
 //------------------------------------------------------------------------
 QList<QImage> PPApplication::getScreenshot() {
-    mScreenshots.clear();
+    m_Screenshots.clear();
 
     if (QThread::currentThread() != this->thread()) {
-        mScreenshotMutex.lock();
+        m_ScreenshotMutex.lock();
 
         emit screenshot();
 
-        if (!mScreenshotCondition.wait(&mScreenshotMutex, 5000)) {
+        if (!m_ScreenshotCondition.wait(&m_ScreenshotMutex, 5000)) {
             LOG(getLog(), LogLevel::Error, "Failed to get screenshot, the application is busy.");
         }
 
-        mScreenshotMutex.unlock();
+        m_ScreenshotMutex.unlock();
     } else {
         onScreenshot();
     }
 
-    return mScreenshots;
+    return m_Screenshots;
 }
 
 //------------------------------------------------------------------------
 void PPApplication::onScreenshot() {
-    QMutexLocker locker(&mScreenshotMutex);
+    QMutexLocker locker(&m_ScreenshotMutex);
 
 #ifdef Q_OS_WIN
     const auto screens = QGuiApplication::screens();
@@ -154,12 +154,12 @@ void PPApplication::onScreenshot() {
     // Screenshot command is not implemented on this platform.
 #endif // Q_OS_WIN
 
-    mScreenshotCondition.wakeAll();
+    m_ScreenshotCondition.wakeAll();
 }
 
 //------------------------------------------------------------------------
 QVariantMap PPApplication::getArguments() const {
-    return mArguments;
+    return m_Arguments;
 }
 
 //------------------------------------------------------------------------
@@ -187,7 +187,7 @@ QString PPApplication::getUserDataPath() const {
                           ? getSettings().value(CSettings::UserDataPath).toString()
                           : "user";
 
-    return QDir::cleanPath(QDir::fromNativeSeparators(
+    return QDir::cleanPath(QDir::from_NativeSeparators(
         QDir::isAbsolutePath(dataDir) ? dataDir
                                       : BasicApplication::getWorkingDirectory() + "/" + dataDir));
 }
@@ -198,7 +198,7 @@ QString PPApplication::getPluginPath() const {
                             ? getSettings().value(CSettings::PluginsPath).toString()
                             : "plugins";
 
-    return QDir::cleanPath(QDir::fromNativeSeparators(
+    return QDir::cleanPath(QDir::from_NativeSeparators(
         QDir::isAbsolutePath(pluginDir)
             ? pluginDir
             : BasicApplication::getWorkingDirectory() + "/" + pluginDir));
@@ -259,7 +259,7 @@ void PPApplication::exit(int aResultCode) {
 }
 
 //------------------------------------------------------------------------
-void PPApplication::closeBySystemRequest(QSessionManager &aSessionManager) {
+void PPApplication::closeBySystem_Request(QSessionManager &aSessionManager) {
     // блокируем остановку системы.
     aSessionManager.cancel();
 

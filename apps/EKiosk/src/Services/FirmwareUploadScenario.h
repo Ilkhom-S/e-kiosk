@@ -37,7 +37,7 @@ class FirmwareUploadScenario : public GUI::Scenario {
     Q_OBJECT
 
 public:
-    FirmwareUploadScenario(IApplication *mApplication);
+    FirmwareUploadScenario(IApplication *m_Application);
     virtual ~FirmwareUploadScenario();
 
 public:
@@ -93,16 +93,16 @@ public slots:
     virtual QString getState() const;
 
 private:
-    IApplication *mApplication;
-    ReportBuilder *mReportBuilder;
-    RemoteService::UpdateCommand mCommand;
-    QByteArray mFirmware;
-    int mRetryCount;
+    IApplication *m_Application;
+    ReportBuilder *m_ReportBuilder;
+    RemoteService::UpdateCommand m_Command;
+    QByteArray m_Firmware;
+    int m_RetryCount;
 
-    SDK::Driver::IDevice *mDevice;
+    SDK::Driver::IDevice *m_Device;
 
     /// Таймер ожидания инициализации устройства
-    int mDeviceInitializedTimer;
+    int m_DeviceInitializedTimer;
 };
 
 //--------------------------------------------------------------------------

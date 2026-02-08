@@ -27,7 +27,7 @@ AsyncSerialPortWin::AsyncSerialPortWin()
     ::RtlSecureZeroMemory(&m_WriteOverlapped, sizeof(m_WriteOverlapped));
 
     m_Type = EPortTypes::COM;
-    m_SystemNames = enumerateSystemNames();
+    m_System_Names = enumerateSystem_Names();
     m_Uuids = CAsyncSerialPortWin::System::Uuids();
     m_PathProperty = CAsyncSerialPortWin::System::PathProperty;
     setOpeningTimeout(CAsyncSerialPortWin::OpeningTimeout);
@@ -42,7 +42,7 @@ void AsyncSerialPortWin::initialize() {
     QStringList otherPortData;
 
     for (auto it = deviceData.begin(); it != deviceData.end(); ++it) {
-        bool mine = !m_SystemName.isEmpty() && it->contains(m_SystemName);
+        bool mine = !m_System_Name.isEmpty() && it->contains(m_System_Name);
         QStringList &target = mine ? minePortData : otherPortData;
         target << it.key() + "\n" + it.value() + "\n";
 
@@ -72,14 +72,14 @@ bool AsyncSerialPortWin::release() {
 //--------------------------------------------------------------------------------
 void AsyncSerialPortWin::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     IOPortBase::setDeviceConfiguration(aConfiguration);
-    bool unknownSystemName = !m_SystemName.isEmpty() && !m_SystemNames.contains(m_SystemName);
-    EPortTypes::Enum portType = getSystemData()[m_SystemName];
+    bool unknownSystem_Name = !m_System_Name.isEmpty() && !m_System_Names.contains(m_System_Name);
+    EPortTypes::Enum portType = getSystem_Data()[m_System_Name];
 
     bool cannotWaitResult = getConfigParameter(CHardware::Port::COM::ControlRemoving).toBool();
 
     // TODO: при увеличении номенклатуры виртуальных/эмуляторных портов продумать логику загрузки
     // девайса с отсутствующим портом
-    if ((m_Type == EPortTypes::COM) && (unknownSystemName || (portType == EPortTypes::VirtualCOM))) {
+    if ((m_Type == EPortTypes::COM) && (unknownSystem_Name || (portType == EPortTypes::VirtualCOM))) {
         m_Type = EPortTypes::VirtualCOM;
     }
 
@@ -87,7 +87,7 @@ void AsyncSerialPortWin::setDeviceConfiguration(const QVariantMap &aConfiguratio
         m_Type = EPortTypes::COMEmulator;
     }
 
-    if (!m_Exist && !m_SystemName.isEmpty()) {
+    if (!m_Exist && !m_System_Name.isEmpty()) {
         checkExistence();
     }
 
@@ -157,7 +157,7 @@ void AsyncSerialPortWin::logError(const QString &aFunctionName) {
     if (checkHandle() || (m_LastErrorChecking != m_LastError)) {
         toLog(LogLevel::Error,
               QString("%1: %2 failed with %3.")
-                  .arg(m_SystemName)
+                  .arg(m_System_Name)
                   .arg(aFunctionName)
                   .arg(ISysUtils::getErrorMessage(m_LastError)));
     }
@@ -176,10 +176,10 @@ void AsyncSerialPortWin::handleError(const QString &aFunctionName) {
     logError(aFunctionName);
 
     if (CAsyncSerialPortWin::DisappearingErrors.contains(m_LastError)) {
-        m_SystemNames = getSystemData(true).keys();
+        m_System_Names = getSystem_Data(true).keys();
     }
 
-    if (!m_SystemNames.contains(m_SystemName)) {
+    if (!m_System_Names.contains(m_System_Name)) {
         close();
 
         m_Exist = false;
@@ -220,14 +220,14 @@ bool AsyncSerialPortWin::open() {
     }
 
     if (getConfigParameter(CHardware::Port::Suspended).toBool()) {
-        toLog(LogLevel::Error, m_SystemName + ": Failed to open due to there is a suspended task.");
+        toLog(LogLevel::Error, m_System_Name + ": Failed to open due to there is a suspended task.");
         return false;
     }
 
     using namespace std::placeholders;
 
     STaskData data;
-    data.task = std::bind(&AsyncSerialPortWin::performOpen, this);
+    data.task = std::bind(&AsyncSerialPortWin::perform_Open, this);
     data.forwardingTask = getConfigParameter(CHardware::Port::OpeningContext).value<TVoidMethod>();
     data.changePerformingTimeout =
         std::bind(&AsyncSerialPortWin::changePerformingTimeout, this, _1, _2, _3);
@@ -241,8 +241,8 @@ bool AsyncSerialPortWin::open() {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::performOpen() {
-    QByteArray fileName = "\\\\.\\" + m_SystemName.toLatin1();
+bool AsyncSerialPortWin::perform_Open() {
+    QByteArray fileName = "\\\\.\\" + m_System_Name.toLatin1();
     m_PortHandle = CreateFileA(fileName.data(),
                               GENERIC_READ | GENERIC_WRITE,
                               0,
@@ -260,15 +260,15 @@ bool AsyncSerialPortWin::performOpen() {
         return false;
     }
 
-    toLog(LogLevel::Normal, QString("Port %1 is opened.").arg(m_SystemName));
+    toLog(LogLevel::Normal, QString("Port %1 is opened.").arg(m_System_Name));
 
-    if (clear() && BOOL_CALL(GetCommState, &m_DCB)) {
-        bool result = BOOL_CALL(ClearCommBreak);
+    if (clear() && BOOL_CALL(GetComm_State, &m_DCB)) {
+        bool result = BOOL_CALL(ClearComm_Break);
 
         COMMTIMEOUTS timeouts = {0};
         timeouts.ReadIntervalTimeout = MAXDWORD;
 
-        if (BOOL_CALL(SetCommTimeouts, &timeouts) && BOOL_CALL(SetCommMask, EV_ERR | EV_RXCHAR)) {
+        if (BOOL_CALL(SetComm_Timeouts, &timeouts) && BOOL_CALL(SetComm_Mask, EV_ERR | EV_RXCHAR)) {
             ::RtlSecureZeroMemory(&m_ReadOverlapped, sizeof(m_ReadOverlapped));
             m_ReadOverlapped.hEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
 
@@ -282,7 +282,7 @@ bool AsyncSerialPortWin::performOpen() {
             if (m_Type == EPortTypes::VirtualCOM) {
                 setConfigParameter(CHardware::Port::Suspended, false);
 
-                toLog(LogLevel::Normal, m_SystemName + " is virtual COM port via USB.");
+                toLog(LogLevel::Normal, m_System_Name + " is virtual COM port via USB.");
                 return true;
             }
 
@@ -324,7 +324,7 @@ bool AsyncSerialPortWin::close() {
     closeHandle(m_PortHandle);
 
     if (result && beenOpened) {
-        toLog(LogLevel::Normal, QString("Port %1 is closed.").arg(m_SystemName));
+        toLog(LogLevel::Normal, QString("Port %1 is closed.").arg(m_System_Name));
     }
 
     return result;
@@ -341,7 +341,7 @@ bool AsyncSerialPortWin::clear() {
         result = false;
     }
 
-    if (!BOOL_CALL(ClearCommError, &errors, nullptr)) {
+    if (!BOOL_CALL(ClearComm_Error, &errors, nullptr)) {
         result = false;
     }
 
@@ -355,17 +355,17 @@ bool AsyncSerialPortWin::isExist() {
 
 //--------------------------------------------------------------------------------
 bool AsyncSerialPortWin::checkExistence() {
-    m_Exist = m_SystemNames.contains(m_SystemName);
+    m_Exist = m_System_Names.contains(m_System_Name);
 
     if (!m_Exist && (m_Type != EPortTypes::COM)) {
-        m_SystemNames = getSystemData(true).keys();
-        m_Exist = m_SystemNames.contains(m_SystemName);
+        m_System_Names = getSystem_Data(true).keys();
+        m_Exist = m_System_Names.contains(m_System_Name);
     }
 
     if (!m_Exist) {
         setOpeningTimeout(CAsyncSerialPortWin::OnlineOpeningTimeout);
 
-        toLog(LogLevel::Error, QString("Port %1 does not exist.").arg(m_SystemName));
+        toLog(LogLevel::Error, QString("Port %1 does not exist.").arg(m_System_Name));
         return false;
     }
 
@@ -381,7 +381,7 @@ bool AsyncSerialPortWin::checkReady() {
     }
 
     if (!open() || !checkHandle()) {
-        toLog(LogLevel::Error, QString("Port %1 is not opened.").arg(m_SystemName));
+        toLog(LogLevel::Error, QString("Port %1 is not opened.").arg(m_System_Name));
         return false;
     }
 
@@ -401,14 +401,14 @@ bool AsyncSerialPortWin::waitAsyncAction(DWORD &aResult, int aTimeout) {
     initializeOverlapped(m_ReadOverlapped);
 
     m_ReadEventMask = 0;
-    ::WaitCommEvent(m_PortHandle, &m_ReadEventMask, &m_ReadOverlapped);
+    ::WaitComm_Event(m_PortHandle, &m_ReadEventMask, &m_ReadOverlapped);
     aResult = ::WaitForSingleObject(m_ReadOverlapped.hEvent, aTimeout);
 
     if ((aResult != WAIT_OBJECT_0) && (aResult != WAIT_TIMEOUT)) {
         QString hexResult = QString("%1").arg(uint(aResult), 8, 16, QChar(ASCII::Zero)).toUpper();
         toLog(LogLevel::Error,
               QString("%1: WaitForSingleObject (ReadFile) has returned %2 = 0x%3 result.")
-                  .arg(m_SystemName)
+                  .arg(m_System_Name)
                   .arg(aResult)
                   .arg(hexResult));
         handleError("WaitForSingleObject");
@@ -442,7 +442,7 @@ bool AsyncSerialPortWin::read(QByteArray &aData, int aTimeout, int aMinSize) {
         toLog(LogLevel::Normal,
               QString("%1: << {%2}").arg(m_ConnectedDeviceName).arg(aData.toHex().constData()));
     } else if (!aData.isEmpty() && !m_MaxReadingSize) {
-        toLog(LogLevel::Debug, QString("%1 << %2").arg(m_SystemName).arg(aData.toHex().data()));
+        toLog(LogLevel::Debug, QString("%1 << %2").arg(m_System_Name).arg(aData.toHex().data()));
     }
 
     return true;
@@ -469,7 +469,7 @@ bool AsyncSerialPortWin::processReading(QByteArray &aData, int aTimeout) {
     DWORD errors = 0;
     COMSTAT comstat = {0};
 
-    if ((m_ReadEventMask & EV_RXCHAR) && BOOL_CALL(ClearCommError, &errors, &comstat)) {
+    if ((m_ReadEventMask & EV_RXCHAR) && BOOL_CALL(ClearComm_Error, &errors, &comstat)) {
         m_ReadingBuffer.fill(ASCII::NUL, comstat.cbInQue);
 
         if (comstat.cbInQue) {
@@ -504,7 +504,7 @@ bool AsyncSerialPortWin::write(const QByteArray &aData) {
         toLog(LogLevel::Normal,
               QString("%1: >> {%2}").arg(m_ConnectedDeviceName).arg(aData.toHex().constData()));
     } else if (!m_MaxReadingSize) {
-        toLog(LogLevel::Debug, QString("%1 >> %2").arg(m_SystemName).arg(aData.toHex().data()));
+        toLog(LogLevel::Debug, QString("%1 >> %2").arg(m_System_Name).arg(aData.toHex().data()));
     }
 
     if (!checkReady() || !clear()) {
@@ -540,7 +540,7 @@ bool AsyncSerialPortWin::write(const QByteArray &aData) {
             if (bytesWritten == dataCount) {
                 result = true;
             } else {
-                QString log = m_SystemName + ": WriteFile timed out";
+                QString log = m_System_Name + ": WriteFile timed out";
 
                 if (bytesWritten) {
                     log += QString(", bytes written = %1, size of data = %2")
@@ -558,7 +558,7 @@ bool AsyncSerialPortWin::write(const QByteArray &aData) {
                 QString("%1").arg(uint(result), 8, 16, QChar(ASCII::Zero)).toUpper();
             toLog(LogLevel::Error,
                   QString("%1: WaitForSingleObject (WriteFile) has returned %2 = 0x%3 result.")
-                      .arg(m_SystemName)
+                      .arg(m_System_Name)
                       .arg(result)
                       .arg(hexResult));
             handleError("WaitForSingleObject");
@@ -612,7 +612,7 @@ bool AsyncSerialPortWin::setParameters(const TPortParameters &aParameters) {
         }
     }
 
-    setConfigParameter(CHardwareSDK::SystemName, m_SystemName);
+    setConfigParameter(CHardwareSDK::System_Name, m_System_Name);
 
     setConfigParameter(CHardware::Port::COM::BaudRate, int(m_DCB.BaudRate));
     setConfigParameter(CHardware::Port::COM::Parity, int(m_DCB.Parity));
@@ -654,7 +654,7 @@ bool AsyncSerialPortWin::applyPortSettings() {
     // m_DCB.XoffLim = 0;
     // m_DCB.fAbortOnError = 1;
 
-    return BOOL_CALL(SetCommState, &m_DCB);
+    return BOOL_CALL(SetComm_State, &m_DCB);
 }
 
 //--------------------------------------------------------------------------------
@@ -810,7 +810,7 @@ TWinDeviceProperties AsyncSerialPortWin::getDeviceProperties(const TUuids &aUuid
     foreach (const QUuid &uuid, aUuids) {
         TWinDeviceProperties uidDeviceProperties;
 
-        if (SystemDeviceUtils::enumerateSystemDevices(
+        if (System_DeviceUtils::enumerateSystem_Devices(
                 uuid, uidDeviceProperties, aPropertyName, aQuick)) {
             for (auto it = uidDeviceProperties.begin(); it != uidDeviceProperties.end(); ++it) {
                 deviceProperties.insert(it.key(), it.value());
@@ -821,15 +821,15 @@ TWinDeviceProperties AsyncSerialPortWin::getDeviceProperties(const TUuids &aUuid
 
     if (aUuids == CAsyncSerialPortWin::System::Uuids()) {
         TWinDeviceProperties deviceRegistryProperties =
-            SystemDeviceUtils::enumerateRegistryDevices(aQuick);
-        SystemDeviceUtils::mergeRegistryDeviceProperties(
+            System_DeviceUtils::enumerateRegistryDevices(aQuick);
+        System_DeviceUtils::mergeRegistryDeviceProperties(
             deviceProperties, deviceRegistryProperties, sourceDeviceData);
     }
 
     if (aData) {
         for (auto it = sourceDeviceData.begin(); it != sourceDeviceData.end(); ++it) {
-            QString outKey = SystemDeviceUtils::getDeviceOutKey(it.value());
-            QString outData = SystemDeviceUtils::getDeviceOutData(deviceProperties[it.key()].data);
+            QString outKey = System_DeviceUtils::getDeviceOutKey(it.value());
+            QString outData = System_DeviceUtils::getDeviceOutData(deviceProperties[it.key()].data);
 
             if (!outData.toLower().contains("mouse")) {
                 aData->insert(outKey, outData);
@@ -841,7 +841,7 @@ TWinDeviceProperties AsyncSerialPortWin::getDeviceProperties(const TUuids &aUuid
 }
 
 //--------------------------------------------------------------------------------
-AsyncSerialPortWin::TData AsyncSerialPortWin::getSystemData(bool aForce) {
+AsyncSerialPortWin::TData AsyncSerialPortWin::getSystem_Data(bool aForce) {
     static TData data;
 
     if (aForce || data.isEmpty()) {
@@ -881,7 +881,7 @@ AsyncSerialPortWin::TData AsyncSerialPortWin::getSystemData(bool aForce) {
 
         /*
         // раскомментировать, если для авто поиска порта по GUID-у (ам) будут какие-либо проблемы
-        foreach(const QString & port, SystemDeviceUtils::enumerateCOMPorts())
+        foreach(const QString & port, System_DeviceUtils::enumerateCOMPorts())
         {
                 if (!data.contains(port))
                 {
@@ -895,8 +895,8 @@ AsyncSerialPortWin::TData AsyncSerialPortWin::getSystemData(bool aForce) {
 }
 
 //--------------------------------------------------------------------------------
-QStringList AsyncSerialPortWin::enumerateSystemNames() {
-    return getSystemData().keys();
+QStringList AsyncSerialPortWin::enumerateSystem_Names() {
+    return getSystem_Data().keys();
 }
 
 //--------------------------------------------------------------------------------

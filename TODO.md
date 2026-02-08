@@ -7,7 +7,7 @@
 - [x] Migrate build system to CMake
 - [x] Integrate clang-tidy for static analysis
 - [x] Set up clang-format for code styling
-- [ ] Review code for Qt 4 deprecated APIs
+- [ ] Review code for Qt 4 deprecated APIs (QRegExp migration in progress)
 - [ ] Test build with Qt 5
 - [ ] Update documentation
 

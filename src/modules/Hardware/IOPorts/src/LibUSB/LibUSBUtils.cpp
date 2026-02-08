@@ -230,7 +230,7 @@ void getDeviceDescriptorData(libusb_device *aDevice,
     deviceData.insert(DeviceUSBData::Vendor, deviceData[CHardwareUSB::VID]);
     deviceData.insert(DeviceUSBData::Product, deviceData[CHardwareUSB::PID]);
 
-    deviceData.insert(DeviceUSBData::ConfigAmount, aDeviceDescriptor.bNumConfigurations);
+    deviceData.insert(DeviceUSBData::ConfigAmount, aDeviceDescriptor.bNum_Configurations);
 
     libusb_device_handle *deviceHandle = nullptr;
 
@@ -251,7 +251,7 @@ void getDeviceDescriptorData(libusb_device *aDevice,
         deviceData.insert(DeviceUSBData::ConfigAmount, configData.size());
     }
 
-    deviceData.insert(DeviceUSBData::ConfigData, QVariant::fromValue<TLibUSBDataList>(configData));
+    deviceData.insert(DeviceUSBData::ConfigData, QVariant::from_Value<TLibUSBDataList>(configData));
 
     if (deviceHandle && (aDeviceDescriptor.bcdUSB >= CLibUSBUtils::USB2_01)) {
         deviceData.insert(DeviceUSBData::BOSData, getBOSData(deviceHandle));
@@ -265,20 +265,20 @@ void getDeviceDescriptorData(libusb_device *aDevice,
 
     QVariantMap data(deviceData);
 
-    if (getDataFromMap(data, DeviceUSBData::ConfigData) &&
-        getDataFromMap(data, DeviceUSBData::Config::InterfaceData)) {
+    if (getDataFrom_Map(data, DeviceUSBData::ConfigData) &&
+        getDataFrom_Map(data, DeviceUSBData::Config::InterfaceData)) {
         int endpointAmounts = data[DeviceUSBData::Config::Interface::EndpointAmount].toInt();
 
         for (int i = 0; i < endpointAmounts; ++i) {
             namespace InterfaceData = DeviceUSBData::Config::Interface;
 
-            if (getDataFromMap(data, InterfaceData::EndpointData, false)) {
+            if (getDataFrom_Map(data, InterfaceData::EndpointData, false)) {
                 QVariantMap EPData =
                     data[InterfaceData::EndpointData].value<CLibUSB::TDeviceDataList>()[i];
 
                 namespace EndpointData = DeviceUSBData::Config::Interface::Endpoint;
 
-                QByteArray EP = getBufferFromString(EPData[EndpointData::Address].toString());
+                QByteArray EP = getBufferFrom_String(EPData[EndpointData::Address].toString());
                 int maxPacketSize = EPData[EndpointData::MaxPacketSize].toInt();
                 int pollingInterval = EPData[EndpointData::PollingInterval].toInt();
                 QString transferTypeData = EPData[EndpointData::TransferType].toString();
@@ -313,7 +313,7 @@ QVariantMap getBOSData(libusb_device_handle *aDeviceHandle) {
                                    &usb_2_0_extension)) {
                 result.insert(DeviceUSBData::BOS::Capability, "USB 2.0");
                 result.insert(DeviceUSBData::BOS::Capability2_0::Attributes,
-                              toHexLog(usb_2_0_extension->bmAttributes));
+                              toHexLog(usb_2_0_extension->bm_Attributes));
 
                 libusb_free_usb_2_0_extension_descriptor(usb_2_0_extension);
             }
@@ -327,7 +327,7 @@ QVariantMap getBOSData(libusb_device_handle *aDeviceHandle) {
                                    &deviceCapability)) {
                 result.insert(DeviceUSBData::BOS::Capability, "USB 3.0");
                 result.insert(DeviceUSBData::BOS::Capability3_0::Attributes,
-                              toHexLog(deviceCapability->bmAttributes));
+                              toHexLog(deviceCapability->bm_Attributes));
                 result.insert(DeviceUSBData::BOS::Capability3_0::SpeedSupported,
                               CLibUSBUtils::SpeedDescriptions[deviceCapability->wSpeedSupported]);
                 result.insert(DeviceUSBData::BOS::Capability3_0::FunctionalitySupport,
@@ -352,7 +352,7 @@ TLibUSBDataList getConfigData(libusb_device *aDevice,
                               const libusb_device_descriptor &aDeviceDescriptor) {
     TLibUSBDataList result;
 
-    for (uint8_t i = 0; i < aDeviceDescriptor.bNumConfigurations; ++i) {
+    for (uint8_t i = 0; i < aDeviceDescriptor.bNum_Configurations; ++i) {
         libusb_config_descriptor *config;
 
         if (LIB_USB_CALL_DEBUG(libusb_get_config_descriptor, aDevice, i, &config)) {
@@ -360,10 +360,10 @@ TLibUSBDataList getConfigData(libusb_device *aDevice,
 
             QVariantMap configData;
 
-            configData.insert(ConfigData::InterfaceAmount, config->bNumInterfaces);
+            configData.insert(ConfigData::InterfaceAmount, config->bNum_Interfaces);
             configData.insert(ConfigData::Index, config->iConfiguration);
             configData.insert(ConfigData::Value, toHexLog(config->bConfigurationValue));
-            configData.insert(ConfigData::Attributes, toHexLog(config->bmAttributes));
+            configData.insert(ConfigData::Attributes, toHexLog(config->bm_Attributes));
             configData.insert(ConfigData::MaxPower, config->MaxPower /* + " m_A"*/);
 
             // TODO: добавить параметры
@@ -384,7 +384,7 @@ TLibUSBDataList getConfigData(libusb_device *aDevice,
 
             TLibUSBDataList interfaceData = getInterfaceData(config);
             configData.insert(ConfigData::InterfaceData,
-                              QVariant::fromValue<TLibUSBDataList>(interfaceData));
+                              QVariant::from_Value<TLibUSBDataList>(interfaceData));
 
             result << configData;
 
@@ -399,7 +399,7 @@ TLibUSBDataList getConfigData(libusb_device *aDevice,
 TLibUSBDataList getInterfaceData(libusb_config_descriptor *config) {
     TLibUSBDataList result;
 
-    for (int i = 0; i < config->bNumInterfaces; ++i) {
+    for (int i = 0; i < config->bNum_Interfaces; ++i) {
         libusb_interface configInterface = config->interface[i];
 
         for (int j = 0; j < configInterface.num_altsetting; ++j) {
@@ -409,7 +409,7 @@ TLibUSBDataList getInterfaceData(libusb_config_descriptor *config) {
             QVariantMap interfaceData;
 
             interfaceData.insert(InterfaceData::Number, interface.bInterfaceNumber);
-            interfaceData.insert(InterfaceData::EndpointAmount, interface.bNumEndpoints);
+            interfaceData.insert(InterfaceData::EndpointAmount, interface.bNum_Endpoints);
             interfaceData.insert(InterfaceData::Index, interface.iInterface);
             interfaceData.insert(InterfaceData::AlternateSetting,
                                  toHexLog(interface.bAlternateSetting));
@@ -436,7 +436,7 @@ TLibUSBDataList getInterfaceData(libusb_config_descriptor *config) {
 
             TLibUSBDataList endpointData = getEndpointData(interface);
             interfaceData.insert(InterfaceData::EndpointData,
-                                 QVariant::fromValue<TLibUSBDataList>(endpointData));
+                                 QVariant::from_Value<TLibUSBDataList>(endpointData));
 
             result << interfaceData;
         }
@@ -449,13 +449,13 @@ TLibUSBDataList getInterfaceData(libusb_config_descriptor *config) {
 TLibUSBDataList getEndpointData(const libusb_interface_descriptor &aInterface) {
     TLibUSBDataList result;
 
-    for (int i = 0; i < aInterface.bNumEndpoints; ++i) {
+    for (int i = 0; i < aInterface.bNum_Endpoints; ++i) {
         namespace EndpointData = DeviceUSBData::Config::Interface::Endpoint;
 
         libusb_endpoint_descriptor endpoint = aInterface.endpoint[i];
         QVariantMap endpointData;
 
-        uint8_t attributes = endpoint.bmAttributes;
+        uint8_t attributes = endpoint.bm_Attributes;
         endpointData.insert(EndpointData::TransferType,
                             CLibUSBUtils::TransferTypeDescriptions[attributes]);
 
@@ -469,7 +469,7 @@ TLibUSBDataList getEndpointData(const libusb_interface_descriptor &aInterface) {
         }
 
         endpointData.insert(EndpointData::Address, toHexLog(endpoint.bEndpointAddress));
-        endpointData.insert(EndpointData::Attributes, toHexLog(endpoint.bmAttributes));
+        endpointData.insert(EndpointData::Attributes, toHexLog(endpoint.bm_Attributes));
         endpointData.insert(EndpointData::MaxPacketSize, endpoint.wMaxPacketSize);
         endpointData.insert(EndpointData::PollingInterval, endpoint.bInterval);
         endpointData.insert(EndpointData::SyncRefreshRate,
@@ -505,7 +505,7 @@ TLibUSBDataList getEndpointData(const libusb_interface_descriptor &aInterface) {
 
         TLibUSBDataList EPCompanionData = getEPCompanionData(endpoint);
         endpointData.insert(EndpointData::CompanionData,
-                            QVariant::fromValue<TLibUSBDataList>(EPCompanionData));
+                            QVariant::from_Value<TLibUSBDataList>(EPCompanionData));
 
         result << endpointData;
     }
@@ -531,7 +531,7 @@ TLibUSBDataList getEPCompanionData(const libusb_endpoint_descriptor &aEndpoint) 
                 companionEPData.insert(CompanionEPData::MaxBurstPacketAmount,
                                        epCompanionDescriptor->bMaxBurst);
                 companionEPData.insert(CompanionEPData::Attributes,
-                                       toHexLog(epCompanionDescriptor->bmAttributes));
+                                       toHexLog(epCompanionDescriptor->bm_Attributes));
                 companionEPData.insert(CompanionEPData::BytesPerInterval,
                                        epCompanionDescriptor->wBytesPerInterval);
 
@@ -562,7 +562,7 @@ TResult logAnswer(const QString &aFunctionName, int aResult, ILog *aLog) {
     }
 
     QString errorName = libusb_error_name(aResult);
-    QString errorDescription = QString::fromUtf8(libusb_strerror(libusb_error(aResult)));
+    QString errorDescription = QString::from_Utf8(libusb_strerror(libusb_error(aResult)));
     QString log = QString("Failed to call %1, error = %2 (%3, %4)")
                       .arg(aFunctionName)
                       .arg(aResult)
@@ -592,7 +592,7 @@ template <class T> QString doubleBCD2String(T aData) {
 }
 
 //--------------------------------------------------------------------------------
-bool getDataFromMap(QVariantMap &aData, const QString &aKey, bool aSetNextData) {
+bool getDataFrom_Map(QVariantMap &aData, const QString &aKey, bool aSetNextData) {
     if (!aData.contains(aKey) ||
         !aData[aKey].isValid() && (aData[aKey].typeId() != QMetaType::User)) {
         return false;

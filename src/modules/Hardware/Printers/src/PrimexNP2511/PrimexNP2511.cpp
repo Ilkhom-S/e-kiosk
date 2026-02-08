@@ -75,7 +75,7 @@ bool PrimexNP2511::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
 
 //--------------------------------------------------------------------------------
 bool PrimexNP2511::printBarcode(const QString &aBarcode) {
-    // 1. В Qt 6 для кодирования текста в байты (fromUnicode) используется QStringEncoder.
+    // 1. В Qt 6 для кодирования текста в байты (from_Unicode) используется QStringEncoder.
     // m_Decoder в 2026 году — это std::shared_ptr<QStringDecoder>.
     QByteArray barcodeData;
 

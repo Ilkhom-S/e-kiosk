@@ -46,7 +46,7 @@ public:
 
     /// Возвращает true, если параметр aName для устройства с именем aDeviceName и типом aType
     /// существует.
-    virtual bool isDeviceParamExists(const QString &aDeviceConfigName) override;
+    virtual bool isDeviceParam_Exists(const QString &aDeviceConfigName) override;
 
     /// Возвращает значение конкретного параметра из список параметров устройства по имени и типу.
     virtual QVariant getDeviceParam(const QString &aDeviceConfigName,
@@ -54,8 +54,8 @@ public:
 
     /// Добавить определенный параметр устройства по имени и типу.
     virtual bool setDeviceParam(const QString &aDeviceConfigName,
-                                const QString &aParamName,
-                                const QVariant &aParamValue) override;
+                                const QString &aParam_Name,
+                                const QVariant &aParam_Value) override;
 
     /// Предикат, определяющий наличие устройства по его имени и типу.
     virtual bool hasDevice(const QString &aDeviceConfigName) override;
@@ -133,7 +133,7 @@ public:
 
     /// Выполняет инкассацию.
     virtual SDK::PaymentProcessor::SEncashment
-    performEncashment(const QVariantMap &aParameters) override;
+    perform_Encashment(const QVariantMap &aParameters) override;
 
     /// Возвращает последнюю выполненную инкассацию
     virtual QList<SDK::PaymentProcessor::SEncashment> getLastEncashments(int aCount) override;
@@ -147,11 +147,11 @@ public:
 #pragma endregion
 
 private:
-    IApplication *mApplication;
-    IDatabaseProxy &mDatabase;
-    ILog *mLog;
-    ILog *mPaymentLog;
-    QRecursiveMutex mAccessMutex;
+    IApplication *m_Application;
+    IDatabaseProxy &m_Database;
+    ILog *m_Log;
+    ILog *m_PaymentLog;
+    QRecursiveMutex m_AccessMutex;
 
 private:
     /// Заполняет отчет инкассации о платежах

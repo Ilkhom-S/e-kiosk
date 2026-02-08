@@ -65,9 +65,9 @@ private slots:
     void stateChanged(QMediaPlayer::PlaybackState aState);
 
 private:
-    IApplication *mApplication;
-    QString mInterfacePath;
-    QSharedPointer<QMediaPlayer> mPlayer;
+    IApplication *m_Application;
+    QString m_InterfacePath;
+    QSharedPointer<QMediaPlayer> m_Player;
 };
 
 //---------------------------------------------------------------------------

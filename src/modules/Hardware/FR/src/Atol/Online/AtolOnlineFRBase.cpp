@@ -172,7 +172,7 @@ template <class T> void AtolOnlineFRBase<T>::processDeviceData() {
     };
 
     if (processCommand(CAtolOnlineFR::Commands::FS::GetValidity, &data) && (data.size() >= 5)) {
-        QDate date = QDate::fromString("20" + hexToBCD(data.mid(2, 3)), CAtolOnlineFR::DateFormat);
+        QDate date = QDate::from_String("20" + hexToBCD(data.mid(2, 3)), CAtolOnlineFR::DateFormat);
 
         if (date.isValid()) {
             setDeviceParameter(CDeviceData::FS::ValidityData, CFR::FSValidityDateOff(date));
@@ -271,7 +271,7 @@ template <class T> bool AtolOnlineFRBase<T>::getStatus(TStatusCodes &aStatusCode
         return false;
     }
 
-    QByteArray data = performStatus(aStatusCodes, CAtolOnlineFR::Commands::FS::GetStatus, 6);
+    QByteArray data = perform_Status(aStatusCodes, CAtolOnlineFR::Commands::FS::GetStatus, 6);
 
     if (data == CFR::Result::Fail) {
         return false;
@@ -321,13 +321,13 @@ template <class T> bool AtolOnlineFRBase<T>::isPrintingNeed(const QStringList &a
 
 //--------------------------------------------------------------------------------
 template <class T>
-bool AtolOnlineFRBase<T>::performFiscal(const QStringList &aReceipt,
+bool AtolOnlineFRBase<T>::perform_Fiscal(const QStringList &aReceipt,
                                         const SPaymentData &aPaymentData,
                                         quint32 *aFDNumber) {
     m_FDExecutionMode = isTradeWithoutPrinting() ? CAtolOnlineFR::FiscalFlags::NotPrinting
                                                 : CAtolFR::FiscalFlags::ExecutionMode;
 
-    if (!T::performFiscal(aReceipt, aPaymentData)) {
+    if (!T::perform_Fiscal(aReceipt, aPaymentData)) {
         return false;
     }
 
@@ -396,10 +396,10 @@ TResult AtolOnlineFRBase<T>::processDataWaiting(const std::function<TResult()> &
 
 //--------------------------------------------------------------------------------
 template <class T>
-bool AtolOnlineFRBase<T>::performEncashment(const QStringList &aReceipt, double aAmount) {
+bool AtolOnlineFRBase<T>::perform_Encashment(const QStringList &aReceipt, double aAmount) {
     openFRSession();
 
-    return T::performEncashment(aReceipt, aAmount);
+    return T::perform_Encashment(aReceipt, aAmount);
 }
 
 //--------------------------------------------------------------------------------
@@ -507,7 +507,7 @@ template <class T> bool AtolOnlineFRBase<T>::sale(const SUnitData &aUnitData) {
     commandData.append(CAtolOnlineFR::DiscountSign);         // знак скидки
     commandData.append(getBCD(0, 7, 2, 3));                  // информация о скидке
     commandData.append(QByteArray(2, ASCII::NUL));           // зарезервировано
-    commandData.append(m_Codec->fromUnicode(aUnitData.name)); // товар
+    commandData.append(m_Codec->from_Unicode(aUnitData.name)); // товар
 
     return processCommand(CAtolOnlineFR::Commands::EndSale, commandData);
 }

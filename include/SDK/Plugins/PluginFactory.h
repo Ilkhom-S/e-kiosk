@@ -116,22 +116,22 @@ public:
                                                        const QString &aInstance);
 
 protected:
-    QString mModuleName;
-    QString mName;
-    QString mDescription;
-    QString mAuthor;
-    QString mVersion;
+    QString m_ModuleName;
+    QString m_Name;
+    QString m_Description;
+    QString m_Author;
+    QString m_Version;
 
-    bool mInitialized;
-    IKernel *mKernel;
-    QString mDirectory;
-    QMap<IPlugin *, QString> mCreatedPlugins;
+    bool m_Initialized;
+    IKernel *m_Kernel;
+    QString m_Directory;
+    QMap<IPlugin *, QString> m_CreatedPlugins;
 
     typedef QMap<std::shared_ptr<IPlugin>, QString> TPluginStorage;
-    TPluginStorage mCreatedPluginsPtr;
+    TPluginStorage m_CreatedPluginsPtr;
 
-    QMap<QString, QVariantMap> mPersistentConfigurations;
-    QMap<QString, TParameterList> mTranslatedParameters;
+    QMap<QString, QVariantMap> m_PersistentConfigurations;
+    QMap<QString, TParameterList> m_TranslatedParameters;
 };
 
 //------------------------------------------------------------------------------

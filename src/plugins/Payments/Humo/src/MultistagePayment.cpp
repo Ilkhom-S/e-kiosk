@@ -2,7 +2,7 @@
 
 #include "MultistagePayment.h"
 
-#include <QtXml/QDomDocument>
+#include <QtXml/QDom_Document>
 
 #include <SDK/PaymentProcessor/Payment/Parameters.h>
 #include <SDK/PaymentProcessor/Payment/Step.h>
@@ -29,7 +29,7 @@ bool MultistagePayment::canProcessOffline() const {
 }
 
 //---------------------------------------------------------------------------
-bool MultistagePayment::performStep(int aStep) {
+bool MultistagePayment::perform_Step(int aStep) {
     if (aStep == PPSDK::EPaymentStep::GetStep) {
         // Для проверки номера генерируем временную сессию.
         if (getSession().isEmpty()) {
@@ -39,7 +39,7 @@ bool MultistagePayment::performStep(int aStep) {
 
         return getNextStep();
     } else {
-        return Payment::performStep(aStep);
+        return Payment::perform_Step(aStep);
     }
 }
 
@@ -49,8 +49,8 @@ bool MultistagePayment::getNextStep() {
           QString("Payment %1. %2, operator: %3 (%4), session: %5, step: %6.")
               .arg(getID())
               .arg(CPayment::Requests::GetStep)
-              .arg(mProviderSettings.id)
-              .arg(mProviderSettings.name)
+              .arg(m_ProviderSettings.id)
+              .arg(m_ProviderSettings.name)
               .arg(getSession())
               .arg(currentStep()));
 
@@ -62,7 +62,7 @@ bool MultistagePayment::getNextStep() {
         return false;
     }
 
-    QUrl url(mProviderSettings.processor.requests[CPayment::Requests::GetStep].url);
+    QUrl url(m_ProviderSettings.processor.requests[CPayment::Requests::GetStep].url);
     if (!url.isValid()) {
         toLog(LogLevel::Error, QString("Payment %1. Can't find url for operation.").arg(getID()));
 
@@ -168,41 +168,41 @@ PPSDK::TProviderFields MultistagePayment::getFieldsForStep(const QString &aStep)
 }
 
 //---------------------------------------------------------------------------
-void loadProviderEnumItems(PPSDK::SProviderField::TEnumItems &aItemList, QDomNode aNode) {
-    QDomElement itemElement = aNode.firstChildElement("item");
+void loadProviderEnum_Items(PPSDK::SProviderField::TEnum_Items &aItem_List, QDom_Node aNode) {
+    QDom_Element item_Element = aNode.firstChildElement("item");
 
-    while (!itemElement.isNull()) {
-        PPSDK::SProviderField::SEnumItem item;
+    while (!item_Element.isNull()) {
+        PPSDK::SProviderField::SEnum_Item item;
 
-        item.title = itemElement.attributeNode("name").nodeValue();
-        item.value = itemElement.attributeNode("value").nodeValue();
+        item.title = item_Element.attributeNode("name").nodeValue();
+        item.value = item_Element.attributeNode("value").nodeValue();
 
-        QString sortValue = itemElement.attributeNode("sort").nodeValue();
+        QString sortValue = item_Element.attributeNode("sort").nodeValue();
         item.sort = sortValue.isEmpty() ? 65535 : sortValue.toInt();
 
-        loadProviderEnumItems(item.subItems, itemElement);
+        loadProviderEnum_Items(item.subItems, item_Element);
 
-        aItemList << item;
+        aItem_List << item;
 
-        itemElement = itemElement.nextSiblingElement("item");
+        item_Element = item_Element.nextSiblingElement("item");
     }
 
-    std::stable_sort(aItemList.begin(),
-                     aItemList.end(),
-                     [](const PPSDK::SProviderField::SEnumItem &a,
-                        const PPSDK::SProviderField::SEnumItem &b) { return a.sort < b.sort; });
+    std::stable_sort(aItem_List.begin(),
+                     aItem_List.end(),
+                     [](const PPSDK::SProviderField::SEnum_Item &a,
+                        const PPSDK::SProviderField::SEnum_Item &b) { return a.sort < b.sort; });
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::TProviderFields
 MultistagePayment::parseFieldsXml(const QString &aFieldsXml) const {
-    auto toBool = [](QDomNode aNode, bool aDefault) -> bool {
+    auto toBool = [](QDom_Node aNode, bool aDefault) -> bool {
         QString value = aNode.nodeValue();
 
         return (value == "true") ? true : (value == "false" ? false : aDefault);
     };
 
-    auto toInt = [](QDomNode aNode, int aDefault) -> int {
+    auto toInt = [](QDom_Node aNode, int aDefault) -> int {
         QString value = aNode.nodeValue();
 
         return value.isEmpty() ? aDefault : value.toInt();
@@ -210,12 +210,12 @@ MultistagePayment::parseFieldsXml(const QString &aFieldsXml) const {
 
     SDK::PaymentProcessor::TProviderFields resultFields;
 
-    QDomDocument doc("mydocument");
+    QDom_Document doc("mydocument");
     if (doc.setContent(aFieldsXml)) {
-        QDomNodeList fieldsList = doc.elementsByTagName("field");
+        QDom_NodeList fieldsList = doc.elementsByTagName("field");
 
         for (int i = 0; i < fieldsList.size(); ++i) {
-            QDomNode node = fieldsList.item(i);
+            QDom_Node node = fieldsList.item(i);
 
             PPSDK::SProviderField field;
 
@@ -239,7 +239,7 @@ MultistagePayment::parseFieldsXml(const QString &aFieldsXml) const {
             field.dependency = node.firstChildElement("dependency").nodeValue();
             field.defaultValue = node.firstChildElement("default").nodeValue();
 
-            loadProviderEnumItems(field.enumItems, node.firstChildElement("enum"));
+            loadProviderEnum_Items(field.enum_Items, node.firstChildElement("enum"));
 
             resultFields << field;
         }

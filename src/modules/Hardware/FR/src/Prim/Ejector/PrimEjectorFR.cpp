@@ -1,35 +1,35 @@
 /* @file Базовый ФР ПРИМ c эжектором. */
 
-#include "PrimEjectorFR.h"
+#include "Prim_EjectorFR.h"
 
-#include "../PrimModelData.h"
-#include "Hardware/Printers/CustomVKP80.h"
+#include "../Prim_ModelData.h"
+#include "Hardware/Printers/Custom_VKP80.h"
 #include "Hardware/Printers/POSPrinterData.h"
-#include "PrimEjectorFRConstants.h"
+#include "Prim_EjectorFRConstants.h"
 
 //--------------------------------------------------------------------------------
-template class PrimEjectorFR<PrimFRBase>;
-template class PrimEjectorFR<PrimOnlineFRBase>;
+template class Prim_EjectorFR<Prim_FRBase>;
+template class Prim_EjectorFR<Prim_OnlineFRBase>;
 
 //--------------------------------------------------------------------------------
-template <class T> PrimEjectorFR<T>::PrimEjectorFR() {
+template <class T> Prim_EjectorFR<T>::Prim_EjectorFR() {
     // данные устройства
     setConfigParameter(CHardware::Printer::RetractorEnable, true);
 
     m_OldBuildNumber = false;
-    m_Printer = PPrinter(new SerialCustomVKP80());
-    m_DeviceName = CPrimFR::ModelData[CPrimFR::Models::PRIM_21K_03].name;
+    m_Printer = PPrinter(new SerialCustom_VKP80());
+    m_DeviceName = CPrim_FR::ModelData[CPrim_FR::Models::PRIM_21K_03].name;
     m_LPC22RetractorErrorCount = 0;
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::updateParameters() {
-    return PrimPresenterFR<T>::updateParameters() && setPresentationMode() &&
+template <class T> bool Prim_EjectorFR<T>::updateParameters() {
+    return Prim_PresenterFR<T>::updateParameters() && setPresentationMode() &&
            checkPresentationLength();
 }
 
 //--------------------------------------------------------------------------------
-template <class T> ushort PrimEjectorFR<T>::getParameter3() {
+template <class T> ushort Prim_EjectorFR<T>::getParameter3() {
     using namespace CHardware::Printer;
 
     if (getConfigParameter(Settings::NotTakenReceipt).toString() != Values::Retract) {
@@ -40,14 +40,14 @@ template <class T> ushort PrimEjectorFR<T>::getParameter3() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::checkPresentationLength() {
-    if (!PrimFRBase::checkParameters()) {
+template <class T> bool Prim_EjectorFR<T>::checkPresentationLength() {
+    if (!Prim_FRBase::checkParameters()) {
         return false;
     }
 
-    CPrimFR::TData data;
+    CPrim_FR::TData data;
 
-    if (processCommand(CPrimFR::Commands::GetMoneyBoxSettings, &data) && (data.size() >= 8)) {
+    if (processCommand(CPrim_FR::Commands::GetMoneyBoxSettings, &data) && (data.size() >= 8)) {
         bool OK;
         int presentationLength =
             getConfigParameter(CHardware::Printer::Settings::PresentationLength).toInt();
@@ -60,14 +60,14 @@ template <class T> bool PrimEjectorFR<T>::checkPresentationLength() {
         data = data.mid(5);
         data[0] = int2ByteArray(presentationLength);
 
-        return processCommand(CPrimFR::Commands::SetMoneyBoxSettings, data);
+        return processCommand(CPrim_FR::Commands::SetMoneyBoxSettings, data);
     }
 
     return false;
 }
 
 //---------------------------------------------------------------------------
-template <class T> void PrimEjectorFR<T>::cleanStatusCodes(TStatusCodes &aStatusCodes) {
+template <class T> void Prim_EjectorFR<T>::cleanStatusCodes(TStatusCodes &aStatusCodes) {
     if (m_OldBuildNumber) {
         aStatusCodes.insert(DeviceStatusCode::Warning::Firmware);
     }
@@ -81,49 +81,49 @@ template <class T> void PrimEjectorFR<T>::cleanStatusCodes(TStatusCodes &aStatus
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::processAnswer(char aError) {
-    if (((aError == CPrimFR::Errors::IncorrigibleError) ||
-         (aError == CPrimFR::Errors::NotReadyForPrint)) &&
-        (m_LPC22RetractorErrorCount < CPrimFR::MaxRepeat::RetractorError)) {
+template <class T> bool Prim_EjectorFR<T>::processAnswer(char aError) {
+    if (((aError == CPrim_FR::Errors::IncorrigibleError) ||
+         (aError == CPrim_FR::Errors::NotReadyForPrint)) &&
+        (m_LPC22RetractorErrorCount < CPrim_FR::MaxRepeat::RetractorError)) {
         m_ProcessingErrors.push_back(aError);
 
         m_LPC22RetractorErrorCount++;
 
         toLog(LogLevel::Normal, "Abnormal error, try to reset printer");
 
-        return processEjectorAction(CPrimEjectorFRActions::Reset);
+        return processEjectorAction(CPrim_EjectorFRActions::Reset);
     }
 
-    if (aError && (m_LPC22RetractorErrorCount >= CPrimFR::MaxRepeat::RetractorError) &&
-        (aError != CPrimFR::Errors::IncorrigibleError) &&
-        (aError != CPrimFR::Errors::NotReadyForPrint)) {
+    if (aError && (m_LPC22RetractorErrorCount >= CPrim_FR::MaxRepeat::RetractorError) &&
+        (aError != CPrim_FR::Errors::IncorrigibleError) &&
+        (aError != CPrim_FR::Errors::NotReadyForPrint)) {
         toLog(LogLevel::Normal, "Reset Abnormal error count");
         m_LPC22RetractorErrorCount = 0;
     }
 
-    return PrimPresenterFR<T>::processAnswer(aError);
+    return Prim_PresenterFR<T>::processAnswer(aError);
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::push() {
+template <class T> bool Prim_EjectorFR<T>::push() {
     if (m_Mode == EFRMode::Printer) {
         return TSerialFRBase::push();
     }
 
-    return processEjectorAction(CPrimEjectorFRActions::Push);
+    return processEjectorAction(CPrim_EjectorFRActions::Push);
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::retract() {
+template <class T> bool Prim_EjectorFR<T>::retract() {
     if (m_Mode == EFRMode::Printer) {
         return TSerialFRBase::retract();
     }
 
-    return processEjectorAction(CPrimEjectorFRActions::Retract);
+    return processEjectorAction(CPrim_EjectorFRActions::Retract);
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::setPresentationMode() {
+template <class T> bool Prim_EjectorFR<T>::setPresentationMode() {
     QString loop = getConfigParameter(CHardware::Printer::Settings::Loop).toString();
 
     if (loop == CHardwareSDK::Values::Auto) {
@@ -137,24 +137,24 @@ template <class T> bool PrimEjectorFR<T>::setPresentationMode() {
                                          : CPOSPrinter::Command::LoopDisable);
     }
 
-    return processEjectorAction(loopEnable ? CPrimEjectorFRActions::SetLoopEnabled
-                                           : CPrimEjectorFRActions::SetLoopDisabled);
+    return processEjectorAction(loopEnable ? CPrim_EjectorFRActions::SetLoopEnabled
+                                           : CPrim_EjectorFRActions::SetLoopDisabled);
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::present() {
+template <class T> bool Prim_EjectorFR<T>::present() {
     return (m_Mode == EFRMode::Printer) && TSerialFRBase::present();
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::processEjectorAction(const QString &aAction) {
-    CPrimFR::TData commandData;
+template <class T> bool Prim_EjectorFR<T>::processEjectorAction(const QString &aAction) {
+    CPrim_FR::TData commandData;
 
     for (int i = 0; i < aAction.size(); ++i) {
         commandData << int2ByteArray(QString(aAction[i]).toInt(0, 16));
     }
 
-    return processCommand(CPrimFR::Commands::SetEjectorAction, commandData);
+    return processCommand(CPrim_FR::Commands::SetEjectorAction, commandData);
 }
 
 //--------------------------------------------------------------------------------

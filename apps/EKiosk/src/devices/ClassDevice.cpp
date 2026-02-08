@@ -7,13 +7,13 @@ SearchDevices::SearchDevices(QObject *parent) : QThread(parent) {
     modem = new ClassModem();
     watchDogs = new WatchDogs();
 
-    modemConUp = false;
+    modem_ConUp = false;
 
     debugger = false;
 }
 
-void SearchDevices::setComListInfo(QStringList com_list) {
-    comList = com_list;
+void SearchDevices::setCom_ListInfo(QStringList com_list) {
+    com_List = com_list;
 }
 
 void SearchDevices::setDbName(QSqlDatabase &dbName) {
@@ -27,9 +27,9 @@ void SearchDevices::run() {
 
     QStringList foundPort;
 
-    for (int ii = 0; ii < comList.count(); ii++) {
+    for (int ii = 0; ii < com_List.count(); ii++) {
         if (debugger)
-            qDebug() << "EXIST --- " << comList.at(ii);
+            qDebug() << "EXIST --- " << com_List.at(ii);
     }
 
     // сделаем небольшую проверку для принтера km1x
@@ -38,8 +38,8 @@ void SearchDevices::run() {
     if (getDeviseInBase(SearchDev::search_printer, vrm_name, vrm_port)) {
         if (vrm_name == PrinterModel::KM1X) {
             // убираем его порт из поиска (потому что печатает)
-            int i = comList.indexOf(vrm_port);
-            comList.removeAt(i);
+            int i = com_List.indexOf(vrm_port);
+            com_List.removeAt(i);
             foundPort << vrm_port;
         }
     }
@@ -65,8 +65,8 @@ void SearchDevices::run() {
                 SearchDev::search_validator, SearchDev::device_found, v_name, v_comment, c_port);
             this->setDeviseInBase(SearchDev::search_validator, v_name, c_port, v_comment, 1);
 
-            int i = comList.indexOf(c_port);
-            comList.removeAt(i);
+            int i = com_List.indexOf(c_port);
+            com_List.removeAt(i);
             foundPort << c_port;
         } else {
             // Устройство не найдено
@@ -76,9 +76,9 @@ void SearchDevices::run() {
         }
     }
 
-    for (int ii = 0; ii < comList.count(); ii++) {
+    for (int ii = 0; ii < com_List.count(); ii++) {
         if (debugger)
-            qDebug() << "EXIST --- " << comList.at(ii);
+            qDebug() << "EXIST --- " << com_List.at(ii);
     }
 
     this->msleep(500);
@@ -107,8 +107,8 @@ void SearchDevices::run() {
                                   c_port);
             this->setDeviseInBase(SearchDev::search_coin_acceptor, v_name, c_port, v_comment, 1);
 
-            int i = comList.indexOf(c_port);
-            comList.removeAt(i);
+            int i = com_List.indexOf(c_port);
+            com_List.removeAt(i);
             foundPort << c_port;
         } else {
             // Устройство не найдено
@@ -121,8 +121,8 @@ void SearchDevices::run() {
         }
     }
 
-    for (int ii = 0; ii < comList.count(); ii++) {
-        qDebug() << "EXIST --- " << comList.at(ii);
+    for (int ii = 0; ii < com_List.count(); ii++) {
+        qDebug() << "EXIST --- " << com_List.at(ii);
     }
 
     //((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
@@ -149,8 +149,8 @@ void SearchDevices::run() {
                 emit emitDeviceSearch(
                     SearchDev::search_printer, SearchDev::device_found, v_name, v_comment, c_port);
 
-                int i = comList.indexOf(c_port);
-                comList.removeAt(i);
+                int i = com_List.indexOf(c_port);
+                com_List.removeAt(i);
                 foundPort << c_port;
             } else {
 
@@ -171,8 +171,8 @@ void SearchDevices::run() {
                                           c_port);
                     setDeviseInBase(SearchDev::search_printer, v_name, c_port, v_comment, 1);
 
-                    int i = comList.indexOf(c_port);
-                    comList.removeAt(i);
+                    int i = com_List.indexOf(c_port);
+                    com_List.removeAt(i);
                     foundPort << c_port;
                 } else {
                     // Устройство не найдено
@@ -198,9 +198,9 @@ void SearchDevices::run() {
         setDeviseInBase(SearchDev::search_printer, v_name, c_port, v_comment, 1);
     }
 
-    for (int ii = 0; ii < comList.count(); ii++) {
+    for (int ii = 0; ii < com_List.count(); ii++) {
         if (debugger)
-            qDebug() << "EXIST --- " << comList.at(ii);
+            qDebug() << "EXIST --- " << com_List.at(ii);
     }
 
     // Ищем сторожевой таймер
@@ -235,8 +235,8 @@ void SearchDevices::run() {
                 SearchDev::search_watchdog, SearchDev::device_found, v_name, v_comment, c_port);
             setDeviseInBase(SearchDev::search_watchdog, v_name, c_port, v_comment, 1);
 
-            int i = comList.indexOf(c_port);
-            comList.removeAt(i);
+            int i = com_List.indexOf(c_port);
+            com_List.removeAt(i);
             foundPort << c_port;
         } else {
             // Устройство не найдено
@@ -246,9 +246,9 @@ void SearchDevices::run() {
         }
     }
 
-    for (int ii = 0; ii < comList.count(); ii++) {
+    for (int ii = 0; ii < com_List.count(); ii++) {
         if (debugger)
-            qDebug() << "EXIST --- " << comList.at(ii);
+            qDebug() << "EXIST --- " << com_List.at(ii);
     }
 
     //((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
@@ -279,7 +279,7 @@ void SearchDevices::run() {
         }
 
         // Даем выбранные устройства на проверку
-        if (!modemConUp) {
+        if (!modem_ConUp) {
             if (searchDeviceMethod(SearchDev::search_modem, v_name, c_port, v_comment)) {
                 // Устройство получило результат true
                 // Тут будет отпрален сигнал устройство найдено...
@@ -287,20 +287,20 @@ void SearchDevices::run() {
                     SearchDev::search_modem, SearchDev::device_found, v_name, v_comment, c_port);
                 setDeviseInBase(SearchDev::search_modem, v_name, c_port, v_comment, 1);
 
-                int i = comList.indexOf(c_port);
-                comList.removeAt(i);
+                int i = com_List.indexOf(c_port);
+                com_List.removeAt(i);
                 foundPort << c_port;
 
-                if (nowSimPresent) {
+                if (nowSim_Present) {
                     if (takeBalanceSim)
                         takeBalanceSim = true;
-                    if (takeSimNumber)
-                        takeSimNumber = true;
+                    if (takeSim_Number)
+                        takeSim_Number = true;
                 } else {
                     takeBalanceSim = false;
-                    takeSimNumber = false;
+                    takeSim_Number = false;
                 }
-                vrmModemPort = c_port;
+                vrm_Modem_Port = c_port;
                 this->msleep(2000);
             } else {
                 // Устройство не найдено
@@ -309,7 +309,7 @@ void SearchDevices::run() {
                 setDeviseInBase(SearchDev::search_modem, v_name, c_port, v_comment, 0);
 
                 takeBalanceSim = false;
-                takeSimNumber = false;
+                takeSim_Number = false;
             }
         } else {
             // Устройство не найдено
@@ -318,19 +318,19 @@ void SearchDevices::run() {
             setDeviseInBase(SearchDev::search_modem, v_name, c_port, v_comment, 0);
 
             takeBalanceSim = false;
-            takeSimNumber = false;
+            takeSim_Number = false;
         }
         //))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
         msleep(1000);
 
-        if (takeSimNumber) {
-            modem->setPort(vrmModemPort);
+        if (takeSim_Number) {
+            modem->setPort(vrm_Modem_Port);
             modem->ussdRequestNumberSim = s_ussdRequestNumberSim;
 
             if (s_ussdRequestNumberSim.trimmed() != "") {
-                modem->execCommand(ModemProtocolCommands::GetSimNumber, false);
-                simNumber = modem->nowNumberSim;
+                modem->execCommand(Modem_ProtocolCommands::GetSim_Number, false);
+                sim_Number = modem->nowNumberSim;
                 msleep(1000);
             }
         } else {
@@ -340,7 +340,7 @@ void SearchDevices::run() {
         msleep(1000);
 
         if (takeBalanceSim) {
-            if (!takeSimNumber) {
+            if (!takeSim_Number) {
                 modem->setPort(c_port);
             }
 
@@ -348,8 +348,8 @@ void SearchDevices::run() {
             modem->indexBalanceParse = s_indexBalanceParse;
 
             if (s_ussdRequestBalanseSim.trimmed() != "") {
-                modem->execCommand(ModemProtocolCommands::GetBalance, false);
-                simBalance = modem->nowBalanceSim;
+                modem->execCommand(Modem_ProtocolCommands::GetBalance, false);
+                sim_Balance = modem->nowBalanceSim;
                 msleep(1000);
             }
         } else {
@@ -363,11 +363,11 @@ void SearchDevices::run() {
     return;
 }
 
-void SearchDevices::getModemInfo() {
+void SearchDevices::getModem_Info() {
     //        if(takeBalanceSim){
     //            ClassModem *Modem = new ClassModem();
-    //            Modem->setPort(vrmModemPort);
-    //            Modem->execCommand(ModemProtocolCommands::GetBalance);
+    //            Modem->setPort(vrm_Modem_Port);
+    //            Modem->execCommand(Modem_ProtocolCommands::GetBalance);
     ////            connect();
     ////            timeSearch = 10000;
     ////            this->msleep(15000);
@@ -449,7 +449,7 @@ bool SearchDevices::searchDeviceMethod(
     int device, QString &dev_name, QString &com_str, QString &dev_coment, const bool with_test) {
     bool result = false;
     if (device == SearchDev::search_validator) {
-        if (validator->isItYou(comList, dev_name, com_str, dev_coment)) {
+        if (validator->isItYou(com_List, dev_name, com_str, dev_coment)) {
             this->validatorPartNum = validator->vPartNumber;
             this->validatorSerialNum = validator->vSerialNumber;
             result = true;
@@ -457,7 +457,7 @@ bool SearchDevices::searchDeviceMethod(
     }
 
     if (device == SearchDev::search_coin_acceptor) {
-        if (coinAccepter->isItYou(comList, dev_name, com_str, dev_coment)) {
+        if (coinAccepter->isItYou(com_List, dev_name, com_str, dev_coment)) {
             this->coinAcceptorSerialNum = coinAccepter->v_SerialNumber;
             this->coinAcceptorPartNum = coinAccepter->v_PartNumber;
             result = true;
@@ -477,28 +477,28 @@ bool SearchDevices::searchDeviceMethod(
 
             return result;
         }
-        if (printer->isItYou(comList, dev_name, com_str, dev_coment)) {
+        if (printer->isItYou(com_List, dev_name, com_str, dev_coment)) {
             result = true;
         }
     }
 
     if (device == SearchDev::search_modem) {
-        if (modem->isItYou(comList, dev_name, com_str, dev_coment)) {
+        if (modem->isItYou(com_List, dev_name, com_str, dev_coment)) {
             result = true;
-            this->nowSimPresent = modem->nowSimPresent;
-            this->signalQuality = modem->nowModemQuality;
+            this->nowSim_Present = modem->nowSim_Present;
+            this->signalQuality = modem->nowModem_Quality;
             this->operatorName = modem->nowProviderSim;
-            this->modemComment = modem->nowModemComment;
+            this->modem_Comment = modem->nowModem_Comment;
 
-            this->modemFound = true;
+            this->modem_Found = true;
         } else {
             modem->close();
-            this->modemFound = false;
+            this->modem_Found = false;
         }
     }
 
     if (device == SearchDev::search_watchdog) {
-        if (watchDogs->isItYou(comList, dev_name, com_str, dev_coment)) {
+        if (watchDogs->isItYou(com_List, dev_name, com_str, dev_coment)) {
             result = true;
         }
     }

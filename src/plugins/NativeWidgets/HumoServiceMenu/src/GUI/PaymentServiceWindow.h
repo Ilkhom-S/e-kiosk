@@ -60,16 +60,16 @@ private slots:
 private:
     enum DateRange { DayRange, WeekRange, MonthRange, ThreeMonthRange };
 
-    HumoServiceBackend *mBackend;
-    PaymentManager *mPaymentManager;
-    QFutureWatcher<void> mPaymentTaskWatcher;
-    bool mFiscalMode;
-    PaymentTableModel *mModel;
-    PaymentProxyModel *mProxyModel;
-    QList<PaymentInfo> mPaymentInfoList;
-    QButtonGroup *mDateFilterButtonGroup;
-    QButtonGroup *mPaymentsFilterButtonGroup;
-    QMap<int, QPointer<QCheckBox>> mColumnCheckboxs;
+    HumoServiceBackend *m_Backend;
+    PaymentManager *m_PaymentManager;
+    QFutureWatcher<void> m_PaymentTaskWatcher;
+    bool m_FiscalMode;
+    PaymentTableModel *m_Model;
+    PaymentProxyModel *m_ProxyModel;
+    QList<PaymentInfo> m_PaymentInfoList;
+    QButtonGroup *m_DateFilterButtonGroup;
+    QButtonGroup *m_PaymentsFilterButtonGroup;
+    QMap<int, QPointer<QCheckBox>> m_ColumnCheckboxs;
 };
 
 //----------------------------------------------------------------------------
@@ -99,7 +99,7 @@ public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    virtual Qt::Item_Flags flags(const QModelIndex &index) const;
     virtual QVariant
     headerData(int aSection, Qt::Orientation aOrientation, int aRole = Qt::DisplayRole) const;
     void setPayments(QList<PaymentInfo> aPaymentInfoList);
@@ -126,10 +126,10 @@ private slots:
     void proccessNextPayment();
 
 private:
-    PaymentManager *mPaymentManager;
-    QList<PaymentInfo> mPaymentInfoList;
-    QMap<qint64, int> mPaymentRowIndex;
-    QSet<qint64> mPrintingQueue;
+    PaymentManager *m_PaymentManager;
+    QList<PaymentInfo> m_PaymentInfoList;
+    QMap<qint64, int> m_PaymentRowIndex;
+    QSet<qint64> m_PrintingQueue;
 
     /// очередь платежей на перепроводку
     struct ProcessPayments {
@@ -142,9 +142,9 @@ private:
             payments.clear();
             processed = 0;
         }
-    } mProcessPayments;
+    } m_ProcessPayments;
 
-    bool mFiscalMode;
+    bool m_FiscalMode;
     QHash<Column, QString> columnHeaders;
 };
 
@@ -171,11 +171,11 @@ protected:
     bool filterAcceptsColumn(int sourceColumn, const QModelIndex &sourceParent) const;
 
 private:
-    bool mDateFilterEnabled;
-    QDateTime mStartDateTime;
-    QDateTime mEndDateTime;
-    PaymentFilter mPaymentFilter;
-    QMap<int, bool> mColumns;
+    bool m_DateFilterEnabled;
+    QDateTime m_StartDateTime;
+    QDateTime m_EndDateTime;
+    PaymentFilter m_PaymentFilter;
+    QMap<int, bool> m_Columns;
 };
 
 typedef QMap<int, bool> map_type;

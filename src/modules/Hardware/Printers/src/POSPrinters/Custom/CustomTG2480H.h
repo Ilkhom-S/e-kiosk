@@ -2,22 +2,22 @@
 
 #pragma once
 
-#include "CustomPrinters.h"
+#include "Custom_Printers.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class CustomTG2480H : public CustomPrinter<T> {
-    SET_SUBSERIES("CustomTG2480H")
+template <class T> class Custom_TG2480H : public Custom_Printer<T> {
+    SET_SUBSERIES("Custom_TG2480H")
 
 public:
-    CustomTG2480H() {
-        this->mParameters.errors[20][4].insert('\x08', PrinterStatusCode::OK::MotorMotion);
-        this->mParameters.errors[20][5].insert('\x02', PrinterStatusCode::Error::Presenter);
+    Custom_TG2480H() {
+        this->m_Parameters.errors[20][4].insert('\x08', PrinterStatusCode::OK::MotorMotion);
+        this->m_Parameters.errors[20][5].insert('\x02', PrinterStatusCode::Error::Presenter);
 
-        this->mDeviceName = CCustomPrinter::Models::TG2480H;
-        this->mModelID = '\xA8';
+        this->m_DeviceName = CCustom_Printer::Models::TG2480H;
+        this->m_ModelID = '\xA8';
 
-        this->mModelData.data().clear();
-        this->mModelData.add(this->mModelID, true, CCustomPrinter::Models::TG2480H);
+        this->m_ModelData.data().clear();
+        this->m_ModelData.add(this->m_ModelID, true, CCustom_Printer::Models::TG2480H);
         this->setConfigParameter(CHardwareSDK::Printer::LineSize, 44);
     }
 
@@ -40,15 +40,15 @@ protected:
 };
 
 //--------------------------------------------------------------------------------
-class LibUSBCustomTG2480H : public CustomTG2480H<TLibUSBPrinterBase> {
+class LibUSBCustom_TG2480H : public Custom_TG2480H<TLibUSBPrinterBase> {
 public:
-    LibUSBCustomTG2480H() {
-        this->mDetectingData->set(CUSBVendors::Custom, this->mDeviceName, 0x01a8);
+    LibUSBCustom_TG2480H() {
+        this->m_DetectingData->set(CUSBVendors::Custom, this->m_DeviceName, 0x01a8);
         this->setConfigParameter(CHardwareSDK::Printer::LineSize, 44);
     }
 };
 
 //--------------------------------------------------------------------------------
-typedef SerialPOSPrinter<CustomTG2480H<TSerialPrinterBase>> SerialCustomTG2480H;
+typedef SerialPOSPrinter<Custom_TG2480H<TSerialPrinterBase>> SerialCustom_TG2480H;
 
 //--------------------------------------------------------------------------------

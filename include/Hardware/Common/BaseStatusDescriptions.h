@@ -92,7 +92,7 @@ public:
 
         ADD_ERROR_STATUS(Unknown, QCoreApplication::translate("GeneralStatuses", "#unknown_error"));
         ADD_ERROR_STATUS(
-            MechanismPosition,
+            Mechanism_Position,
             QCoreApplication::translate("GeneralStatuses", "#mechanisms_positioning_error"));
         ADD_ERROR_STATUS(PowerSupply,
                          QCoreApplication::translate("GeneralStatuses", "#power_supply_error"));

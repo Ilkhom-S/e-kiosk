@@ -51,16 +51,16 @@ struct SJobProgress {
 class SJob {
 public:
     SJob() {
-        mState = EJobStateUnknown;
-        mMinRetryDelay = 0;
-        mNoProgressTimeout = 0;
+        m_State = EJobStateUnknown;
+        m_MinRetryDelay = 0;
+        m_NoProgressTimeout = 0;
     }
 
     bool isComplete() const {
-        return mState == EJobStateTransferred || mState == EJobStateAcknowledged;
+        return m_State == EJobStateTransferred || m_State == EJobStateAcknowledged;
     }
 
-    bool isFatal() const { return mState == EJobStateError || mState == EJobStateCancelled; }
+    bool isFatal() const { return m_State == EJobStateError || m_State == EJobStateCancelled; }
 
     bool inProgress() const { return !isComplete() && !isFatal(); }
 
@@ -68,23 +68,23 @@ public:
         return QString(
                    "UUID: %1. Name: '%2'. Dscr: %3. State: %4. Progress: %5. MinRetryDelay: %6. "
                    "NoProgressTimeout: %7.")
-            .arg(mGuidID.toString())
-            .arg(mName)
-            .arg(mDesc)
-            .arg(mState)
-            .arg(mProgress.toString())
-            .arg(mMinRetryDelay)
-            .arg(mNoProgressTimeout);
+            .arg(m_GuidID.toString())
+            .arg(m_Name)
+            .arg(m_Desc)
+            .arg(m_State)
+            .arg(m_Progress.toString())
+            .arg(m_MinRetryDelay)
+            .arg(m_NoProgressTimeout);
     }
 
 public:
-    QUuid mGuidID;
-    QString mName;
-    QString mDesc;
-    quint32 mState;
-    SJobProgress mProgress;
-    quint32 mMinRetryDelay;
-    quint32 mNoProgressTimeout;
+    QUuid m_GuidID;
+    QString m_Name;
+    QString m_Desc;
+    quint32 m_State;
+    SJobProgress m_Progress;
+    quint32 m_MinRetryDelay;
+    quint32 m_NoProgressTimeout;
 };
 
 //---------------------------------------------------------------------------

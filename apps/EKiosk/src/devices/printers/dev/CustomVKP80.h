@@ -4,7 +4,7 @@
 
 class BasePrinterDevices;
 
-namespace CMDCustomVKP80 {
+namespace CMDCustom_VKP80 {
 
 namespace Constants {
 namespace Status {
@@ -208,7 +208,7 @@ const uchar PrinterIsNotAvailable = 0xFF; /// Принтер недоступе�
 const uchar PaperEnd = 0x0C;              /// Бумага закончилась
 const uchar PaperNearEnd = 0x03;          /// Бумага почти закончилась
 const uchar UnknownCommand = 0x20;        /// Неизвестная команда
-const uchar PaperJamError = 0x40;         /// Бумага зажевалась
+const uchar PaperJam_Error = 0x40;         /// Бумага зажевалась
 const uchar PrinterIsOK = 0x00;           /// Нет ошибок
 
 /// Константы для установки шрифта принтера
@@ -221,28 +221,28 @@ const uchar PrinterFontUnderline = 0x2D;         /// Подчеркнутый
 
 const uchar PrinterCommandSetBarCodeHeightSecondByte = 0x68; /// Высота штрих-кода
 const uchar PrinterCommandPrintBarCodeSecondByte = 0x6B;     /// Печать штрих-кода
-const uchar PrinterCommandSetBarCodeSystemThirdByte = 0x49;  /// Система штрих-кода CODE128
+const uchar PrinterCommandSetBarCodeSystem_ThirdByte = 0x49;  /// Система штрих-кода CODE128
 const uchar PrinterCommandSetBarCodeHRIPositionSecondByte = 0x48;
 const uchar PrinterCommandSetBarCodeFontSizeSecondByte = 0x66;
 const uchar PrinterCommandSetBarCodeWidthSecondByte = 0x77;
 
-const QString DeviceName = "CustomVKP80";
+const QString DeviceName = "Custom_VKP80";
 
 namespace Control {
 const char StatusMask1 = '\x12';
 const char StatusMask0 = '\x7E';
 } // namespace Control
-} // namespace CMDCustomVKP80
+} // namespace CMDCustom_VKP80
 
-class CustomVKP80_PRINTER : public BasePrinterDevices {
+class Custom_VKP80_PRINTER : public BasePrinterDevices {
 
 public:
-    CustomVKP80_PRINTER(QObject *parent = 0);
+    Custom_VKP80_PRINTER(QObject *parent = 0);
     QString printer_name;
 
     bool OpenPrinterPort();
-    bool isEnabled(CMDCustomVKP80::SStatus &s_status, int &state);
-    bool getControlInfo(char aInfoType, CMDCustomVKP80::SControlInfo &aControlInfo);
+    bool isEnabled(CMDCustom_VKP80::SStatus &s_status, int &state);
+    bool getControlInfo(char aInfoType, CMDCustom_VKP80::SControlInfo &aControlInfo);
     bool isItYou();
     void print(const QString &aCheck);
     bool registerLogo(const QString &aPixelString, uchar aWidth);
@@ -253,7 +253,7 @@ public:
 
 protected:
     bool openPort();
-    bool getStatus(int &aStatus, CMDCustomVKP80::SStatus &s_status);
+    bool getStatus(int &aStatus, CMDCustom_VKP80::SStatus &s_status);
     bool printCheck(const QString &aCheck);
     void sendFiscalData();
     bool initialize();
@@ -264,5 +264,5 @@ protected:
     void getSpecialCharacters(QByteArray &printText);
 
 private:
-    bool getState(char aStatusType, CMDCustomVKP80::SStatus &aStatus);
+    bool getState(char aStatusType, CMDCustom_VKP80::SStatus &aStatus);
 };

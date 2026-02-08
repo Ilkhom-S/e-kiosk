@@ -105,7 +105,7 @@ private:
 
 private:
     QThread m_Thread;
-    SDK::PaymentProcessor::ICore *mCore;
+    SDK::PaymentProcessor::ICore *m_Core;
     QSharedPointer<RequestSender> m_Http;
     QUrl m_ServerUrl;
     QString m_ContentPath;
@@ -123,7 +123,7 @@ private:
     QStringList m_TypeList;
 
     /// Список новых каналов, полученных от сервера
-    QMap<QString, Ad::Campaign> mCampaigns;
+    QMap<QString, Ad::Campaign> m_Campaigns;
 
     /// Список каналов, подлежащих обновлению
     QStringList m_TypeDownloadList;

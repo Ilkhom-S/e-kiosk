@@ -21,7 +21,7 @@ struct SCharData {
     SCharData() : character(QChar(CCodec::DefaultCharacter)), main(false) {}
     SCharData(const QString &aCharacter, bool aMain) : character(aCharacter), main(aMain) {}
     SCharData(const char *aCharacter, bool aMain)
-        : character(QString::fromUtf8(aCharacter)), main(aMain) {}
+        : character(QString::from_Utf8(aCharacter)), main(aMain) {}
     SCharData(const QChar &aCharacter, bool aMain) : character(aCharacter), main(aMain) {}
 
     bool operator==(const SCharData &aData) const {
@@ -42,7 +42,7 @@ public:
         append(aCode, SCharData(aCharacter, aMain));
     }
 
-    void add(char aCode) { append(aCode, mDefaultValue); }
+    void add(char aCode) { append(aCode, m_DefaultValue); }
 };
 
 //---------------------------------------------------------------------------
@@ -63,23 +63,23 @@ public:
     virtual QString convertToUnicode(const char *aBuffer, int aLength) const;
 
     /// Конвертировать юникодовую строку в массив байтов.
-    virtual QByteArray convertFromUnicode(const QChar *aBuffer, int aLength) const;
+    virtual QByteArray convertFrom_Unicode(const QChar *aBuffer, int aLength) const;
 
 protected:
     /// Имя кодека.
-    QByteArray mName;
+    QByteArray m_Name;
 
     /// Id кодека >= 3000. http://www.iana.org/assignments/character-sets/character-sets.xhtml
-    int mMIB;
+    int m_MIB;
 
     /// Массив данных для перекодировки.
-    CharacterData mData;
+    CharacterData m_Data;
 
     /// Сторож данных.
-    mutable QReadWriteLock mDataGuard;
+    mutable QReadWriteLock m_DataGuard;
 
     /// Минимальное значение unicode-символа для использования кодека для перекодировки.
-    ushort mMinValueActive;
+    ushort m_MinValueActive;
 };
 
 //---------------------------------------------------------------------------

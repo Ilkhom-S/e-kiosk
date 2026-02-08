@@ -62,7 +62,7 @@ void CCNetCreator::processDeviceData(QByteArray &aAnswer) {
 
     if (firmware.size() == 6) {
         QString logDate =
-            QDate::fromString(firmware.left(4).prepend("20"), CCCNetCreator::DateFormat)
+            QDate::from_String(firmware.left(4).prepend("20"), CCCNetCreator::DateFormat)
                 .toString(CCCNetCreator::DateLogFormat);
 
         setDeviceParameter(CDeviceData::Date, logDate, CDeviceData::Firmware);
@@ -86,7 +86,7 @@ void CCNetCreator::processDeviceData(QByteArray &aAnswer) {
     QByteArray data = ProtocolUtils::clean(aAnswer.mid(27, 7));
 
     if (data.size() == 6) {
-        QString logDate = QDate::fromString(data.left(4).prepend("20"), CCCNetCreator::DateFormat)
+        QString logDate = QDate::from_String(data.left(4).prepend("20"), CCCNetCreator::DateFormat)
                               .toString(CCCNetCreator::DateLogFormat);
 
         setDeviceParameter(CDeviceData::Date, logDate, CDeviceData::InternalFirmware);
@@ -95,7 +95,7 @@ void CCNetCreator::processDeviceData(QByteArray &aAnswer) {
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetCreator::performUpdateFirmware(const QByteArray &aBuffer) {
+bool CCNetCreator::perform_UpdateFirmware(const QByteArray &aBuffer) {
     if (!changeBaudRate(true) || !writeHead(aBuffer)) {
         return false;
     }
@@ -124,7 +124,7 @@ bool CCNetCreator::performUpdateFirmware(const QByteArray &aBuffer) {
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetCreator::performBaudRateChanging(const TPortParameters &aPortParameters) {
+bool CCNetCreator::perform_BaudRateChanging(const TPortParameters &aPortParameters) {
     m_Protocol.changePortParameters(aPortParameters);
     QByteArray answer;
 

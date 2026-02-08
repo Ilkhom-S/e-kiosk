@@ -65,7 +65,7 @@ public:
     virtual QQuickItem *getWidget() const;
 
     // возвращает нативный виджет.
-    virtual QWidget *getNativeWidget() const { return mAutoEncashmentWindow; }
+    virtual QWidget *getNativeWidget() const { return m_AutoEncashmentWindow; }
 
     /// Возвращает контекст виджета.
     virtual QVariantMap getContext() const;
@@ -73,14 +73,14 @@ public:
 #pragma endregion
 
 private:
-    bool mIsReady;
-    QString mInstancePath;
-    SDK::Plugin::IEnvironment *mEnvironment;
-    QVariantMap mParameters;
+    bool m_IsReady;
+    QString m_InstancePath;
+    SDK::Plugin::IEnvironment *m_Environment;
+    QVariantMap m_Parameters;
 
-    QGraphicsProxyWidget *mMainWidget;
-    AutoEncashmentWindow *mAutoEncashmentWindow;
-    QSharedPointer<ServiceMenuBackend> mBackend;
+    QGraphicsProxyWidget *m_MainWidget;
+    AutoEncashmentWindow *m_AutoEncashmentWindow;
+    QSharedPointer<ServiceMenuBackend> m_Backend;
 };
 
 //--------------------------------------------------------------------------

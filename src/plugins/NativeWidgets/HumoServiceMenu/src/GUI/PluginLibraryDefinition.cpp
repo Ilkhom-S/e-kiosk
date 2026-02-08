@@ -7,11 +7,11 @@
 #include <SDK/Plugins/PluginFactory.h>
 
 ServiceMenuPluginFactory::ServiceMenuPluginFactory() {
-    mName = "Service menu native widget";
-    mDescription = "Service menu.";
-    mAuthor = "Humo";
-    mVersion = "1.0";
-    mModuleName = "service_menu"; // Название dll/so модуля без расширения
+    m_Name = "Service menu native widget";
+    m_Description = "Service menu.";
+    m_Author = "Humo";
+    m_Version = "1.0";
+    m_ModuleName = "service_menu"; // Название dll/so модуля без расширения
 }
 
 //--------------------------------------------------------------------------

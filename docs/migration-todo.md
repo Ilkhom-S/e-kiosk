@@ -40,7 +40,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Fix AUTOMOC processing issues for Qt classes with Q_OBJECT macros by adding public headers to CMake SOURCES (GraphicsEngine, DeviceManager, ScenarioEngine, UpdateEngine)
 - [x] Fix compiler warning for unhandled enumeration values 'EMoney' and 'BankCard' in PaymentDatabaseUtils.cpp switch statement
 - [x] Fix Boost.Bind deprecation warning by updating includes to use modern <boost/bind/bind.hpp> + using namespace boost::placeholders
-- [x] Fix QMessageBox constructor deprecation warning by updating to use StandardButtons overload instead of deprecated parameter-based constructor
+- [ ] Migrate remaining QRegExp usages to QRegularExpression for Qt 6 compatibility
 
 ## Version Pinning
 

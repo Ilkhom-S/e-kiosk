@@ -23,13 +23,13 @@ public:
 
 protected:
     /// Локальный кодек.
-    QTextCodec *mCodec;
+    QTextCodec *m_Codec;
 
     /// Открыта ли сессия.
-    bool mSessionOpened;
+    bool m_SessionOpened;
 
     /// Необходимо выполнить Z-отчет (для ФР без буфера).
-    bool mNeedCloseSession;
+    bool m_NeedCloseSession;
 };
 
 //--------------------------------------------------------------------------------

@@ -60,17 +60,17 @@ protected:
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
     /// Флаг корректной инициализации библиотек.
-    bool mLibrariesInitialized;
+    bool m_LibrariesInitialized;
 
     /// Id устройства.
-    int mId;
+    int m_Id;
 
 private:
     /// Статический экземпляр класса.
-    static IDTechReader *mInstance;
+    static IDTechReader *m_Instance;
 
     /// Счетчик экземпляров класса.
-    static int mInstanceCounter;
+    static int m_InstanceCounter;
 };
 
 //------------------------------------------------------------------------------

@@ -39,7 +39,7 @@ const QString HumoPin = "humo_pin";
 
 //------------------------------------------------------------------------------
 PinLoader::PinLoader(PaymentFactoryBase *aPaymentFactoryBase)
-    : QObject(aPaymentFactoryBase), mPaymentFactoryBase(aPaymentFactoryBase), m_IsStopping(false) {
+    : QObject(aPaymentFactoryBase), m_PaymentFactoryBase(aPaymentFactoryBase), m_IsStopping(false) {
     ILogable::setLog(aPaymentFactoryBase->getLog("PinLoader"));
 
     m_PinThread.setObjectName(CPinLoader::ThreadName);
@@ -70,9 +70,9 @@ PinLoader::~PinLoader(void) {
 PPSDK::SProvider PinLoader::getProviderSpecification(const PPSDK::SProvider &aProvider) {
     QMutexLocker lock(&m_PinMutex);
 
-    if (mPinProviders.contains(aProvider.id) && mPinProviders[aProvider.id].lastLoad.isValid()) {
+    if (m_PinProviders.contains(aProvider.id) && m_PinProviders[aProvider.id].lastLoad.isValid()) {
         // Возвращаем описание с заполненными номиналами.
-        return mPinProviders[aProvider.id].provider;
+        return m_PinProviders[aProvider.id].provider;
     }
 
     return PPSDK::SProvider();
@@ -91,13 +91,13 @@ Response *PinLoader::createResponse(const SDK::PaymentProcessor::Humo::Request &
 
 //------------------------------------------------------------------------------
 void PinLoader::findPinProviders() {
-    PPSDK::ISettingsService *settingsService = mPaymentFactoryBase->getCore()->getSettingsService();
+    PPSDK::ISettingsService *settingsService = m_PaymentFactoryBase->getCore()->getSettingsService();
     if (!settingsService) {
         toLog(LogLevel::Error, "Failed to get settings service.");
         return;
     }
 
-    if (mPinProviders.isEmpty()) {
+    if (m_PinProviders.isEmpty()) {
         toLog(LogLevel::Normal, "Updating list...");
 
         PPSDK::DealerSettings *dealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
@@ -113,7 +113,7 @@ void PinLoader::findPinProviders() {
             if (provider.processor.requests.contains(CPinLoader::GetCardsRequestName)) {
                 QMutexLocker lock(&m_PinMutex);
 
-                mPinProviders.insert(provider.id, SProviderPins(provider));
+                m_PinProviders.insert(provider.id, SProviderPins(provider));
             }
         }
     }
@@ -121,19 +121,19 @@ void PinLoader::findPinProviders() {
 
 //------------------------------------------------------------------------------
 void PinLoader::onLoadPinList() {
-    if (mPinProviders.isEmpty()) {
+    if (m_PinProviders.isEmpty()) {
         findPinProviders();
     }
 
-    if (mPinProviders.isEmpty()) {
+    if (m_PinProviders.isEmpty()) {
         toLog(LogLevel::Normal, "No providers.");
 
-        mPinThread.quit();
+        m_PinThread.quit();
 
         return;
     }
 
-    PPSDK::ISettingsService *settingsService = mPaymentFactoryBase->getCore()->getSettingsService();
+    PPSDK::ISettingsService *settingsService = m_PaymentFactoryBase->getCore()->getSettingsService();
     if (!settingsService) {
         toLog(LogLevel::Error, "Failed to get settings service.");
         return;
@@ -146,27 +146,27 @@ void PinLoader::onLoadPinList() {
         return;
     }
 
-    SDK::PaymentProcessor::Humo::RequestSender http(mPaymentFactoryBase->getNetworkTaskManager(),
-                                                    mPaymentFactoryBase->getCryptEngine());
+    SDK::PaymentProcessor::Humo::RequestSender http(m_PaymentFactoryBase->getNetworkTaskManager(),
+                                                    m_PaymentFactoryBase->getCryptEngine());
     http.setResponseCreator(boost::bind(
         &PinLoader::createResponse, this, boost::placeholders::_1, boost::placeholders::_2));
 
     int failedCount = 0;
 
-    foreach (qint64 id, mPinProviders.keys()) {
+    foreach (qint64 id, m_PinProviders.keys()) {
         if (m_IsStopping) {
             toLog(LogLevel::Normal, "Updating providers stopped.");
             break;
         }
 
-        if (mPinProviders[id].lastLoad.isValid() &&
-            mPinProviders[id].lastLoad.addSecs(CPinLoader::PinsExpirationTime) >
+        if (m_PinProviders[id].lastLoad.isValid() &&
+            m_PinProviders[id].lastLoad.addSecs(CPinLoader::PinsExpirationTime) >
                 QDateTime::currentDateTime()) {
             // пропускаем т.к. еще не закончилось время действия загруженных пинов
             continue;
         }
 
-        PPSDK::SProvider &provider = mPinProviders[id].provider;
+        PPSDK::SProvider &provider = m_PinProviders[id].provider;
 
         toLog(LogLevel::Normal,
               QString("Updating provider %1 (%2).").arg(provider.id).arg(provider.name));
@@ -216,7 +216,7 @@ void PinLoader::onLoadPinList() {
         toLog(LogLevel::Error,
               QString("Pin nominals update failed for %1 in %2 providers. Retry after %3 min.")
                   .arg(failedCount)
-                  .arg(mPinProviders.size())
+                  .arg(m_PinProviders.size())
                   .arg(CPinLoader::ErrorRetryTimeout / 60.));
     } else {
         toLog(LogLevel::Normal, "All pin nominals successfully updated.");
@@ -231,21 +231,21 @@ void PinLoader::onLoadPinList() {
 void PinLoader::updatePinList(qint64 aProvider, const QList<SPinCard> &aCards) {
     QMutexLocker lock(&m_PinMutex);
 
-    mPinProviders[aProvider].pins = aCards;
-    mPinProviders[aProvider].lastLoad = QDateTime::currentDateTime();
+    m_PinProviders[aProvider].pins = aCards;
+    m_PinProviders[aProvider].lastLoad = QDateTime::currentDateTime();
 
-    PPSDK::SProvider &provider = mPinProviders[aProvider].provider;
+    PPSDK::SProvider &provider = m_PinProviders[aProvider].provider;
 
     BOOST_FOREACH (PPSDK::SProviderField &field, provider.fields) {
         if (field.id == CPin::UIFieldName) {
-            field.enumItems.clear();
+            field.enum_Items.clear();
 
-            foreach (const SPinCard &card, mPinProviders[aProvider].pins) {
-                PPSDK::SProviderField::SEnumItem item;
+            foreach (const SPinCard &card, m_PinProviders[aProvider].pins) {
+                PPSDK::SProviderField::SEnum_Item item;
                 item.title = card.name;
                 item.value = card.id;
 
-                field.enumItems << item;
+                field.enum_Items << item;
             }
 
             toLog(LogLevel::Normal,
@@ -260,9 +260,9 @@ void PinLoader::updatePinList(qint64 aProvider, const QList<SPinCard> &aCards) {
 QList<SPinCard> PinLoader::getPinCardList(qint64 aProvider) {
     QMutexLocker lock(&m_PinMutex);
 
-    if (mPinProviders.contains(aProvider) && mPinProviders[aProvider].lastLoad.isValid()) {
+    if (m_PinProviders.contains(aProvider) && m_PinProviders[aProvider].lastLoad.isValid()) {
         // Возвращаем описание с заполненными номиналами.
-        return mPinProviders[aProvider].pins;
+        return m_PinProviders[aProvider].pins;
     }
 
     return QList<SPinCard>();

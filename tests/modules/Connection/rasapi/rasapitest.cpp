@@ -6,7 +6,7 @@
 std::list<std::wstring> gConnections;
 std::list<std::wstring> gDevices;
 
-void testEnumPhonebookEntries() {
+void testEnum_PhonebookEntries() {
     std::wcout << std::endl << "Enumerating phonebook entries:" << std::endl;
 
     RasApi::PhonebookEntryEnumerator e;
@@ -24,7 +24,7 @@ void testEnumPhonebookEntries() {
     }
 }
 
-void testEnumDevices(RasApi::EDeviceType::Enum aType) {
+void testEnum_Devices(RasApi::EDeviceType::Enum aType) {
     std::wcout << std::endl << "Enumerating devices:" << std::endl;
 
     RasApi::DeviceEnumerator d;
@@ -46,7 +46,7 @@ void testEnumDevices(RasApi::EDeviceType::Enum aType) {
     }
 }
 
-void testEnumConnections() {
+void testEnum_Connections() {
     std::wcout << std::endl << "Enumerating connections:" << std::endl;
 
     RasApi::ConnectionEnumerator c;
@@ -126,7 +126,7 @@ void testCreatePhonebookEntry() {
 
     entry.setOptions(RasApi::EConnectionOption::RemoteDefaultGateway |
                      RasApi::EConnectionOption::DisableLcpExtensions |
-                     RasApi::EConnectionOption::ModemLights |
+                     RasApi::EConnectionOption::Modem_Lights |
                      RasApi::EConnectionOption::SecureLocalFiles);
 
     entry.setOptions2(RasApi::EConnectionOption2::Internet |
@@ -188,9 +188,9 @@ void testHangUp() {
 }
 
 int main(int argc, char *argv[]) {
-    testEnumPhonebookEntries();
-    testEnumDevices(RasApi::EDeviceType::Modem);
-    testEnumConnections();
+    testEnum_PhonebookEntries();
+    testEnum_Devices(RasApi::EDeviceType::Modem);
+    testEnum_Connections();
     testConnectionStatus();
     testCreatePhonebookEntry();
     testDial();

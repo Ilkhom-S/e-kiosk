@@ -21,17 +21,17 @@ void ModelData::add(char aModelId,
                     bool aVerified,
                     const QString &aName,
                     const QString &aDescription) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
     append(aModelId, SModelData(aName, aVerified, aDescription));
-    mModelIds.insert(aModelId);
+    m_ModelIds.insert(aModelId);
 }
 
 //--------------------------------------------------------------------------------
 const TModelIds &ModelData::getModelIds() {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    return mModelIds;
+    return m_ModelIds;
 }
 
 } // namespace POSPrinters

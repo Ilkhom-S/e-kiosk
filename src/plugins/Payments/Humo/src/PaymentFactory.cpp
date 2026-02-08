@@ -49,7 +49,7 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
 
 //------------------------------------------------------------------------------
 PaymentFactory::PaymentFactory(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : PaymentFactoryBase(aFactory, aInstancePath), mPinLoader(0) {}
+    : PaymentFactoryBase(aFactory, aInstancePath), m_PinLoader(0) {}
 
 //------------------------------------------------------------------------------
 QString PaymentFactory::getPluginName() const {
@@ -58,14 +58,14 @@ QString PaymentFactory::getPluginName() const {
 
 //------------------------------------------------------------------------------
 bool PaymentFactory::initialize() {
-    mPinLoader = new PinLoader(this);
+    m_PinLoader = new PinLoader(this);
     return true;
 }
 
 //------------------------------------------------------------------------------
 void PaymentFactory::shutdown() {
-    delete mPinLoader;
-    mPinLoader = 0;
+    delete m_PinLoader;
+    m_PinLoader = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ void PaymentFactory::releasePayment(SDK::PaymentProcessor::IPayment *aPayment) {
 //------------------------------------------------------------------------------
 PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider &aProvider) {
     if (aProvider.processor.type == CProcessorType::HumoPin) {
-        return mPinLoader->getProviderSpecification(aProvider);
+        return m_PinLoader->getProviderSpecification(aProvider);
     } else if (aProvider.processor.type == CProcessorType::Humo) {
         return aProvider;
     } else if (aProvider.processor.type == CProcessorType::Dealer) {
@@ -111,7 +111,7 @@ PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider
 
 //------------------------------------------------------------------------------
 QList<SPinCard> PaymentFactory::getPinCardList(qint64 aProvider) {
-    return mPinLoader ? mPinLoader->getPinCardList(aProvider) : QList<SPinCard>();
+    return m_PinLoader ? m_PinLoader->getPinCardList(aProvider) : QList<SPinCard>();
 }
 
 //------------------------------------------------------------------------------

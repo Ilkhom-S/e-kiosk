@@ -45,10 +45,10 @@ private:
     bool leaveEscrow(int aStatusCode);
 
     /// Cтатус-коды со срабатыванием при стекировании.
-    TStatusCodes mStackedStatusCodes;
+    TStatusCodes m_StackedStatusCodes;
 
     /// Количество купюр, принимаемых за 1 заход.
-    int mNotesPerEscrow;
+    int m_NotesPerEscrow;
 };
 
 //-----------------------------------------------------------------------------------------------------------

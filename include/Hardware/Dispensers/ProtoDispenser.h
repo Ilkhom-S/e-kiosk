@@ -33,7 +33,7 @@ protected slots:
     virtual void dispense(int /*aUnit*/, int /*aItems*/) {};
 
     /// Выдать.
-    virtual void performDispense(int /*aUnit*/, int /*aItems*/) {};
+    virtual void perform_Dispense(int /*aUnit*/, int /*aItems*/) {};
 };
 
 //--------------------------------------------------------------------------------

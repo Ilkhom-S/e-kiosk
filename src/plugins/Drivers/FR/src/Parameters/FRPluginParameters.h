@@ -26,6 +26,6 @@ SDK::Plugin::SPluginParameter setPrinterModel(const QStringList &aModels, const 
 SDK::Plugin::SPluginParameter setPrinterModel(const QString &aModel);
 
 // Обнуление суммы в кассе при закрытии смены.
-SDK::Plugin::SPluginParameter setNullingSumInCash();
+SDK::Plugin::SPluginParameter setNullingSum_InCash();
 
 //------------------------------------------------------------------------------

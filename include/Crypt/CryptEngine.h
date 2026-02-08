@@ -204,7 +204,7 @@ private:
 
 private:
     bool m_Initialized;
-    CCrypt::ETypeEngine mEngine;
+    CCrypt::ETypeEngine m_Engine;
 
     QRecursiveMutex m_Mutex;
 

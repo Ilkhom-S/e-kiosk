@@ -64,26 +64,26 @@ REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
 
 //--------------------------------------------------------------------------
 HumoServiceMenu::HumoServiceMenu(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mEnvironment(aFactory), mInstancePath(aInstancePath), mMainHumoServiceMenuWindow(nullptr),
-      mIsReady(true) {
+    : m_Environment(aFactory), m_InstancePath(aInstancePath), m_MainHumoServiceMenuWindow(nullptr),
+      m_IsReady(true) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
-        mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+        m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
     if (core) {
-        mBackend = QSharedPointer<HumoServiceBackend>(new HumoServiceBackend(
-            mEnvironment, mEnvironment->getLog(CHumoServiceBackend::LogName)));
+        m_Backend = QSharedPointer<HumoServiceBackend>(new HumoServiceBackend(
+            m_Environment, m_Environment->getLog(CHumoServiceBackend::LogName)));
     } else {
-        mEnvironment->getLog(CHumoServiceBackend::LogName)
+        m_Environment->getLog(CHumoServiceBackend::LogName)
             ->write(LogLevel::Error, "Failed to get ICore");
     }
 
-    mMainHumoServiceMenuWindow = new MainHumoServiceMenuWindow(mBackend.data());
-    mMainHumoServiceMenuWindow->initialize();
+    m_MainHumoServiceMenuWindow = new MainHumoServiceMenuWindow(m_Backend.data());
+    m_MainHumoServiceMenuWindow->initialize();
 }
 
 //--------------------------------------------------------------------------
 HumoServiceMenu::~HumoServiceMenu() {
-    if (mMainHumoServiceMenuWindow) {
+    if (m_MainHumoServiceMenuWindow) {
         saveConfiguration();
     }
 }
@@ -95,46 +95,46 @@ QString HumoServiceMenu::getPluginName() const {
 
 //--------------------------------------------------------------------------
 QVariantMap HumoServiceMenu::getConfiguration() const {
-    return mBackend->getConfiguration();
+    return m_Backend->getConfiguration();
 }
 
 //--------------------------------------------------------------------------
 void HumoServiceMenu::setConfiguration(const QVariantMap &aParameters) {
-    mBackend->setConfiguration(aParameters);
+    m_Backend->setConfiguration(aParameters);
 }
 
 //--------------------------------------------------------------------------
 QString HumoServiceMenu::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //--------------------------------------------------------------------------
 bool HumoServiceMenu::saveConfiguration() {
-    return mEnvironment->saveConfiguration(mInstancePath, mBackend->getConfiguration());
+    return m_Environment->saveConfiguration(m_InstancePath, m_Backend->getConfiguration());
 }
 
 //--------------------------------------------------------------------------
 bool HumoServiceMenu::isReady() const {
-    return mIsReady;
+    return m_IsReady;
 }
 
 //---------------------------------------------------------------------------
 void HumoServiceMenu::show() {
-    GUI::MessageBox::setParentWidget(mMainHumoServiceMenuWindow);
+    GUI::MessageBox::setParentWidget(m_MainHumoServiceMenuWindow);
 
-    mBackend->startHeartbeat();
+    m_Backend->startHeartbeat();
 }
 
 //---------------------------------------------------------------------------
 void HumoServiceMenu::hide() {
     GUI::MessageBox::hide();
-    mBackend->stopHeartbeat();
+    m_Backend->stopHeartbeat();
 }
 
 //---------------------------------------------------------------------------
 void HumoServiceMenu::notify(const QString &aReason, const QVariantMap &aParameters) {
     if (aReason.toInt() == PPSDK::EEventType::TryStopScenario) {
-        mMainHumoServiceMenuWindow->closeHumoServiceMenu(
+        m_MainHumoServiceMenuWindow->closeHumoServiceMenu(
             true, QObject::tr("#need_restart_application"), true);
     } else {
         GUI::MessageBox::emitSignal(aParameters);
@@ -143,9 +143,9 @@ void HumoServiceMenu::notify(const QString &aReason, const QVariantMap &aParamet
 
 //---------------------------------------------------------------------------
 void HumoServiceMenu::reset(const QVariantMap & /*aParameters*/) {
-    if (mMainHumoServiceMenuWindow) {
-        mMainHumoServiceMenuWindow->shutdown();
-        mMainHumoServiceMenuWindow->initialize();
+    if (m_MainHumoServiceMenuWindow) {
+        m_MainHumoServiceMenuWindow->shutdown();
+        m_MainHumoServiceMenuWindow->initialize();
     }
 }
 
@@ -156,7 +156,7 @@ QQuickItem *HumoServiceMenu::getWidget() const {
 
 //---------------------------------------------------------------------------
 QWidget *HumoServiceMenu::getNativeWidget() const {
-    return mMainHumoServiceMenuWindow;
+    return m_MainHumoServiceMenuWindow;
 }
 
 //---------------------------------------------------------------------------

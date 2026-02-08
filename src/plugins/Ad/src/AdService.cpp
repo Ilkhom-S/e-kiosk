@@ -48,17 +48,17 @@ AdService *AdService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 AdService::AdService(IApplication *aApplication)
-    : mApplication(aApplication), ILogable(CAdService::LogName), mSettings(nullptr) {
+    : m_Application(aApplication), ILogable(CAdService::LogName), m_Settings(nullptr) {
     QString userPath = IApplication::toAbsolutePath(
-        mApplication->getSettings().value(CSettings::UserDataPath).toString());
-    mSettings =
-        new QSettings(ISysUtils::rmBOM(userPath + QDir::separator() + CAdService::SettingsName),
+        m_Application->getSettings().value(CSettings::UserDataPath).toString());
+    m_Settings =
+        new QSettings(ISysUtils::rm_BOM(userPath + QDir::separator() + CAdService::SettingsName),
                       QSettings::IniFormat,
                       this);
     // В Qt6 метод setIniCodec() удален, UTF-8 используется по умолчанию
     // В Qt5 необходимо явно установить кодировку UTF-8
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    mSettings->setIniCodec("utf-8");
+    m_Settings->setIniCodec("utf-8");
 #endif
 }
 
@@ -68,15 +68,15 @@ AdService::~AdService() {}
 //---------------------------------------------------------------------------
 bool AdService::initialize() {
     QString userPath = IApplication::toAbsolutePath(
-        mApplication->getSettings().value(CSettings::UserDataPath).toString());
-    mDatabase = QSharedPointer<Ad::DatabaseUtils>(new Ad::DatabaseUtils(userPath, getLog()));
-    // mSettings->value(CAdService::Settings::Url, CAdService::DefaultUrl).toUrl(),
-    // 		mApplication->getWorkingDirectory() + QDir::separator() +
-    // 			mSettings->value(CAdService::Settings::ContendPath,
-    // CAdService::DefaultContentPath).toString(), 		mDatabase.data(),
-    mClient = QSharedPointer<Ad::Client>(new Ad::Client(mApplication->getCore(), getLog(), 0));
+        m_Application->getSettings().value(CSettings::UserDataPath).toString());
+    m_Database = QSharedPointer<Ad::DatabaseUtils>(new Ad::DatabaseUtils(userPath, getLog()));
+    // m_Settings->value(CAdService::Settings::Url, CAdService::DefaultUrl).toUrl(),
+    // 		m_Application->getWorkingDirectory() + QDir::separator() +
+    // 			m_Settings->value(CAdService::Settings::ContendPath,
+    // CAdService::DefaultContentPath).toString(), 		m_Database.data(),
+    m_Client = QSharedPointer<Ad::Client>(new Ad::Client(m_Application->getCore(), getLog(), 0));
 
-    mDatabase->addStatisticRecord(-1, "terminal_started");
+    m_Database->addStatisticRecord(-1, "terminal_started");
 
     return true;
 }
@@ -92,8 +92,8 @@ bool AdService::canShutdown() {
 
 //---------------------------------------------------------------------------
 bool AdService::shutdown() {
-    mClient.clear();
-    mDatabase.clear();
+    m_Client.clear();
+    m_Database.clear();
 
     return true;
 }
@@ -120,11 +120,11 @@ void AdService::resetParameters(const QSet<QString> &) {}
 
 //---------------------------------------------------------------------------
 QVariant AdService::getContent(const QString &aName) const {
-    //  auto channel = mClient->channel(aName); // if API is channel()
+    //  auto channel = m_Client->channel(aName); // if API is channel()
     // if (!channel || channel->isExpired())
     //     return QVariant();
 
-    return mClient->getContent(aName); // adjust to actual accessor
+    return m_Client->getContent(aName); // adjust to actual accessor
 }
 
 //---------------------------------------------------------------------------

@@ -15,7 +15,7 @@
 #include <QtCore/QSettings>
 #include <QtCore/QUrlQuery>
 #include <QtNetwork/QNetworkProxy>
-#include <QtXml/QDomDocument>
+#include <QtXml/QDom_Document>
 
 #include <Common/Exception.h>
 
@@ -57,18 +57,18 @@ const QString BitsJobNamePrefix = "TCUpdater_";
 
 //---------------------------------------------------------------------------
 Updater::Updater(QObject *aParent)
-    : QObject(aParent), mFailCount(0), mAllTasksCount(0), mProgressPercent(0),
+    : QObject(aParent), m_FailCount(0), m_AllTasksCount(0), m_ProgressPercent(0),
 #ifdef Q_OS_WIN32
-      mBitsManager(ILog::getInstance(CUpdater::Name)), mUseBITS(true), mJobPriority(CBITS::HIGH)
+      m_BitsManager(ILog::getInstance(CUpdater::Name)), m_UseBITS(true), m_JobPriority(CBITS::HIGH)
 #else
-      mUseBITS(false), mJobPriority(0)
+      m_UseBITS(false), m_JobPriority(0)
 #endif
 {
     m_NetworkTaskManager.setLog(ILog::getInstance(CUpdater::Name));
 
     m_NetworkTaskManager.setDownloadSpeedLimit(80);
 
-    connect(&mProgressTimer, SIGNAL(timeout()), this, SLOT(showProgress()));
+    connect(&m_ProgressTimer, SIGNAL(timeout()), this, SLOT(showProgress()));
 }
 
 //---------------------------------------------------------------------------
@@ -80,18 +80,18 @@ Updater::Updater(const QString &aConfigURL,
                  const QString &aPointId)
     : m_ConfigURL(aConfigURL), m_UpdateURL(aUpdateURL + "/" + aAppId + "/" + aConfiguration),
       m_Version(aVersion), m_AppId(aAppId), m_Configuration(aConfiguration),
-      m_NetworkTaskManager(ILog::getInstance(CUpdater::Name)), mCurrentTaskSize(0),
-      mWaitUpdateServer(false), mFailCount(0), m_AP(aPointId), mAllTasksCount(0),
-      mProgressPercent(0),
+      m_NetworkTaskManager(ILog::getInstance(CUpdater::Name)), m_CurrentTaskSize(0),
+      m_WaitUpdateServer(false), m_FailCount(0), m_AP(aPointId), m_AllTasksCount(0),
+      m_ProgressPercent(0),
 #ifdef Q_OS_WIN32
-      mBitsManager(ILog::getInstance(CUpdater::Name)), mUseBITS(true), mJobPriority(CBITS::HIGH)
+      m_BitsManager(ILog::getInstance(CUpdater::Name)), m_UseBITS(true), m_JobPriority(CBITS::HIGH)
 #else
-      mUseBITS(false), mJobPriority(0)
+      m_UseBITS(false), m_JobPriority(0)
 #endif
 {
     m_NetworkTaskManager.setDownloadSpeedLimit(80);
 
-    connect(&mProgressTimer, SIGNAL(timeout()), this, SLOT(showProgress()));
+    connect(&m_ProgressTimer, SIGNAL(timeout()), this, SLOT(showProgress()));
 }
 
 //---------------------------------------------------------------------------
@@ -118,7 +118,7 @@ void Updater::setProxy(const QString &aProxy) {
 
 //---------------------------------------------------------------------------
 CUpdaterErrors::Enum Updater::getComponents(Updater::TComponentList &aComponents) {
-    mWaitUpdateServer = false;
+    m_WaitUpdateServer = false;
 
     aComponents.clear();
 
@@ -150,7 +150,7 @@ CUpdaterErrors::Enum Updater::getComponents(Updater::TComponentList &aComponents
             QString("Failed to download component description. Error %1.")
                 .arg(task->errorString()));
 
-        mWaitUpdateServer = true;
+        m_WaitUpdateServer = true;
 
         return CUpdaterErrors::NetworkError;
     }
@@ -162,15 +162,15 @@ CUpdaterErrors::Enum Updater::getComponents(Updater::TComponentList &aComponents
         QByteArray statusTag = responseHeader.value(CUpdater::HumoStatusTag);
         Log(LogLevel::Warning,
             QString("Download component %1: %2")
-                .arg(QString::fromLatin1(CUpdater::HumoStatusTag))
-                .arg(QString::fromLatin1(statusTag)));
+                .arg(QString::from_Latin1(CUpdater::HumoStatusTag))
+                .arg(QString::from_Latin1(statusTag)));
 
-        mWaitUpdateServer = (statusTag == CUpdater::Wait);
+        m_WaitUpdateServer = (statusTag == CUpdater::Wait);
 
         return CUpdaterErrors::UpdateBlocked;
     }
 
-    m_ComponentsSignature = QByteArray::fromPercentEncoding(
+    m_ComponentsSignature = QByteArray::from_PercentEncoding(
         responseHeader.value(CUpdater::HumoSignatureTag, QByteArray()));
 
     auto dataStream = task->getDataStream();
@@ -295,14 +295,14 @@ TFileList Updater::getWorkingDirStructure(const QString &aDir) const noexcept(fa
 
 #if QT_VERSION >= 0x050000
                 list.insert(File(filePath.replace(QRegularExpression("^/+"), ""),
-                                 QString::fromLatin1(QCryptographicHash::hash(
+                                 QString::from_Latin1(QCryptographicHash::hash(
                                                          file.readAll(), QCryptographicHash::Sha256)
                                                          .toHex()),
                                  "",
                                  fileInfo.size()));
 #else
                 list.insert(File(filePath.remove(QRegularExpression("^/+"), ""),
-                                 QString::fromLatin1(CCryptographicHash::hash(
+                                 QString::from_Latin1(CCryptographicHash::hash(
                                                          file.readAll(), CCryptographicHash::Sha256)
                                                          .toHex()),
                                  "",
@@ -385,7 +385,7 @@ void Updater::deleteFiles(const TFileList &aFiles, bool aIgnoreError) noexcept(f
 void Updater::download() {
     // Если список пуст, инициируем следующий шаг обновления.
     if (m_ActiveTasks.empty()) {
-        mProgressTimer.stop();
+        m_ProgressTimer.stop();
 
         Log(LogLevel::Normal, "Download complete.");
 
@@ -403,7 +403,7 @@ void Updater::download() {
         task->connect(
             task, SIGNAL(onComplete()), this, SLOT(downloadComplete()), Qt::UniqueConnection);
 
-        mCurrentTaskSize = task->getDataStream()->size();
+        m_CurrentTaskSize = task->getDataStream()->size();
         m_NetworkTaskManager.addTask(task);
 
         Log(LogLevel::Normal, QString("%1 downloading...").arg(task->getUrl().toString()));
@@ -427,7 +427,7 @@ void Updater::downloadComplete() {
         // Удаляем старое задание.
         task->getDataStream()->close();
         m_ActiveTasks.pop_front();
-        mFailCount = 0;
+        m_FailCount = 0;
 
         // Продолжаем закачку другого файла.
         QMetaObject::invokeMethod(this, "download", Qt::QueuedConnection);
@@ -450,8 +450,8 @@ void Updater::downloadComplete() {
             .arg(task->errorString())
             .arg(task->getHttpError()));
 
-    bool haveNewData = (mCurrentTaskSize != task->getDataStream()->size());
-    bool retryCountReached = ++mFailCount >= CUpdater::MaxFails;
+    bool haveNewData = (m_CurrentTaskSize != task->getDataStream()->size());
+    bool retryCountReached = ++m_FailCount >= CUpdater::MaxFails;
 
     if (task->getError() == NetworkTask::VerifyFailed ||
         task->getHttpError() == 416) // 416 - Requested Range Not Satisfiable
@@ -500,7 +500,7 @@ void Updater::downloadComplete() {
         Log(LogLevel::Error,
             QString("Download terminated after %1 attempts.").arg(CUpdater::MaxFails));
 
-        mProgressTimer.stop();
+        m_ProgressTimer.stop();
         emit done(CUpdaterErrors::NetworkError);
     }
 }
@@ -521,18 +521,18 @@ void Updater::checkTaskVerifierResult(NetworkTask *aTask) {
 
     QMetaObject::invokeMethod(aTask, "resetFile", Qt::DirectConnection);
 
-    mCurrentTaskSize = 0;
+    m_CurrentTaskSize = 0;
 }
 
 //---------------------------------------------------------------------------
 void Updater::showProgress() {
-    if (mAllTasksCount > 0) {
-        mProgressPercent = (mAllTasksCount - m_ActiveTasks.size()) * 100 / mAllTasksCount;
+    if (m_AllTasksCount > 0) {
+        m_ProgressPercent = (m_AllTasksCount - m_ActiveTasks.size()) * 100 / m_AllTasksCount;
     } else {
-        mProgressPercent = ++mProgressPercent > 100 ? 1 : mProgressPercent;
+        m_ProgressPercent = ++m_ProgressPercent > 100 ? 1 : m_ProgressPercent;
     }
 
-    emit progress(mProgressPercent);
+    emit progress(m_ProgressPercent);
 }
 
 //---------------------------------------------------------------------------
@@ -549,8 +549,8 @@ void Updater::downloadComponents(const TComponentList &aComponents) {
                 comp->download(m_UpdateURL, comp->getFiles().intersect(currentStructure));
         }
 
-        mAllTasksCount = m_ActiveTasks.size();
-        mProgressTimer.start(3 * 60 * 1000);
+        m_AllTasksCount = m_ActiveTasks.size();
+        m_ProgressTimer.start(3 * 60 * 1000);
 
         // Запускаем загрузку.
         QMetaObject::invokeMethod(this, "download", Qt::QueuedConnection);
@@ -782,8 +782,8 @@ int Updater::checkIntegrity() {
 //---------------------------------------------------------------------------
 #ifdef Q_OS_WIN32
 void Updater::useBITS(bool aUseBITS, int aJobPriority) {
-    mUseBITS = aUseBITS;
-    mJobPriority = aJobPriority;
+    m_UseBITS = aUseBITS;
+    m_JobPriority = aJobPriority;
 }
 #endif
 
@@ -809,10 +809,10 @@ void Updater::runUpdate() {
         break;
 
     default:
-        if (mWaitUpdateServer && mFailCount < CUpdater::MaxFails) {
-            ++mFailCount;
+        if (m_WaitUpdateServer && m_FailCount < CUpdater::MaxFails) {
+            ++m_FailCount;
 
-            emit updateSystemIsWaiting();
+            emit updateSystem_IsWaiting();
         } else {
             Log(LogLevel::Error, "Failed to download package description.");
 
@@ -826,7 +826,7 @@ void Updater::runUpdate() {
 int Updater::removeEmptyFolders(const QString &aDir) {
     QDir current(aDir);
 
-    int numFiles = 0;
+    int num_Files = 0;
 
     foreach (auto fileInfo,
              current.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files)) {
@@ -836,14 +836,14 @@ int Updater::removeEmptyFolders(const QString &aDir) {
             if (n == 0) {
                 current.rmpath(aDir + "/" + fileInfo.fileName());
             } else {
-                numFiles++;
+                num_Files++;
             }
         } else {
-            numFiles++;
+            num_Files++;
         }
     }
 
-    return numFiles;
+    return num_Files;
 }
 
 //---------------------------------------------------------------------------
@@ -880,9 +880,9 @@ void Updater::downloadPackage() {
     } else {
         auto task = tasks.at(0);
 
-        mMapper.setMapping(task, package);
-        mMapper.connect(task, SIGNAL(onComplete()), SLOT(map()));
-        connect(&mMapper,
+        m_Mapper.setMapping(task, package);
+        m_Mapper.connect(task, SIGNAL(onComplete()), SLOT(map()));
+        connect(&m_Mapper,
                 SIGNAL(mapped(QObject *)),
                 SLOT(packageDownloaded(QObject *)),
                 Qt::UniqueConnection);
@@ -890,18 +890,18 @@ void Updater::downloadPackage() {
         Log(LogLevel::Normal, QString("Downloading file %1...").arg(m_ConfigURL));
 
         // Запускаем закачку.
-        mCurrentTaskSize = task->getDataStream()->size();
+        m_CurrentTaskSize = task->getDataStream()->size();
         m_NetworkTaskManager.addTask(task);
     }
 }
 
 //---------------------------------------------------------------------------
 void Updater::packageDownloaded(QObject *aPackage) {
-    auto task = qobject_cast<NetworkTask *>(mMapper.mapping(aPackage));
+    auto task = qobject_cast<NetworkTask *>(m_Mapper.mapping(aPackage));
     auto package = qobject_cast<Package *>(aPackage);
 
-    bool haveNewData = (mCurrentTaskSize != task->getDataStream()->size());
-    bool retryCountReached = ++mFailCount >= CUpdater::MaxFails;
+    bool haveNewData = (m_CurrentTaskSize != task->getDataStream()->size());
+    bool retryCountReached = ++m_FailCount >= CUpdater::MaxFails;
 
     if (!task->getError() || task->getError() == NetworkTask::TaskFailedButVerified) {
         Log(LogLevel::Normal,
@@ -1012,7 +1012,7 @@ bool Updater::validateConfiguration(const TComponentList &aComponents) {
 //---------------------------------------------------------------------------
 #ifdef Q_OS_WIN32
 bool Updater::bitsDownload() {
-    if (!mBitsManager.isReady() || !mUseBITS) {
+    if (!m_BitsManager.isReady() || !m_UseBITS) {
         return false;
     }
 
@@ -1026,19 +1026,19 @@ bool Updater::bitsDownload() {
     bitsSaveState();
 
     // Устанавливаем после выполнения задачи запуск себя с теми же самыми параметрами
-    mBitsManager.setNotify(qApp->applicationFilePath(),
+    m_BitsManager.setNotify(qApp->applicationFilePath(),
                            QString("--command bits --workdir %1").arg(m_WorkingDir));
 
     CBITS::SJob job;
-    if (mBitsManager.createJob(bitsJobName(), job, mJobPriority)) {
+    if (m_BitsManager.createJob(bitsJobName(), job, m_JobPriority)) {
         foreach (auto task, m_ActiveTasks) {
             auto fileTask = dynamic_cast<FileDownloadTask *>(task);
             if (fileTask) {
                 fileTask->closeFile();
-                if (!mBitsManager.addTask(fileTask->getUrl(), fileTask->getPath())) {
+                if (!m_BitsManager.addTask(fileTask->getUrl(), fileTask->getPath())) {
                     Log(LogLevel::Error, "Error add task to BITS job.");
 
-                    mBitsManager.shutdown();
+                    m_BitsManager.shutdown();
                     // перейти обратно к схеме скачивания вручную
                     return false;
                 }
@@ -1046,7 +1046,7 @@ bool Updater::bitsDownload() {
         }
 
         // Запускаем на скачивание задание
-        if (mBitsManager.resume()) {
+        if (m_BitsManager.resume()) {
             Log(LogLevel::Normal, QString("BITS job '%1' create successful.").arg(bitsJobName()));
 
             // закрываем updater с кодом - "команда выполняется"
@@ -1059,7 +1059,7 @@ bool Updater::bitsDownload() {
         Log(LogLevel::Error, "Error create BITS job.");
     }
 
-    mBitsManager.shutdown();
+    m_BitsManager.shutdown();
 
     // перейти обратно к схеме скачивания вручную
     return false;
@@ -1069,20 +1069,20 @@ bool Updater::bitsDownload() {
 //---------------------------------------------------------------------------
 #ifdef Q_OS_WIN32
 void Updater::bitsCompleteAllJobs(int &aCount, int &aCountComplete, int &aCountError) {
-    auto jobs = mBitsManager.getJobs(bitsJobName());
+    auto jobs = m_BitsManager.getJobs(bitsJobName());
     aCount = jobs.size();
     aCountComplete = 0;
     aCountError = 0;
 
     auto complete = [this](const CBITS::SJob &job) -> bool {
-        if (!mBitsManager.openJob(job)) {
-            Log(LogLevel::Error, QString("BITS job '%1' error open.").arg(job.mName));
+        if (!m_BitsManager.openJob(job)) {
+            Log(LogLevel::Error, QString("BITS job '%1' error open.").arg(job.m_Name));
 
             return false;
         }
 
-        if (!mBitsManager.complete()) {
-            Log(LogLevel::Error, QString("BITS job '%1' failed complete.").arg(job.mName));
+        if (!m_BitsManager.complete()) {
+            Log(LogLevel::Error, QString("BITS job '%1' failed complete.").arg(job.m_Name));
 
             return false;
         }
@@ -1095,7 +1095,7 @@ void Updater::bitsCompleteAllJobs(int &aCount, int &aCountComplete, int &aCountE
         auto job = jobs.value(jobName);
 
         if (job.isComplete()) {
-            Log(LogLevel::Normal, QString("BITS job '%1' download complete.").arg(job.mName));
+            Log(LogLevel::Normal, QString("BITS job '%1' download complete.").arg(job.m_Name));
 
             if (!complete(job)) {
                 aCountError++;
@@ -1104,13 +1104,13 @@ void Updater::bitsCompleteAllJobs(int &aCount, int &aCountComplete, int &aCountE
             }
         } else if (job.isFatal()) {
             // Всё равно коммитим то, что удалось скачать
-            Log(LogLevel::Error, QString("BITS job '%1' failed.").arg(job.mName));
+            Log(LogLevel::Error, QString("BITS job '%1' failed.").arg(job.m_Name));
 
             complete(job);
 
             aCountError++;
         } else {
-            Log(LogLevel::Normal, QString("BITS job '%1' in progress.").arg(job.mName));
+            Log(LogLevel::Normal, QString("BITS job '%1' in progress.").arg(job.m_Name));
         }
     }
 }
@@ -1167,14 +1167,14 @@ void Updater::bitsCleanupOldTasks() {
     Log(LogLevel::Normal, QString("Cancel all bits jobs."));
 
     // Останавливаем все наши таски от предыдущих версий.
-    auto jobs = mBitsManager.getJobs(CUpdater::BitsJobNamePrefix);
+    auto jobs = m_BitsManager.getJobs(CUpdater::BitsJobNamePrefix);
 
     foreach (const QString &jobName, jobs.keys()) {
         if (jobName.startsWith(CUpdater::BitsJobNamePrefix) &&
-            mBitsManager.openJob(jobs[jobName])) {
+            m_BitsManager.openJob(jobs[jobName])) {
             Log(LogLevel::Normal, QString("Cancel old bits job '%1'.").arg(jobName));
 
-            mBitsManager.cancel();
+            m_BitsManager.cancel();
         }
     }
 }
@@ -1197,7 +1197,7 @@ QString Updater::bitsJobName() const {
 CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent,
                                              Updater::TComponentList &aComponents,
                                              QString &aRevision) {
-    QDomDocument description;
+    QDom_Document description;
 
     if (!description.setContent(aContent)) {
         Log(LogLevel::Error, "Failed to parse component description.");
@@ -1205,7 +1205,7 @@ CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent,
         return CUpdaterErrors::ParseError;
     }
 
-    QDomElement application = description.documentElement();
+    QDom_Element application = description.documentElement();
 
     QString revision = application.attribute("revision", "");
 
@@ -1222,8 +1222,8 @@ CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent,
     QRegularExpression leadingSlash("^[\\\\/]");
 
     // Получаем список компонент.
-    for (QDomNode node = application.firstChild(); !node.isNull(); node = node.nextSibling()) {
-        QDomElement component = node.toElement();
+    for (QDom_Node node = application.firstChild(); !node.isNull(); node = node.nextSibling()) {
+        QDom_Element component = node.toElement();
 
         if (component.tagName() == "component") {
             auto componentType = component.attribute("type");
@@ -1238,7 +1238,7 @@ CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent,
             TFileList files;
             QStringList actions;
 
-            for (QDomNode node = component.firstChild(); !node.isNull();
+            for (QDom_Node node = component.firstChild(); !node.isNull();
                  node = node.nextSibling()) {
                 auto record = node.toElement();
 
@@ -1377,17 +1377,17 @@ bool Updater::bitsLoadState(QStringList *aParameters) {
 bool Updater::bitsIsComplete() {
     Log(LogLevel::Normal, QString("BITS job name: %1.").arg(bitsJobName()));
 
-    auto jobs = mBitsManager.getJobs(bitsJobName());
+    auto jobs = m_BitsManager.getJobs(bitsJobName());
     int countComplete = 0;
 
     foreach (QString jobName, jobs.keys()) {
         // Проверяем состояние таска
         auto job = jobs.value(jobName);
 
-        Log(LogLevel::Normal, QString("JOB: %1 has state=%2.").arg(job.mName).arg(job.mState));
+        Log(LogLevel::Normal, QString("JOB: %1 has state=%2.").arg(job.m_Name).arg(job.m_State));
 
         if (job.isComplete()) {
-            Log(LogLevel::Normal, QString("BITS job '%1' complete.").arg(job.mName));
+            Log(LogLevel::Normal, QString("BITS job '%1' complete.").arg(job.m_Name));
 
             countComplete++;
         }
@@ -1407,7 +1407,7 @@ bool Updater::bitsIsComplete() {
 //---------------------------------------------------------------------------
 #ifdef Q_OS_WIN32
 bool Updater::bitsIsError() {
-    auto jobs = mBitsManager.getJobs(bitsJobName());
+    auto jobs = m_BitsManager.getJobs(bitsJobName());
     int badJobs = 0;
 
     foreach (QString jobName, jobs.keys()) {
@@ -1415,10 +1415,10 @@ bool Updater::bitsIsError() {
         auto job = jobs.value(jobName);
 
         if (job.isFatal()) {
-            Log(LogLevel::Normal, QString("BITS job '%1' failed.").arg(job.mName));
+            Log(LogLevel::Normal, QString("BITS job '%1' failed.").arg(job.m_Name));
 
-            if (mBitsManager.openJob(job)) {
-                mBitsManager.complete();
+            if (m_BitsManager.openJob(job)) {
+                m_BitsManager.complete();
             }
 
             badJobs++;
@@ -1433,8 +1433,8 @@ bool Updater::bitsIsError() {
             auto job = jobs.value(jobName);
 
             if (!job.isFatal()) {
-                if (mBitsManager.openJob(job)) {
-                    mBitsManager.complete();
+                if (m_BitsManager.openJob(job)) {
+                    m_BitsManager.complete();
                 }
             }
         }

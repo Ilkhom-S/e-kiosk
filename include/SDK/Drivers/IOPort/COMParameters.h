@@ -15,7 +15,7 @@ namespace EParity {
 enum Enum { No, Odd, Even, Mark, Space };
 
 /// Преобразовать в строку.
-inline static const char *EnumToString(int aParity) {
+inline static const char *Enum_ToString(int aParity) {
     switch (aParity) {
     case No:
         return "no";
@@ -38,7 +38,7 @@ inline static const char *EnumToString(int aParity) {
 namespace EDTRControl {
 enum Enum { Disable, Enable, Handshake };
 
-inline static const char *EnumToString(int aDTR) {
+inline static const char *Enum_ToString(int aDTR) {
     switch (aDTR) {
     case Disable:
         return "Disable";
@@ -58,7 +58,7 @@ namespace ERTSControl {
 enum Enum { Disable, Enable, Handshake, Toggle };
 
 /// Преобразовать в строку.
-inline static const char *EnumToString(int aRTS) {
+inline static const char *Enum_ToString(int aRTS) {
     switch (aRTS) {
     case Disable:
         return "Disable";
@@ -88,7 +88,7 @@ enum Enum {
 };
 
 /// Преобразовать в строку.
-inline static const char *EnumToString(int aBaudRate) {
+inline static const char *Enum_ToString(int aBaudRate) {
     switch (aBaudRate) {
     case BR4800:
         return "4800";
@@ -116,7 +116,7 @@ namespace EStopBits {
 enum Enum { One, One5, Two };
 
 /// Преобразовать в строку.
-inline static const char *EnumToString(int aBaudRate) {
+inline static const char *Enum_ToString(int aBaudRate) {
     switch (aBaudRate) {
     case One:
         return "1";
@@ -145,7 +145,7 @@ enum Enum {
 };
 
 /// Преобразовать в строку.
-inline static const char *EnumToString(int aParameter) {
+inline static const char *Enum_ToString(int aParameter) {
     switch (aParameter) {
     case BaudRate:
         return "baud rate";
@@ -169,15 +169,15 @@ inline static const char *EnumToString(int aParameter) {
 inline static QString parameterDescription(int aParameter, int aValue) {
     switch (aParameter) {
     case EParameters::BaudRate:
-        return EBaudRate::EnumToString(aValue);
+        return EBaudRate::Enum_ToString(aValue);
     case EParameters::StopBits:
-        return EStopBits::EnumToString(aValue);
+        return EStopBits::Enum_ToString(aValue);
     case EParameters::Parity:
-        return EParity::EnumToString(aValue);
+        return EParity::Enum_ToString(aValue);
     case EParameters::DTR:
-        return EDTRControl::EnumToString(aValue);
+        return EDTRControl::Enum_ToString(aValue);
     case EParameters::RTS:
-        return ERTSControl::EnumToString(aValue);
+        return ERTSControl::Enum_ToString(aValue);
     case EParameters::ByteSize:
         return QString::number(aValue);
     }

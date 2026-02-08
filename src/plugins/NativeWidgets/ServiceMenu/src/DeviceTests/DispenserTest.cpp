@@ -15,8 +15,8 @@ const QString TestDispense = QT_TRANSLATE_NOOP("DispenserTest", "#dispense");
 DispenserTest::DispenserTest(SDK::Driver::IDevice *aDevice,
                              const QString &aConfigurationName,
                              SDK::PaymentProcessor::ICore *aCore)
-    : mConfigurationName(aConfigurationName), mCore(aCore) {
-    mDispenser = dynamic_cast<SDK::Driver::IDispenser *>(aDevice);
+    : m_ConfigurationName(aConfigurationName), m_Core(aCore) {
+    m_Dispenser = dynamic_cast<SDK::Driver::IDispenser *>(aDevice);
 }
 
 //------------------------------------------------------------------------------
@@ -27,18 +27,18 @@ QList<QPair<QString, QString>> DispenserTest::getTestNames() const {
 
 //------------------------------------------------------------------------------
 bool DispenserTest::run(const QString &aName) {
-    mResults.clear();
+    m_Results.clear();
 
     if (aName == CDispenserTest::TestDispense) {
-        if (mDispenser->isDeviceReady()) {
-            mDispenser->subscribe(
+        if (m_Dispenser->isDeviceReady()) {
+            m_Dispenser->subscribe(
                 SDK::Driver::IDispenser::DispensedSignal, this, SLOT(onDispensed(int, int)));
-            mDispenser->subscribe(
+            m_Dispenser->subscribe(
                 SDK::Driver::IDispenser::RejectedSignal, this, SLOT(onRejected(int, int)));
 
             // Выдаём из диспенсера по одной купюре из каждого ящика.
-            for (int i = 0; i < mDispenser->units(); ++i) {
-                mDispenser->dispense(i, 1);
+            for (int i = 0; i < m_Dispenser->units(); ++i) {
+                m_Dispenser->dispense(i, 1);
             }
 
             return true;
@@ -50,12 +50,12 @@ bool DispenserTest::run(const QString &aName) {
 
 //------------------------------------------------------------------------------
 void DispenserTest::stop() {
-    // mHID->unsubscribe(SDK::Driver::IHID::DataSignal, this);
+    // m_HID->unsubscribe(SDK::Driver::IHID::DataSignal, this);
 }
 
 //------------------------------------------------------------------------------
 bool DispenserTest::isReady() {
-    return mDispenser && mDispenser->isDeviceReady();
+    return m_Dispenser && m_Dispenser->isDeviceReady();
 }
 
 //------------------------------------------------------------------------------
@@ -65,18 +65,18 @@ bool DispenserTest::hasResult() {
 
 //------------------------------------------------------------------------------
 void DispenserTest::onDispensed(int aCashUnit, int aCount) {
-    mResults
+    m_Results
         << QString("%1 from slot %2 count: %3").arg(tr("#dispensed")).arg(aCashUnit).arg(aCount);
 
-    emit result("", mResults.join("\n"));
+    emit result("", m_Results.join("\n"));
 }
 
 //------------------------------------------------------------------------------
 void DispenserTest::onRejected(int aCashUnit, int aCount) {
-    mResults
+    m_Results
         << QString("%1 from slot %2 count: %3").arg(tr("#rejected")).arg(aCashUnit).arg(aCount);
 
-    emit result("", mResults.join("\n"));
+    emit result("", m_Results.join("\n"));
 }
 
 //------------------------------------------------------------------------------

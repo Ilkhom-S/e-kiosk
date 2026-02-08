@@ -166,19 +166,19 @@ protected:
                                  const QByteArray &aSignature = QByteArray());
 
 private:
-    TResponseCreator mResponseCreator;
-    TRequestEncoder mRequestEncoder;
-    TResponseDecoder mResponseDecoder;
-    TRequestSigner mRequestSigner;
-    TResponseVerifier mResponseVerifier;
-    TRequestModifier mRequestModifier;
+    TResponseCreator m_ResponseCreator;
+    TRequestEncoder m_RequestEncoder;
+    TResponseDecoder m_ResponseDecoder;
+    TRequestSigner m_RequestSigner;
+    TResponseVerifier m_ResponseVerifier;
+    TRequestModifier m_RequestModifier;
 
-    int mKeyPair;
+    int m_KeyPair;
 
-    QPointer<NetworkTaskManager> mNetwork;
-    ICryptEngine *mCryptEngine;
+    QPointer<NetworkTaskManager> m_Network;
+    ICryptEngine *m_CryptEngine;
 
-    bool mOnlySecureConnection;
+    bool m_OnlySecureConnection;
 };
 
 //------------------------------------------------------------------------------

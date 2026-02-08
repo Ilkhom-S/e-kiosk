@@ -26,18 +26,18 @@ HIDService *HIDService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 HIDService::HIDService(IApplication *aApplication)
-    : mApplication(aApplication), mDeviceService(0), ILogable(CHIDService::Name) {}
+    : m_Application(aApplication), m_DeviceService(0), ILogable(CHIDService::Name) {}
 
 //---------------------------------------------------------------------------
 HIDService::~HIDService() {}
 
 //---------------------------------------------------------------------------
 bool HIDService::initialize() {
-    mDeviceService = DeviceService::instance(mApplication);
+    m_DeviceService = DeviceService::instance(m_Application);
 
     updateHardwareConfiguration();
 
-    connect(mDeviceService, SIGNAL(configurationUpdated()), SLOT(updateHardwareConfiguration()));
+    connect(m_DeviceService, SIGNAL(configurationUpdated()), SLOT(updateHardwareConfiguration()));
 
     return true;
 }
@@ -47,23 +47,23 @@ void HIDService::finishInitialize() {}
 
 //---------------------------------------------------------------------------
 void HIDService::updateHardwareConfiguration() {
-    mHIDs.clear();
-    mCardReaders.clear();
+    m_HIDs.clear();
+    m_CardReaders.clear();
 
     toLog(LogLevel::Normal, "Initialize HIDs...");
 
     // Получаем список всех доступных HID-устройств.
     PPSDK::TerminalSettings *settings =
-        SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+        SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
 
     foreach (
         const QString &configurationName,
         settings->getDeviceList().filter(QRegularExpression(SDK::Driver::CComponents::Scanner))) {
         SDK::Driver::IHID *device =
-            dynamic_cast<SDK::Driver::IHID *>(mDeviceService->acquireDevice(configurationName));
+            dynamic_cast<SDK::Driver::IHID *>(m_DeviceService->acquireDevice(configurationName));
 
         if (device) {
-            mHIDs.append(device);
+            m_HIDs.append(device);
 
             // Подписываемся на сигнал от устройства.
             device->subscribe(
@@ -82,10 +82,10 @@ void HIDService::updateHardwareConfiguration() {
              settings->getDeviceList().filter(
                  QRegularExpression(SDK::Driver::CComponents::CardReader))) {
         SDK::Driver::ICardReader *device = dynamic_cast<SDK::Driver::ICardReader *>(
-            mDeviceService->acquireDevice(configurationName));
+            m_DeviceService->acquireDevice(configurationName));
 
         if (device) {
-            mCardReaders.append(device);
+            m_CardReaders.append(device);
 
             // Подписываемся на сигнал от устройства.
             device->subscribe(
@@ -124,17 +124,17 @@ bool HIDService::canShutdown() {
 bool HIDService::shutdown() {
     toLog(LogLevel::Normal, "Shutting down HIDs...");
 
-    foreach (SDK::Driver::IHID *HID, mHIDs) {
-        mDeviceService->releaseDevice(HID);
+    foreach (SDK::Driver::IHID *HID, m_HIDs) {
+        m_DeviceService->releaseDevice(HID);
     }
 
-    mHIDs.clear();
+    m_HIDs.clear();
 
-    foreach (auto cardReader, mCardReaders) {
-        mDeviceService->releaseDevice(cardReader);
+    foreach (auto cardReader, m_CardReaders) {
+        m_DeviceService->releaseDevice(cardReader);
     }
 
-    mCardReaders.clear();
+    m_CardReaders.clear();
 
     return true;
 }
@@ -167,12 +167,12 @@ bool HIDService::setEnable(bool aEnable, const QString &aDevice) {
     if (!aDevice.isEmpty()) {
         // Получаем список всех доступных HID-устройств.
         PPSDK::TerminalSettings *settings =
-            SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+            SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
 
         foreach (const QString &configurationName,
                  settings->getDeviceList().filter(QRegularExpression(aDevice))) {
             SDK::Driver::IHID *device =
-                dynamic_cast<SDK::Driver::IHID *>(mDeviceService->acquireDevice(configurationName));
+                dynamic_cast<SDK::Driver::IHID *>(m_DeviceService->acquireDevice(configurationName));
 
             if (device) {
                 // Подписываемся на сигнал от устройства.
@@ -186,7 +186,7 @@ bool HIDService::setEnable(bool aEnable, const QString &aDevice) {
         }
     } else {
         // TODO когда появится контекст - конкретизируем
-        foreach (SDK::Driver::IHID *HID, mHIDs) {
+        foreach (SDK::Driver::IHID *HID, m_HIDs) {
             if (HID->enable(aEnable)) {
                 result = true;
             }

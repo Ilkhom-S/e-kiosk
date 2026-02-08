@@ -18,13 +18,13 @@ protected:
 
     /// Выполнить команду.
     virtual TResult
-    performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout);
+    perform_Command(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout);
 
     /// Протокол.
-    Atol3FRProtocol mProtocol;
+    Atol3FRProtocol m_Protocol;
 
     /// Id задачи.
-    uchar mTId;
+    uchar m_TId;
 };
 
 //--------------------------------------------------------------------------------

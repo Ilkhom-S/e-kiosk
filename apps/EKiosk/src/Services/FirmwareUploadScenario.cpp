@@ -31,13 +31,13 @@ const int DeviceInitializedTimeout = 10 * 60 * 1000;
 //---------------------------------------------------------------------------
 FirmwareUploadScenario::FirmwareUploadScenario(IApplication *aApplication)
     : Scenario(CFirmwareUploadScenario::Name, ILog::getInstance(CFirmwareUploadScenario::Name)),
-      mApplication(aApplication), mRetryCount(2), mDevice(nullptr), mDeviceInitializedTimer(0) {
-    mReportBuilder = new ReportBuilder(mApplication->getWorkingDirectory());
+      m_Application(aApplication), m_RetryCount(2), m_Device(nullptr), m_DeviceInitializedTimer(0) {
+    m_ReportBuilder = new ReportBuilder(m_Application->getWorkingDirectory());
 }
 
 //---------------------------------------------------------------------------
 FirmwareUploadScenario::~FirmwareUploadScenario() {
-    delete mReportBuilder;
+    delete m_ReportBuilder;
 }
 
 //---------------------------------------------------------------------------
@@ -49,17 +49,17 @@ bool FirmwareUploadScenario::initialize(const QList<GUI::SScriptObject> & /*aScr
 void FirmwareUploadScenario::start(const QVariantMap &aContext) {
     Q_UNUSED(aContext);
 
-    mTimeoutTimer.stop();
+    m_TimeoutTimer.stop();
 
     lockGUI();
 
-    mCommand = RemoteService::instance(mApplication)
+    m_Command = RemoteService::instance(m_Application)
                    ->findUpdateCommand(PPSDK::IRemoteService::FirmwareUpload);
 
-    if (!mCommand.isValid()) {
+    if (!m_Command.isValid()) {
         toLog(LogLevel::Error, "Not found active FirmwareUpload command.");
 
-        GUIService::instance(mApplication)->disable(false);
+        GUIService::instance(m_Application)->disable(false);
 
         QVariantMap parameters;
         parameters.insert("result", "abort");
@@ -68,35 +68,35 @@ void FirmwareUploadScenario::start(const QVariantMap &aContext) {
         return;
     }
 
-    toLog(LogLevel::Normal, QString("Command %1 loaded.").arg(mCommand.ID));
+    toLog(LogLevel::Normal, QString("Command %1 loaded.").arg(m_Command.ID));
 
-    mReportBuilder->open(
-        QString::number(mCommand.ID), mCommand.configUrl.toString(), mCommand.parameters.at(2));
-    mReportBuilder->setStatus(PPSDK::IRemoteService::Executing);
+    m_ReportBuilder->open(
+        QString::number(m_Command.ID), m_Command.configUrl.toString(), m_Command.parameters.at(2));
+    m_ReportBuilder->setStatus(PPSDK::IRemoteService::Executing);
 
-    QFile firmwareFile(mApplication->getWorkingDirectory() + "/update/" +
-                       mCommand.parameters.at(1) + "/firmware.bin");
+    QFile firmwareFile(m_Application->getWorkingDirectory() + "/update/" +
+                       m_Command.parameters.at(1) + "/firmware.bin");
     if (firmwareFile.open(QIODevice::ReadOnly)) {
-        mFirmware = firmwareFile.readAll();
+        m_Firmware = firmwareFile.readAll();
         firmwareFile.close();
 
         toLog(LogLevel::Normal,
-              QString("Firmware readed from file. size=%1.").arg(mFirmware.size()));
+              QString("Firmware readed from file. size=%1.").arg(m_Firmware.size()));
     } else {
-        mRetryCount = 0;
+        m_RetryCount = 0;
         abortScenario(QString("Error open file %1.").arg(firmwareFile.fileName()));
         return;
     }
 
-    if (QCryptographicHash::hash(mFirmware, QCryptographicHash::Md5).toHex().toLower() !=
-        mCommand.parameters.at(2).toLower()) {
-        mRetryCount = 0;
+    if (QCryptographicHash::hash(m_Firmware, QCryptographicHash::Md5).toHex().toLower() !=
+        m_Command.parameters.at(2).toLower()) {
+        m_RetryCount = 0;
         abortScenario("Firmware MD5 verify failed.");
         return;
     }
 
     toLog(LogLevel::Normal,
-          QString("Firmware MD5 verify OK. (%1).").arg(mCommand.parameters.at(2)));
+          QString("Firmware MD5 verify OK. (%1).").arg(m_Command.parameters.at(2)));
 
     QMetaObject::invokeMethod(this, "acquireDevice", Qt::QueuedConnection);
     return;
@@ -104,8 +104,8 @@ void FirmwareUploadScenario::start(const QVariantMap &aContext) {
 
 //---------------------------------------------------------------------------
 void FirmwareUploadScenario::stop() {
-    if (mReportBuilder) {
-        mReportBuilder->close();
+    if (m_ReportBuilder) {
+        m_ReportBuilder->close();
     }
 }
 
@@ -134,7 +134,7 @@ bool FirmwareUploadScenario::canStop() {
 
 //--------------------------------------------------------------------------
 void FirmwareUploadScenario::lockGUI() {
-    auto guiService = GUIService::instance(mApplication);
+    auto guiService = GUIService::instance(m_Application);
 
     // Показываем экран блокировки и определяем, что делать дальше.
     guiService->show("SplashScreen", QVariantMap());
@@ -149,12 +149,12 @@ void FirmwareUploadScenario::lockGUI() {
 void FirmwareUploadScenario::abortScenario(const QString &aErrorMessage) {
     toLog(LogLevel::Error, aErrorMessage);
 
-    if (--mRetryCount > 0) {
+    if (--m_RetryCount > 0) {
         toLog(LogLevel::Normal,
               QString("Retry upload throw %1 sec")
                   .arg(CFirmwareUploadScenario::UploadRetryTimeout / 1000));
 
-        if (mDevice) {
+        if (m_Device) {
             QTimer::singleShot(
                 CFirmwareUploadScenario::UploadRetryTimeout, this, SLOT(onDeviceInitialized()));
         } else {
@@ -165,28 +165,28 @@ void FirmwareUploadScenario::abortScenario(const QString &aErrorMessage) {
         return;
     }
 
-    killTimer(mDeviceInitializedTimer);
+    killTimer(m_DeviceInitializedTimer);
 
-    if (mDevice) {
-        disconnect(dynamic_cast<QObject *>(mDevice),
+    if (m_Device) {
+        disconnect(dynamic_cast<QObject *>(m_Device),
                    SDK::Driver::IDevice::InitializedSignal,
                    this,
                    SLOT(onDeviceInitialized()));
-        disconnect(dynamic_cast<QObject *>(mDevice),
+        disconnect(dynamic_cast<QObject *>(m_Device),
                    SDK::Driver::IDevice::UpdatedSignal,
                    this,
                    SLOT(onUpdated(bool)));
 
-        DeviceService::instance(mApplication)->releaseDevice(mDevice);
-        mDevice = nullptr;
+        DeviceService::instance(m_Application)->releaseDevice(m_Device);
+        m_Device = nullptr;
     }
 
-    mReportBuilder->setStatusDescription(aErrorMessage);
-    mReportBuilder->setStatus(PPSDK::IRemoteService::Error);
+    m_ReportBuilder->setStatusDescription(aErrorMessage);
+    m_ReportBuilder->setStatus(PPSDK::IRemoteService::Error);
 
     cleanFirmwareArtifacts();
 
-    EventService::instance(mApplication)->sendEvent(PPSDK::Event(PPSDK::EEventType::Restart));
+    EventService::instance(m_Application)->sendEvent(PPSDK::Event(PPSDK::EEventType::Restart));
 
     QVariantMap parameters;
     parameters.insert("result", "abort");
@@ -198,16 +198,16 @@ void FirmwareUploadScenario::acquireDevice() {
     SDK::Driver::IDevice *device = nullptr;
     QString deviceConfig;
 
-    foreach (auto config, DeviceService::instance(mApplication)->getConfigurations()) {
-        if (config.contains(mCommand.parameters.at(1))) {
+    foreach (auto config, DeviceService::instance(m_Application)->getConfigurations()) {
+        if (config.contains(m_Command.parameters.at(1))) {
             deviceConfig = config;
-            device = DeviceService::instance(mApplication)->acquireDevice(config);
+            device = DeviceService::instance(m_Application)->acquireDevice(config);
             break;
         }
     }
 
     if (device == nullptr) {
-        abortScenario(QString("Not found device with GUID:%1.").arg(mCommand.parameters.at(1)));
+        abortScenario(QString("Not found device with GUID:%1.").arg(m_Command.parameters.at(1)));
         return;
     }
 
@@ -224,14 +224,14 @@ void FirmwareUploadScenario::acquireDevice() {
     toLog(LogLevel::Normal, "Device UpdatedSignal connected.");
 
     // Проверяем в каком состоянии находится устройство
-    auto status = DeviceService::instance(mApplication)->getDeviceStatus(deviceConfig);
+    auto status = DeviceService::instance(m_Application)->getDeviceStatus(deviceConfig);
     if (status && status->isMatched(SDK::Driver::EWarningLevel::Warning)) {
         toLog(LogLevel::Normal,
               QString("Device '%1' have status: %2.")
                   .arg(device->getName())
                   .arg(status->description()));
 
-        mDevice = device;
+        m_Device = device;
 
         QMetaObject::invokeMethod(this, "onDeviceInitialized", Qt::QueuedConnection);
     } else {
@@ -245,7 +245,7 @@ void FirmwareUploadScenario::acquireDevice() {
 
         toLog(LogLevel::Normal, "Device Initialized signal connected.");
 
-        mDevice = device;
+        m_Device = device;
 
         auto configuration = device->getDeviceConfiguration();
         int waitInitializedTimeout =
@@ -255,7 +255,7 @@ void FirmwareUploadScenario::acquireDevice() {
 
         // Здесь ждём инициализации устройства -> onDeviceInitialized()
         // Если не инициализировались в течении DeviceInitializedTimeout, то обрываем сценарий
-        mDeviceInitializedTimer = startTimer(waitInitializedTimeout);
+        m_DeviceInitializedTimer = startTimer(waitInitializedTimeout);
 
         toLog(LogLevel::Normal, "Wait for device initialize...");
     }
@@ -263,8 +263,8 @@ void FirmwareUploadScenario::acquireDevice() {
 
 //---------------------------------------------------------------------------
 void FirmwareUploadScenario::timerEvent(QTimerEvent *aEvent) {
-    if (aEvent->timerId() == mDeviceInitializedTimer) {
-        killTimer(mDeviceInitializedTimer);
+    if (aEvent->timerId() == m_DeviceInitializedTimer) {
+        killTimer(m_DeviceInitializedTimer);
 
         abortScenario("Device initialization timeout.");
     }
@@ -274,25 +274,25 @@ void FirmwareUploadScenario::timerEvent(QTimerEvent *aEvent) {
 void FirmwareUploadScenario::onDeviceInitialized() {
     toLog(LogLevel::Normal, "Device initialized.");
 
-    killTimer(mDeviceInitializedTimer);
-    disconnect(dynamic_cast<QObject *>(mDevice),
+    killTimer(m_DeviceInitializedTimer);
+    disconnect(dynamic_cast<QObject *>(m_Device),
                SDK::Driver::IDevice::InitializedSignal,
                this,
                SLOT(onDeviceInitialized()));
 
-    if (!mDevice) {
-        abortScenario("onDeviceInitialized but mDevice isNULL.");
+    if (!m_Device) {
+        abortScenario("onDeviceInitialized but m_Device isNULL.");
         return;
     }
 
-    if (!mDevice->canUpdateFirmware()) {
+    if (!m_Device->canUpdateFirmware()) {
         abortScenario("Device can't update.");
         return;
     }
 
     toLog(LogLevel::Normal, "START upload firmware.");
 
-    mDevice->updateFirmware(mFirmware);
+    m_Device->updateFirmware(m_Firmware);
 }
 
 //---------------------------------------------------------------------------
@@ -300,18 +300,18 @@ void FirmwareUploadScenario::onUpdated(bool aSuccess) {
     if (aSuccess) {
         toLog(LogLevel::Normal, "Firmware upload OK.");
 
-        mReportBuilder->setStatusDescription("OK");
-        mReportBuilder->setStatus(PPSDK::IRemoteService::OK);
+        m_ReportBuilder->setStatusDescription("OK");
+        m_ReportBuilder->setStatus(PPSDK::IRemoteService::OK);
     } else {
         toLog(LogLevel::Error, "Firmware upload failed. See the log for details device errors.");
 
-        mReportBuilder->setStatusDescription("Fail");
-        mReportBuilder->setStatus(PPSDK::IRemoteService::Error);
+        m_ReportBuilder->setStatusDescription("Fail");
+        m_ReportBuilder->setStatus(PPSDK::IRemoteService::Error);
     }
 
     cleanFirmwareArtifacts();
 
-    EventService::instance(mApplication)->sendEvent(PPSDK::Event(PPSDK::EEventType::Restart));
+    EventService::instance(m_Application)->sendEvent(PPSDK::Event(PPSDK::EEventType::Restart));
 
     QVariantMap parameters;
     parameters.insert("result", aSuccess ? "ok" : "error");
@@ -320,15 +320,15 @@ void FirmwareUploadScenario::onUpdated(bool aSuccess) {
 
 //---------------------------------------------------------------------------
 void FirmwareUploadScenario::cleanFirmwareArtifacts() {
-    killTimer(mDeviceInitializedTimer);
+    killTimer(m_DeviceInitializedTimer);
 
-    if (mCommand.isValid()) {
-        QDir updateDir(mApplication->getWorkingDirectory() + "/update/" +
-                       mCommand.parameters.at(1));
+    if (m_Command.isValid()) {
+        QDir updateDir(m_Application->getWorkingDirectory() + "/update/" +
+                       m_Command.parameters.at(1));
 
         updateDir.remove("firmware.bin");
         updateDir.cdUp();
-        updateDir.rmdir(mCommand.parameters.at(1));
+        updateDir.rmdir(m_Command.parameters.at(1));
     }
 }
 

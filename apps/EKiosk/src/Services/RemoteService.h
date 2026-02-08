@@ -21,7 +21,7 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 class IApplication;
 class IHardwareDatabaseUtils;
-class QFileSystemWatcher;
+class QFileSystem_Watcher;
 
 //---------------------------------------------------------------------------
 class RemoteService : public SDK::PaymentProcessor::IRemoteService,
@@ -209,7 +209,7 @@ public:
 
 private:
     /// Обновить список файлов
-    void restartUpdateWatcher(QFileSystemWatcher *aWatcher = nullptr);
+    void restartUpdateWatcher(QFileSystem_Watcher *aWatcher = nullptr);
 
     void timerEvent(QTimerEvent *aEvent);
 
@@ -220,38 +220,38 @@ private:
     void startNextUpdateCommand();
 
 private:
-    IApplication *mApplication;
+    IApplication *m_Application;
 
-    IHardwareDatabaseUtils *mDatabase;
+    IHardwareDatabaseUtils *m_Database;
 
-    QList<PPSDK::IRemoteClient *> mMonitoringClients;
+    QList<PPSDK::IRemoteClient *> m_MonitoringClients;
 
     /// Синхронизация заполнения очереди команд мониторинга.
-    QRecursiveMutex mCommandMutex;
+    QRecursiveMutex m_CommandMutex;
 
     /// Номер последней принятой команды.
-    int mLastCommand;
+    int m_LastCommand;
 
     /// Платёжные команды, ожидающие выполнения.
-    QMap<int, int> mPaymentCommands;
+    QMap<int, int> m_PaymentCommands;
 
     /// Выполняющиеся команды обновления.
-    QMap<int, UpdateCommand> mUpdateCommands;
+    QMap<int, UpdateCommand> m_UpdateCommands;
 
     /// Выполняющиеся команды снятия скриншотов.
-    QList<int> mScreenShotsCommands;
+    QList<int> m_ScreenShotsCommands;
 
     /// Выполняющаяся команда регенерации ключей терминала.
-    int mGenerateKeyCommand;
-    QFuture<void> mGenerateKeyFuture;
+    int m_GenerateKeyCommand;
+    QFuture<void> m_GenerateKeyFuture;
 
     /// Список запланированных команд перезагрузки и выключений.
-    QStringList mQueuedRebootCommands;
+    QStringList m_QueuedRebootCommands;
 
     /// Настройки сервиса для сохранения очереди выполняющихся команд
-    QSettings mSettings;
+    QSettings m_Settings;
 
-    QTimer mCheckUpdateReportsTimer;
+    QTimer m_CheckUpdateReportsTimer;
 };
 
 //---------------------------------------------------------------------------

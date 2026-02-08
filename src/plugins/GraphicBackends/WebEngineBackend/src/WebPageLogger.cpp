@@ -9,7 +9,7 @@ void WebPageLogger::javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level
                                              int lineNumber,
                                              const QUrl &sourceID) {
     Q_UNUSED(level);
-    LOG(mLog,
+    LOG(m_Log,
         LogLevel::Normal,
         QString("%1, [%2]: %3").arg(sourceID.toString()).arg(lineNumber).arg(message));
 }
@@ -24,5 +24,5 @@ void WebPageLogger::javaScriptAlert(const QUrl &securityOrigin, const QString &m
     // popupParameters.insert("cancelable", "true");
     // popupParameters.insert("message", "Alert: " + msg);
     // popupParameters.insert("result", "");
-    // mCoreProxy->getCore()->getGUIService()->showPopup("InfoPopup", popupParameters);
+    // m_CoreProxy->getCore()->getGUIService()->showPopup("InfoPopup", popupParameters);
 }

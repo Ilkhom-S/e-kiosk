@@ -17,7 +17,7 @@ public:
     void gotoPageMain() { emit emitGotoPageMain(); }
 
     Q_INVOKABLE
-    void gotoPageMainFromInput() { emit emitGotoPageMainFromInput(); }
+    void gotoPageMainFrom_Input() { emit emitGotoPageMainFrom_Input(); }
 
     Q_INVOKABLE
     void gotoPageInfo() { emit emitGotoPageInfo(); }
@@ -35,7 +35,7 @@ public:
     void gotoPageServices(QString group) { emit emitGotoPageServices(group); }
 
     Q_INVOKABLE
-    void gotoPageInputFromPayment() { emit emitGotoPageInputFromPayment(); }
+    void gotoPageInputFrom_Payment() { emit emitGotoPageInputFrom_Payment(); }
 
     Q_INVOKABLE
     void paymentConfirm() { emit emitPaymentConfirm(); }
@@ -85,7 +85,7 @@ public:
 signals:
     void emitAdminOpen();
     void emitGotoPageMain();
-    void emitGotoPageMainFromInput();
+    void emitGotoPageMainFrom_Input();
     void emitGotoPageInfo();
     void emitGotoPageInputAccount(QString serviceName);
     void emitGotoPageInsertNominal(QString account,
@@ -93,7 +93,7 @@ signals:
                                    QString prvId,
                                    QString prvName);
     void emitGotoPageServices(QString group);
-    void emitGotoPageInputFromPayment();
+    void emitGotoPageInputFrom_Payment();
 
     void emitPaymentConfirm();
 

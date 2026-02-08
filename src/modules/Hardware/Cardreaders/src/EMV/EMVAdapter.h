@@ -43,13 +43,13 @@ protected:
 
 protected:
     /// Экземпляр класса кардридера.
-    SDK::Driver::IMifareReader *mReader;
+    SDK::Driver::IMifareReader *m_Reader;
 
     /// Track 2 карты.
-    QString mTrack2;
+    QString m_Track2;
 
     /// Найденный EMV Application ID
-    EMV::Application mApp;
+    EMV::Application m_App;
 };
 
 //------------------------------------------------------------------------------

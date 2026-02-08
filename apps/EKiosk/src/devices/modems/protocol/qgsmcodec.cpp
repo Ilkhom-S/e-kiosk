@@ -68,7 +68,7 @@ static const unsigned short greekGSMTable[32] = {
 const unsigned short UUC = 0xFFFE; // Unicode Undefined character
 
 // Reversed version of latin1GSMTable.
-static const unsigned short gsmLatin1Table[256] = {
+static const unsigned short gsm_Latin1Table[256] = {
     0x40,   0xa3,   0x24,   0xa5, 0xe8,   0xe9, 0xf9,   0xec,   0xf2,   0xc7,   0x0a,   0xd8,
     0xf8,   0x0d,   0xc5,   0xe5, 0x0394, 0x5f, 0x03a6, 0x0393, 0x039B, 0x03A9, 0x03A0, 0x03A8,
     0x03A3, 0x0398, 0x039E, 0x20, 0xc6,   0xe6, 0xdf,   0xc9,   0x20,   0x21,   0x22,   0x23,
@@ -110,10 +110,10 @@ static const unsigned short extensionLatin1Table[256] = {
     UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC};
 
 /*!
-        \class QGsmCodec
+        \class QGsm_Codec
         \inpublicgroup QtBaseModule
 
-        \brief The QGsmCodec class represents the text codec for the GSM 7-bit
+        \brief The QGsm_Codec class represents the text codec for the GSM 7-bit
    encoding of Latin-1
         \ingroup telephony::serial
 
@@ -121,7 +121,7 @@ static const unsigned short extensionLatin1Table[256] = {
         Latin-1 characters, compared to the more usual 8-bit ISO-8859-1 encoding
         used on many computer systems.
 
-        The QGsmCodec class enables conversion back and forth between the GSM
+        The QGsm_Codec class enables conversion back and forth between the GSM
         encoding and the normal Unicode encoding used by Qtopia.
 
         Application programs will rarely need to use this class, because
@@ -130,7 +130,7 @@ static const unsigned short extensionLatin1Table[256] = {
 
         If an application program does need to use this class, it should call
         QAtUtils::codec() to obtain an instance of the codec.  Constructing
-        QGsmCodec objects directly is not recommended, due to how QTextCodec
+        QGsm_Codec objects directly is not recommended, due to how QTextCodec
         registers and deregisters codec implementations.
 
         The following example converts the \c input string into the compact
@@ -138,7 +138,7 @@ static const unsigned short extensionLatin1Table[256] = {
 
         \code
         QString input = "...";
-        QByteArray output = QAtUtils::codec("gsm")->fromUnicode(input);
+        QByteArray output = QAtUtils::codec("gsm")->from_Unicode(input);
         \endcode
 
         This codec implementation conforms to 3GPP TS 03.38 and 3GPP TS 07.05,
@@ -160,7 +160,7 @@ static const unsigned short extensionLatin1Table[256] = {
 
         \sa QAtUtils::codec()
 */
-QGsmCodec::QGsmCodec(bool noLoss) {
+QGsm_Codec::QGsm_Codec(bool noLoss) {
     this->noLoss = noLoss;
 }
 
@@ -168,12 +168,12 @@ QGsmCodec::QGsmCodec(bool noLoss) {
         Destruct a GSM text codec.  This should not be used directly by
         application programs.
 */
-QGsmCodec::~QGsmCodec() {}
+QGsm_Codec::~QGsm_Codec() {}
 
 /*!
         Returns the name of this codec.
 */
-QByteArray QGsmCodec::name() const {
+QByteArray QGsm_Codec::name() const {
     if (noLoss)
         return QByteArray("gsm-noloss");
     else
@@ -183,7 +183,7 @@ QByteArray QGsmCodec::name() const {
 /*!
         Returns the MIB value associated with this codec.
 */
-int QGsmCodec::mibEnum() const {
+int QGsm_Codec::mibEnum() const {
     if (noLoss)
         return 61237;
     else
@@ -196,11 +196,11 @@ int QGsmCodec::mibEnum() const {
         function is discouraged.
 
         Note: this will not work for two-byte GSM encodings.  Use
-        twoByteFromUnicode() instead.
+        twoByteFrom_Unicode() instead.
 
-        \sa singleToUnicode(), twoByteFromUnicode()
+        \sa singleToUnicode(), twoByteFrom_Unicode()
 */
-char QGsmCodec::singleFromUnicode(QChar c) {
+char QGsm_Codec::singleFrom_Unicode(QChar c) {
     unsigned int ch = c.unicode();
     if (ch < 256)
         return (char)(latin1GSMTable[ch]);
@@ -217,10 +217,10 @@ char QGsmCodec::singleFromUnicode(QChar c) {
         Note: this will not work for two-byte GSM encodings.  Use
         twoByteToUnicode() instead.
 
-        \sa singleFromUnicode(), twoByteToUnicode()
+        \sa singleFrom_Unicode(), twoByteToUnicode()
 */
-QChar QGsmCodec::singleToUnicode(char ch) {
-    return QChar((unsigned int)(gsmLatin1Table[((int)ch) & 0xFF]));
+QChar QGsm_Codec::singleToUnicode(char ch) {
+    return QChar((unsigned int)(gsm_Latin1Table[((int)ch) & 0xFF]));
 }
 
 /*!
@@ -230,7 +230,7 @@ QChar QGsmCodec::singleToUnicode(char ch) {
 
         \sa twoByteToUnicode()
 */
-unsigned short QGsmCodec::twoByteFromUnicode(QChar ch) {
+unsigned short QGsm_Codec::twoByteFrom_Unicode(QChar ch) {
     unsigned short c = ch.unicode();
     if (c == 0x20AC) // Euro
         return 0x1b65;
@@ -246,11 +246,11 @@ unsigned short QGsmCodec::twoByteFromUnicode(QChar ch) {
         Convert a single GSM-encoded character into its Unicode counterpart.
         If \a ch is greater than 256, then it represents a two-byte sequence.
 
-        \sa twoByteFromUnicode()
+        \sa twoByteFrom_Unicode()
 */
-QChar QGsmCodec::twoByteToUnicode(unsigned short ch) {
+QChar QGsm_Codec::twoByteToUnicode(unsigned short ch) {
     if (ch < 256)
-        return QChar(gsmLatin1Table[ch]);
+        return QChar(gsm_Latin1Table[ch]);
     else if ((ch & 0xFF00) != 0x1B00)
         return QChar(0);
     else {
@@ -258,7 +258,7 @@ QChar QGsmCodec::twoByteToUnicode(unsigned short ch) {
         if (mapping != UUC)
             return QChar(mapping);
         else
-            return QChar(gsmLatin1Table[ch & 0xFF]);
+            return QChar(gsm_Latin1Table[ch & 0xFF]);
     }
 }
 
@@ -267,9 +267,9 @@ QChar QGsmCodec::twoByteToUnicode(unsigned short ch) {
         field of \a state will be incremented if there are invalid characters
         within \a in.
 
-        \sa convertFromUnicode()
+        \sa convertFrom_Unicode()
 */
-QString QGsmCodec::convertToUnicode(const char *in, int length, ConverterState *state) const {
+QString QGsm_Codec::convertToUnicode(const char *in, int length, ConverterState *state) const {
     QString str;
     unsigned short ch;
     while (length > 0) {
@@ -286,12 +286,12 @@ QString QGsmCodec::convertToUnicode(const char *in, int length, ConverterState *
             if (ch != UUC) {
                 str += QChar((unsigned int)ch);
             } else {
-                str += QChar(gsmLatin1Table[((int)(*in)) & 0xFF]);
+                str += QChar(gsm_Latin1Table[((int)(*in)) & 0xFF]);
                 if (state)
                     (state->invalidChars)++;
             }
         } else {
-            ch = gsmLatin1Table[((int)(*in)) & 0xFF];
+            ch = gsm_Latin1Table[((int)(*in)) & 0xFF];
             if (ch != UUC)
                 str += QChar((unsigned int)ch);
             else if (state)
@@ -310,7 +310,7 @@ QString QGsmCodec::convertToUnicode(const char *in, int length, ConverterState *
 
         \sa convertToUnicode()
 */
-QByteArray QGsmCodec::convertFromUnicode(const QChar *in, int length, ConverterState *state) const {
+QByteArray QGsm_Codec::convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const {
     QByteArray result;
     unsigned int unicode;
     if (noLoss) {

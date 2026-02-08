@@ -37,35 +37,35 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
 
 //--------------------------------------------------------------------------
 Keyboard::Keyboard(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mMainWidget(0), mEnvironment(aFactory), mInstancePath(aInstancePath), mKeyboardWindow(0),
-      mIsReady(false) {
+    : m_MainWidget(0), m_Environment(aFactory), m_InstancePath(aInstancePath), m_KeyboardWindow(0),
+      m_IsReady(false) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
-        mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+        m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
-    mIsReady = core != 0;
+    m_IsReady = core != 0;
 
-    if (mIsReady) {
-        mMainWidget = new QGraphicsProxyWidget();
+    if (m_IsReady) {
+        m_MainWidget = new QGraphicsProxyWidget();
 
-        mKeyboardWindow = new KeyboardWindow();
-        mKeyboardWindow->initialize();
+        m_KeyboardWindow = new KeyboardWindow();
+        m_KeyboardWindow->initialize();
 
-        mMainWidget->setWidget(mKeyboardWindow);
-        mMainWidget->setFlag(QGraphicsItem::ItemIsFocusable, false);
+        m_MainWidget->setWidget(m_KeyboardWindow);
+        m_MainWidget->setFlag(QGraphicsItem::Item_IsFocusable, false);
 
-        mMainWidget->setScale(qMin(1.0,
+        m_MainWidget->setScale(qMin(1.0,
                                    qreal(qMin(core->getGUIService()->getScreenSize(0).width() /
-                                                  qreal(mKeyboardWindow->width()),
+                                                  qreal(m_KeyboardWindow->width()),
                                               core->getGUIService()->getScreenSize(0).height() /
-                                                  qreal(mKeyboardWindow->height())))));
+                                                  qreal(m_KeyboardWindow->height())))));
     }
 }
 
 //--------------------------------------------------------------------------
 Keyboard::~Keyboard() {
-    if (mMainWidget) {
-        mKeyboardWindow->shutdown();
-        mMainWidget->deleteLater();
+    if (m_MainWidget) {
+        m_KeyboardWindow->shutdown();
+        m_MainWidget->deleteLater();
     }
 }
 
@@ -76,17 +76,17 @@ QString Keyboard::getPluginName() const {
 
 //--------------------------------------------------------------------------
 QVariantMap Keyboard::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //--------------------------------------------------------------------------
 void Keyboard::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 }
 
 //--------------------------------------------------------------------------
 QString Keyboard::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //--------------------------------------------------------------------------
@@ -96,13 +96,13 @@ bool Keyboard::saveConfiguration() {
 
 //--------------------------------------------------------------------------
 bool Keyboard::isReady() const {
-    return mIsReady;
+    return m_IsReady;
 }
 
 //--------------------------------------------------------------------------
 void Keyboard::show() {
-    if (mMainWidget) {
-        mMainWidget->show();
+    if (m_MainWidget) {
+        m_MainWidget->show();
     }
 }
 
@@ -113,8 +113,8 @@ void Keyboard::reset(const QVariantMap &aParameters) {
 
 //--------------------------------------------------------------------------
 void Keyboard::hide() {
-    if (mMainWidget) {
-        mMainWidget->hide();
+    if (m_MainWidget) {
+        m_MainWidget->hide();
     }
 }
 

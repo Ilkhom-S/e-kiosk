@@ -45,13 +45,13 @@ protected:
     bool waitBufferClearing();
 
     /// Флаг переполнения буфера.
-    bool mOverflow;
+    bool m_Overflow;
 
     /// Флаг инициализации, для понижения уровня надежности определения устройства.
-    bool mInitialize;
+    bool m_Initialize;
 
     /// Допустимые настройки презентера и ретрактора.
-    Enum mModelType;
+    Enum m_ModelType;
 };
 
 //--------------------------------------------------------------------------------

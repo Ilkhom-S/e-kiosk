@@ -26,20 +26,20 @@ template <class T> T clean(const T &aData);
 bool getBit(const QByteArray &aBuffer, int aShift, bool invert = false);
 
 /// Получить массив байтов по строке лога.
-QByteArray getBufferFromString(QString aData);
+QByteArray getBufferFrom_String(QString aData);
 
 /// Проверить массив байтов в текстовом представлении.
 bool checkBufferString(QString aData, QString *aLog = nullptr);
 
 /// Получить список из массивов байтов по массиву строк.
 typedef QList<QByteArray> TBufferList;
-TBufferList getBufferListFromStrings(QStringList aDataList);
+TBufferList getBufferListFrom_Strings(QStringList aDataList);
 
 /// Получить список из массивов байтов по строке логов. Логи должны быть разделены \t.
-TBufferList getBufferListFromLog(const QString &aData);
+TBufferList getBufferListFrom_Log(const QString &aData);
 
 /// Получить список из массивов байтов из файла.
-TBufferList getBufferListFromFile(const QString &aFileName);
+TBufferList getBufferListFrom_File(const QString &aFileName);
 
 /// Маскировать байт.
 char mask(char aData, const QString &aMask);

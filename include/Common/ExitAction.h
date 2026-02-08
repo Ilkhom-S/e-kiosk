@@ -10,19 +10,19 @@ typedef std::function<void()> TVoidMethod;
 //---------------------------------------------------------------------------
 class ExitAction {
 public:
-    ExitAction(const TVoidMethod &aAction) : mAction(aAction) {}
+    ExitAction(const TVoidMethod &aAction) : m_Action(aAction) {}
     ~ExitAction() {
-        if (mAction)
-            mAction();
+        if (m_Action)
+            m_Action();
     }
 
     bool reset(const TVoidMethod &aAction = TVoidMethod()) {
-        mAction = aAction;
+        m_Action = aAction;
         return true;
     }
 
 private:
-    TVoidMethod mAction;
+    TVoidMethod m_Action;
 };
 
 //---------------------------------------------------------------------------

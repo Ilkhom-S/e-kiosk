@@ -103,7 +103,7 @@ extern const char UpdateFirmware[];
 
 /// Обновление прошивки.
 namespace UpdatingFirmware {
-const QByteArray GetStatus = QByteArray::fromRawData("\x50\x00", 2);
+const QByteArray GetStatus = QByteArray::from_RawData("\x50\x00", 2);
 extern const char GetBlockSize[];
 extern const char Write[];
 extern const char Exit[];

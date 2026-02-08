@@ -32,7 +32,7 @@
 #include <QtCore/QEvent>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtCore/QFileSystemWatcher>
+#include <QtCore/QFileSystem_Watcher>
 #include <QtCore/QFinalState>
 #include <QtCore/QFlags>
 #include <QtCore/QFuture>
@@ -130,7 +130,7 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QInputDialog>
-#include <QtWidgets/QItemDelegate>
+#include <QtWidgets/QItem_Delegate>
 /*
 #include <QtGui/QKeyEvent>
 #include <QtGui/QKeySequence>
@@ -153,8 +153,8 @@
 #include <QtGui/QStackedLayout>
 #include <QtGui/QStatusBar>
 #include <QtGui/QStringListModel>
-#include <QtGui/QStyledItemDelegate>
-#include <QtGui/QSystemTrayIcon>
+#include <QtGui/QStyledItem_Delegate>
+#include <QtGui/QSystem_TrayIcon>
 #include <QtGui/QTextCursor>
 #include <QtGui/QTextDocument>
 #include <QtGui/QToolBar>
@@ -194,13 +194,13 @@
 // #include <QtWebkit/QWebElementCollection>
 // #include <QtWebkit/QWebFrame>
 // #include <QtWebkit/QWebPage>
-#include <QtXML/QDomDocument>
-// #include <QtXML/QXmlStreamWriter>
-#include <QtXml/QDomDocument>
-#include <QtXml/QDomElement>
-// #include <QtXml/QXMLStreamWriter>
-// #include <QtXml/QXmlStreamReader>
-// #include <QtXml/QXmlStreamWriter>
+#include <QtXML/QDom_Document>
+// #include <QtXML/QXmlStream_Writer>
+#include <QtXml/QDom_Document>
+#include <QtXml/QDom_Element>
+// #include <QtXml/QXMLStream_Writer>
+// #include <QtXml/QXmlStream_Reader>
+// #include <QtXml/QXmlStream_Writer>
 
 #include <algorithm>
 #include <array>

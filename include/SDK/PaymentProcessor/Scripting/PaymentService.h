@@ -25,7 +25,7 @@ class PaymentService;
 
 //------------------------------------------------------------------------------
 /// Элемент перечисления.
-class EnumItem : public QObject {
+class Enum_Item : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString name READ getName CONSTANT)
@@ -34,7 +34,7 @@ class EnumItem : public QObject {
 
 public:
     /// Конструктор.
-    EnumItem(const SProviderField::SEnumItem &aItem, QObject *aParent)
+    Enum_Item(const SProviderField::SEnum_Item &aItem, QObject *aParent)
         : QObject(aParent), m_Item(aItem) {}
 
 private:
@@ -47,7 +47,7 @@ private:
 
 private:
     /// Элемент перечисления.
-    SProviderField::SEnumItem m_Item;
+    SProviderField::SEnum_Item m_Item;
 };
 
 //------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ class ProviderField : public QObject {
 
     Q_PROPERTY(QString behavior READ getBehavior CONSTANT)
     Q_PROPERTY(QString defaultValue READ getDefaultValue CONSTANT)
-    Q_PROPERTY(QObject *enumItems READ getEnumItems CONSTANT)
+    Q_PROPERTY(QObject *enum_Items READ getEnum_Items CONSTANT)
 
     Q_PROPERTY(QString url READ getUrl CONSTANT)
     Q_PROPERTY(QString html READ getHtml CONSTANT)
@@ -88,42 +88,42 @@ class ProviderField : public QObject {
 public:
     /// Конструктор.
     ProviderField(const SProviderField &aField, QObject *aParent = 0)
-        : QObject(aParent), mField(aField) {}
+        : QObject(aParent), m_Field(aField) {}
 
 private:
     /// Получить тип.
-    QString getType() { return mField.type; }
-    QString getId() { return mField.id; }
+    QString getType() { return m_Field.type; }
+    QString getId() { return m_Field.id; }
 
-    QString getKeyboardType() { return mField.keyboardType; }
-    QString getLanguage() { return mField.language; }
-    QString getLetterCase() { return mField.letterCase; }
+    QString getKeyboardType() { return m_Field.keyboardType; }
+    QString getLanguage() { return m_Field.language; }
+    QString getLetterCase() { return m_Field.letterCase; }
 
-    int getMinSize() { return mField.minSize; }
-    int getMaxSize() { return mField.maxSize; }
+    int getMinSize() { return m_Field.minSize; }
+    int getMaxSize() { return m_Field.maxSize; }
 
-    bool isRequired() { return mField.isRequired; }
+    bool isRequired() { return m_Field.isRequired; }
 
-    QString getTitle() { return mField.title; }
-    QString getComment() { return mField.comment; }
-    QString getExtendedComment() { return mField.extendedComment; }
+    QString getTitle() { return m_Field.title; }
+    QString getComment() { return m_Field.comment; }
+    QString getExtendedComment() { return m_Field.extendedComment; }
 
-    QString getMask() { return mField.mask; }
-    QString getFormat() { return mField.format; }
-    bool isPassword() { return mField.isPassword; }
+    QString getMask() { return m_Field.mask; }
+    QString getFormat() { return m_Field.format; }
+    bool isPassword() { return m_Field.isPassword; }
 
-    QString getBehavior() { return mField.behavior; }
-    QString getDefaultValue() { return mField.defaultValue; }
-    ScriptArray *getEnumItems();
+    QString getBehavior() { return m_Field.behavior; }
+    QString getDefaultValue() { return m_Field.defaultValue; }
+    ScriptArray *getEnum_Items();
 
-    QString getUrl() { return mField.url; }
-    QString getHtml() { return mField.html; }
-    QString getBackButton() { return mField.backButton; }
-    QString getForwardButton() { return mField.forwardButton; }
+    QString getUrl() { return m_Field.url; }
+    QString getHtml() { return m_Field.html; }
+    QString getBackButton() { return m_Field.backButton; }
+    QString getForwardButton() { return m_Field.forwardButton; }
 
-    QString getDependency() { return mField.dependency; }
+    QString getDependency() { return m_Field.dependency; }
 
-    SProviderField mField;
+    SProviderField m_Field;
 };
 
 //------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ class Provider : public QObject {
     Q_PROPERTY(QString comment READ getComment CONSTANT)
     Q_PROPERTY(QString minLimit READ getMinLimit CONSTANT)
     Q_PROPERTY(QString maxLimit READ getMaxLimit CONSTANT)
-    Q_PROPERTY(QString systemLimit READ getSystemLimit CONSTANT)
+    Q_PROPERTY(QString system_Limit READ getSystem_Limit CONSTANT)
     Q_PROPERTY(QVariant fields READ getFields CONSTANT)
     Q_PROPERTY(bool skipCheck READ getSkipCheck CONSTANT)
     Q_PROPERTY(bool payOnline READ getPayOnline CONSTANT)
@@ -154,7 +154,7 @@ public:
     Provider(const SProvider &aProvider, QObject *aParent);
 
 public slots:
-    bool isNull() const { return mProvider.id == -1 || mProvider.fields.isEmpty(); }
+    bool isNull() const { return m_Provider.id == -1 || m_Provider.fields.isEmpty(); }
 
     /// Проверить согласование проверки номера и лимитов, получаемых с сервера
     bool isCheckStepSettingsOK();
@@ -166,29 +166,29 @@ public slots:
     QString xmlFields2Json(const QString &aXmlFields);
 
 private:
-    QString getID() const { return QString::number(mProvider.id); }
-    QString getCID() const { return QString::number(mProvider.cid); }
-    QString getType() const { return mProvider.type; }
-    QString getProcessorType() const { return mProvider.processor.type; }
-    QString getName() const { return mProvider.name; }
-    QString getComment() const { return mProvider.comment; }
-    QString getMinLimit() const { return mProvider.limits.min; }
-    QString getMaxLimit() const { return mProvider.limits.max; }
-    QString getSystemLimit() const { return mProvider.limits.system; }
+    QString getID() const { return QString::number(m_Provider.id); }
+    QString getCID() const { return QString::number(m_Provider.cid); }
+    QString getType() const { return m_Provider.type; }
+    QString getProcessorType() const { return m_Provider.processor.type; }
+    QString getName() const { return m_Provider.name; }
+    QString getComment() const { return m_Provider.comment; }
+    QString getMinLimit() const { return m_Provider.limits.min; }
+    QString getMaxLimit() const { return m_Provider.limits.max; }
+    QString getSystem_Limit() const { return m_Provider.limits.system; }
     QVariant getFields();
-    bool getSkipCheck() const { return mProvider.processor.skipCheck; }
-    bool getPayOnline() const { return mProvider.processor.payOnline; }
-    bool getAskForRetry() const { return mProvider.processor.askForRetry; }
-    bool getRequirePrinter() const { return mProvider.processor.requirePrinter; }
-    bool getShowAddInfo() const { return mProvider.processor.showAddInfo; }
-    QString getClientCard() const { return QString::number(mProvider.processor.clientCard); }
-    QString getExternalDataHandler() const { return mProvider.externalDataHandler; }
-    QVariantMap getReceipts() const { return mProvider.receipts; }
-    QVariantMap getReceiptParameters() const { return mProvider.receiptParameters; }
+    bool getSkipCheck() const { return m_Provider.processor.skipCheck; }
+    bool getPayOnline() const { return m_Provider.processor.payOnline; }
+    bool getAskForRetry() const { return m_Provider.processor.askForRetry; }
+    bool getRequirePrinter() const { return m_Provider.processor.requirePrinter; }
+    bool getShowAddInfo() const { return m_Provider.processor.showAddInfo; }
+    QString getClientCard() const { return QString::number(m_Provider.processor.clientCard); }
+    QString getExternalDataHandler() const { return m_Provider.externalDataHandler; }
+    QVariantMap getReceipts() const { return m_Provider.receipts; }
+    QVariantMap getReceiptParameters() const { return m_Provider.receiptParameters; }
 
 private:
-    SProvider mProvider;
-    QMap<QString, QObjectList> mFields;
+    SProvider m_Provider;
+    QMap<QString, QObjectList> m_Fields;
 };
 
 #define PROPERTY_GET(type, name, holder)                                                           \
@@ -206,16 +206,16 @@ class Note : public QObject {
     Q_PROPERTY(int type READ type CONSTANT)
 
 public:
-    Note(const SNote &aNote, QObject *aParent) : QObject(aParent), mNote(aNote) {}
+    Note(const SNote &aNote, QObject *aParent) : QObject(aParent), m_Note(aNote) {}
 
 private:
-    PROPERTY_GET(double, nominal, mNote)
-    PROPERTY_GET(QString, serial, mNote)
-    PROPERTY_GET(int, currency, mNote)
-    PROPERTY_GET(int, type, mNote)
+    PROPERTY_GET(double, nominal, m_Note)
+    PROPERTY_GET(QString, serial, m_Note)
+    PROPERTY_GET(int, currency, m_Note)
+    PROPERTY_GET(int, type, m_Note)
 
 private:
-    SNote mNote;
+    SNote m_Note;
 };
 
 //------------------------------------------------------------------------------
@@ -297,7 +297,7 @@ public slots:
     void setExternalParameter(const QString &aName, const QVariant &aValue);
 
     /// Возвращает имя алиаса, к которому привязан параметр из запроса
-    QString findAliasFromRequest(const QString &aParamName,
+    QString findAliasFrom_Request(const QString &aParam_Name,
                                  const QString &aRequestName = QString("CHECK"));
 
     /// Обновляет указанное свойство у платежа.
@@ -412,7 +412,7 @@ private:
 
 private:
     /// Получить список купюр из баланса
-    QObject *notesFromBalance(const SDK::PaymentProcessor::SBalance &aBalance);
+    QObject *notesFrom_Balance(const SDK::PaymentProcessor::SBalance &aBalance);
 
     /// Модифицируем провайдера в соответствии с настройками
     SProvider updateSkipCheckFlag(SProvider aProvider);

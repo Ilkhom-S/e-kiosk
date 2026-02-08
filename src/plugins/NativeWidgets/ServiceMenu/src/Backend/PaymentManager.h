@@ -100,23 +100,23 @@ private:
     QString decryptParameter(const QString &aValue);
 
 private:
-    QList<PaymentInfo> mPaymentList;
-    SDK::PaymentProcessor::ICore *mCore;
-    SDK::PaymentProcessor::IPaymentService *mPaymentService;
-    SDK::PaymentProcessor::IPrinterService *mPrinterService;
-    SDK::PaymentProcessor::SEncashment mEncashment;
-    QList<SDK::PaymentProcessor::SEncashment> mEncashmentList;
-    SDK::PaymentProcessor::DealerSettings *mDealerSettings;
+    QList<PaymentInfo> m_PaymentList;
+    SDK::PaymentProcessor::ICore *m_Core;
+    SDK::PaymentProcessor::IPaymentService *m_PaymentService;
+    SDK::PaymentProcessor::IPrinterService *m_PrinterService;
+    SDK::PaymentProcessor::SEncashment m_Encashment;
+    QList<SDK::PaymentProcessor::SEncashment> m_EncashmentList;
+    SDK::PaymentProcessor::DealerSettings *m_DealerSettings;
 
     /// Список заданий в очереди печати
-    QMap<int, qint64> mPaymentPrintJobs;
+    QMap<int, qint64> m_PaymentPrintJobs;
 
     /// Задание печати реестра нераспечатанных платежей
-    int mPaymentsRegistryPrintJob;
+    int m_PaymentsRegistryPrintJob;
 
     /// Флаг, выставляемый при необходимости печати Z-отчета если имеются не напечатанные чеки
-    bool mUseFiscalPrinter;
-    QString mNeedPrintZReport;
+    bool m_UseFiscalPrinter;
+    QString m_NeedPrintZReport;
 };
 
 //------------------------------------------------------------------------

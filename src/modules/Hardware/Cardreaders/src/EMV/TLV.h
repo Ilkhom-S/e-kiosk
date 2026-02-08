@@ -59,7 +59,7 @@ protected:
     /// Взять первый байт и вернуть его в виде quint16
     quint16 takeByte(QByteArray &aBuffer);
 
-    QList<SItem> mItems;
+    QList<SItem> m_Items;
 };
 } // namespace TLV
 } // namespace EMV

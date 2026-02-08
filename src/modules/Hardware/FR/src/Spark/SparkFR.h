@@ -34,13 +34,13 @@ protected:
 
     /// Проверить параметры налогов во флагах.
     typedef QList<QByteArray> TTaxData;
-    bool checkSystemFlags(QByteArray &aFlagData);
+    bool checkSystem_Flags(QByteArray &aFlagData);
 
     /// Проверить установки системного флага.
-    bool checkSystemFlag(const QByteArray &aFlagBuffer, int aNumber);
+    bool checkSystem_Flag(const QByteArray &aFlagBuffer, int aNumber);
 
     /// Получить системные флаги.
-    bool getSystemFlags(QByteArray &aData, TTaxData *aTaxes = nullptr);
+    bool getSystem_Flags(QByteArray &aData, TTaxData *aTaxes = nullptr);
 
     /// Получить дату и время ФР.
     virtual QDateTime getDateTime();
@@ -52,12 +52,12 @@ protected:
     virtual void execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt,
+    virtual bool perform_Fiscal(const QStringList &aReceipt,
                                const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Печать Z отчета.
-    virtual bool performZReport(bool aPrintDeferredReports);
+    virtual bool perform_ZReport(bool aPrintDeferredReports);
 
     /// Локальная печать X-отчета.
     virtual bool processXReport();
@@ -123,8 +123,8 @@ protected:
     bool sale(const SDK::Driver::SUnitData &aUnitData);
 
     /// Извлечь данные из специфичного BCD-формата.
-    template <class T> T fromBCD(const QByteArray &aData);
-    char fromBCD(char aData);
+    template <class T> T from_BCD(const QByteArray &aData);
+    char from_BCD(char aData);
 
     /// Подождать готовность эжектора.
     bool waitEjectorReady();
@@ -133,29 +133,29 @@ protected:
     bool waitNextPrinting();
 
     /// Протокол.
-    SparkFRProtocol mProtocol;
+    SparkFRProtocol m_Protocol;
 
     /// Список поддерживаемых плагином моделей.
-    QStringList mSupportedModels;
+    QStringList m_SupportedModels;
 
     /// Последняя ошибка.
-    char mDocumentState;
+    char m_DocumentState;
 
     /// Системные флаги.
-    CSparkFR::SystemFlags::Data mSystemFlags;
+    CSparkFR::System_Flags::Data m_System_Flags;
 
     /// Дата и время начала смены.
-    QDateTime mSessionOpeningDT;
+    QDateTime m_SessionOpeningDT;
 
     /// Количество Z-отчетов в буфере.
-    int mZReports;
+    int m_ZReports;
 
     /// Можно ли проверять статус в нештатных ситуациях при выполнении команды.
-    bool mCheckStatus;
+    bool m_CheckStatus;
 
     /// Налоги.
     typedef QList<SDK::Driver::TVAT> TTaxes;
-    TTaxes mTaxes;
+    TTaxes m_Taxes;
 };
 
 //--------------------------------------------------------------------------------

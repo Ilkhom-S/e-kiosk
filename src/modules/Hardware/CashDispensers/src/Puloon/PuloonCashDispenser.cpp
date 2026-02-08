@@ -61,12 +61,12 @@ TResult PuloonLCDM::processCommand(char aCommand,
         return result;
     }
 
-    if (answerList.isEmpty() || (answerList.last().size() == CPuloon::ItemDataSize)) {
+    if (answerList.isEmpty() || (answerList.last().size() == CPuloon::Item_DataSize)) {
         return CommandResult::Answer;
     }
 
     foreach (const QByteArray &data, answerList) {
-        if ((data.size() == CPuloon::ItemDataSize) && (data[1] == CPuloonLCDM::RejectingID)) {
+        if ((data.size() == CPuloon::Item_DataSize) && (data[1] == CPuloonLCDM::RejectingID)) {
             toLog(LogLevel::Warning,
                   QString("%1: rejecting, reason = %2")
                       .arg(m_DeviceName)
@@ -199,12 +199,12 @@ bool PuloonLCDM::isConnected() {
         answer.mid(4, 4).toHex().remove(0, 1).remove(1, 1).remove(2, 1).remove(3, 1).toUpper();
     setDeviceParameter(CDeviceData::CheckSum, textCheckSum);
 
-    bool checkSumOK;
-    ushort checkSum = textCheckSum.toUShort(&checkSumOK, 16);
+    bool checkSum_OK;
+    ushort checkSum = textCheckSum.toUShort(&checkSum_OK, 16);
 
     CPuloonLCDM::Models::SData modelData;
 
-    if (checkSumOK) {
+    if (checkSum_OK) {
         modelData = CPuloonLCDM::Models::Data[checkSum];
         m_DeviceName = modelData.name;
         m_Units = modelData.units;
@@ -227,10 +227,10 @@ bool PuloonLCDM::isConnected() {
 }
 
 //--------------------------------------------------------------------------------
-void PuloonLCDM::performDispense(int aUnit, int aItems) {
+void PuloonLCDM::perform_Dispense(int aUnit, int aItems) {
     if (!isWorkingThread()) {
         QMetaObject::invokeMethod(
-            this, "performDispense", Qt::QueuedConnection, Q_ARG(int, aUnit), Q_ARG(int, aItems));
+            this, "perform_Dispense", Qt::QueuedConnection, Q_ARG(int, aUnit), Q_ARG(int, aItems));
 
         return;
     }

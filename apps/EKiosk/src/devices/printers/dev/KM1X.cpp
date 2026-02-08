@@ -14,7 +14,7 @@ bool KM1X_PRINTER::openPort() {
         is_open = false;
 
         // Даем девайсу название порта
-        serialPort->setPortName(comName);
+        serialPort->setPortName(com_Name);
 
         if (serialPort->open(QIODevice::ReadWrite)) {
             // Устанавливаем параметры открытия порта

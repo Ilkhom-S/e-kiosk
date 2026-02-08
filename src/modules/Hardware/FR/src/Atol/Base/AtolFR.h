@@ -10,8 +10,8 @@ class PayCTS2000 : public AtolSerialFR {
 
 public:
     PayCTS2000::PayCTS2000() {
-        mDeviceName = CAtolFR::Models::PayCTS2000K;
-        mSupportedModels = QStringList() << mDeviceName;
+        m_DeviceName = CAtolFR::Models::PayCTS2000K;
+        m_SupportedModels = QStringList() << m_DeviceName;
     }
 };
 
@@ -19,8 +19,8 @@ public:
 class AtolFR : public AtolSerialFR {
 public:
     AtolFR::AtolFR() {
-        mDeviceName = "ATOL FR";
-        mSupportedModels = getModelList();
+        m_DeviceName = "ATOL FR";
+        m_SupportedModels = getModelList();
     }
 
     static QStringList getModelList() {
@@ -34,8 +34,8 @@ class AtolFRSingle : public AtolFR {
 
 public:
     AtolFRSingle::AtolFRSingle() {
-        mDeviceName = "ATOL single FR";
-        mSupportedModels = getModelList();
+        m_DeviceName = "ATOL single FR";
+        m_SupportedModels = getModelList();
     }
 
     static QStringList getModelList() {
@@ -49,8 +49,8 @@ class AtolDP : public AtolSerialFR {
 
 public:
     AtolDP::AtolDP() {
-        mDeviceName = "ATOL DP";
-        mSupportedModels = getModelList();
+        m_DeviceName = "ATOL DP";
+        m_SupportedModels = getModelList();
     }
 
     static QStringList getModelList() {
@@ -64,8 +64,8 @@ class AtolDPSingle : public AtolDP {
 
 public:
     AtolDPSingle::AtolDPSingle() {
-        mDeviceName = "ATOL single DP";
-        mSupportedModels = getModelList();
+        m_DeviceName = "ATOL single DP";
+        m_SupportedModels = getModelList();
     }
 
     static QStringList getModelList() {

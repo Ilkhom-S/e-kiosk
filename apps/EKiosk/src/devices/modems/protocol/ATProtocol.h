@@ -7,12 +7,12 @@
 #include <QtCore/QThread>
 #include <QtSerialPort/QSerialPort>
 
-namespace CModemConstants {
+namespace CModem_Constants {
 const auto regExpBalance =
     "([0-9]{1,5}[.][0-9]{1,2}|[0-9]{1,5}[,][0-9]{1,2}|[-][0-9]{1,5}[.][0-9]{1,"
     "2}|[-][0-9]{1,5}[,][0-9]{1,2})";
 const auto regExpNumberSim = "[0-9]{9,12}";
-} // namespace CModemConstants
+} // namespace CModem_Constants
 
 //--------------------------------------------------------------------------------
 /// Константы ATProtocol протокола.
@@ -35,14 +35,14 @@ const int GetAllSMSRepeatCount = 12;
 /// Число дополнительных чтений для sendSMS
 const int SendSMSAddRepeatCount = 5;
 
-/// Число дополнительных чтений для getSimNumber
-const int GetSimNumberAddRepeatCount = 4;
+/// Число дополнительных чтений для getSim_Number
+const int GetSim_NumberAddRepeatCount = 4;
 
 /// Пауза между чтениями для getBalance (ms)
 const int GetBalancePauseTime = 300;
 
-/// Пауза между чтениями для getSimNumber (ms)
-const int GetSimNumberPauseTime = 300;
+/// Пауза между чтениями для getSim_Number (ms)
+const int GetSim_NumberPauseTime = 300;
 }; // namespace CATProtocolConstants
 
 //--------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ enum Enum {
 
 /// Команды протокола модемов.
 //--------------------------------------------------------------------------------
-namespace ModemProtocolCommands {
+namespace Modem_ProtocolCommands {
 enum Enum {
     /// Получить качество сигнала (в dBm)
     GetSignalQuality,
@@ -182,8 +182,8 @@ enum Enum {
     /// Comment
     GetComment,
 
-    /// GetSimNumber
-    GetSimNumber,
+    /// GetSim_Number
+    GetSim_Number,
 
     /// Restart
     CmdRestart,
@@ -209,9 +209,9 @@ enum Enum {
     /// Неизвестна
     Uknown
 };
-}; // namespace ModemProtocolCommands
+}; // namespace Modem_ProtocolCommands
 
-namespace ModemCmd {
+namespace Modem_Cmd {
 
 /// Получить качество сигнала (в dBm)
 const QString GetSignalQuality = "GetSignalQuality";
@@ -238,7 +238,7 @@ const QString GetBalance = "GetBalance";
 const QString GetComment = "GetComment";
 
 /// Получить номер симки
-const QString GetSimNumber = "GetSimNumber";
+const QString GetSim_Number = "GetSim_Number";
 
 const QString CmdRestart = "CmdRestart";
 
@@ -247,10 +247,10 @@ const QString CmdSendSms = "CmdSendSms";
 
 /// Неизвестна
 const QString Uknown = "Uknown";
-} // namespace ModemCmd
+} // namespace Modem_Cmd
 
 /// Коды ошибок абстрактного валидатора
-namespace ModemErrors {
+namespace Modem_Errors {
 enum Enum {
     /// Всё окей, ошибок нет
     OK,
@@ -264,36 +264,36 @@ enum Enum {
     /// Неизвестен
     Unknown
 };
-}; // namespace ModemErrors
+}; // namespace Modem_Errors
 
 /// Состояния абстрактного валидатора.
-namespace ModemStates {
+namespace Modem_States {
 enum Enum {
     /// Модем проиницилизирован, готов к работе.
     Initialize,
 
-    /// Возникла ошибка. Код ошибки ModemErrors::Enum
+    /// Возникла ошибка. Код ошибки Modem_Errors::Enum
     Error,
 
     /// Неизвестен
     Unknown
 };
-}; // namespace ModemStates
+}; // namespace Modem_States
 
 /// Структура о полном статусе абстрактного модема
-struct SModemStatusInfo {
+struct SModem_StatusInfo {
     /// Состояние модема.
-    ModemStates::Enum state;
+    Modem_States::Enum state;
 
     /// Ошибка модема (в случае возникновения).
-    ModemErrors::Enum error;
+    Modem_Errors::Enum error;
 
-    bool operator==(const SModemStatusInfo &aModemStatusInfo) {
-        return (state == aModemStatusInfo.state) && (error == aModemStatusInfo.error);
+    bool operator==(const SModem_StatusInfo &aModem_StatusInfo) {
+        return (state == aModem_StatusInfo.state) && (error == aModem_StatusInfo.error);
     }
 
-    bool operator!=(const SModemStatusInfo &aModemStatusInfo) {
-        return (state != aModemStatusInfo.state) || (error != aModemStatusInfo.error);
+    bool operator!=(const SModem_StatusInfo &aModem_StatusInfo) {
+        return (state != aModem_StatusInfo.state) || (error != aModem_StatusInfo.error);
     }
 };
 
@@ -302,7 +302,7 @@ enum sms {
     smsErrorValidator = 0,
     smsErrorPrinter = 1,
     smsErrorBalanceAgent = 2,
-    smsErrorSimBalance = 3,
+    smsErrorSim_Balance = 3,
     smsErrorLockTerminal = 4,
     smsErrorConnection = 5,
 };
@@ -310,7 +310,7 @@ enum sms {
 const QString txtErrorValidator = "Error validator";
 const QString txtErrorPrinter = "Error printer";
 const QString txtErrorBalanceAgent = "Few balance agent";
-const QString txtErrorSimBalance = "Few balance SIM";
+const QString txtErrorSim_Balance = "Few balance SIM";
 const QString txtErrorLockTerminal = "Error lock terminal";
 const QString txtErrorConnection = "Error connection";
 } // namespace SmsTextIndex
@@ -337,23 +337,23 @@ public:
     bool Debugger;
     bool devicesCreated;
     bool is_open;
-    QString comName;
+    QString com_Name;
     QStringList smsTextInit;
     QString balanceRequest;
-    QString simNumberRequest;
+    QString sim_NumberRequest;
 
-    QString regExpSimNumber;
+    QString regExpSim_Number;
     QString regExpBalance;
     int position;
 
-    QString nowSimNumber;
-    QString nowSimBalance;
-    QString nowModemName;
-    QString nowModemComment;
+    QString nowSim_Number;
+    QString nowSim_Balance;
+    QString nowModem_Name;
+    QString nowModem_Comment;
     QString nowPortName;
     QString nowProviderSim;
     QString nowSignalQuality;
-    bool nowSimPresent;
+    bool nowSim_Present;
     // protected:
     /// Маска для разбора выражения баланса
     QRegularExpression m_getBalanceRegExp;
@@ -361,18 +361,18 @@ public:
     ///
     /// Параметры:
     /// - порт;
-    /// - команда из перечисления ModemProtocolCommands::Enum;
+    /// - команда из перечисления Modem_ProtocolCommands::Enum;
     /// - данные команды;
     /// - данные ответа;
     ///
     /// Возвращает:
     /// - успешность выполнения.
-    virtual bool processCommand(ModemProtocolCommands::Enum aCommand,
+    virtual bool processCommand(Modem_ProtocolCommands::Enum aCommand,
                                 const QByteArray &aCommandData,
                                 QByteArray &aAnswerData);
 
     /// Получить текущий статус
-    virtual bool getStatusInfo(SModemStatusInfo &aStatusInfo);
+    virtual bool getStatusInfo(SModem_StatusInfo &aStatusInfo);
 
     // signals:
     //         void emit_statusSmsSend(bool sts);
@@ -381,20 +381,20 @@ private:
     // QString numberPhoneSms;
     QString textToSendSms;
 
-    QString getCommandString(ModemProtocolCommands::Enum aCommand);
+    QString getCommandString(Modem_ProtocolCommands::Enum aCommand);
     bool readPort(QByteArray &tempAnswer);
     void printDataToHex(const QByteArray &data);
     static void msleep(int ms) { QThread::msleep(ms); }
     /// Получение пакета с сформированной командой и её данными.
     ///
     /// Параметры:
-    /// - команда (ModemProtocolCommands::Enum);
+    /// - команда (Modem_ProtocolCommands::Enum);
     /// - данные команды;
     /// - сформированный пакет с конкретными байтами команды
     ///
     /// Возвращает:
     /// - успешность выполнения.
-    bool getCommandPacket(ModemProtocolCommands::Enum aCommand,
+    bool getCommandPacket(Modem_ProtocolCommands::Enum aCommand,
                           const QByteArray &aCommandData,
                           QByteArray &aPacketCommand);
 
@@ -462,13 +462,13 @@ private:
     ///
     /// Возвращает:
     /// - успешность выполнения.
-    bool prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray &aAnswer);
+    bool prepareAnswer(Modem_ProtocolCommands::Enum aCommand, QByteArray &aAnswer);
 
     /// Состояние модема
-    ModemStates::Enum m_state;
+    Modem_States::Enum m_state;
 
     /// Код ошибки состояния модема
-    ModemErrors::Enum m_error;
+    Modem_Errors::Enum m_error;
 
     int waittimeforans;
 

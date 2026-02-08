@@ -47,7 +47,7 @@ SPluginParameter addSensorAction(const QString &aName, const QString &aTranslati
 << addSensorAction(CHardware::Watchdog::Sensor::Action::aName, aSensorActionTranslation)*/
 
 //------------------------------------------------------------------------------
-QVector<SPluginParameter> AlarmParameters(const QString &aModel) {
+QVector<SPluginParameter> Alarm_Parameters(const QString &aModel) {
     return defaultParameters<Alarm>(aModel)
            << ADD_SENSOR(
                   LowerUnit,
@@ -73,7 +73,7 @@ QVector<SPluginParameter> AlarmParameters(const QString &aModel) {
 #define WD_PLUGIN(aName) COMMON_DRIVER(aName, std::bind(&defaultParameters<aName>, #aName))
 
 BEGIN_REGISTER_PLUGIN
-WD_PLUGIN_WITH_PARAMETERS(Alarm, Alarm, AlarmParameters)
+WD_PLUGIN_WITH_PARAMETERS(Alarm, Alarm, Alarm_Parameters)
 WD_PLUGIN(STOD)
 WD_PLUGIN(OSMP)
 WD_PLUGIN(OSMP2)

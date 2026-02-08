@@ -2,35 +2,35 @@
 
 #pragma once
 
-#include "PrimOnlineFRBase.h"
+#include "Prim_OnlineFRBase.h"
 
 //--------------------------------------------------------------------------------
 // Получить модели данной реализации.
-namespace CPrimFR {
+namespace CPrim_FR {
 TModels OnlineModels68() {
-    return TModels() << CPrimFR::Models::PRIM_06F << CPrimFR::Models::PRIM_08F;
+    return TModels() << CPrim_FR::Models::PRIM_06F << CPrim_FR::Models::PRIM_08F;
 }
-} // namespace CPrimFR
+} // namespace CPrim_FR
 
 //--------------------------------------------------------------------------------
-class PrimOnlineFR68 : public PrimOnlineFRBase {
+class Prim_OnlineFR68 : public Prim_OnlineFRBase {
     SET_SUBSERIES("68F")
 
 public:
-    PrimOnlineFR68() { mModels = CPrimFR::OnlineModels68(); }
+    Prim_OnlineFR68() { m_Models = CPrim_FR::OnlineModels68(); }
 
     /// Возвращает список поддерживаемых устройств.
-    static QStringList getModelList() { return CPrimFR::getModelList(CPrimFR::OnlineModels68()); }
+    static QStringList getModelList() { return CPrim_FR::getModelList(CPrim_FR::OnlineModels68()); }
 
 protected:
     /// Инициализация устройства.
     virtual bool updateParameters() {
-        if (!PrimOnlineFRBase::updateParameters()) {
+        if (!Prim_OnlineFRBase::updateParameters()) {
             return false;
         }
 
-        if (mFFDFR > EFFD::F10) {
-            mAFDFont = CPrimFR::FiscalFont::Narrow;
+        if (m_FFDFR > EFFD::F10) {
+            m_AFDFont = CPrim_FR::FiscalFont::Narrow;
         }
 
         return true;

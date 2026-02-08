@@ -33,7 +33,7 @@ const int DefaultAlpha = 0xd8;
 class ModalBackgroundWidget : public QQuickPaintedItem {
 public:
     ModalBackgroundWidget() {
-        setFlag(QQuickItem::ItemHasContents);
+        setFlag(QQuickItem::Item_HasContents);
         setFillColor(ModalBackgroundWidget::getColor(DefaultBackgroundColor));
 
         // Необходимо для обработки мыши
@@ -77,18 +77,18 @@ protected:
     }*/
 
 public:
-    void setPosition(const QPoint &aLeftBottomPoint) {
-        // setRect(QRect(aLeftBottomPoint.x(), aLeftBottomPoint.y() - 20, 100, 20));
+    void setPosition(const QPoint &aLeftBottom_Point) {
+        // setRect(QRect(aLeftBottom_Point.x(), aLeftBottom_Point.y() - 20, 100, 20));
     }
 
     void updateMousePos(const QPoint &aPos) {
-        mMousePos = aPos;
+        m_MousePos = aPos;
         update();
     }
 
 private:
     QString getDebugInfo() const {
-        return QString("(%1; %2)").arg(mMousePos.x()).arg(mMousePos.y());
+        return QString("(%1; %2)").arg(m_MousePos.x()).arg(m_MousePos.y());
     }
 
 private:
@@ -226,7 +226,7 @@ private: // Типы
 
     /// Список графических элементов.
     struct SWidget {
-        SDK::GUI::GraphicsItemInfo info;
+        SDK::GUI::GraphicsItem_Info info;
         std::weak_ptr<SDK::GUI::IGraphicsItem> graphics;
     };
 
@@ -234,18 +234,18 @@ private: // Типы
 
 private: // Данные
          // Интерфейс приложения.
-    SDK::GUI::IGraphicsHost *mHost;
+    SDK::GUI::IGraphicsHost *m_Host;
 
     /// Список доступных экранов.
-    QMap<int, SScreen> mScreens;
+    QMap<int, SScreen> m_Screens;
 
     // Родительское окно приложения
-    QWidget *mRootView;
+    QWidget *m_RootView;
 
-    QWidget *mQuickContainer;
+    QWidget *m_QuickContainer;
 
     // Контейнер для отображения QtQuick сцен
-    QQuickWindow *mQuickView;
+    QQuickWindow *m_QuickView;
 
     // Список каталогов с контентом.
     QStringList m_ContentDirectories;
@@ -253,7 +253,7 @@ private: // Данные
     QStringList m_HandledKeyList;
 
     // Список доступных бэкэндов.
-    QMap<QString, SDK::GUI::IGraphicsBackend *> mBackends;
+    QMap<QString, SDK::GUI::IGraphicsBackend *> m_Backends;
 
     // Список доступных виджетов.
     TWidgetList m_Widgets;
@@ -261,9 +261,9 @@ private: // Данные
     QQmlEngine m_Engine;
 
     // Текущий виджет.
-    TWidgetList::Iterator mTopWidget;
+    TWidgetList::Iterator m_TopWidget;
     // Popup виджет
-    TWidgetList::Iterator mPopupWidget;
+    TWidgetList::Iterator m_PopupWidget;
 
     bool m_ShowingModal;
     ModalBackgroundWidget m_ModalBackgroundWidget;

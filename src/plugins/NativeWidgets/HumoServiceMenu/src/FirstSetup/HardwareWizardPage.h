@@ -46,14 +46,14 @@ protected slots:
     void onEditFinished();
 
     /// Изменился текущая форма (список устройств/выбор типа устройтсва/редактирование параметров).
-    void onCurrentFormChanged(int aIndex);
+    void onCurrentForm_Changed(int aIndex);
 
     /// Отменяем поиск устройств
     void onClicked(const QVariantMap &aParameters);
 
 private:
-    HardwareWindow *mHardwareWindow;
-    QWidget *mEditorWindow;
+    HardwareWindow *m_HardwareWindow;
+    QWidget *m_EditorWindow;
 };
 
 //----------------------------------------------------------------------------

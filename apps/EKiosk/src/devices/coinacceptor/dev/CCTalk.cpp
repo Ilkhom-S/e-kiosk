@@ -66,7 +66,7 @@ bool CCTalk::openPort() {
         // Если девайс для работы с портом обявлен
         is_open = false;
 
-        serialPort->setPortName(comName);
+        serialPort->setPortName(com_Name);
 
         if (serialPort->open(QIODevice::ReadWrite)) {
 
@@ -180,22 +180,22 @@ void CCTalk::clearCoin() {
 
     execCommand(AcceptorCommands::SetDisabled, respData);
 
-    execCommand(AcceptorCommands::PerformSelfCheck, respData);
+    execCommand(AcceptorCommands::Perform_SelfCheck, respData);
 
     execCommand(AcceptorCommands::Reset, respData);
 
     execCommand(AcceptorCommands::SetDisabled, respData);
 
-    execCommand(AcceptorCommands::PerformSelfCheck, respData);
+    execCommand(AcceptorCommands::Perform_SelfCheck, respData);
 
-    execCommand(AcceptorCommands::PerformSelfCheck, respData);
+    execCommand(AcceptorCommands::Perform_SelfCheck, respData);
 }
 
 ushort CCTalk::calcCRC8(const QByteArray &aData) {
     return -uchar(std::accumulate(aData.begin(), aData.end(), 0));
 }
 
-QByteArray CCTalk::makeCustomRequest(int cmd, const QByteArray &data) {
+QByteArray CCTalk::makeCustom_Request(int cmd, const QByteArray &data) {
     QByteArray aCommandData;
     aCommandData.append(cmd);
     aCommandData.append(data);
@@ -220,11 +220,11 @@ bool CCTalk::execCommand(int cmdType, QByteArray &cmdResponse, QByteArray data) 
 
             // перезагрузка купюроприёмника
             case AcceptorCommands::Reset:
-                cmdRequest = makeCustomRequest(CCTalkConstruct::ApReset, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApReset, 0);
                 break;
 
             case AcceptorCommands::GetNominalTable:
-                cmdRequest = makeCustomRequest(CCTalkConstruct::ApRequestCoinId, data);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApRequestCoinId, data);
                 break;
 
             case AcceptorCommands::SetEnabled: {
@@ -234,38 +234,38 @@ bool CCTalk::execCommand(int cmdType, QByteArray &cmdResponse, QByteArray data) 
                 data[0] = 0xFF;
                 data[1] = 0xFF;
 
-                cmdRequest = makeCustomRequest(CCTalkConstruct::ApModifyInhibitStatus, data);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApModifyInhibitStatus, data);
 
                 toCoinAcceptorLog(0, "", "Coin table\n" + billTableResp);
                 toCoinAcceptorLog(0, cmdRequest, "SetEnabled");
             } break;
 
             case AcceptorCommands::Poll:
-                cmdRequest = makeCustomRequest(CCTalkConstruct::ApReadBufferedBillEvents, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApReadBufferedBillEvents, 0);
                 toCoinAcceptorLog(0, cmdRequest, "Poll");
                 break;
 
             case AcceptorCommands::RequestProductCode:
-                cmdRequest = makeCustomRequest(CCTalkConstruct::ApRequestProductCode, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApRequestProductCode, 0);
                 break;
 
             case AcceptorCommands::RequestSerialNumber:
-                cmdRequest = makeCustomRequest(CCTalkConstruct::ApRequestSerialNumber, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApRequestSerialNumber, 0);
                 break;
 
             case AcceptorCommands::Idintification:
-                cmdRequest = makeCustomRequest(CCTalkConstruct::ApRequestManufactureId, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApRequestManufactureId, 0);
                 break;
 
             case AcceptorCommands::SetSecurity: {
                 data.clear();
                 data.append(01);
 
-                cmdRequest = makeCustomRequest(CCTalkConstruct::ApModifyMasterInhibitStatus, data);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApModifyMasterInhibitStatus, data);
             } break;
 
             case AcceptorCommands::ACK:
-                cmdRequest = makeCustomRequest(CCTalkConstruct::ApSimplePoll, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApSimplePoll, 0);
                 toCoinAcceptorLog(0, cmdRequest, "SimplePoll");
                 break;
 
@@ -277,18 +277,18 @@ bool CCTalk::execCommand(int cmdType, QByteArray &cmdResponse, QByteArray data) 
                     data[i] = 0;
                 }
 
-                cmdRequest = makeCustomRequest(CCTalkConstruct::ApModifyInhibitStatus, data);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApModifyInhibitStatus, data);
                 toCoinAcceptorLog(0, cmdRequest, "SetDisabled");
             } break;
 
             case AcceptorCommands::Stack: {
                 data.clear();
                 data.append(01);
-                cmdRequest = makeCustomRequest(CCTalkConstruct::ApAcceptBill, data);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApAcceptBill, data);
             } break;
 
-            case AcceptorCommands::PerformSelfCheck:
-                cmdRequest = makeCustomRequest(CCTalkConstruct::APPerformSelfCheck, 0);
+            case AcceptorCommands::Perform_SelfCheck:
+                cmdRequest = makeCustom_Request(CCTalkConstruct::APPerform_SelfCheck, 0);
                 break;
             }
 
@@ -474,9 +474,9 @@ void CCTalk::CmdInit() {
 
     execCommand(AcceptorCommands::SetDisabled, respData);
 
-    execCommand(AcceptorCommands::PerformSelfCheck, respData);
+    execCommand(AcceptorCommands::Perform_SelfCheck, respData);
 
-    execCommand(AcceptorCommands::PerformSelfCheck, respData);
+    execCommand(AcceptorCommands::Perform_SelfCheck, respData);
 
     QByteArray cmdResponse;
 
@@ -549,9 +549,9 @@ void CCTalk::CmdStartPoll() {
 
             // Проверяем есть ли номинал и нет ли повторений
             if (nominal > 0) {
-                QString vrmD = QDateTime::currentDateTime().toString("ddHHmmsszzz");
+                QString vrm_D = QDateTime::currentDateTime().toString("ddHHmmsszzz");
 
-                double nowD = vrmD.toDouble();
+                double nowD = vrm_D.toDouble();
                 double sicPointDoublle = nowD - preDate;
 
                 if (sicPointDoublle < 0) {
@@ -581,15 +581,15 @@ void CCTalk::CmdStopPoll() {
 
     execCommand(AcceptorCommands::SetDisabled, respData);
 
-    execCommand(AcceptorCommands::PerformSelfCheck, respData);
+    execCommand(AcceptorCommands::Perform_SelfCheck, respData);
 
     execCommand(AcceptorCommands::Reset, respData);
 
     execCommand(AcceptorCommands::SetDisabled, respData);
 
-    execCommand(AcceptorCommands::PerformSelfCheck, respData);
+    execCommand(AcceptorCommands::Perform_SelfCheck, respData);
 
-    execCommand(AcceptorCommands::PerformSelfCheck, respData);
+    execCommand(AcceptorCommands::Perform_SelfCheck, respData);
 
     checkCoin = true;
     coinAcceptorLogEnable = false;
@@ -600,17 +600,17 @@ void CCTalk::CmdStopPoll() {
 int CCTalk::readPollInfo(QByteArray byte) {
     setBoolingDlgState(false);
 
-    int vrmRespData = byte[4];
+    int vrm_RespData = byte[4];
     int nominal = 0;
 
     if (byte[4] == '\x00') {
         coin_ev_counter = byte[4];
     }
 
-    if (coin_ev_counter <= vrmRespData) {
-        events_in_queue = vrmRespData - coin_ev_counter;
+    if (coin_ev_counter <= vrm_RespData) {
+        events_in_queue = vrm_RespData - coin_ev_counter;
     } else {
-        events_in_queue = 255 + vrmRespData - coin_ev_counter;
+        events_in_queue = 255 + vrm_RespData - coin_ev_counter;
     }
 
     if (events_in_queue > 5) {
@@ -739,9 +739,9 @@ int CCTalk::readPollInfo(QByteArray byte) {
                 this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
-            case CCTalkConstruct::States::CoinOnStringMechanismActivated:
-                this->sendStatusTo(CCtalkStatus::Errors::CoinOnStringMechanismActivated,
-                                   QString("CoinOnStringMechanismActivated"));
+            case CCTalkConstruct::States::CoinOnStringMechanism_Activated:
+                this->sendStatusTo(CCtalkStatus::Errors::CoinOnStringMechanism_Activated,
+                                   QString("CoinOnStringMechanism_Activated"));
                 this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
@@ -807,15 +807,15 @@ int CCTalk::readPollInfo(QByteArray byte) {
                 this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
-            case CCTalkConstruct::States::CoinReturnMechanismActivated:
-                this->sendStatusTo(CCtalkStatus::Errors::CoinReturnMechanismActivated,
-                                   QString("CoinReturnMechanismActivated"));
+            case CCTalkConstruct::States::CoinReturnMechanism_Activated:
+                this->sendStatusTo(CCtalkStatus::Errors::CoinReturnMechanism_Activated,
+                                   QString("CoinReturnMechanism_Activated"));
                 this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
-            case CCTalkConstruct::States::UnspecifiedAlarmCode:
-                this->sendStatusTo(CCtalkStatus::Errors::UnspecifiedAlarmCode,
-                                   QString("UnspecifiedAlarmCode"));
+            case CCTalkConstruct::States::UnspecifiedAlarm_Code:
+                this->sendStatusTo(CCtalkStatus::Errors::UnspecifiedAlarm_Code,
+                                   QString("UnspecifiedAlarm_Code"));
                 this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
             }

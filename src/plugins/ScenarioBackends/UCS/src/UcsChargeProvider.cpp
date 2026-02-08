@@ -28,7 +28,7 @@ QPointer<UcsChargeProvider> &plugin() {
 
 //------------------------------------------------------------------------------
 namespace {
-const char ParamRuntimePath[] = "ucs_runtime_path";
+const char Param_RuntimePath[] = "ucs_runtime_path";
 
 /// Конструктор экземпляра плагина.
 SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
@@ -64,22 +64,22 @@ REGISTER_PLUGIN_WITH_PARAMETERS(
 //------------------------------------------------------------------------------
 UcsChargeProvider::UcsChargeProvider(SDK::Plugin::IEnvironment *aFactory,
                                      const QString &aInstancePath)
-    : ILogable(aFactory->getLog(Ucs::LogName)), mFactory(aFactory), mInstancePath(aInstancePath),
-      mCore(dynamic_cast<SDK::PaymentProcessor::ICore *>(
+    : ILogable(aFactory->getLog(Ucs::LogName)), m_Factory(aFactory), m_InstancePath(aInstancePath),
+      m_Core(dynamic_cast<SDK::PaymentProcessor::ICore *>(
           aFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore))),
-      mApi(Ucs::API::getInstance(mCore, aFactory->getLog(Ucs::LogName))) {
+      m_Api(Ucs::API::getInstance(m_Core, aFactory->getLog(Ucs::LogName))) {
     qRegisterMetaType<SDK::PaymentProcessor::SNote>("SDK::PaymentProcessor::SNote");
 
-    mDealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
+    m_DealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
 
-    connect(mApi.data(),
+    connect(m_Api.data(),
             SIGNAL(saleComplete(double, int, const QString &, const QString &)),
             SLOT(onSaleComplete(double, int, const QString &, const QString &)));
 
-    connect(mApi.data(), SIGNAL(encashmentComplete()), SLOT(onEncashmentComplete()));
+    connect(m_Api.data(), SIGNAL(encashmentComplete()), SLOT(onEncashmentComplete()));
 
-    mCore->getEventService()->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
+    m_Core->getEventService()->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
 }
 
 //------------------------------------------------------------------------------
@@ -92,19 +92,19 @@ QString UcsChargeProvider::getPluginName() const {
 
 //------------------------------------------------------------------------------
 QVariantMap UcsChargeProvider::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //------------------------------------------------------------------------------
 void UcsChargeProvider::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 
-    mApi->setupRuntime(aParameters.value(ParamRuntimePath).toString());
+    m_Api->setupRuntime(aParameters.value(Param_RuntimePath).toString());
 }
 
 //------------------------------------------------------------------------------
 QString UcsChargeProvider::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //------------------------------------------------------------------------------
@@ -134,32 +134,32 @@ bool UcsChargeProvider::unsubscribe(const char *aSignal, QObject *aReceiver) {
 
 //------------------------------------------------------------------------------
 QString UcsChargeProvider::getMethod() {
-    return mApi->isReady() ? "card_ucs" : QString();
+    return m_Api->isReady() ? "card_ucs" : QString();
 }
 
 //------------------------------------------------------------------------------
 bool UcsChargeProvider::enable(PPSDK::TPaymentAmount aMaxAmount) {
-    return mApi->enable(aMaxAmount);
+    return m_Api->enable(aMaxAmount);
 }
 
 //------------------------------------------------------------------------------
 bool UcsChargeProvider::disable() {
     // Чистим ресурсы по команде сценария, т.к. нужны дополнительные движения с API
-    // mApi->disable();
+    // m_Api->disable();
     return true;
 }
 
 //------------------------------------------------------------------------------
 void UcsChargeProvider::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
     if (aEvent.getType() == PPSDK::EEventType::ProcessEncashment) {
-        mApi->encashment(false);
+        m_Api->encashment(false);
     }
 }
 
 //------------------------------------------------------------------------------
 void UcsChargeProvider::onEncashmentComplete() {
     // TODO - напечатать все чеки отложенных инкассаций
-    // mCore->getPrinterService()->pri
+    // m_Core->getPrinterService()->pri
 }
 
 //------------------------------------------------------------------------------
@@ -173,8 +173,8 @@ void UcsChargeProvider::onSaleComplete(double aAmount,
               .arg(aRRN)
               .arg(aConfirmationCode));
 
-    mCore->getPaymentService()->updatePaymentField(
-        mCore->getPaymentService()->getActivePayment(),
+    m_Core->getPaymentService()->updatePaymentField(
+        m_Core->getPaymentService()->getActivePayment(),
         PPSDK::IPayment::SParameter("PAY_TOOL", 2, true, false, true));
 
     emit stacked(PPSDK::SNote(PPSDK::EAmountType::BankCard, aAmount, aCurrency, aRRN));

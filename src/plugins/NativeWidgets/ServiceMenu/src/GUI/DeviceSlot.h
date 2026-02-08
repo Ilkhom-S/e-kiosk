@@ -111,17 +111,17 @@ private slots:
     void onClicked(const QVariantMap &aParameters);
 
 protected:
-    QString mType;
-    bool mIsUserSlot;
-    QVariantMap mParameterValues;
-    ServiceMenuBackend *mBackend;
-    QString mConfigurationName;
+    QString m_Type;
+    bool m_IsUserSlot;
+    QVariantMap m_ParameterValues;
+    ServiceMenuBackend *m_Backend;
+    QString m_ConfigurationName;
 
-    Ui::frmDeviceSlot ui;
-    QPointer<QWidget> mWidget;
+    Ui::frm_DeviceSlot ui;
+    QPointer<QWidget> m_Widget;
 
-    ObjectPointer<SDK::Driver::IDevice> mDevice;
-    QSharedPointer<SDK::PaymentProcessor::IDeviceTest> mDeviceTest;
+    ObjectPointer<SDK::Driver::IDevice> m_Device;
+    QSharedPointer<SDK::PaymentProcessor::IDeviceTest> m_DeviceTest;
 };
 
 //------------------------------------------------------------------------

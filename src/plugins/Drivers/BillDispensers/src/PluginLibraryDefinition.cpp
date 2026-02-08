@@ -7,11 +7,11 @@
 #include <SDK/Plugins/PluginFactory.h>
 
 BillDispenserPluginFactory::BillDispenserPluginFactory() {
-    mName = "BillDispenser";
-    mDescription = "BillDispenser driver library";
-    mAuthor = "Humo";
-    mVersion = "1.0";
-    mModuleName = "bill_dispensers"; // Название dll/so модуля без расширения
+    m_Name = "BillDispenser";
+    m_Description = "BillDispenser driver library";
+    m_Author = "Humo";
+    m_Version = "1.0";
+    m_ModuleName = "bill_dispensers"; // Название dll/so модуля без расширения
 }
 
 //------------------------------------------------------------------------------

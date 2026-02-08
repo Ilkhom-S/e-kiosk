@@ -87,7 +87,7 @@ private:
     const bool setFRParameters(SDK::Driver::IIOPort *aPort);
 
     /// Программировать таблицу режимов работы ФР.
-    const bool programmFRParameter(SDK::Driver::IIOPort *aPort, uchar aNumber, uchar aValue);
+    const bool programm_FRParameter(SDK::Driver::IIOPort *aPort, uchar aNumber, uchar aValue);
 
     /// Поместить реквизит в буфер данных для фискального документа.
     /// Возвращает: количество реквизитов.

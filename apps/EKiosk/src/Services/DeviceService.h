@@ -58,9 +58,9 @@ public:
         bool isMatched(SDK::Driver::EWarningLevel::Enum aLevel) const;
 
     public:
-        SDK::Driver::EWarningLevel::Enum mLevel;
-        QString mDescription;
-        int mStatus;
+        SDK::Driver::EWarningLevel::Enum m_Level;
+        QString m_Description;
+        int m_Status;
     };
 
 public:
@@ -171,31 +171,31 @@ private slots:
                         int aStatus);
 
 private:
-    DeviceManager *mDeviceManager;
+    DeviceManager *m_DeviceManager;
 
     /// Общий список параметров, необходимых для инициализации устройств.
-    QMap<QString, QVariantMap> mInitParameters;
+    QMap<QString, QVariantMap> m_InitParameters;
 
     /// Здесь хранится результат запуска detectа.
-    QFutureWatcher<void> mDetectionResult;
+    QFutureWatcher<void> m_DetectionResult;
 
-    mutable QRecursiveMutex mAccessMutex;
+    mutable QRecursiveMutex m_AccessMutex;
 
     /// Список всех использованных устройств.
     typedef QMap<QString, SDK::Driver::IDevice *> TAcquiredDevices;
-    TAcquiredDevices mAcquiredDevices;
+    TAcquiredDevices m_AcquiredDevices;
 
     /// Кэш для статусов устройств.
-    QMap<QString, Status> mDeviceStatusCache;
+    QMap<QString, Status> m_DeviceStatusCache;
 
     /// Параметр момента создания устройств
-    QMap<QString, int> mDeviceCreationOrder;
+    QMap<QString, int> m_DeviceCreationOrder;
 
-    IApplication *mApplication;
-    ILog *mLog;
-    IHardwareDatabaseUtils *mDatabaseUtils;
+    IApplication *m_Application;
+    ILog *m_Log;
+    IHardwareDatabaseUtils *m_DatabaseUtils;
 
-    IntegratedDrivers mIntegratedDrivers;
+    IntegratedDrivers m_IntegratedDrivers;
 };
 
 //------------------------------------------------------------------------------

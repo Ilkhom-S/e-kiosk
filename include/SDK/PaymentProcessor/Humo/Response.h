@@ -65,19 +65,19 @@ protected:
 
 private:
     /// Строка, из которой был создан класс.
-    QString mResponseString;
+    QString m_ResponseString;
 
     /// Параметры ответа.
-    QVariantMap mParameters;
+    QVariantMap m_Parameters;
 
     /// Значения полей "ошибка" и "результат".
-    int mError;
-    int mResult;
+    int m_Error;
+    int m_Result;
 
     /// Текст ошибки сервера.
-    QString mErrorMessage;
+    QString m_ErrorMessage;
 
-    const Request &mRequest;
+    const Request &m_Request;
 };
 
 //------------------------------------------------------------------------------

@@ -11,11 +11,11 @@ namespace Humo {
 
 //---------------------------------------------------------------------------
 Response::Response(const Request &aRequest, const QString &aResponseString)
-    : mResponseString(aResponseString), mError(ELocalError::NetworkError),
-      mResult(EServerResult::Empty), mRequest(aRequest) {
+    : m_ResponseString(aResponseString), m_Error(ELocalError::NetworkError),
+      m_Result(EServerResult::Empty), m_Request(aRequest) {
     QRegularExpression regexp("^(\\w+)=(.*)$");
 
-    foreach (auto line, mResponseString.split("\r\n")) {
+    foreach (auto line, m_ResponseString.split("\r\n")) {
         QRegularExpressionMatch match = regexp.match(line);
         if (match.hasMatch()) {
             if (match.capturedLength() > 1) {
@@ -30,37 +30,37 @@ Response::~Response() {}
 
 //---------------------------------------------------------------------------
 bool Response::isOk() {
-    return ((mError == EServerError::Ok) && (mResult == EServerResult::Ok));
+    return ((m_Error == EServerError::Ok) && (m_Result == EServerResult::Ok));
 }
 
 //---------------------------------------------------------------------------
 int Response::getError() const {
-    return mError;
+    return m_Error;
 }
 
 //---------------------------------------------------------------------------
 int Response::getResult() const {
-    return mResult;
+    return m_Result;
 }
 
 //---------------------------------------------------------------------------
 const QString &Response::getErrorMessage() const {
-    return mErrorMessage;
+    return m_ErrorMessage;
 }
 
 //---------------------------------------------------------------------------
 QVariant Response::getParameter(const QString &aName) const {
-    return mParameters.contains(aName) ? mParameters.value(aName) : QVariant();
+    return m_Parameters.contains(aName) ? m_Parameters.value(aName) : QVariant();
 }
 
 //---------------------------------------------------------------------------
 const QVariantMap &Response::getParameters() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //---------------------------------------------------------------------------
 const QString &Response::toString() const {
-    return mResponseString;
+    return m_ResponseString;
 }
 
 //---------------------------------------------------------------------------
@@ -76,26 +76,26 @@ QString Response::toLogString() const {
 
 //---------------------------------------------------------------------------
 void Response::addParameter(const QString &aName, const QString &aValue) {
-    mParameters[aName] = aValue;
+    m_Parameters[aName] = aValue;
 
     if (aName == CResponse::Parameters::Error) {
-        mError = static_cast<EServerError::Enum>(aValue.toInt());
+        m_Error = static_cast<EServerError::Enum>(aValue.toInt());
     } else if (aName == CResponse::Parameters::ErrorCode) {
-        mError = static_cast<EServerError::Enum>(aValue.toInt());
+        m_Error = static_cast<EServerError::Enum>(aValue.toInt());
     }
 
     if (aName == CResponse::Parameters::Result) {
-        mResult = static_cast<EServerResult::Enum>(aValue.toInt());
+        m_Result = static_cast<EServerResult::Enum>(aValue.toInt());
     }
 
     if (aName == CResponse::Parameters::ErrorMessage) {
-        mErrorMessage = aValue;
+        m_ErrorMessage = aValue;
     }
 }
 
 //---------------------------------------------------------------------------
 const Request &Response::getRequest() const {
-    return mRequest;
+    return m_Request;
 }
 
 //------------------------------------------------------------------------------

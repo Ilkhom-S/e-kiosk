@@ -48,26 +48,26 @@ const char Bits[] = "bits";
 //---------------------------------------------------------------------------
 UpdaterApp::UpdaterApp(int aArgc, char **aArgv)
     : BasicQtApplication<SafeQApplication>(CUpdater::Name, Humo::getVersion(), aArgc, aArgv),
-      mState(CUpdaterApp::Download) {
+      m_State(CUpdaterApp::Download) {
 #ifdef Q_OS_WIN
     CatchUnhandledExceptions();
 #endif
 
-    mWatchServiceClient = QSharedPointer<IWatchServiceClient>(
+    m_WatchServiceClient = QSharedPointer<IWatchServiceClient>(
         ::createWatchServiceClient(CWatchService::Modules::Updater));
 
-    mWatchServiceClient->subscribeOnCloseCommandReceived(this);
-    mWatchServiceClient->subscribeOnDisconnected(this);
+    m_WatchServiceClient->subscribeOnCloseCommandReceived(this);
+    m_WatchServiceClient->subscribeOnDisconnected(this);
 }
 
 //---------------------------------------------------------------------------
 UpdaterApp::~UpdaterApp() {
-    mWatchServiceClient->stop();
+    m_WatchServiceClient->stop();
 
     SDK::PaymentProcessor::IRemoteService::EStatus status;
 
     // Обновляем отчет.
-    switch (mResultCode_) {
+    switch (m_ResultCode_) {
     case CUpdaterApp::ExitCode::NoError:
         status = SDK::PaymentProcessor::IRemoteService::OK;
         break;
@@ -81,8 +81,8 @@ UpdaterApp::~UpdaterApp() {
         status = SDK::PaymentProcessor::IRemoteService::Error;
     }
 
-    mReportBuilder.setStatusDescription(mResultDescription);
-    mReportBuilder.setStatus(status);
+    m_ReportBuilder.setStatusDescription(m_ResultDescription);
+    m_ReportBuilder.setStatus(status);
 }
 
 //---------------------------------------------------------------------------
@@ -97,9 +97,9 @@ QString UpdaterApp::getArgument(const char *aName,
 //---------------------------------------------------------------------------
 void UpdaterApp::onCloseCommandReceived() {
     getLog()->write(LogLevel::Normal,
-                    QString("Receive close signal from watch service. State=%1.").arg(mState));
+                    QString("Receive close signal from watch service. State=%1.").arg(m_State));
 
-    if (mState == CUpdaterApp::Download) {
+    if (m_State == CUpdaterApp::Download) {
         getLog()->write(LogLevel::Normal,
                         "Receive close signal from watch service. Update aborted.");
 
@@ -111,10 +111,10 @@ void UpdaterApp::onCloseCommandReceived() {
 
 //---------------------------------------------------------------------------
 void UpdaterApp::onDisconnected() {
-    switch (mState) {
+    switch (m_State) {
     case CUpdaterApp::Deploy:
         getLog()->write(LogLevel::Normal, "Disconnected from watch service. Go to deploy.");
-        QMetaObject::invokeMethod(mUpdater, "deploy", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(m_Updater, "deploy", Qt::QueuedConnection);
         break;
 
     case CUpdaterApp::Finish:
@@ -124,8 +124,8 @@ void UpdaterApp::onDisconnected() {
     default:
         getLog()->write(LogLevel::Normal, "Disconnected from watch service. Try reconnect.");
 
-        if (!mWatchServiceClient->isConnected()) {
-            if (!mWatchServiceClient->start()) {
+        if (!m_WatchServiceClient->isConnected()) {
+            if (!m_WatchServiceClient->start()) {
                 // не удалось подключиться, пробуем еще раз
                 QTimer::singleShot(1000, this, SLOT(onDisconnected()));
             } else {
@@ -191,8 +191,8 @@ void UpdaterApp::run() {
     woBITS = settings.value("bits/ignore", woBITS).toBool();
 
     // Создаем файл с отчетом.
-    mReportBuilder.open(cmdId, server, md5);
-    mReportBuilder.setStatus(SDK::PaymentProcessor::IRemoteService::Executing);
+    m_ReportBuilder.open(cmdId, server, md5);
+    m_ReportBuilder.setStatus(SDK::PaymentProcessor::IRemoteService::Executing);
 
     // Проверка на запуск второй копии программы (SingleApplication).
     SingleApplication *appInstance =
@@ -204,8 +204,8 @@ void UpdaterApp::run() {
     }
 
     if (command == Command::Bits) {
-        mUpdater = new Updater(this);
-        mUpdater->setWorkingDir(workingDir);
+        m_Updater = new Updater(this);
+        m_Updater->setWorkingDir(workingDir);
         // For BITS command, treat secondary instance as update in progress
         if (appInstance->isSecondary()) {
             setResultCode(CUpdaterApp::ExitCode::NoError, tr("Update in progress"));
@@ -223,7 +223,7 @@ void UpdaterApp::run() {
     // ...existing code...
 
     // Запускаем клиент сторожевого сервиса.
-    if (!mWatchServiceClient->start()) {
+    if (!m_WatchServiceClient->start()) {
         getLog()->write(LogLevel::Error, "Cannot connect to watch service.");
         setResultCode(CUpdaterApp::ExitCode::NoWatchService);
 #ifndef _DEBUG
@@ -235,44 +235,44 @@ void UpdaterApp::run() {
     connect(tooLongDownloadTimer, SIGNAL(timeout()), this, SLOT(tooLondToDownload()));
     tooLongDownloadTimer->start(CUpdaterApp::MaxDownloadTime);
 
-    mUpdater = new Updater(server, updateBaseUrl, version, app, configuration, pointId);
+    m_Updater = new Updater(server, updateBaseUrl, version, app, configuration, pointId);
 
-    mUpdater->setParent(this);
-    mUpdater->setProxy(proxy);
-    mUpdater->setAcceptedKeys(acceptKeys);
+    m_Updater->setParent(this);
+    m_Updater->setProxy(proxy);
+    m_Updater->setAcceptedKeys(acceptKeys);
 #ifdef Q_OS_WIN32
-    mUpdater->useBITS(!woBITS, settings.value("bits/priority", CBITS::HIGH).toInt());
+    m_Updater->useBITS(!woBITS, settings.value("bits/priority", CBITS::HIGH).toInt());
 #endif
-    connect(mUpdater, SIGNAL(progress(int)), &mReportBuilder, SLOT(setProgress(int)));
+    connect(m_Updater, SIGNAL(progress(int)), &m_ReportBuilder, SLOT(setProgress(int)));
 
     // Создаем файл отчета.
     if (command == Command::Config) {
         // Устанавливаем рабочую папку.
-        mUpdater->setWorkingDir("./user");
-        mUpdater->setMD5(md5);
+        m_Updater->setWorkingDir("./user");
+        m_Updater->setMD5(md5);
 
-        connect(mUpdater,
+        connect(m_Updater,
                 SIGNAL(done(CUpdaterErrors::Enum)),
                 SLOT(onConfigReady(CUpdaterErrors::Enum)));
-        connect(mUpdater, SIGNAL(deployment()), SLOT(onDeployment()));
+        connect(m_Updater, SIGNAL(deployment()), SLOT(onDeployment()));
 
         // Команда на закачку конфигов.
-        mUpdater->downloadPackage();
+        m_Updater->downloadPackage();
     } else if (command == Command::UserPack) {
-        mUpdater->setWorkingDir(subdir.isEmpty() ? "." : QString("./%1").arg(subdir));
-        mUpdater->setMD5(md5);
+        m_Updater->setWorkingDir(subdir.isEmpty() ? "." : QString("./%1").arg(subdir));
+        m_Updater->setMD5(md5);
 
-        connect(mUpdater,
+        connect(m_Updater,
                 SIGNAL(done(CUpdaterErrors::Enum)),
                 woRestart ? SLOT(onPackReady(CUpdaterErrors::Enum))
                           : SLOT(onConfigReady(CUpdaterErrors::Enum)));
-        connect(mUpdater, SIGNAL(deployment()), SLOT(onDeployment()));
+        connect(m_Updater, SIGNAL(deployment()), SLOT(onDeployment()));
 
         // Команда на закачку конфигов.
-        mUpdater->downloadPackage();
+        m_Updater->downloadPackage();
     } else if (command == Command::Update) {
         if (workingDir.isEmpty()) {
-            if (reRunFromTempDirectory()) {
+            if (reRunFrom_TempDirectory()) {
                 getLog()->write(
                     LogLevel::Normal,
                     QString("Run updater from temp path: '%1' is OK.").arg(getUpdaterTempDir()));
@@ -282,51 +282,51 @@ void UpdaterApp::run() {
                 getLog()->write(
                     LogLevel::Error,
                     QString("Failed run updater from temp path: '%1'.").arg(getUpdaterTempDir()));
-                setResultCode(CUpdaterApp::ExitCode::ErrorRunFromTempDir);
+                setResultCode(CUpdaterApp::ExitCode::ErrorRunFrom_TempDir);
                 return;
             }
         } else {
             // Устанавливаем рабочую папку.
-            mUpdater->setWorkingDir(workingDir);
+            m_Updater->setWorkingDir(workingDir);
         }
 
         // Добавляем директории в список исключений. Файлы в этих папках не участвуют в обновлении.
-        mUpdater->addExceptionDirs(exceptionDirs());
-        mUpdater->addExceptionDirs(configStringList(settings.value("directory/ignore")));
+        m_Updater->addExceptionDirs(exceptionDirs());
+        m_Updater->addExceptionDirs(configStringList(settings.value("directory/ignore")));
 
-        mUpdater->addComponentForUpdate(components);
-        mUpdater->setOptionalComponents(configStringList(settings.value("component/optional")));
-        mUpdater->setConfigurationRequiredFiles(
+        m_Updater->addComponentForUpdate(components);
+        m_Updater->setOptionalComponents(configStringList(settings.value("component/optional")));
+        m_Updater->setConfigurationRequiredFiles(
             configStringList(settings.value("validator/required_files")));
 
         // Подписываемся на нужные сигналы от движка обновлений.
-        connect(mUpdater, SIGNAL(updateSystemIsWaiting()), this, SLOT(updateSystemIsWaiting()));
-        connect(mUpdater, SIGNAL(downloadAccomplished()), this, SLOT(onDownloadComplete()));
-        connect(mUpdater,
+        connect(m_Updater, SIGNAL(updateSystem_IsWaiting()), this, SLOT(updateSystem_IsWaiting()));
+        connect(m_Updater, SIGNAL(downloadAccomplished()), this, SLOT(onDownloadComplete()));
+        connect(m_Updater,
                 SIGNAL(done(CUpdaterErrors::Enum)),
                 this,
                 SLOT(onUpdateComplete(CUpdaterErrors::Enum)));
 
-        QMetaObject::invokeMethod(mUpdater, "runUpdate", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(m_Updater, "runUpdate", Qt::QueuedConnection);
     } else if (command == Command::Integrity) {
         // Устанавливаем рабочую папку.
-        mUpdater->setWorkingDir("./");
+        m_Updater->setWorkingDir("./");
 
         // Добавляем директории в список исключений. Файлы в этих папках не участвуют в обновлении.
-        mUpdater->addExceptionDirs(exceptionDirs());
-        mUpdater->addExceptionDirs(configStringList(settings.value("directory/ignore")));
+        m_Updater->addExceptionDirs(exceptionDirs());
+        m_Updater->addExceptionDirs(configStringList(settings.value("directory/ignore")));
 
-        mUpdater->setOptionalComponents(configStringList(settings.value("component/optional")));
-        mUpdater->setConfigurationRequiredFiles(
+        m_Updater->setOptionalComponents(configStringList(settings.value("component/optional")));
+        m_Updater->setConfigurationRequiredFiles(
             configStringList(settings.value("validator/required_files")));
 
-        int result = mUpdater->checkIntegrity();
+        int result = m_Updater->checkIntegrity();
 
         if (result < 0) {
             setResultCode(CUpdaterApp::ExitCode::UnknownCommand);
         } else if (result > 0) {
             setResultCode(CUpdaterApp::ExitCode::FailIntegrity);
-            mReportBuilder.setStatusDescription(tr("#error_check_integrity").arg(result));
+            m_ReportBuilder.setStatusDescription(tr("#error_check_integrity").arg(result));
         } else {
             setResultCode(CUpdaterApp::ExitCode::NoError);
         }
@@ -339,7 +339,7 @@ void UpdaterApp::run() {
     }
 
     int result = exec();
-    if (result != mResultCode_) {
+    if (result != m_ResultCode_) {
         setResultCode(static_cast<CUpdaterApp::ExitCode::Enum>(result));
     }
 }
@@ -351,17 +351,17 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
 
     QStringList parameters;
 
-    if (!mUpdater->bitsLoadState(&parameters)) {
+    if (!m_Updater->bitsLoadState(&parameters)) {
         getLog()->write(LogLevel::Error, QString("Failed load bits.ini."));
         return CUpdaterApp::ExitCode::ParseError;
     }
 
-    if (mUpdater->bitsIsComplete()) {
+    if (m_Updater->bitsIsComplete()) {
         getLog()->write(LogLevel::Normal, QString("BITS jobs are complete. Restart for deploy."));
 
         if (!aAlreadyRunning) {
             int stub = 0;
-            mUpdater->bitsCompleteAllJobs(stub, stub, stub);
+            m_Updater->bitsCompleteAllJobs(stub, stub, stub);
 
             // Restart for deploy
             if (!QProcess::startDetached(qApp->applicationFilePath(), parameters)) {
@@ -374,8 +374,8 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
 #ifdef Q_OS_WIN
             QString commanLine = QDir::toNativeSeparators(qApp->applicationFilePath());
             QString arguments =
-                QString("--command bits --workdir %1").arg(mUpdater->getWorkingDir());
-            QString workDir = QDir::toNativeSeparators(mUpdater->getWorkingDir());
+                QString("--command bits --workdir %1").arg(m_Updater->getWorkingDir());
+            QString workDir = QDir::toNativeSeparators(m_Updater->getWorkingDir());
 
             try {
                 // Schedule restart myself
@@ -395,7 +395,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
                     LogLevel::Fatal,
                     QString("Didn't create updater restart scheduler task '%1'. Reason: %2.")
                         .arg(commanLine)
-                        .arg(QString::fromLocal8Bit(ex.what())));
+                        .arg(QString::from_Local8Bit(ex.what())));
 
                 return CUpdaterApp::ExitCode::UnknownError;
             }
@@ -405,7 +405,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
         return CUpdaterApp::ExitCode::NoError;
     }
 
-    if (mUpdater->bitsIsError()) {
+    if (m_Updater->bitsIsError()) {
         getLog()->write(LogLevel::Error,
                         QString("BITS jobs are failed. Restart for download w/o bits."));
 
@@ -414,7 +414,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
 #ifdef Q_OS_WIN
         QString commanLine = QDir::toNativeSeparators(qApp->applicationFilePath());
         QString arguments = parameters.join(" ");
-        QString workDir = QDir::toNativeSeparators(mUpdater->getWorkingDir());
+        QString workDir = QDir::toNativeSeparators(m_Updater->getWorkingDir());
 
         try {
             // Schedule restart myself
@@ -433,7 +433,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
                 LogLevel::Fatal,
                 QString("Didn't create updater restart scheduler task '%1'. Reason: %2.")
                     .arg(commanLine)
-                    .arg(QString::fromLocal8Bit(ex.what())));
+                    .arg(QString::from_Local8Bit(ex.what())));
         }
 #endif
         return CUpdaterApp::ExitCode::NetworkError;
@@ -444,7 +444,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
 }
 
 //---------------------------------------------------------------------------
-void UpdaterApp::updateSystemIsWaiting() {
+void UpdaterApp::updateSystem_IsWaiting() {
     Updater *updater = dynamic_cast<Updater *>(sender());
 
     int nextUpdateTimeout = 10 * 60;
@@ -456,7 +456,7 @@ void UpdaterApp::updateSystemIsWaiting() {
 
 //---------------------------------------------------------------------------
 void UpdaterApp::onDeployment() {
-    mState = CUpdaterApp::Deploy;
+    m_State = CUpdaterApp::Deploy;
 }
 
 //---------------------------------------------------------------------------
@@ -466,11 +466,11 @@ void UpdaterApp::onDownloadComplete() {
     getLog()->write(LogLevel::Normal, "Download complete. Close modules...");
 
     // Останавливаем controller.exe (watch_service_controller)
-    mWatchServiceClient->closeModule(CWatchService::Modules::WatchServiceController);
+    m_WatchServiceClient->closeModule(CWatchService::Modules::WatchServiceController);
 
     // Останавливаем ekiosk.exe
-    mWatchServiceClient->subscribeOnModuleClosed(this);
-    mWatchServiceClient->closeModule(CWatchService::Modules::PaymentProcessor);
+    m_WatchServiceClient->subscribeOnModuleClosed(this);
+    m_WatchServiceClient->closeModule(CWatchService::Modules::PaymentProcessor);
 
     getLog()->write(LogLevel::Normal,
                     QString("Waiting PaymentProcessor exit... (%1 sec)")
@@ -482,17 +482,17 @@ void UpdaterApp::onDownloadComplete() {
 
 //---------------------------------------------------------------------------
 void UpdaterApp::startErrorTimer() {
-    mErrorStopTimer = new QTimer(this);
-    mErrorStopTimer->setSingleShot(true);
-    connect(mErrorStopTimer.data(), SIGNAL(timeout()), this, SLOT(onFailStopClient()));
-    mErrorStopTimer->start(CUpdaterApp::ErrorExitTimeout);
+    m_ErrorStopTimer = new QTimer(this);
+    m_ErrorStopTimer->setSingleShot(true);
+    connect(m_ErrorStopTimer.data(), SIGNAL(timeout()), this, SLOT(onFailStopClient()));
+    m_ErrorStopTimer->start(CUpdaterApp::ErrorExitTimeout);
 }
 
 //---------------------------------------------------------------------------
 void UpdaterApp::stopErrorTimer() {
-    if (mErrorStopTimer) {
-        mErrorStopTimer->stop();
-        mErrorStopTimer->deleteLater();
+    if (m_ErrorStopTimer) {
+        m_ErrorStopTimer->stop();
+        m_ErrorStopTimer->deleteLater();
     }
 }
 
@@ -500,7 +500,7 @@ void UpdaterApp::stopErrorTimer() {
 void UpdaterApp::onFailStopClient() {
     getLog()->write(LogLevel::Error, "Fail stop EKiosk.");
 
-    mWatchServiceClient->startModule(CWatchService::Modules::PaymentProcessor);
+    m_WatchServiceClient->startModule(CWatchService::Modules::PaymentProcessor);
 
     QTimer::singleShot(10, this, SLOT(errorExit()));
 }
@@ -509,7 +509,7 @@ void UpdaterApp::onFailStopClient() {
 void UpdaterApp::tooLondToDownload() {
     getLog()->write(LogLevel::Error, "Too long to downloading update. Try to close updater.");
 
-    if (mState == CUpdaterApp::Download) {
+    if (m_State == CUpdaterApp::Download) {
         errorExit();
     } else {
         getLog()->write(LogLevel::Fatal, "Fail to close. Updater in deploy stage.");
@@ -528,18 +528,18 @@ void UpdaterApp::onModuleClosed(const QString &aModuleName) {
         stopErrorTimer();
 
         // Показываем экран блокировки.
-        mSplashScreen.showMaximized();
-        mSplashScreen.showFullScreen();
+        m_SplashScreen.showMaximized();
+        m_SplashScreen.showFullScreen();
 
         // Останавливаем Watch-Service.
-        mWatchServiceClient->stopService();
+        m_WatchServiceClient->stopService();
         // после остановки WatchService мы попадём в onDisconnected()
     }
 }
 
 //---------------------------------------------------------------------------
 void UpdaterApp::onUpdateComplete(CUpdaterErrors::Enum aError) {
-    if (mState == CUpdaterApp::Deploy) {
+    if (m_State == CUpdaterApp::Deploy) {
         // Запускаем controller
         if (!QProcess::startDetached(getWorkingDirectory() + QDir::separator() +
                                      CWatchService::Modules::WatchServiceController +
@@ -567,16 +567,16 @@ void UpdaterApp::onUpdateComplete(CUpdaterErrors::Enum aError) {
 
 //---------------------------------------------------------------------------
 void UpdaterApp::errorExit() {
-    if (!mResultCode_) {
-        mResultCode_ = CUpdaterApp::ExitCode::UnknownError;
+    if (!m_ResultCode_) {
+        m_ResultCode_ = CUpdaterApp::ExitCode::UnknownError;
     }
 
-    getQtApplication().exit(mResultCode_);
+    getQtApplication().exit(m_ResultCode_);
 }
 
 //---------------------------------------------------------------------------
 int UpdaterApp::getResultCode() const {
-    return mResultCode_;
+    return m_ResultCode_;
 }
 
 //---------------------------------------------------------------------------
@@ -586,7 +586,7 @@ void UpdaterApp::onConfigReady(CUpdaterErrors::Enum aError) {
     QDir(QDir::currentPath() + QDir::separator() + "user").rmdir("templates");
 
     // Перезапускаем ПО.
-    mWatchServiceClient->restartService(QStringList());
+    m_WatchServiceClient->restartService(QStringList());
 
     // Завершаем работу приложения через 5 секунд, что бы watchdog успел получить сигнал
     // перезагрузки ТК
@@ -600,14 +600,14 @@ void UpdaterApp::onPackReady(CUpdaterErrors::Enum aError) {
 
 //---------------------------------------------------------------------------
 void UpdaterApp::delayedExit(int aTimeout, CUpdaterErrors::Enum aError) {
-    mState = CUpdaterApp::Finish;
+    m_State = CUpdaterApp::Finish;
 
     setResultCode(aError);
 
     getLog()->write(aError ? LogLevel::Error : LogLevel::Normal,
                     QString("Closing after %1 seconds.").arg(aTimeout));
 
-    if (mResultCode_) {
+    if (m_ResultCode_) {
         QTimer::singleShot(aTimeout * 1000, this, SLOT(errorExit()));
     } else {
         QTimer::singleShot(aTimeout * 1000, qApp, SLOT(quit()));
@@ -654,7 +654,7 @@ QString UpdaterApp::getLibraryExtension() const {
 }
 
 //---------------------------------------------------------------------------
-bool UpdaterApp::reRunFromTempDirectory() {
+bool UpdaterApp::reRunFrom_TempDirectory() {
     getLog()->write(LogLevel::Normal,
                     QString("Trying run updater from temp path: '%1'.").arg(getUpdaterTempDir()));
     if (CopyToTempPath()) {
@@ -665,11 +665,11 @@ bool UpdaterApp::reRunFromTempDirectory() {
                                 << getArguments() << "--workdir" << getWorkingDirectory();
 
         {
-            QString programSettingsFile =
+            QString program_SettingsFile =
                 QDir(getUpdaterTempDir())
                     .absoluteFilePath(QFileInfo(QCoreApplication::arguments()[0]).baseName()) +
                 ".ini";
-            QSettings tempSettings(ISysUtils::rmBOM(programSettingsFile), QSettings::IniFormat);
+            QSettings tempSettings(ISysUtils::rm_BOM(program_SettingsFile), QSettings::IniFormat);
 
             tempSettings.setValue("common/working_directory", getWorkingDirectory());
         }
@@ -745,12 +745,12 @@ bool UpdaterApp::CopyToTempPath() {
 
 //---------------------------------------------------------------------------
 bool UpdaterApp::copyFiles(const QString &from, const QString &mask, const QString &to) {
-    QDir fromDir = QDir(from);
+    QDir from_Dir = QDir(from);
 
-    Q_FOREACH (QString file, fromDir.entryList(QStringList() << mask)) {
+    Q_FOREACH (QString file, from_Dir.entryList(QStringList() << mask)) {
         QString dstFileName = to + QDir::separator() + QFileInfo(file).fileName();
         getLog()->write(LogLevel::Normal, QString("Copy: '%1'.").arg(file));
-        if (!QFile::copy(fromDir.filePath(file), dstFileName)) {
+        if (!QFile::copy(from_Dir.filePath(file), dstFileName)) {
             getLog()->write(LogLevel::Fatal,
                             QString("Error copy from '%1' to '%2'.").arg(file).arg(dstFileName));
             return false;
@@ -799,7 +799,7 @@ bool UpdaterApp::cleanDir(const QString &dirName) {
 //---------------------------------------------------------------------------
 void UpdaterApp::setResultCode(CUpdaterErrors::Enum aError,
                                const QString aMessage /*= QString()*/) {
-    mResultDescription = aMessage;
+    m_ResultDescription = aMessage;
 
     switch (aError) {
     case CUpdaterErrors::OK:
@@ -841,8 +841,8 @@ void UpdaterApp::setResultCode(CUpdaterErrors::Enum aError,
 //---------------------------------------------------------------------------
 void UpdaterApp::setResultCode(CUpdaterApp::ExitCode::Enum aExitCode,
                                const QString aMessage /*= QString()*/) {
-    mResultCode_ = aExitCode;
-    mResultDescription = aMessage;
+    m_ResultCode_ = aExitCode;
+    m_ResultDescription = aMessage;
 
     updateErrorDescription();
 }
@@ -852,7 +852,7 @@ void UpdaterApp::updateErrorDescription() {
     static QMap<int, QString> descriptions;
 
     if (descriptions.isEmpty()) {
-        descriptions.insert(CUpdaterApp::ExitCode::ErrorRunFromTempDir,
+        descriptions.insert(CUpdaterApp::ExitCode::ErrorRunFrom_TempDir,
                             tr("#error_run_from_temp_dir"));
         descriptions.insert(CUpdaterApp::ExitCode::NoWatchService,
                             tr("#error_connection_to_watchdog"));
@@ -868,8 +868,8 @@ void UpdaterApp::updateErrorDescription() {
         descriptions.insert(CUpdaterApp::ExitCode::WorkInProgress, tr("#work_in_progress"));
     }
 
-    if (mResultDescription.isEmpty() && descriptions.contains(mResultCode_)) {
-        mResultDescription = descriptions.value(mResultCode_);
+    if (m_ResultDescription.isEmpty() && descriptions.contains(m_ResultCode_)) {
+        m_ResultDescription = descriptions.value(m_ResultCode_);
     }
 }
 

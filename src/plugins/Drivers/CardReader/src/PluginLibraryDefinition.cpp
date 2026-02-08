@@ -7,11 +7,11 @@
 #include <SDK/Plugins/PluginFactory.h>
 
 CardReaderPluginFactory::CardReaderPluginFactory() {
-    mName = "CardReader";
-    mDescription = "Driver for card reader";
-    mAuthor = "Humo";
-    mVersion = "1.0";
-    mModuleName = "card_readers"; // Название dll/so модуля без расширения
+    m_Name = "CardReader";
+    m_Description = "Driver for card reader";
+    m_Author = "Humo";
+    m_Version = "1.0";
+    m_ModuleName = "card_readers"; // Название dll/so модуля без расширения
 }
 
 //------------------------------------------------------------------------------

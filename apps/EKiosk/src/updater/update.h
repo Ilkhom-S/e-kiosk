@@ -17,8 +17,8 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
-#include <QtXml/QDomDocument>
-#include <QtXml/QDomNode>
+#include <QtXml/QDom_Document>
+#include <QtXml/QDom_Node>
 
 #include "CopyFile.h"
 #include "textprogressbar.h"
@@ -48,7 +48,7 @@ private:
     void createDirIfNotExist(QString dirPath);
     void createPathDirIfNotExist(QString dirPath);
     void openDocumentXml();
-    void traverseNode(const QDomNode &node);
+    void traverseNode(const QDom_Node &node);
     void addToDatabaseFile();
     bool updateRecordFile(int id, QString fieldName, QString value);
     bool updateRecordForMore(int id, QString hash, int size);

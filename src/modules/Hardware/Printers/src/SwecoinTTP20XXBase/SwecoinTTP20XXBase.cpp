@@ -80,7 +80,7 @@ bool SwecoinPrinter::isConnected() {
 
     // 2. Выполняем сопоставление и получаем объект QRegularExpressionMatch
     // match() автоматически выполнит конвертацию QByteArray в QString через UTF-8
-    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
+    QRegularExpressionMatch match = regExp.match(QString::from_Utf8(answer));
 
     // 3. Проверяем наличие совпадения через hasMatch()
     if (match.hasMatch()) {

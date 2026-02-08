@@ -27,16 +27,16 @@ class DrawAreaWindow : public QWidget {
 
 public:
     DrawAreaWindow(SDK::PaymentProcessor::ICore *aCore, const QRect &aRect)
-        : mCore(aCore), mPressed(false) {
-        // setMinimumWidth(aRect.width()); setMinimumHeight(aRect.height());
+        : m_Core(aCore), m_Pressed(false) {
+        // setMinimum_Width(aRect.width()); setMinimum_Height(aRect.height());
         setGeometry(aRect);
         setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     }
 
 public:
     void updateImage(const QImage &aImage) {
-        mRects.clear();
-        mImage = aImage;
+        m_Rects.clear();
+        m_Image = aImage;
     }
 
 public:
@@ -48,18 +48,18 @@ public:
             pen.setColor(QColor(0xff, 0x00, 0x00));
             pen.setWidth(5);
 
-            painter.begin(&mImage);
+            painter.begin(&m_Image);
             painter.setPen(pen);
             painter.setBrush(Qt::NoBrush);
-            painter.drawRects(mRects);
+            painter.drawRects(m_Rects);
             painter.end();
 
             QClipboard *clipboard = QApplication::clipboard();
-            clipboard->setImage(mImage);
+            clipboard->setImage(m_Image);
 
-            mFilePath =
-                QFileDialog::getSaveFileName(this, "Save Scene", mFilePath, "Image (*.png)");
-            mImage.save(mFilePath);
+            m_FilePath =
+                QFileDialog::getSaveFileName(this, "Save Scene", m_FilePath, "Image (*.png)");
+            m_Image.save(m_FilePath);
         }
 
         finish();
@@ -68,26 +68,26 @@ public:
     }
 
     virtual void mouseMoveEvent(QMouseEvent *aEvent) {
-        if (mPressed) {
-            mCurrentPos = aEvent->pos();
+        if (m_Pressed) {
+            m_CurrentPos = aEvent->pos();
             // update();
         }
     }
 
     virtual void mousePressEvent(QMouseEvent *aEvent) {
         if (aEvent->button() == Qt::LeftButton) {
-            mPressed = true;
-            mStartPos = mCurrentPos = aEvent->pos();
-        } else if (aEvent->button() == Qt::RightButton && mRects.count() > 0) {
-            mRects.remove(mRects.count() - 1);
+            m_Pressed = true;
+            m_StartPos = m_CurrentPos = aEvent->pos();
+        } else if (aEvent->button() == Qt::RightButton && m_Rects.count() > 0) {
+            m_Rects.remove(m_Rects.count() - 1);
             update();
         }
     }
 
     virtual void mouseReleaseEvent(QMouseEvent *aEvent) {
         if (aEvent->button() == Qt::LeftButton) {
-            mPressed = false;
-            mRects.append(QRect(mStartPos, aEvent->pos()));
+            m_Pressed = false;
+            m_Rects.append(QRect(m_StartPos, aEvent->pos()));
         }
     }
 
@@ -95,7 +95,7 @@ public:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing, false);
 
-        painter.drawImage(0, 0, mImage);
+        painter.drawImage(0, 0, m_Image);
 
         QPen pen;
         pen.setWidth(5);
@@ -105,15 +105,15 @@ public:
         // border
         pen.setColor(QColor(0x00, 0xff, 0x00));
         painter.setPen(pen);
-        painter.drawRect(0, 0, mImage.width(), mImage.height());
+        painter.drawRect(0, 0, m_Image.width(), m_Image.height());
 
         // current frame
         pen.setColor(QColor(0xff, 0x00, 0x00));
         painter.setPen(pen);
-        painter.drawRects(mRects);
+        painter.drawRects(m_Rects);
 
-        if (mPressed) {
-            painter.drawRect(QRect(mStartPos, mCurrentPos));
+        if (m_Pressed) {
+            painter.drawRect(QRect(m_StartPos, m_CurrentPos));
         }
 
         update();
@@ -123,7 +123,7 @@ public:
 
 private:
     void finish() {
-        mRects.clear();
+        m_Rects.clear();
         finishScenario();
     }
 
@@ -132,18 +132,18 @@ private:
         params["signal"] = "finish";
 
         SDK::PaymentProcessor::Event e(
-            SDK::PaymentProcessor::EEventType::UpdateScenario, "", QVariant::fromValue(params));
-        mCore->getEventService()->sendEvent(e);
+            SDK::PaymentProcessor::EEventType::UpdateScenario, "", QVariant::from_Value(params));
+        m_Core->getEventService()->sendEvent(e);
     }
 
 private:
-    QPoint mStartPos;
-    QPoint mCurrentPos;
-    bool mPressed;
-    QImage mImage;
-    QVector<QRect> mRects;
-    SDK::PaymentProcessor::ICore *mCore;
-    QString mFilePath;
+    QPoint m_StartPos;
+    QPoint m_CurrentPos;
+    bool m_Pressed;
+    QImage m_Image;
+    QVector<QRect> m_Rects;
+    SDK::PaymentProcessor::ICore *m_Core;
+    QString m_FilePath;
 };
 
 class IApplication;
@@ -203,10 +203,10 @@ public slots:
     virtual QString getState() const;
 
 private:
-    QVariantMap mContext;
-    QString mLastSignal;
-    SDK::PaymentProcessor::ICore *mCore;
-    DrawAreaWindow *mDrawAreaWindow;
+    QVariantMap m_Context;
+    QString m_LastSignal;
+    SDK::PaymentProcessor::ICore *m_Core;
+    DrawAreaWindow *m_DrawAreaWindow;
 };
 
 } // namespace ScreenMaker

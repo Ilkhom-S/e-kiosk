@@ -19,7 +19,7 @@ public:
     void setPortListInfo(QStringList port_list);
     void setPartNumber(QString partNumber);
     bool openPort();
-    bool isItYou(QStringList &comList,
+    bool isItYou(QStringList &com_List,
                  QString &validator_name,
                  QString &com_str,
                  QString &validator_coment);
@@ -40,12 +40,12 @@ public:
 
 public slots:
     void execCommand(int cmd);
-    void getStatusFromAcceptor(int sts, QString comment);
+    void getStatusFrom_Acceptor(int sts, QString comment);
 
 private:
     CCTalk *CCTalkAcceptor;
 
-    QString comPort;
+    QString com_Port;
     QStringList portList;
     QString validatorName;
 

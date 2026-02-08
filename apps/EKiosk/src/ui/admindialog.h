@@ -47,7 +47,7 @@ enum AdminCmd {
     // Информация о принтере
     aCmdPrinterInform = 11,
     // Информация о модеме
-    aCmdModemInform = 12,
+    aCmdModem_Inform = 12,
     // Перезагрузить купюроприемник
     aCmdRestartValidator = 13,
     // Распечатать пробный чек
@@ -55,7 +55,7 @@ enum AdminCmd {
     // Перезагрузить модем
     aCmdRestartModem = 15,
     // Параметры поиска
-    aCmdSearchParamRef = 16,
+    aCmdSearchParam_Ref = 16,
     // Информация действия с устройствами
     aCmdInfrmationPanel = 17,
     // Перезагрузить программу
@@ -67,9 +67,9 @@ enum AdminCmd {
     // Сохранить параметры устройств
     aCmdSaveDeviceParam = 21,
     // Сохранить параметры устройств c перезагрузкой
-    aCmdSaveDeviceParamR = 22,
+    aCmdSaveDeviceParam_R = 22,
     // Информация о сим карте
-    aCmdSimInfoData = 23,
+    aCmdSim_InfoData = 23,
     // Список соединений
     aCmdRasConnlist = 24,
     // Перезагрузка ПО интервал
@@ -79,7 +79,7 @@ enum AdminCmd {
     // Информация на странице соединения
     aCmdConnectInfo = 27,
     // Проверка данных SIM крты
-    aCmdGetSimInfo = 28,
+    aCmdGetSim_Info = 28,
     // Создание соединения
     aCmdRasConnCreate = 29,
     // Проверяем активное рас соединение
@@ -87,7 +87,7 @@ enum AdminCmd {
     // Перезагружаем соединение
     aCmdRestartDialupCon = 31,
     // Параметры модема
-    aCmdModemInfData = 32,
+    aCmdModem_InfData = 32,
     // Параметры печати
     aCmdPrinterInfData = 33,
     // Параметры sms оповещений
@@ -103,7 +103,7 @@ enum AdminCmd {
     // Сохранение параметров печати
     aCmdSavePrinterParam = 40,
     // Параметры авторизации терминала
-    aCmdAvtorizationTrmP = 41,
+    aCmdAvtorizationTrm_P = 41,
     // Остальные настройки
     aCmdOtherSettings = 42,
     // Получаем конфигурацию
@@ -113,7 +113,7 @@ enum AdminCmd {
     // Информация на странице регистрации
     aCmdSaveOtherSetting = 45,
     // Сохраняем параметры авторизации терминала
-    aCmdSaveTrmNumSett = 46,
+    aCmdSaveTrm_Num_Sett = 46,
     // Сохраняем параметры авторизации пользователя
     aCmdSaveUserAvtoriza = 47,
     // Параметры сторожевика
@@ -184,7 +184,7 @@ private:
 
 private slots:
     void printerNameChanged(int index);
-    void getLogDataFromFile(QStringList &logLst, QString &all);
+    void getLogDataFrom_File(QStringList &logLst, QString &all);
     void steckerClicked(int stk);
     // Проверка баланса
     void checkBalance();
@@ -214,8 +214,8 @@ private slots:
     void saveDeviceParam();
     void shutDounASO();
     void checkConnection();
-    void getModemDataInfo();
-    void saveTrmAutorizationData();
+    void getModem_DataInfo();
+    void saveTrm_AutorizationData();
     void openSelectCategory();
     void go_to_up_log();
     void go_to_doun_log();

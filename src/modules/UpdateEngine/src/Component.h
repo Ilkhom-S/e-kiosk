@@ -72,15 +72,15 @@ public:
     bool optional() const;
 
 private:
-    QString mId;
-    TFileList mFiles;
-    QStringList mPostActions;
-    QString mURL;
-    QString mVersion;
-    bool mOptional;
+    QString m_Id;
+    TFileList m_Files;
+    QStringList m_PostActions;
+    QString m_URL;
+    QString m_Version;
+    bool m_Optional;
 
 protected:
-    bool mSkipExisting;
+    bool m_SkipExisting;
 };
 
 //---------------------------------------------------------------------------

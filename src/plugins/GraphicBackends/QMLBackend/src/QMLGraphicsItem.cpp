@@ -9,7 +9,7 @@
 #include <Common/ILog.h>
 
 namespace CQMLGraphicsItem {
-const char ItemKey[] = "item";
+const char Item_Key[] = "item";
 
 const char ShowHandlerName[] = "showHandler";
 const char ShowHandlerSignature[] = "showHandler()";
@@ -25,94 +25,94 @@ const char NotifyHandlerSignature[] = "notifyHandler(const QVariant &, const QVa
 } // namespace CQMLGraphicsItem
 
 //---------------------------------------------------------------------------
-QMLGraphicsItem::QMLGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo,
+QMLGraphicsItem::QMLGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
                                  QQmlEngine *aEngine,
                                  ILog *aLog)
-    : mLog(aLog), mEngine(aEngine), mItem(0), mInfo(aInfo) {
+    : m_Log(aLog), m_Engine(aEngine), m_Item(0), m_Info(aInfo) {
     QString qmlPath = QDir::toNativeSeparators(QDir::cleanPath(
-        aInfo.directory + QDir::separator() + aInfo.parameters[CQMLGraphicsItem::ItemKey]));
+        aInfo.directory + QDir::separator() + aInfo.parameters[CQMLGraphicsItem::Item_Key]));
     QQmlComponent component(
-        mEngine, qmlPath.startsWith("qrc") ? QUrl(qmlPath) : QUrl::fromLocalFile(qmlPath));
+        m_Engine, qmlPath.startsWith("qrc") ? QUrl(qmlPath) : QUrl::from_LocalFile(qmlPath));
 
     QObject *object = component.create();
     if (object) {
-        mItem = QSharedPointer<QQuickItem>(qobject_cast<QQuickItem *>(object));
+        m_Item = QSharedPointer<QQuickItem>(qobject_cast<QQuickItem *>(object));
     } else {
         foreach (QQmlError error, component.errors()) {
-            mError += error.toString() + "\n";
+            m_Error += error.toString() + "\n";
         }
     }
 }
 
 //---------------------------------------------------------------------------
 void QMLGraphicsItem::show() {
-    if (mItem->metaObject()->indexOfMethod(CQMLGraphicsItem::ShowHandlerSignature) != -1) {
+    if (m_Item->metaObject()->indexOfMethod(CQMLGraphicsItem::ShowHandlerSignature) != -1) {
         QMetaObject::invokeMethod(
-            mItem.data(), CQMLGraphicsItem::ShowHandlerName, Qt::DirectConnection);
+            m_Item.data(), CQMLGraphicsItem::ShowHandlerName, Qt::DirectConnection);
     }
 }
 
 //---------------------------------------------------------------------------
 void QMLGraphicsItem::hide() {
-    if (mItem->metaObject()->indexOfMethod(CQMLGraphicsItem::HideHandlerSignature) != -1) {
+    if (m_Item->metaObject()->indexOfMethod(CQMLGraphicsItem::HideHandlerSignature) != -1) {
         QMetaObject::invokeMethod(
-            mItem.data(), CQMLGraphicsItem::HideHandlerName, Qt::DirectConnection);
+            m_Item.data(), CQMLGraphicsItem::HideHandlerName, Qt::DirectConnection);
     }
 }
 
 //---------------------------------------------------------------------------
 void QMLGraphicsItem::reset(const QVariantMap &aParameters) {
-    if (mItem->metaObject()->indexOfMethod(
+    if (m_Item->metaObject()->indexOfMethod(
             QMetaObject::normalizedSignature(CQMLGraphicsItem::ResetHandlerSignature)) != -1) {
         QVariant error;
-        QMetaObject::invokeMethod(mItem.data(),
+        QMetaObject::invokeMethod(m_Item.data(),
                                   CQMLGraphicsItem::ResetHandlerName,
                                   Qt::DirectConnection,
                                   Q_RETURN_ARG(QVariant, error),
-                                  Q_ARG(const QVariant &, QVariant::fromValue(aParameters)));
+                                  Q_ARG(const QVariant &, QVariant::from_Value(aParameters)));
 
         if (!error.isNull()) {
-            mLog->write(LogLevel::Error, translateError(error));
+            m_Log->write(LogLevel::Error, translateError(error));
         }
     }
 }
 
 //---------------------------------------------------------------------------
 void QMLGraphicsItem::notify(const QString &aEvent, const QVariantMap &aParameters) {
-    if (mItem->metaObject()->indexOfMethod(
+    if (m_Item->metaObject()->indexOfMethod(
             QMetaObject::normalizedSignature(CQMLGraphicsItem::NotifyHandlerSignature)) != -1) {
         QVariant error;
-        QMetaObject::invokeMethod(mItem.data(),
+        QMetaObject::invokeMethod(m_Item.data(),
                                   CQMLGraphicsItem::NotifyHandlerName,
                                   Qt::DirectConnection,
                                   Q_RETURN_ARG(QVariant, error),
-                                  Q_ARG(const QVariant &, QVariant::fromValue(aEvent)),
-                                  Q_ARG(const QVariant &, QVariant::fromValue(aParameters)));
+                                  Q_ARG(const QVariant &, QVariant::from_Value(aEvent)),
+                                  Q_ARG(const QVariant &, QVariant::from_Value(aParameters)));
 
         if (!error.isNull()) {
-            mLog->write(LogLevel::Error, translateError(error));
+            m_Log->write(LogLevel::Error, translateError(error));
         }
     }
 }
 
 //---------------------------------------------------------------------------
 QQuickItem *QMLGraphicsItem::getWidget() const {
-    return mItem.data();
+    return m_Item.data();
 }
 
 //---------------------------------------------------------------------------
 QVariantMap QMLGraphicsItem::getContext() const {
-    return mInfo.context;
+    return m_Info.context;
 }
 
 //---------------------------------------------------------------------------
 bool QMLGraphicsItem::isValid() const {
-    return !mItem.isNull();
+    return !m_Item.isNull();
 }
 
 //---------------------------------------------------------------------------
 QString QMLGraphicsItem::getError() const {
-    return mError;
+    return m_Error;
 }
 
 //---------------------------------------------------------------------------

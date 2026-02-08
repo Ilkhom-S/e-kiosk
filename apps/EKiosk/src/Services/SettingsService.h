@@ -55,7 +55,7 @@ public:
     template <typename T> T *getAdapter() {
         QString adapterName = T::getAdapterName();
         return static_cast<T *>(
-            mSettingsAdapters.contains(adapterName) ? mSettingsAdapters[adapterName] : 0);
+            m_SettingsAdapters.contains(adapterName) ? m_SettingsAdapters[adapterName] : 0);
     }
 
     /// Возвращает список адаптеров.
@@ -65,11 +65,11 @@ public:
     static SettingsService *instance(IApplication *aApplication);
 
 private:
-    SettingsManager *mSettingsManager;
-    bool mRestoreConfiguration;
-    QMap<QString, SDK::PaymentProcessor::ISettingsAdapter *> mSettingsAdapters;
+    SettingsManager *m_SettingsManager;
+    bool m_RestoreConfiguration;
+    QMap<QString, SDK::PaymentProcessor::ISettingsAdapter *> m_SettingsAdapters;
 
-    IApplication *mApplication;
+    IApplication *m_Application;
 };
 
 //---------------------------------------------------------------------------

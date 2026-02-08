@@ -3,7 +3,7 @@
 #include "PaymentBase.h"
 
 #include <QtCore/QCryptographicHash>
-#include <QtCore/QRandomGenerator>
+#include <QtCore/QRandom_Generator>
 #include <QtCore/QReadLocker>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QWriteLocker>
@@ -40,16 +40,16 @@ namespace PPSDK = SDK::PaymentProcessor;
 //------------------------------------------------------------------------------
 PaymentBase::PaymentBase(SDK::PaymentProcessor::IPaymentFactory *aFactory,
                          SDK::PaymentProcessor::ICore *aCore)
-    : ILogable(aFactory->getLog()), mFactory(aFactory), mCore(aCore), mIsRestoring(false),
-      mParametersLock(QReadWriteLock::Recursive) {
-    mParameters.insert(
+    : ILogable(aFactory->getLog()), m_Factory(aFactory), m_Core(aCore), m_IsRestoring(false),
+      m_ParametersLock(QReadWriteLock::Recursive) {
+    m_Parameters.insert(
         SParameter(PPSDK::CPayment::Parameters::CreationDate, QDateTime::currentDateTime(), true));
-    mParameters.insert(
+    m_Parameters.insert(
         SParameter(PPSDK::CPayment::Parameters::Status, PPSDK::EPaymentStatus::Init, true));
-    mParameters.insert(SParameter(PPSDK::CPayment::Parameters::Step, CPayment::Steps::Init, true));
-    mParameters.insert(
+    m_Parameters.insert(SParameter(PPSDK::CPayment::Parameters::Step, CPayment::Steps::Init, true));
+    m_Parameters.insert(
         SParameter(PPSDK::CPayment::Parameters::InitialSession, createPaymentSession(), true));
-    mParameters.insert(SParameter(PPSDK::CPayment::Parameters::AmountAll, 0, true));
+    m_Parameters.insert(SParameter(PPSDK::CPayment::Parameters::AmountAll, 0, true));
 
     QStringList states;
 
@@ -61,15 +61,15 @@ PaymentBase::PaymentBase(SDK::PaymentProcessor::IPaymentFactory *aFactory,
 
     if (!states.isEmpty()) {
 #if QT_VERSION < 0x050000
-        QString crc = QString::fromLatin1(
+        QString crc = QString::from_Latin1(
             CCryptographicHash::hash(states.join(";").toLatin1(), CCryptographicHash::Sha256)
                 .toHex());
 #else
-        QString crc = QString::fromLatin1(
+        QString crc = QString::from_Latin1(
             QCryptographicHash::hash(states.join(";").toLatin1(), QCryptographicHash::Sha256)
                 .toHex());
 #endif
-        mParameters.insert(SParameter(PPSDK::CPayment::Parameters::CRC, crc, true, true, true));
+        m_Parameters.insert(SParameter(PPSDK::CPayment::Parameters::CRC, crc, true, true, true));
     }
 }
 
@@ -82,7 +82,7 @@ bool PaymentBase::isNull() const {
 
 //------------------------------------------------------------------------------
 PPSDK::IPaymentFactory *PaymentBase::getFactory() const {
-    return mFactory;
+    return m_Factory;
 }
 
 //------------------------------------------------------------------------------
@@ -98,21 +98,21 @@ void PaymentBase::setParameter(const SParameter &aParameter) {
 
 //------------------------------------------------------------------------------
 PPSDK::IPayment::SParameter PaymentBase::getParameter(const QString &aName) const {
-    QReadLocker lock(&mParametersLock);
+    QReadLocker lock(&m_ParametersLock);
 
-    TParameterList::index<NameTag>::type::iterator it = mParameters.find(aName);
+    TParameterList::index<NameTag>::type::iterator it = m_Parameters.find(aName);
 
-    return it == mParameters.end() ? SParameter() : *it;
+    return it == m_Parameters.end() ? SParameter() : *it;
 }
 
 //------------------------------------------------------------------------------
 QList<PPSDK::IPayment::SParameter> PaymentBase::getParameters() const {
-    QReadLocker lock(&mParametersLock);
+    QReadLocker lock(&m_ParametersLock);
 
     QList<SParameter> result;
 
-    for (TParameterList::index<NameTag>::type::iterator it = mParameters.begin();
-         it != mParameters.end();
+    for (TParameterList::index<NameTag>::type::iterator it = m_Parameters.begin();
+         it != m_Parameters.end();
          ++it) {
         result << *it;
     }
@@ -214,7 +214,7 @@ qint64 PaymentBase::getProvider(bool aMNP) const {
     qint64 gatewayOut = getParameter(PPSDK::CPayment::Parameters::MNPGatewayOut).value.toLongLong();
 
     PPSDK::DealerSettings *dealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
 
     Q_ASSERT(dealerSettings);
 
@@ -259,21 +259,21 @@ void PaymentBase::setBlockUpdateLimits(bool aBlock) {
 //------------------------------------------------------------------------------
 void PaymentBase::updateParameter(const SParameter &aParameter) {
     {
-        QWriteLocker lock(&mParametersLock);
+        QWriteLocker lock(&m_ParametersLock);
 
-        TParameterList::index<NameTag>::type::iterator it = mParameters.find(aParameter.name);
-        if (it != mParameters.end()) {
-            mParameters.modify(it, SParameterModifier(aParameter));
+        TParameterList::index<NameTag>::type::iterator it = m_Parameters.find(aParameter.name);
+        if (it != m_Parameters.end()) {
+            m_Parameters.modify(it, SParameterModifier(aParameter));
         } else {
-            mParameters.insert(aParameter);
+            m_Parameters.insert(aParameter);
         }
     }
 
     if (aParameter.name == PPSDK::CPayment::Parameters::Provider) {
-        mProviderSettings = getProviderSettings(getProvider(false));
+        m_ProviderSettings = getProviderSettings(getProvider(false));
 
-        if (!mProviderSettings.isNull()) {
-            if (!mIsRestoring) {
+        if (!m_ProviderSettings.isNull()) {
+            if (!m_IsRestoring) {
                 // При установке провайдера, считаем по нему ограничения сумм.
                 calculateLimits();
             }
@@ -282,7 +282,7 @@ void PaymentBase::updateParameter(const SParameter &aParameter) {
             // конфига, а платежи по нему ещё останутся.
             QStringList providerFields;
 
-            foreach (const PPSDK::SProviderField &field, mProviderSettings.fields) {
+            foreach (const PPSDK::SProviderField &field, m_ProviderSettings.fields) {
                 providerFields << field.id;
             }
 
@@ -309,15 +309,15 @@ bool PaymentBase::getLimits(double &aMinAmount, double &aMaxAmount) {
 
     QRegularExpressionMatch match;
     while ((match = macroPattern.match(minLimit)).hasMatch()) {
-        QString paramName = match.captured(1);
-        QString paramValue = getParameter(paramName).value.toString();
-        minLimit.replace(match.captured(0), paramValue);
+        QString param_Name = match.captured(1);
+        QString param_Value = getParameter(param_Name).value.toString();
+        minLimit.replace(match.captured(0), param_Value);
     }
 
     while ((match = macroPattern.match(maxLimit)).hasMatch()) {
-        QString paramName = match.captured(1);
-        QString paramValue = getParameter(paramName).value.toString();
-        maxLimit.replace(match.captured(0), paramValue);
+        QString param_Name = match.captured(1);
+        QString param_Value = getParameter(param_Name).value.toString();
+        maxLimit.replace(match.captured(0), param_Value);
     }
 
     QJSEngine myEngine;
@@ -343,7 +343,7 @@ inline bool greatOrEqual(double aValue, double bValue) {
 //------------------------------------------------------------------------------
 bool PaymentBase::calculateLimits() {
     PPSDK::DealerSettings *dealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
 
     Q_ASSERT(dealerSettings);
 
@@ -360,23 +360,23 @@ bool PaymentBase::calculateLimits() {
 
     const bool isFixedAmount = qFuzzyCompare(minAmount, maxAmount);
     const auto provider = getMNPProviderSettings();
-    double systemMax = provider.limits.system.toDouble();
-    systemMax = maxAmount > systemMax ? systemMax : maxAmount;
+    double system_Max = provider.limits.system.toDouble();
+    system_Max = maxAmount > system_Max ? system_Max : maxAmount;
 
     if (!isFixedAmount) {
         // Корректируем максимальный платеж в зависимости от системного лимита
-        if (qFuzzyIsNull(maxAmount) || qFuzzyIsNull(systemMax)) {
+        if (qFuzzyIsNull(maxAmount) || qFuzzyIsNull(system_Max)) {
             // Если какой-либо из лимитов не задан, то берем тот, который задан.
-            maxAmount = qMax(systemMax, maxAmount);
+            maxAmount = qMax(system_Max, maxAmount);
         } else {
             // Иначе берем нижнюю границу.
-            maxAmount = qMin(systemMax, maxAmount);
+            maxAmount = qMin(system_Max, maxAmount);
         }
     }
 
     // Проверяем значение системного лимита
-    if (qFuzzyIsNull(systemMax)) {
-        systemMax = maxAmount;
+    if (qFuzzyIsNull(system_Max)) {
+        system_Max = maxAmount;
     }
 
     // Если провайдер требует округления - применим округление к пограничным значениям
@@ -466,8 +466,8 @@ bool PaymentBase::calculateLimits() {
     if (isFixedAmount) {
         // если лимиты равны и комиссия больше системного лимита, то пропускаем эти лимиты дальше.
         maxAmountAll = localAmountAllLimit;
-    } else if (localAmountAllLimit > systemMax) {
-        maxAmountAll = systemMax;
+    } else if (localAmountAllLimit > system_Max) {
+        maxAmountAll = system_Max;
         maxAmount = calcAmountAllByAmountAll(maxAmount);
     } else {
         maxAmountAll = qMax(localAmountAllLimit, maxAmount);
@@ -514,7 +514,7 @@ PaymentBase::calculateCommission(const QList<PPSDK::IPayment::SParameter> &aPara
 
     const auto limits = getMNPProviderSettings().limits;
     PPSDK::DealerSettings *dealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
 
     Q_ASSERT(dealerSettings);
 
@@ -638,7 +638,7 @@ void PaymentBase::calculateSums() {
 
 //------------------------------------------------------------------------------
 bool PaymentBase::limitsDependOnParameter(const SParameter &aParameter) {
-    return !mIsRestoring && !getMNPProviderSettings().isNull() &&
+    return !m_IsRestoring && !getMNPProviderSettings().isNull() &&
            (aParameter.name == PPSDK::CPayment::Parameters::AmountAll ||
             aParameter.name == PPSDK::CPayment::Parameters::Provider ||
             getMNPProviderSettings().limits.min.contains(QString("{%1}").arg(aParameter.name)) ||
@@ -648,13 +648,13 @@ bool PaymentBase::limitsDependOnParameter(const SParameter &aParameter) {
 //------------------------------------------------------------------------------
 QString PaymentBase::createPaymentSession() const {
     return QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz") +
-           QString("%1").arg(QRandomGenerator::global()->bounded(1000), 3, 10, QChar('0'));
+           QString("%1").arg(QRandom_Generator::global()->bounded(1000), 3, 10, QChar('0'));
 }
 
 //------------------------------------------------------------------------------
 bool PaymentBase::isCriticalError(int aError) const {
     PPSDK::TerminalSettings *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
     Q_ASSERT(terminalSettings);
 
@@ -664,16 +664,16 @@ bool PaymentBase::isCriticalError(int aError) const {
 //------------------------------------------------------------------------------
 const PPSDK::SProvider PaymentBase::getProviderSettings(qint64 aProvider) const {
     if (aProvider == -1) {
-        return mProviderSettings;
+        return m_ProviderSettings;
     }
 
-    if (!mCore) {
+    if (!m_Core) {
         toLog(LogLevel::Error, QString("Payment %1. Failed to get core object.").arg(getID()));
 
         return PPSDK::SProvider();
     }
 
-    PPSDK::ISettingsService *settingsService = mCore->getSettingsService();
+    PPSDK::ISettingsService *settingsService = m_Core->getSettingsService();
     if (!settingsService) {
         toLog(LogLevel::Error, QString("Payment %1. Failed to get settings service.").arg(getID()));
 
@@ -698,15 +698,15 @@ const SDK::PaymentProcessor::SProvider PaymentBase::getMNPProviderSettings() con
 
 //------------------------------------------------------------------------------
 const PPSDK::SKeySettings &PaymentBase::getKeySettings() const {
-    return mKeySettings;
+    return m_KeySettings;
 }
 
 //------------------------------------------------------------------------------
 bool PaymentBase::restore(const QList<SParameter> &aParameters) {
-    mIsRestoring = true;
+    m_IsRestoring = true;
 
     try {
-        if (!mCore) {
+        if (!m_Core) {
             throw QString("failed to get core object");
         }
 
@@ -715,7 +715,7 @@ bool PaymentBase::restore(const QList<SParameter> &aParameters) {
 
             // Расшифровываем параметры ключом терминала.
             if (parameter.crypted) {
-                ICryptEngine *cryptEngine = mCore->getCryptService()->getCryptEngine();
+                ICryptEngine *cryptEngine = m_Core->getCryptService()->getCryptEngine();
 
                 QByteArray decryptedValue;
 
@@ -723,7 +723,7 @@ bool PaymentBase::restore(const QList<SParameter> &aParameters) {
 
                 if (cryptEngine->decryptLong(
                         -1, parameter.value.toString().toLatin1(), decryptedValue, error)) {
-                    parameter.value = QString::fromUtf8(decryptedValue);
+                    parameter.value = QString::from_Utf8(decryptedValue);
                 } else {
                     toLog(LogLevel::Error,
                           QString("Payment %1. Failed to decrypt parameter %2 while restoring. "
@@ -746,9 +746,9 @@ bool PaymentBase::restore(const QList<SParameter> &aParameters) {
                            << PPSDK::CPayment::Parameters::Priority;
 
         foreach (const QString &requiredParameter, requiredParameters) {
-            QReadLocker lock(&mParametersLock);
+            QReadLocker lock(&m_ParametersLock);
 
-            if (mParameters.find(requiredParameter) == mParameters.end()) {
+            if (m_Parameters.find(requiredParameter) == m_Parameters.end()) {
                 throw QString("required parameter missing: %1").arg(requiredParameter);
             }
         }
@@ -767,7 +767,7 @@ bool PaymentBase::restore(const QList<SParameter> &aParameters) {
             }
         }
 
-        PPSDK::ISettingsService *settingsService = mCore->getSettingsService();
+        PPSDK::ISettingsService *settingsService = m_Core->getSettingsService();
         if (!settingsService) {
             throw QString("failed to get settings service");
         }
@@ -778,8 +778,8 @@ bool PaymentBase::restore(const QList<SParameter> &aParameters) {
             throw QString("failed to get terminal settings");
         }
 
-        mKeySettings = terminalSettings->getKeys()[mProviderSettings.processor.keyPair];
-        if (!mKeySettings.isValid) {
+        m_KeySettings = terminalSettings->getKeys()[m_ProviderSettings.processor.keyPair];
+        if (!m_KeySettings.isValid) {
             throw QString("failed to get key pair settings");
         }
 
@@ -789,21 +789,21 @@ bool PaymentBase::restore(const QList<SParameter> &aParameters) {
         toLog(LogLevel::Error,
               QString("Payment %1. Failed to restore. Error: %2.").arg(getID()).arg(error));
 
-        mIsRestoring = false;
+        m_IsRestoring = false;
 
         return false;
     }
 
-    mIsRestoring = false;
+    m_IsRestoring = false;
 
     return true;
 }
 
 //------------------------------------------------------------------------------
 QList<SDK::PaymentProcessor::IPayment::SParameter> PaymentBase::serialize() const {
-    QReadLocker lock(&mParametersLock);
+    QReadLocker lock(&m_ParametersLock);
 
-    const TParameterList::index<UpdateTag>::type &index = mParameters.get<UpdateTag>();
+    const TParameterList::index<UpdateTag>::type &index = m_Parameters.get<UpdateTag>();
 
     TParameterList::index<UpdateTag>::type::iterator i = index.lower_bound(true);
     TParameterList::index<UpdateTag>::type::iterator j = index.upper_bound(true);
@@ -815,7 +815,7 @@ QList<SDK::PaymentProcessor::IPayment::SParameter> PaymentBase::serialize() cons
 
         // Шифруем параметры ключом терминала.
         if (parameter.crypted) {
-            ICryptEngine *cryptEngine = mCore->getCryptService()->getCryptEngine();
+            ICryptEngine *cryptEngine = m_Core->getCryptService()->getCryptEngine();
 
             QByteArray encryptedValue;
 

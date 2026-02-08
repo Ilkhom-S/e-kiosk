@@ -62,7 +62,7 @@ protected:
     virtual bool printLine(const QByteArray &aString);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt,
+    virtual bool perform_Fiscal(const QStringList &aReceipt,
                                const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
@@ -86,7 +86,7 @@ protected:
     virtual void setErrorFlags() {}
 
     /// Печать Z отчета.
-    virtual bool performZReport(bool aPrintDeferredReports);
+    virtual bool perform_ZReport(bool aPrintDeferredReports);
 
     /// Снять Z-отчет.
     virtual bool execZReport(bool aAuto);
@@ -159,43 +159,43 @@ protected:
     bool isCoverSensor() const;
 
     /// Протокол.
-    ShtrihFRProtocol mProtocol;
+    ShtrihFRProtocol m_Protocol;
 
     /// ID типа устройства.
-    int mType;
+    int m_Type;
 
     /// ID модели устройства.
-    int mModel;
+    int m_Model;
 
     /// Текущий режим.
-    char mMode;
+    char m_Mode;
 
     /// Текущий подрежим.
-    char mSubmode;
+    char m_Submode;
 
     /// Необнуляемая сумма.
-    double mNonNullableAmount;
+    double m_NonNullableAmount;
 
     /// Список поддерживаемых плагином моделей.
-    QStringList mSupportedModels;
+    QStringList m_SupportedModels;
 
     /// Данные модели.
-    CShtrihFR::SModelData mModelData;
+    CShtrihFR::SModelData m_ModelData;
 
     /// Параметры системных таблиц.
-    CShtrihFR::FRParameters::SFields mParameters;
+    CShtrihFR::FRParameters::SFields m_Parameters;
 
     /// Данные команд.
-    CShtrihFR::Commands::Data mCommandData;
+    CShtrihFR::Commands::Data m_CommandData;
 
     /// Номер шрифта.
-    char mFontNumber;
+    char m_FontNumber;
 
     /// Таймаут технологических посылок.
-    int mTransportTimeout;
+    int m_TransportTimeout;
 
     /// На отмене фискального документа необходима [промотка и] отрезка чека.
-    bool mNeedReceiptProcessingOnCancel;
+    bool m_NeedReceiptProcessingOnCancel;
 };
 
 //--------------------------------------------------------------------------------

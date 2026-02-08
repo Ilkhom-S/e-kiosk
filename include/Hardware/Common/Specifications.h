@@ -62,10 +62,10 @@ public:
     using CSpecification<T, QString>::m_DefaultValue;
 
     void append(const T &aKey, const char *aParameter) {
-        m_Buffer.insert(aKey, QString::fromUtf8(aParameter));
+        m_Buffer.insert(aKey, QString::from_Utf8(aParameter));
     }
     void append(const T &aKey, const QString &aParameter) { m_Buffer.insert(aKey, aParameter); }
-    void setDefault(const char *aDefaultValue) { m_DefaultValue = QString::fromUtf8(aDefaultValue); }
+    void setDefault(const char *aDefaultValue) { m_DefaultValue = QString::from_Utf8(aDefaultValue); }
 };
 
 //--------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ public:
 
 protected:
     void addBit(int aBit, const char *aParameter) {
-        append(T(1) << aBit, QString::fromUtf8(aParameter));
+        append(T(1) << aBit, QString::from_Utf8(aParameter));
     }
 };
 

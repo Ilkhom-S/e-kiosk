@@ -20,7 +20,7 @@ bool Atol3FRBase::isConnected() {
 
 //--------------------------------------------------------------------------------
 TResult
-Atol3FRBase::performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
+Atol3FRBase::perform_Command(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
     m_Protocol.setPort(m_IOPort);
     m_Protocol.setLog(m_Log);
 

@@ -48,7 +48,7 @@ protected:
     virtual bool cut();
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt,
+    virtual bool perform_Fiscal(const QStringList &aReceipt,
                                const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
@@ -58,7 +58,7 @@ protected:
                                  SDK::Driver::TComplexFiscalPaymentData &aPSData);
 
     /// Печать Z отчета.
-    virtual bool performZReport(bool aPrintDeferredReports);
+    virtual bool perform_ZReport(bool aPrintDeferredReports);
 
     /// Локальная печать X-отчета.
     virtual bool processXReport();
@@ -91,7 +91,7 @@ protected:
     virtual bool setNotPrintDocument(bool aEnabled, bool aZReport = false);
 
     /// Протокол.
-    KasbiFRProtocol mProtocol;
+    KasbiFRProtocol m_Protocol;
 };
 
 //--------------------------------------------------------------------------------

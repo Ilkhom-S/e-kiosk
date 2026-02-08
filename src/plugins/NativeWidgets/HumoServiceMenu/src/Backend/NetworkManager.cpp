@@ -17,15 +17,15 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-NetworkManager::NetworkManager(SDK::PaymentProcessor::ICore *aCore) : mCore(aCore) {
-    mNetworkService = mCore->getNetworkService();
-    mTerminalSettings = static_cast<PPSDK::TerminalSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
-    mDirectory = static_cast<PPSDK::Directory *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::Directory));
+NetworkManager::NetworkManager(SDK::PaymentProcessor::ICore *aCore) : m_Core(aCore) {
+    m_NetworkService = m_Core->getNetworkService();
+    m_TerminalSettings = static_cast<PPSDK::TerminalSettings *>(
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
+    m_Directory = static_cast<PPSDK::Directory *>(
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::Directory));
 
-    mInitialConnection = mNetworkService->getConnection();
-    mSelectedConnection = mInitialConnection;
+    m_InitialConnection = m_NetworkService->getConnection();
+    m_SelectedConnection = m_InitialConnection;
 }
 
 //---------------------------------------------------------------------------
@@ -33,45 +33,45 @@ NetworkManager::~NetworkManager() {}
 
 //---------------------------------------------------------------------------
 bool NetworkManager::isConfigurationChanged() const {
-    return !(mSelectedConnection == mInitialConnection);
+    return !(m_SelectedConnection == m_InitialConnection);
 }
 
 //------------------------------------------------------------------------
 void NetworkManager::resetConfiguration() {
-    mInitialConnection = mSelectedConnection;
+    m_InitialConnection = m_SelectedConnection;
 }
 
 //---------------------------------------------------------------------------
 bool NetworkManager::openConnection(bool aWait) {
-    return mNetworkService->openConnection(aWait);
+    return m_NetworkService->openConnection(aWait);
 }
 
 //---------------------------------------------------------------------------
 bool NetworkManager::closeConnection() {
-    return mNetworkService->closeConnection();
+    return m_NetworkService->closeConnection();
 }
 
 //---------------------------------------------------------------------------
 bool NetworkManager::isConnected(bool aUseCache) const {
-    return mNetworkService->isConnected(aUseCache);
+    return m_NetworkService->isConnected(aUseCache);
 }
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::SConnection NetworkManager::getConnection() const {
-    return mNetworkService->getConnection();
+    return m_NetworkService->getConnection();
 }
 
 //---------------------------------------------------------------------------
 void NetworkManager::setConnection(const SDK::PaymentProcessor::SConnection &aConnection) {
-    mSelectedConnection = aConnection;
-    mNetworkService->setConnection(aConnection);
-    mTerminalSettings->setConnection(aConnection);
+    m_SelectedConnection = aConnection;
+    m_NetworkService->setConnection(aConnection);
+    m_TerminalSettings->setConnection(aConnection);
 }
 
 //---------------------------------------------------------------------------
 bool NetworkManager::testConnection(QString &aErrorMessage) {
-    bool result = mNetworkService->testConnection();
-    aErrorMessage = mNetworkService->getLastConnectionError().split(":").last();
+    bool result = m_NetworkService->testConnection();
+    aErrorMessage = m_NetworkService->getLastConnectionError().split(":").last();
     return result;
 }
 
@@ -81,7 +81,7 @@ QList<QPair<QString, QString>> NetworkManager::getModems() const {
 
     try {
         foreach (auto modem, IConnection::getModems()) {
-            result << QPair<QString, QString>(modem, IConnection::getModemInfo(modem));
+            result << QPair<QString, QString>(modem, IConnection::getModem_Info(modem));
         }
     } catch (const NetworkError &) {
         GUI::MessageBox::critical(tr("#get_modems_error"));
@@ -128,7 +128,7 @@ QStringList NetworkManager::getConnectionTemplates() const {
     QStringList nameList;
 
     foreach (SDK::PaymentProcessor::SConnectionTemplate dialupTemplate,
-             mDirectory->getConnectionTemplates()) {
+             m_Directory->getConnectionTemplates()) {
         nameList << dialupTemplate.name;
     }
 
@@ -138,7 +138,7 @@ QStringList NetworkManager::getConnectionTemplates() const {
 //---------------------------------------------------------------------------
 bool NetworkManager::createDialupConnection(const SDK::PaymentProcessor::SConnection &aConnection,
                                             const QString &aNetworkDevice) {
-    foreach (PPSDK::SConnectionTemplate connection, mDirectory->getConnectionTemplates()) {
+    foreach (PPSDK::SConnectionTemplate connection, m_Directory->getConnectionTemplates()) {
         if (connection.name == aConnection.name) {
             try {
                 IConnection::createDialupConnection(connection.name,
@@ -160,9 +160,9 @@ bool NetworkManager::createDialupConnection(const SDK::PaymentProcessor::SConnec
 
 //---------------------------------------------------------------------------
 bool NetworkManager::removeDialupConnection(const SDK::PaymentProcessor::SConnection &aConnection) {
-    mNetworkService->closeConnection();
+    m_NetworkService->closeConnection();
 
-    foreach (PPSDK::SConnectionTemplate connection, mDirectory->getConnectionTemplates()) {
+    foreach (PPSDK::SConnectionTemplate connection, m_Directory->getConnectionTemplates()) {
         if (connection.name == aConnection.name) {
             try {
                 IConnection::removeDialupConnection(connection.name);
@@ -180,12 +180,12 @@ bool NetworkManager::removeDialupConnection(const SDK::PaymentProcessor::SConnec
 
 //---------------------------------------------------------------------------
 void NetworkManager::getNetworkInfo(QVariantMap &aResult) const {
-    aResult[CServiceTags::Connection] = mNetworkService->getConnection().name;
-    aResult[CServiceTags::ConnectionType] = mNetworkService->getConnection().type;
-    aResult[CServiceTags::CheckInterval] = mNetworkService->getConnection().checkInterval;
-    aResult[CServiceTags::ConnectionStatus] = mNetworkService->isConnected();
+    aResult[CServiceTags::Connection] = m_NetworkService->getConnection().name;
+    aResult[CServiceTags::ConnectionType] = m_NetworkService->getConnection().type;
+    aResult[CServiceTags::CheckInterval] = m_NetworkService->getConnection().checkInterval;
+    aResult[CServiceTags::ConnectionStatus] = m_NetworkService->isConnected();
 
-    QNetworkProxy proxy = mNetworkService->getConnection().proxy;
+    QNetworkProxy proxy = m_NetworkService->getConnection().proxy;
 
     aResult[CServiceTags::ProxyType] = proxy.type();
 
@@ -196,7 +196,7 @@ void NetworkManager::getNetworkInfo(QVariantMap &aResult) const {
         aResult[CServiceTags::ProxyPassword] = proxy.password();
     }
 
-    aResult.insert(dynamic_cast<PPSDK::IService *>(mNetworkService)->getParameters());
+    aResult.insert(dynamic_cast<PPSDK::IService *>(m_NetworkService)->getParameters());
 }
 
 //---------------------------------------------------------------------------

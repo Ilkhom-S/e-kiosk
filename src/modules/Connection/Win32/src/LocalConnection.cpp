@@ -38,11 +38,11 @@ void LocalConnection::doDisconnect() throw(...) {
 //--------------------------------------------------------------------------------
 bool LocalConnection::doIsConnected() throw(...) {
     // FIX: имя локального соединения может быть указано в конфиге неправильно
-    // QNetworkInterface intf = QNetworkInterface::interfaceFromName(getName());
+    // QNetworkInterface intf = QNetworkInterface::interfaceFrom_Name(getName());
 
     // return intf.isValid() ? (intf.flags() & QNetworkInterface::IsUp) : false;
 
-    return mConnected;
+    return m_Connected;
 }
 
 //--------------------------------------------------------------------------------

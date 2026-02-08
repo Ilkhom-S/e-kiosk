@@ -56,15 +56,15 @@ QSharedPointer<Ad::Client> getAdClientInstance(SDK::Plugin::IEnvironment *aFacto
 //---------------------------------------------------------------------------
 // Конструктор плагина
 AdRemotePlugin::AdRemotePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : ILogable(aFactory->getLog(Ad::CClient::LogName)), mFactory(aFactory),
-      mInstancePath(aInstancePath) {
-    mClient = getAdClientInstance(aFactory);
+    : ILogable(aFactory->getLog(Ad::CClient::LogName)), m_Factory(aFactory),
+      m_InstancePath(aInstancePath) {
+    m_Client = getAdClientInstance(aFactory);
 
-    mCore = dynamic_cast<SDK::PaymentProcessor::ICore *>(
-        mFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+        m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
-    connect(mClient.data(), SIGNAL(contentUpdated()), this, SLOT(needRestart()));
-    connect(mClient.data(), SIGNAL(contentExpired()), this, SLOT(needRestart()));
+    connect(m_Client.data(), SIGNAL(contentUpdated()), this, SLOT(needRestart()));
+    connect(m_Client.data(), SIGNAL(contentExpired()), this, SLOT(needRestart()));
 }
 
 //------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ void AdRemotePlugin::setConfiguration(const QVariantMap &aParameters) {
 
 //------------------------------------------------------------------------------
 QString AdRemotePlugin::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //------------------------------------------------------------------------------
@@ -107,12 +107,12 @@ bool AdRemotePlugin::isReady() const {
 void AdRemotePlugin::enable() {
     toLog(LogLevel::Normal, "Ad updater plugin enabled.");
 
-    QMetaObject::invokeMethod(mClient.data(), "reinitialize", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(m_Client.data(), "reinitialize", Qt::QueuedConnection);
 }
 
 //------------------------------------------------------------------------------
 void AdRemotePlugin::disable() {
-    mClient.clear();
+    m_Client.clear();
 
     toLog(LogLevel::Normal, "Ad updater plugin disabled.");
 }
@@ -121,12 +121,12 @@ void AdRemotePlugin::disable() {
 void AdRemotePlugin::needRestart() {
     toLog(LogLevel::Normal, "Send restart command.");
 
-    mCore->getRemoteService()->registerRestartCommand();
+    m_Core->getRemoteService()->registerRestartCommand();
 }
 
 //------------------------------------------------------------------------------
 SDK::PaymentProcessor::ICore *AdRemotePlugin::getCore() const {
-    return mCore;
+    return m_Core;
 }
 
 //------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ SDK::PaymentProcessor::IRemoteClient::Capabilities AdRemotePlugin::getCapabiliti
 //------------------------------------------------------------------------------
 bool AdRemotePlugin::useCapability(ECapability aCapability) {
     if (aCapability == IRemoteClient::UpdateContent) {
-        QMetaObject::invokeMethod(mClient.data(), "update", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(m_Client.data(), "update", Qt::QueuedConnection);
 
         return true;
     }

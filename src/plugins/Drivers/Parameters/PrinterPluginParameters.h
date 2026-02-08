@@ -16,7 +16,7 @@ SDK::Plugin::SPluginParameter setLeftMargin();
 SDK::Plugin::SPluginParameter setRemoteSensor(bool aEnabled);
 
 /// Датчик замятия - включен.
-SDK::Plugin::SPluginParameter setJamSensorEnabled();
+SDK::Plugin::SPluginParameter setJam_SensorEnabled();
 
 /// Весовые датчики - включены.
 SDK::Plugin::SPluginParameter setWeightSensorsEnabled();
@@ -51,7 +51,7 @@ SDK::Plugin::SPluginParameter
 setPresentationLength(const QString &aOptionalTranslation = "", int aMin = -1, int aMax = -1);
 
 /// Длина презентации чека.
-SDK::Plugin::SPluginParameter setCustomCodepage();
+SDK::Plugin::SPluginParameter setCustom_Codepage();
 
 /// Способ формирования фискального чека.
 SDK::Plugin::SPluginParameter setFiscalChequeCreation();

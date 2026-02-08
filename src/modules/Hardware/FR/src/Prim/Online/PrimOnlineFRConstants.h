@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "../PrimFRConstants.h"
+#include "../Prim_FRConstants.h"
 #include "Hardware/FR/FRBaseConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CPrimOnlineFR {
+namespace CPrim_OnlineFR {
 /// Параметр снятия Z-отчета наружу.
 extern const char ZReportOut[];
 
@@ -214,50 +214,50 @@ public:
     }
 };
 
-class ExtraData : public CPrimFR::Errors::ExtraDataBase {
+class ExtraData : public CPrim_FR::Errors::ExtraDataBase {
 public:
     ExtraData() {
         /// Причины переполнения денежного счетчика.
-        mMoneyCounterOverflows.append('\x01', "Сумма составляющих не равна общей сумме");
-        mMoneyCounterOverflows.append('\x02', "Сумма по видам оплат не равна общей сумме");
-        mMoneyCounterOverflows.append('\xA0', "Ошибка умножения");
-        mMoneyCounterOverflows.append('\xA1', "Ошибка деления");
-        mMoneyCounterOverflows.append(
+        m_MoneyCounterOverflows.append('\x01', "Сумма составляющих не равна общей сумме");
+        m_MoneyCounterOverflows.append('\x02', "Сумма по видам оплат не равна общей сумме");
+        m_MoneyCounterOverflows.append('\xA0', "Ошибка умножения");
+        m_MoneyCounterOverflows.append('\xA1', "Ошибка деления");
+        m_MoneyCounterOverflows.append(
             '\xFA', "Переполнение для процента скидки/наценки (превышает 999.99%)");
-        mMoneyCounterOverflows.append('\xFB',
+        m_MoneyCounterOverflows.append('\xFB',
                                       "Переполнение для счетчиков накопления (нарастающий итог)");
-        mMoneyCounterOverflows.append('\xFC', "Переполнение для суммы наличных в кассе");
-        mMoneyCounterOverflows.append('\xFD',
+        m_MoneyCounterOverflows.append('\xFC', "Переполнение для суммы наличных в кассе");
+        m_MoneyCounterOverflows.append('\xFD',
                                       "Переполнение для дневного денежного счетчика по операциям");
-        mMoneyCounterOverflows.append('\xFE', "Переполнение для итоговой суммы документа");
-        mMoneyCounterOverflows.append('\xFF', "Переполнение для суммы операции");
-        mMoneyCounterOverflows.setDefault("Неизвестна");
+        m_MoneyCounterOverflows.append('\xFE', "Переполнение для итоговой суммы документа");
+        m_MoneyCounterOverflows.append('\xFF', "Переполнение для суммы операции");
+        m_MoneyCounterOverflows.setDefault("Неизвестна");
 
         /// Причины некорректного состояния ЭКЛЗ.
-        mCode2DErrors.append('\x01', "Длина поля вне диапазона");
-        mCode2DErrors.append('\x02', "Неверные параметры построения");
-        mCode2DErrors.append('\x03', "Аппаратная ошибка модуля QR");
-        mCode2DErrors.append('\x0A', "2D-код (PDF417 или QR) не создан");
-        mCode2DErrors.append(
+        m_Code2DErrors.append('\x01', "Длина поля вне диапазона");
+        m_Code2DErrors.append('\x02', "Неверные параметры построения");
+        m_Code2DErrors.append('\x03', "Аппаратная ошибка модуля QR");
+        m_Code2DErrors.append('\x0A', "2D-код (PDF417 или QR) не создан");
+        m_Code2DErrors.append(
             '\x0B',
             "Неверные параметры для печати (размеры PDF417 или QR-кода больше области печати)");
-        mCode2DErrors.setDefault("Неизвестна");
+        m_Code2DErrors.setDefault("Неизвестна");
     }
 
     virtual QString value(char aErrorCode, char aErrorReason) {
         if (aErrorCode == Errors::Code2DErrors)
-            return mCode2DErrors[aErrorReason];
+            return m_Code2DErrors[aErrorReason];
         if (aErrorCode == Errors::MoneyCounterOverflow)
-            return mMoneyCounterOverflows[aErrorReason];
+            return m_MoneyCounterOverflows[aErrorReason];
 
         return ExtraDataBase::value(aErrorCode, aErrorReason);
     }
 
 private:
-    CDescription<char> mMoneyCounterOverflows;
-    CDescription<char> mCode2DErrors;
+    CDescription<char> m_MoneyCounterOverflows;
+    CDescription<char> m_Code2DErrors;
 };
 } // namespace Errors
-} // namespace CPrimOnlineFR
+} // namespace CPrim_OnlineFR
 
 //--------------------------------------------------------------------------------

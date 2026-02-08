@@ -140,7 +140,7 @@ public slots:
     virtual void initialize();
 
     /// Останавливаем сервисы по запросу операционной системы
-    void closeBySystemRequest(QSessionManager &aSessionManager);
+    void closeBySystem_Request(QSessionManager &aSessionManager);
 
 private slots:
     /// Слот закрытие всех работающих модулей.
@@ -203,30 +203,30 @@ private slots:
 private:
     typedef QMap<QString, SModule> TModules;
 
-    QSharedPointer<IMessageQueueServer> mServer;
+    QSharedPointer<IMessageQueueServer> m_Server;
 
     /// При первом запуске модулей всегда true.
-    bool mFirstRun;
+    bool m_FirstRun;
 
     /// Защитный экран.
-    SplashScreen mSplashScreen;
+    SplashScreen m_SplashScreen;
 
     /// Таймер на проверку состояния модулей.
-    QTimer mTimer;
+    QTimer m_Timer;
 
     /// Таймер для обнуления экранных кликов
-    QTimer mScreenActivityTimer;
+    QTimer m_ScreenActivityTimer;
 
     /// Последовательность экранных кликов
-    QString mClickSequence;
+    QString m_ClickSequence;
 
     /// Это действие будет выполнено после закрытия всех модулей.
-    ECloseAction::Enum mCloseAction;
+    ECloseAction::Enum m_CloseAction;
 
     /// Включён ли автоматический показ сплэш-скрина
-    bool mScreenProtectionEnabled;
+    bool m_ScreenProtectionEnabled;
 
-    TModules mModules;
+    TModules m_Modules;
 
 #if 0 // #40592 Пока выключаем данную опцию
 private slots:
@@ -238,25 +238,25 @@ private slots:
 
 private:
 	/// Флаг - признак выключения модулей при старте ТК
-	bool mShutdownForbiddenModules;
+	bool m_ShutdownForbiddenModules;
 
 	/// Список процессов подлежащих остановке во время работы ТК
-	QStringList mForbiddenModules;
+	QStringList m_ForbiddenModules;
 
 	/// Список процессов остановленных при старте
-	QStringList mTerminatedModules;
-	int mCheckForbiddenTimeout;
-	QSharedPointer<QTimer> mCheckForbiddenTimer;
+	QStringList m_TerminatedModules;
+	int m_CheckForbiddenTimeout;
+	QSharedPointer<QTimer> m_CheckForbiddenTimer;
 #endif
 
 private:
     /// Параметры при перезапуске
-    QString mRestartParameters;
+    QString m_RestartParameters;
 
-    QSharedPointer<TimeChangeListener> mTimeChangeListener;
-    QSharedPointer<QTimer> mCheckMemoryTimer;
+    QSharedPointer<TimeChangeListener> m_TimeChangeListener;
+    QSharedPointer<QTimer> m_CheckMemoryTimer;
 
-    int mInitializeFailedCounter;
+    int m_InitializeFailedCounter;
 };
 
 //----------------------------------------------------------------------------

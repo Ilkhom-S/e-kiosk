@@ -28,16 +28,16 @@ EConnectionTypes::Enum DialupConnection::getType() const {
 //--------------------------------------------------------------------------------
 void DialupConnection::doConnect() throw(...) {
     RasApi::PhonebookEntryName entryName;
-    entryName.setName(mName.toStdWString());
+    entryName.setName(m_Name.toStdWString());
 
     RasApi::PhonebookEntry entry;
     if (RasApi::GetEntryProperties(entryName, entry) == 0) {
         toLog(LogLevel::Normal,
               QString("Device name:    %1 (%2)")
-                  .arg(QString::fromStdWString(entry.deviceName()))
-                  .arg(QString::fromStdWString(RasApi::getAttachedTo(entry.deviceName()))));
+                  .arg(QString::from_StdWString(entry.deviceName()))
+                  .arg(QString::from_StdWString(RasApi::getAttachedTo(entry.deviceName()))));
         toLog(LogLevel::Normal,
-              QString("Phone number:   %1").arg(QString::fromStdWString(entry.localPhoneNumber())));
+              QString("Phone number:   %1").arg(QString::from_StdWString(entry.localPhoneNumber())));
         toLog(LogLevel::Normal, QString("*").repeated(40));
     }
 
@@ -57,15 +57,15 @@ void DialupConnection::doConnect() throw(...) {
                            ESeverity::Major,
                            raserror,
                            QString("RasApi: failed to dial '%1': %2 (%3)")
-                               .arg(mName)
-                               .arg(QString::fromStdWString(RasApi::EErrorCode::ToString(raserror)))
+                               .arg(m_Name)
+                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
                                .arg(raserror));
     }
 }
 
 //--------------------------------------------------------------------------------
 void DialupConnection::doDisconnect() throw(...) {
-    DWORD raserror = RasApi::HangUp(mName.toStdWString());
+    DWORD raserror = RasApi::HangUp(m_Name.toStdWString());
 
     if (raserror == RPC_S_SERVER_UNAVAILABLE || raserror == RPC_S_SERVER_TOO_BUSY) {
         throw NetworkError(
@@ -79,8 +79,8 @@ void DialupConnection::doDisconnect() throw(...) {
                            ESeverity::Major,
                            raserror,
                            QString("RasApi: failed to dial '%1': %2 (%3)")
-                               .arg(mName)
-                               .arg(QString::fromStdWString(RasApi::EErrorCode::ToString(raserror)))
+                               .arg(m_Name)
+                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
                                .arg(raserror));
     }
 }
@@ -89,7 +89,7 @@ void DialupConnection::doDisconnect() throw(...) {
 bool DialupConnection::doIsConnected() throw(...) {
     RasApi::EConnectionStatus::Enum status = RasApi::EConnectionStatus::Disconnected;
 
-    DWORD raserror = RasApi::GetConnectionStatus(mName.toStdWString(), status);
+    DWORD raserror = RasApi::GetConnectionStatus(m_Name.toStdWString(), status);
 
     if (raserror == RPC_S_SERVER_UNAVAILABLE || raserror == RPC_S_SERVER_TOO_BUSY) {
         throw NetworkError(
@@ -100,7 +100,7 @@ bool DialupConnection::doIsConnected() throw(...) {
                 "RasApi: GetConnectionStatus failed because RPC server is busy or unavailable (%1)")
                 .arg(raserror));
     } else if (raserror != ERROR_SUCCESS) {
-        toLog(LogLevel::Error, QString("GetConnectionStatus for '%1' failed.").arg(mName));
+        toLog(LogLevel::Error, QString("GetConnectionStatus for '%1' failed.").arg(m_Name));
         return false;
     }
 

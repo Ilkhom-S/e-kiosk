@@ -20,7 +20,7 @@ public:
     virtual QValidator::State validate(QString &aInput, int &aPos) const {
         Q_UNUSED(aPos)
 
-        if (mHash.isEmpty()) {
+        if (m_Hash.isEmpty()) {
             return QValidator::Intermediate;
         }
 
@@ -28,16 +28,16 @@ public:
             return QValidator::Intermediate;
         }
 
-        return QCryptographicHash::hash(aInput.toLatin1(), QCryptographicHash::Md5).toHex() == mHash
+        return QCryptographicHash::hash(aInput.toLatin1(), QCryptographicHash::Md5).toHex() == m_Hash
                    ? QValidator::Acceptable
                    : QValidator::Intermediate;
     }
 
 private slots:
-    QString getHash() const { return mHash; }
+    QString getHash() const { return m_Hash; }
 
-    void setHash(const QString &aHash) { mHash = aHash.toLower(); }
+    void setHash(const QString &aHash) { m_Hash = aHash.toLower(); }
 
 private:
-    QString mHash;
+    QString m_Hash;
 };

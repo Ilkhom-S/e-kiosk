@@ -25,47 +25,47 @@ const char InitializeHandlerSignature[] = "initialize()";
 } // namespace CWebGraphicsItem
 
 //---------------------------------------------------------------------------
-WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo,
+WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
                                  SDK::PaymentProcessor::Scripting::Core *aCore,
                                  ILog *aLog)
-    : mCoreProxy(aCore), mLog(aLog), mItemLoaded(false), mContext(aInfo.context) {
-    mWebView = QSharedPointer<QGraphicsWebView>(new QGraphicsWebView());
+    : m_CoreProxy(aCore), m_Log(aLog), m_Item_Loaded(false), m_Context(aInfo.context) {
+    m_WebView = QSharedPointer<QGraphicsWebView>(new QGraphicsWebView());
 
-    mWebView->setPage(new WebPageLogger(this, mCoreProxy, mLog));
+    m_WebView->setPage(new WebPageLogger(this, m_CoreProxy, m_Log));
 
-    mWebView->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
-    mWebView->settings()->setAttribute(QWebSettings::LocalStorageEnabled, true);
-    mWebView->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
-    mWebView->settings()->setAttribute(QWebSettings::LocalContentCanAccessFileUrls, true);
-    mWebView->settings()->setAttribute(QWebSettings::LocalContentCanAccessRemoteUrls, true);
-    mWebView->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
-    mWebView->settings()->setAttribute(QWebSettings::JavascriptCanCloseWindows, false);
-    mWebView->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,
+    m_WebView->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
+    m_WebView->settings()->setAttribute(QWebSettings::LocalStorageEnabled, true);
+    m_WebView->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+    m_WebView->settings()->setAttribute(QWebSettings::LocalContentCanAccessFileUrls, true);
+    m_WebView->settings()->setAttribute(QWebSettings::LocalContentCanAccessRemoteUrls, true);
+    m_WebView->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
+    m_WebView->settings()->setAttribute(QWebSettings::JavascriptCanCloseWindows, false);
+    m_WebView->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,
                                        aInfo.parameters[CWebGraphicsItem::DebugKey] == "true");
-    mWebView->setWindowFlags(Qt::FramelessWindowHint);
+    m_WebView->setWindowFlags(Qt::FramelessWindowHint);
 
     // Добавляем обновление страницы по F5
     QKeySequence keys_refresh(QKeySequence::Refresh);
     QAction *actionRefresh = new QAction(this);
     actionRefresh->setShortcut(keys_refresh);
-    mWebView->addAction(actionRefresh);
+    m_WebView->addAction(actionRefresh);
     connect(actionRefresh, SIGNAL(triggered()), SLOT(onRefresh()));
 
     // Скрываем контекстное меню  'Обновить'
-    mWebView->page()->action(QWebPage::Reload)->setVisible(false);
+    m_WebView->page()->action(QWebPage::Reload)->setVisible(false);
 
-    connect(mWebView->page()->mainFrame(),
+    connect(m_WebView->page()->mainFrame(),
             SIGNAL(javaScriptWindowObjectCleared()),
             SLOT(onJavaScriptWindowObjectCleared()));
 
     // Получаем разрешение из конфига виджета (секция [web]).
     if (!aInfo.parameters.contains(CWebGraphicsItem::WidthKey) ||
         !aInfo.parameters.contains(CWebGraphicsItem::HeightKey)) {
-        LOG(mLog, LogLevel::Error, "Widget dimensions (width or height) missing.");
+        LOG(m_Log, LogLevel::Error, "Widget dimensions (width or height) missing.");
         return;
     }
 
-    mWebView->setGeometry(QRect(0,
+    m_WebView->setGeometry(QRect(0,
                                 0,
                                 aInfo.parameters[CWebGraphicsItem::WidthKey].toInt(),
                                 aInfo.parameters[CWebGraphicsItem::HeightKey].toInt()));
@@ -74,34 +74,34 @@ WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo,
     QString path = aInfo.parameters[CWebGraphicsItem::StartPageKey];
     if (path.startsWith("http")) {
         // Загружаем удаленный адрес
-        mWebView->load(QUrl(path));
+        m_WebView->load(QUrl(path));
     } else {
         // Загружаем локальный контент
         path = aInfo.directory + "/" + path;
         QFile content(path);
 
         if (!content.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            LOG(mLog, LogLevel::Error, QString("Failed to load html content file '%1'.").arg(path));
+            LOG(m_Log, LogLevel::Error, QString("Failed to load html content file '%1'.").arg(path));
             return;
         }
         QTextStream stream(&content);
-        mWebView->setHtml(stream.readAll(), QUrl::fromLocalFile(aInfo.directory + "/"));
+        m_WebView->setHtml(stream.readAll(), QUrl::from_LocalFile(aInfo.directory + "/"));
     }
-    mUrl = path;
+    m_Url = path;
 
     // Импорт enum'a в виде свойств (QWebKit не понимает энумераторы внутри QObjectа, объявленные
     // через Q_ENUMS).
-    const QMetaObject *metaObject = mEventTypeMetaInfo.metaObject();
+    const QMetaObject *metaObject = m_EventTypeMetaInfo.metaObject();
     QMetaEnum metaEnum = metaObject->enumerator(metaObject->indexOfEnumerator("Enum"));
 
     for (int keyIndex = 0; keyIndex < metaEnum.keyCount(); keyIndex++) {
-        mEventTypeMetaInfo.setProperty(metaEnum.key(keyIndex), metaEnum.value(keyIndex));
+        m_EventTypeMetaInfo.setProperty(metaEnum.key(keyIndex), metaEnum.value(keyIndex));
     }
 }
 
 //------------------------------------------------------------------------------
 void WebGraphicsItem::onRefresh() {
-    mWebView->load(QUrl(mUrl));
+    m_WebView->load(QUrl(m_Url));
 }
 
 //------------------------------------------------------------------------------
@@ -111,9 +111,9 @@ void WebGraphicsItem::onJavaScriptWindowObjectCleared() {
     if (frame) {
         // Добавляем типы событий.
         frame->addToJavaScriptWindowObject(SDK::PaymentProcessor::Scripting::CProxyNames::EventType,
-                                           &mEventTypeMetaInfo);
+                                           &m_EventTypeMetaInfo);
         frame->addToJavaScriptWindowObject(SDK::PaymentProcessor::Scripting::CProxyNames::Core,
-                                           mCoreProxy,
+                                           m_CoreProxy,
                                            QWebFrame::QtOwnership); // TODO QJSEngine->QWebFrame ?
         frame->addToJavaScriptWindowObject(CWebGraphicsItem::ContainerScriptObject,
                                            this,
@@ -135,16 +135,16 @@ void WebGraphicsItem::onFrameLoaded(bool aOk) {
                     QString("%1; true").arg(CWebGraphicsItem::InitializeHandlerSignature));
 
                 if (result.typeId() != QMetaType::Bool || result.toBool() != true) {
-                    LOG(mLog,
+                    LOG(m_Log,
                         LogLevel::Error,
                         "Web frame has no initialize() method or error occured. Graphics events "
                         "are inaccessible.");
                 }
 
-                while (!mSignalQueue.isEmpty()) {
-                    QString signalName = mSignalQueue.first().first;
+                while (!m_SignalQueue.isEmpty()) {
+                    QString signalName = m_SignalQueue.first().first;
 
-                    switch (mSignalQueue.first().second.count()) {
+                    switch (m_SignalQueue.first().second.count()) {
                     case 0:
                         QMetaObject::invokeMethod(this, signalName.toLatin1());
                         break;
@@ -152,79 +152,79 @@ void WebGraphicsItem::onFrameLoaded(bool aOk) {
                         QMetaObject::invokeMethod(
                             this,
                             signalName.toLatin1(),
-                            Q_ARG(QVariantMap, mSignalQueue.first().second.first().toMap()));
+                            Q_ARG(QVariantMap, m_SignalQueue.first().second.first().toMap()));
                         break;
                     case 2:
                         QMetaObject::invokeMethod(
                             this,
                             signalName.toLatin1(),
-                            Q_ARG(QString, mSignalQueue.first().second.first().toString()),
-                            Q_ARG(QVariantMap, mSignalQueue.first().second.last().toMap()));
+                            Q_ARG(QString, m_SignalQueue.first().second.first().toString()),
+                            Q_ARG(QVariantMap, m_SignalQueue.first().second.last().toMap()));
                         break;
 
                     default:
-                        LOG(mLog,
+                        LOG(m_Log,
                             LogLevel::Warning,
                             QString("Signal with wrong arguments queued: %1. Failed to emit.")
                                 .arg(signalName));
                     }
 
-                    mSignalQueue.takeFirst();
+                    m_SignalQueue.takeFirst();
                 }
 
-                mItemLoaded = true;
+                m_Item_Loaded = true;
             }
         }
     } else {
-        LOG(mLog, LogLevel::Warning, "Cannot load frame " + mWebView->title());
+        LOG(m_Log, LogLevel::Warning, "Cannot load frame " + m_WebView->title());
     }
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::show() {
-    mItemLoaded ? emit onShow()
-                : mSignalQueue.push_back(qMakePair(QString("onShow"), QList<QVariant>()));
+    m_Item_Loaded ? emit onShow()
+                : m_SignalQueue.push_back(qMakePair(QString("onShow"), QList<QVariant>()));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::hide() {
-    mItemLoaded ? emit onHide()
-                : mSignalQueue.push_back(qMakePair(QString("onHide"), QList<QVariant>()));
+    m_Item_Loaded ? emit onHide()
+                : m_SignalQueue.push_back(qMakePair(QString("onHide"), QList<QVariant>()));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::reset(const QVariantMap &aParameters) {
-    mItemLoaded
+    m_Item_Loaded
         ? emit onReset(aParameters)
-        : mSignalQueue.push_back(qMakePair(QString("onReset"), QList<QVariant>() << aParameters));
+        : m_SignalQueue.push_back(qMakePair(QString("onReset"), QList<QVariant>() << aParameters));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::notify(const QString &aReason, const QVariantMap &aParameters) {
-    mItemLoaded ? emit onNotify(aReason, aParameters)
-                : mSignalQueue.push_back(
+    m_Item_Loaded ? emit onNotify(aReason, aParameters)
+                : m_SignalQueue.push_back(
                       qMakePair(QString("onNotify"), QList<QVariant>() << aReason << aParameters));
 }
 
 //---------------------------------------------------------------------------
 QQuickItem *WebGraphicsItem::getWidget() const {
     // FIXME !!!
-    return nullptr; // mWebView.data();
+    return nullptr; // m_WebView.data();
 }
 
 //---------------------------------------------------------------------------
 QVariantMap WebGraphicsItem::getContext() const {
-    return mContext;
+    return m_Context;
 }
 
 //---------------------------------------------------------------------------
 bool WebGraphicsItem::isValid() const {
-    return !mWebView.isNull();
+    return !m_WebView.isNull();
 }
 
 //---------------------------------------------------------------------------
 QString WebGraphicsItem::getError() const {
-    return mError;
+    return m_Error;
 }
 
 //---------------------------------------------------------------------------

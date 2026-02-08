@@ -137,7 +137,7 @@ bool SQLiteDatabaseProxy::execDML(const QString &aQuery, long &aRowsAffected) {
     QSqlQuery dbQuery(*m_Db);
 
     if (safeExec(&dbQuery, aQuery)) {
-        aRowsAffected = dbQuery.numRowsAffected();
+        aRowsAffected = dbQuery.num_RowsAffected();
 
         return true;
     }

@@ -397,7 +397,7 @@ QVariantMap TerminalSettings::getChargeProviderAccess() const {
     static TPtree emptyTreeChargeAccess;
     BOOST_FOREACH (const TPtree::value_type &value,
                    m_Properties.get_child("system.charge_access", emptyTreeChargeAccess)) {
-        result.insert(QString::fromStdString(value.first),
+        result.insert(QString::from_StdString(value.first),
                       value.second.get_value<QString>().split(","));
     }
 
@@ -444,8 +444,8 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
                                                settings.autoEncashment);
     settings.printFailedReceipts = m_Properties.get(
         "config.hardware.printer_settings.print_failed_receipts", settings.printFailedReceipts);
-    settings.randomReceiptsID = m_Properties.get(
-        "config.hardware.printer_settings.random_receipts_id", settings.randomReceiptsID);
+    settings.random_ReceiptsID = m_Properties.get(
+        "config.hardware.printer_settings.random_receipts_id", settings.random_ReceiptsID);
     settings.enableBlankFiscalData =
         m_Properties.get("config.hardware.printer_settings.enable_blank_fiscal_data",
                          settings.enableBlankFiscalData);
@@ -454,7 +454,7 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
         (!settings.autoZReportTime.isNull() && settings.autoZReportTime.isValid())
             ? settings.autoZReportTime.toString("hh:mm")
             : "";
-    settings.autoZReportTime = QTime::fromString(
+    settings.autoZReportTime = QTime::from_String(
         m_Properties.get("config.hardware.printer_settings.auto_z_report_time", defaultZReportTime),
         "hh:mm");
 
@@ -648,7 +648,7 @@ QString TerminalSettings::getAdProfile() const {
 //---------------------------------------------------------------------------
 QTime TerminalSettings::autoUpdate() const {
     if (m_Properties.get<bool>("config.terminal.check_update", false)) {
-        return QTime::fromString(
+        return QTime::from_String(
             m_Properties.get<QString>("config.terminal.check_update.<xmlattr>.start", ""), "hh:mm");
     }
 

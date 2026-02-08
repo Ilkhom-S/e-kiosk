@@ -34,12 +34,12 @@ const QString CreateStatRecordQuery = "insert into ad_statistics(id, channel) VA
 DatabaseUtils::DatabaseUtils(const QString &aWorkingDirectory, ILog *aLog) : ILogable(aLog) {
     initMyResource();
 
-    mDatabase = QSqlDatabase::addDatabase("QSQLITE", CDatabaseUtils::Connection);
-    mDatabase.setDatabaseName(aWorkingDirectory + QDir::separator() + CDatabaseUtils::Name);
+    m_Database = QSqlDatabase::addDatabase("QSQLITE", CDatabaseUtils::Connection);
+    m_Database.setDatabaseName(aWorkingDirectory + QDir::separator() + CDatabaseUtils::Name);
 
-    if (!mDatabase.open()) {
+    if (!m_Database.open()) {
         toLog(LogLevel::Error,
-              QString("Failed to open database: %1").arg(mDatabase.lastError().text()));
+              QString("Failed to open database: %1").arg(m_Database.lastError().text()));
     } else {
         QFile script(QResource(CDatabaseUtils::ScriptPath).absoluteFilePath());
         if (script.open(QIODevice::ReadOnly)) {
@@ -57,7 +57,7 @@ DatabaseUtils::DatabaseUtils(const QString &aWorkingDirectory, ILog *aLog) : ILo
             foreach (const QString &line, statements) {
                 QString statement = line.simplified();
                 if (!statement.isEmpty()) {
-                    QSqlQuery query(mDatabase);
+                    QSqlQuery query(m_Database);
                     query.exec(statement);
                     if (!query.isActive()) {
                         toLog(
@@ -80,11 +80,11 @@ DatabaseUtils::~DatabaseUtils() = default;
 bool DatabaseUtils::addStatisticRecord(qint64 aId, const QString &aChannel) {
     bool result = false;
 
-    if (!mDatabase.isOpen()) {
+    if (!m_Database.isOpen()) {
         return false;
     }
 
-    QSqlQuery query(mDatabase);
+    QSqlQuery query(m_Database);
     query.prepare(CDatabaseUtils::AddStatRecordQuery);
     query.addBindValue(aId);
     query.addBindValue(aChannel);
@@ -99,8 +99,8 @@ bool DatabaseUtils::addStatisticRecord(qint64 aId, const QString &aChannel) {
                   .arg(query.lastError().text()));
     }
 
-    if (query.numRowsAffected() == 0) {
-        QSqlQuery createQuery(mDatabase);
+    if (query.num_RowsAffected() == 0) {
+        QSqlQuery createQuery(m_Database);
         createQuery.prepare(CDatabaseUtils::CreateStatRecordQuery);
         createQuery.addBindValue(aId);
         createQuery.addBindValue(aChannel);
@@ -123,11 +123,11 @@ bool DatabaseUtils::addStatisticRecord(qint64 aId, const QString &aChannel) {
 bool DatabaseUtils::setStatisticRecord(qint64 aId, const QString &aChannel, int aValue) {
     bool result = false;
 
-    if (!mDatabase.isOpen()) {
+    if (!m_Database.isOpen()) {
         return false;
     }
 
-    QSqlQuery query(mDatabase);
+    QSqlQuery query(m_Database);
     query.prepare(CDatabaseUtils::SetStatRecordQuery);
     query.addBindValue(aValue);
     query.addBindValue(aId);
@@ -143,8 +143,8 @@ bool DatabaseUtils::setStatisticRecord(qint64 aId, const QString &aChannel, int 
                   .arg(query.lastError().text()));
     }
 
-    if (query.numRowsAffected() == 0) {
-        QSqlQuery createQuery(mDatabase);
+    if (query.num_RowsAffected() == 0) {
+        QSqlQuery createQuery(m_Database);
         createQuery.prepare(CDatabaseUtils::CreateStatRecordQuery);
         createQuery.addBindValue(aId);
         createQuery.addBindValue(aChannel);
@@ -164,7 +164,7 @@ bool DatabaseUtils::setStatisticRecord(qint64 aId, const QString &aChannel, int 
 }
 //------------------------------------------------------------------------
 bool DatabaseUtils::getUnsentStatisticRecords(QList<SStatisticRecord> &aRecords, int aLimit) {
-    QSqlQuery query(mDatabase);
+    QSqlQuery query(m_Database);
 
     if (!query.prepare(
             "SELECT record_id, id, channel, date, quantity FROM ad_statistics WHERE quantity <> "
@@ -211,7 +211,7 @@ bool DatabaseUtils::deleteStatisticRecords(const QList<SStatisticRecord> &aRecor
         idList << record.recordId;
     }
 
-    QSqlQuery query(mDatabase);
+    QSqlQuery query(m_Database);
 
     if (!query.prepare("UPDATE ad_statistics SET quantity_reported = ? WHERE record_id = ?")) {
         toLog(LogLevel::Error,

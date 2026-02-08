@@ -79,11 +79,11 @@ private:
 
 private:
     /// Указатель на ядро.
-    ICore *mCore;
+    ICore *m_Core;
     /// Указатель на сервис GUI.
-    IGUIService *mGUIService;
+    IGUIService *m_GUIService;
     /// Имя верхнего виджета.
-    QString mTopWidgetName;
+    QString m_TopWidgetName;
 };
 
 //------------------------------------------------------------------------------

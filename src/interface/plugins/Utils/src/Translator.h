@@ -37,16 +37,16 @@ signals:
     void languageChanged();
 
 private:
-    QString mInterfacePath;
+    QString m_InterfacePath;
 
     // Список всех поддерживаемых языков <наименование, локализованное название языка>.
-    QMap<QString, QString> mLanguages;
+    QMap<QString, QString> m_Languages;
 
     // Набор трансляторов для каждого модуля.
-    QMap<QString, QTranslator *> mTranslators;
+    QMap<QString, QTranslator *> m_Translators;
 
-    QString mCurrentLanguage;
-    QString mDefaultLanguage;
+    QString m_CurrentLanguage;
+    QString m_DefaultLanguage;
 };
 
 //------------------------------------------------------------------------------

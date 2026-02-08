@@ -15,7 +15,7 @@
 #pragma comment(lib, "Psapi")
 
 //--------------------------------------------------------------------------------
-int ISysUtils::systemReboot() {
+int ISysUtils::system_Reboot() {
     PrivilegeElevator privilege(SE_SHUTDOWN_NAME);
 
     // Shut down the system and force all applications to close.
@@ -27,7 +27,7 @@ int ISysUtils::systemReboot() {
 }
 
 //--------------------------------------------------------------------------------
-int ISysUtils::systemShutdown() {
+int ISysUtils::system_Shutdown() {
     PrivilegeElevator privilege(SE_SHUTDOWN_NAME);
 
     // Shut down the system and force all applications to close.
@@ -122,7 +122,7 @@ QString ISysUtils::getOSVersionInfo() {
 
 //--------------------------------------------------------------------------------
 void ISysUtils::disableScreenSaver() {
-    ::SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, nullptr, 0);
+    ::System_ParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, nullptr, 0);
 }
 
 //--------------------------------------------------------------------------------
@@ -171,10 +171,10 @@ QString ISysUtils::getErrorMessage(ulong aError, bool aNativeLanguage) {
     QString result = "error: " + QString::number(aError);
 
     if (data) {
-        // fromWCharArray is compatible with both Qt 5 and Qt 6 and handles wchar_t*
+        // from_WCharArray is compatible with both Qt 5 and Qt 6 and handles wchar_t*
         // naturally.
         const wchar_t *msgPtr = reinterpret_cast<const wchar_t *>(data);
-        QString description = QString::fromWCharArray(msgPtr).simplified();
+        QString description = QString::from_WCharArray(msgPtr).simplified();
 
         if (!description.isEmpty()) {
             result += QString(" (%1)").arg(description); // Changed to %1 as standard
@@ -187,7 +187,7 @@ QString ISysUtils::getErrorMessage(ulong aError, bool aNativeLanguage) {
 }
 
 //--------------------------------------------------------------------------------
-void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false) {
+void ISysUtils::setSystem_Time(QDateTime aDateTime) noexcept(false) {
     PrivilegeElevator privilege(SE_SYSTEMTIME_NAME);
 
     // Синхронизируем
@@ -205,7 +205,7 @@ void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false) {
 
     switch (aDateTime.timeSpec()) {
     case Qt::UTC: {
-        result = ::SetSystemTime(&localTime);
+        result = ::SetSystem_Time(&localTime);
         break;
     }
     default: {
@@ -241,12 +241,12 @@ bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo,
     }
 
     // http://stackoverflow.com/questions/63166/how-to-determine-cpu-and-memory-consumption-from-inside-a-process
-    MEMORYSTATUSEX memInfo;
-    memInfo.dwLength = sizeof(MEMORYSTATUSEX);
-    GlobalMemoryStatusEx(&memInfo);
+    MEMORYSTATUSEX mem_Info;
+    mem_Info.dwLength = sizeof(MEMORYSTATUSEX);
+    GlobalMemoryStatusEx(&mem_Info);
 
-    aMemoryInfo.total = memInfo.ullTotalPhys;
-    aMemoryInfo.totalUsed = memInfo.ullTotalPhys - memInfo.ullAvailPhys;
+    aMemoryInfo.total = mem_Info.ullTotalPhys;
+    aMemoryInfo.totalUsed = mem_Info.ullTotalPhys - mem_Info.ullAvailPhys;
 
     PROCESS_MEMORY_COUNTERS_EX pmc;
     HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
@@ -339,7 +339,7 @@ ISysUtils::TProcessInfo ISysUtils::getAllProcessInfo() {
     do {
         SProcessInfo pInfo;
         pInfo.id = pe32.th32ProcessID;
-        pInfo.path = QString::fromWCharArray((const wchar_t *)pe32.szExeFile);
+        pInfo.path = QString::from_WCharArray((const wchar_t *)pe32.szExeFile);
 
         HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID);
 
@@ -368,7 +368,7 @@ ISysUtils::TProcessInfo ISysUtils::getAllProcessInfo() {
 }
 
 //--------------------------------------------------------------------------------
-QString ISysUtils::rmBOM(const QString &aFile) {
+QString ISysUtils::rm_BOM(const QString &aFile) {
     QFile file(aFile);
 
     if (file.open(QIODevice::ReadWrite)) {
@@ -379,7 +379,7 @@ QString ISysUtils::rmBOM(const QString &aFile) {
         const uchar *dd = (const uchar *)data.constData();
         if (data.size() >= 3 && dd[0] == 0xef && dd[1] == 0xbb && dd[2] == 0xbf) {
             file.resize(0);
-            file.write(QString::fromUtf8(data.remove(0, 3)).toUtf8());
+            file.write(QString::from_Utf8(data.remove(0, 3)).toUtf8());
         }
     }
 

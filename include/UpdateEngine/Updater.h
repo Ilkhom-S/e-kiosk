@@ -18,7 +18,7 @@
 #include "WindowsBITS.h"
 #endif
 
-class QDomElement;
+class QDom_Element;
 
 //---------------------------------------------------------------------------
 namespace CUpdater {
@@ -99,7 +99,7 @@ public slots:
     /// Запуск процедуры обновления.
     void runUpdate();
 
-    /// Запрос на скачивание архива по адресу mURL и его распаковка в папку m_WorkingDir.
+    /// Запрос на скачивание архива по адресу m_URL и его распаковка в папку m_WorkingDir.
     void downloadPackage();
 
 private:
@@ -156,7 +156,7 @@ signals:
     void downloadAccomplished();
 
     /// Система обновлений формирует описание - ждем 5 минут
-    void updateSystemIsWaiting();
+    void updateSystem_IsWaiting();
 
 private slots:
     void download();
@@ -182,7 +182,7 @@ private:
 
 private:
 #ifdef Q_OS_WIN32
-    CBITS::CopyManager mBitsManager;
+    CBITS::CopyManager m_BitsManager;
 #endif
 
     /// Перейти к скачиванию файлов с помощью BITS
@@ -232,23 +232,23 @@ private:
     QList<NetworkTask *> m_ActiveTasks;
 
     // Размер таска на момент начала загрузки
-    qint64 mCurrentTaskSize;
+    qint64 m_CurrentTaskSize;
 
     // При попытке получить обновление сервер просил подождать
-    bool mWaitUpdateServer;
+    bool m_WaitUpdateServer;
 
     // Число неудачных попыток скачать файл.
-    int mFailCount;
+    int m_FailCount;
 
-    QSignalMapper mMapper;
+    QSignalMapper m_Mapper;
 
 private:
-    QTimer mProgressTimer;
-    int mAllTasksCount;
-    int mProgressPercent;
+    QTimer m_ProgressTimer;
+    int m_AllTasksCount;
+    int m_ProgressPercent;
 
-    bool mUseBITS;
-    int mJobPriority;
+    bool m_UseBITS;
+    int m_JobPriority;
 };
 
 //---------------------------------------------------------------------------

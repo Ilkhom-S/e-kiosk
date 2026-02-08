@@ -37,7 +37,7 @@ QStringList IConnection::getModems() {
 //--------------------------------------------------------------------------------
 /// Получить информацию о модеме.
 /// macOS doesn't have traditional modems.
-QString IConnection::getModemInfo(const QString &aName) {
+QString IConnection::getModem_Info(const QString &aName) {
     Q_UNUSED(aName)
     return QString();
 }

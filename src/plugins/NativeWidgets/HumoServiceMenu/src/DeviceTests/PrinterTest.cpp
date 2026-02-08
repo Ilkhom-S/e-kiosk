@@ -16,7 +16,7 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------------
 PrinterTest::PrinterTest(SDK::Driver::IDevice *aDevice, SDK::PaymentProcessor::ICore *aCore)
-    : mPrinter(dynamic_cast<SDK::Driver::IPrinter *>(aDevice)), mCore(aCore) {}
+    : m_Printer(dynamic_cast<SDK::Driver::IPrinter *>(aDevice)), m_Core(aCore) {}
 
 //------------------------------------------------------------------------------
 QList<QPair<QString, QString>> PrinterTest::getTestNames() const {
@@ -26,9 +26,9 @@ QList<QPair<QString, QString>> PrinterTest::getTestNames() const {
 //------------------------------------------------------------------------------
 bool PrinterTest::run(const QString &aName) {
     if (aName == CPrinterTest::PrintTestReceipt) {
-        mTestResult = QtConcurrent::run([this]() {
-            return mCore->getPrinterService()->printReceiptDirected(
-                mPrinter.data(), QString(PPSDK::CReceiptType::Test), QVariantMap());
+        m_TestResult = QtConcurrent::run([this]() {
+            return m_Core->getPrinterService()->printReceiptDirected(
+                m_Printer.data(), QString(PPSDK::CReceiptType::Test), QVariantMap());
         });
     }
 
@@ -37,16 +37,16 @@ bool PrinterTest::run(const QString &aName) {
 
 //------------------------------------------------------------------------------
 void PrinterTest::stop() {
-    mTestResult.waitForFinished();
+    m_TestResult.waitForFinished();
 }
 
 //------------------------------------------------------------------------------
 bool PrinterTest::isReady() {
-    if (mPrinter) {
-        auto fr = dynamic_cast<SDK::Driver::IFiscalPrinter *>(mPrinter.data());
+    if (m_Printer) {
+        auto fr = dynamic_cast<SDK::Driver::IFiscalPrinter *>(m_Printer.data());
 
         return fr ? fr->isFiscalReady(false, SDK::Driver::EFiscalPrinterCommand::Print)
-                  : mPrinter->isDeviceReady(false);
+                  : m_Printer->isDeviceReady(false);
     }
 
     return false;

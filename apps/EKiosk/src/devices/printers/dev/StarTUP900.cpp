@@ -16,7 +16,7 @@ bool StarTUP900_PRINTER::openPort() {
         is_open = false;
         //    return is_open;
         // Даем девайсу название порта
-        serialPort->setPortName(comName);
+        serialPort->setPortName(com_Name);
 
         if (serialPort->open(QIODevice::ReadWrite)) {
             // Устанавливаем параметры открытия порта
@@ -46,7 +46,7 @@ bool StarTUP900_PRINTER::openPort() {
 
 bool StarTUP900_PRINTER::isEnabled() {
     int status = 0;
-    //    CMDCustomVKP80::SStatus s_status;
+    //    CMDCustom_VKP80::SStatus s_status;
     if (!this->getStatus(status))
         return false;
     return (status != PrinterState::PrinterNotAvailable);
@@ -277,7 +277,7 @@ bool StarTUP900_PRINTER::getStatus(int &aStatus) {
             result |= PrinterState::PaperEnd;
             // if(Debugger) qDebug() << "StarTUP900::getStatus(): Paper end";
         }
-        code = paperDetectorError & CMDStarTUP900::PaperJamError;
+        code = paperDetectorError & CMDStarTUP900::PaperJam_Error;
         if (code > 0) {
             // Paper jam
             result |= PrinterState::PaperJam;

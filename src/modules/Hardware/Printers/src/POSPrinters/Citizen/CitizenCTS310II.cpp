@@ -12,7 +12,7 @@ CitizenCTS310II::CitizenCTS310II() {
     m_Parameters.errors[2][1].insert('\x20', PrinterStatusCode::Error::PaperEnd);
     m_Parameters.errors[2][1].insert('\x40', DeviceStatusCode::Error::Unknown);
 
-    m_Parameters.errors[3][1].insert('\x04', DeviceStatusCode::Error::MechanismPosition);
+    m_Parameters.errors[3][1].insert('\x04', DeviceStatusCode::Error::Mechanism_Position);
     m_Parameters.errors[3][1].insert('\x08', PrinterStatusCode::Error::Cutter);
     m_Parameters.errors[3][1].insert('\x60', DeviceStatusCode::Error::Unknown);
 

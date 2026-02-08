@@ -125,7 +125,7 @@ void MStarPrinters::identify(const CIncotexFR::SUnpackedData &aUnpackedData) {
 }
 
 //--------------------------------------------------------------------------------
-bool MStarPrinters::performFiscal(const QStringList &aReceipt, double aAmount) {
+bool MStarPrinters::perform_Fiscal(const QStringList &aReceipt, double aAmount) {
     toLog(LogLevel::Normal, "Printing fiscal document, receipt:\n" + aReceipt.join("\n"));
 
     bool result = processReceipt(aReceipt, false);
@@ -147,13 +147,13 @@ bool MStarPrinters::performFiscal(const QStringList &aReceipt, double aAmount) {
 }
 
 //--------------------------------------------------------------------------------
-bool MStarPrinters::performEncashment(const QStringList &aReceipt) {
+bool MStarPrinters::perform_Encashment(const QStringList &aReceipt) {
     toLog(LogLevel::Normal, "Printing encashment, receipt:\n" + aReceipt.join("\n"));
 
     // запрашиваем сумму в кассе
     CIncotexFR::SUnpackedData unpackedData;
     QVariantMap commandData;
-    commandData.insert(CHardware::Register, CIncotexFR::Registers::SumInCash);
+    commandData.insert(CHardware::Register, CIncotexFR::Registers::Sum_InCash);
 
     if (!m_Protocol->processCommand(
             m_IOPort, FRProtocolCommands::GetFRRegisters, commandData, &unpackedData)) {
@@ -164,7 +164,7 @@ bool MStarPrinters::performEncashment(const QStringList &aReceipt) {
     // делаем выплату
     TReceiptBuffer receiptBuffer;
     makeReceipt(aReceipt, receiptBuffer);
-    commandData.insert(CHardware::Printer::Receipt, QVariant().fromValue(&receiptBuffer));
+    commandData.insert(CHardware::Printer::Receipt, QVariant().from_Value(&receiptBuffer));
     commandData.insert(CHardware::FiscalPrinter::Amount, unpackedData.Register);
 
     return m_Protocol->processCommand(m_IOPort, FRProtocolCommands::Encashment, commandData);
@@ -180,7 +180,7 @@ bool MStarPrinters::processPayout() {
 }
 
 //--------------------------------------------------------------------------------
-bool MStarPrinters::performZReport(bool /*aPrintDeferredReports*/) {
+bool MStarPrinters::perform_ZReport(bool /*aPrintDeferredReports*/) {
     toLog(LogLevel::Normal, "MStarPrinters: Begin processing command 'print Z report'");
 
     if (!m_Protocol->processCommand(m_IOPort, FRProtocolCommands::ZReport, QVariantMap())) {

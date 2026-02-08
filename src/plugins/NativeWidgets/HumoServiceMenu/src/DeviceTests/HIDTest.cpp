@@ -15,9 +15,9 @@ const QString TestRead = QT_TRANSLATE_NOOP("HIDTest", "#test_read");
 
 //------------------------------------------------------------------------------
 HIDTest::HIDTest(SDK::Driver::IDevice *aDevice, const QString &aInstancePath) {
-    mHID = dynamic_cast<SDK::Driver::IHID *>(aDevice);
+    m_HID = dynamic_cast<SDK::Driver::IHID *>(aDevice);
 
-    mTestNames << qMakePair(CHIDTest::TestRead,
+    m_TestNames << qMakePair(CHIDTest::TestRead,
                             aInstancePath.contains(SDK::Driver::CComponents::Camera)
                                 ? tr("#wait_photo")
                                 : tr("#read_barcode"));
@@ -25,14 +25,14 @@ HIDTest::HIDTest(SDK::Driver::IDevice *aDevice, const QString &aInstancePath) {
 
 //------------------------------------------------------------------------------
 QList<QPair<QString, QString>> HIDTest::getTestNames() const {
-    return mTestNames;
+    return m_TestNames;
 }
 
 //------------------------------------------------------------------------------
 bool HIDTest::run(const QString &aName) {
     if (aName == CHIDTest::TestRead) {
-        if (mHID->enable(true)) {
-            mHID->subscribe(SDK::Driver::IHID::DataSignal, this, SLOT(onData(const QVariantMap &)));
+        if (m_HID->enable(true)) {
+            m_HID->subscribe(SDK::Driver::IHID::DataSignal, this, SLOT(onData(const QVariantMap &)));
             return true;
         }
     }
@@ -42,13 +42,13 @@ bool HIDTest::run(const QString &aName) {
 
 //------------------------------------------------------------------------------
 void HIDTest::stop() {
-    mHID->unsubscribe(SDK::Driver::IHID::DataSignal, this);
-    mHID->enable(false);
+    m_HID->unsubscribe(SDK::Driver::IHID::DataSignal, this);
+    m_HID->enable(false);
 }
 
 //------------------------------------------------------------------------------
 bool HIDTest::isReady() {
-    return mHID && mHID->isDeviceReady();
+    return m_HID && m_HID->isDeviceReady();
 }
 
 //------------------------------------------------------------------------------

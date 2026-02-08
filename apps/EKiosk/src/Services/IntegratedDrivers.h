@@ -40,9 +40,9 @@ private:
     };
 
     typedef QMap<QString, SData> TData;
-    TData mData;
+    TData m_Data;
 
-    DeviceManager *mDeviceManager;
+    DeviceManager *m_DeviceManager;
 };
 
 uint qHash(const IntegratedDrivers::TPaths &aPaths);

@@ -137,30 +137,30 @@ protected:
 
 protected:
     /// Пользовательские переменные.
-    QVariantMap mUserProperties;
+    QVariantMap m_UserProperties;
 
     /// Список зарегистрированных сервисов.
-    QMap<QString, SDK::PaymentProcessor::IService *> mRegisteredServices;
+    QMap<QString, SDK::PaymentProcessor::IService *> m_RegisteredServices;
 
     /// Список инициализированных сервисов.
-    QSet<QString> mInitializedServices;
+    QSet<QString> m_InitializedServices;
 
     /// Имена сервисов, инициализация которых не удалась.
-    QSet<QString> mFailedServices;
+    QSet<QString> m_FailedServices;
 
     /// Список сервисов в порядке их отключения.
-    QList<SDK::PaymentProcessor::IService *> mShutdownOrder;
+    QList<SDK::PaymentProcessor::IService *> m_ShutdownOrder;
 
     /// Список загруженных плагинов ядра
-    QList<SDK::Plugin::IPlugin *> mCorePluginList;
+    QList<SDK::Plugin::IPlugin *> m_CorePluginList;
 
-    IApplication *mApplication;
+    IApplication *m_Application;
 
     /// Таймер остановки сервисов
-    QTimer *mFinalizeTimer;
+    QTimer *m_FinalizeTimer;
 
     /// Код выхода из приложения
-    int mReturnCode;
+    int m_ReturnCode;
 };
 
 //----------------------------------------------------------------------------

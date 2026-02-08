@@ -10,7 +10,7 @@ UscEncashTask::UscEncashTask(const QString &aName, const QString &aLogName, cons
 
 //---------------------------------------------------------------------------
 void UscEncashTask::execute() {
-    emit finished(mName, true);
+    emit finished(m_Name, true);
 }
 
 //---------------------------------------------------------------------------

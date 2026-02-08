@@ -147,7 +147,7 @@ bool AV268::getStatus(TStatusCodes &aStatusCodes) {
     }
 
     if (status & CAV268::Statuses::HeadDoorOpened) {
-        aStatusCodes.insert(DeviceStatusCode::Error::MechanismPosition);
+        aStatusCodes.insert(DeviceStatusCode::Error::Mechanism_Position);
     }
 
     if (status & CAV268::Statuses::UnknownError) {

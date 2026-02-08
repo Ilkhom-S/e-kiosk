@@ -7,11 +7,11 @@
 #include "PluginLibraryDefinition.h"
 
 UcsPluginFactory::UcsPluginFactory() {
-    mName = "ucs";
-    mDescription = "Scenario backend for UCS Pay System";
-    mAuthor = "Humo";
-    mVersion = "1.0";
-    mModuleName = "ucs";
+    m_Name = "ucs";
+    m_Description = "Scenario backend for UCS Pay System";
+    m_Author = "Humo";
+    m_Version = "1.0";
+    m_ModuleName = "ucs";
 }
 
 //------------------------------------------------------------------------------

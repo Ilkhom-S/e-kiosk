@@ -21,14 +21,14 @@ bool DispenserServiceWindow::activate() {
     lwCashUnits->clear();
 
     PPSDK::TCashUnitsState cashUnitState =
-        mBackend->getCore()->getFundsService()->getDispenser()->getCashUnitsState();
+        m_Backend->getCore()->getFundsService()->getDispenser()->getCashUnitsState();
 
     if (cashUnitState.isEmpty()) {
         return false;
     }
 
     foreach (QString device, cashUnitState.keys()) {
-        QVariantMap config = mBackend->getHardwareManager()->getDeviceConfiguration(device);
+        QVariantMap config = m_Backend->getHardwareManager()->getDeviceConfiguration(device);
 
         for (const PPSDK::SCashUnit &cashUnit : cashUnitState.value(device)) {
             QListWidgetItem *item =

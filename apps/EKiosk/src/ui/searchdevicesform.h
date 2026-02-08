@@ -18,7 +18,7 @@ public:
     void setCoinAcceptorSearchText(int state, QString text);
     void setWDSearchText(int state, QString text);
     void setPrinterSearchText(int state, QString text);
-    void setModemSearchText(int state, QString text);
+    void setModem_SearchText(int state, QString text);
     void setCopirightText(QString text, QString version);
     void setLogo(QString path);
 

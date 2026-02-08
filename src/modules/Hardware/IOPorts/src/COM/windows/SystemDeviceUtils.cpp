@@ -1,6 +1,6 @@
 /* @file Набор функционала для работы с системными ресурсами с использованием SetupDi. */
 
-#include "SystemDeviceUtils.h"
+#include "System_DeviceUtils.h"
 
 #include <QtCore/QRegularExpression>
 #include <QtCore/QSettings>
@@ -11,12 +11,12 @@ const char InitialPath[] = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Enum"
 const char PathProperty[] = "FriendlyName";
 } // namespace CRegistrySerialPort
 
-QStringList SystemDeviceUtils::enumerateCOMPorts() {
+QStringList System_DeviceUtils::enumerateCOMPorts() {
     TCHAR buffer[USHRT_MAX];
     memset(buffer, NULL, sizeof(buffer));
     int bufferSize = QueryDosDevice(NULL, &buffer[0], USHRT_MAX);
 
-    QStringList data = QString::fromWCharArray(buffer, bufferSize)
+    QStringList data = QString::from_WCharArray(buffer, bufferSize)
                            .split(QChar(ASCII::NUL))
                            .filter(QRegularExpression("COM[0-9]+"));
     QRegularExpression regExp("[^0-9a-zA-Z](COM[0-9]+)[^a-zA-Z]");
@@ -35,7 +35,7 @@ QStringList SystemDeviceUtils::enumerateCOMPorts() {
 }
 
 //--------------------------------------------------------------------------------
-QStringList SystemDeviceUtils::getSerialDeviceNames() {
+QStringList System_DeviceUtils::getSerialDeviceNames() {
     HKEY hKey = nullptr;
 
     if (::RegOpenKeyEx(
@@ -52,7 +52,7 @@ QStringList SystemDeviceUtils::getSerialDeviceNames() {
 
     forever {
         DWORD keySyze = MAXSHORT / sizeof(wchar_t);
-        LONG ret = ::RegEnumValue(hKey,
+        LONG ret = ::RegEnum_Value(hKey,
                                   i,
                                   LPTSTR(key.data()),
                                   &keySyze,
@@ -65,7 +65,7 @@ QStringList SystemDeviceUtils::getSerialDeviceNames() {
             value.resize(valueSize);
         } else if (ret == ERROR_SUCCESS) {
             QString data =
-                QString::fromWCharArray(LPTSTR(value.data()), value.size() / sizeof(wchar_t));
+                QString::from_WCharArray(LPTSTR(value.data()), value.size() / sizeof(wchar_t));
             int size = result.indexOf(QChar(0));
 
             result << data.left(size).replace(QChar(ASCII::NUL), "");
@@ -83,7 +83,7 @@ QStringList SystemDeviceUtils::getSerialDeviceNames() {
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getRelevantPortName(const QString &aPortName,
+QString System_DeviceUtils::getRelevantPortName(const QString &aPortName,
                                                const QStringList &aPortNames) {
     auto getPropertyData = [](const QString &aData) -> QString {
         return " " + aData.simplified().toLower() + " ";
@@ -107,7 +107,7 @@ QString SystemDeviceUtils::getRelevantPortName(const QString &aPortName,
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getRelevantWinProperty(const QString &aWinProperty,
+QString System_DeviceUtils::getRelevantWinProperty(const QString &aWinProperty,
                                                   const QStringList &aWinProperties) {
     auto getData = [](const QString &aData) -> QString {
         return aData.simplified()
@@ -126,7 +126,7 @@ QString SystemDeviceUtils::getRelevantWinProperty(const QString &aWinProperty,
 }
 
 //--------------------------------------------------------------------------------
-TWinDeviceProperties SystemDeviceUtils::enumerateRegistryDevices(bool aQuick) {
+TWinDeviceProperties System_DeviceUtils::enumerateRegistryDevices(bool aQuick) {
     QStringList portNames = getSerialDeviceNames();
     TWinDeviceProperties result;
 
@@ -172,7 +172,7 @@ TWinDeviceProperties SystemDeviceUtils::enumerateRegistryDevices(bool aQuick) {
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getProperty(const HDEVINFO &aHDevInfo,
+QString System_DeviceUtils::getProperty(const HDEVINFO &aHDevInfo,
                                        SP_DEVINFO_DATA &aDeviceInfoData,
                                        DWORD aProperty) {
     DWORD DataT;
@@ -192,7 +192,7 @@ QString SystemDeviceUtils::getProperty(const HDEVINFO &aHDevInfo,
         }
     }
 
-    QString result = QString::fromWCharArray(buffer);
+    QString result = QString::from_WCharArray(buffer);
 
     if (buffer) {
         LocalFree(buffer);
@@ -202,7 +202,7 @@ QString SystemDeviceUtils::getProperty(const HDEVINFO &aHDevInfo,
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty) {
+QString System_DeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty) {
     DWORD size = 0;
     RegQueryValueEx(key, aProperty, NULL, NULL, NULL, &size);
 
@@ -212,7 +212,7 @@ QString SystemDeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty) {
     QString value;
 
     if (RegQueryValueEx(key, aProperty, NULL, NULL, buffer, &size) == ERROR_SUCCESS) {
-        value = QString::fromUtf16(reinterpret_cast<const char16_t *>(buffer));
+        value = QString::from_Utf16(reinterpret_cast<const char16_t *>(buffer));
     }
 
     delete[] buffer;
@@ -221,7 +221,7 @@ QString SystemDeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty) {
 }
 
 //--------------------------------------------------------------------------------
-bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid,
+bool System_DeviceUtils::enumerateSystem_Devices(const QUuid &aUuid,
                                                TWinDeviceProperties &aDeviceProperties,
                                                DWORD aPathProperty,
                                                bool aQuick) {
@@ -243,7 +243,7 @@ bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid,
     DWORD olddetailedDataSize = 0;
 
     for (DWORD i = 0; OK; i++) {
-        OK = SetupDiEnumDeviceInterfaces(deviceInfo, NULL, &guid, i, &interfaceData);
+        OK = SetupDiEnum_DeviceInterfaces(deviceInfo, NULL, &guid, i, &interfaceData);
 
         if (OK) {
             SP_DEVINFO_DATA deviceData = {sizeof(SP_DEVINFO_DATA)};
@@ -274,7 +274,7 @@ bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid,
             }
 
             QString pathProperty = getProperty(deviceInfo, deviceData, aPathProperty);
-            QString path = QString::fromWCharArray(detailedData->DevicePath);
+            QString path = QString::from_WCharArray(detailedData->DevicePath);
             aDeviceProperties[pathProperty].path = path;
 
             QRegularExpression regexp("vid_([0-9a-fA-F]+)");
@@ -310,7 +310,7 @@ bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid,
                 }
             }
         } else if (GetLastError() != ERROR_NO_MORE_ITEMS) {
-            qCritical("SetupDiEnumDeviceInterfaces failed. Error code: %ld", GetLastError());
+            qCritical("SetupDiEnum_DeviceInterfaces failed. Error code: %ld", GetLastError());
             break;
         }
     }
@@ -323,7 +323,7 @@ bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid,
 }
 
 //--------------------------------------------------------------------------------
-void SystemDeviceUtils::mergeRegistryDeviceProperties(
+void System_DeviceUtils::mergeRegistryDeviceProperties(
     TWinDeviceProperties &aDeviceProperties,
     const TWinDeviceProperties &aDeviceRegistryProperties,
     TSourceDeviceData &aSourceDeviceData) {
@@ -365,7 +365,7 @@ void SystemDeviceUtils::mergeRegistryDeviceProperties(
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getDeviceOutKey(const QStringList &aKeys) {
+QString System_DeviceUtils::getDeviceOutKey(const QStringList &aKeys) {
     int maxNameSize = getMaxSize(aKeys);
     QString result;
 
@@ -400,7 +400,7 @@ QString SystemDeviceUtils::getDeviceOutKey(const QStringList &aKeys) {
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getDeviceOutData(const TWinProperties &aWinPropertyData) {
+QString System_DeviceUtils::getDeviceOutData(const TWinProperties &aWinPropertyData) {
     QStringList dataKeys = aWinPropertyData.keys();
 
     QStringList outDataKeys = dataKeys.filter(CDeviceWinProperties::Prefix);
@@ -420,7 +420,7 @@ QString SystemDeviceUtils::getDeviceOutData(const TWinProperties &aWinPropertyDa
 }
 
 //--------------------------------------------------------------------------------
-int SystemDeviceUtils::getMaxSize(const QStringList &aBuffer) {
+int System_DeviceUtils::getMaxSize(const QStringList &aBuffer) {
     int result = 0;
 
     foreach (auto element, aBuffer) {
@@ -431,7 +431,7 @@ int SystemDeviceUtils::getMaxSize(const QStringList &aBuffer) {
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getScreenedData(const QString &aData) {
+QString System_DeviceUtils::getScreenedData(const QString &aData) {
     QString result = aData;
 
     for (int i = 0; i < sizeof(CRegistrySerialPort::RegexSymbols); ++i) {

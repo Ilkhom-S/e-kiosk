@@ -78,13 +78,13 @@ public:
     void getNetworkInfo(QVariantMap &aResult) const;
 
 private:
-    SDK::PaymentProcessor::ICore *mCore;
-    SDK::PaymentProcessor::INetworkService *mNetworkService;
-    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;
-    SDK::PaymentProcessor::Directory *mDirectory;
+    SDK::PaymentProcessor::ICore *m_Core;
+    SDK::PaymentProcessor::INetworkService *m_NetworkService;
+    SDK::PaymentProcessor::TerminalSettings *m_TerminalSettings;
+    SDK::PaymentProcessor::Directory *m_Directory;
 
-    SDK::PaymentProcessor::SConnection mInitialConnection;
-    SDK::PaymentProcessor::SConnection mSelectedConnection;
+    SDK::PaymentProcessor::SConnection m_InitialConnection;
+    SDK::PaymentProcessor::SConnection m_SelectedConnection;
 };
 
 //---------------------------------------------------------------------------

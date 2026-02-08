@@ -19,13 +19,13 @@ QString ExtensionsSettings::getAdapterName() {
 
 //---------------------------------------------------------------------------
 ExtensionsSettings::ExtensionsSettings(TPtree &aProperties)
-    : mProperties(aProperties.get_child(CAdapterNames::Extensions, aProperties)) {
+    : m_Properties(aProperties.get_child(CAdapterNames::Extensions, aProperties)) {
     auto loadExtensions = [&](const char *aChildPropertyName) -> void {
         TPtree empty;
         SRange range;
 
         BOOST_FOREACH (const TPtree::value_type &record,
-                       mProperties.get_child(aChildPropertyName, empty)) {
+                       m_Properties.get_child(aChildPropertyName, empty)) {
             if (record.first == "<xmlattr>") {
                 continue;
             }
@@ -43,7 +43,7 @@ ExtensionsSettings::ExtensionsSettings(TPtree &aProperties)
                                            parameter.second.get_value<QString>());
                 }
 
-                mExtensionSettings.insert(extensionName, extensionParams);
+                m_ExtensionSettings.insert(extensionName, extensionParams);
             } catch (std::exception &e) {
                 toLog(LogLevel::Error, QString("Skipping broken extension: %1.").arg(e.what()));
             }
@@ -66,8 +66,8 @@ bool ExtensionsSettings::isValid() const {
 TStringMap ExtensionsSettings::getSettings(const QString &aExtensionName) const {
     TStringMap result;
 
-    if (mExtensionSettings.contains(aExtensionName)) {
-        result = mExtensionSettings.value(aExtensionName);
+    if (m_ExtensionSettings.contains(aExtensionName)) {
+        result = m_ExtensionSettings.value(aExtensionName);
     }
 
     return result;

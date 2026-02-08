@@ -43,12 +43,12 @@ protected:
     virtual bool processReceipt(const QStringList &aReceipt, bool aProcessing = true);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt,
+    virtual bool perform_Fiscal(const QStringList &aReceipt,
                                const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Печать Z отчета.
-    virtual bool performZReport(bool aPrintDeferredReports);
+    virtual bool perform_ZReport(bool aPrintDeferredReports);
 
     /// Печать выплаты.
     virtual bool processPayout(double aAmount);
@@ -69,10 +69,10 @@ protected:
     bool reInitPrinter();
 
     /// Параметры презентера и ретрактора.
-    CEjectorAtolFR::SData mEjectorSettings;
+    CEjectorAtolFR::SData m_EjectorSettings;
 
     /// Параметры презентера и ретрактора.
-    char mEjectorMode;
+    char m_EjectorMode;
 };
 
 //--------------------------------------------------------------------------------

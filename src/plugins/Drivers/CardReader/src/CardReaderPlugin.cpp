@@ -21,19 +21,19 @@ template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QStri
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList EnumParameters() {
+template <class T> TParameterList Enum_Parameters() {
     return createNamedList<T>(T::getModelList(), CComponents::CardReader);
 }
 
 //------------------------------------------------------------------------------
 BEGIN_REGISTER_PLUGIN
 #ifdef Q_OS_WIN32
-SIMPLE_COMMON_DRIVER(MifareReader, EnumParameters)
+SIMPLE_COMMON_DRIVER(MifareReader, Enum_Parameters)
 #endif
 #ifdef Q_OS_WIN32
-SIMPLE_COMMON_DRIVER(CreatorReader, EnumParameters)
+SIMPLE_COMMON_DRIVER(CreatorReader, Enum_Parameters)
 #endif
-// SIMPLE_COMMON_DRIVER(IDTechReader, EnumParameters)
+// SIMPLE_COMMON_DRIVER(IDTechReader, Enum_Parameters)
 END_REGISTER_PLUGIN
 
 //------------------------------------------------------------------------------

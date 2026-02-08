@@ -29,20 +29,20 @@ public:
         auto taskCreator = [](const QString &aName, const QString &aLogName, const QString &aParams)
             -> SDK::PaymentProcessor::ITask * { return new C(aName, aLogName, aParams); };
 
-        if (!mFactory.contains(aType)) {
-            mFactory[aType] = TTaskCreator(taskCreator);
+        if (!m_Factory.contains(aType)) {
+            m_Factory[aType] = TTaskCreator(taskCreator);
         }
     }
 
     void registerTaskType(const QString &aName, SDK::PaymentProcessor::ITask *aTask) {
-        if (!mExternalTasks.contains(aName)) {
-            mExternalTasks[aName] = aTask;
+        if (!m_ExternalTasks.contains(aName)) {
+            m_ExternalTasks[aName] = aTask;
         }
     }
 
 protected:
-    QMap<QString, TTaskCreator> mFactory;
-    QMap<QString, SDK::PaymentProcessor::ITask *> mExternalTasks;
+    QMap<QString, TTaskCreator> m_Factory;
+    QMap<QString, SDK::PaymentProcessor::ITask *> m_ExternalTasks;
 };
 
 //------------------------------------------------------------------------------

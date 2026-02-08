@@ -8,7 +8,7 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний принтеров Custom.
-namespace CCustomPrinter {
+namespace CCustom_Printer {
 namespace Models {
 extern const char TG2480[];
 extern const char TG2480H[];
@@ -59,14 +59,14 @@ extern const char SendData[];                     /// Послать карти�
 extern const char PrintImage[];                   /// Печать изображения.
 } // namespace Commands
 } // namespace GAM
-} // namespace CCustomPrinter
+} // namespace CCustom_Printer
 
 //--------------------------------------------------------------------------------
-template <class T> class CustomPrinter : public POSPrinter<T> {
+template <class T> class Custom_Printer : public POSPrinter<T> {
     SET_SUBSERIES("Custom")
 
 public:
-    CustomPrinter();
+    Custom_Printer();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
@@ -83,7 +83,7 @@ protected:
 };
 
 //--------------------------------------------------------------------------------
-typedef SerialPOSPrinter<CustomPrinter<TSerialPrinterBase>> SerialCustomPrinter;
-typedef CustomPrinter<TLibUSBPrinterBase> LibUSBCustomPrinter;
+typedef SerialPOSPrinter<Custom_Printer<TSerialPrinterBase>> SerialCustom_Printer;
+typedef Custom_Printer<TLibUSBPrinterBase> LibUSBCustom_Printer;
 
 //--------------------------------------------------------------------------------

@@ -31,39 +31,39 @@ const char ConfigurationDirectory[] = "plugins";
 } // namespace CPluginFactory
 
 //------------------------------------------------------------------------------
-PluginFactory::PluginFactory() : mKernel(0), mInitialized(false) {}
+PluginFactory::PluginFactory() : m_Kernel(0), m_Initialized(false) {}
 
 //------------------------------------------------------------------------------
 PluginFactory::~PluginFactory() {
-    if (mInitialized) {
+    if (m_Initialized) {
         shutdown();
     }
 }
 
 //------------------------------------------------------------------------------
 bool PluginFactory::initialize(IKernel *aKernel, const QString &aDirectory) {
-    mInitialized = false;
+    m_Initialized = false;
 
     if (!aKernel) {
         Q_ASSERT(aKernel);
-        return mInitialized;
+        return m_Initialized;
     }
 
-    mKernel = aKernel;
-    mDirectory = aDirectory;
+    m_Kernel = aKernel;
+    m_Directory = aDirectory;
 
-    mKernel->getLog()->write(LogLevel::Normal,
+    m_Kernel->getLog()->write(LogLevel::Normal,
                              QString("Initializing plugin library \"%1\". Core: %2.")
                                  .arg(getName())
                                  .arg(Humo::getVersion()));
 
-    if (mKernel->getVersion() != Humo::getVersion()) {
-        mKernel->getLog()->write(LogLevel::Warning,
+    if (m_Kernel->getVersion() != Humo::getVersion()) {
+        m_Kernel->getLog()->write(LogLevel::Warning,
                                  QString("Plugin library \"%1\" compiled with a different "
                                          "core versions. Compiled:[%2] Current core:[%3]")
                                      .arg(getName())
                                      .arg(Humo::getVersion())
-                                     .arg(mKernel->getVersion()));
+                                     .arg(m_Kernel->getVersion()));
     }
 
     // Отключение плагинов с пустым путём или конструктором
@@ -71,7 +71,7 @@ bool PluginFactory::initialize(IKernel *aKernel, const QString &aDirectory) {
          i != PluginInitializer::getPluginList().end();
          ++i) {
         if (i.key().isEmpty() || !i.value().first) {
-            mKernel->getLog()->write(
+            m_Kernel->getLog()->write(
                 LogLevel::Warning,
                 QString("Disabling broken plugin %1: no path or constructor.").arg(i.key()));
         }
@@ -80,11 +80,11 @@ bool PluginFactory::initialize(IKernel *aKernel, const QString &aDirectory) {
     // Загрузка конфигураций (в одном файле хранятся ВСЕ конфигурации ВСЕХ плагинов данной
     // библиотеки)
     QFileInfo file(QDir::toNativeSeparators(QDir::cleanPath(
-        mKernel->getDataDirectory() + QDir::separator() + CPluginFactory::ConfigurationDirectory +
-        QDir::separator() + mModuleName + ".ini")));
+        m_Kernel->getDataDirectory() + QDir::separator() + CPluginFactory::ConfigurationDirectory +
+        QDir::separator() + m_ModuleName + ".ini")));
 
     if (file.exists()) {
-        mKernel->getLog()->write(
+        m_Kernel->getLog()->write(
             LogLevel::Normal,
             QString("Configuration file %1 found, loading.").arg(file.absoluteFilePath()));
 
@@ -104,59 +104,59 @@ bool PluginFactory::initialize(IKernel *aKernel, const QString &aDirectory) {
             }
 
             config.endGroup();
-            mPersistentConfigurations[group] = parameters;
+            m_PersistentConfigurations[group] = parameters;
         }
     }
 
-    mInitialized = true;
+    m_Initialized = true;
 
-    return mInitialized;
+    return m_Initialized;
 }
 
 //------------------------------------------------------------------------------
 void PluginFactory::shutdown() {
-    if (mKernel) {
+    if (m_Kernel) {
         // Don't log during Qt shutdown to avoid crashes in test framework
         if (QCoreApplication::instance() != nullptr) {
-            mKernel->getLog()->write(
+            m_Kernel->getLog()->write(
                 LogLevel::Normal, QString("Shutting down plugin library \"%1\".").arg(getName()));
         }
 
-        foreach (IPlugin *plugin, mCreatedPlugins.keys()) {
+        foreach (IPlugin *plugin, m_CreatedPlugins.keys()) {
             delete plugin;
         }
     }
 
-    mCreatedPlugins.clear();
-    mInitialized = false;
+    m_CreatedPlugins.clear();
+    m_Initialized = false;
 }
 
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 QString PluginFactory::getName() const {
-    return mName;
+    return m_Name;
 }
 
 //------------------------------------------------------------------------------
 QString PluginFactory::getDescription() const {
-    return mDescription;
+    return m_Description;
 }
 
 //------------------------------------------------------------------------------
 QString PluginFactory::getAuthor() const {
-    return mAuthor;
+    return m_Author;
 }
 
 //------------------------------------------------------------------------------
 QString PluginFactory::getVersion() const {
-    return mVersion;
+    return m_Version;
 }
 
 //------------------------------------------------------------------------------
 
 QString PluginFactory::getModuleName() const {
-    return mModuleName;
+    return m_ModuleName;
 }
 
 //------------------------------------------------------------------------------
@@ -171,7 +171,7 @@ static PluginFactory *dummy = nullptr;
 //------------------------------------------------------------------------------
 IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
                                      const QString &aConfigInstancePath) {
-    mKernel->getLog()->write(LogLevel::Normal, QString("Creating plugin %1.").arg(aInstancePath));
+    m_Kernel->getLog()->write(LogLevel::Normal, QString("Creating plugin %1.").arg(aInstancePath));
 
     IPlugin *plugin = 0;
 
@@ -205,7 +205,7 @@ IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
 
             if (plugin && plugin->isReady()) {
                 // Инициализируем и конфигурируем плагин
-                mCreatedPlugins[plugin] = realInstancePath;
+                m_CreatedPlugins[plugin] = realInstancePath;
                 QString configPath =
                     aConfigInstancePath.section(CPlugin::InstancePathSeparator, 0, 0);
                 QString configInstance =
@@ -215,7 +215,7 @@ IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
                     configPath, configInstance.isEmpty() ? instance : configInstance);
 
                 // Синхронизируем настройки конфига и плагина, если плагин новее, чем конфиг
-                TParameterList &parameterList = mTranslatedParameters[path];
+                TParameterList &parameterList = m_TranslatedParameters[path];
 
                 SPluginParameter modifiedKeys = findParameter(CPlugin::ModifiedKeys, parameterList);
 
@@ -281,10 +281,10 @@ IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
                 */
 
                 // Добаляем версию PP и устанавливаем настройки плагина
-                configuration.insert(CPluginParameters::PPVersion, mKernel->getVersion());
+                configuration.insert(CPluginParameters::PPVersion, m_Kernel->getVersion());
                 plugin->setConfiguration(configuration);
             } else {
-                mKernel->getLog()->write(LogLevel::Error,
+                m_Kernel->getLog()->write(LogLevel::Error,
                                          QString("Failed to create plugin %1.").arg(path));
 
                 if (plugin) {
@@ -293,7 +293,7 @@ IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
                 }
             }
         } catch (...) {
-            EXCEPTION_FILTER_NO_THROW(mKernel->getLog());
+            EXCEPTION_FILTER_NO_THROW(m_Kernel->getLog());
 
             if (plugin) {
                 delete plugin;
@@ -301,7 +301,7 @@ IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
             }
         }
     } else {
-        mKernel->getLog()->write(LogLevel::Error,
+        m_Kernel->getLog()->write(LogLevel::Error,
                                  QString("No plugin found for %1.").arg(aInstancePath));
     }
 
@@ -313,11 +313,11 @@ bool PluginFactory::destroyPlugin(IPlugin *aPlugin) {
     Q_ASSERT(aPlugin);
 
     if (aPlugin) {
-        mKernel->getLog()->write(
+        m_Kernel->getLog()->write(
             LogLevel::Normal, QString("Destroying plugin \"%1\".").arg(aPlugin->getPluginName()));
 
-        if (mCreatedPlugins.contains(aPlugin)) {
-            mCreatedPlugins.remove(aPlugin);
+        if (m_CreatedPlugins.contains(aPlugin)) {
+            m_CreatedPlugins.remove(aPlugin);
             delete aPlugin;
 
             return true;
@@ -340,20 +340,20 @@ std::weak_ptr<IPlugin> PluginFactory::createPluginPtr(const QString &aInstancePa
 
     // createPlugin помещает указатель на плагин в отдельную мапу. Поместим плагин в отдельный
     // контейнер.
-    mCreatedPluginsPtr.insert(pluginPtr, mCreatedPlugins[plugin]);
-    mCreatedPlugins.remove(plugin);
+    m_CreatedPluginsPtr.insert(pluginPtr, m_CreatedPlugins[plugin]);
+    m_CreatedPlugins.remove(plugin);
 
     return pluginPtr;
 }
 
 //------------------------------------------------------------------------------
 bool PluginFactory::destroyPlugin(const std::weak_ptr<IPlugin> &aPlugin) {
-    mKernel->getLog()->write(
+    m_Kernel->getLog()->write(
         LogLevel::Normal,
         QString("Destroying plugin \"%1\".").arg(aPlugin.lock()->getPluginName()));
 
-    if (mCreatedPluginsPtr.contains(aPlugin.lock())) {
-        mCreatedPluginsPtr.remove(aPlugin.lock());
+    if (m_CreatedPluginsPtr.contains(aPlugin.lock())) {
+        m_CreatedPluginsPtr.remove(aPlugin.lock());
         return true;
     }
 
@@ -391,43 +391,43 @@ void PluginFactory::translateParameters() {
             result.append(parameter);
         }
 
-        mTranslatedParameters.insert(pluginPath, result);
+        m_TranslatedParameters.insert(pluginPath, result);
     }
 }
 
 //------------------------------------------------------------------------------
 IExternalInterface *PluginFactory::getInterface(const QString &aInterface) {
-    return mKernel->getInterface(aInterface);
+    return m_Kernel->getInterface(aInterface);
 }
 
 //------------------------------------------------------------------------------
 QString PluginFactory::getKernelVersion() const {
-    return mKernel->getVersion();
+    return m_Kernel->getVersion();
 }
 
 //------------------------------------------------------------------------------
 QString PluginFactory::getKernelDirectory() const {
-    return mKernel->getDirectory();
+    return m_Kernel->getDirectory();
 }
 
 //------------------------------------------------------------------------------
 QString PluginFactory::getKernelDataDirectory() const {
-    return mKernel->getDataDirectory();
+    return m_Kernel->getDataDirectory();
 }
 
 //------------------------------------------------------------------------------
 QString PluginFactory::getKernelLogsDirectory() const {
-    return mKernel->getLogsDirectory();
+    return m_Kernel->getLogsDirectory();
 }
 
 //------------------------------------------------------------------------------
 const QString &PluginFactory::getPluginDirectory() const {
-    return mDirectory;
+    return m_Directory;
 }
 
 //------------------------------------------------------------------------------
 ILog *PluginFactory::getLog(const QString &aName) {
-    return mKernel->getLog(aName);
+    return m_Kernel->getLog(aName);
 }
 
 //------------------------------------------------------------------------------
@@ -436,7 +436,7 @@ TParameterList PluginFactory::getPluginParametersDescription(const QString &aPat
         PluginInitializer::getPluginList().find(aPath);
 
     if (plugin != PluginInitializer::getPluginList().end()) {
-        return mTranslatedParameters.contains(aPath) ? mTranslatedParameters.value(aPath)
+        return m_TranslatedParameters.contains(aPath) ? m_TranslatedParameters.value(aPath)
                                                      : plugin->second;
     }
 
@@ -447,10 +447,10 @@ TParameterList PluginFactory::getPluginParametersDescription(const QString &aPat
 QStringList PluginFactory::getRuntimeConfigurations(const QString &aPathFilter) const {
     // Немного оптимизации
     if (aPathFilter.isEmpty()) {
-        return mCreatedPlugins.values();
+        return m_CreatedPlugins.values();
     } else {
         QRegularExpression regex(QString("^%1").arg(QRegularExpression::escape(aPathFilter)));
-        return QStringList(mCreatedPlugins.values()).filter(regex);
+        return QStringList(m_CreatedPlugins.values()).filter(regex);
     }
 }
 
@@ -458,10 +458,10 @@ QStringList PluginFactory::getRuntimeConfigurations(const QString &aPathFilter) 
 QStringList PluginFactory::getPersistentConfigurations(const QString &aPathFilter) const {
     // Немного оптимизации
     if (aPathFilter.isEmpty()) {
-        return mPersistentConfigurations.keys();
+        return m_PersistentConfigurations.keys();
     } else {
         QRegularExpression regex(QString("^%1").arg(QRegularExpression::escape(aPathFilter)));
-        return QStringList(mPersistentConfigurations.keys()).filter(regex);
+        return QStringList(m_PersistentConfigurations.keys()).filter(regex);
     }
 }
 
@@ -482,8 +482,8 @@ bool PluginFactory::saveConfiguration(const QString &aInstancePath,
     bool result = false;
 
     // Сохраняем во внешнем хранилище, если можно
-    if (mKernel->canSavePluginConfiguration(aInstancePath)) {
-        mKernel->getLog()->write(
+    if (m_Kernel->canSavePluginConfiguration(aInstancePath)) {
+        m_Kernel->getLog()->write(
             LogLevel::Error,
             QString("Saving configuration %1 to external storage.").arg(aInstancePath));
 
@@ -498,7 +498,7 @@ bool PluginFactory::saveConfiguration(const QString &aInstancePath,
             }
         }
 
-        result = mKernel->savePluginConfiguration(aInstancePath, parameters);
+        result = m_Kernel->savePluginConfiguration(aInstancePath, parameters);
     } else {
         // Формируем список параметров для сохранения в конфиг
         QVariantMap saveParameters;
@@ -512,15 +512,15 @@ bool PluginFactory::saveConfiguration(const QString &aInstancePath,
         }
 
         // Проверяем, нужно ли сохранять
-        if (isContainContent(mPersistentConfigurations[aInstancePath], saveParameters)) {
-            mKernel->getLog()->write(
+        if (isContainContent(m_PersistentConfigurations[aInstancePath], saveParameters)) {
+            m_Kernel->getLog()->write(
                 LogLevel::Normal,
                 QString("Skip saving configuration %1. Nothing changes.").arg(aInstancePath));
         } else {
             // Иначе в конфигурационный файл
-            QString fileName = mKernel->getDataDirectory() + QDir::separator() +
+            QString fileName = m_Kernel->getDataDirectory() + QDir::separator() +
                                CPluginFactory::ConfigurationDirectory + QDir::separator() +
-                               mModuleName + ".ini";
+                               m_ModuleName + ".ini";
             QSettings config(QDir::toNativeSeparators(QDir::cleanPath(fileName)),
                              QSettings::IniFormat);
             // В Qt6 метод setIniCodec() удален, UTF-8 используется по умолчанию
@@ -532,7 +532,7 @@ bool PluginFactory::saveConfiguration(const QString &aInstancePath,
             result = config.isWritable();
 
             if (result) {
-                mKernel->getLog()->write(
+                m_Kernel->getLog()->write(
                     LogLevel::Normal,
                     QString("Saving configuration %1 to file.").arg(config.fileName()));
 
@@ -545,9 +545,9 @@ bool PluginFactory::saveConfiguration(const QString &aInstancePath,
                 config.endGroup();
                 config.sync();
 
-                mPersistentConfigurations[aInstancePath] = aParameters;
+                m_PersistentConfigurations[aInstancePath] = aParameters;
             } else {
-                mKernel->getLog()->write(
+                m_Kernel->getLog()->write(
                     LogLevel::Error,
                     QString("Failed to save configuration %1: %2 is not writable.")
                         .arg(aInstancePath)
@@ -565,15 +565,15 @@ QVariantMap PluginFactory::getPluginInstanceConfiguration(const QString &aPath,
     QString instancePath = aPath + CPlugin::InstancePathSeparator + aInstance;
 
     // Если конфигурация есть у приложения, берём её
-    if (mKernel->canConfigurePlugin(instancePath)) {
-        return mKernel->getPluginConfiguration(instancePath);
+    if (m_Kernel->canConfigurePlugin(instancePath)) {
+        return m_Kernel->getPluginConfiguration(instancePath);
     } else {
         // Иначе из конфигурационного файла
-        if (mPersistentConfigurations.contains(instancePath)) {
-            return mPersistentConfigurations[instancePath];
-        } else if (mPersistentConfigurations.contains(aPath)) {
+        if (m_PersistentConfigurations.contains(instancePath)) {
+            return m_PersistentConfigurations[instancePath];
+        } else if (m_PersistentConfigurations.contains(aPath)) {
             // Иначе из конфигурационного файла конфигурацию по умолчанию
-            return mPersistentConfigurations[aPath];
+            return m_PersistentConfigurations[aPath];
         }
     }
 
@@ -583,7 +583,7 @@ QVariantMap PluginFactory::getPluginInstanceConfiguration(const QString &aPath,
 
 //------------------------------------------------------------------------------
 IPluginLoader *PluginFactory::getPluginLoader() const {
-    return mKernel->getPluginLoader();
+    return m_Kernel->getPluginLoader();
 }
 
 //------------------------------------------------------------------------------

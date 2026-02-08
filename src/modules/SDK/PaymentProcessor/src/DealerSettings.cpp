@@ -8,7 +8,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QStack>
 #include <QtCore/QStringList>
-#include <QtCore/QXmlStreamReader>
+#include <QtCore/QXmlStream_Reader>
 
 #include <Common/ILog.h>
 
@@ -24,8 +24,8 @@ typedef boost::property_tree::basic_ptree<std::string, std::string> TPtreeOperat
 
 //---------------------------------------------------------------------------
 DealerSettings::DealerSettings(TPtree &aProperties)
-    : mProperties(aProperties.get_child(CAdapterNames::DealerAdapter, aProperties)),
-      mProvidersLock(QReadWriteLock::Recursive), mIsValid(false) {}
+    : m_Properties(aProperties.get_child(CAdapterNames::DealerAdapter, aProperties)),
+      m_ProvidersLock(QReadWriteLock::Recursive), m_IsValid(false) {}
 
 //---------------------------------------------------------------------------
 DealerSettings::~DealerSettings() {}
@@ -41,15 +41,15 @@ void DealerSettings::initialize() {
     bool r2 = loadCommissions();
     bool r3 = loadPersonalSettings();
 
-    mIsValid = r1 && r2 && r3;
+    m_IsValid = r1 && r2 && r3;
 
     // Проверяем наличие групп.
     static const TPtree emptyTree;
-    if (mProperties.get_child("groups", emptyTree).empty()) {
-        mIsValid = false;
+    if (m_Properties.get_child("groups", emptyTree).empty()) {
+        m_IsValid = false;
     }
 
-    mProperties.clear();
+    m_Properties.clear();
 }
 
 //---------------------------------------------------------------------------
@@ -80,14 +80,14 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
 
     op.reserve(4096);
 
-    QXmlStreamReader xmlReader(&inputFile);
+    QXmlStream_Reader xmlReader(&inputFile);
 
     while (!xmlReader.atEnd()) {
-        QXmlStreamReader::TokenType token = xmlReader.readNext();
+        QXmlStream_Reader::TokenType token = xmlReader.readNext();
 
         switch (token) {
         // Встретили открывающий тег.
-        case QXmlStreamReader::StartElement: {
+        case QXmlStream_Reader::StartElement: {
             tags << xmlReader.name().toString().toLower();
 
             bool isOP = (tags.top() == "operator");
@@ -104,12 +104,12 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
             }
 
             // Обрабатываем список атрибутов, если такие имеются.
-            QXmlStreamAttributes attributes = xmlReader.attributes();
+            QXmlStream_Attributes attributes = xmlReader.attributes();
 
             if (!attributes.isEmpty()) {
                 QMap<QString, QString> attrs;
 
-                foreach (const QXmlStreamAttribute &attribute, attributes) {
+                foreach (const QXmlStream_Attribute &attribute, attributes) {
                     QString value = attribute.value().toString();
                     attrs[attribute.name().toString().toLower()].swap(encodeQUOT(value));
                 }
@@ -138,7 +138,7 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
         }
 
         // Текст внутри тегов.
-        case QXmlStreamReader::Characters: {
+        case QXmlStream_Reader::Characters: {
             if (!xmlReader.isWhitespace()) {
                 QString text = xmlReader.text().toString();
                 op += encodeLTGT(text).toUtf8();
@@ -162,23 +162,23 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
         }
 
         // Встретили закрывающий тег.
-        case QXmlStreamReader::EndElement: {
+        case QXmlStream_Reader::EndElement: {
             QString key = xmlReader.name().toString().toLower();
 
             if (key == "operator") {
                 op += "</operator>";
 
-                if (mProviderRawBuffer.contains(opID)) {
+                if (m_ProviderRawBuffer.contains(opID)) {
                     // qDebug() << "Skip existing operator " << opID;
                 } else {
-                    mProviderRawBuffer[opID].swap(op);
+                    m_ProviderRawBuffer[opID].swap(op);
                     foreach (qint64 cid, cids) {
-                        mProviderGateways.insert(cid, opID);
+                        m_ProviderGateways.insert(cid, opID);
                     }
                     // operatorsProcessing[opID].swap(processing);
-                    // operatorsHash[opID].swap(QString::fromLatin1(CCryptographicHash::hash(op,
+                    // operatorsHash[opID].swap(QString::from_Latin1(CCryptographicHash::hash(op,
                     // CCryptographicHash::Sha256).toHex()));
-                    mProvidersProcessingIndex.insert(processing, opID);
+                    m_ProvidersProcessingIndex.insert(processing, opID);
                 }
 
                 cids.clear();
@@ -194,7 +194,7 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
         }
 
         // Ошибка в формате документа.
-        case QXmlStreamReader::Invalid: {
+        case QXmlStream_Reader::Invalid: {
             toLog(LogLevel::Error,
                   QString("'%1' parsing error: %2, line %3, column %4.")
                       .arg(aFileName)
@@ -223,12 +223,12 @@ bool DealerSettings::loadProviders() {
     QElapsedTimer elapsed;
     elapsed.start();
 
-    BOOST_FOREACH (const TPtree::value_type &operators, mProperties.get_child("", emptyTree)) {
+    BOOST_FOREACH (const TPtree::value_type &operators, m_Properties.get_child("", emptyTree)) {
         if (operators.first != "operators") {
             continue;
         }
 
-        QString operatorsPath = QString::fromStdWString(operators.second.get_value(L""));
+        QString operatorsPath = QString::from_StdWString(operators.second.get_value(L""));
 
         toLog(LogLevel::Normal, QString("Loading %1.").arg(operatorsPath));
 
@@ -237,40 +237,40 @@ bool DealerSettings::loadProviders() {
 
     toLog(LogLevel::Normal,
           QString("Total providers loaded: %1, elapsed %2 ms.")
-              .arg(mProviderRawBuffer.size())
+              .arg(m_ProviderRawBuffer.size())
               .arg(elapsed.elapsed()));
 
-    return !mProviderRawBuffer.isEmpty();
+    return !m_ProviderRawBuffer.isEmpty();
 }
 
 //---------------------------------------------------------------------------
-void loadProviderEnumItems(SProviderField::TEnumItems &aItemList, const TPtreeOperators &aTree) {
+void loadProviderEnum_Items(SProviderField::TEnum_Items &aItem_List, const TPtreeOperators &aTree) {
     auto searchBounds = aTree.equal_range("item");
 
-    for (auto itemIt = searchBounds.first; itemIt != searchBounds.second; ++itemIt) {
-        SProviderField::SEnumItem item;
+    for (auto item_It = searchBounds.first; item_It != searchBounds.second; ++item_It) {
+        SProviderField::SEnum_Item item;
 
-        auto attr = itemIt->second.get_child("<xmlattr>");
+        auto attr = item_It->second.get_child("<xmlattr>");
 
         item.title = attr.get<QString>("name");
         item.value = attr.get<QString>("value", QString());
         item.id = attr.get<QString>("id", QString());
         item.sort = attr.get<int>("sort", 65535);
 
-        loadProviderEnumItems(item.subItems, itemIt->second);
+        loadProviderEnum_Items(item.subItems, item_It->second);
 
-        aItemList << item;
+        aItem_List << item;
     }
 
-    std::stable_sort(aItemList.begin(),
-                     aItemList.end(),
-                     [](const SProviderField::SEnumItem &a, const SProviderField::SEnumItem &b) {
+    std::stable_sort(aItem_List.begin(),
+                     aItem_List.end(),
+                     [](const SProviderField::SEnum_Item &a, const SProviderField::SEnum_Item &b) {
                          return a.sort < b.sort;
                      });
 }
 
 //---------------------------------------------------------------------------
-bool DealerSettings::loadProvidersFromBuffer(const std::string &aBuffer, SProvider &aProvider) {
+bool DealerSettings::loadProvidersFrom_Buffer(const std::string &aBuffer, SProvider &aProvider) {
     TPtreeOperators operators;
     const TPtreeOperators emptyTree;
 
@@ -280,7 +280,7 @@ bool DealerSettings::loadProvidersFromBuffer(const std::string &aBuffer, SProvid
         boost::property_tree::read_xml(stream, operators);
     } catch (boost::property_tree::xml_parser_error &e) {
         toLog(LogLevel::Error,
-              QString("XML parser error: %1.").arg(QString::fromStdString(e.message())));
+              QString("XML parser error: %1.").arg(QString::from_StdString(e.message())));
 
         return false;
     }
@@ -445,7 +445,7 @@ bool DealerSettings::loadProvidersFromBuffer(const std::string &aBuffer, SProvid
                     aProvider.externalDataHandler = externalDataHandler;
                 }
 
-                loadProviderEnumItems(field.enumItems, fieldIt.second.get_child("enum", emptyTree));
+                loadProviderEnum_Items(field.enum_Items, fieldIt.second.get_child("enum", emptyTree));
 
                 auto security = fieldIt.second.get_child("security", emptyTree);
                 if (!security.empty()) {
@@ -512,14 +512,14 @@ bool DealerSettings::loadProvidersFromBuffer(const std::string &aBuffer, SProvid
 
 //---------------------------------------------------------------------------
 void DealerSettings::disableProvider(qint64 aId) {
-    QWriteLocker locker(&mProvidersLock);
+    QWriteLocker locker(&m_ProvidersLock);
 
-    mProviders.remove(aId);
-    mProviderRawBuffer.remove(aId);
-    mProvidersProcessingIndex.remove(mProvidersProcessingIndex.key(aId), aId);
+    m_Providers.remove(aId);
+    m_ProviderRawBuffer.remove(aId);
+    m_ProvidersProcessingIndex.remove(m_ProvidersProcessingIndex.key(aId), aId);
 
-    foreach (auto cid, mProviderGateways.keys()) {
-        mProviderGateways.remove(cid, aId);
+    foreach (auto cid, m_ProviderGateways.keys()) {
+        m_ProviderGateways.remove(cid, aId);
     }
 }
 
@@ -531,15 +531,15 @@ bool DealerSettings::loadCommissions() {
         toLog(LogLevel::Normal, "Loading commissions.");
 
         BOOST_FOREACH (const TPtree::value_type &commissions,
-                       mProperties.get_child("", emptyTree)) {
+                       m_Properties.get_child("", emptyTree)) {
             if (commissions.first != "commissions") {
                 continue;
             }
 
-            if (!mCommissions.isValid()) {
-                mCommissions = Commissions::fromSettings(commissions.second);
+            if (!m_Commissions.isValid()) {
+                m_Commissions = Commissions::from_Settings(commissions.second);
             } else {
-                mCommissions.appendFromSettings(commissions.second);
+                m_Commissions.appendFrom_Settings(commissions.second);
             }
         }
     } catch (std::runtime_error &error) {
@@ -550,7 +550,7 @@ bool DealerSettings::loadCommissions() {
     try {
         toLog(LogLevel::Normal, "Loading customers.");
 
-        BOOST_FOREACH (const TPtree::value_type &value, mProperties.get_child("customers")) {
+        BOOST_FOREACH (const TPtree::value_type &value, m_Properties.get_child("customers")) {
             if (value.first == "<xmlattr>") {
                 continue;
             }
@@ -569,11 +569,11 @@ bool DealerSettings::loadCommissions() {
             }
 
             if (!customer.blocked) {
-                customer.commissions = Commissions::fromSettings(operatorSettings);
+                customer.commissions = Commissions::from_Settings(operatorSettings);
             }
 
             if (!customer.isEmpty()) {
-                mCustomers << customer;
+                m_Customers << customer;
             }
         }
     } catch (std::runtime_error &error) {
@@ -588,39 +588,39 @@ bool DealerSettings::loadPersonalSettings() {
     toLog(LogLevel::Normal, "Loading personal settings.");
 
     try {
-        TPtree &branch = mProperties.get_child("config.dealer");
+        TPtree &branch = m_Properties.get_child("config.dealer");
 
-        mPersonalSettings.pointName = branch.get("point_name", QString());
-        mPersonalSettings.pointAddress = branch.get("point_address", QString());
-        mPersonalSettings.pointExternalID =
+        m_PersonalSettings.pointName = branch.get("point_name", QString());
+        m_PersonalSettings.pointAddress = branch.get("point_address", QString());
+        m_PersonalSettings.pointExternalID =
             branch.get("external_id_for_cash_collection", QString());
-        mPersonalSettings.name = branch.get("dealer_name", QString());
-        mPersonalSettings.address = branch.get("dealer_address", QString());
-        mPersonalSettings.businessAddress = branch.get("dealer_business_address", QString());
-        mPersonalSettings.inn = branch.get("dealer_inn", QString());
-        mPersonalSettings.kbk = branch.get("dealer_kbk", QString());
-        mPersonalSettings.phone = branch.get("dealer_support_phone", QString());
-        mPersonalSettings.isBank = branch.get("dealer_is_bank", QString("0"));
+        m_PersonalSettings.name = branch.get("dealer_name", QString());
+        m_PersonalSettings.address = branch.get("dealer_address", QString());
+        m_PersonalSettings.businessAddress = branch.get("dealer_business_address", QString());
+        m_PersonalSettings.inn = branch.get("dealer_inn", QString());
+        m_PersonalSettings.kbk = branch.get("dealer_kbk", QString());
+        m_PersonalSettings.phone = branch.get("dealer_support_phone", QString());
+        m_PersonalSettings.isBank = branch.get("dealer_is_bank", QString("0"));
 
-        mPersonalSettings.operatorName = branch.get("operator_name", QString());
-        mPersonalSettings.operatorAddress = branch.get("operator_address", QString());
-        mPersonalSettings.operatorInn = branch.get("operator_inn", QString());
-        mPersonalSettings.operatorContractNumber =
+        m_PersonalSettings.operatorName = branch.get("operator_name", QString());
+        m_PersonalSettings.operatorAddress = branch.get("operator_address", QString());
+        m_PersonalSettings.operatorInn = branch.get("operator_inn", QString());
+        m_PersonalSettings.operatorContractNumber =
             branch.get("operator_contract_number", QString());
 
-        mPersonalSettings.bankName = branch.get("bank_name", QString());
-        mPersonalSettings.bankAddress = branch.get("bank_address", QString());
-        mPersonalSettings.bankBik = branch.get("bank_bik", QString());
-        mPersonalSettings.bankInn = branch.get("bank_inn", QString());
-        mPersonalSettings.bankPhone = branch.get("bank_phone", QString());
-        mPersonalSettings.bankContractNumber = branch.get("contract_number", QString());
+        m_PersonalSettings.bankName = branch.get("bank_name", QString());
+        m_PersonalSettings.bankAddress = branch.get("bank_address", QString());
+        m_PersonalSettings.bankBik = branch.get("bank_bik", QString());
+        m_PersonalSettings.bankInn = branch.get("bank_inn", QString());
+        m_PersonalSettings.bankPhone = branch.get("bank_phone", QString());
+        m_PersonalSettings.bankContractNumber = branch.get("contract_number", QString());
 
         const TPtree emptyTree;
 
         BOOST_FOREACH (const TPtree::value_type &parameter,
-                       mProperties.get_child("config.printing.parameters", emptyTree)) {
-            mPersonalSettings.mPrintingParameters.insert(
-                QString::fromStdString(parameter.first).toUpper(),
+                       m_Properties.get_child("config.printing.parameters", emptyTree)) {
+            m_PersonalSettings.m_PrintingParameters.insert(
+                QString::from_StdString(parameter.first).toUpper(),
                 parameter.second.get_value(QString()).replace("\\n", "\n"));
         }
     } catch (std::runtime_error &error) {
@@ -633,22 +633,22 @@ bool DealerSettings::loadPersonalSettings() {
 
 //----------------------------------------------------------------------------
 SProvider DealerSettings::getProvider(qint64 aId) {
-    if (mProviderRawBuffer.contains(aId)) {
-        QWriteLocker locker(&mProvidersLock);
+    if (m_ProviderRawBuffer.contains(aId)) {
+        QWriteLocker locker(&m_ProvidersLock);
 
         SProvider provider;
-        if (loadProvidersFromBuffer(mProviderRawBuffer[aId], provider)) {
-            mProviders.insert(aId, provider);
-            mProviderRawBuffer.remove(aId);
+        if (loadProvidersFrom_Buffer(m_ProviderRawBuffer[aId], provider)) {
+            m_Providers.insert(aId, provider);
+            m_ProviderRawBuffer.remove(aId);
         } else {
             toLog(LogLevel::Error, QString("Error parse provider %1 from buffer.").arg(aId));
         }
     }
 
-    QReadLocker locker(&mProvidersLock);
+    QReadLocker locker(&m_ProvidersLock);
 
-    if (mProviders.contains(aId)) {
-        SProvider provider = mProviders.value(aId);
+    if (m_Providers.contains(aId)) {
+        SProvider provider = m_Providers.value(aId);
 
         // Лимиты из описания оператора могут быть переопределены снаружи
         provider.limits.min = !qFuzzyIsNull(provider.limits.externalMin.toDouble())
@@ -689,7 +689,7 @@ SProvider DealerSettings::getMNPProvider(qint64 aId, qint64 aCidIn, qint64 aCidO
 QList<SProvider> DealerSettings::getProvidersByCID(qint64 aCid) {
     QList<SProvider> providers;
 
-    foreach (auto id, mProviderGateways.values(aCid)) {
+    foreach (auto id, m_ProviderGateways.values(aCid)) {
         providers << getProvider(id);
     }
 
@@ -698,13 +698,13 @@ QList<SProvider> DealerSettings::getProvidersByCID(qint64 aCid) {
 
 //---------------------------------------------------------------------------
 const QList<qint64> DealerSettings::getProviders(const QString &aProcessingType) {
-    return mProvidersProcessingIndex.values(aProcessingType);
+    return m_ProvidersProcessingIndex.values(aProcessingType);
 }
 
 //---------------------------------------------------------------------------
 QStringList DealerSettings::getProviderProcessingTypes() {
-    return QStringList(mProvidersProcessingIndex.keys().begin(),
-                       mProvidersProcessingIndex.keys().end());
+    return QStringList(m_ProvidersProcessingIndex.keys().begin(),
+                       m_ProvidersProcessingIndex.keys().end());
 }
 
 //---------------------------------------------------------------------------
@@ -714,14 +714,14 @@ void DealerSettings::setExternalLimits(qint64 aProviderId,
     SProvider provider = getProvider(aProviderId);
 
     if (!provider.isNull()) {
-        mProviders[aProviderId].limits.externalMin = QString::number(aMinExternalLimit);
-        mProviders[aProviderId].limits.externalMax = QString::number(aMaxExternalLimit);
+        m_Providers[aProviderId].limits.externalMin = QString::number(aMinExternalLimit);
+        m_Providers[aProviderId].limits.externalMax = QString::number(aMaxExternalLimit);
     }
 }
 
 //---------------------------------------------------------------------------
 const SPersonalSettings &DealerSettings::getPersonalSettings() const {
-    return mPersonalSettings;
+    return m_PersonalSettings;
 }
 
 //---------------------------------------------------------------------------
@@ -736,69 +736,69 @@ DealerSettings::TCustomers::iterator DealerSettings::findCustomer(const QVariant
         return aCustomer.contains(parametersValueSet);
     };
 
-    return std::find_if(mCustomers.begin(), mCustomers.end(), isItRightCustomer);
+    return std::find_if(m_Customers.begin(), m_Customers.end(), isItRightCustomer);
 }
 
 //---------------------------------------------------------------------------
 void DealerSettings::setExternalCommissions(const Commissions &aCommissions) {
-    mExternalCommissions = aCommissions;
+    m_ExternalCommissions = aCommissions;
 }
 
 //---------------------------------------------------------------------------
 void DealerSettings::resetExternalCommissions() {
-    mExternalCommissions.clear();
+    m_ExternalCommissions.clear();
 }
 
 //---------------------------------------------------------------------------
 bool DealerSettings::isCustomerAllowed(const QVariantMap &aParameters) {
     TCustomers::iterator it = findCustomer(aParameters);
 
-    return it == mCustomers.end() ? true : !it->blocked;
+    return it == m_Customers.end() ? true : !it->blocked;
 }
 
 //---------------------------------------------------------------------------
 TCommissions DealerSettings::getCommissions(qint64 aProvider, const QVariantMap &aParameters) {
-    if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider)) {
-        return mExternalCommissions.getCommissions(aProvider);
+    if (m_ExternalCommissions.isValid() && m_ExternalCommissions.contains(aProvider)) {
+        return m_ExternalCommissions.getCommissions(aProvider);
     }
 
     TCustomers::iterator it = findCustomer(aParameters);
 
     // Игнорируем настройки customer комиссии если комиссия процессинга не нулевая.
-    return it == mCustomers.end() ? mCommissions.getCommissions(aProvider)
+    return it == m_Customers.end() ? m_Commissions.getCommissions(aProvider)
                                   : it->commissions.getCommissions(aProvider);
 }
 
 //---------------------------------------------------------------------------
 Commission
 DealerSettings::getCommission(qint64 aProvider, const QVariantMap &aParameters, double aSum) {
-    if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider)) {
-        return mExternalCommissions.getCommission(aProvider, aSum);
+    if (m_ExternalCommissions.isValid() && m_ExternalCommissions.contains(aProvider)) {
+        return m_ExternalCommissions.getCommission(aProvider, aSum);
     }
 
     TCustomers::iterator it = findCustomer(aParameters);
 
     // Игнорируем настройки customer комиссии если комиссия процессинга не нулевая.
-    return it == mCustomers.end() ? mCommissions.getCommission(aProvider, aSum)
+    return it == m_Customers.end() ? m_Commissions.getCommission(aProvider, aSum)
                                   : it->commissions.getCommission(aProvider, aSum);
 }
 
 //---------------------------------------------------------------------------
 ProcessingCommission DealerSettings::getProcessingCommission(qint64 aProvider) {
-    if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider)) {
-        return mExternalCommissions.getProcessingCommission(aProvider);
+    if (m_ExternalCommissions.isValid() && m_ExternalCommissions.contains(aProvider)) {
+        return m_ExternalCommissions.getProcessingCommission(aProvider);
     }
 
-    return mCommissions.getProcessingCommission(aProvider);
+    return m_Commissions.getProcessingCommission(aProvider);
 }
 
 //---------------------------------------------------------------------------
 int DealerSettings::getVAT(qint64 aProvider) {
-    if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider)) {
-        return mExternalCommissions.getVAT(aProvider);
+    if (m_ExternalCommissions.isValid() && m_ExternalCommissions.contains(aProvider)) {
+        return m_ExternalCommissions.getVAT(aProvider);
     }
 
-    return mCommissions.getVAT(aProvider);
+    return m_Commissions.getVAT(aProvider);
 }
 
 //---------------------------------------------------------------------------
@@ -830,7 +830,7 @@ QList<SProvider> DealerSettings::getProvidersByRange(QList<SRange> aRanges, QSet
 
 //---------------------------------------------------------------------------
 bool DealerSettings::isValid() const {
-    return mIsValid;
+    return m_IsValid;
 }
 
 //---------------------------------------------------------------------------

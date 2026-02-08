@@ -12,7 +12,7 @@
 
 #include <SDK/Drivers/IOPort/COMParameters.h>
 
-#include <Hardware/IOPorts/COM/windows/SystemDeviceUtils.h>
+#include <Hardware/IOPorts/COM/windows/System_DeviceUtils.h>
 #include <Hardware/IOPorts/IOPortBase.h>
 #include <Hardware/IOPorts/IOPortGUIDs.h>
 #include <windows.h>
@@ -45,7 +45,7 @@ public:
     AsyncSerialPortWin();
 
     /// Возвращает список доступных в системе портов.
-    static QStringList enumerateSystemNames();
+    static QStringList enumerateSystem_Names();
 
     /// Опрашивает данные портов.
     virtual void initialize();
@@ -96,7 +96,7 @@ protected:
     virtual bool checkExistence();
 
     /// Открыть порт.
-    virtual bool performOpen();
+    virtual bool perform_Open();
 
     /// Прочитать данные.
     virtual bool processReading(QByteArray &aData, int aTimeout);
@@ -165,7 +165,7 @@ protected:
     int m_MaxReadingSize;
 
     /// Системные имена портов.
-    QStringList m_SystemNames;
+    QStringList m_System_Names;
 
     /// Нефильтрованные системные данные портов.
     TWinDeviceProperties m_WinProperties;
@@ -178,7 +178,7 @@ protected:
 
     /// Получение системных данных о портах (порт -> виртуальность).
     typedef QMap<QString, SDK::Driver::EPortTypes::Enum> TData;
-    static TData getSystemData(bool aForce = false);
+    static TData getSystem_Data(bool aForce = false);
 
     /// Получить данные о ресурсах.
     static TWinDeviceProperties getDeviceProperties(const TUuids &aUuids,

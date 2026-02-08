@@ -20,7 +20,7 @@ void LoadingGprsForm::setCopirightText(QString text, QString version) {
     ui->loading_copyrigh_info->setText(text);
 }
 
-void LoadingGprsForm::setSimInfo(QString text) {
+void LoadingGprsForm::setSim_Info(QString text) {
     ui->loading_sim_info->setText(text);
 }
 

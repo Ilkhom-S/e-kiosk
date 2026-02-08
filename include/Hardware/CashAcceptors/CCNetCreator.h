@@ -16,10 +16,10 @@ protected:
     virtual void processDeviceData(QByteArray &aAnswer);
 
     /// Обновить прошивку.
-    virtual bool performUpdateFirmware(const QByteArray &aBuffer);
+    virtual bool perform_UpdateFirmware(const QByteArray &aBuffer);
 
     /// Изменить скорость работы.
-    virtual bool performBaudRateChanging(const SDK::Driver::TPortParameters &aPortParameters);
+    virtual bool perform_BaudRateChanging(const SDK::Driver::TPortParameters &aPortParameters);
 
     /// Записать головную часть прошивки.
     bool writeHead(const QByteArray &aBuffer);

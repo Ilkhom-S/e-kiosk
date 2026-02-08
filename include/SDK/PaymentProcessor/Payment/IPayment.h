@@ -125,7 +125,7 @@ public:
     virtual bool canProcessOffline() const = 0;
 
     /// Выполнение шага с идентификатором aStep.
-    virtual bool performStep(int aStep) = 0;
+    virtual bool perform_Step(int aStep) = 0;
 
     /// Обновление статуса платежа.
     virtual void process() = 0;

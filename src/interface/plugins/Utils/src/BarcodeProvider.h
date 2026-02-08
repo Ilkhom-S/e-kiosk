@@ -41,8 +41,8 @@ public:
     virtual QImage requestImage(const QString &aId, QSize *aSize, const QSize &aRequestedSize);
 
 private:
-    QSize mDefaultBarcodeSize;
-    QHash<QString, QImage> mBarcodeCache;
+    QSize m_DefaultBarcodeSize;
+    QHash<QString, QImage> m_BarcodeCache;
 };
 
 //------------------------------------------------------------------------------

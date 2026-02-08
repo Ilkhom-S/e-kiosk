@@ -20,24 +20,24 @@ template <class T> bool TCPDeviceBase<T>::checkConnectionAbility() {
     // Это исправляет ошибку "explicit qualification required".
     if (!this->checkError(
             IOPortStatusCode::Error::NotSet,
-            [this]() { return this->mIOPort != nullptr; },
+            [this]() { return this->m_IOPort != nullptr; },
             "IO port is not set")) {
         return false;
     }
 
     // dynamic_cast обеспечивает безопасность типов при передаче в QVariant.
     // Если IDevice наследует QObject, можно использовать qobject_cast.
-    IDevice *deviceInterface = dynamic_cast<IDevice *>(this->mIOPort);
-    this->setConfigParameter(CHardwareSDK::RequiredDevice, QVariant::fromValue(deviceInterface));
+    IDevice *deviceInterface = dynamic_cast<IDevice *>(this->m_IOPort);
+    this->setConfigParameter(CHardwareSDK::RequiredDevice, QVariant::from_Value(deviceInterface));
 
     // Использование .value() вместо [] предотвращает создание пустых записей в карте конфигурации.
     // toString() корректно работает во всех версиях Qt 5.15 и 6.x.
     const QString address =
-        this->mIOPort->getDeviceConfiguration().value(CHardwareSDK::Port::TCP::IP).toString();
+        this->m_IOPort->getDeviceConfiguration().value(CHardwareSDK::Port::TCP::IP).toString();
 
     return this->checkError(
                IOPortStatusCode::Error::NotConnected,
-               [this]() { return this->mIOPort->isExist() || this->mIOPort->deviceConnected(); },
+               [this]() { return this->m_IOPort->isExist() || this->m_IOPort->deviceConnected(); },
                "IO port is not connected") &&
            this->checkError(
                IOPortStatusCode::Error::NotConfigured,
@@ -45,7 +45,7 @@ template <class T> bool TCPDeviceBase<T>::checkConnectionAbility() {
                "IO port is not set correctly") &&
            this->checkError(
                IOPortStatusCode::Error::Busy,
-               [this]() { return this->mIOPort->open(); },
+               [this]() { return this->m_IOPort->open(); },
                "device cannot open port");
 }
 
@@ -53,12 +53,12 @@ template <class T> bool TCPDeviceBase<T>::checkConnectionAbility() {
 template <class T> bool TCPDeviceBase<T>::checkPort() {
     // В шаблонных классах необходимо использовать this-> для доступа к членам,
     // чтобы компилятор мог найти их в зависимом базовом классе на этапе инстанцирования.
-    if (this->mIOPort->isExist()) {
+    if (this->m_IOPort->isExist()) {
         return true;
     }
 
     // Если порт физически (или логически) не существует, проверяем активное соединение.
-    if (!this->mIOPort->deviceConnected()) {
+    if (!this->m_IOPort->deviceConnected()) {
         return false;
     }
 
@@ -69,16 +69,16 @@ template <class T> bool TCPDeviceBase<T>::checkPort() {
 
 // Исправленный макрос: используем QStringLiteral для оптимизации и явный this-> для логов
 #define MAKE_TCP_PORT_PARAMETER(aName, aType)                                                      \
-    TTCPDevicePortParameter aName = this->mPortParameters.value(CHardwareSDK::Port::TCP::aType);   \
+    TTCPDevicePortParameter aName = this->m_PortParameters.value(CHardwareSDK::Port::TCP::aType);   \
     if (aName.isEmpty()) {                                                                         \
         this->toLog(LogLevel::Error,                                                               \
-                    this->mDeviceName + QStringLiteral(": %1 are empty").arg(#aName));             \
+                    this->m_DeviceName + QStringLiteral(": %1 are empty").arg(#aName));             \
         return false;                                                                              \
     }
 
 //--------------------------------------------------------------------------------
 template <class T> bool TCPDeviceBase<T>::makeSearchingList() {
-    // В шаблонах C++ обращение к членам базового класса mPortParameters требует this->
+    // В шаблонах C++ обращение к членам базового класса m_PortParameters требует this->
     MAKE_TCP_PORT_PARAMETER(IPs, IP);
     MAKE_TCP_PORT_PARAMETER(portNumbers, Number);
 
@@ -87,7 +87,7 @@ template <class T> bool TCPDeviceBase<T>::makeSearchingList() {
     for (const QVariant &IP : IPs) {
         for (const QVariant &portNumber : portNumbers) {
             STCPPortParameters params(IP, portNumber);
-            this->mSearchingPortParameters.append(params);
+            this->m_SearchingPortParameters.append(params);
         }
     }
 
@@ -96,17 +96,17 @@ template <class T> bool TCPDeviceBase<T>::makeSearchingList() {
 
 //--------------------------------------------------------------------------------
 template <class T> IDevice::IDetectingIterator *TCPDeviceBase<T>::getDetectingIterator() {
-    if (!this->mAutoDetectable) {
+    if (!this->m_AutoDetectable) {
         return nullptr;
     }
 
-    this->mSearchingPortParameters.clear();
+    this->m_SearchingPortParameters.clear();
     // makeSearchingList() — зависимое имя, вызываем через this->
     if (!this->makeSearchingList()) {
         return nullptr;
     }
 
-    this->mNextParameterIterator = this->mSearchingPortParameters.begin();
+    this->m_NextParameterIterator = this->m_SearchingPortParameters.begin();
 
     return this;
 }
@@ -114,11 +114,11 @@ template <class T> IDevice::IDetectingIterator *TCPDeviceBase<T>::getDetectingIt
 //--------------------------------------------------------------------------------
 template <class T> bool TCPDeviceBase<T>::find() {
     QVariantMap portParameters;
-    portParameters.insert(CHardwareSDK::Port::TCP::IP, this->mCurrentParameter.IP);
-    portParameters.insert(CHardwareSDK::Port::TCP::Number, this->mCurrentParameter.number);
+    portParameters.insert(CHardwareSDK::Port::TCP::IP, this->m_CurrentParameter.IP);
+    portParameters.insert(CHardwareSDK::Port::TCP::Number, this->m_CurrentParameter.number);
 
     // Прямая настройка IO порта для следующей итерации поиска
-    this->mIOPort->setDeviceConfiguration(portParameters);
+    this->m_IOPort->setDeviceConfiguration(portParameters);
 
     // Вызов статического или базового метода find из параметра шаблона
     return T::find();
@@ -127,12 +127,12 @@ template <class T> bool TCPDeviceBase<T>::find() {
 //--------------------------------------------------------------------------------
 template <class T> bool TCPDeviceBase<T>::moveNext() {
     // Безопасное сравнение итераторов (совместимо с Qt 5 и 6)
-    if (this->mNextParameterIterator == this->mSearchingPortParameters.end()) {
+    if (this->m_NextParameterIterator == this->m_SearchingPortParameters.end()) {
         return false;
     }
 
-    this->mCurrentParameter = *(this->mNextParameterIterator);
-    this->mNextParameterIterator++;
+    this->m_CurrentParameter = *(this->m_NextParameterIterator);
+    this->m_NextParameterIterator++;
 
     return true;
 }

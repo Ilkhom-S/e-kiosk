@@ -13,7 +13,7 @@
 #include "modules/CheckOnline.h"
 #include "modules/CollectDaemons.h"
 #include "modules/CommandConfirm.h"
-#include "modules/ConfirmOtp.h"
+#include "modules/Confirm_Otp.h"
 #include "modules/GetBalanceAgent.h"
 #include "modules/GetServices.h"
 #include "modules/JsonRequest.h"
@@ -27,7 +27,7 @@
 #include "other/logger.h"
 #include "other/loggerValidator.h"
 #include "other/receipt.h"
-#include "other/systemInfo.h"
+#include "other/system_Info.h"
 #include "other/utils.h"
 #include "ui/admindialog.h"
 #include "ui/avtorizationtoadminin.h"
@@ -81,13 +81,13 @@ struct CoinAcceptorParams {
     QString partNumber;
 };
 
-struct ModemParams {
+struct Modem_Params {
     bool found = false;
     QString name;
     QString port;
     QString comment;
     bool present = false;
-    bool simPresent = false;
+    bool sim_Present = false;
     QString provider;
     QString rate;
     QString balance;
@@ -107,7 +107,7 @@ struct Config {
     // Пораметры терминала
     TerminalParams terminalData;
     // Пораметры модема
-    ModemParams modemData;
+    Modem_Params modem_Data;
     // Параметры купюроприёмника
     ValidatorParams validatorData;
     // Параметры монетоприемника
@@ -133,9 +133,9 @@ struct Config {
     // Индекс для проверки баланса сим карты
     int indexCheckBalance = 0;
     // Запрос на проверку баланса сим
-    QString simBalanceRequest = "*100#";
+    QString sim_BalanceRequest = "*100#";
     // Запрос на проверку Номера сим
-    QString simNumberRequest = "*99#";
+    QString sim_NumberRequest = "*99#";
     // Наименование точки дозвона
     QString vpnName;
     // Показать диалог печати чека
@@ -145,7 +145,7 @@ struct Config {
     // Язык по умолчанию
     QString langDefault = Lang::RU;
     // Информация о системе
-    QVariantMap systemInfo;
+    QVariantMap system_Info;
     // Поиск валидатора
     bool searchValidator = true;
     // Поиск монетоприемника
@@ -169,7 +169,7 @@ struct Config {
     // Верхний отступ Win чека
     int winPrtChekTopMargin = 1;
     // Нижний отступ Win чека
-    int winPrtChekBottomMargin = 1;
+    int winPrtChekBottom_Margin = 1;
     // Счетчик чека
     bool existCounterChek = true;
     // Включение отключения датчика рулона на принтере
@@ -191,17 +191,17 @@ struct Config {
     // Значение баланса агента при котором надо отправлять смс
     double smsValueBalanceAgent = false;
     // Отправка смс при малом балансе на сим карте
-    bool smsErrSimBalance = false;
+    bool smsErrSim_Balance = false;
     // Отправка смс при блокировке терминала
     bool smsErrLockTerminal = false;
     // Отправка смс при ошибке соединения с сервером
     bool smsErrConnection = false;
     // Отправка статуса замятия купюры в боксе
-    bool statusValidatorJamInBox = false;
+    bool statusValidatorJam_InBox = false;
     // Счетчик подсчета замятия купюры в боксе
-    int statusValidatorJamInBoxValueCounter = 0;
+    int statusValidatorJam_InBoxValueCounter = 0;
     // Блокировть ли терминал при замятии в боксе
-    bool statusValidatorJamInBoxLockers = false;
+    bool statusValidatorJam_InBoxLockers = false;
     // Блокировка при дубликат купюры
     bool lockDuplicateNominal = false;
     // Включение/отключение автоматического обновления
@@ -272,7 +272,7 @@ enum Data {
     // Терминал заблокирован из за проблемы с интерфейсом
     ErrorInterface = 3,
     // Терминал заблокирован по сигналу с сервера
-    LockFromServer = 4,
+    LockFrom_Server = 4,
     // Терминал заблокирован по ошибке определения устройств
     ErrorDevice = 5,
     // Терминал заблокирован по параметру is_active
@@ -323,7 +323,7 @@ private:
     Logger *logger;
     LoggerValidator *loggerValidator;
     LogClean *logClean{};
-    SystemInfo *systemInfo{};
+    System_Info *system_Info{};
     ConnectionPart *connObject{};
 
     // Devices
@@ -354,7 +354,7 @@ private:
     CheckOnline *checkOnline{};
     SendReceipt *sendReceipt{};
     SendOtp *sendOtp{};
-    ConfirmOtp *confirmOtp{};
+    Confirm_Otp *confirm_Otp{};
     CommandConfirm *commandConfirm{};
     SendLogInfo *sendLogInfo{};
     GetBalanceAgent *getBalanceAgent{};
@@ -430,7 +430,7 @@ private:
     bool oneGetServices = true;
     bool oneSendStatus = true;
     bool oneLoadingGprs = true;
-    bool systemInfoGot = false;
+    bool system_InfoGot = false;
 
     bool whenRasReboot{};
     int countGS = 0;
@@ -446,9 +446,9 @@ private:
 
     bool clearDataBase();
     bool deleteTerminalData();
-    bool getDeviceFromDB();
+    bool getDeviceFrom_DB();
 
-    QString getWinprinterFromDB();
+    QString getWinprinterFrom_DB();
 
     bool commandExist(QString trn);
     bool
@@ -467,12 +467,12 @@ private:
 
     void deleteSearchParam();
 
-    QString systemHash;
-    QString systemHashGet() const;
+    QString system_Hash;
+    QString system_HashGet() const;
 
     static QStringList getWinPrinterNames();
 
-    bool isModemConnectionUp(QString &connectionName);
+    bool isModem_ConnectionUp(QString &connectionName);
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -511,7 +511,7 @@ private slots:
 
     void lockUnlockCenter(Lock::Data state, bool lock);
     void openAdminDialog();
-    void getCommandFromAdmin(AdminCommand::AdminCmd cmd);
+    void getCommandFrom_Admin(AdminCommand::AdminCmd cmd);
     void unlockAdminOpenSts();
     void checkLockTerminal();
     bool saveTerminalAuthData(bool update, QString login, QString token);
@@ -537,10 +537,10 @@ private slots:
     void rebootCountSet(int val = 0);
     void rebootCountClear();
 
-    void rebootModemEntries();
+    void rebootModem_Entries();
     void rebootEntries(int errInit);
 
-    void getSystemInfo(QVariantMap data);
+    void getSystem_Info(QVariantMap data);
 
     // SMS
     void createSmsSendTable();
@@ -564,10 +564,10 @@ private slots:
     void validatorStatusGetOnMain();
     void nominalGet(int nominal);
     void nominalDuplicateGet(int nominal);
-    void incameStatusFromValidator(int sts, QString comment);
+    void incameStatusFrom_Validator(int sts, QString comment);
     void validatorInit(bool action);
     void openValidatorBox();
-    void getCommandFromIncash(int cmd);
+    void getCommandFrom_Incash(int cmd);
     void validatorFirmwareResult(QString state);
 
     // Coin acceptor
@@ -575,14 +575,14 @@ private slots:
     void coinAcceptorStatusGetOnMain();
     void coinGet(int coin);
     void coinDuplicateGet(int coin);
-    void incameStatusFromCoinAcceptor(int sts, QString comment);
+    void incameStatusFrom_CoinAcceptor(int sts, QString comment);
     void coinAcceptorInit(bool action);
 
     // Watchdog
     void cmdWatchdogDone(bool state, int aCommand);
 
     // Cmd
-    void getCommandFromServer(QVariantList cmdList);
+    void getCommandFrom_Server(QVariantList cmdList);
     void commandConfirmed(QString trn);
     void commandExecution(CommandInit::Cmd cmd, QVariantMap meta = QVariantMap());
     void restartTerminalInit();
@@ -615,10 +615,10 @@ private slots:
     void filesUpdated(QVariantMap files);
     void updaterLock(bool lock);
 
-    QVariantList getServicesFromDB();
-    QVariantList getCategoriesFromDB();
-    QVariantList getServicesInputsFromDB();
-    QVariantList getServicesFieldsFromDB();
+    QVariantList getServicesFrom_DB();
+    QVariantList getCategoriesFrom_DB();
+    QVariantList getServicesInputsFrom_DB();
+    QVariantList getServicesFieldsFrom_DB();
 
     bool updateHashConfig(QString hash);
 

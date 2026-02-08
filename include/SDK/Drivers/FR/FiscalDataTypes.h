@@ -56,7 +56,7 @@ enum Enum {
 } // namespace ETaxSystems
 
 /// Описатель списка СНО
-typedef QMap<ETaxSystems::Enum, QString> TTaxSystemData;
+typedef QMap<ETaxSystems::Enum, QString> TTaxSystem_Data;
 
 //--------------------------------------------------------------------------------
 /// Признаки агента (1057 в ФР, 1222 в чеке).
@@ -236,7 +236,7 @@ typedef QMap<int, QString> TSectionNames;
 } // namespace Driver
 } // namespace SDK
 
-Q_DECLARE_METATYPE(SDK::Driver::TTaxSystemData);
+Q_DECLARE_METATYPE(SDK::Driver::TTaxSystem_Data);
 Q_DECLARE_METATYPE(SDK::Driver::TAgentFlagsData);
 Q_DECLARE_METATYPE(QList<SDK::Driver::EAgentFlags::Enum>);
 Q_DECLARE_METATYPE(SDK::Driver::TSectionNames);

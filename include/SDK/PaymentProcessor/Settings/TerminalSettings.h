@@ -106,14 +106,14 @@ struct SCommonSettings {
 
     // Printer
     bool printFailedReceipts;   /// Распечатывать не напечатанные фискальные чеки при инкассации
-    bool randomReceiptsID;      /// Номера чеков в рандомном порядке
+    bool random_ReceiptsID;      /// Номера чеков в рандомном порядке
     QTime autoZReportTime;      /// Автоматическое закрытие смены ККТ в определенное время
     bool enableBlankFiscalData; /// Разрешать печатать фискальные чеки без фискальных данных
 
     SCommonSettings()
         : blockCheatedPayment(false), autoEncashment(false), minPar(10),
           skipCheckWhileNetworkError(false), isValid(true), disableAmountOverflow(false),
-          penetrationEventLevel(EEventType::OK), printFailedReceipts(true), randomReceiptsID(false),
+          penetrationEventLevel(EEventType::OK), printFailedReceipts(true), random_ReceiptsID(false),
           enableBlankFiscalData(false) {
         _blockOn << ValidatorError << PrinterError << CardReaderError;
     }

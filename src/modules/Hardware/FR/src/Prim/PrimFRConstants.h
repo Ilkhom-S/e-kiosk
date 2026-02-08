@@ -6,11 +6,11 @@
 #include "Hardware/Common/BaseStatusTypes.h"
 #include "Hardware/FR/FRStatusCodes.h"
 #include "Hardware/Printers/Tags.h"
-#include "PrimFRDataTypes.h"
+#include "Prim_FRDataTypes.h"
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе PRIM.
-namespace CPrimFR {
+namespace CPrim_FR {
 /// Байт-разделитель.
 const char Separator = '\x1C';
 
@@ -107,7 +107,7 @@ const ushort Parameter2 = 0x14A0;
 const ushort LongReportMask2 = 0x0005;
 
 /// Маска для обнуления суммы в кассе при закрытии смены (параметр 2).
-const ushort NullingSumInCashMask = 0x0100;
+const ushort NullingSum_InCashMask = 0x0100;
 
 /// Версия ПО ФР, где присутствуют презентер и ретрактор.
 extern const char SoftVersionPresenter[];
@@ -330,42 +330,42 @@ class ExtraData : public ExtraDataBase {
 public:
     ExtraData() {
         /// Причины переполнения денежного счетчика.
-        mMoneyCounterOverflows.append('\x01', "Сумма составляющих не равна общей сумме");
-        mMoneyCounterOverflows.append('\x02', "Сумма по видам оплат не равна общей сумме");
-        mMoneyCounterOverflows.append('\xA0', "Ошибка умножения");
-        mMoneyCounterOverflows.append('\xA1', "Ошибка деления");
-        mMoneyCounterOverflows.append('\xFA', "Переполнение для процента");
-        mMoneyCounterOverflows.append('\xFB', "Переполнение для счетчиков накопления");
-        mMoneyCounterOverflows.append('\xFC', "Переполнение для суммы в кассе");
-        mMoneyCounterOverflows.append('\xFD', "Переполнение для дневного счетчика");
-        mMoneyCounterOverflows.append('\xFE', "Переполнение для суммы документа");
-        mMoneyCounterOverflows.append('\xFF', "Переполнение для суммы операции");
-        mMoneyCounterOverflows.setDefault("Неизвестна");
+        m_MoneyCounterOverflows.append('\x01', "Сумма составляющих не равна общей сумме");
+        m_MoneyCounterOverflows.append('\x02', "Сумма по видам оплат не равна общей сумме");
+        m_MoneyCounterOverflows.append('\xA0', "Ошибка умножения");
+        m_MoneyCounterOverflows.append('\xA1', "Ошибка деления");
+        m_MoneyCounterOverflows.append('\xFA', "Переполнение для процента");
+        m_MoneyCounterOverflows.append('\xFB', "Переполнение для счетчиков накопления");
+        m_MoneyCounterOverflows.append('\xFC', "Переполнение для суммы в кассе");
+        m_MoneyCounterOverflows.append('\xFD', "Переполнение для дневного счетчика");
+        m_MoneyCounterOverflows.append('\xFE', "Переполнение для суммы документа");
+        m_MoneyCounterOverflows.append('\xFF', "Переполнение для суммы операции");
+        m_MoneyCounterOverflows.setDefault("Неизвестна");
 
         /// Причины некорректного состояния ЭКЛЗ.
-        mEKLZIncorrectStateReason.append('\x00', "Требуется активизация ЭКЛЗ или ответ 02 из ЭКЛЗ");
-        mEKLZIncorrectStateReason.append('\x01', "Попытка фискализации при активизированной ЭКЛЗ");
-        mEKLZIncorrectStateReason.append('\x09', "Повторная активизация активизированной ЭКЛЗ");
-        mEKLZIncorrectStateReason.append('\x0A', "Не опознан номер ЭКЛЗ");
-        mEKLZIncorrectStateReason.append(
+        m_EKLZIncorrectStateReason.append('\x00', "Требуется активизация ЭКЛЗ или ответ 02 из ЭКЛЗ");
+        m_EKLZIncorrectStateReason.append('\x01', "Попытка фискализации при активизированной ЭКЛЗ");
+        m_EKLZIncorrectStateReason.append('\x09', "Повторная активизация активизированной ЭКЛЗ");
+        m_EKLZIncorrectStateReason.append('\x0A', "Не опознан номер ЭКЛЗ");
+        m_EKLZIncorrectStateReason.append(
             '\x40', "Ошибка, связанная с ЭКЛЗ (подробности в трассовой информации)");
-        mEKLZIncorrectStateReason.setDefault("Неизвестна");
+        m_EKLZIncorrectStateReason.setDefault("Неизвестна");
     }
 
     virtual QString value(char aErrorCode, char aErrorReason) {
         if (aErrorCode == Errors::EKLZIncorrectState)
-            return mEKLZIncorrectStateReason[aErrorReason];
+            return m_EKLZIncorrectStateReason[aErrorReason];
         else if (aErrorCode == Errors::MoneyCounterOverflow)
-            return mMoneyCounterOverflows[aErrorReason];
+            return m_MoneyCounterOverflows[aErrorReason];
 
         return ExtraDataBase::value(aErrorCode, aErrorReason);
     }
 
 private:
-    CDescription<char> mMoneyCounterOverflows;
-    CDescription<char> mEKLZIncorrectStateReason;
+    CDescription<char> m_MoneyCounterOverflows;
+    CDescription<char> m_EKLZIncorrectStateReason;
 };
 } // namespace Errors
-} // namespace CPrimFR
+} // namespace CPrim_FR
 
 //--------------------------------------------------------------------------------

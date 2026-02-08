@@ -28,9 +28,9 @@ const char DefaultName[] = "Meta device";
 //-------------------------------------------------------------------------------
 template <class T>
 MetaDevice<T>::MetaDevice()
-    : mDeviceName(CMetaDevice::DefaultName), mLogDate(QDate::currentDate()),
-      mOperatorPresence(false), mFiscalServerPresence(false), mDetectingPosition(0),
-      mInitialized(ERequestStatus::Fail), mExitTimeout(ULONG_MAX), mInitializationError(false) {}
+    : m_DeviceName(CMetaDevice::DefaultName), m_LogDate(QDate::currentDate()),
+      m_OperatorPresence(false), m_FiscalServerPresence(false), m_DetectingPosition(0),
+      m_Initialized(ERequestStatus::Fail), m_ExitTimeout(ULONG_MAX), m_InitializationError(false) {}
 
 //--------------------------------------------------------------------------------
 template <class T>
@@ -50,27 +50,27 @@ bool MetaDevice<T>::unsubscribe(const char * /*aSignal*/, QObject * /*aReceiver*
 template <class T> QString MetaDevice<T>::getName() const {
     QString deviceName = getConfigParameter(CHardwareSDK::ModelName).toString();
 
-    return deviceName.isEmpty() ? mDeviceName : deviceName;
+    return deviceName.isEmpty() ? m_DeviceName : deviceName;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void MetaDevice<T>::initialize() {
     logDeviceData(getDeviceData());
 
-    mInitialized = ERequestStatus::Success;
+    m_Initialized = ERequestStatus::Success;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool MetaDevice<T>::release() {
-    if (mThread.isRunning()) {
-        mThread.quit();
+    if (m_Thread.isRunning()) {
+        m_Thread.quit();
 
         if (!isWorkingThread()) {
-            mThread.wait(mExitTimeout);
+            m_Thread.wait(m_ExitTimeout);
         }
     }
 
-    mInitialized = ERequestStatus::Fail;
+    m_Initialized = ERequestStatus::Fail;
 
     return true;
 }
@@ -95,17 +95,17 @@ template <class T> void MetaDevice<T>::setDeviceConfiguration(const QVariantMap 
         setConfigParameter(it.key(), it.value());
     }
 
-    mOperatorPresence =
-        aConfiguration.value(CHardwareSDK::OperatorPresence, mOperatorPresence).toBool();
-    mFiscalServerPresence =
-        aConfiguration.value(CHardwareSDK::FiscalServerPresence, mFiscalServerPresence).toBool();
+    m_OperatorPresence =
+        aConfiguration.value(CHardwareSDK::OperatorPresence, m_OperatorPresence).toBool();
+    m_FiscalServerPresence =
+        aConfiguration.value(CHardwareSDK::FiscalServerPresence, m_FiscalServerPresence).toBool();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> QVariantMap MetaDevice<T>::getDeviceConfiguration() const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mConfiguration;
+    return m_Configuration;
 }
 
 //--------------------------------------------------------------------------------
@@ -129,19 +129,19 @@ void MetaDevice<T>::setDeviceParameter(const QString &aName,
     }
 
     if (aExtensibleName.isEmpty()) {
-        QWriteLocker locker(&mConfigurationGuard);
-        mDeviceData.insert(aName, value);
+        QWriteLocker locker(&m_ConfigurationGuard);
+        m_DeviceData.insert(aName, value);
     } else if (!value.isEmpty()) {
         // Использование QStringBuilder (через % вместо +) позволяет избежать
         // создания промежуточных объектов строк при конкатенации.
         value = aName % " " % value;
 
         if (!aUpdateExtensible) {
-            QReadLocker locker(&mConfigurationGuard);
+            QReadLocker locker(&m_ConfigurationGuard);
 
             // Использование value() вместо оператора [] предотвращает случайное
             // создание пустых записей в контейнере при чтении.
-            QString extensibleValue = mDeviceData.value(aExtensibleName);
+            QString extensibleValue = m_DeviceData.value(aExtensibleName);
 
             if (!extensibleValue.isEmpty()) {
                 value = extensibleValue % ", " % value;
@@ -149,31 +149,31 @@ void MetaDevice<T>::setDeviceParameter(const QString &aName,
         }
 
         {
-            QWriteLocker locker(&mConfigurationGuard);
-            mDeviceData.insert(aExtensibleName, value);
+            QWriteLocker locker(&m_ConfigurationGuard);
+            m_DeviceData.insert(aExtensibleName, value);
         }
     }
 }
 
 //--------------------------------------------------------------------------------
 template <class T> QVariant MetaDevice<T>::getDeviceParameter(const QString &aName) const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mDeviceData.value(aName);
+    return m_DeviceData.value(aName);
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool MetaDevice<T>::containsDeviceParameter(const QString &aName) const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mDeviceData.contains(aName) && !mDeviceData.value(aName).isEmpty();
+    return m_DeviceData.contains(aName) && !m_DeviceData.value(aName).isEmpty();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void MetaDevice<T>::removeDeviceParameter(const QString &aName) {
-    QWriteLocker lock(&mConfigurationGuard);
+    QWriteLocker lock(&m_ConfigurationGuard);
 
-    mDeviceData.remove(aName);
+    m_DeviceData.remove(aName);
 }
 
 //---------------------------------------------------------------------------
@@ -187,9 +187,9 @@ template <class T> void MetaDevice<T>::logDeviceData(const SLogData &aData) cons
     if (!aData.config.isEmpty())
         toLog(LogLevel::Normal, "Config data:" + aData.config);
 
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    if (mConfiguration[CHardwareSDK::RequiredDevice].template value<IDevice *>() &&
+    if (m_Configuration[CHardwareSDK::RequiredDevice].template value<IDevice *>() &&
         !aData.requiredDevice.isEmpty()) {
         toLog(LogLevel::Normal, "Required device data:" + aData.requiredDevice);
     }
@@ -197,10 +197,10 @@ template <class T> void MetaDevice<T>::logDeviceData(const SLogData &aData) cons
 
 //---------------------------------------------------------------------------
 template <class T> SLogData MetaDevice<T>::getDeviceData() const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
     IDevice *requiredDevice =
-        mConfiguration.value(CHardwareSDK::RequiredDevice).template value<IDevice *>();
+        m_Configuration.value(CHardwareSDK::RequiredDevice).template value<IDevice *>();
     SLogData result;
 
     if (requiredDevice) {
@@ -225,7 +225,7 @@ template <class T> SLogData MetaDevice<T>::getDeviceData() const {
     }
 
     result.plugin = DeviceUtils::getPartDeviceData(data, false);
-    result.device = DeviceUtils::getPartDeviceData(mDeviceData, false);
+    result.device = DeviceUtils::getPartDeviceData(m_DeviceData, false);
 
     QVariantMap dealerSettings = getConfigParameter(CHardware::ConfigData).toMap();
     names = dealerSettings.keys();
@@ -243,7 +243,7 @@ template <class T> SLogData MetaDevice<T>::getDeviceData() const {
 
 //--------------------------------------------------------------------------------
 template <class T> IDevice::IDetectingIterator *MetaDevice<T>::getDetectingIterator() {
-    mDetectingPosition = 0;
+    m_DetectingPosition = 0;
 
     return this;
 }
@@ -255,17 +255,17 @@ template <class T> bool MetaDevice<T>::find() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool MetaDevice<T>::moveNext() {
-    return (mDetectingPosition++ == 0);
+    return (m_DetectingPosition++ == 0);
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void MetaDevice<T>::setLog(ILog *aLog) {
-    mLog = aLog;
+    m_Log = aLog;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool MetaDevice<T>::isWorkingThread() {
-    return &mThread == QThread::currentThread();
+    return &m_Thread == QThread::currentThread();
 }
 
 //--------------------------------------------------------------------------------

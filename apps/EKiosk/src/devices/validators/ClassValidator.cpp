@@ -27,7 +27,7 @@ void ClassValidator::setValidator(QString name) {
         connect(CCNetValidator,
                 SIGNAL(emitStatus(int, QString)),
                 this,
-                SLOT(getStatusFromValidator(int, QString)));
+                SLOT(getStatusFrom_Validator(int, QString)));
         connect(CCNetValidator,
                 SIGNAL(emitLog(int, QString, QString)),
                 SIGNAL(emitLog(int, QString, QString)));
@@ -55,7 +55,7 @@ void ClassValidator::setValidator(QString name) {
         connect(EBDSValidator,
                 SIGNAL(emitStatus(int, QString)),
                 this,
-                SLOT(getStatusFromValidator(int, QString)));
+                SLOT(getStatusFrom_Validator(int, QString)));
         connect(EBDSValidator,
                 SIGNAL(emitLog(int, QString, QString)),
                 SIGNAL(emitLog(int, QString, QString)));
@@ -65,18 +65,18 @@ void ClassValidator::setValidator(QString name) {
     }
 }
 
-void ClassValidator::getStatusFromValidator(int sts, QString comment) {
+void ClassValidator::getStatusFrom_Validator(int sts, QString comment) {
     status = sts;
     emit emitStatusValidator(status, comment);
 }
 
 void ClassValidator::setPortName(QString portName) {
-    comPort = portName;
+    com_Port = portName;
 
     if (validatorName == ValidatorModel::CashCodeCCNET) {
-        CCNetValidator->setPortName(comPort);
+        CCNetValidator->setPortName(com_Port);
     } else if (validatorName == ValidatorModel::MeiEBDS) {
-        EBDSValidator->setPortName(comPort);
+        EBDSValidator->setPortName(com_Port);
     }
 }
 
@@ -156,11 +156,11 @@ void ClassValidator::run() {
 
     case ValidatorCommands::StartPolling:
         if (validatorName == ValidatorModel::CashCodeCCNET) {
-            CCNetValidator->maxSumReject = maxSum.value("max_sum_reject").toBool();
+            CCNetValidator->maxSum_Reject = maxSum.value("max_sum_reject").toBool();
             CCNetValidator->maxSum = maxSum.value("max_sum").toInt();
             CCNetValidator->CmdStartPoll();
         } else if (validatorName == ValidatorModel::MeiEBDS) {
-            EBDSValidator->maxSumReject = maxSum.value("max_sum_reject").toBool();
+            EBDSValidator->maxSum_Reject = maxSum.value("max_sum_reject").toBool();
             EBDSValidator->maxSum = maxSum.value("max_sum").toInt();
             EBDSValidator->CmdStartPoll();
         }
@@ -193,7 +193,7 @@ void ClassValidator::run() {
     return;
 }
 
-bool ClassValidator::isItYou(QStringList &comList,
+bool ClassValidator::isItYou(QStringList &com_List,
                              QString &validator_name,
                              QString &com_str,
                              QString &validator_coment) {
@@ -230,13 +230,13 @@ bool ClassValidator::isItYou(QStringList &comList,
 
         this->setValidator(Validator_List.at(dev_count));
 
-        for (int com_count = 0; com_count < comList.count(); com_count++) {
-            this->setPortName(comList.at(com_count));
+        for (int com_count = 0; com_count < com_List.count(); com_count++) {
+            this->setPortName(com_List.at(com_count));
 
             if (validatorName == ValidatorModel::CashCodeCCNET) {
                 if (CCNetValidator->isItYou()) {
                     nowValidatorName = validator_name = Validator_List.at(dev_count);
-                    nowPortName = com_str = comList.at(com_count);
+                    nowPortName = com_str = com_List.at(com_count);
                     nowComent = validator_coment = CCNetValidator->PartNumber;
                     CCNetValidator->closePort();
                     return true;
@@ -246,7 +246,7 @@ bool ClassValidator::isItYou(QStringList &comList,
             if (validatorName == ValidatorModel::MeiEBDS) {
                 if (EBDSValidator->isItYou()) {
                     nowValidatorName = validator_name = Validator_List.at(dev_count);
-                    nowPortName = com_str = comList.at(com_count);
+                    nowPortName = com_str = com_List.at(com_count);
                     nowComent = validator_coment = EBDSValidator->partNumber;
                     EBDSValidator->closePort();
                     return true;

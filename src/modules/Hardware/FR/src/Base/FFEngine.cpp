@@ -297,7 +297,7 @@ QByteArray FFEngine::getTLVData(int aField, const QVariant &aValue, QString *aLo
                                     .arg(data));
         }
 
-        result += m_Codec->fromUnicode(data);
+        result += m_Codec->from_Unicode(data);
         log += data;
 
         break;
@@ -609,9 +609,9 @@ bool FFEngine::checkDealerTaxSystem(ERequestStatus::Enum aInitialized, bool aCan
         return false;
     }
 
-    QVariant taxSystemData = getConfigParameter(CHardwareSDK::FR::DealerTaxSystem);
+    QVariant taxSystem_Data = getConfigParameter(CHardwareSDK::FR::DealerTaxSystem);
 
-    if (taxSystemData.toString().isEmpty()) {
+    if (taxSystem_Data.toString().isEmpty()) {
         if (aCanLog) {
             toLog(LogLevel::Warning, m_DeviceName + ": Dealer taxation system is empty");
         }
@@ -619,7 +619,7 @@ bool FFEngine::checkDealerTaxSystem(ERequestStatus::Enum aInitialized, bool aCan
         return false;
     }
 
-    char taxSystem = char(taxSystemData.toInt());
+    char taxSystem = char(taxSystem_Data.toInt());
 
     if (!CFR::TaxSystems.data().keys().contains(taxSystem)) {
         if (aCanLog) {
@@ -734,13 +734,13 @@ bool FFEngine::checkCashier(QString &aCashier) {
 }
 
 //--------------------------------------------------------------------------------
-bool FFEngine::checkTaxSystemOnPayment(SPaymentData &aPaymentData) {
-    char paymentTaxSystemData = char(aPaymentData.taxSystem);
-    char dealerTaxSystemData = char(getConfigParameter(CHardwareSDK::FR::DealerTaxSystem).toInt());
-    ETaxSystems::Enum dealerTaxSystem = ETaxSystems::Enum(dealerTaxSystemData);
+bool FFEngine::checkTaxSystem_OnPayment(SPaymentData &aPaymentData) {
+    char paymentTaxSystem_Data = char(aPaymentData.taxSystem);
+    char dealerTaxSystem_Data = char(getConfigParameter(CHardwareSDK::FR::DealerTaxSystem).toInt());
+    ETaxSystems::Enum dealerTaxSystem = ETaxSystems::Enum(dealerTaxSystem_Data);
 
     if (dealerTaxSystem != ETaxSystems::None) {
-        if (m_TaxSystems.contains(dealerTaxSystemData)) {
+        if (m_TaxSystems.contains(dealerTaxSystem_Data)) {
             aPaymentData.taxSystem = dealerTaxSystem;
         } else if (m_TaxSystems.size() == 1) {
             aPaymentData.taxSystem = ETaxSystems::Enum(m_TaxSystems[0]);
@@ -758,13 +758,13 @@ bool FFEngine::checkTaxSystemOnPayment(SPaymentData &aPaymentData) {
                                         .arg(toHexLog(joinedTaxSystems)));
                 return false;
             }
-        } else if (!m_TaxSystems.contains(paymentTaxSystemData)) {
+        } else if (!m_TaxSystems.contains(paymentTaxSystem_Data)) {
             toLog(LogLevel::Error,
                   m_DeviceName +
                       QString(": The actual taxation system(s) %1 don`t contain system %2 (%3)")
                           .arg(toHexLog(joinedTaxSystems))
-                          .arg(toHexLog(paymentTaxSystemData))
-                          .arg(CFR::TaxSystems[paymentTaxSystemData]));
+                          .arg(toHexLog(paymentTaxSystem_Data))
+                          .arg(CFR::TaxSystems[paymentTaxSystem_Data]));
             return false;
         }
     }
@@ -833,7 +833,7 @@ void FFEngine::logRemovedFields(const QStringList &aOldTextKeys,
 
     toLog(LogLevel::Normal,
           m_DeviceName + QString(": fiscal fields %1 have been removed from the fiscal payment data")
-                            .arg(m_FFData.getLogFromList(removedFields)));
+                            .arg(m_FFData.getLogFrom_List(removedFields)));
 }
 
 //--------------------------------------------------------------------------------
@@ -1015,7 +1015,7 @@ QString FFEngine::filterPhone(const QString &aData) const {
         }
     }
 
-    index = result.indexOf(QRegularExpression(QString::fromUtf8("[a-zA-Zа-яА-Я\\.\\,\\;\\+]+")), 1);
+    index = result.indexOf(QRegularExpression(QString::from_Utf8("[a-zA-Zа-яА-Я\\.\\,\\;\\+]+")), 1);
     result = result.left(index).remove(QRegularExpression("[^0-9\\+]+"), "");
 
     if (result.size() == 10) {

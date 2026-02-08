@@ -50,8 +50,8 @@ private:
     QString getContent(const QString &aName);
 
 private:
-    ICore *mCore;
-    SDK::GUI::IAdSource *mAdSource;
+    ICore *m_Core;
+    SDK::GUI::IAdSource *m_AdSource;
 };
 
 //------------------------------------------------------------------------------

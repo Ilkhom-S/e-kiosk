@@ -50,19 +50,19 @@ private:
     bool handleResult(const QString &aFunctionName, HRESULT aResultCode);
 
     /// Контекст карты
-    SCARDCONTEXT mContext;
+    SCARDCONTEXT m_Context;
 
     /// Хендл карты
-    SCARDHANDLE mCard;
+    SCARDHANDLE m_Card;
 
     /// Используемый протокол
-    unsigned mActiveProtocol;
+    unsigned m_ActiveProtocol;
 
     /// Заголовок протокольного запроса к ридеру
-    SCARD_IO_REQUEST mPioSendPci;
+    SCARD_IO_REQUEST m_PioSendPci;
 
     /// Статус-коды результатов операций
-    TStatusCodes mStatusCodes;
+    TStatusCodes m_StatusCodes;
 };
 
 //--------------------------------------------------------------------------------

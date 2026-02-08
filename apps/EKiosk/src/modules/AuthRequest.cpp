@@ -4,7 +4,7 @@ AuthRequest::AuthRequest(QObject *parent) : SendRequest(parent) {
     senderName = "AUTH";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(errorResponse()));
-    connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
+    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
 }
 
 void AuthRequest::sendAuthRequest(QString login, QString otp, QString hash, QString cid) {
@@ -31,13 +31,13 @@ void AuthRequest::errorResponse() {
     emit emitResult("", "", "", "");
 }
 
-void AuthRequest::setDataNote(const QDomNode &domElement) {
+void AuthRequest::setDataNote(const QDom_Node &dom_Element) {
     resultCode = "";
     token = "";
     message = "";
 
     // Парсим данные
-    parcerNote(domElement);
+    parcerNote(dom_Element);
 
     if (resultCode != "") {
         emit emitResult(resultCode, login, token, message);
@@ -47,30 +47,30 @@ void AuthRequest::setDataNote(const QDomNode &domElement) {
     emit emitResult("", "", "", "");
 }
 
-void AuthRequest::parcerNote(const QDomNode &domElement) {
+void AuthRequest::parcerNote(const QDom_Node &dom_Element) {
     // Необходимо отпарсить документ
-    QDomNode domNode = domElement.firstChild();
+    QDom_Node dom_Node = dom_Element.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!dom_Node.isNull()) {
+        if (dom_Node.isElement()) {
 
-            QDomElement domElement = domNode.toElement();
-            QString strTag = domElement.tagName();
+            QDom_Element dom_Element = dom_Node.toElement();
+            QString strTag = dom_Element.tagName();
 
             if (strTag == "resultCode") {
-                resultCode = domElement.text();
+                resultCode = dom_Element.text();
             }
 
             if (strTag == "token") {
-                token = domElement.text();
+                token = dom_Element.text();
             }
 
             if (strTag == "message") {
-                message = domElement.text();
+                message = dom_Element.text();
             }
         }
 
-        parcerNote(domNode);
-        domNode = domNode.nextSibling();
+        parcerNote(dom_Node);
+        dom_Node = dom_Node.nextSibling();
     }
 }

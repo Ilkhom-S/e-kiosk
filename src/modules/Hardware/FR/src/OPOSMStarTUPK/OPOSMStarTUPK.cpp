@@ -350,7 +350,7 @@ bool OPOSMStarTUPK::getStatus(TStatusCodes &aStatusCodes) {
             aStatusCodes.insert(Error::PrinterFR);
             break;
         case COPOSMStarTUPK::ExtendedErrors::Printer::Mechanical:
-            aStatusCodes.insert(DeviceStatusCode::Error::MechanismPosition);
+            aStatusCodes.insert(DeviceStatusCode::Error::Mechanism_Position);
             break;
         case COPOSMStarTUPK::ExtendedErrors::Printer::Cutter:
             aStatusCodes.insert(Error::Cutter);
@@ -425,7 +425,7 @@ bool OPOSMStarTUPK::abortDocument() {
     case OPOS::FPTR_PS_NONFISCAL: {
         toOPOS_LOG(LogLevel::Warning, "Aborting non-fiscal receipt.");
         QStringList text = QStringList()
-                           << QString::fromWCharArray(COPOSMStarTUPK::NonFiscalCancellation);
+                           << QString::from_WCharArray(COPOSMStarTUPK::NonFiscalCancellation);
         processReceipt(text);
 
         setEnable(COPOSMStarTUPK::Parameters::AutoCutter, false);
@@ -495,7 +495,7 @@ bool OPOSMStarTUPK::makeFiscal(const SPaymentData &aPaymentData) {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::performFiscal(const QStringList &aReceipt,
+bool OPOSMStarTUPK::perform_Fiscal(const QStringList &aReceipt,
                                   const SPaymentData &aPaymentData,
                                   quint32 * /*aFDNumber*/) {
     if (!processReceipt(aReceipt, false)) {
@@ -518,7 +518,7 @@ ESessionState::Enum OPOSMStarTUPK::getSessionState() {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::performZReport(bool aPrintDeferredReports) {
+bool OPOSMStarTUPK::perform_ZReport(bool aPrintDeferredReports) {
     bool printZReport = execZReport(false);
     bool printDeferred = aPrintDeferredReports && printDeferredZReports();
 
@@ -645,7 +645,7 @@ bool OPOSMStarTUPK::printDeferredZReports() {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::performXReport(const QStringList &aReceipt) {
+bool OPOSMStarTUPK::perform_XReport(const QStringList &aReceipt) {
     TBoolMethod printing =
         std::bind(&OPOSMStarTUPK::processReceipt, this, aReceipt, m_NextReceiptProcessing);
     TBoolMethod XReport = std::bind(&OPOSMStarTUPK::processXReport, this);
@@ -668,7 +668,7 @@ bool OPOSMStarTUPK::performXReport(const QStringList &aReceipt) {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::performEncashment(const QStringList &aReceipt, double aAmount) {
+bool OPOSMStarTUPK::perform_Encashment(const QStringList &aReceipt, double aAmount) {
     TBoolMethod printing =
         std::bind(&OPOSMStarTUPK::processReceipt, this, std::ref(aReceipt), m_NextReceiptProcessing);
     TBoolMethod payout = std::bind(&OPOSMStarTUPK::processPayout, this, aAmount);

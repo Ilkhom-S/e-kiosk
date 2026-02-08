@@ -29,7 +29,7 @@ enum Enum {
 
 namespace {
 /// Преобразует строку в тип устройства.
-Enum fromString(const QString &aDeviceType) {
+Enum from_String(const QString &aDeviceType) {
     static QMap<QString, Enum> translation;
 
     if (translation.isEmpty()) {

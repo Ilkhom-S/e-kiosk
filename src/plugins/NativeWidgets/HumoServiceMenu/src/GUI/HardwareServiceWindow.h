@@ -49,9 +49,9 @@ private slots:
     void onClicked(const QVariantMap &aParameters);
 
 private:
-    HardwareWindow *mWindow;
-    bool mShown;
-    bool mFinish;
+    HardwareWindow *m_Window;
+    bool m_Shown;
+    bool m_Finish;
 };
 
 //------------------------------------------------------------------------

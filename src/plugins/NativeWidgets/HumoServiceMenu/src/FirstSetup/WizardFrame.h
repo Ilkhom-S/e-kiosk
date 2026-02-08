@@ -52,16 +52,16 @@ private:
     void onAbstractButtonClicked();
 
 private:
-    HumoServiceBackend *mBackend;
-    QString mCurrentContext;
-    WizardPageBase *mCurrentPage;
+    HumoServiceBackend *m_Backend;
+    QString m_CurrentContext;
+    WizardPageBase *m_CurrentPage;
 
     struct CacheItem {
         WizardPageBase *page;
     };
 
-    QMap<QString, CacheItem> mPages;
-    QSignalMapper mSignalMapper;
+    QMap<QString, CacheItem> m_Pages;
+    QSignalMapper m_SignalMapper;
 };
 
 //----------------------------------------------------------------------------

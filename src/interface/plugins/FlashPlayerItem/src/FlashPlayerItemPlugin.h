@@ -7,7 +7,7 @@
 #include "FlashPlayerItem.h"
 
 //--------------------------------------------------------------------------
-class FlashPlayerItemPlugin : public QDeclarativeExtensionPlugin {
+class FlashPlayerItem_Plugin : public QDeclarativeExtensionPlugin {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "Humo.GraphicsItems.FlashPlayer")
 

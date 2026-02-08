@@ -14,8 +14,8 @@ class WindowsImpl : public AsyncSerialPort::ISerialPortImpl {
 public:
     WindowsImpl() : m_impl() {}
 
-    QStringList enumerateSystemNames() override {
-        return AsyncSerialPortWin::enumerateSystemNames();
+    QStringList enumerateSystem_Names() override {
+        return AsyncSerialPortWin::enumerateSystem_Names();
     }
 
     void initialize() override { m_impl.initialize(); }
@@ -69,7 +69,7 @@ class LinuxImpl : public AsyncSerialPort::ISerialPortImpl {
 public:
     LinuxImpl() {}
 
-    QStringList enumerateSystemNames() override {
+    QStringList enumerateSystem_Names() override {
         return QStringList(); // No serial ports available
     }
 
@@ -143,9 +143,9 @@ AsyncSerialPort::~AsyncSerialPort() {
     m_impl = nullptr;
 }
 
-QStringList AsyncSerialPort::enumerateSystemNames() {
+QStringList AsyncSerialPort::enumerateSystem_Names() {
 #ifdef Q_OS_WIN
-    return AsyncSerialPortWin::enumerateSystemNames();
+    return AsyncSerialPortWin::enumerateSystem_Names();
 #else
     return QStringList(); // No serial ports available on this platform
 #endif

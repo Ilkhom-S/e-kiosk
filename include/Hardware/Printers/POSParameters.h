@@ -16,9 +16,9 @@
 namespace POSPrinters {
 /// Ошибки принтера.
 typedef QMap<char, int> TErrors;
-typedef QMap<char, TErrors> TCustomErrors;
-typedef CSpecification<char, TCustomErrors> CAllErrors;
-typedef QMap<char, TCustomErrors> TAllErrors;
+typedef QMap<char, TErrors> TCustom_Errors;
+typedef CSpecification<char, TCustom_Errors> CAllErrors;
+typedef QMap<char, TCustom_Errors> TAllErrors;
 typedef QSharedPointer<CAllErrors> PAllErrors;
 
 typedef QList<int> TSerialDevicePortParameter;

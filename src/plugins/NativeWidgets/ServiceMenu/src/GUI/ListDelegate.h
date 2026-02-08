@@ -1,10 +1,10 @@
 /* @file Делегат отображения элемента с комментарием в QListWidget */
 
 #include <QtGui/QPainter>
-#include <QtWidgets/QItemDelegate>
+#include <QtWidgets/QItem_Delegate>
 
 //---------------------------------------------------------------------------
-class ListDelegate : public QItemDelegate {
+class ListDelegate : public QItem_Delegate {
 public:
     ListDelegate(QObject *aParent = 0) { Q_UNUSED(aParent); }
 
@@ -45,7 +45,7 @@ public:
 
     virtual QSize sizeHint(const QStyleOptionViewItem &aOption, const QModelIndex &aIndex) const {
         QString description = aIndex.data(Qt::UserRole + 1).toString();
-        QSize size = QItemDelegate::sizeHint(aOption, aIndex);
+        QSize size = QItem_Delegate::sizeHint(aOption, aIndex);
 
         if (!description.isEmpty()) {
             size.setHeight(static_cast<int>(size.height() * 1.6));

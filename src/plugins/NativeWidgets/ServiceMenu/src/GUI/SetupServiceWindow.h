@@ -22,7 +22,7 @@ protected slots:
     void onCurrentPageChanged(int aIndex);
 
 private:
-    int mCurrentPageIndex;
+    int m_CurrentPageIndex;
 };
 
 //------------------------------------------------------------------------

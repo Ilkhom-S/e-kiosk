@@ -2,20 +2,20 @@
 
 #pragma once
 
-#include "../Ejector/PrimEjectorFR.h"
-#include "../Presenter/PrimPresenterFR.h"
+#include "../Ejector/Prim_EjectorFR.h"
+#include "../Presenter/Prim_PresenterFR.h"
 
 //--------------------------------------------------------------------------------
-template <CPrimFR::Models::Enum T1, class T2> class PrimOnlineFRSpecial : public T2 {
+template <CPrim_FR::Models::Enum T1, class T2> class Prim_OnlineFRSpecial : public T2 {
 public:
-    PrimOnlineFRSpecial() { setInitialParameters(); }
+    Prim_OnlineFRSpecial() { setInitialParameters(); }
 
 protected:
     /// Установить начальные параметры.
     void setInitialParameters() {
-        mModel = T1;
-        mModels = CPrimFR::TModels() << mModel;
-        mDeviceName = CPrimFR::ModelData[mModel].name;
+        m_Model = T1;
+        m_Models = CPrim_FR::TModels() << m_Model;
+        m_DeviceName = CPrim_FR::ModelData[m_Model].name;
     }
 
     /// Попытка самоидентификации.
@@ -24,11 +24,11 @@ protected:
             return false;
         }
 
-        CPrimFR::TData commandData = QVector<QByteArray>(3, int2ByteArray(0)).toList();
-        mModelCompatibility = (processCommand(CPrimFR::Commands::SetEjectorAction, commandData) ==
-                               CommandResult::Device) == (T1 == CPrimFR::Models::PRIM_21FA_Epson);
+        CPrim_FR::TData commandData = QVector<QByteArray>(3, int2ByteArray(0)).toList();
+        m_ModelCompatibility = (processCommand(CPrim_FR::Commands::SetEjectorAction, commandData) ==
+                               CommandResult::Device) == (T1 == CPrim_FR::Models::PRIM_21FA_Epson);
 
-        if (mModelCompatibility) {
+        if (m_ModelCompatibility) {
             setInitialParameters();
         }
 
@@ -36,9 +36,9 @@ protected:
     }
 };
 
-typedef PrimOnlineFRSpecial<CPrimFR::Models::PRIM_21FA_Custom, PrimEjectorFR<PrimOnlineFRBase>>
-    PrimEjectorOnlineFR;
-typedef PrimOnlineFRSpecial<CPrimFR::Models::PRIM_21FA_Epson, PrimPresenterFR<PrimOnlineFRBase>>
-    PrimPresenterOnlineFR;
+typedef Prim_OnlineFRSpecial<CPrim_FR::Models::PRIM_21FA_Custom, Prim_EjectorFR<Prim_OnlineFRBase>>
+    Prim_EjectorOnlineFR;
+typedef Prim_OnlineFRSpecial<CPrim_FR::Models::PRIM_21FA_Epson, Prim_PresenterFR<Prim_OnlineFRBase>>
+    Prim_PresenterOnlineFR;
 
 //--------------------------------------------------------------------------------

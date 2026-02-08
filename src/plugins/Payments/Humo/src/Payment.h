@@ -19,7 +19,7 @@ public:
 #pragma region SDK::PaymentProcessor::IPayment interface
 
     /// Выполнение шага с идентификатором aStep.
-    virtual bool performStep(int aStep);
+    virtual bool perform_Step(int aStep);
 
     /// Обновление статуса платежа.
     virtual void process();
@@ -49,10 +49,10 @@ protected:
     virtual bool status();
 
     /// Попытка проведения платежа.
-    virtual void performTransaction();
+    virtual void perform_Transaction();
 
     /// Проведение PAY части платежа
-    void performTransactionPay();
+    void perform_TransactionPay();
 
     /// Пересчитываем кол-во попыток и время следующей
     void updateNumberOfTries();
@@ -64,7 +64,7 @@ protected:
     virtual void setProcessError();
 
 protected:
-    RequestSender mRequestSender;
+    RequestSender m_RequestSender;
 };
 
 //------------------------------------------------------------------------------

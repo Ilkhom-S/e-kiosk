@@ -239,7 +239,7 @@ public:
     bool devicesCreated;
     bool is_open;
     int statusDevices;
-    QString comName;
+    QString com_Name;
     QString part_number;
 
     bool debugger;

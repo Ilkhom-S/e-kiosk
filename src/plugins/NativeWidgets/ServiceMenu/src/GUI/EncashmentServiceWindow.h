@@ -37,9 +37,9 @@ private:
     Ui::EncashmentServiceWindow ui;
 
 private:
-    QVariantMap mPayloadSettings;
-    QString mPayloadSettingsPath;
-    ServiceMenuBackend *mBackend;
+    QVariantMap m_PayloadSettings;
+    QString m_PayloadSettingsPath;
+    ServiceMenuBackend *m_Backend;
 };
 
 //------------------------------------------------------------------------

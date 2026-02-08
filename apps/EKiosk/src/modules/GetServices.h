@@ -11,9 +11,9 @@ public:
     GetServices(QObject *parent = 0);
 
 public slots:
-    void parcerHash(const QDomNode &domElement);
-    void parcerNote(const QDomNode &domElement);
-    void setDataNote(const QDomNode &domElement);
+    void parcerHash(const QDom_Node &dom_Element);
+    void parcerNote(const QDom_Node &dom_Element);
+    void setDataNote(const QDom_Node &dom_Element);
     void sendGetServicesQuery();
     //        void errorResponse();
 
@@ -34,8 +34,8 @@ private:
     bool saveServicesDB();
     bool saveCategoriesDB(const QVariantMap category);
     bool saveCommissionDB(const int id,
-                          const double sumFrom,
-                          const double sumTo,
+                          const double sum_From,
+                          const double sum_To,
                           const int type,
                           const double value,
                           const int serviceId,

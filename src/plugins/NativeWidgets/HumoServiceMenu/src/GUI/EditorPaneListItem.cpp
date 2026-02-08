@@ -4,19 +4,19 @@
 
 #include <QtWidgets/QApplication>
 
-EditorPaneListItemDelegate::EditorPaneListItemDelegate(QObject *aParent)
-    : QStyledItemDelegate(aParent) {}
+EditorPaneListItem_Delegate::EditorPaneListItem_Delegate(QObject *aParent)
+    : QStyledItem_Delegate(aParent) {}
 
 //------------------------------------------------------------------------
 QVariant EditorPaneListItem::data(int aRole) const {
     if (aRole == Qt::SizeHintRole) {
         return QSize(0, 40);
     } else if (aRole == ParameterName) {
-        return mName;
+        return m_Name;
     } else if (aRole == ParameterValue) {
-        return mValue;
+        return m_Value;
     } else if (aRole == Qt::DisplayRole) {
-        return mName + ":\n" + mValue;
+        return m_Name + ":\n" + m_Value;
     } else {
         return QListWidgetItem::data(aRole);
     }
@@ -25,9 +25,9 @@ QVariant EditorPaneListItem::data(int aRole) const {
 //------------------------------------------------------------------------
 void EditorPaneListItem::setData(int aRole, const QVariant &aValue) {
     if (aRole == ParameterName) {
-        mName = aValue.toString();
+        m_Name = aValue.toString();
     } else if (aRole == ParameterValue) {
-        mValue = aValue.toString();
+        m_Value = aValue.toString();
     } else {
         QListWidgetItem::setData(aRole, aValue);
     }

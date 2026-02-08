@@ -11,7 +11,7 @@ namespace CUSBDevice {
 template class ProductDataBase<SProductData>;
 template class ProductDataBase<CMifareReader::SModelData>;
 
-CUSBVendors::Data DetectingData::mVendorData;
+CUSBVendors::Data DetectingData::m_VendorData;
 
 // //--------------------------------------------------------------------------------
 // template <class T> QStringList ProductDataBase<T>::getModelList(const QString &aVendor)
@@ -19,11 +19,11 @@ CUSBVendors::Data DetectingData::mVendorData;
 //     QStringList result;
 
 //     // Резервируем память, чтобы избежать множественных переаллокаций при заполнении списка
-//     result.reserve(this->mBuffer.size());
+//     result.reserve(this->m_Buffer.size());
 
 //     // Qt 6 удалил макрос foreach. Используем стандартный range-based for (C++11/14).
 //     // Используем const auto & для предотвращения лишнего копирования объектов данных.
-//     for (const auto &data : this->mBuffer)
+//     for (const auto &data : this->m_Buffer)
 //     {
 //         // Использование оператора % (через QStringBuilder) или QStringLiteral
 //         // более эффективно, чем оператор +, так как выделяет память один раз.
@@ -46,7 +46,7 @@ CUSBVendors::Data DetectingData::mVendorData;
 // //--------------------------------------------------------------------------------
 // template <class T> TProductData ProductDataBase<T>::getProductData()
 // {
-//     return mProductData;
+//     return m_ProductData;
 // }
 
 // //--------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ CUSBVendors::Data DetectingData::mVendorData;
 // {
 //     data().clear();
 
-//     quint16 VID = mVendorData[aVendor];
+//     quint16 VID = m_VendorData[aVendor];
 //     data()[VID].append(aPID, SProductData(aVendor + " " + aModel, aVerified));
 // }
 
@@ -63,7 +63,7 @@ CUSBVendors::Data DetectingData::mVendorData;
 void DetectingData::set(const QString &aVendor, const QString &aDeviceName, quint16 aPID) {
     data().clear();
 
-    quint16 VID = mVendorData[aVendor];
+    quint16 VID = m_VendorData[aVendor];
     data()[VID].append(aPID, SProductData(aDeviceName, true));
 }
 
@@ -71,7 +71,7 @@ void DetectingData::set(const QString &aVendor, const QString &aDeviceName, quin
 void DetectingData::set(const SDetectingData &aDetectingData) {
     data().clear();
 
-    quint16 VID = mVendorData[aDetectingData.vendor];
+    quint16 VID = m_VendorData[aDetectingData.vendor];
     data()[VID].append(aDetectingData.PID,
                        SProductData(aDetectingData.vendor + " " + aDetectingData.model, true));
 }
@@ -80,7 +80,7 @@ void DetectingData::set(const SDetectingData &aDetectingData) {
 void DetectingData::set(const QString &aVendor, const TProductData &aProductData) {
     data().clear();
 
-    quint16 VID = mVendorData[aVendor];
+    quint16 VID = m_VendorData[aVendor];
     TProductData &productData = data()[VID].data();
 
     for (auto it = aProductData.begin(); it != aProductData.end(); ++it) {

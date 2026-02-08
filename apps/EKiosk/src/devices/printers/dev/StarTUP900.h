@@ -38,7 +38,7 @@ const QString DeviceName = "StarTUP900";
 
 /// Ошибки принтера
 const uchar PrinterIsNotAvailable = 0xFF; /// Принтер недоступен
-const uchar PaperJamError = 0x40;         /// Бумага зажевалась
+const uchar PaperJam_Error = 0x40;         /// Бумага зажевалась
 const uchar PaperEnd = 0x08;              /// Бумага закончилась
 const uchar PaperNearEnd = 0x04;          /// Бумага почти закончилась
 

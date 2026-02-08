@@ -33,7 +33,7 @@ extern const char OpPhone[];
 extern const char RecipientInn[];
 extern const char RecipientName[];
 extern const char ServiceType[];
-extern const char TermNumber[];
+extern const char Term_Number[];
 extern const char Currency[];
 extern const char ContractNumber[];
 extern const char DateTime[];

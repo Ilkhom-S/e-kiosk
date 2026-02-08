@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "Hardware/Modems/ModemStatusesDescriptions.h"
+#include "Hardware/Modems/Modem_StatusesDescriptions.h"
 #include "smspdudecoder.h"
 #include "smspduencoder.h"
 
@@ -16,9 +16,9 @@ using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
 ATGSMModem::ATGSMModem() {
-    m_GsmDialect = AT::EModemDialect::DefaultAtGsm;
+    m_Gsm_Dialect = AT::EModem_Dialect::DefaultAtGsm;
     m_StatusCodesSpecification =
-        DeviceStatusCode::PSpecifications(new ModemStatusCode::CSpecifications());
+        DeviceStatusCode::PSpecifications(new Modem_StatusCode::CSpecifications());
 
     m_DeviceName = CATGSMModem::DefaultName;
 }
@@ -52,7 +52,7 @@ bool ATGSMModem::getOperator(QString &aOperator) {
 
 //--------------------------------------------------------------------------------
 void ATGSMModem::setDeviceConfiguration(const QVariantMap &aConfiguration) {
-    ATModemBase::setDeviceConfiguration(aConfiguration);
+    ATModem_Base::setDeviceConfiguration(aConfiguration);
 
     if (aConfiguration.contains(CHardwareSDK::ModelName)) {
         setDeviceName(aConfiguration.value(CHardwareSDK::ModelName).toString().toLatin1());
@@ -61,19 +61,19 @@ void ATGSMModem::setDeviceConfiguration(const QVariantMap &aConfiguration) {
 
 //--------------------------------------------------------------------------------
 void ATGSMModem::setDeviceName(const QByteArray &aFullName) {
-    ATModemBase::setDeviceName(aFullName);
+    ATModem_Base::setDeviceName(aFullName);
 
     if (m_DeviceName.contains("Cinterion", Qt::CaseInsensitive) ||
         m_DeviceName.contains("SIEMENS", Qt::CaseInsensitive)) {
-        m_GsmDialect = AT::EModemDialect::Siemens;
+        m_Gsm_Dialect = AT::EModem_Dialect::Siemens;
     } else if (m_DeviceName.contains("SIMCOM", Qt::CaseInsensitive)) {
-        m_GsmDialect = AT::EModemDialect::SimCom;
+        m_Gsm_Dialect = AT::EModem_Dialect::Sim_Com;
 
         QRegularExpression revisionRegex("(\\s*Revision.*)");
         m_DeviceName.remove(revisionRegex);
-        m_ModemConfigTimeout = CATGSMModem::Timeouts::SimCom::Config;
+        m_Modem_ConfigTimeout = CATGSMModem::Timeouts::Sim_Com::Config;
     } else if (m_DeviceName.contains("huawei", Qt::CaseInsensitive)) {
-        m_GsmDialect = AT::EModemDialect::Huawei;
+        m_Gsm_Dialect = AT::EModem_Dialect::Huawei;
 
         QString value;
 
@@ -87,7 +87,7 @@ void ATGSMModem::setDeviceName(const QByteArray &aFullName) {
     } else if (m_DeviceName.contains(
                    QRegularExpression("MF\\d{3}", QRegularExpression::CaseInsensitiveOption)) ||
                m_DeviceName.contains("ZTE", Qt::CaseInsensitive)) {
-        m_GsmDialect = AT::EModemDialect::ZTE;
+        m_Gsm_Dialect = AT::EModem_Dialect::ZTE;
 
         QString value;
 
@@ -129,8 +129,8 @@ bool ATGSMModem::getInfo(QString &aInfo) {
         setDeviceParameter(CDeviceData::Revision, data);
     }
 
-    switch (m_GsmDialect) {
-    case AT::EModemDialect::Siemens: {
+    switch (m_Gsm_Dialect) {
+    case AT::EModem_Dialect::Siemens: {
         getSIMData(AT::Commands::Siemens::SIMID);
 
         if (getSiemensCellList(value)) {
@@ -140,20 +140,20 @@ bool ATGSMModem::getInfo(QString &aInfo) {
         break;
     }
     //--------------------------------------------------------------------------------
-    case AT::EModemDialect::Huawei: {
+    case AT::EModem_Dialect::Huawei: {
         getSIMData(AT::Commands::Huawei::SIMID);
 
         break;
     }
     //--------------------------------------------------------------------------------
-    case AT::EModemDialect::ZTE: {
+    case AT::EModem_Dialect::ZTE: {
         getSIMData(AT::Commands::ZTE::SIMID);
 
         break;
     }
     //--------------------------------------------------------------------------------
-    case AT::EModemDialect::SimCom: {
-        if (getSimCOMCellList(value)) {
+    case AT::EModem_Dialect::Sim_Com: {
+        if (getSim_COMCellList(value)) {
             setDeviceParameter(CDeviceData::Modems::GSMCells, value);
         }
 
@@ -186,7 +186,7 @@ void ATGSMModem::getSIMData(const QByteArray &aCommand) {
 
     // 2. Ответ от модема (QByteArray) конвертируем в QString для поиска.
     // Используем перегрузку, которая принимает QByteArray целиком.
-    QString answerStr = QString::fromUtf8(answer);
+    QString answerStr = QString::from_Utf8(answer);
 
     // 3. Выполняем поиск
     QRegularExpressionMatch match = regExp.match(answerStr);
@@ -218,7 +218,7 @@ bool ATGSMModem::parseFieldInternal(const QByteArray &aBuffer,
 
     // 2. Преобразуем буфер в строку (Latin1 обычно достаточно для заголовков AT-команд).
     // Выполняем поиск.
-    QRegularExpressionMatch match = rx.match(QString::fromLatin1(aBuffer).trimmed());
+    QRegularExpressionMatch match = rx.match(QString::from_Latin1(aBuffer).trimmed());
 
     // 3. Проверяем наличие совпадения
     if (match.hasMatch()) {
@@ -232,12 +232,12 @@ bool ATGSMModem::parseFieldInternal(const QByteArray &aBuffer,
 }
 
 //--------------------------------------------------------------------------------
-bool ATGSMModem::getSimCOMCellList(QString &aValue) {
+bool ATGSMModem::getSim_COMCellList(QString &aValue) {
     QByteArray answer;
     // 1. Используем QRegularExpression.
     // В Qt 6 регулярные выражения компилируются один раз, что эффективнее.
     QRegularExpression regExp("(\\d+),(\\d+),\"([\\d\\w]+)\",\"([\\d\\w]+)\"");
-    QByteArray CGREG = AT::Commands::SimCom::CGREG;
+    QByteArray CGREG = AT::Commands::Sim_Com::CGREG;
 
     // 2. Выполняем команды.
     // Для проверки регулярного выражения сначала конвертируем ответ в строку.
@@ -247,7 +247,7 @@ bool ATGSMModem::getSimCOMCellList(QString &aValue) {
     }
 
     // 3. Выполняем поиск и сохраняем результат в объект Match
-    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
+    QRegularExpressionMatch match = regExp.match(QString::from_Utf8(answer));
 
     if (!match.hasMatch()) {
         return false;
@@ -281,7 +281,7 @@ bool ATGSMModem::getSiemensCellList(QString &aValue) {
 
     // MCC, MNC, LAC, cell, BSIC, channel, RSSI, C1, C2
     // Используем QStringLiteral для совместимости и производительности
-    QStringList items = QString::fromLatin1(answer).section(':', 1, 1).split(QStringLiteral(","));
+    QStringList items = QString::from_Latin1(answer).section(':', 1, 1).split(QStringLiteral(","));
     bool result = false;
 
     for (int i = 0; i < items.size(); i += 9) {
@@ -310,7 +310,7 @@ bool ATGSMModem::getSiemensCellList(QString &aValue) {
 
     for (const QByteArray &command : commands) {
         if (processCommand(command, answer, CATGSMModem::Timeouts::CellInfo)) {
-            QStringList lines = QString::fromLatin1(answer).trimmed().split(QStringLiteral("\n"));
+            QStringList lines = QString::from_Latin1(answer).trimmed().split(QStringLiteral("\n"));
 
             for (const QString &line : lines) {
                 // Qt::SkipEmptyParts — универсальный флаг для Qt 5.14+ и 6.x
@@ -361,7 +361,7 @@ bool ATGSMModem::getSignalQuality(int &aQuality) {
     QRegularExpression signalRegex(QStringLiteral("(\\d+),(\\d+)"));
 
     // 2. Конвертируем ответ в строку для поиска
-    QRegularExpressionMatch match = signalRegex.match(QString::fromUtf8(answer));
+    QRegularExpressionMatch match = signalRegex.match(QString::from_Utf8(answer));
     bool result = false;
 
     // 3. Используем hasMatch() вместо indexIn() != -1
@@ -395,22 +395,22 @@ bool ATGSMModem::reset() {
     // Сбрасываем модем.
     toLog(LogLevel::Normal, "Resetting modem to factory defaults...");
 
-    switch (m_GsmDialect) {
-    case AT::EModemDialect::Siemens: {
+    switch (m_Gsm_Dialect) {
+    case AT::EModem_Dialect::Siemens: {
         toLog(LogLevel::Normal, "Restart Siemens modem...");
         processCommand(AT::Commands::Siemens::Restart);
 
         break;
     }
-    case AT::EModemDialect::ZTE: {
+    case AT::EModem_Dialect::ZTE: {
         toLog(LogLevel::Normal, "Power on ZTE modem...");
         processCommand(AT::Commands::ZTE::PowerOn);
 
         break;
     }
-    case AT::EModemDialect::SimCom: {
-        toLog(LogLevel::Normal, "Restart SimCOM modem...");
-        processCommand(AT::Commands::SimCom::Restart);
+    case AT::EModem_Dialect::Sim_Com: {
+        toLog(LogLevel::Normal, "Restart Sim_COM modem...");
+        processCommand(AT::Commands::Sim_Com::Restart);
 
         break;
     }
@@ -459,7 +459,7 @@ bool ATGSMModem::getStatus(TStatusCodes &aStatuses) {
     QByteArray answer;
 
     if (!processCommand(AT::Commands::CPIN, answer)) {
-        aStatuses.insert(ModemStatusCode::Error::SIMError);
+        aStatuses.insert(Modem_StatusCode::Error::SIMError);
         toLog(LogLevel::Error, QString("SIM card error, modem answer '%1'.").arg(answer.data()));
     } else {
         ENetworkAccessability::Enum networkAccessability;
@@ -467,7 +467,7 @@ bool ATGSMModem::getStatus(TStatusCodes &aStatuses) {
         if (!getNetworkAccessability(networkAccessability) ||
             (networkAccessability != ENetworkAccessability::RegisteredHomeNetwork &&
              networkAccessability != ENetworkAccessability::SearchingOperator)) {
-            aStatuses.insert(ModemStatusCode::Error::NoNetwork);
+            aStatuses.insert(Modem_StatusCode::Error::NoNetwork);
             toLog(LogLevel::Error,
                   QString("Network is not available, modem answer '%1'.").arg(answer.data()));
         }
@@ -492,7 +492,7 @@ bool ATGSMModem::getNetworkAccessability(ENetworkAccessability::Enum &aNetworkAc
     QRegularExpression regExp(QStringLiteral("\\+CREG:\\s+\\d,(\\d)"));
 
     // 2. Выполняем поиск и получаем объект совпадения.
-    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
+    QRegularExpressionMatch match = regExp.match(QString::from_Utf8(answer));
 
     // 3. Проверяем успех с помощью hasMatch()
     if (!match.hasMatch()) {
@@ -536,7 +536,7 @@ bool ATGSMModem::waitNetworkAccessability(int aTimeout) {
 bool ATGSMModem::getCUSDMessage(const QByteArray &aBuffer, QString &aMessage) {
     QString str;
 
-    if (m_GsmDialect == AT::EModemDialect::SimCom) {
+    if (m_Gsm_Dialect == AT::EModem_Dialect::Sim_Com) {
         str.reserve(aBuffer.size());
         for (char character : aBuffer) {
             if (character != '\0') {
@@ -544,7 +544,7 @@ bool ATGSMModem::getCUSDMessage(const QByteArray &aBuffer, QString &aMessage) {
             }
         }
     } else {
-        str = QString::fromLatin1(aBuffer).simplified();
+        str = QString::from_Latin1(aBuffer).simplified();
     }
 
     // Регулярное выражение с анкорами ^ и $ для замены exactMatch
@@ -575,7 +575,7 @@ bool ATGSMModem::getCUSDMessage(const QByteArray &aBuffer, QString &aMessage) {
         } else {
             // Устранение Deprecated Warning: используем char16_t
             QByteArray rawBytes = messageContent.toLatin1();
-            aMessage = QString::fromUtf16(reinterpret_cast<const char16_t *>(rawBytes.constData()),
+            aMessage = QString::from_Utf16(reinterpret_cast<const char16_t *>(rawBytes.constData()),
                                           rawBytes.size() / 2);
         }
     } else {
@@ -601,16 +601,16 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
     command.append(AT::Commands::CUSD);
     command.append(",\"");
 
-    switch (m_GsmDialect) {
-    case AT::EModemDialect::Huawei: {
+    switch (m_Gsm_Dialect) {
+    case AT::EModem_Dialect::Huawei: {
         // В Qt 6 toHex() возвращает QByteArray, что эффективно
         command.append(SmsPduEncoder::encode(aMessage.toLatin1()).toHex());
         break;
     }
-    case AT::EModemDialect::SimCom: {
-        commandTimeout = CATGSMModem::Timeouts::SimCom::USSD;
+    case AT::EModem_Dialect::Sim_Com: {
+        commandTimeout = CATGSMModem::Timeouts::Sim_Com::USSD;
         // Переключаем кодировку USSD
-        processCommand(AT::Commands::SimCom::CSCS);
+        processCommand(AT::Commands::Sim_Com::CSCS);
         // fall through
         //[[fallthrough]]; // Явное указание перехода для компилятора (C++17)
     }
@@ -626,7 +626,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
 
     if (!processCommand(command, answer, commandTimeout)) {
         // В Qt 6/5.15 используем QByteArray::contains() напрямую
-        if ((m_GsmDialect != AT::EModemDialect::ZTE) || !answer.contains("Unexpected Data Value")) {
+        if ((m_Gsm_Dialect != AT::EModem_Dialect::ZTE) || !answer.contains("Unexpected Data Value")) {
             m_IOPort->close();
             return false;
         }
@@ -653,7 +653,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
             answer.append(data);
 
             toLog(LogLevel::Normal,
-                  QStringLiteral("Total received string: %1").arg(QString::fromLatin1(answer)));
+                  QStringLiteral("Total received string: %1").arg(QString::from_Latin1(answer)));
 
             // Вызываем обновленный нами ранее метод на базе QRegularExpression
             if (getCUSDMessage(answer, aAnswer)) {
@@ -665,7 +665,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
             // В Qt 6/5.15 indexOf для байтовых строк работает очень быстро
             if (answer.indexOf("ERROR") != -1) {
                 toLog(LogLevel::Warning,
-                      QStringLiteral("USSD request failed: %1").arg(QString::fromLatin1(answer)));
+                      QStringLiteral("USSD request failed: %1").arg(QString::from_Latin1(answer)));
                 m_IOPort->close();
                 return false;
             }
@@ -726,7 +726,7 @@ bool ATGSMModem::takeMessages(TMessages &aMessages) {
     QByteArray answer;
     processCommand(AT::Commands::ListSMS, answer, CATGSMModem::Timeouts::SMS);
 
-    QString answerData = QString::fromLatin1(answer);
+    QString answerData = QString::from_Latin1(answer);
 
     QList<int> messageIds;
     QList<SmsPart> parts;

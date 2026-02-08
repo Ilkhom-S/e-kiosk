@@ -166,11 +166,11 @@ struct SFields {
         add(data);
     }
 
-    SFields() : mMaxNADescriptionSize(0) {}
+    SFields() : m_MaxNADescriptionSize(0) {}
 
     /// Получить максимальный размер описания отсутствующего в системных таблицах конкретного ФР
     /// поля.
-    int getMaxNADescriptionSize() { return mMaxNADescriptionSize; }
+    int getMaxNADescriptionSize() { return m_MaxNADescriptionSize; }
 
 private:
     void add(const TData &aData) {
@@ -179,9 +179,9 @@ private:
         aName = aData[aIndex];                                                                     \
     aName.description = #aName;                                                                    \
     if ((aData.size() > aIndex) && (aName.field == NA))                                            \
-        mMaxNADescriptionSize = qMax(mMaxNADescriptionSize, aName.description.size());
+        m_MaxNADescriptionSize = qMax(m_MaxNADescriptionSize, aName.description.size());
 
-        mMaxNADescriptionSize = 0;
+        m_MaxNADescriptionSize = 0;
 
         ADD_SHTRIH_FIELD(
             0, autoNulling); // Автоматическое обнуление денежной наличности при закрытии смены
@@ -211,7 +211,7 @@ private:
     }
 
     /// Максимальный размер описания отсутствующего в системных таблицах конкретного ФР поля.
-    int mMaxNADescriptionSize;
+    int m_MaxNADescriptionSize;
 };
 } // namespace FRParameters
 } // namespace CShtrihFR

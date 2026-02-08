@@ -52,10 +52,10 @@ protected:
                                 QByteArray *aAnswer = nullptr);
 
     /// Обновить прошивку.
-    virtual bool performUpdateFirmware(const QByteArray &aBuffer);
+    virtual bool perform_UpdateFirmware(const QByteArray &aBuffer);
 
     /// Изменить скорость работы.
-    bool performBaudRateChanging(bool aUp);
+    bool perform_BaudRateChanging(bool aUp);
 
     /// Протокол.
     SSPProtocol m_Protocol;

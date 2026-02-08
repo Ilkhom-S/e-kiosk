@@ -10,32 +10,32 @@
     handleResult(#aFunctionName, aFunctionName(__VA_ARGS__))
 
 //--------------------------------------------------------------------------------
-PCSCReader::PCSCReader() : mContext(0), mCard(0), mActiveProtocol(SCARD_PROTOCOL_UNDEFINED) {
-    CHECK_SCARD_ERROR(SCardEstablishContext, SCARD_SCOPE_SYSTEM, NULL, NULL, &mContext);
+PCSCReader::PCSCReader() : m_Context(0), m_Card(0), m_ActiveProtocol(SCARD_PROTOCOL_UNDEFINED) {
+    CHECK_SCARD_ERROR(SCardEstablishContext, SCARD_SCOPE_SYSTEM, NULL, NULL, &m_Context);
 }
 
 //--------------------------------------------------------------------------------
 PCSCReader::~PCSCReader() {
     disconnect(false);
 
-    if (mContext) {
-        CHECK_SCARD_ERROR(SCardReleaseContext, mContext);
-        mContext = 0;
+    if (m_Context) {
+        CHECK_SCARD_ERROR(SCardReleaseContext, m_Context);
+        m_Context = 0;
     }
 }
 
 //--------------------------------------------------------------------------------
 bool PCSCReader::reset(QByteArray & /*aAnswer*/) {
-    if (!mCard) {
+    if (!m_Card) {
         return false;
     }
 
     return CHECK_SCARD_ERROR(SCardReconnect,
-                             mCard,
+                             m_Card,
                              SCARD_SHARE_SHARED,
                              SCARD_PROTOCOL_Tx,
                              SCARD_UNPOWER_CARD,
-                             (LPDWORD)&mActiveProtocol);
+                             (LPDWORD)&m_ActiveProtocol);
 }
 
 //--------------------------------------------------------------------------------
@@ -45,19 +45,19 @@ QStringList PCSCReader::getReaderList() {
     DWORD dwReaders = SCARD_AUTOALLOCATE;
 
     if (!CHECK_SCARD_ERROR(
-            SCardListReadersW, mContext, SCARD_ALL_READERS, (LPTSTR)&mszReaders, &dwReaders)) {
+            SCardListReadersW, m_Context, SCARD_ALL_READERS, (LPTSTR)&mszReaders, &dwReaders)) {
         return readers;
     }
 
     wchar_t *pReader = mszReaders;
 
     while ('\0' != *pReader) {
-        readers << QString::fromWCharArray(pReader);
+        readers << QString::from_WCharArray(pReader);
         // Advance to the next value.
         pReader = pReader + wcslen(pReader) + 1;
     }
 
-    CHECK_SCARD_ERROR(SCardFreeMemory, mContext, mszReaders);
+    CHECK_SCARD_ERROR(SCardFreeMemory, m_Context, mszReaders);
 
     return readers;
 }
@@ -72,7 +72,7 @@ bool PCSCReader::handleResult(const QString &aFunctionName, HRESULT aResultCode)
     }
 
     SDeviceCodeSpecification specification = CPCSCReader::DeviceCodeSpecification[aResultCode];
-    mStatusCodes.insert(specification.statusCode);
+    m_StatusCodes.insert(specification.statusCode);
 
     QString log = ISysUtils::getErrorMessage(aResultCode, false);
 
@@ -87,8 +87,8 @@ bool PCSCReader::handleResult(const QString &aFunctionName, HRESULT aResultCode)
 
 //--------------------------------------------------------------------------------
 TStatusCodes PCSCReader::getStatusCodes() {
-    TStatusCodes statusCodes(mStatusCodes);
-    mStatusCodes.clear();
+    TStatusCodes statusCodes(m_StatusCodes);
+    m_StatusCodes.clear();
 
     return statusCodes;
 }
@@ -97,28 +97,28 @@ TStatusCodes PCSCReader::getStatusCodes() {
 bool PCSCReader::connect(const QString &aReaderName) {
     // TOSO PORT_QT5 (const wchar_t *)aReaderName.utf16()???
     if (!CHECK_SCARD_ERROR(SCardConnect,
-                           mContext,
+                           m_Context,
                            (const wchar_t *)aReaderName.utf16(),
                            SCARD_SHARE_SHARED,
                            SCARD_PROTOCOL_Tx,
-                           &mCard,
-                           (LPDWORD)&mActiveProtocol)) {
+                           &m_Card,
+                           (LPDWORD)&m_ActiveProtocol)) {
         return false;
     }
 
-    if (mActiveProtocol == SCARD_PROTOCOL_T0)
-        mPioSendPci = *SCARD_PCI_T0;
-    if (mActiveProtocol == SCARD_PROTOCOL_T1)
-        mPioSendPci = *SCARD_PCI_T1;
+    if (m_ActiveProtocol == SCARD_PROTOCOL_T0)
+        m_PioSendPci = *SCARD_PCI_T0;
+    if (m_ActiveProtocol == SCARD_PROTOCOL_T1)
+        m_PioSendPci = *SCARD_PCI_T1;
 
     return true;
 }
 
 //--------------------------------------------------------------------------------
 void PCSCReader::disconnect(bool aEject) {
-    if (mCard) {
-        CHECK_SCARD_ERROR(SCardDisconnect, mCard, aEject ? SCARD_EJECT_CARD : SCARD_LEAVE_CARD);
-        mCard = 0;
+    if (m_Card) {
+        CHECK_SCARD_ERROR(SCardDisconnect, m_Card, aEject ? SCARD_EJECT_CARD : SCARD_LEAVE_CARD);
+        m_Card = 0;
     }
 }
 
@@ -128,8 +128,8 @@ bool PCSCReader::communicate(const QByteArray &aRequest, QByteArray &aResponse) 
     DWORD dwRecvLength = 4096; // достаточно ;)
 
     if (!CHECK_SCARD_ERROR(SCardTransmit,
-                           mCard,
-                           &mPioSendPci,
+                           m_Card,
+                           &m_PioSendPci,
                            (const byte *)aRequest.constData(),
                            aRequest.size(),
                            NULL,
@@ -146,7 +146,7 @@ bool PCSCReader::communicate(const QByteArray &aRequest, QByteArray &aResponse) 
 
 //--------------------------------------------------------------------------------
 bool PCSCReader::isConnected() const {
-    return mCard != 0;
+    return m_Card != 0;
 }
 
 //--------------------------------------------------------------------------------

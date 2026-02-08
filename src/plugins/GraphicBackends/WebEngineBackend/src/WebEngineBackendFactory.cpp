@@ -9,9 +9,9 @@
 #include "WebEngineBackend.h"
 
 WebEngineBackendFactory::WebEngineBackendFactory() {
-    mModuleName = "webengine_backend";
-    mName = "WebEngineBackend";
-    mDescription = "WebEngine based graphics backend for HTML widgets";
-    mAuthor = "Humo";
-    mVersion = "1.0";
+    m_ModuleName = "webengine_backend";
+    m_Name = "WebEngineBackend";
+    m_Description = "WebEngine based graphics backend for HTML widgets";
+    m_Author = "Humo";
+    m_Version = "1.0";
 }

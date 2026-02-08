@@ -10,7 +10,7 @@
 using namespace SDK::Driver::IOPort::COM;
 using namespace PrinterStatusCode;
 
-POSPrinters::TModelIds POSPrinters::ModelData::mModelIds;
+POSPrinters::TModelIds POSPrinters::ModelData::m_ModelIds;
 
 //--------------------------------------------------------------------------------
 namespace CPOSPrinter {
@@ -52,22 +52,22 @@ const char Code128Spec[] = "\x7B\x42";
 template class POSPrinter<TSerialPrinterBase>;
 
 //--------------------------------------------------------------------------------
-template <class T> POSPrinter<T>::POSPrinter() : T(), mModelID(0), mPrintingStringTimeout(0) {
+template <class T> POSPrinter<T>::POSPrinter() : T(), m_ModelID(0), m_PrintingStringTimeout(0) {
     // данные устройства
-    this->mDeviceName = CPOSPrinter::DefaultName;
+    this->m_DeviceName = CPOSPrinter::DefaultName;
     this->setConfigParameter(CHardware::Printer::FeedingAmount, 4);
     this->setConfigParameter(CHardware::Printer::Commands::Cutting, "\x1B\x69");
 
-    this->mModelData.setDefault(
+    this->m_ModelData.setDefault(
         POSPrinters::SModelData(CPOSPrinter::DefaultName, false, "Default"));
 
-    this->mOverflow = false;
-    this->mRussianCodePage = CPOSPrinter::RussianCodePage;
+    this->m_Overflow = false;
+    this->m_RussianCodePage = CPOSPrinter::RussianCodePage;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool POSPrinter<T>::isConnected() {
-    if (!this->mIOPort->write(CPOSPrinter::Command::Initialize)) {
+    if (!this->m_IOPort->write(CPOSPrinter::Command::Initialize)) {
         return false;
     }
 
@@ -77,14 +77,14 @@ template <class T> bool POSPrinter<T>::isConnected() {
 
     /*
     bool errors = std::find_if(statusCodes.begin(), statusCodes.end(), [&] (int aStatusCode) -> bool
-            { return mStatusCodesSpecification->value(aStatusCode).warningLevel ==
+            { return m_StatusCodesSpecification->value(aStatusCode).warningLevel ==
     SDK::Driver::EWarningLevel::Error; })
     != statusCodes.end();
 
     //TODO: выяснить причины отсутствия ответа на данную команду для некоторых принтеров
     QByteArray answer;
 
-    if (!errors && (!mIOPort->write(CPOSPrinter::Command::GetPaperStatus) || !getAnswer(answer,
+    if (!errors && (!m_IOPort->write(CPOSPrinter::Command::GetPaperStatus) || !getAnswer(answer,
     CPOSPrinter::Timeouts::Status) || answer.isEmpty()))
     {
             return false;
@@ -99,7 +99,7 @@ template <class T> bool POSPrinter<T>::isConnected() {
     }
 
     bool onlyDefaultModels = this->isOnlyDefaultModels();
-    this->mVerified = false;
+    this->m_Verified = false;
 
     if (answer.isEmpty()) {
         bool isLoading = !this->isAutoDetecting();
@@ -114,13 +114,13 @@ template <class T> bool POSPrinter<T>::isConnected() {
                 .arg(isLoading ? "loading" : "autodetecting"));
 
         if (!onlyDefaultModels && isLoading) {
-            this->mDeviceName = this->getConfigParameter(CHardwareSDK::ModelName).toString();
+            this->m_DeviceName = this->getConfigParameter(CHardwareSDK::ModelName).toString();
         }
 
-        this->mVerified = result;
+        this->m_Verified = result;
 
         if (result) {
-            this->mTagEngine->data() = POSPrinters::CommonParameters.tagEngine.constData();
+            this->m_TagEngine->data() = POSPrinters::CommonParameters.tagEngine.constData();
         }
 
         return result;
@@ -128,7 +128,7 @@ template <class T> bool POSPrinter<T>::isConnected() {
 
     char modelId = this->parseModelId(answer);
 
-    if (!this->mModelData.getModelIds().contains(modelId)) {
+    if (!this->m_ModelData.getModelIds().contains(modelId)) {
         LogLevel::Enum logLevel = onlyDefaultModels ? LogLevel::Warning : LogLevel::Error;
         this->toLog(logLevel,
                     QString("Unknown POS printer has detected, it model id = %1 is unknown and the "
@@ -138,35 +138,35 @@ template <class T> bool POSPrinter<T>::isConnected() {
                         .arg(onlyDefaultModels ? "" : "not "));
 
         if (onlyDefaultModels) {
-            this->mTagEngine->data() = POSPrinters::CommonParameters.tagEngine.constData();
+            this->m_TagEngine->data() = POSPrinters::CommonParameters.tagEngine.constData();
         }
 
         return onlyDefaultModels;
     }
 
-    QString name = this->mModelData[modelId].name;
-    QString description = this->mModelData[modelId].description;
+    QString name = this->m_ModelData[modelId].name;
+    QString description = this->m_ModelData[modelId].description;
 
     if (!description.isEmpty()) {
         name += QString(" (%1)").arg(description);
     }
 
-    if (!this->mModelData.data().keys().contains(modelId)) {
-        this->mModelCompatibility = false;
+    if (!this->m_ModelData.data().keys().contains(modelId)) {
+        this->m_ModelCompatibility = false;
         this->toLog(LogLevel::Error, name + " is detected, but not supported by this pligin");
 
-        this->mTagEngine->data() = this->mParameters.tagEngine.data();
+        this->m_TagEngine->data() = this->m_Parameters.tagEngine.data();
 
         return true;
     }
 
-    this->mModelID = modelId;
-    this->mDeviceName = this->mModelData[this->mModelID].name;
-    this->mTagEngine->data() = this->mParameters.tagEngine.data();
+    this->m_ModelID = modelId;
+    this->m_DeviceName = this->m_ModelData[this->m_ModelID].name;
+    this->m_TagEngine->data() = this->m_Parameters.tagEngine.data();
 
     this->processDeviceData();
 
-    this->mVerified = this->mModelData[this->mModelID].verified;
+    this->m_Verified = this->m_ModelData[this->m_ModelID].verified;
 
     return true;
 }
@@ -175,7 +175,7 @@ template <class T> bool POSPrinter<T>::isConnected() {
 template <class T> void POSPrinter<T>::processDeviceData() {
     QByteArray answer;
 
-    if (this->mIOPort->write(CPOSPrinter::Command::GetTypeId) &&
+    if (this->m_IOPort->write(CPOSPrinter::Command::GetTypeId) &&
         this->getAnswer(answer, CPOSPrinter::Timeouts::Info) && (answer.size() == 1)) {
         this->setDeviceParameter(CDeviceData::Printers::Unicode, ProtocolUtils::getBit(answer, 0));
         this->setDeviceParameter(CDeviceData::Printers::Cutter, ProtocolUtils::getBit(answer, 1));
@@ -183,7 +183,7 @@ template <class T> void POSPrinter<T>::processDeviceData() {
                                  ProtocolUtils::getBit(answer, 2));
     }
 
-    if (this->mIOPort->write(CPOSPrinter::Command::GetROMVersion) &&
+    if (this->m_IOPort->write(CPOSPrinter::Command::GetROMVersion) &&
         this->getAnswer(answer, CPOSPrinter::Timeouts::Info) && !answer.isEmpty()) {
         QString firmware = (answer.size() > 1) ? answer : ProtocolUtils::toHexLog(char(answer[0]));
         this->setDeviceParameter(CDeviceData::Firmware, firmware);
@@ -192,7 +192,7 @@ template <class T> void POSPrinter<T>::processDeviceData() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool POSPrinter<T>::getModelId(QByteArray &aAnswer) const {
-    return this->mIOPort->write(CPOSPrinter::Command::GetModelId) &&
+    return this->m_IOPort->write(CPOSPrinter::Command::GetModelId) &&
            this->getAnswer(aAnswer, CPOSPrinter::Timeouts::Info) && (aAnswer.size() <= 1);
 }
 
@@ -208,14 +208,14 @@ template <class T> void POSPrinter<T>::checkVerifying() {
 
         if (!modelName.isEmpty()) {
             POSPrinters::TModelData::iterator modelDataIt =
-                std::find_if(this->mModelData.data().begin(),
-                             this->mModelData.data().end(),
+                std::find_if(this->m_ModelData.data().begin(),
+                             this->m_ModelData.data().end(),
                              [&](const POSPrinters::SModelData &aModelData) -> bool {
                                  return aModelData.name == modelName;
                              });
 
-            if (modelDataIt != this->mModelData.data().end()) {
-                this->mVerified = modelDataIt->verified;
+            if (modelDataIt != this->m_ModelData.data().end()) {
+                this->m_Verified = modelDataIt->verified;
             }
         }
     }
@@ -226,7 +226,7 @@ template <class T> bool POSPrinter<T>::updateParameters() {
     // TODO: устанавливать размеры ячейки сетки для печати, с учетом выбранного режима.
     QByteArray command = QByteArray(CPOSPrinter::Command::Initialize) +
                          CPOSPrinter::Command::SetEnabled +
-                         CPOSPrinter::Command::SetCodePage(this->mRussianCodePage) +
+                         CPOSPrinter::Command::SetCodePage(this->m_RussianCodePage) +
                          CPOSPrinter::Command::SetUSCharacterSet +
                          CPOSPrinter::Command::SetStandardMode + CPOSPrinter::Command::AlignLeft;
 
@@ -237,11 +237,11 @@ template <class T> bool POSPrinter<T>::updateParameters() {
         command += CPOSPrinter::Command::SetLineSpacing(lineSpacing);
     }
 
-    if (!this->mIOPort->write(command)) {
+    if (!this->m_IOPort->write(command)) {
         return false;
     }
 
-    this->mVerified = this->mVerified && !this->isOnlyDefaultModels();
+    this->m_Verified = this->m_Verified && !this->isOnlyDefaultModels();
     SleepHelper::msleep(CPOSPrinter::InitializationPause);
 
     return true;
@@ -249,26 +249,26 @@ template <class T> bool POSPrinter<T>::updateParameters() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool POSPrinter<T>::isOnlyDefaultModels() {
-    return this->mModelData.data().keys().isEmpty();
+    return this->m_ModelData.data().keys().isEmpty();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool POSPrinter<T>::printLine(const QByteArray &aString) {
     QDateTime beginning = QDateTime::currentDateTime();
 
-    if (!this->mIOPort->write(aString)) {
+    if (!this->m_IOPort->write(aString)) {
         return false;
     }
 
-    if (this->mPrintingStringTimeout) {
+    if (this->m_PrintingStringTimeout) {
         int count =
-            aString.contains(this->mTagEngine->value(Tags::Type::DoubleHeight).open) ? 2 : 1;
-        int pause = count * this->mPrintingStringTimeout -
+            aString.contains(this->m_TagEngine->value(Tags::Type::DoubleHeight).open) ? 2 : 1;
+        int pause = count * this->m_PrintingStringTimeout -
                     int(beginning.msecsTo(QDateTime::currentDateTime()));
 
         if (pause > 0) {
             this->toLog(LogLevel::Debug,
-                        this->mDeviceName +
+                        this->m_DeviceName +
                             QString(": Pause after printing line = %1 ms").arg(pause));
             SleepHelper::msleep(pause);
         }
@@ -288,14 +288,14 @@ template <class T> QByteArray POSPrinter<T>::prepareBarcodePrinting() {
 //--------------------------------------------------------------------------------
 template <class T> bool POSPrinter<T>::printBarcode(const QString &aBarcode) {
     // В Qt 6 для отправки данных в принтер нужен ENCODER
-    // Если mDecoder это QStringDecoder, он не сможет выполнить fromUnicode.
+    // Если m_Decoder это QStringDecoder, он не сможет выполнить from_Unicode.
 
     QByteArray data;
 
     // Создаем временный энкодер на основе кодировки декодера
     // В Qt 6 это делается так:
-    if (this->mDecoder) {
-        QStringEncoder encoder(this->mDecoder->name());
+    if (this->m_Decoder) {
+        QStringEncoder encoder(this->m_Decoder->name());
         data = encoder(aBarcode); // Вызов как функции
     } else {
         data = aBarcode.toLatin1();
@@ -305,7 +305,7 @@ template <class T> bool POSPrinter<T>::printBarcode(const QString &aBarcode) {
         QByteArray() + CPOSPrinter::Command::Barcode::Print + CPOSPrinter::Barcode::CodeSystem128 +
         static_cast<char>(data.size() + 2) + CPOSPrinter::Barcode::Code128Spec + data + '\x0A';
 
-    return this->mIOPort->write(this->prepareBarcodePrinting() + barcodePrinting);
+    return this->m_IOPort->write(this->prepareBarcodePrinting() + barcodePrinting);
 }
 
 //--------------------------------------------------------------------------------
@@ -313,7 +313,7 @@ template <class T> bool POSPrinter<T>::printBarcode(const QString &aBarcode) {
 template <class T> bool POSPrinter<T>::getStatus(TStatusCodes &aStatusCodes) {
     // В Qt 6 итераторы QMap/QHash могут работать иначе, используем константные итераторы для
     // безопасности
-    for (auto it = this->mParameters.errors.begin(); it != this->mParameters.errors.end(); ++it) {
+    for (auto it = this->m_Parameters.errors.begin(); it != this->m_Parameters.errors.end(); ++it) {
         SleepHelper::msleep(CPOSPrinter::StatusPause);
 
         // keys() в Qt 6 возвращает QList
@@ -329,7 +329,7 @@ template <class T> bool POSPrinter<T>::getStatus(TStatusCodes &aStatusCodes) {
         }
 
         // Вызываем команду статуса. Используем it.key()
-        if (!this->mIOPort->write(CPOSPrinter::Command::GetStatus(it.key())) ||
+        if (!this->m_IOPort->write(CPOSPrinter::Command::GetStatus(it.key())) ||
             !this->readStatusAnswer(
                 answer, CPOSPrinter::Timeouts::Status, static_cast<int>(bytes.last())) ||
             answer.isEmpty()) {
@@ -337,12 +337,12 @@ template <class T> bool POSPrinter<T>::getStatus(TStatusCodes &aStatusCodes) {
         }
 
         // Проверка XOff
-        this->mOverflow = answer.startsWith(ASCII::XOff);
+        this->m_Overflow = answer.startsWith(ASCII::XOff);
 
-        if (this->mOverflow && (this->mInitialized == ERequestStatus::Success) &&
-            !this->mStatusCollection.isEmpty() &&
-            !this->mStatusCollection.contains(DeviceStatusCode::Error::NotAvailable)) {
-            aStatusCodes = this->getStatusCodes(this->mStatusCollection);
+        if (this->m_Overflow && (this->m_Initialized == ERequestStatus::Success) &&
+            !this->m_StatusCollection.isEmpty() &&
+            !this->m_StatusCollection.contains(DeviceStatusCode::Error::NotAvailable)) {
+            aStatusCodes = this->getStatusCodes(this->m_StatusCollection);
             return true;
         }
 
@@ -372,9 +372,9 @@ template <class T> bool POSPrinter<T>::getStatus(TStatusCodes &aStatusCodes) {
 template <class T>
 bool POSPrinter<T>::readStatusAnswer(QByteArray &aAnswer, int aTimeout, int aBytesCount) const {
     QVariantMap configuration;
-    // В Qt 6 конструкторы QVariant часто explicit, используем fromValue
-    configuration.insert(CHardware::Port::IOLogging, QVariant::fromValue(ELoggingType::Write));
-    this->mIOPort->setDeviceConfiguration(configuration);
+    // В Qt 6 конструкторы QVariant часто explicit, используем from_Value
+    configuration.insert(CHardware::Port::IOLogging, QVariant::from_Value(ELoggingType::Write));
+    this->m_IOPort->setDeviceConfiguration(configuration);
 
     // 1. В Qt 6 методы QTime::start() и elapsed() удалены.
     // Используем QElapsedTimer — он точнее и доступен в Qt 5.15 и 6.
@@ -385,7 +385,7 @@ bool POSPrinter<T>::readStatusAnswer(QByteArray &aAnswer, int aTimeout, int aByt
         QByteArray data;
 
         // Используем 10 мс как таймаут чтения одного блока
-        if (!this->mIOPort->read(data, 10)) {
+        if (!this->m_IOPort->read(data, 10)) {
             return false;
         }
 
@@ -409,8 +409,8 @@ bool POSPrinter<T>::readStatusAnswer(QByteArray &aAnswer, int aTimeout, int aByt
     // - В Qt 6 toHex() возвращает QByteArray, который можно передать в .arg() напрямую
     this->toLog(logLevel,
                 QStringLiteral("%1: << {%2}")
-                    .arg(this->mDeviceName)
-                    .arg(QString::fromLatin1(aAnswer.toHex())));
+                    .arg(this->m_DeviceName)
+                    .arg(QString::from_Latin1(aAnswer.toHex())));
 
     return true;
 }
@@ -436,7 +436,7 @@ template <class T> bool POSPrinter<T>::printImage(const QImage &aImage, const Ta
         request.append((const char *)aImage.scanLine(i), widthInBytes);
     }
 
-    if (!this->mIOPort->write(request)) {
+    if (!this->m_IOPort->write(request)) {
         return false;
     }
 
@@ -446,7 +446,7 @@ template <class T> bool POSPrinter<T>::printImage(const QImage &aImage, const Ta
     // одновременно или почти одновременно, через какое-то количество строк текста.
     int pause = qMin(int(double(request.size()) / 2), 5000);
     this->toLog(LogLevel::Debug,
-                this->mDeviceName +
+                this->m_DeviceName +
                     QString(": size = %1, pause = %2").arg(request.size()).arg(pause));
     SleepHelper::msleep(pause);
 

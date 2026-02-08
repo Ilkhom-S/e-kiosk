@@ -3,14 +3,14 @@
 #pragma once
 
 #include <QtWidgets/QListWidgetItem>
-#include <QtWidgets/QStyledItemDelegate>
+#include <QtWidgets/QStyledItem_Delegate>
 
 //------------------------------------------------------------------------
-class EditorPaneListItemDelegate : public QStyledItemDelegate {
+class EditorPaneListItem_Delegate : public QStyledItem_Delegate {
     Q_OBJECT
 
 public:
-    EditorPaneListItemDelegate(QObject *aParent = 0);
+    EditorPaneListItem_Delegate(QObject *aParent = 0);
 };
 
 //------------------------------------------------------------------------
@@ -25,8 +25,8 @@ public:
     virtual void setData(int aRole, const QVariant &aValue);
 
 private:
-    QString mValue;
-    QString mName;
+    QString m_Value;
+    QString m_Name;
 };
 
 //---------------------------------------------------------------------------

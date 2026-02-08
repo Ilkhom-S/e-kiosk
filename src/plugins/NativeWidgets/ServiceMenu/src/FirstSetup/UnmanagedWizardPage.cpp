@@ -14,32 +14,32 @@
 #include "GUI/UnmanagedConnectionWindow.h"
 
 UnmanagedWizardPage::UnmanagedWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : WizardPageBase(aBackend, aParent), mConnectionWindow(new UnmanagedConnectionWindow) {
-    mConnectionWindow->setParent(this);
+    : WizardPageBase(aBackend, aParent), m_ConnectionWindow(new UnmanagedConnectionWindow) {
+    m_ConnectionWindow->setParent(this);
     setLayout(new QHBoxLayout(this));
     layout()->setSpacing(0);
     layout()->setContentsMargins(0, 0, 0, 0);
-    layout()->addWidget(mConnectionWindow);
+    layout()->addWidget(m_ConnectionWindow);
 
-    connect(mConnectionWindow,
+    connect(m_ConnectionWindow,
             SIGNAL(testConnection(QNetworkProxy)),
             SLOT(onTestConnection(QNetworkProxy)));
-    connect(mConnectionWindow, SIGNAL(userSelectionChanged()), SLOT(onUserSelectionChanged()));
-    connect(&mTaskWatcher, SIGNAL(finished()), SLOT(onTestFinished()));
+    connect(m_ConnectionWindow, SIGNAL(userSelectionChanged()), SLOT(onUserSelectionChanged()));
+    connect(&m_TaskWatcher, SIGNAL(finished()), SLOT(onTestFinished()));
 }
 
 //------------------------------------------------------------------------
 bool UnmanagedWizardPage::initialize() {
-    mConnectionSettings[CServiceTags::ConnectionType] = EConnectionTypes::Unmanaged;
-    mConnectionSettings[CServiceTags::Connection] = "unmanaged connection";
+    m_ConnectionSettings[CServiceTags::ConnectionType] = EConnectionTypes::Unmanaged;
+    m_ConnectionSettings[CServiceTags::Connection] = "unmanaged connection";
 
     QVariantMap result;
-    mBackend->getNetworkManager()->getNetworkInfo(result);
+    m_Backend->getNetworkManager()->getNetworkInfo(result);
 
     // Заполняем хосты для пинга и временные интервалы
     foreach (const QString &param, result.keys()) {
         if (param.contains(CServiceTags::CheckHost) || (param == CServiceTags::CheckInterval)) {
-            mStaticParameters.insert(param, result[param]);
+            m_StaticParameters.insert(param, result[param]);
         }
     }
 
@@ -53,7 +53,7 @@ bool UnmanagedWizardPage::initialize() {
         proxy.setPassword(result[CServiceTags::ProxyPassword].toString());
     }
 
-    mConnectionWindow->initialize(proxy);
+    m_ConnectionWindow->initialize(proxy);
 
     emit pageEvent("#can_proceed", false);
 
@@ -62,7 +62,7 @@ bool UnmanagedWizardPage::initialize() {
 
 //------------------------------------------------------------------------
 bool UnmanagedWizardPage::shutdown() {
-    mTaskWatcher.waitForFinished();
+    m_TaskWatcher.waitForFinished();
 
     return true;
 }
@@ -81,18 +81,18 @@ bool UnmanagedWizardPage::deactivate() {
 
     QNetworkProxy proxy(QNetworkProxy::NoProxy);
 
-    if (mConnectionSettings.contains(CServiceTags::ProxyType)) {
+    if (m_ConnectionSettings.contains(CServiceTags::ProxyType)) {
         proxy.setType(
-            QNetworkProxy::ProxyType(mConnectionSettings[CServiceTags::ProxyType].toInt()));
-        proxy.setHostName(mConnectionSettings[CServiceTags::ProxyAddress].toString());
-        proxy.setPort(static_cast<quint16>(mConnectionSettings[CServiceTags::ProxyPort].toUInt()));
-        proxy.setUser(mConnectionSettings[CServiceTags::ProxyUser].toString());
-        proxy.setPassword(mConnectionSettings[CServiceTags::ProxyPassword].toString());
+            QNetworkProxy::ProxyType(m_ConnectionSettings[CServiceTags::ProxyType].toInt()));
+        proxy.setHostName(m_ConnectionSettings[CServiceTags::ProxyAddress].toString());
+        proxy.setPort(static_cast<quint16>(m_ConnectionSettings[CServiceTags::ProxyPort].toUInt()));
+        proxy.setUser(m_ConnectionSettings[CServiceTags::ProxyUser].toString());
+        proxy.setPassword(m_ConnectionSettings[CServiceTags::ProxyPassword].toString());
     }
 
     connection.proxy = proxy;
 
-    mBackend->getNetworkManager()->setConnection(connection);
+    m_Backend->getNetworkManager()->setConnection(connection);
 
     return true;
 }
@@ -119,34 +119,34 @@ void UnmanagedWizardPage::onTestConnection(QNetworkProxy aProxy) {
 
     connection.proxy = proxy;
 
-    mBackend->getNetworkManager()->setConnection(connection);
+    m_Backend->getNetworkManager()->setConnection(connection);
 
     GUI::MessageBox::wait(tr("#testing_connection"));
 
-    mTaskWatcher.setFuture(QtConcurrent::run([this]() {
+    m_TaskWatcher.setFuture(QtConcurrent::run([this]() {
         QString errorMessage;
-        return mBackend->getNetworkManager()->testConnection(errorMessage);
+        return m_Backend->getNetworkManager()->testConnection(errorMessage);
     }));
 }
 
 //---------------------------------------------------------------------------
 void UnmanagedWizardPage::onTestFinished() {
     GUI::MessageBox::hide();
-    GUI::MessageBox::info(mTaskWatcher.result() ? tr("#connection_test_ok")
+    GUI::MessageBox::info(m_TaskWatcher.result() ? tr("#connection_test_ok")
                                                 : tr("#connection_test_failed"));
 
-    // сохраняем в mConnectionSettings хорошие настройки прокси
-    if (mTaskWatcher.result()) {
-        auto proxy = mBackend->getNetworkManager()->getConnection().proxy;
+    // сохраняем в m_ConnectionSettings хорошие настройки прокси
+    if (m_TaskWatcher.result()) {
+        auto proxy = m_Backend->getNetworkManager()->getConnection().proxy;
 
-        mConnectionSettings[CServiceTags::ProxyType] = proxy.type();
-        mConnectionSettings[CServiceTags::ProxyAddress] = proxy.hostName();
-        mConnectionSettings[CServiceTags::ProxyPort] = proxy.port();
-        mConnectionSettings[CServiceTags::ProxyUser] = proxy.user();
-        mConnectionSettings[CServiceTags::ProxyPassword] = proxy.password();
+        m_ConnectionSettings[CServiceTags::ProxyType] = proxy.type();
+        m_ConnectionSettings[CServiceTags::ProxyAddress] = proxy.hostName();
+        m_ConnectionSettings[CServiceTags::ProxyPort] = proxy.port();
+        m_ConnectionSettings[CServiceTags::ProxyUser] = proxy.user();
+        m_ConnectionSettings[CServiceTags::ProxyPassword] = proxy.password();
     }
 
-    emit pageEvent("#can_proceed", mTaskWatcher.result());
+    emit pageEvent("#can_proceed", m_TaskWatcher.result());
 }
 
 //------------------------------------------------------------------------

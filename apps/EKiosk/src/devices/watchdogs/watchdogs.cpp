@@ -34,7 +34,7 @@ bool WatchDogs::closePort() {
 }
 
 void WatchDogs::setPort(const QString com_Name) {
-    comName = com_Name;
+    com_Name = com_Name;
 }
 
 bool WatchDogs::isOpened() {
@@ -79,7 +79,7 @@ bool WatchDogs::sendCommand(QByteArray dataRequest,
         respOk = false;
 
         serialPort->write(dataRequest);
-        qDebug() << QString("\n --> Request : to port - %1\n").arg(comName);
+        qDebug() << QString("\n --> Request : to port - %1\n").arg(com_Name);
         this->printDataToHex(dataRequest);
 
         if (getResponse) {
@@ -112,7 +112,7 @@ bool WatchDogs::openPort() {
         is_open = false;
 
         // Даем девайсу название порта
-        serialPort->setPortName(comName);
+        serialPort->setPortName(com_Name);
 
         if (serialPort->open(QIODevice::ReadWrite)) {
             // Если Девайсу удалось открыть порт
@@ -146,7 +146,7 @@ bool WatchDogs::openPort() {
     return is_open;
 }
 
-bool WatchDogs::isItYou(QStringList &comList,
+bool WatchDogs::isItYou(QStringList &com_List,
                         QString &wd_name,
                         QString &com_str,
                         QString &wd_coment) {
@@ -159,17 +159,17 @@ bool WatchDogs::isItYou(QStringList &comList,
         }
     }
 
-    int com_lst_c = comList.count();
+    int com_lst_c = com_List.count();
     for (int com_count = 0; com_count < com_lst_c; com_count++) {
 
-        QString vrmPort = comList.at(com_count);
+        QString vrm_Port = com_List.at(com_count);
         qDebug() << "--- com_count  - " << com_count;
-        qDebug() << "--- vrmPort    - " << vrmPort;
+        qDebug() << "--- vrm_Port    - " << vrm_Port;
 
-        this->setPort(vrmPort);
+        this->setPort(vrm_Port);
 
         if (this->isItYou(wd_coment)) {
-            com_str = vrmPort;
+            com_str = vrm_Port;
             return true;
         }
     }

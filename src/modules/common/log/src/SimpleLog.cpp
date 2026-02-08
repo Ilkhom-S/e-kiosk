@@ -31,12 +31,12 @@
 
 //---------------------------------------------------------------------------
 SimpleLog::SimpleLog(const QString &aName, LogType::Enum aType, LogLevel::Enum aMaxLogLevel)
-    : mInitOk(false), mMaxLogLevel(aMaxLogLevel), mName(aName), mDestination(aName), mType(aType),
-      mPadding(0), mDuplicateCounter(0) {}
+    : m_InitOk(false), m_MaxLogLevel(aMaxLogLevel), m_Name(aName), m_Destination(aName), m_Type(aType),
+      m_Padding(0), m_DuplicateCounter(0) {}
 
 //---------------------------------------------------------------------------
 SimpleLog::~SimpleLog() {
-    if (mInitOk) {
+    if (m_InitOk) {
         // write log footer
         adjustPadding(-99);
 
@@ -48,21 +48,21 @@ SimpleLog::~SimpleLog() {
 
 //---------------------------------------------------------------------------
 const QString &SimpleLog::getName() const {
-    return mName;
+    return m_Name;
 }
 
 //---------------------------------------------------------------------------
 const QString &SimpleLog::getDestination() const {
-    return mDestination;
+    return m_Destination;
 }
 
 //---------------------------------------------------------------------------
 void SimpleLog::setDestination(const QString &aDestination) {
-    switch (mType) {
+    switch (m_Type) {
     case LogType::File: {
-        if (mDestination != aDestination) {
-            mDestination = aDestination;
-            mInitOk = false;
+        if (m_Destination != aDestination) {
+            m_Destination = aDestination;
+            m_InitOk = false;
         }
 
         break;
@@ -79,17 +79,17 @@ void SimpleLog::setDestination(const QString &aDestination) {
 
 //---------------------------------------------------------------------------
 LogType::Enum SimpleLog::getType() const {
-    return mType;
+    return m_Type;
 }
 
 //---------------------------------------------------------------------------
 void SimpleLog::setLevel(LogLevel::Enum aLevel) {
-    mMaxLogLevel = aLevel;
+    m_MaxLogLevel = aLevel;
 }
 
 //---------------------------------------------------------------------------
 void SimpleLog::adjustPadding(int aStep) {
-    mPadding = qMax(0, mPadding + aStep);
+    m_Padding = qMax(0, m_Padding + aStep);
 }
 
 //---------------------------------------------------------------------------
@@ -105,7 +105,7 @@ void SimpleLog::write(LogLevel::Enum aLevel, const QString &aMessage) {
         return;
     }
 
-    if (aLevel > mMaxLogLevel) {
+    if (aLevel > m_MaxLogLevel) {
         return;
     }
 
@@ -128,24 +128,24 @@ bool SimpleLog::init() {
 
     bool needWriteHeader = false;
 
-    switch (mType) {
+    switch (m_Type) {
     case LogType::File: {
         QMutexLocker locker(&fileListMutex);
 
-        if (fileList.contains(mDestination)) {
-            mCurrentFile = fileList[mDestination];
+        if (fileList.contains(m_Destination)) {
+            m_CurrentFile = fileList[m_Destination];
 
-            if (!mCurrentFile || !mCurrentFile->isOpen()) {
-                fileList.remove(mDestination);
+            if (!m_CurrentFile || !m_CurrentFile->isOpen()) {
+                fileList.remove(m_Destination);
 
                 return init();
             }
 
             // Тут происходит смена даты файла при смене суток.
-            if (mCurrentFile->fileName().contains(QDate::currentDate().toString("yyyy.MM.dd"))) {
+            if (m_CurrentFile->fileName().contains(QDate::currentDate().toString("yyyy.MM.dd"))) {
                 break;
             } else {
-                fileList.remove(mDestination);
+                fileList.remove(m_Destination);
                 return init();
             }
         } else {
@@ -157,14 +157,14 @@ bool SimpleLog::init() {
 
             if (GetModuleFileName(0, szPath, MAX_PATH)) {
                 QFileInfo info(QDir::toNativeSeparators(
-                    QString::fromWCharArray(reinterpret_cast<const wchar_t *>(szPath))));
+                    QString::from_WCharArray(reinterpret_cast<const wchar_t *>(szPath))));
                 QString settingsFilePath = QDir::toNativeSeparators(
                     info.absolutePath() + "/" + info.completeBaseName() + ".ini");
-                QSettings mSettings(ISysUtils::rmBOM(settingsFilePath), QSettings::IniFormat);
-                mSettings.setIniCodec("UTF-8");
+                QSettings m_Settings(ISysUtils::rm_BOM(settingsFilePath), QSettings::IniFormat);
+                m_Settings.setIniCodec("UTF-8");
 
-                if (mSettings.contains("common/working_directory")) {
-                    QString directory = mSettings.value("common/working_directory").toString();
+                if (m_Settings.contains("common/working_directory")) {
+                    QString directory = m_Settings.value("common/working_directory").toString();
                     workingDirectory = QDir::toNativeSeparators(QDir::cleanPath(
                         (QDir::isAbsolutePath(directory) ? "" : (info.absolutePath() + "/")) +
                         directory));
@@ -221,10 +221,10 @@ bool SimpleLog::init() {
 
                 QString settingsFilePath = QDir::toNativeSeparators(
                     iniDirPath + "/" + exeInfo.completeBaseName() + ".ini");
-                QSettings mSettings(ISysUtils::rmBOM(settingsFilePath), QSettings::IniFormat);
+                QSettings m_Settings(ISysUtils::rm_BOM(settingsFilePath), QSettings::IniFormat);
 
-                if (mSettings.contains("common/working_directory")) {
-                    QString directory = mSettings.value("common/working_directory").toString();
+                if (m_Settings.contains("common/working_directory")) {
+                    QString directory = m_Settings.value("common/working_directory").toString();
                     if (QDir::isAbsolutePath(directory)) {
                         workingDirectory = QDir::toNativeSeparators(QDir::cleanPath(directory));
                     } else {
@@ -246,7 +246,7 @@ bool SimpleLog::init() {
             }
 #endif
             logPath = workingDirectory + "/logs/" + QDate::currentDate().toString("yyyy.MM.dd ") +
-                      mDestination + ".log";
+                      m_Destination + ".log";
 
             QFileInfo logPathInfo(logPath);
 
@@ -258,15 +258,15 @@ bool SimpleLog::init() {
                 }
             }
 
-            mCurrentFile = DestinationFilePtr(new DestinationFile());
+            m_CurrentFile = DestinationFilePtr(new DestinationFile());
 
-            if (!mCurrentFile->open(logPath)) {
+            if (!m_CurrentFile->open(logPath)) {
                 return false;
             }
 
             needWriteHeader = true;
 
-            fileList[mDestination] = mCurrentFile;
+            fileList[m_Destination] = m_CurrentFile;
             break;
         }
     }
@@ -279,7 +279,7 @@ bool SimpleLog::init() {
         return false;
     }
 
-    mInitOk = true;
+    m_InitOk = true;
 
     if (needWriteHeader) {
         writeHeader();
@@ -291,12 +291,12 @@ bool SimpleLog::init() {
 //---------------------------------------------------------------------------
 bool SimpleLog::isInitiated() {
     // Тут проверяем сменился ли день
-    if (mType == LogType::File && mCurrentFile &&
-        !mCurrentFile->fileName().contains(QDate::currentDate().toString("yyyy.MM.dd"))) {
+    if (m_Type == LogType::File && m_CurrentFile &&
+        !m_CurrentFile->fileName().contains(QDate::currentDate().toString("yyyy.MM.dd"))) {
         return false;
     }
 
-    return mInitOk;
+    return m_InitOk;
 }
 
 //---------------------------------------------------------------------------
@@ -311,7 +311,7 @@ void SimpleLog::writeHeader() {
 
 //---------------------------------------------------------------------------
 void SimpleLog::safeWrite(LogLevel::Enum aLevel, const QString &aMessage) {
-    if (!mInitOk) {
+    if (!m_InitOk) {
         return;
     }
 
@@ -350,11 +350,11 @@ void SimpleLog::safeWrite(LogLevel::Enum aLevel, const QString &aMessage) {
         break;
     }
 
-    formattedMessage += QString(" %1%2\n").arg("", mPadding * 3).arg(aMessage);
+    formattedMessage += QString(" %1%2\n").arg("", m_Padding * 3).arg(aMessage);
 
-    switch (mType) {
+    switch (m_Type) {
     case LogType::File:
-        mCurrentFile->write(formattedMessage);
+        m_CurrentFile->write(formattedMessage);
         break;
 
     case LogType::Debug:

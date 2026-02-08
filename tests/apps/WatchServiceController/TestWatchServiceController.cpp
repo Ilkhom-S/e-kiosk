@@ -22,9 +22,9 @@ void TestWatchServiceController::test_creation() {
 void TestWatchServiceController::test_trayIconMenu() {
     WatchServiceController controller;
     // Проверяем, что меню трея создается
-    // (доступ к приватным членам невозможен, но можно проверить через QSystemTrayIcon)
+    // (доступ к приватным членам невозможен, но можно проверить через QSystem_TrayIcon)
     // Здесь можно добавить проверки сигналов/слотов через QSignalSpy при необходимости
-    QVERIFY(controller.findChild<QSystemTrayIcon *>() != nullptr || true);
+    QVERIFY(controller.findChild<QSystem_TrayIcon *>() != nullptr || true);
 }
 
 QTEST_MAIN(TestWatchServiceController)

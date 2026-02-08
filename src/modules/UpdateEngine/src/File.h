@@ -25,19 +25,19 @@ public:
     Result verify(const QString &aTempFilePath);
 
 public:
-    const QString &name() const { return mName; }
-    const QString &url() const { return mUrl; }
-    const QString &hash() const { return mHash; }
-    qint64 size() const { return mSize; }
+    const QString &name() const { return m_Name; }
+    const QString &url() const { return m_Url; }
+    const QString &hash() const { return m_Hash; }
+    qint64 size() const { return m_Size; }
 
     // Возвращает корневую папку файла, или само имя файла
-    QString dir() const { return QDir::fromNativeSeparators(mName).split("/").at(0); }
+    QString dir() const { return QDir::from_NativeSeparators(m_Name).split("/").at(0); }
 
 private:
-    QString mName; // путь относительно корня дистрибутива
-    QString mHash; // sha256 хеш файла
-    qint64 mSize;  // Размер файла
-    QString mUrl;  // Опциональный параметр - адрес для скачивания
+    QString m_Name; // путь относительно корня дистрибутива
+    QString m_Hash; // sha256 хеш файла
+    qint64 m_Size;  // Размер файла
+    QString m_Url;  // Опциональный параметр - адрес для скачивания
 };
 
 inline uint qHash(const File &aFile) {

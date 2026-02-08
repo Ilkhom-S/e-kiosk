@@ -93,7 +93,7 @@ void WINAPI RasConnection::RasCallback(
         G_State = QString("%1").arg(S);
 
         G_Error_Num = QString("%1").arg(dwError);
-        G_Error_Comment = QString::fromUtf16(reinterpret_cast<const char16_t *>((buff)));
+        G_Error_Comment = QString::from_Utf16(reinterpret_cast<const char16_t *>((buff)));
 
         return;
     }
@@ -183,7 +183,7 @@ void WINAPI RasConnection::RasCallback(
         D += " (Линии составляет около отключить в рамках подготовки к обратного "
              "вызова.)";
         break;
-    case RASCS_WaitForModemReset:
+    case RASCS_WaitForModem_Reset:
         S = "Wait For Modem Reset...";
         D = "The client is delaying in order to give the modem time to reset "
             "itself in preparation for callback.";
@@ -325,7 +325,7 @@ bool RasConnection::Dial() {
             G_State = QString("ERROR");
 
             G_Error_Num = QString("%1").arg(dialError);
-            G_Error_Comment = QString::fromUtf16(reinterpret_cast<const char16_t *>((buff)));
+            G_Error_Comment = QString::from_Utf16(reinterpret_cast<const char16_t *>((buff)));
 
             emit this->emit_errorState(G_Error_Num, G_Error_Comment);
 
@@ -370,7 +370,7 @@ int RasConnection::createNewDialupConnection(
              sizeof(tRasEntry.szDeviceName) / sizeof(wchar_t),
              (const wchar_t *)devName.utf16());
     wcscpy_s(tRasEntry.szDeviceType, sizeof(tRasEntry.szDeviceType) / sizeof(wchar_t), L"modem");
-    tRasEntry.dwfOptions = RASEO_ModemLights | RASEO_SecureLocalFiles | RASEO_RemoteDefaultGateway |
+    tRasEntry.dwfOptions = RASEO_Modem_Lights | RASEO_SecureLocalFiles | RASEO_RemoteDefaultGateway |
                            RASEO_DisableLcpExtensions;
     tRasEntry.dwfOptions2 = RASEO2_Internet | RASEO2_SecureFileAndPrint |
                             RASEO2_SecureClientForMSNet | RASEO2_DisableNbtOverIP |
@@ -416,7 +416,7 @@ int RasConnection::createNewDialupConnection(
     return ErrorDialup::rNoError;
 }
 
-bool RasConnection::HasInstalledModems(QStringList &lstModemList) {
+bool RasConnection::HasInstalledModems(QStringList &lstModem_List) {
     DWORD dwCb = sizeof(RASDEVINFO);
     DWORD dwErr = ERROR_SUCCESS;
     DWORD dwRetries = 5;
@@ -439,7 +439,7 @@ bool RasConnection::HasInstalledModems(QStringList &lstModemList) {
 
         lpRasDevInfo->dwSize = sizeof(RASDEVINFO);
         //
-        dwErr = RasEnumDevices(lpRasDevInfo, &dwCb, &dwDevices);
+        dwErr = RasEnum_Devices(lpRasDevInfo, &dwCb, &dwDevices);
         if (ERROR_BUFFER_TOO_SMALL != dwErr) {
             break;
         }
@@ -447,9 +447,9 @@ bool RasConnection::HasInstalledModems(QStringList &lstModemList) {
 
     if (ERROR_SUCCESS == dwErr) {
         for (DWORD i = 0; i < dwDevices; i++) {
-            if (QString::fromUtf16(reinterpret_cast<const char16_t *>(
+            if (QString::from_Utf16(reinterpret_cast<const char16_t *>(
                     &(lpRasDevInfo[i].szDeviceType))) == "modem") {
-                lstModemList << QString::fromUtf16(
+                lstModem_List << QString::from_Utf16(
                     reinterpret_cast<const char16_t *>(&(lpRasDevInfo[i].szDeviceName)));
                 bResult = true;
             }
@@ -471,9 +471,9 @@ bool RasConnection::getConName(QStringList &lstCon) {
     ras[0].dwSize = sizeof(RASCONN);
     dSize = sizeof(ras);
 
-    if (RasEnumConnections(ras, &dSize, &dNumber) == 0) {
+    if (RasEnum_Connections(ras, &dSize, &dNumber) == 0) {
         for (DWORD x = 0; x < dNumber; x++) {
-            lstCon << QString::fromUtf16(reinterpret_cast<const char16_t *>(&(ras[x].szEntryName)));
+            lstCon << QString::from_Utf16(reinterpret_cast<const char16_t *>(&(ras[x].szEntryName)));
             exit_b = true;
             emit this->emit_toLoging(
                 0,
@@ -528,10 +528,10 @@ HRASCONN RasConnection::getConnection() {
 
     dwBufferSize = sizeof(rasConnections);
 
-    DWORD dwError = RasEnumConnections(rasConnections, &dwBufferSize, &dwActualConnectionsCount);
+    DWORD dwError = RasEnum_Connections(rasConnections, &dwBufferSize, &dwActualConnectionsCount);
     if (dwError == 0) {
         for (DWORD i = 0; i < dwActualConnectionsCount; i++) {
-            if (conName == QString::fromUtf16(reinterpret_cast<const char16_t *>(
+            if (conName == QString::from_Utf16(reinterpret_cast<const char16_t *>(
                                &(rasConnections[i].szEntryName)))) {
                 result = rasConnections[i].hrasconn;
                 break;
@@ -552,10 +552,10 @@ void RasConnection::getConnection(QStringList &connectionEntries) {
     dSize = sizeof(rasentry);
     rasentry[0].dwSize = sizeof(RASENTRYNAME);
 
-    if (RasEnumEntries(NULL, NULL, rasentry, &dSize, &dNumber) == 0) {
+    if (RasEnum_Entries(NULL, NULL, rasentry, &dSize, &dNumber) == 0) {
         for (DWORD i = 0; i < dNumber; i++) {
             connectionEntries.append(
-                QString::fromUtf16(reinterpret_cast<const char16_t *>(&(rasentry[i].szEntryName))));
+                QString::from_Utf16(reinterpret_cast<const char16_t *>(&(rasentry[i].szEntryName))));
         }
     }
 }

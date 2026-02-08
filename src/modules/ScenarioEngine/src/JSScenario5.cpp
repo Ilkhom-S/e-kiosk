@@ -37,13 +37,13 @@ const char ScriptCanStopFunction[] =
     "canStop"; /// Возвращает false, если сценарий не может быть остановлен в текущий момент.
 
 /// Параметры состояний.
-const char ParamInitial[] = "initial";                 /// Начальное состояние.
-const char ParamFinal[] = "final";                     /// Конечное состояние.
-const char ParamTimeout[] = "timeout";                 /// Таймаут состояния.
-const char ParamUserActivity[] = "ignoreUserActivity"; /// Игнорировать активность пользователя.
-const char ParamSignalName[] = "signal"; /// Имя сигнала, при которому мы пришли в данное состояние.
-const char ParamResult[] = "result";     /// Результат работы сценария.
-const char ParamResultError[] = "resultError"; /// Ошибка, возвращаемая сценарием.
+const char Param_Initial[] = "initial";                 /// Начальное состояние.
+const char Param_Final[] = "final";                     /// Конечное состояние.
+const char Param_Timeout[] = "timeout";                 /// Таймаут состояния.
+const char Param_UserActivity[] = "ignoreUserActivity"; /// Игнорировать активность пользователя.
+const char Param_SignalName[] = "signal"; /// Имя сигнала, при которому мы пришли в данное состояние.
+const char Param_Result[] = "result";     /// Результат работы сценария.
+const char Param_ResultError[] = "resultError"; /// Ошибка, возвращаемая сценарием.
 } // namespace CJSScenario
 
 //---------------------------------------------------------------------------
@@ -53,31 +53,31 @@ public:
     /// Пользовательский тип.
     static const int Type = QEvent::User + 1;
 
-    ScenarioEvent(const QString &aSignal) : QEvent(QEvent::Type(Type)), mSignal(aSignal) {}
-    QString getSignal() const { return mSignal; }
+    ScenarioEvent(const QString &aSignal) : QEvent(QEvent::Type(Type)), m_Signal(aSignal) {}
+    QString getSignal() const { return m_Signal; }
 
 private:
-    QString mSignal;
+    QString m_Signal;
 };
 
 //---------------------------------------------------------------------------
 /// Переход между состояниями сценария.
 class ScenarioTransition : public QAbstractTransition {
 public:
-    ScenarioTransition(const QString &aSignal) : mSignal(aSignal) {}
+    ScenarioTransition(const QString &aSignal) : m_Signal(aSignal) {}
 
     virtual void onTransition(QEvent *) {}
     virtual bool eventTest(QEvent *aEvent) {
         if (aEvent->type() == ScenarioEvent::Type) {
             ScenarioEvent *se = static_cast<ScenarioEvent *>(aEvent);
-            return mSignal == se->getSignal();
+            return m_Signal == se->getSignal();
         }
 
         return false;
     }
 
 private:
-    QString mSignal;
+    QString m_Signal;
 };
 
 //---------------------------------------------------------------------------
@@ -85,11 +85,11 @@ JSScenario::JSScenario(const QString &aName,
                        const QString &aPath,
                        const QString &aBasePath,
                        ILog *aLog)
-    : Scenario(aName, aLog), mBasePath(aBasePath), mPath(aPath), mIsPaused(true) {
+    : Scenario(aName, aLog), m_BasePath(aBasePath), m_Path(aPath), m_IsPaused(true) {
     connect(
-        &mEnterSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onEnterState(const QString &)));
+        &m_EnterSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onEnterState(const QString &)));
     connect(
-        &mExitSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onExitState(const QString &)));
+        &m_ExitSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onExitState(const QString &)));
 }
 
 //---------------------------------------------------------------------------
@@ -97,100 +97,100 @@ JSScenario::~JSScenario() {}
 
 //---------------------------------------------------------------------------
 void JSScenario::start(const QVariantMap &aContext) {
-    mContext = aContext;
-    mCurrentState = mInitialState;
+    m_Context = aContext;
+    m_CurrentState = m_InitialState;
 
-    mIsPaused = false;
+    m_IsPaused = false;
 
     functionCall(CJSScenario::ScriptStartFunction,
                  QVariantMap(),
-                 mName + ":" + CJSScenario::ScriptStartFunction);
+                 m_Name + ":" + CJSScenario::ScriptStartFunction);
 
-    mSignalArguments.clear();
-    mSignalArguments[CJSScenario::ParamSignalName] = "start";
+    m_SignalArguments.clear();
+    m_SignalArguments[CJSScenario::Param_SignalName] = "start";
 
-    mStateMachine->setInitialState(mStates[mCurrentState].qstate);
-    mStateMachine->start();
+    m_StateMachine->setInitialState(m_States[m_CurrentState].qstate);
+    m_StateMachine->start();
 }
 
 //---------------------------------------------------------------------------
 void JSScenario::pause() {
-    mIsPaused = true;
+    m_IsPaused = true;
 
-    mTimeoutTimer.stop();
-    mStateMachine->stop();
+    m_TimeoutTimer.stop();
+    m_StateMachine->stop();
 
     functionCall(CJSScenario::ScriptPauseFunction,
                  QVariantMap(),
-                 mName + ":" + CJSScenario::ScriptPauseFunction);
+                 m_Name + ":" + CJSScenario::ScriptPauseFunction);
 }
 
 //---------------------------------------------------------------------------
 void JSScenario::resume(const QVariantMap &aContext) {
     // Очищаем контекст от совпадающих ключей
     foreach (QString key, aContext.keys()) {
-        mContext.remove(key);
+        m_Context.remove(key);
     }
 
     // Объединяем контексты
-    mContext.unite(aContext);
+    m_Context.unite(aContext);
 
-    mIsPaused = false;
+    m_IsPaused = false;
 
     functionCall(CJSScenario::ScriptResumeFunction,
                  QVariantMap(),
-                 mName + ":" + CJSScenario::ScriptResumeFunction);
+                 m_Name + ":" + CJSScenario::ScriptResumeFunction);
 
-    mSignalArguments.clear();
-    mSignalArguments[CJSScenario::ParamSignalName] = "resume";
+    m_SignalArguments.clear();
+    m_SignalArguments[CJSScenario::Param_SignalName] = "resume";
 
-    mStateMachine->setInitialState(mStates[mCurrentState].qstate);
-    mStateMachine->start();
+    m_StateMachine->setInitialState(m_States[m_CurrentState].qstate);
+    m_StateMachine->start();
 }
 
 //---------------------------------------------------------------------------
 bool JSScenario::initialize(const QList<SScriptObject> &aScriptObjects) {
-    mStateMachine = QSharedPointer<QStateMachine>(new QStateMachine);
-    mScriptEngine = QSharedPointer<QScriptEngine>(new QScriptEngine);
+    m_StateMachine = QSharedPointer<QStateMachine>(new QStateMachine);
+    m_ScriptEngine = QSharedPointer<QScriptEngine>(new QScriptEngine);
 
-    connect(mStateMachine.data(), SIGNAL(finished()), this, SLOT(onFinish()));
-    connect(mScriptEngine.data(),
+    connect(m_StateMachine.data(), SIGNAL(finished()), this, SLOT(onFinish()));
+    connect(m_ScriptEngine.data(),
             SIGNAL(signalHandlerException(const QScriptValue &)),
             this,
             SLOT(onException(const QScriptValue &)));
 
     // Добавляем в скрипты внешние объекты.
     foreach (const SScriptObject &object, aScriptObjects) {
-        mScriptEngine->globalObject().setProperty(
+        m_ScriptEngine->globalObject().setProperty(
             object.name,
-            object.isType ? mScriptEngine->newQMetaObject(object.metaObject)
-                          : mScriptEngine->newQObject(object.object));
+            object.isType ? m_ScriptEngine->newQMetaObject(object.metaObject)
+                          : m_ScriptEngine->newQObject(object.object));
     }
 
-    mScriptEngine->globalObject().setProperty(CJSScenario::ServiceName,
-                                              mScriptEngine->newQObject(this));
-    mScriptEngine->globalObject().setProperty(
+    m_ScriptEngine->globalObject().setProperty(CJSScenario::ServiceName,
+                                              m_ScriptEngine->newQObject(this));
+    m_ScriptEngine->globalObject().setProperty(
         CJSScenario::ScriptIncludeFunction,
-        mScriptEngine->newFunction(&JSScenario::includeScript, this));
-    mScriptEngine->installTranslatorFunctions();
+        m_ScriptEngine->newFunction(&JSScenario::includeScript, this));
+    m_ScriptEngine->installTranslatorFunctions();
 
     // Загружаем базовый сценарий, если такой имеется.
-    if (!mBasePath.isEmpty()) {
-        if (!loadScript(mScriptEngine.data(), mName, mBasePath)) {
+    if (!m_BasePath.isEmpty()) {
+        if (!loadScript(m_ScriptEngine.data(), m_Name, m_BasePath)) {
             toLog(LogLevel::Error,
                   QString("Failed to load base scenario script %1 for scenario %2.")
-                      .arg(mBasePath)
-                      .arg(mName));
+                      .arg(m_BasePath)
+                      .arg(m_Name));
             return false;
         }
 
         // Делаем вызов функции initialize в скрипте.
         functionCall(CJSScenario::ScriptInitFunction,
                      QVariantMap(),
-                     mName + ":" + CJSScenario::ScriptInitFunction);
+                     m_Name + ":" + CJSScenario::ScriptInitFunction);
     }
 
-    if (!loadScript(mScriptEngine.data(), mName, mPath)) {
+    if (!loadScript(m_ScriptEngine.data(), m_Name, m_Path)) {
         return false;
     }
 
@@ -198,10 +198,10 @@ bool JSScenario::initialize(const QList<SScriptObject> &aScriptObjects) {
     QScriptValue result =
         functionCall(CJSScenario::ScriptInitFunction,
                      QVariantMap(),
-                     QString("%1:%2").arg(mName).arg(CJSScenario::ScriptInitFunction));
+                     QString("%1:%2").arg(m_Name).arg(CJSScenario::ScriptInitFunction));
     if (result.isError()) {
         toLog(LogLevel::Error,
-              QString("Failed to initialize '%1' scenario: %2").arg(mName).arg(result.toString()));
+              QString("Failed to initialize '%1' scenario: %2").arg(m_Name).arg(result.toString()));
         return false;
     }
 
@@ -213,11 +213,11 @@ bool JSScenario::canStop() {
     QScriptValue result =
         functionCall(CJSScenario::ScriptCanStopFunction,
                      QVariantMap(),
-                     QString("%1:%2").arg(mName).arg(CJSScenario::ScriptCanStopFunction));
+                     QString("%1:%2").arg(m_Name).arg(CJSScenario::ScriptCanStopFunction));
 
     if (result.isError()) {
         toLog(LogLevel::Error,
-              QString("Failed to call '%1' scenario: %2").arg(mName).arg(result.toString()));
+              QString("Failed to call '%1' scenario: %2").arg(m_Name).arg(result.toString()));
         return true;
     }
 
@@ -227,10 +227,10 @@ bool JSScenario::canStop() {
 //---------------------------------------------------------------------------
 void JSScenario::signalTriggered(const QString &aSignal, const QVariantMap &aArguments) {
     // Если переход не зарегистрирован, не обрабатываем его.
-    if (!mTransitions.contains(mCurrentState, aSignal)) {
+    if (!m_Transitions.contains(m_CurrentState, aSignal)) {
         toLog(LogLevel::Debug,
               QString("Transition from state '%1' by signal '%2' not found.")
-                  .arg(mCurrentState)
+                  .arg(m_CurrentState)
                   .arg(aSignal));
 
         return;
@@ -238,25 +238,25 @@ void JSScenario::signalTriggered(const QString &aSignal, const QVariantMap &aArg
 
     // State-машина была активирована, но еще не вошла в рабочее состояние (срабатывание приведет к
     // утечке памяти).
-    if (!mStateMachine->isRunning()) {
+    if (!m_StateMachine->isRunning()) {
         return;
     }
 
     // Переход не был выполнен.
-    if (!mSignalArguments.isEmpty()) {
+    if (!m_SignalArguments.isEmpty()) {
         toLog(LogLevel::Debug,
               QString(
                   "Transition from state '%1' was not completed but new signal '%2' was happened.")
-                  .arg(mCurrentState)
+                  .arg(m_CurrentState)
                   .arg(aSignal));
 
         return;
     }
 
-    mSignalArguments = aArguments;
-    mSignalArguments[CJSScenario::ParamSignalName] = aSignal;
+    m_SignalArguments = aArguments;
+    m_SignalArguments[CJSScenario::Param_SignalName] = aSignal;
 
-    mStateMachine->postEvent(new ScenarioEvent(aSignal));
+    m_StateMachine->postEvent(new ScenarioEvent(aSignal));
 }
 
 //---------------------------------------------------------------------------
@@ -269,29 +269,29 @@ void JSScenario::addState(const QString &aStateName, const QVariantMap &aParamet
 
     if (state.name.isEmpty()) {
         toLog(LogLevel::Error,
-              QString("Failed to add a state to '%1' scenario: name not specified.").arg(mName));
+              QString("Failed to add a state to '%1' scenario: name not specified.").arg(m_Name));
         return;
     }
 
     // Начальное, конечное или обычное состояние.
-    if (aParameters.contains(CJSScenario::ParamFinal)) {
+    if (aParameters.contains(CJSScenario::Param_Final)) {
         state.qstate = new QFinalState();
     } else {
-        if (aParameters.contains(CJSScenario::ParamInitial)) {
-            mInitialState = state.name;
+        if (aParameters.contains(CJSScenario::Param_Initial)) {
+            m_InitialState = state.name;
         }
 
         state.qstate = new QState();
     }
 
-    mEnterSignalMapper.connect(state.qstate, SIGNAL(entered()), SLOT(map()));
-    mEnterSignalMapper.setMapping(state.qstate, aStateName);
+    m_EnterSignalMapper.connect(state.qstate, SIGNAL(entered()), SLOT(map()));
+    m_EnterSignalMapper.setMapping(state.qstate, aStateName);
 
-    mExitSignalMapper.connect(state.qstate, SIGNAL(exited()), SLOT(map()));
-    mExitSignalMapper.setMapping(state.qstate, aStateName);
+    m_ExitSignalMapper.connect(state.qstate, SIGNAL(exited()), SLOT(map()));
+    m_ExitSignalMapper.setMapping(state.qstate, aStateName);
 
-    mStates[aStateName] = state;
-    mStateMachine->addState(state.qstate);
+    m_States[aStateName] = state;
+    m_StateMachine->addState(state.qstate);
 }
 
 //---------------------------------------------------------------------------
@@ -300,16 +300,16 @@ void JSScenario::addTransition(const QString &aSource,
                                const QString &aSignal) {
     Q_ASSERT(!aSignal.isEmpty());
 
-    TStateList::iterator src = mStates.find(aSource);
-    TStateList::iterator dst = mStates.find(aTarget);
+    TStateList::iterator src = m_States.find(aSource);
+    TStateList::iterator dst = m_States.find(aTarget);
 
-    if (src == mStates.end() || dst == mStates.end()) {
+    if (src == m_States.end() || dst == m_States.end()) {
         toLog(LogLevel::Error,
               QString("Failed to add '%1->%2' transition to '%3' scenario: either source or target "
                       "state doesn't exist.")
                   .arg(aSource)
                   .arg(aTarget)
-                  .arg(mName));
+                  .arg(m_Name));
         return;
     }
 
@@ -323,35 +323,35 @@ void JSScenario::addTransition(const QString &aSource,
                       "have transitions.")
                   .arg(aSource)
                   .arg(aTarget)
-                  .arg(mName));
+                  .arg(m_Name));
         return;
     }
 
     state->addTransition(transition.release());
-    mTransitions.insert(aSource, aSignal);
+    m_Transitions.insert(aSource, aSignal);
 }
 
 //---------------------------------------------------------------------------
 void JSScenario::setDefaultTimeout(int aSeconds, const QScriptValue &aHandler) {
-    mDefaultTimeout = aSeconds;
-    mTimeoutHandler = aHandler;
+    m_DefaultTimeout = aSeconds;
+    m_TimeoutHandler = aHandler;
 }
 
 //---------------------------------------------------------------------------
 void JSScenario::onEnterState(const QString &aState) {
-    if (mIsPaused) {
+    if (m_IsPaused) {
         toLog(LogLevel::Warning,
-              QString("Scenario %1 is paused. Skip state %2.").arg(mName).arg(aState));
+              QString("Scenario %1 is paused. Skip state %2.").arg(m_Name).arg(aState));
         return;
     }
 
-    TStateList::iterator s = mStates.find(aState);
-    bool final = s->parameters.contains(CJSScenario::ParamFinal);
+    TStateList::iterator s = m_States.find(aState);
+    bool final = s->parameters.contains(CJSScenario::Param_Final);
 
     toLog(LogLevel::Normal, QString("ENTER %1 %2state.").arg(aState).arg(final ? "final " : ""));
 
     QVariantMap::iterator t = s->parameters.find("timeout");
-    int timeout = mDefaultTimeout;
+    int timeout = m_DefaultTimeout;
 
     if (t != s->parameters.end()) {
         timeout = t->toInt();
@@ -361,53 +361,53 @@ void JSScenario::onEnterState(const QString &aState) {
         setStateTimeout(timeout);
     }
 
-    mCurrentState = aState;
+    m_CurrentState = aState;
 
     // Если достигли конечного состояния - копируем результат.
     if (final) {
-        mContext[CJSScenario::ParamResult] = s->parameters[CJSScenario::ParamResult];
+        m_Context[CJSScenario::Param_Result] = s->parameters[CJSScenario::Param_Result];
     }
 
-    foreach (Scenario::SExternalStateHook hook, mHooks) {
-        if (hook.targetScenario == getName() && hook.targetState == mCurrentState) {
-            mSignalArguments = hook.hook(getContext(), mSignalArguments);
+    foreach (Scenario::SExternalStateHook hook, m_Hooks) {
+        if (hook.targetScenario == getName() && hook.targetState == m_CurrentState) {
+            m_SignalArguments = hook.hook(getContext(), m_SignalArguments);
         }
     }
 
     QString handler =
         aState + (final ? CJSScenario::ScriptFinalHandler : CJSScenario::ScriptEnterHandler);
     functionCall(
-        handler, mSignalArguments, QString("%1:%2:%3").arg(mName).arg(aState).arg(handler));
+        handler, m_SignalArguments, QString("%1:%2:%3").arg(m_Name).arg(aState).arg(handler));
 
-    mSignalArguments.clear();
+    m_SignalArguments.clear();
 }
 
 //---------------------------------------------------------------------------
 void JSScenario::onExitState(const QString &aState) {
-    if (mIsPaused) {
+    if (m_IsPaused) {
         toLog(LogLevel::Warning,
-              QString("Scenario %1 in da pause. Skip state %2.").arg(mName).arg(aState));
+              QString("Scenario %1 in da pause. Skip state %2.").arg(m_Name).arg(aState));
         return;
     }
 
     QString handler = aState + CJSScenario::ScriptExitHandler;
     functionCall(
-        handler, mSignalArguments, QString("%1:%2:%3").arg(mName).arg(aState).arg(handler));
+        handler, m_SignalArguments, QString("%1:%2:%3").arg(m_Name).arg(aState).arg(handler));
 
-    mTimeoutTimer.stop();
+    m_TimeoutTimer.stop();
 }
 
 //---------------------------------------------------------------------------
 void JSScenario::onTimeout() {
     bool handled = false;
 
-    if (mTimeoutHandler.isFunction()) {
+    if (m_TimeoutHandler.isFunction()) {
         QScriptValue result =
-            mTimeoutHandler.call(QScriptValue(), QScriptValueList() << mCurrentState);
+            m_TimeoutHandler.call(QScriptValue(), QScriptValueList() << m_CurrentState);
         if (result.isError()) {
             toLog(LogLevel::Error,
                   QString("An exception occured during executing '%1' timeout handler: %2.")
-                      .arg(mName)
+                      .arg(m_Name)
                       .arg(result.toString()));
         } else {
             handled = result.toBool();
@@ -415,7 +415,7 @@ void JSScenario::onTimeout() {
     }
 
     if (!handled) {
-        mSignalArguments.clear();
+        m_SignalArguments.clear();
         signalTriggered("timeout");
     }
 
@@ -424,34 +424,34 @@ void JSScenario::onTimeout() {
 
 //---------------------------------------------------------------------------
 void JSScenario::onFinish() {
-    mTimeoutTimer.stop();
+    m_TimeoutTimer.stop();
 
     QScriptValue resultError =
         functionCall(CJSScenario::ScriptStopFunction,
                      QVariantMap(),
-                     QString("%1:%2").arg(mName).arg(CJSScenario::ScriptStopFunction));
+                     QString("%1:%2").arg(m_Name).arg(CJSScenario::ScriptStopFunction));
 
     // Помещаем в контекст возвращаемое сценарием значение
-    mContext[CJSScenario::ParamResultError] = resultError.toVariant();
+    m_Context[CJSScenario::Param_ResultError] = resultError.toVariant();
 
-    emit finished(mContext);
+    emit finished(m_Context);
 }
 
 //---------------------------------------------------------------------------
 QString JSScenario::getState() const {
-    return mCurrentState;
+    return m_CurrentState;
 }
 
 //---------------------------------------------------------------------------
 QVariantMap JSScenario::getContext() const {
-    return mContext;
+    return m_Context;
 }
 
 //---------------------------------------------------------------------------
 QScriptValue JSScenario::functionCall(const QString &aFunction,
                                       const QVariantMap &aArguments,
                                       const QString &aNameForLog) {
-    QScriptValue function = mScriptEngine->globalObject().property(aFunction);
+    QScriptValue function = m_ScriptEngine->globalObject().property(aFunction);
 
     QScriptValue result;
 
@@ -534,14 +534,14 @@ JSScenario::includeScript(QScriptContext *aContext, QScriptEngine *aEngine, void
     JSScenario *self = static_cast<JSScenario *>(aScenario);
 
     QString includeFilePath =
-        self->mPath.section("/", 0, -2) + "/" + aContext->argument(0).toString();
+        self->m_Path.section("/", 0, -2) + "/" + aContext->argument(0).toString();
     QString namespaceName = aContext->argument(1).toString();
 
     if (!namespaceName.isEmpty()) {
         aEngine->pushContext();
 
         // Добавляем другой файл в текущий контекст.
-        if (!self->loadScript(aEngine, self->mName, includeFilePath)) {
+        if (!self->loadScript(aEngine, self->m_Name, includeFilePath)) {
             aEngine->popContext();
             return QScriptValue(false);
         }
@@ -559,7 +559,7 @@ JSScenario::includeScript(QScriptContext *aContext, QScriptEngine *aEngine, void
         aContext->setActivationObject(aContext->parentContext()->activationObject());
 
         // Добавляем другой скрипт в текущий контекст.
-        if (self->loadScript(aEngine, self->mName, includeFilePath)) {
+        if (self->loadScript(aEngine, self->m_Name, includeFilePath)) {
             return QScriptValue(true);
         }
 

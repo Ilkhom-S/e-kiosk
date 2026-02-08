@@ -31,9 +31,9 @@ public:
             for (QStringList::Iterator iter = allFilesList.begin(); iter != allFilesList.end();
                  ++iter) {
 
-                QString vrmPath = *iter;
-                int compex = vrmPath.indexOf("assets/");
-                QString fileFrom = vrmPath.mid(compex);
+                QString vrm_Path = *iter;
+                int compex = vrm_Path.indexOf("assets/");
+                QString fileFrom = vrm_Path.mid(compex);
 
                 QFileInfo infoIn(*iter);
                 QFile fileCopy;

@@ -40,8 +40,8 @@ struct {
 
 //---------------------------------------------------------------------------
 DatabaseUtils::DatabaseUtils(IDatabaseProxy &aProxy, IApplication *aApplication)
-    : mDatabase(aProxy), mApplication(aApplication), mLog(aApplication->getLog()),
-      mPaymentLog(ILog::getInstance("Payments")), mAccessMutex(QRecursiveMutex()) {}
+    : m_Database(aProxy), m_Application(aApplication), m_Log(aApplication->getLog()),
+      m_PaymentLog(ILog::getInstance("Payments")), m_AccessMutex(QRecursiveMutex()) {}
 
 //---------------------------------------------------------------------------
 DatabaseUtils::~DatabaseUtils() {}
@@ -49,11 +49,11 @@ DatabaseUtils::~DatabaseUtils() {}
 //---------------------------------------------------------------------------
 bool DatabaseUtils::initialize() {
     try {
-        if (!mDatabase.isConnected()) {
+        if (!m_Database.isConnected()) {
             throw std::runtime_error("not connected.");
         }
 
-        if (!mDatabase.transaction()) {
+        if (!m_Database.transaction()) {
             throw std::runtime_error("Cannot start database transaction.");
         }
 
@@ -66,7 +66,7 @@ bool DatabaseUtils::initialize() {
         for (int i = 0; i < sizeof(CDatabaseUtils::Patches) / sizeof(CDatabaseUtils::Patches[0]);
              i++) {
             if (databasePatch() < CDatabaseUtils::Patches[i].version) {
-                LOG(mLog,
+                LOG(m_Log,
                     LogLevel::Normal,
                     QString("Patch database to version %1.")
                         .arg(CDatabaseUtils::Patches[i].version));
@@ -75,15 +75,15 @@ bool DatabaseUtils::initialize() {
             }
         }
     } catch (...) {
-        EXCEPTION_FILTER(mLog);
+        EXCEPTION_FILTER(m_Log);
 
-        mDatabase.rollback();
+        m_Database.rollback();
 
         return false;
     }
 
-    if (!mDatabase.commit()) {
-        LOG(mLog, LogLevel::Error, "Failed to commit changes to the terminal database.");
+    if (!m_Database.commit()) {
+        LOG(m_Log, LogLevel::Error, "Failed to commit changes to the terminal database.");
         return false;
     }
 
@@ -119,7 +119,7 @@ bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName) {
             continue;
         }
 
-        if (!mDatabase.execDML(step, rowsAffected)) {
+        if (!m_Database.execDML(step, rowsAffected)) {
             throw std::runtime_error("Cannot execute regular sql query.");
         }
     }
@@ -130,9 +130,9 @@ bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName) {
 //---------------------------------------------------------------------------
 int DatabaseUtils::databaseTableCount() const {
     QString queryMessage = "SELECT count(*) FROM sqlite_master WHERE type = 'table'";
-    QScopedPointer<IDatabaseQuery> dbQuery(mDatabase.execQuery(queryMessage));
+    QScopedPointer<IDatabaseQuery> dbQuery(m_Database.execQuery(queryMessage));
     if (!dbQuery) {
-        LOG(mLog, LogLevel::Error, "Failed to check database tables presence.");
+        LOG(m_Log, LogLevel::Error, "Failed to check database tables presence.");
         return 0;
     }
 
@@ -146,9 +146,9 @@ int DatabaseUtils::databaseTableCount() const {
 //---------------------------------------------------------------------------
 int DatabaseUtils::databasePatch() const {
     QString queryMessage = "SELECT `value` FROM device_param WHERE `name` = 'db_patch'";
-    QScopedPointer<IDatabaseQuery> dbQuery(mDatabase.execQuery(queryMessage));
+    QScopedPointer<IDatabaseQuery> dbQuery(m_Database.execQuery(queryMessage));
     if (!dbQuery) {
-        LOG(mLog, LogLevel::Error, "Failed to check database patch version.");
+        LOG(m_Log, LogLevel::Error, "Failed to check database patch version.");
         return 0;
     }
 
@@ -161,16 +161,16 @@ int DatabaseUtils::databasePatch() const {
 
 //---------------------------------------------------------------------------
 IDatabaseQuery *DatabaseUtils::prepareQuery(const QString &aQuery) {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
-    std::unique_ptr<IDatabaseQuery> query(mDatabase.createQuery(aQuery));
+    std::unique_ptr<IDatabaseQuery> query(m_Database.createQuery(aQuery));
 
     return query ? query.release() : nullptr;
 }
 
 //---------------------------------------------------------------------------
 bool DatabaseUtils::execQuery(IDatabaseQuery *aQuery) {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
     if (aQuery) {
         return aQuery->exec();
@@ -181,7 +181,7 @@ bool DatabaseUtils::execQuery(IDatabaseQuery *aQuery) {
 
 //---------------------------------------------------------------------------
 void DatabaseUtils::releaseQuery(IDatabaseQuery *aQuery) {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
     delete aQuery;
 }

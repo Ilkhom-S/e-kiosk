@@ -23,18 +23,18 @@ char *ContextProperty = "cyberContext";
 
 //----------------------------------------------------------------------------
 WizardFrame::WizardFrame(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), mBackend(aBackend), mCurrentPage(0) {
+    : QWidget(aParent), m_Backend(aBackend), m_CurrentPage(0) {
     setupUi(this);
     wPage->setLayout(new QGridLayout);
 
-    mSignalMapper.connect(btnBack, SIGNAL(clicked()), SLOT(map()));
-    mSignalMapper.connect(btnForward, SIGNAL(clicked()), SLOT(map()));
+    m_SignalMapper.connect(btnBack, SIGNAL(clicked()), SLOT(map()));
+    m_SignalMapper.connect(btnForward, SIGNAL(clicked()), SLOT(map()));
 
     connect(this, SIGNAL(changePage(const QString &)), this, SLOT(onChangePage(const QString &)));
-    connect(&mSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onControlEvent(const QString &)));
+    connect(&m_SignalMapper, SIGNAL(mapped(const QString &)), SLOT(onControlEvent(const QString &)));
     connect(btnExit, SIGNAL(clicked()), SLOT(onExit()));
 
-    mBackend->toLog("Welcome to the First Setup Wizard!");
+    m_Backend->toLog("Welcome to the First Setup Wizard!");
 }
 
 //----------------------------------------------------------------------------
@@ -47,9 +47,9 @@ void WizardFrame::initialize() {
 
 //----------------------------------------------------------------------------
 void WizardFrame::shutdown() {
-    hidePage(mCurrentContext, mCurrentPage);
+    hidePage(m_CurrentContext, m_CurrentPage);
 
-    foreach (CacheItem item, mPages.values()) {
+    foreach (CacheItem item, m_Pages.values()) {
         item.page->deactivate();
     }
 }
@@ -64,21 +64,21 @@ void WizardFrame::setPage(const QString &aContext, WizardPageBase *aPage, bool a
     if (aCanCache) {
         CacheItem item;
         item.page = aPage;
-        mPages[aContext] = item;
+        m_Pages[aContext] = item;
     }
 
     connect(
         aPage, SIGNAL(pageEvent(const QString &, bool)), SLOT(onPageEvent(const QString &, bool)));
-    hidePage(mCurrentContext, mCurrentPage);
+    hidePage(m_CurrentContext, m_CurrentPage);
     showPage(aContext, aPage);
 
-    mBackend->saveConfiguration();
+    m_Backend->saveConfiguration();
 }
 
 //----------------------------------------------------------------------------
 void WizardFrame::commitPageChanges() {
-    if (mCurrentPage) {
-        mCurrentPage->initialize();
+    if (m_CurrentPage) {
+        m_CurrentPage->initialize();
     }
 }
 
@@ -88,10 +88,10 @@ void WizardFrame::showPage(const QString &aContext, WizardPageBase *aPage) {
     aPage->show();
     aPage->activate();
 
-    mCurrentContext = aContext;
-    mCurrentPage = aPage;
+    m_CurrentContext = aContext;
+    m_CurrentPage = aPage;
 
-    mBackend->toLog(QString("Show page %1").arg(aContext));
+    m_Backend->toLog(QString("Show page %1").arg(aContext));
 }
 
 //----------------------------------------------------------------------------
@@ -102,9 +102,9 @@ void WizardFrame::hidePage(const QString &aContext, WizardPageBase *aPage) {
         wPage->layout()->removeWidget(aPage);
     }
 
-    TPageMap::iterator page = mPages.find(aContext);
+    TPageMap::iterator page = m_Pages.find(aContext);
 
-    if (page != mPages.end()) {
+    if (page != m_Pages.end()) {
         for (QList<CacheItem::ControlItem>::iterator i = page->controls.begin();
              i != page->controls.end();
              ++i) {
@@ -123,8 +123,8 @@ void WizardFrame::hidePage(const QString &aContext, WizardPageBase *aPage) {
     btnBack->hide();
     btnForward->hide();
 
-    mSignalMapper.removeMappings(btnBack);
-    mSignalMapper.removeMappings(btnForward);
+    m_SignalMapper.removeMappings(btnBack);
+    m_SignalMapper.removeMappings(btnForward);
 }
 
 //----------------------------------------------------------------------------
@@ -135,9 +135,9 @@ void WizardFrame::setupDecoration(const QString &aStage,
     lbStageName->setText(aStageName);
     lbStageHowto->setText(aStageHowto);
 
-    TPageMap::iterator page = mPages.find(mCurrentContext);
+    TPageMap::iterator page = m_Pages.find(m_CurrentContext);
 
-    if (page != mPages.end()) {
+    if (page != m_Pages.end()) {
         page->stage = aStage;
         page->stageName = aStageName;
         page->stageHowto = aStageHowto;
@@ -156,7 +156,7 @@ void WizardFrame::setupControl(Control aControl,
         btnBack->setEnabled(aEnabled);
         btnBack->setText(aTitle);
         btnBack->setProperty(CWizardFrame::ContextProperty, aContext);
-        mSignalMapper.setMapping(btnBack, aContext);
+        m_SignalMapper.setMapping(btnBack, aContext);
         break;
 
     case ForwardButton:
@@ -164,7 +164,7 @@ void WizardFrame::setupControl(Control aControl,
         btnForward->setEnabled(aEnabled);
         btnForward->setText(aTitle);
         btnForward->setProperty(CWizardFrame::ContextProperty, aContext);
-        mSignalMapper.setMapping(btnForward, aContext);
+        m_SignalMapper.setMapping(btnForward, aContext);
         break;
 
     case ExitButton:
@@ -173,9 +173,9 @@ void WizardFrame::setupControl(Control aControl,
     }
 
     if (aCanCache) {
-        TPageMap::iterator page = mPages.find(mCurrentContext);
+        TPageMap::iterator page = m_Pages.find(m_CurrentContext);
 
-        if (page != mPages.end()) {
+        if (page != m_Pages.end()) {
             CacheItem::ControlItem control;
             control.control = aControl;
             control.context = aContext;
@@ -197,10 +197,10 @@ void WizardFrame::onPageEvent(const QString &aContext, bool aFlag) {
         wButtonBar->setVisible(aFlag);
     } else if (aFlag) {
         // Иначе переход по заданному контексту
-        TPageMap::iterator page = mPages.find(aContext);
+        TPageMap::iterator page = m_Pages.find(aContext);
 
-        if (page != mPages.end()) {
-            hidePage(mCurrentContext, mCurrentPage);
+        if (page != m_Pages.end()) {
+            hidePage(m_CurrentContext, m_CurrentPage);
             showPage(aContext, page->page);
 
             foreach (CacheItem::ControlItem control, page->controls) {
@@ -258,14 +258,14 @@ void WizardFrame::onChangePage(const QString &aContext) {
 #endif
 
     if (aContext == CWizardContext::StartPage) {
-        WelcomeWizardPage *wwp = new WelcomeWizardPage(mBackend, this);
+        WelcomeWizardPage *wwp = new WelcomeWizardPage(m_Backend, this);
 
         setPage(aContext, wwp);
         setupDecoration("", "", "");
 
         connectAllAbstractButtons(wwp);
     } else if (aContext == CWizardContext::SetupHardware) {
-        HardwareWizardPage *hwp = new HardwareWizardPage(mBackend, this);
+        HardwareWizardPage *hwp = new HardwareWizardPage(m_Backend, this);
 
         setPage(aContext, hwp);
         setupDecoration(
@@ -279,7 +279,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(hwp);
     } else if (aContext == CWizardContext::SetupNetwork) {
-        NetworkWizardPage *nwp = new NetworkWizardPage(mBackend, this);
+        NetworkWizardPage *nwp = new NetworkWizardPage(m_Backend, this);
 
         setPage(aContext, nwp);
         setupDecoration(
@@ -289,7 +289,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(nwp);
     } else if (aContext == CWizardContext::SetupDialup) {
-        DialupWizardPage *dwp = new DialupWizardPage(mBackend, this);
+        DialupWizardPage *dwp = new DialupWizardPage(m_Backend, this);
 
         setPage(aContext, dwp);
         setupDecoration(stageIndex(aContext), tr("#dialup_setup_stage"), tr("#dialup_setup_howto"));
@@ -308,7 +308,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(dwp);
     } else if (aContext == CWizardContext::SetupUnmanaged) {
-        UnmanagedWizardPage *uwp = new UnmanagedWizardPage(mBackend, this);
+        UnmanagedWizardPage *uwp = new UnmanagedWizardPage(m_Backend, this);
 
         setPage(aContext, uwp);
         setupDecoration(
@@ -328,7 +328,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(uwp);
     } else if (aContext == CWizardContext::SetupToken) {
-        TokenWizardPage *rwp = new TokenWizardPage(mBackend, this);
+        TokenWizardPage *rwp = new TokenWizardPage(m_Backend, this);
 
         setPage(aContext, rwp);
         setupDecoration(stageIndex(aContext), tr("#token_setup_stage"), tr("#token_setup_howto"));
@@ -339,7 +339,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(rwp);
     } else if (aContext == CWizardContext::SetupKeys) {
-        KeysWizardPage *kwp = new KeysWizardPage(mBackend, this);
+        KeysWizardPage *kwp = new KeysWizardPage(m_Backend, this);
 
         setPage(aContext, kwp);
         setupDecoration(stageIndex(aContext), tr("#keys_setup_stage"), tr("#keys_setup_howto"));
@@ -361,7 +361,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(kwp);
     } else if (aContext == CWizardContext::SaveSettings) {
-        SaveSettingsWizardPage *swp = new SaveSettingsWizardPage(mBackend, this);
+        SaveSettingsWizardPage *swp = new SaveSettingsWizardPage(m_Backend, this);
 
         setPage(aContext, swp);
         setupDecoration(
@@ -380,12 +380,12 @@ void WizardFrame::onExit() {
         parameters["signal"] = "exit";
 
         // Завершаем сценарий.
-        mBackend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, parameters);
+        m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, parameters);
 
         // Останавливаем ПО.
-        mBackend->sendEvent(SDK::PaymentProcessor::EEventType::StopSoftware);
+        m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::StopSoftware);
 
-        mBackend->toLog("Bye-bye.");
+        m_Backend->toLog("Bye-bye.");
     }
 }
 
@@ -409,7 +409,7 @@ void WizardFrame::onAbstractButtonClicked() {
 
     message += ".";
 
-    mBackend->toLog(message);
+    m_Backend->toLog(message);
 }
 
 //----------------------------------------------------------------------------

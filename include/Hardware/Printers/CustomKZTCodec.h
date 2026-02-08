@@ -7,10 +7,10 @@
 #include <Hardware/Common/CodecBase.h>
 
 //---------------------------------------------------------------------------
-class CustomKZTCodec : public CodecBase {
+class Custom_KZTCodec : public CodecBase {
 public:
-    CustomKZTCodec() {
-        m_Name = CHardware::Codepages::CustomKZT;
+    Custom_KZTCodec() {
+        m_Name = CHardware::Codepages::Custom_KZT;
         m_MIB = 3003;
 
         auto encoding = QStringConverter::encodingForName("IBM866");

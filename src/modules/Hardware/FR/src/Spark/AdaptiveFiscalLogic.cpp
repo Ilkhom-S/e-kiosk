@@ -97,7 +97,7 @@ TMoneyPosition AdaptiveFiscalLogic::getMoneyPosition() {
             });
 
         if (lastIt != reciptTemplate.rend()) {
-            QStringList qreciptTemplate = QStringList::fromStdList(reciptTemplate);
+            QStringList qreciptTemplate = QStringList::from_StdList(reciptTemplate);
             result = TMoneyPosition(qreciptTemplate.indexOf(*firstIt),
                                     qreciptTemplate.lastIndexOf(*lastIt));
         }

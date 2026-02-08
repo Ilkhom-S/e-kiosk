@@ -24,7 +24,7 @@ public:
 
 private:
     /// Список полей, которые нельзя логировать.
-    QStringList mCryptedFields;
+    QStringList m_CryptedFields;
 };
 
 //---------------------------------------------------------------------------

@@ -205,7 +205,7 @@ template <class T> bool Paymaster<T>::printDeferredZReports() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool Paymaster<T>::performZReport(bool /*aPrintDeferredReports*/) {
+template <class T> bool Paymaster<T>::perform_ZReport(bool /*aPrintDeferredReports*/) {
     toLog(LogLevel::Normal, "AtolFR: Processing Z-report");
 
     // если ККМ работает в расширенном режиме - печатаем отложенные Z-отчеты

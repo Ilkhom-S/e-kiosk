@@ -9,17 +9,17 @@
 #include <NetworkTaskManager/HashVerifier.h>
 
 File::File() {
-    mSize = 0;
+    m_Size = 0;
 }
 
 //---------------------------------------------------------------------------
 File::File(const QString &aName, const QString &aHash, const QString &aUrl, qint64 aSize /*= 0*/)
-    : mName(aName), mHash(aHash), mUrl(aUrl), mSize(aSize) {}
+    : m_Name(aName), m_Hash(aHash), m_Url(aUrl), m_Size(aSize) {}
 
 //---------------------------------------------------------------------------
 bool File::operator==(const File &aFile) const {
-    return (this->mName.compare(aFile.mName, Qt::CaseInsensitive) == 0 &&
-            this->mHash.compare(aFile.mHash, Qt::CaseInsensitive) == 0);
+    return (this->m_Name.compare(aFile.m_Name, Qt::CaseInsensitive) == 0 &&
+            this->m_Hash.compare(aFile.m_Hash, Qt::CaseInsensitive) == 0);
 }
 
 //---------------------------------------------------------------------------

@@ -43,7 +43,7 @@ const char PrinterCommandImagePrintSecondByte = '\x2F'; /// Второй бай�
 /// Ошибки принтера
 const char PrinterIsNotAvailable = '\xFF'; /// Принтер недоступен
 const char PrinterError = '\x40';          /// Ошибка принтера
-const char PaperJamError = '\x08';         /// Бумага зажевалась
+const char PaperJam_Error = '\x08';         /// Бумага зажевалась
 const char UnrecoverableError = '\x20';    /// Невосстановимая ошибка принтера
 const char RecoverableError = '\x40';      /// Восстановимая ошибка принтера
 const char PaperEnd = '\x7E';              /// Бумага закончилась

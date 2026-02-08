@@ -1,6 +1,6 @@
 /* @file Системный принтер. */
 
-#include "SystemPrinter.h"
+#include "System_Printer.h"
 
 #include <QtCore/QBuffer>
 #include <QtCore/QRegularExpression>
@@ -17,12 +17,12 @@ namespace PrinterSettings = CHardware::Printer::Settings;
 
 //--------------------------------------------------------------------------------
 /// Константы системного принтера.
-namespace CSystemPrinter {
+namespace CSystem_Printer {
 const char BRtag[] = "<br>";
-} // namespace CSystemPrinter
+} // namespace CSystem_Printer
 
 //--------------------------------------------------------------------------------
-SystemPrinter::SystemPrinter() {
+System_Printer::System_Printer() {
     // данные устройства
     m_DeviceName = "System printer";
     setConfigParameter(CHardware::Printer::NeedSeparating, false);
@@ -30,16 +30,16 @@ SystemPrinter::SystemPrinter() {
     m_SideMargin = 1.0;
 
     // теги
-    m_TagEngine = Tags::PEngine(new CSystemPrinter::TagEngine());
+    m_TagEngine = Tags::PEngine(new CSystem_Printer::TagEngine());
 }
 
 //--------------------------------------------------------------------------------
-bool SystemPrinter::isConnected() {
+bool System_Printer::isConnected() {
     return m_Printer.isValid();
 }
 
 //--------------------------------------------------------------------------------
-bool SystemPrinter::updateParameters() {
+bool System_Printer::updateParameters() {
     if (m_Printer.printerName().isEmpty()) {
         return true;
     }
@@ -75,7 +75,7 @@ bool SystemPrinter::updateParameters() {
 }
 
 //--------------------------------------------------------------------------------
-bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
+bool System_Printer::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
     QStringList receipt;
 
     for (const auto &lexemeCollection : aLexemeReceipt) {
@@ -84,14 +84,14 @@ bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
 
             for (auto lexeme : lexemes) {
                 if (lexeme.tags.contains(Tags::Type::Image)) {
-                    QByteArray data = QByteArray::fromBase64(lexeme.data.toLatin1());
-                    QImage image = QImage::fromData(data, "png");
+                    QByteArray data = QByteArray::from_Base64(lexeme.data.toLatin1());
+                    QImage image = QImage::from_Data(data, "png");
 
                     if (!image.isNull()) {
                         // Рефакторинг QMatrix -> QTransform (Qt 6 совместимо)
                         QTransform transform;
-                        transform.scale(CSystemPrinter::ImageScalingFactor,
-                                        CSystemPrinter::ImageScalingFactor);
+                        transform.scale(CSystem_Printer::ImageScalingFactor,
+                                        CSystem_Printer::ImageScalingFactor);
                         image = image.transformed(transform);
 
                         QBuffer buffer;
@@ -120,19 +120,19 @@ bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
         receipt[i] = receipt[i].replace(endSpaceRegex, QString());
     }
 
-    qreal bottomMargin = getConfigParameter(PrinterSettings::PrintPageNumber).toBool()
+    qreal bottom_Margin = getConfigParameter(PrinterSettings::PrintPageNumber).toBool()
                              ? 12.7
-                             : CSystemPrinter::DefaultMargin;
+                             : CSystem_Printer::DefaultMargin;
     qreal leftMargin = getConfigParameter(PrinterSettings::LeftMargin, m_SideMargin).toDouble();
     qreal rightMargin = getConfigParameter(PrinterSettings::RightMargin, m_SideMargin).toDouble();
 
     // Qt 6: Использование QPageLayout и QMarginsF для установки полей
     m_Printer.setPageMargins(
-        QMarginsF(leftMargin, CSystemPrinter::DefaultMargin, rightMargin, bottomMargin),
+        QMarginsF(leftMargin, CSystem_Printer::DefaultMargin, rightMargin, bottom_Margin),
         QPageLayout::Millimeter);
 
     QTextDocument document;
-    QString toPrint = receipt.join(CSystemPrinter::BRtag) + CSystemPrinter::BRtag;
+    QString toPrint = receipt.join(CSystem_Printer::BRtag) + CSystem_Printer::BRtag;
 
     int lineSpacing = getConfigParameter(PrinterSettings::LineSpacing).toInt();
     int fontSize = getConfigParameter(PrinterSettings::FontSize).toInt();
@@ -158,7 +158,7 @@ bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
 }
 
 //--------------------------------------------------------------------------------
-bool SystemPrinter::getStatus(TStatusCodes &aStatusCodes) {
+bool System_Printer::getStatus(TStatusCodes &aStatusCodes) {
     using namespace SDK::Driver;
 
     if (!isConnected()) {
@@ -190,7 +190,7 @@ bool SystemPrinter::getStatus(TStatusCodes &aStatusCodes) {
 
         for (auto it = m_LastStatusesNames.begin(); it != m_LastStatusesNames.end(); ++it) {
             // Явно упаковываем значение в QVariant через статический метод
-            QVariant val = QVariant::fromValue(it.value());
+            QVariant val = QVariant::from_Value(it.value());
             QStringList statusNames;
 
             // 2. Явное извлечение данных (Qt 6 стиль)

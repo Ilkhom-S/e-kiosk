@@ -152,12 +152,12 @@ bool Shtrih::getCommandPacket(int aCommand,
     case EShtrihCommands::ResetModem: {
         aCommandPacket.append(m_DeviceData[CShtrih::Devices::Type::PowerInterrupter].address);
         aCommandPacket.append(CShtrih::Commands::PowerInterrupter::PulseRelay);
-        char relayNumber = 1 << CShtrih::Constants::ModemRelay;
+        char relayNumber = 1 << CShtrih::Constants::Modem_Relay;
         aCommandPacket.append(relayNumber);
 
         QString delay = QString("%1").arg(
             qToBigEndian(CShtrih::Constants::RelayPulseDelay), 4, 16, QChar(ASCII::Zero));
-        aCommandPacket.append(QByteArray::fromHex(delay.toLatin1()));
+        aCommandPacket.append(QByteArray::from_Hex(delay.toLatin1()));
 
         break;
     }
@@ -388,7 +388,7 @@ bool Shtrih::localProcessCommand(int aCommand,
 
         QByteArray answer;
 
-        if (!performCommand(packet, answer)) {
+        if (!perform_Command(packet, answer)) {
             toLog(LogLevel::Error, "Shtrih: Failed to execute command");
             return false;
         }
@@ -415,7 +415,7 @@ bool Shtrih::localProcessCommand(int aCommand,
 }
 
 //--------------------------------------------------------------------------------
-bool Shtrih::performCommand(const QByteArray &aPacket, QByteArray &aAnswer) {
+bool Shtrih::perform_Command(const QByteArray &aPacket, QByteArray &aAnswer) {
     if (!m_IOPort->write(aPacket)) {
         return false;
     }

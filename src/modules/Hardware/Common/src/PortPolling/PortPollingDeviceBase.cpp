@@ -29,7 +29,7 @@ template <class T> void PortPollingDeviceBase<T>::initialize() {
 
 //--------------------------------------------------------------------------------
 template <class T> void PortPollingDeviceBase<T>::setPollingActive(bool aActive) {
-    QVariantMap configuration = this->mIOPort->getDeviceConfiguration();
+    QVariantMap configuration = this->m_IOPort->getDeviceConfiguration();
 
     if (!configuration.value(CHardware::Port::Suspended).toBool()) {
         PortDeviceBase<PollingDeviceBase<T>>::setPollingActive(aActive);

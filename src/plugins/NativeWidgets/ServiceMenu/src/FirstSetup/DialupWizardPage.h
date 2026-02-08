@@ -11,7 +11,7 @@ class DialupConnectionWindow;
 //------------------------------------------------------------------------
 namespace CDialupWizardPage {
 /// Минимальное время, когда будет показан экран ожидания при тесте соединения
-const int MinimumPingTime = 1000;
+const int Minimum_PingTime = 1000;
 } // namespace CDialupWizardPage
 
 //------------------------------------------------------------------------
@@ -35,9 +35,9 @@ private slots:
     void onTestFinished();
 
 private:
-    QFutureWatcher<bool> mTaskWatcher;
-    QString mConnectionError;
-    DialupConnectionWindow *mConnectionWindow;
+    QFutureWatcher<bool> m_TaskWatcher;
+    QString m_ConnectionError;
+    DialupConnectionWindow *m_ConnectionWindow;
 };
 
 //------------------------------------------------------------------------

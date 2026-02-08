@@ -66,8 +66,8 @@ bool OSMP25::updateParameters() {
         }
     }
 
-    return processCommand(COSMP25::Commands::SetModemPause,
-                          QByteArray(1, COSMP25::ModemResettingPause)) &&
+    return processCommand(COSMP25::Commands::SetModem_Pause,
+                          QByteArray(1, COSMP25::Modem_ResettingPause)) &&
            processCommand(COSMP25::Commands::SetPCPause,
                           QByteArray(1, COSMP25::PCResettingPause)) &&
            processCommand(COSMP25::Commands::SetPingTimeout, QByteArray(1, COSMP25::PingTimeout));

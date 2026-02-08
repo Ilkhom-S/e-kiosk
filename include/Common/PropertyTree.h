@@ -58,7 +58,7 @@ template <> inline std::wstring WStringTranslator<qint64>::put_value(const qint6
 
 //---------------------------------------------------------------------------
 template <> inline QString WStringTranslator<QString>::get_value(const std::wstring &aValue) const {
-    return QString::fromStdWString(aValue);
+    return QString::from_StdWString(aValue);
 };
 
 //---------------------------------------------------------------------------
@@ -68,7 +68,7 @@ template <> inline std::wstring WStringTranslator<QString>::put_value(const QStr
 
 //---------------------------------------------------------------------------
 template <> inline int WStringTranslator<int>::get_value(const std::wstring &aValue) const {
-    return QString::fromStdWString(aValue).toInt();
+    return QString::from_StdWString(aValue).toInt();
 };
 
 //---------------------------------------------------------------------------
@@ -107,12 +107,12 @@ template <> inline std::wstring WStringTranslator<double>::put_value(const doubl
 //---------------------------------------------------------------------------
 template <>
 inline std::wstring WStringTranslator<const char *>::put_value(const char *const &aValue) const {
-    return QString::fromLatin1(aValue).toStdWString();
+    return QString::from_Latin1(aValue).toStdWString();
 }
 
 //---------------------------------------------------------------------------
 template <> inline bool WStringTranslator<bool>::get_value(const std::wstring &aValue) const {
-    QString v = QString::fromStdWString(aValue);
+    QString v = QString::from_StdWString(aValue);
 
     return v.compare("true", Qt::CaseInsensitive) == 0 ||
            v.compare("yes", Qt::CaseInsensitive) == 0 || v.toInt() != 0;
@@ -125,9 +125,9 @@ template <> inline std::wstring WStringTranslator<bool>::put_value(const bool &a
 
 //---------------------------------------------------------------------------
 template <> inline QTime WStringTranslator<QTime>::get_value(const std::wstring &aValue) const {
-    QString v = QString::fromStdWString(aValue);
+    QString v = QString::from_StdWString(aValue);
 
-    return QTime::fromString(v);
+    return QTime::from_String(v);
 };
 
 //---------------------------------------------------------------------------
@@ -180,7 +180,7 @@ template <> inline std::string StringTranslator<qint64>::put_value(const qint64 
 
 //---------------------------------------------------------------------------
 template <> inline QString StringTranslator<QString>::get_value(const std::string &aValue) const {
-    return QString::fromUtf8(aValue.data());
+    return QString::from_Utf8(aValue.data());
 };
 
 //---------------------------------------------------------------------------
@@ -190,7 +190,7 @@ template <> inline std::string StringTranslator<QString>::put_value(const QStrin
 
 //---------------------------------------------------------------------------
 template <> inline int StringTranslator<int>::get_value(const std::string &aValue) const {
-    return QString::fromUtf8(aValue.c_str()).toInt();
+    return QString::from_Utf8(aValue.c_str()).toInt();
 };
 
 //---------------------------------------------------------------------------
@@ -234,7 +234,7 @@ inline std::string StringTranslator<const char *>::put_value(const char *const &
 
 //---------------------------------------------------------------------------
 template <> inline bool StringTranslator<bool>::get_value(const std::string &aValue) const {
-    QString v = QString::fromUtf8(aValue.c_str());
+    QString v = QString::from_Utf8(aValue.c_str());
 
     return v.compare("true", Qt::CaseInsensitive) == 0 ||
            v.compare("yes", Qt::CaseInsensitive) == 0 || v.toInt() != 0;
@@ -247,9 +247,9 @@ template <> inline std::string StringTranslator<bool>::put_value(const bool &aVa
 
 //---------------------------------------------------------------------------
 template <> inline QTime StringTranslator<QTime>::get_value(const std::string &aValue) const {
-    QString v = QString::fromUtf8(aValue.c_str());
+    QString v = QString::from_Utf8(aValue.c_str());
 
-    return QTime::fromString(v);
+    return QTime::from_String(v);
 };
 
 //---------------------------------------------------------------------------

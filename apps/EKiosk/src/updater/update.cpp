@@ -239,8 +239,8 @@ void DownloadManager::startNextDownload() {
         }
 
         /// Готовим параметры для заголовка файла закачки
-        QFileInfo vrmInf(filename);
-        int size = vrmInf.size(); // размер частично загруженного файла
+        QFileInfo vrm_Inf(filename);
+        int size = vrm_Inf.size(); // размер частично загруженного файла
         request.setRawHeader(QByteArray("Range"), QString("bytes=%1-").arg(size).toLatin1());
         // if(Debugger) qDebug() << "----- request.setRawHeader ----- size - " <<
         // size;
@@ -321,7 +321,7 @@ void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal) 
         unit = "MB/s";
     }
 
-    progressBar.setMessage(QString::fromLatin1("%1 %2").arg(speed, 3, 'f', 1).arg(unit));
+    progressBar.setMessage(QString::from_Latin1("%1 %2").arg(speed, 3, 'f', 1).arg(unit));
     progressBar.update();
 }
 
@@ -432,7 +432,7 @@ void DownloadManager::openDocumentXml() {
     countFileTag = 0;
 
     // Документ для парсинга xml
-    QDomDocument doc;
+    QDom_Document doc;
     QFile file(tmpDirectory + this->XmlName);
 
     // Проверяем можно ли открыть файл
@@ -484,8 +484,8 @@ void DownloadManager::openDocumentXml() {
         emit this->emit_Loging(
             0, this->senderName, QString("Начинаем парсить %1 файл.").arg(this->XmlName));
         this->ServerXmlMap.clear();
-        QDomElement domElement = doc.documentElement();
-        traverseNode(domElement);
+        QDom_Element dom_Element = doc.documentElement();
+        traverseNode(dom_Element);
     }
 
     // Файл отпарсен успешно
@@ -638,16 +638,16 @@ void DownloadManager::downloadOneByOneFile() {
         // Путь куда будет идти закачка
         tmpDirectory = "tmp/" + this->nowDownloadFilePath;
 
-        QString vrmUrl =
+        QString vrm_Url =
             QString("%1/%2/%3").arg(this->IpServer, this->FolderName, nowDownloadFileAll);
-        // if(Debugger) qDebug() << vrmUrl;
+        // if(Debugger) qDebug() << vrm_Url;
         emit this->emit_Loging(0,
                                this->senderName,
                                QString("Начинаем качать файл %1 объемом %2 Byte в директорию %3")
                                    .arg(nowDownloadFileName)
                                    .arg(nowDownloadFileSize)
                                    .arg(this->tmpDirectory));
-        this->append(QUrl(vrmUrl));
+        this->append(QUrl(vrm_Url));
         return;
     } else {
         /// Тут надо сделать перемещение файлов из папки tmp в реальную директорию
@@ -731,9 +731,9 @@ void DownloadManager::reCopyAllFiles() {
         for (QStringList::Iterator iter = allFilesList.begin(); iter != allFilesList.end();
              ++iter) {
             //            qDebug() << "--- FILES PATH --- " << *iter;
-            QString vrmPath = *iter;
-            int compex = vrmPath.indexOf("assets/");
-            QString fileFrom = vrmPath.mid(compex);
+            QString vrm_Path = *iter;
+            int compex = vrm_Path.indexOf("assets/");
+            QString fileFrom = vrm_Path.mid(compex);
             //            qDebug() << "--- FILES PATH --- " << fileFrom;
             QFileInfo infoIn(*iter);
             QFile fileCopy;
@@ -886,27 +886,27 @@ bool DownloadManager::insertNewRecordFile(QString path, QString name, QString si
     return true;
 }
 
-void DownloadManager::traverseNode(const QDomNode &node) {
-    QDomNode domNode = node.firstChild();
+void DownloadManager::traverseNode(const QDom_Node &node) {
+    QDom_Node dom_Node = node.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
-            QDomElement domElement = domNode.toElement();
-            QString strTag = domElement.tagName();
+    while (!dom_Node.isNull()) {
+        if (dom_Node.isElement()) {
+            QDom_Element dom_Element = dom_Node.toElement();
+            QString strTag = dom_Element.tagName();
 
             if (strTag == "file") {
                 countFileTag++;
 
                 ServerXmlMap[countFileTag]["path"] =
-                    domElement.attribute("path", "")
-                        .right(domElement.attribute("path", "").length() - 1);
-                ServerXmlMap[countFileTag]["name"] = domElement.attribute("name", "");
-                ServerXmlMap[countFileTag]["size"] = domElement.attribute("size", "");
-                ServerXmlMap[countFileTag]["hash"] = domElement.text();
+                    dom_Element.attribute("path", "")
+                        .right(dom_Element.attribute("path", "").length() - 1);
+                ServerXmlMap[countFileTag]["name"] = dom_Element.attribute("name", "");
+                ServerXmlMap[countFileTag]["size"] = dom_Element.attribute("size", "");
+                ServerXmlMap[countFileTag]["hash"] = dom_Element.text();
             }
         }
-        traverseNode(domNode);
-        domNode = domNode.nextSibling();
+        traverseNode(dom_Node);
+        dom_Node = dom_Node.nextSibling();
     }
 }
 

@@ -18,7 +18,7 @@ bool CitizenPPU700_PRINTER::openPort() {
         is_open = false;
 
         // Даем девайсу название порта
-        serialPort->setPortName(comName);
+        serialPort->setPortName(com_Name);
 
         if (serialPort->open(QIODevice::ReadWrite)) {
             // Если Девайсу удалось открыть порт
@@ -107,7 +107,7 @@ bool CitizenPPU700_PRINTER::getStatus(int &aStatus, CMDCitizenPPU700::SStatus &s
     if (s_status.Failures.HighVoltage || s_status.Failures.HighVoltage) {
         aStatus |= PrinterState::PowerSupplyError;
     } else if (s_status.Failures.Presentor) {
-        aStatus |= PrinterState::MechanismPositionError;
+        aStatus |= PrinterState::Mechanism_PositionError;
     } else if (s_status.Failures.Memory || s_status.Failures.CPU) {
         aStatus |= PrinterState::ElectronicError;
     } else if (s_status.Failures.CoverOpen || s_status.CoverOpen) {
@@ -394,16 +394,16 @@ bool CitizenPPU700_PRINTER::printCheck(const QString &aCheck) {
     bool respData = false;
 
     //    // Проинициализируем принтер
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandFirstByte);
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandInitSecondByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandInitSecondByte);
 
     //    if(!this->sendCommand(cmd,false,0,respData,answer,0))
     //            return false;
 
     //    cmd.clear();
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandFirstByte);
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandPaperSizeSecondByte);
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandPaperSizeThirdByteSmall);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandPaperSizeSecondByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandPaperSizeThirdByteSmall);
     //    cmd.push_back(0x0A);
 
     if (!this->sendCommand(printText, true, 200, respData, answer, 50)) {
@@ -472,10 +472,10 @@ void CitizenPPU700_PRINTER::dispense() {
     bool respData = false;
 
     // Dispense
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandGetIDFirstByte);
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandClrDispenserSecondByte);
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandDispenseThirdByte);
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandDispenseForthByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandGetIDFirstByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandClrDispenserSecondByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandDispenseThirdByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandDispenseForthByte);
 
     if (!this->sendCommand(cmd, false, 0, respData, answer, 50))
         return;
@@ -575,13 +575,13 @@ bool CitizenPPU700_PRINTER::printImage() {
     QByteArray answer;
     bool respData = false;
 
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandFirstByte);
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandLogoPrintSecondByte);
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandCharacterSetThirdByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandLogoPrintSecondByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandCharacterSetThirdByte);
     //    cmd.push_back(ASCII::NUL);
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandLogoPrintThirdByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandLogoPrintThirdByte);
     //    cmd.push_back(ASCII::NUL);
-    //    cmd.push_back(CMDCustomVKP80::PrinterCommandLogoPrintFothByte);
+    //    cmd.push_back(CMDCustom_VKP80::PrinterCommandLogoPrintFothByte);
 
     if (!this->sendCommand(cmd, false, 0, respData, answer, 50)) {
         return false;
@@ -602,12 +602,12 @@ bool CitizenPPU700_PRINTER::printImageI(const QString &aPixelString,
             return false;
         }
     }
-    //        cmd.push_back(CMDCustomVKP80::PrinterCommandGetIDFirstByte);
+    //        cmd.push_back(CMDCustom_VKP80::PrinterCommandGetIDFirstByte);
     //        cmd.push_back(0x2F);
     //        cmd.push_back(48);
     //        uchar nil = 0;
-    //        cmd.append(CMDCustomVKP80::PrinterCommandFirstByte);
-    //        cmd.append(CMDCustomVKP80::PrinterCommandAnotherFeedSecondByte);
+    //        cmd.append(CMDCustom_VKP80::PrinterCommandFirstByte);
+    //        cmd.append(CMDCustom_VKP80::PrinterCommandAnotherFeedSecondByte);
     //        cmd.append(nil);
 
     return this->sendCommand(cmd, true, 100, resp_ok, resp_data, 0);
@@ -634,8 +634,8 @@ bool CitizenPPU700_PRINTER::registerLogo(const QString &aPixelString, uchar aWid
     //        verticalSize++;
     //    }
 
-    //        cmd.push_back(CMDCustomVKP80::PrinterCommandGetIDFirstByte);
-    //        cmd.push_back(CMDCustomVKP80::PrinterCommandLogoRegSecondByte);
+    //        cmd.push_back(CMDCustom_VKP80::PrinterCommandGetIDFirstByte);
+    //        cmd.push_back(CMDCustom_VKP80::PrinterCommandLogoRegSecondByte);
     //        cmd.push_back(aWidth);
     //        cmd.push_back(verticalSize);
     ////        QString str(aPixelString);

@@ -7,11 +7,11 @@
 #include <SDK/Plugins/PluginFactory.h>
 
 ModemsPluginFactory::ModemsPluginFactory() {
-    mName = "Modems";
-    mDescription = "Modem driver library.";
-    mAuthor = "Humo";
-    mVersion = "1.0";
-    mModuleName = "modems"; // Название dll/so модуля без расширения
+    m_Name = "Modems";
+    m_Description = "Modem driver library.";
+    m_Author = "Humo";
+    m_Version = "1.0";
+    m_ModuleName = "modems"; // Название dll/so модуля без расширения
 }
 
 //------------------------------------------------------------------------------

@@ -12,12 +12,12 @@ static const char Name[] = QT_TRANSLATE_NOOP("PortParameters", "PortParameters#n
 
 namespace COM {
 static const char BaudRate[] =
-    QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_baud_rate");
-static const char Parity[] = QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_parity");
+    QT_TRANSLATE_NOOP("Com_PortParameters", "Com_PortParameters#com_baud_rate");
+static const char Parity[] = QT_TRANSLATE_NOOP("Com_PortParameters", "Com_PortParameters#com_parity");
 static const char ByteSize[] =
-    QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_byte_size");
-static const char RTS[] = QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_rts");
-static const char DTR[] = QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_dtr");
+    QT_TRANSLATE_NOOP("Com_PortParameters", "Com_PortParameters#com_byte_size");
+static const char RTS[] = QT_TRANSLATE_NOOP("Com_PortParameters", "Com_PortParameters#com_rts");
+static const char DTR[] = QT_TRANSLATE_NOOP("Com_PortParameters", "Com_PortParameters#com_dtr");
 } // namespace COM
 
 namespace TCP {
@@ -77,12 +77,12 @@ TParameterList TCPParameters() {
 //------------------------------------------------------------------------------
 TParameterList COMParameters() {
     // TODO: сделать отображаемые в сервисном меню параметры понятными пользователю
-    return TParameterList() << SPluginParameter(CHardwareSDK::SystemName,
+    return TParameterList() << SPluginParameter(CHardwareSDK::System_Name,
                                                 false,
                                                 PortPT::Name,
                                                 QString(),
                                                 QVariant(),
-                                                AsyncSerialPort::enumerateSystemNames())
+                                                AsyncSerialPort::enumerateSystem_Names())
 
                             << SPluginParameter(CHardware::Port::COM::BaudRate,
                                                 false,

@@ -46,13 +46,13 @@ const char SIMID[] = "+CRSM=176,12258,0,0,10"; /// SIM card identification numbe
 const char PowerOn[] = "+CFUN=1";              /// Подать питание на GSM модуль
 } // namespace ZTE
 
-namespace SimCom {
+namespace Sim_Com {
 const char Restart[] = "+CFUN=1,1"; /// Перегрузить модем и заставить его перерегистрироваться в
                                     /// сети. Требует 5 секундного ожидания.
 const char CSCS[] = "+CSCS=\"GSM\""; /// Переключение кодировки USSD запросов.
 
 const char CGREG[] = "+CGREG";        /// Network Registration Status
 const char GetCellList[] = "+CCINFO"; /// получение списка базовых станций
-} // namespace SimCom
+} // namespace Sim_Com
 } // namespace Commands
 } // namespace AT

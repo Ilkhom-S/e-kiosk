@@ -32,8 +32,8 @@ bool DatabaseQuery::isValid() {
 }
 
 //---------------------------------------------------------------------------
-int DatabaseQuery::numRowsAffected() const {
-    return QSqlQuery::numRowsAffected();
+int DatabaseQuery::num_RowsAffected() const {
+    return QSqlQuery::num_RowsAffected();
 }
 
 //---------------------------------------------------------------------------

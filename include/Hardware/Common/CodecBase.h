@@ -21,7 +21,7 @@ struct SCharData {
     SCharData() : character(QChar(CCodec::DefaultCharacter)), main(false) {}
     SCharData(const QString &aCharacter, bool aMain) : character(aCharacter), main(aMain) {}
     SCharData(const char *aCharacter, bool aMain)
-        : character(QString::fromUtf8(aCharacter)), main(aMain) {}
+        : character(QString::from_Utf8(aCharacter)), main(aMain) {}
     SCharData(const QChar &aCharacter, bool aMain) : character(aCharacter), main(aMain) {}
 
     bool operator==(const SCharData &aData) const {
@@ -63,7 +63,7 @@ public:
     virtual QString convertToUnicode(const char *aBuffer, int aLength) const;
 
     /// Конвертировать юникодовую строку в массив байтов.
-    virtual QByteArray convertFromUnicode(const QChar *aBuffer, int aLength) const;
+    virtual QByteArray convertFrom_Unicode(const QChar *aBuffer, int aLength) const;
 
 protected:
     /// Имя кодека.

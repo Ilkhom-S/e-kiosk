@@ -11,13 +11,13 @@
 
 namespace CBITS {
 //---------------------------------------------------------------------------
-QSet<Qt::HANDLE> CopyManager_p::mThreadInitialized;
+QSet<Qt::HANDLE> CopyManager_p::m_ThreadInitialized;
 
 //---------------------------------------------------------------------------
 CopyManager_p::CopyManager_p(ILog *aLog) : ILogable(aLog) {
     HRESULT hr;
 
-    if (!mThreadInitialized.contains(QThread::currentThreadId())) {
+    if (!m_ThreadInitialized.contains(QThread::currentThreadId())) {
         hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
         if (FAILED(hr) && hr != RPC_E_CHANGED_MODE) {
             toLog(LoggerLevel::Error,
@@ -41,7 +41,7 @@ CopyManager_p::CopyManager_p(ILog *aLog) : ILogable(aLog) {
             return;
         }
 
-        mThreadInitialized.insert(QThread::currentThreadId());
+        m_ThreadInitialized.insert(QThread::currentThreadId());
     }
 
     // Connect to BITS.
@@ -49,7 +49,7 @@ CopyManager_p::CopyManager_p(ILog *aLog) : ILogable(aLog) {
                           NULL,
                           CLSCTX_LOCAL_SERVER,
                           __uuidof(IBackgroundCopyManager),
-                          (void **)&mQueueMgr);
+                          (void **)&m_QueueMgr);
     if (FAILED(hr)) {
         toLog(LoggerLevel::Error,
               QString("BITS: Failed to connect with BITS, result=0x%1").arg(hr, 0, 16));
@@ -61,46 +61,46 @@ CopyManager_p::~CopyManager_p() {}
 
 //---------------------------------------------------------------------------
 bool CopyManager_p::isReady() const {
-    return (mQueueMgr != nullptr);
+    return (m_QueueMgr != nullptr);
 }
 
 //---------------------------------------------------------------------------
-bool fillJobInfo(CComPtr<IBackgroundCopyJob> &aJob, SJob &aJobInfo) {
+bool fillJobInfo(CCom_Ptr<IBackgroundCopyJob> &aJob, SJob &aJobInfo) {
     GUID id;
     if (FAILED(aJob->GetId(&id))) {
         return false;
     }
 
-    aJobInfo.mGuidID = QUuid(id);
+    aJobInfo.m_GuidID = QUuid(id);
 
     LPWSTR pwstrText = nullptr;
     if (FAILED(aJob->GetDisplayName(&pwstrText))) {
         return false;
     }
 
-    aJobInfo.mName = QString::fromWCharArray(pwstrText);
-    ::CoTaskMemFree(pwstrText);
+    aJobInfo.m_Name = QString::from_WCharArray(pwstrText);
+    ::CoTaskMem_Free(pwstrText);
 
     if (FAILED(aJob->GetDescription(&pwstrText))) {
         return false;
     }
 
-    aJobInfo.mDesc = QString::fromWCharArray(pwstrText);
-    ::CoTaskMemFree(pwstrText);
+    aJobInfo.m_Desc = QString::from_WCharArray(pwstrText);
+    ::CoTaskMem_Free(pwstrText);
 
-    aJob->GetState((BG_JOB_STATE *)&aJobInfo.mState);
-    aJob->GetMinimumRetryDelay((ULONG *)&aJobInfo.mMinRetryDelay);
-    aJob->GetNoProgressTimeout((ULONG *)&aJobInfo.mNoProgressTimeout);
+    aJob->GetState((BG_JOB_STATE *)&aJobInfo.m_State);
+    aJob->GetMinimum_RetryDelay((ULONG *)&aJobInfo.m_MinRetryDelay);
+    aJob->GetNoProgressTimeout((ULONG *)&aJobInfo.m_NoProgressTimeout);
 
     BG_JOB_PROGRESS progress;
     if (FAILED(aJob->GetProgress(&progress))) {
         return false;
     }
 
-    aJobInfo.mProgress.bytesTotal = progress.BytesTotal;
-    aJobInfo.mProgress.bytesTransferred = progress.BytesTransferred;
-    aJobInfo.mProgress.filesTotal = progress.FilesTotal;
-    aJobInfo.mProgress.filesTransferred = progress.FilesTransferred;
+    aJobInfo.m_Progress.bytesTotal = progress.BytesTotal;
+    aJobInfo.m_Progress.bytesTransferred = progress.BytesTransferred;
+    aJobInfo.m_Progress.filesTotal = progress.FilesTotal;
+    aJobInfo.m_Progress.filesTransferred = progress.FilesTransferred;
 
     return true;
 }
@@ -109,29 +109,29 @@ bool fillJobInfo(CComPtr<IBackgroundCopyJob> &aJob, SJob &aJobInfo) {
 QMap<QString, SJob> CopyManager_p::getJobs() {
     QMap<QString, SJob> result;
 
-    if (mQueueMgr == nullptr) {
+    if (m_QueueMgr == nullptr) {
         return result;
     }
 
-    CComPtr<IEnumBackgroundCopyJobs> enumJobs;
-    HRESULT hr = mQueueMgr->EnumJobs(0, &enumJobs);
+    CCom_Ptr<IEnum_BackgroundCopyJobs> enum_Jobs;
+    HRESULT hr = m_QueueMgr->Enum_Jobs(0, &enum_Jobs);
 
     if (SUCCEEDED(hr)) {
         ULONG ulCount = 0;
-        hr = enumJobs->GetCount(&ulCount);
-        hr = enumJobs->Reset();
+        hr = enum_Jobs->GetCount(&ulCount);
+        hr = enum_Jobs->Reset();
         // signed/unsigned syndrome
         int iCount = ulCount;
         for (int i = 0; i < iCount; i++) {
-            CComPtr<IBackgroundCopyJob> job;
-            hr = enumJobs->Next(1, &job, NULL);
+            CCom_Ptr<IBackgroundCopyJob> job;
+            hr = enum_Jobs->Next(1, &job, NULL);
             if (SUCCEEDED(hr)) {
                 SJob jobItem;
 
                 if (fillJobInfo(job, jobItem)) {
                     toLog(LoggerLevel::Debug, QString("BITS: JOB: %1").arg(jobItem.toString()));
 
-                    result[jobItem.mName] = jobItem;
+                    result[jobItem.m_Name] = jobItem;
                 } else {
                     toLog(LoggerLevel::Error, QString("BITS: Failed fill job info."));
                 }
@@ -150,15 +150,15 @@ QMap<QString, SJob> CopyManager_p::getJobs() {
 
 //---------------------------------------------------------------------------
 bool CopyManager_p::cancel() {
-    return mCurrentJob && SUCCEEDED(mCurrentJob->Cancel());
+    return m_CurrentJob && SUCCEEDED(m_CurrentJob->Cancel());
 }
 
 //---------------------------------------------------------------------------
 bool CopyManager_p::complete() {
     HRESULT hr = E_FAIL;
 
-    if (mCurrentJob) {
-        hr = mCurrentJob->Complete();
+    if (m_CurrentJob) {
+        hr = m_CurrentJob->Complete();
 
         if (FAILED(hr)) {
             toLog(LoggerLevel::Error,
@@ -187,28 +187,28 @@ BG_JOB_PRIORITY priorityConvert(int aPriority) {
 
 //---------------------------------------------------------------------------
 bool CopyManager_p::createJob(const QString &aName, SJob &aJob, int aPriority) {
-    if (!mQueueMgr) {
+    if (!m_QueueMgr) {
         return false;
     }
 
-    if (mCurrentJob) {
-        mCurrentJob.Release();
+    if (m_CurrentJob) {
+        m_CurrentJob.Release();
     }
 
     GUID guidJob;
-    HRESULT hr = mQueueMgr->CreateJob(
-        aName.toStdWString().c_str(), BG_JOB_TYPE_DOWNLOAD, &guidJob, &mCurrentJob);
-    if (FAILED(hr) || mCurrentJob == nullptr) {
+    HRESULT hr = m_QueueMgr->CreateJob(
+        aName.toStdWString().c_str(), BG_JOB_TYPE_DOWNLOAD, &guidJob, &m_CurrentJob);
+    if (FAILED(hr) || m_CurrentJob == nullptr) {
         toLog(LoggerLevel::Error,
               QString("BITS: Failed to create job, result=0x%1").arg(hr, 0, 16));
 
         return false;
     }
 
-    mCurrentJob->SetPriority(priorityConvert(aPriority));
+    m_CurrentJob->SetPriority(priorityConvert(aPriority));
 
-    CComPtr<IBackgroundCopyJobHttpOptions> httpOption;
-    if (SUCCEEDED(mCurrentJob->QueryInterface(&httpOption)) && httpOption) {
+    CCom_Ptr<IBackgroundCopyJobHttpOptions> httpOption;
+    if (SUCCEEDED(m_CurrentJob->QueryInterface(&httpOption)) && httpOption) {
         ULONG flags = 0;
         httpOption->GetSecurityFlags(&flags);
         httpOption->SetSecurityFlags(flags | BG_SSL_IGNORE_CERT_CN_INVALID |
@@ -216,15 +216,15 @@ bool CopyManager_p::createJob(const QString &aName, SJob &aJob, int aPriority) {
                                      BG_SSL_IGNORE_CERT_WRONG_USAGE);
     }
 
-    fillJobInfo(mCurrentJob, aJob);
+    fillJobInfo(m_CurrentJob, aJob);
 
-    return (mCurrentJob != nullptr);
+    return (m_CurrentJob != nullptr);
 }
 
 //---------------------------------------------------------------------------
 bool CopyManager_p::setJobNotify(const QString &aApplicationPath, const QString &aParameters) {
-    CComPtr<IBackgroundCopyJob2> job2;
-    if (mCurrentJob && SUCCEEDED(mCurrentJob->QueryInterface(&job2)) && job2) {
+    CCom_Ptr<IBackgroundCopyJob2> job2;
+    if (m_CurrentJob && SUCCEEDED(m_CurrentJob->QueryInterface(&job2)) && job2) {
         std::wstring appPath = aApplicationPath.toStdWString();
 
 #ifdef _DEBUG
@@ -236,9 +236,9 @@ bool CopyManager_p::setJobNotify(const QString &aApplicationPath, const QString 
         auto hr2 = job2->SetNotifyFlags(BG_NOTIFY_JOB_TRANSFERRED | BG_NOTIFY_JOB_ERROR);
 
         LPWSTR namePtr = nullptr;
-        mCurrentJob->GetDisplayName(&namePtr);
-        QString name = QString::fromWCharArray(namePtr);
-        CoTaskMemFree(namePtr);
+        m_CurrentJob->GetDisplayName(&namePtr);
+        QString name = QString::from_WCharArray(namePtr);
+        CoTaskMem_Free(namePtr);
 
         if (SUCCEEDED(hr1) && SUCCEEDED(hr2)) {
             toLog(LoggerLevel::Normal,
@@ -262,11 +262,11 @@ bool CopyManager_p::setJobNotify(const QString &aApplicationPath, const QString 
 
 //---------------------------------------------------------------------------
 CBITS::AddTaskResult::Enum CopyManager_p::addTask(const QUrl &aUrl, const QString &aFileName) {
-    if (mCurrentJob) {
+    if (m_CurrentJob) {
         QString url = aUrl.toString();
         QString path = QDir::toNativeSeparators(aFileName);
 
-        auto hr = mCurrentJob->AddFile(url.toStdWString().c_str(), path.toStdWString().c_str());
+        auto hr = m_CurrentJob->AddFile(url.toStdWString().c_str(), path.toStdWString().c_str());
         if (SUCCEEDED(hr)) {
             toLog(LoggerLevel::Debug, QString("BITS: Add task to job OK: %1.").arg(url));
 
@@ -292,16 +292,16 @@ CBITS::AddTaskResult::Enum CopyManager_p::addTask(const QUrl &aUrl, const QStrin
 
 //---------------------------------------------------------------------------
 bool CopyManager_p::openJob(const SJob &aJob) {
-    if (!mQueueMgr) {
+    if (!m_QueueMgr) {
         return false;
     }
 
-    if (mCurrentJob) {
-        mCurrentJob.Release();
+    if (m_CurrentJob) {
+        m_CurrentJob.Release();
     }
 
-    HRESULT hr = mQueueMgr->GetJobW(aJob.mGuidID, &mCurrentJob);
-    if (SUCCEEDED(hr) && mCurrentJob) {
+    HRESULT hr = m_QueueMgr->GetJobW(aJob.m_GuidID, &m_CurrentJob);
+    if (SUCCEEDED(hr) && m_CurrentJob) {
         return true;
     }
 
@@ -314,8 +314,8 @@ bool CopyManager_p::openJob(const SJob &aJob) {
 
 //---------------------------------------------------------------------------
 bool CopyManager_p::resume() {
-    if (mCurrentJob) {
-        HRESULT hr = mCurrentJob->Resume();
+    if (m_CurrentJob) {
+        HRESULT hr = m_CurrentJob->Resume();
         if (SUCCEEDED(hr)) {
             return true;
         }
@@ -331,13 +331,13 @@ bool CopyManager_p::resume() {
 
 //---------------------------------------------------------------------------
 QString CopyManager_p::getJobError() {
-    CComPtr<IBackgroundCopyError> error;
-    if (SUCCEEDED(mCurrentJob->GetError(&error)) && error) {
+    CCom_Ptr<IBackgroundCopyError> error;
+    if (SUCCEEDED(m_CurrentJob->GetError(&error)) && error) {
         LPWSTR errorMsg = nullptr;
         error->GetErrorDescription(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), &errorMsg);
         if (errorMsg) {
-            QString msg = QString::fromWCharArray(errorMsg);
-            CoTaskMemFree(errorMsg);
+            QString msg = QString::from_WCharArray(errorMsg);
+            CoTaskMem_Free(errorMsg);
 
             return msg;
         }

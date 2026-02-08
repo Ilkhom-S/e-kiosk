@@ -8,7 +8,7 @@
 
 namespace CPuloon {
 /// Размер данных о выдаваемом предмете.
-const int ItemDataSize = 3;
+const int Item_DataSize = 3;
 } // namespace CPuloon
 
 typedef QList<QByteArray> TAnswerList;

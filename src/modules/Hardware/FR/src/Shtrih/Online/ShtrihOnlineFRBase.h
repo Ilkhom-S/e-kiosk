@@ -43,7 +43,7 @@ protected:
     virtual void checkSalesName(QString &aName);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt,
+    virtual bool perform_Fiscal(const QStringList &aReceipt,
                                const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
@@ -90,10 +90,10 @@ protected:
     bool setCashier();
 
     /// Поддерживается команда запроса статуса принтера.
-    bool mPrinterStatusEnabled;
+    bool m_PrinterStatusEnabled;
 
     /// Невозможно включить автообновление прошивки.
-    bool mNotEnableFirmwareUpdating;
+    bool m_NotEnableFirmwareUpdating;
 };
 
 typedef ShtrihOnlineFRBase<ShtrihTCPFRBase> ShtrihOnlineTCPFR;

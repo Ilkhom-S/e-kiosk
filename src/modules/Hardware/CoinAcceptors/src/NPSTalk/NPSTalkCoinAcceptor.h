@@ -42,14 +42,14 @@ protected:
                                 QByteArray *aAnswer = nullptr);
 
     /// Протокол.
-    NPSTalkProtocol mProtocol;
+    NPSTalkProtocol m_Protocol;
 
     // TODO: в базу.
     /// Последние статус-коды устройства.
-    TDeviceCodes mCodes;
+    TDeviceCodes m_Codes;
 
     /// Количество монет на канал.
-    TCoinsByChannel mCoinsByChannel;
+    TCoinsByChannel m_CoinsByChannel;
 };
 
 //--------------------------------------------------------------------------------

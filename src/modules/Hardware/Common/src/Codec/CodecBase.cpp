@@ -9,34 +9,34 @@
 
 //---------------------------------------------------------------------------
 CodecBase::CodecBase()
-    : mMIB(3000), mMinValueActive(0x0080), mName("Base"), mDataGuard(QReadWriteLock::Recursive) {}
+    : m_MIB(3000), m_MinValueActive(0x0080), m_Name("Base"), m_DataGuard(QReadWriteLock::Recursive) {}
 
 //---------------------------------------------------------------------------
 QByteArray CodecBase::name() const {
-    return mName;
+    return m_Name;
 }
 
 //---------------------------------------------------------------------------
 QList<QByteArray> CodecBase::aliases() const {
-    return QList<QByteArray>() << mName;
+    return QList<QByteArray>() << m_Name;
 }
 
 //---------------------------------------------------------------------------
 int CodecBase::mibEnum() const {
-    return mMIB;
+    return m_MIB;
 }
 
 //---------------------------------------------------------------------------
 QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const {
-    QReadLocker lock(&mDataGuard);
+    QReadLocker lock(&m_DataGuard);
 
-    QByteArray buffer = QByteArray::fromRawData(aBuffer, aLength);
-    CharacterData &characterData = const_cast<CharacterData &>(mData);
+    QByteArray buffer = QByteArray::from_RawData(aBuffer, aLength);
+    CharacterData &characterData = const_cast<CharacterData &>(m_Data);
     QByteArray defaultBuffer = characterData.getDefault().character.toLatin1();
     bool dataEmpty = characterData.data().isEmpty();
 
     auto replace = [&](char ch) {
-        if (uchar(ch) < uchar(mMinValueActive)) {
+        if (uchar(ch) < uchar(m_MinValueActive)) {
             dataEmpty ? buffer.replace(ch, defaultBuffer[0]) : buffer.replace(ch, "");
         }
     };
@@ -50,14 +50,14 @@ QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const {
     QString result;
 
     for (int i = 0; i < buffer.size(); ++i) {
-        if (!buffer[i] && mMinValueActive) {
+        if (!buffer[i] && m_MinValueActive) {
             break;
         }
 
-        if (uchar(buffer[i]) < uchar(mMinValueActive)) {
+        if (uchar(buffer[i]) < uchar(m_MinValueActive)) {
             result += buffer[i];
         } else {
-            result += mData[buffer[i]].character;
+            result += m_Data[buffer[i]].character;
         }
     }
 
@@ -65,18 +65,18 @@ QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const {
 }
 
 //---------------------------------------------------------------------------
-QByteArray CodecBase::convertFromUnicode(const QChar *aBuffer, int aLength) const {
-    QReadLocker lock(&mDataGuard);
+QByteArray CodecBase::convertFrom_Unicode(const QChar *aBuffer, int aLength) const {
+    QReadLocker lock(&m_DataGuard);
 
     QByteArray result;
-    CharacterData &characterData = const_cast<CharacterData &>(mData);
+    CharacterData &characterData = const_cast<CharacterData &>(m_Data);
     QString data(aBuffer, aLength);
 
     for (int i = 0; i < aLength; ++i) {
         ushort unicode = aBuffer[i].unicode();
         char character = char(unicode);
 
-        if (unicode > mMinValueActive) {
+        if (unicode > m_MinValueActive) {
             QList<char> characters = characterData.data().keys(SCharData(data[i], true));
 
             if (characters.isEmpty()) {

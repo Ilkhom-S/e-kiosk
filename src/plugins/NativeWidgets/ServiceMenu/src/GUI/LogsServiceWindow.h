@@ -13,27 +13,27 @@
 class LogFileModel : public QStringListModel {
     Q_OBJECT
 
-    QStringList mList;
+    QStringList m_List;
 
 public:
     LogFileModel() {}
 
     virtual void setStringList(const QStringList &aStrings) {
-        mList = aStrings;
-        QStringListModel::setStringList(mList);
+        m_List = aStrings;
+        QStringListModel::setStringList(m_List);
     }
 
     virtual QVariant data(const QModelIndex &aIndex, int aRole) const {
         int row = aIndex.row();
 
-        if (row >= 0 && row < mList.size()) {
+        if (row >= 0 && row < m_List.size()) {
             switch (aRole) {
             case Qt::DisplayRole:
             case Qt::EditRole:
-                return mList.at(row);
+                return m_List.at(row);
 
             case Qt::ForegroundRole: {
-                const QString &line = mList.at(row);
+                const QString &line = m_List.at(row);
 
                 if (line.size() > 14) {
                     switch (line.at(14).toLatin1()) {
@@ -123,8 +123,8 @@ private:
     }
 
 private:
-    QMap<QString, QString> mLogs;
-    LogFileModel mModel;
+    QMap<QString, QString> m_Logs;
+    LogFileModel m_Model;
 };
 
 //------------------------------------------------------------------------

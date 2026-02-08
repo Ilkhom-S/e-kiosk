@@ -5,7 +5,7 @@
 #include <QtCore/QSharedPointer>
 
 // GUI SDK
-#include <SDK/GUI/GraphicsItemInfo.h>
+#include <SDK/GUI/GraphicsItem_Info.h>
 #include <SDK/GUI/IGraphicsItem.h>
 
 class QQuickItem;
@@ -16,7 +16,7 @@ class ILog;
 /// Интерфейс для созданного движком графического объекта.
 class QMLGraphicsItem : public SDK::GUI::IGraphicsItem {
 public:
-    QMLGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo, QQmlEngine *aEngine, ILog *aLog);
+    QMLGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo, QQmlEngine *aEngine, ILog *aLog);
 
     /// Вызывается перед отображением виджета.
     virtual void show();
@@ -49,11 +49,11 @@ private:
     QString translateError(const QVariant &aError) const;
 
 private:
-    ILog *mLog;
-    QString mError;
-    QQmlEngine *mEngine;
-    QSharedPointer<QQuickItem> mItem;
-    SDK::GUI::GraphicsItemInfo mInfo;
+    ILog *m_Log;
+    QString m_Error;
+    QQmlEngine *m_Engine;
+    QSharedPointer<QQuickItem> m_Item;
+    SDK::GUI::GraphicsItem_Info m_Info;
 };
 
 //---------------------------------------------------------------------------

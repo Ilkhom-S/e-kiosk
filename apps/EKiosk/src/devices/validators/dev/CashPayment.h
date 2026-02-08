@@ -1,6 +1,6 @@
 #ifdef Q_OS_WIN32
 extern "C" {
-int __declspec(dllexport) SendFirmWareDataByPath(int nPort, char *pFilePath);
+int __declspec(dllexport) SendFirm_WareDataByPath(int nPort, char *pFilePath);
 
 int _stdcall GetDataStatus();
 

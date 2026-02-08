@@ -125,7 +125,7 @@ TResult Puloon::processCommand(const QByteArray &aCommandData,
             if (!aAnswerList.isEmpty()) {
                 QByteArray &lastAnswer = aAnswerList.last();
 
-                if (lastAnswer.size() > CPuloon::ItemDataSize) {
+                if (lastAnswer.size() > CPuloon::Item_DataSize) {
                     lastAnswer = lastAnswer.mid(4, lastAnswer.size() - 6);
                 }
             }
@@ -227,9 +227,9 @@ bool Puloon::getAnswer(TAnswerList &aAnswerList, int aTimeout) const {
             while (!lastData.isEmpty()) {
                 int size = lastData.size();
 
-                if ((size > CPuloon::ItemDataSize) && (lastData[0] == CPuloon::AnswerMark) &&
-                    (lastData[CPuloon::ItemDataSize] == CPuloon::AnswerMark)) {
-                    size = CPuloon::ItemDataSize;
+                if ((size > CPuloon::Item_DataSize) && (lastData[0] == CPuloon::AnswerMark) &&
+                    (lastData[CPuloon::Item_DataSize] == CPuloon::AnswerMark)) {
+                    size = CPuloon::Item_DataSize;
                 }
 
                 aAnswerList.append(lastData.left(size));

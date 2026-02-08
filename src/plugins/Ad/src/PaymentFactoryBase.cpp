@@ -16,17 +16,17 @@ const char LogName[] = "Ad";
 // Конструктор базовой фабрики платежей
 PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory,
                                        const QString &aInstancePath)
-    : mInitialized(false), mFactory(aFactory), mInstancePath(aInstancePath), mCore(0),
-      mCryptEngine(0) {
+    : m_Initialized(false), m_Factory(aFactory), m_InstancePath(aInstancePath), m_Core(0),
+      m_CryptEngine(0) {
     try {
-        mCore = dynamic_cast<SDK::PaymentProcessor::ICore *>(
-            mFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
-        mCryptEngine = mCore->getCryptService()->getCryptEngine();
-        mNetwork = mCore->getNetworkService()->getNetworkTaskManager();
+        m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+            m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+        m_CryptEngine = m_Core->getCryptService()->getCryptEngine();
+        m_Network = m_Core->getNetworkService()->getNetworkTaskManager();
 
-        mInitialized = true;
+        m_Initialized = true;
     } catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &e) {
-        mInitialized = false;
+        m_Initialized = false;
 
         LOG(getLog(),
             LogLevel::Error,
@@ -36,17 +36,17 @@ PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory,
 
 //------------------------------------------------------------------------------
 QVariantMap PaymentFactoryBase::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //------------------------------------------------------------------------------
 void PaymentFactoryBase::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 }
 
 //------------------------------------------------------------------------------
 QString PaymentFactoryBase::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ bool PaymentFactoryBase::restorePayment(
 //------------------------------------------------------------------------------
 void PaymentFactoryBase::setSerializer(
     boost::function<bool(SDK::PaymentProcessor::IPayment *)> aSerializer) {
-    mSerializer = aSerializer;
+    m_Serializer = aSerializer;
 }
 
 //------------------------------------------------------------------------------
@@ -81,8 +81,8 @@ bool PaymentFactoryBase::convertPayment(const QString & /*aTargetType*/,
 
 //------------------------------------------------------------------------------
 bool PaymentFactoryBase::savePayment(SDK::PaymentProcessor::IPayment *aPayment) {
-    if (mSerializer) {
-        return mSerializer(aPayment);
+    if (m_Serializer) {
+        return m_Serializer(aPayment);
     }
 
     return false;
@@ -90,22 +90,22 @@ bool PaymentFactoryBase::savePayment(SDK::PaymentProcessor::IPayment *aPayment) 
 
 //------------------------------------------------------------------------------
 SDK::PaymentProcessor::ICore *PaymentFactoryBase::getCore() const {
-    return mCore;
+    return m_Core;
 }
 
 //------------------------------------------------------------------------------
 ILog *PaymentFactoryBase::getLog(const char *aLogName /*= nullptr*/) const {
-    return mFactory->getLog(aLogName ? aLogName : CPaymentFactory::LogName);
+    return m_Factory->getLog(aLogName ? aLogName : CPaymentFactory::LogName);
 }
 
 //------------------------------------------------------------------------------
 ICryptEngine *PaymentFactoryBase::getCryptEngine() const {
-    return mCryptEngine;
+    return m_CryptEngine;
 }
 
 //------------------------------------------------------------------------------
 NetworkTaskManager *PaymentFactoryBase::getNetworkTaskManager() const {
-    return mNetwork;
+    return m_Network;
 }
 
 //------------------------------------------------------------------------------

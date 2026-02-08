@@ -124,7 +124,7 @@ void SearchDevicesForm::setPrinterSearchText(int state, QString text) {
     ui->loading_printer_info->setText(text);
 }
 
-void SearchDevicesForm::setModemSearchText(int state, QString text) {
+void SearchDevicesForm::setModem_SearchText(int state, QString text) {
     if (state == 0) {
         ui->loading_modem_search->setVisible(true);
         ui->loading_modem_search->setMovie(srchMovie);

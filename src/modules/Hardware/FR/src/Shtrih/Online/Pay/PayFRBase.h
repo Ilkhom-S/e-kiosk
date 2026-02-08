@@ -24,7 +24,7 @@ protected:
     virtual bool retract();
 
     /// Id модели подключенного принтера.
-    uchar mPrinterModelId;
+    uchar m_PrinterModelId;
 };
 
 //--------------------------------------------------------------------------------

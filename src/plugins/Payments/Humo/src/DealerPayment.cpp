@@ -14,7 +14,7 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-DealerPayment::DealerPayment(PaymentFactory *aFactory) : Payment(aFactory), mFactory(aFactory) {}
+DealerPayment::DealerPayment(PaymentFactory *aFactory) : Payment(aFactory), m_Factory(aFactory) {}
 
 //------------------------------------------------------------------------------
 bool DealerPayment::check(bool /*aFakeCheck*/) {
@@ -24,20 +24,20 @@ bool DealerPayment::check(bool /*aFakeCheck*/) {
             "Payment %1. (dealer) %2, operator: %3 (%4), session: %5, amount_all: %6, amount: %7.")
             .arg(getID())
             .arg(CPayment::Requests::Pay)
-            .arg(mProviderSettings.id)
-            .arg(mProviderSettings.name)
+            .arg(m_ProviderSettings.id)
+            .arg(m_ProviderSettings.name)
             .arg(getSession())
             .arg(getAmountAll())
             .arg(getAmount()));
 
     if (haveLocalData()) {
-        QString number = getParameter(mLocalData.getFirstField()).value.toString();
+        QString number = getParameter(m_LocalData.getFirstField()).value.toString();
 
         toLog(LogLevel::Normal,
               QString("Payment %1. (dealer) Check local data by '%2'.").arg(getID()).arg(number));
 
         QMap<QString, QString> values;
-        if (mLocalData.findNumber(number, values)) {
+        if (m_LocalData.findNumber(number, values)) {
             QString addInfo = getAddinfo(values);
             toLog(LogLevel::Normal, QString("Payment %1. ADDINFO: %2.").arg(getID()).arg(addInfo));
             setParameter(SParameter(PPSDK::CPayment::Parameters::AddInfo, addInfo, true));
@@ -105,7 +105,7 @@ bool DealerPayment::haveLocalData() {
         return false;
     }
 
-    SDK::Plugin::IEnvironment *env = mFactory->getEnvironment();
+    SDK::Plugin::IEnvironment *env = m_Factory->getEnvironment();
 
     if (env) {
         QString dataFile = QDir(env->getKernelDataDirectory()).filePath(urlParts[1]);
@@ -113,7 +113,7 @@ bool DealerPayment::haveLocalData() {
         toLog(LogLevel::Normal,
               QString("Payment %1. (dealer) LocalDataFile: %3.").arg(getID()).arg(dataFile));
 
-        return mLocalData.loadInfo(dataFile);
+        return m_LocalData.loadInfo(dataFile);
     } else {
         toLog(LogLevel::Error, QString("Payment %1. Failed get IEnvironment object.").arg(getID()));
 
@@ -124,7 +124,7 @@ bool DealerPayment::haveLocalData() {
 //---------------------------------------------------------------------------
 QString DealerPayment::getAddinfo(QMap<QString, QString> &aValues) {
     QStringList result;
-    auto columns = mLocalData.getColumns();
+    auto columns = m_LocalData.getColumns();
 
     for (int i = 0; i < columns.size(); i++) {
         QString fieldID = columns[i].first;
@@ -139,7 +139,7 @@ QString DealerPayment::getAddinfo(QMap<QString, QString> &aValues) {
 //---------------------------------------------------------------------------
 QString DealerPayment::getAddFields() {
     QStringList fields;
-    auto columns = mLocalData.getColumns();
+    auto columns = m_LocalData.getColumns();
 
     for (int i = 0; i < columns.size(); i++) {
         if (i) {

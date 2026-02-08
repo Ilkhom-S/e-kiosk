@@ -27,10 +27,10 @@ void AvtorizationToAdminIn::checkInputData() {
         this->close();
     }
 
-    QString vrmLogin = ui->editLoginReg->text().trimmed();
-    QString vrmPass = ui->editPasswordReg->text().trimmed();
+    QString vrm_Login = ui->editLoginReg->text().trimmed();
+    QString vrm_Pass = ui->editPasswordReg->text().trimmed();
 
-    if (vrmLogin == "" || vrmPass == "") {
+    if (vrm_Login == "" || vrm_Pass == "") {
 
         countCheckIn++;
 
@@ -47,7 +47,7 @@ void AvtorizationToAdminIn::checkInputData() {
         return;
     }
 
-    if (vrmLogin == this->loginIn && vrmPass == this->passIn) {
+    if (vrm_Login == this->loginIn && vrm_Pass == this->passIn) {
         countCheckIn = 0;
         emit this->emit_openAdminDialog();
         this->close();

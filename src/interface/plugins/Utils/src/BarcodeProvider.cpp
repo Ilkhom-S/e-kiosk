@@ -10,17 +10,17 @@
 #include "Log.h"
 
 BarcodeProvider::BarcodeProvider()
-    : QQuickImageProvider(QQmlImageProviderBase::Image), mDefaultBarcodeSize(200, 200) {}
+    : QQuickImageProvider(QQmlImageProviderBase::Image), m_DefaultBarcodeSize(200, 200) {}
 
 //------------------------------------------------------------------------------
 QImage
 BarcodeProvider::requestImage(const QString &aId, QSize *aSize, const QSize &aRequestedSize) {
     QSize barcodeSize = aRequestedSize.isValid() && !aRequestedSize.isEmpty() ? aRequestedSize
-                                                                              : mDefaultBarcodeSize;
+                                                                              : m_DefaultBarcodeSize;
     QString path = QString("%1|%2x%3").arg(aId).arg(barcodeSize.width()).arg(barcodeSize.height());
 
-    if (mBarcodeCache.contains(path)) {
-        return mBarcodeCache.value(path);
+    if (m_BarcodeCache.contains(path)) {
+        return m_BarcodeCache.value(path);
     }
 
     QColor fgColor = QColor("black");
@@ -37,7 +37,7 @@ BarcodeProvider::requestImage(const QString &aId, QSize *aSize, const QSize &aRe
             continue;
         }
         QString name = nameValue[0].toLower();
-        QString value = QByteArray::fromPercentEncoding(nameValue[1].toLatin1());
+        QString value = QByteArray::from_PercentEncoding(nameValue[1].toLatin1());
 
         if (name == "bgcolor") {
             bgColor = QColor(value);
@@ -85,7 +85,7 @@ BarcodeProvider::requestImage(const QString &aId, QSize *aSize, const QSize &aRe
                                .arg(aId)
                                .arg(zint.lastError());
     } else {
-        mBarcodeCache.insert(path, image);
+        m_BarcodeCache.insert(path, image);
     }
 
     *aSize = image.size();

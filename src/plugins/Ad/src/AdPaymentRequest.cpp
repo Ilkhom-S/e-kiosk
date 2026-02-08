@@ -16,7 +16,7 @@ using SDK::PaymentProcessor::SProvider;
 
 //---------------------------------------------------------------------------
 AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName)
-    : mPayment(aPayment), mName(aName) {
+    : m_Payment(aPayment), m_Name(aName) {
     addParameter("SD", aPayment->getKeySettings().sd);
     addParameter("AP", aPayment->getKeySettings().ap);
     addParameter("OP", aPayment->getKeySettings().op);
@@ -41,9 +41,9 @@ AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName)
 
     // Берём все внешние параметры для отправки на сервер и заменяем в них макросы на
     // значения параметров платежа.
-    if (mPayment->getProviderSettings().processor.requests.contains(step.toUpper())) {
+    if (m_Payment->getProviderSettings().processor.requests.contains(step.toUpper())) {
         foreach (const SProvider::SProcessingTraits::SRequest::SField &field,
-                 mPayment->getProviderSettings().processor.requests[step.toUpper()].requestFields) {
+                 m_Payment->getProviderSettings().processor.requests[step.toUpper()].requestFields) {
             QString value = field.value;
 
             QRegularExpression macroPattern("\\{(.+)\\}");
@@ -51,21 +51,21 @@ AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName)
             QRegularExpressionMatch match = macroPattern.match(value);
             while (match.capturedStart() != -1) {
                 QString macro = match.captured(0);
-                QString paramName = match.captured(1);
-                value.replace(macro, mPayment->getParameter(paramName).value.toString());
+                QString param_Name = match.captured(1);
+                value.replace(macro, m_Payment->getParameter(param_Name).value.toString());
                 match = macroPattern.match(value);
             }
 
             if (field.crypted) {
                 switch (field.algorithm) {
                 case SProvider::SProcessingTraits::SRequest::SField::Md5:
-                    value = QString::fromLatin1(
+                    value = QString::from_Latin1(
                         QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Md5)
                             .toHex());
                     break;
 
                 case SProvider::SProcessingTraits::SRequest::SField::Sha1:
-                    value = QString::fromLatin1(
+                    value = QString::from_Latin1(
                         QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Sha1)
                             .toHex());
                     break;
@@ -81,9 +81,9 @@ AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName)
                                              value.toLatin1(),
                                              encryptedValue,
                                              error)) {
-                        mCryptedFields << field.name;
+                        m_CryptedFields << field.name;
 
-                        value = QString::fromLatin1(encryptedValue);
+                        value = QString::from_Latin1(encryptedValue);
                     } else {
                         LOG(getPayment()->getPaymentFactory()->getLog(),
                             LogLevel::Error,
@@ -105,7 +105,7 @@ AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName)
 //---------------------------------------------------------------------------
 void AdPaymentRequest::addProviderParameters(const QString & /*aStep*/) {
     // Добавляем в платёж все external параметры
-    foreach (auto parameter, mPayment->getParameters()) {
+    foreach (auto parameter, m_Payment->getParameters()) {
         if (parameter.external) {
             addParameter(parameter.name, parameter.value);
         }
@@ -114,12 +114,12 @@ void AdPaymentRequest::addProviderParameters(const QString & /*aStep*/) {
 
 //---------------------------------------------------------------------------
 AdPayment *AdPaymentRequest::getPayment() const {
-    return mPayment;
+    return m_Payment;
 }
 
 //---------------------------------------------------------------------------
 const QString &AdPaymentRequest::getName() const {
-    return mName;
+    return m_Name;
 }
 
 //---------------------------------------------------------------------------
@@ -131,7 +131,7 @@ QString AdPaymentRequest::toLogString() const {
          ++it) {
         result << QString("%1 = \"%2\"")
                       .arg(it.key())
-                      .arg(mCryptedFields.contains(it.key()) ? "**CRYPTED**"
+                      .arg(m_CryptedFields.contains(it.key()) ? "**CRYPTED**"
                                                              : it.value().toString());
     }
 

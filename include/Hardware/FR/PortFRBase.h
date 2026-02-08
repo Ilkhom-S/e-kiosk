@@ -43,7 +43,7 @@ protected:
 
     /// Получить статус. Возвращает Fail, Error (константы) или правильный ответ.
     template <class T2>
-    QByteArray performStatus(TStatusCodes &aStatusCodes, T2 aCommand, int aIndex = -1);
+    QByteArray perform_Status(TStatusCodes &aStatusCodes, T2 aCommand, int aIndex = -1);
 
     /// Сформировать массив байтов для печаит из массива строк.
     typedef QList<QByteArray> TReceiptBuffer;

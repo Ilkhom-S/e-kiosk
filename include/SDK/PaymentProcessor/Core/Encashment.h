@@ -49,7 +49,7 @@ struct SBalance {
                 result += a.value.rawValue() * a.count;
             }
 
-            return Currency::Nominal::fromRawValue(result);
+            return Currency::Nominal::from_RawValue(result);
         }
     };
 
@@ -91,7 +91,7 @@ struct SBalance {
             }
         }
 
-        return Currency::Nominal::fromRawValue(result).toString(false);
+        return Currency::Nominal::from_RawValue(result).toString(false);
     }
 
     /// Получить список полей для чека баланса.

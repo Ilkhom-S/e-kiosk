@@ -15,7 +15,7 @@
 
 //--------------------------------------------------------------------------------
 typedef struct {
-    LPWSTR lpszProgramName;
+    LPWSTR lpszProgram_Name;
     LPWSTR lpszPublisherLink;
     LPWSTR lpszMoreInfoLink;
 } SPROG_PUBLISHERINFO, *PSPROG_PUBLISHERINFO;
@@ -165,10 +165,10 @@ BOOL GetProgAndPublisherInfo(PCMSG_SIGNER_INFO pSignerInfo, PSPROG_PUBLISHERINFO
                 }
 
                 // Fill in Program Name if present.
-                if (OpusInfo->pwszProgramName) {
-                    Info->lpszProgramName = AllocateAndCopyWideString(OpusInfo->pwszProgramName);
+                if (OpusInfo->pwszProgram_Name) {
+                    Info->lpszProgram_Name = AllocateAndCopyWideString(OpusInfo->pwszProgram_Name);
                 } else
-                    Info->lpszProgramName = NULL;
+                    Info->lpszProgram_Name = NULL;
 
                 // Fill in Publisher Information if present.
                 if (OpusInfo->pPublisherInfo) {
@@ -259,7 +259,7 @@ BOOL GetDateOfTimeStamp(PCMSG_SIGNER_INFO pSignerInfo, SYSTEMTIME *st) {
 
                 // Convert to local time.
                 FileTimeToLocalFileTime(&ft, &lft);
-                FileTimeToSystemTime(&lft, st);
+                FileTimeToSystem_Time(&lft, st);
 
                 fReturn = TRUE;
 
@@ -447,7 +447,7 @@ bool ISysUtils::getSignerInfo(const QString &aFile, SSignerInfo &aSigner) {
             throw false;
         }
 
-        aSigner.issuer = QString::fromWCharArray(szSignerName);
+        aSigner.issuer = QString::from_WCharArray(szSignerName);
         LocalFree(szSignerName);
         szSignerName = NULL;
 
@@ -472,7 +472,7 @@ bool ISysUtils::getSignerInfo(const QString &aFile, SSignerInfo &aSigner) {
             return false;
         }
 
-        aSigner.name = QString::fromWCharArray(szSignerName);
+        aSigner.name = QString::from_WCharArray(szSignerName);
     } catch (bool &e) {
         fResult = e;
     } catch (delayload::CDynFunException &e) {

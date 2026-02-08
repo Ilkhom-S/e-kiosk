@@ -41,7 +41,7 @@ namespace Migrator3000 {
 class MainScenarioPlugin : public SDK::Plugin::IFactory<GUI::Scenario> {
 public:
     MainScenarioPlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-        : mEnvironment(aFactory), mInstancePath(aInstancePath) {}
+        : m_Environment(aFactory), m_InstancePath(aInstancePath) {}
 
 public:
     /// Возвращает название плагина.
@@ -50,23 +50,23 @@ public:
     /// Возвращает параметры плагина.
     virtual QVariantMap getConfiguration() const {
         QVariantMap parameters;
-        parameters["url"] = mUrl;
+        parameters["url"] = m_Url;
         return parameters;
     }
 
     /// Настраивает плагин.
     virtual void setConfiguration(const QVariantMap &aParameters) {
         QString url = aParameters["url"].toString();
-        mUrl = url.isEmpty() ? mUrl : url;
+        m_Url = url.isEmpty() ? m_Url : url;
     }
 
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
-    virtual QString getConfigurationName() const { return mInstancePath; }
+    virtual QString getConfigurationName() const { return m_InstancePath; }
 
     /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
     /// программы).
     virtual bool saveConfiguration() {
-        return mEnvironment->saveConfiguration(CScenarioPlugin::PluginName, getConfiguration());
+        return m_Environment->saveConfiguration(CScenarioPlugin::PluginName, getConfiguration());
     }
 
     /// Проверяет успешно ли инициализировался плагин при создании.
@@ -78,14 +78,14 @@ public:
     /// Создает класс c заданным именем.
     virtual GUI::Scenario *create(const QString &aClassName) const {
         PPSDK::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
-            mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
-        return new MainScenario(core, mEnvironment->getLog(aClassName));
+            m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+        return new MainScenario(core, m_Environment->getLog(aClassName));
     }
 
 private:
-    QString mUrl;
-    QString mInstancePath;
-    SDK::Plugin::IEnvironment *mEnvironment;
+    QString m_Url;
+    QString m_InstancePath;
+    SDK::Plugin::IEnvironment *m_Environment;
 };
 
 } // namespace Migrator3000

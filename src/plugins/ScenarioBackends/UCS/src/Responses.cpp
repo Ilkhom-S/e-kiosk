@@ -22,27 +22,27 @@ BaseResponsePtr BaseResponse::createResponse(QByteArray &aResponseBuffer) {
     }
 
     BaseResponse response;
-    response.mClass = aResponseBuffer[0];
-    response.mCode = aResponseBuffer[1];
-    response.mTerminalID = aResponseBuffer.mid(2, 10);
+    response.m_Class = aResponseBuffer[0];
+    response.m_Code = aResponseBuffer[1];
+    response.m_TerminalID = aResponseBuffer.mid(2, 10);
 
     bool ok = true;
-    int dataLength = QString::fromLatin1(aResponseBuffer.mid(12, 2)).toInt(&ok, 16);
+    int dataLength = QString::from_Latin1(aResponseBuffer.mid(12, 2)).toInt(&ok, 16);
     if (ok && dataLength) {
-        response.mData = aResponseBuffer.mid(14, dataLength);
+        response.m_Data = aResponseBuffer.mid(14, dataLength);
     }
 
     aResponseBuffer.remove(0, 14 + dataLength);
 
-    switch (response.mClass) {
+    switch (response.m_Class) {
     case Ucs::Class::Service:
-        switch (response.mCode) {
+        switch (response.m_Code) {
         case Ucs::Encashment::CodeResponse:
             return QSharedPointer<BaseResponse>(new EncashmentResponse(response));
         }
         break;
     case Ucs::Class::Session:
-        switch (response.mCode) {
+        switch (response.m_Code) {
         case Ucs::Login::CodeResponse:
             return QSharedPointer<BaseResponse>(new LoginResponse(response));
         case Ucs::PrintLine::CodeRequest:
@@ -55,7 +55,7 @@ BaseResponsePtr BaseResponse::createResponse(QByteArray &aResponseBuffer) {
         break;
 
     case Ucs::Class::Accept:
-        switch (response.mCode) {
+        switch (response.m_Code) {
         case Ucs::Initial::CodeResponse:
             return QSharedPointer<BaseResponse>(new InitialResponse(response));
         case Ucs::Sale::PinRequired:
@@ -72,7 +72,7 @@ BaseResponsePtr BaseResponse::createResponse(QByteArray &aResponseBuffer) {
         break;
 
     case Ucs::Class::AuthResponse:
-        switch (response.mCode) {
+        switch (response.m_Code) {
         case Ucs::Auth::Response:
             return QSharedPointer<BaseResponse>(new AuthResponse(response));
         }
@@ -87,8 +87,8 @@ ErrorResponse::ErrorResponse(const BaseResponse &aResponse) : BaseResponse(aResp
 
 //---------------------------------------------------------------------------
 QString ErrorResponse::getError() const {
-    if (mData.size() >= 2) {
-        return QString::fromLatin1(mData.left(2));
+    if (m_Data.size() >= 2) {
+        return QString::from_Latin1(m_Data.left(2));
     }
 
     return QString();
@@ -96,8 +96,8 @@ QString ErrorResponse::getError() const {
 
 //---------------------------------------------------------------------------
 QString ErrorResponse::getErrorMessage() const {
-    if (mData.size() > 2) {
-        return QString::fromLatin1(mData.mid(2));
+    if (m_Data.size() > 2) {
+        return QString::from_Latin1(m_Data.mid(2));
     }
 
     return QString();
@@ -108,24 +108,24 @@ PrintLineResponse::PrintLineResponse(const BaseResponse &aResponse) : BaseRespon
 
 //---------------------------------------------------------------------------
 bool PrintLineResponse::isLast() const {
-    return mData.size() > 0 && mData[0] == '1';
+    return m_Data.size() > 0 && m_Data[0] == '1';
 }
 
 //---------------------------------------------------------------------------
 QString PrintLineResponse::getText() const {
-    return (mData.size() > 1) ? QTextCodec::codecForName("Windows-1251")->toUnicode(mData.mid(1))
+    return (m_Data.size() > 1) ? QTextCodec::codecForName("Windows-1251")->toUnicode(m_Data.mid(1))
                               : "";
 }
 
 //---------------------------------------------------------------------------
 bool GetStateResponse::isLast() const {
-    return mData.size() > 0 && mData[0] == '1';
+    return m_Data.size() > 0 && m_Data[0] == '1';
 }
 
 //---------------------------------------------------------------------------
 int GetStateResponse::state() const {
-    if (mData.size() > 2) {
-        return QString::fromLatin1(mData.mid(1, 2)).toInt(nullptr, 16);
+    if (m_Data.size() > 2) {
+        return QString::from_Latin1(m_Data.mid(1, 2)).toInt(nullptr, 16);
     }
 
     return 0xff;
@@ -133,12 +133,12 @@ int GetStateResponse::state() const {
 
 //---------------------------------------------------------------------------
 QString GetStateResponse::getName() const {
-    return QString::fromLatin1(mData.mid(3));
+    return QString::from_Latin1(m_Data.mid(3));
 }
 
 //---------------------------------------------------------------------------
 bool BreakResponse::isComplete() const {
-    return mData.size() && mData[0] == '0';
+    return m_Data.size() && m_Data[0] == '0';
 }
 
 //---------------------------------------------------------------------------
@@ -146,65 +146,65 @@ AuthResponse::AuthResponse(const BaseResponse &aResponse) : BaseResponse(aRespon
     int index = 0;
 
     auto readTo1B = [&](QString &aString, QTextCodec *aCodec) {
-        for (; mData.size() > index && mData.at(index) != 0x1b; index++) {
-            char c = mData.at(index);
+        for (; m_Data.size() > index && m_Data.at(index) != 0x1b; index++) {
+            char c = m_Data.at(index);
             aString.append(aCodec ? aCodec->toUnicode(&c, 1).at(0) : c);
         }
         index++;
     };
 
-    if (mData.size()) {
-        mOperation = static_cast<Ucs::Operation::Enum>(mData.at(index));
+    if (m_Data.size()) {
+        m_Operation = static_cast<Ucs::Operation::Enum>(m_Data.at(index));
         index++;
-        mTransactionSum = QString::fromLatin1(mData.mid(index, 12)).toUInt();
+        m_TransactionSum = QString::from_Latin1(m_Data.mid(index, 12)).toUInt();
         index += 12;
-        mCurrency = QString::fromLatin1(mData.mid(index, 3)).toUInt();
+        m_Currency = QString::from_Latin1(m_Data.mid(index, 3)).toUInt();
         index += 3;
-        mStamp = QDateTime::fromString(QString::fromLatin1(mData.mid(index, 14)), "yyyyMMddhhmmss");
+        m_Stamp = QDateTime::from_String(QString::from_Latin1(m_Data.mid(index, 14)), "yyyyMMddhhmmss");
         index += 14;
-        mMerchant = QString::fromLatin1(mData.mid(index, 15));
+        m_Merchant = QString::from_Latin1(m_Data.mid(index, 15));
         index += 15;
-        mRRN = QString::fromLatin1(mData.mid(index, 12));
+        m_RRN = QString::from_Latin1(m_Data.mid(index, 12));
         index += 12;
-        mResponse = QString::fromLatin1(mData.mid(index, 2));
+        m_Response = QString::from_Latin1(m_Data.mid(index, 2));
         index += 2;
 
-        readTo1B(mConfirmation, nullptr);
-        readTo1B(mCardNumber, nullptr);
-        readTo1B(mCardLabel, nullptr);
-        readTo1B(mMessage, QTextCodec::codecForName("windows-1251"));
+        readTo1B(m_Confirmation, nullptr);
+        readTo1B(m_CardNumber, nullptr);
+        readTo1B(m_CardLabel, nullptr);
+        readTo1B(m_Message, QTextCodec::codecForName("windows-1251"));
     }
 }
 
 //---------------------------------------------------------------------------
 bool AuthResponse::isOK() const {
-    return mResponse == "00";
+    return m_Response == "00";
 }
 
 //---------------------------------------------------------------------------
 QString AuthResponse::toString() const {
-    return mCardLabel + "|" + mMessage;
+    return m_CardLabel + "|" + m_Message;
 }
 
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 LoginResponse::LoginResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
-    mStatusCode = mData.size() == 2 ? QString::fromLatin1(mData.mid(1, 1)) : "";
+    m_StatusCode = m_Data.size() == 2 ? QString::from_Latin1(m_Data.mid(1, 1)) : "";
 }
 
 //---------------------------------------------------------------------------
 QString LoginResponse::getStatusCode() const {
-    return mStatusCode;
+    return m_StatusCode;
 }
 
 //---------------------------------------------------------------------------
 QString LoginResponse::getTerminalID() const {
-    return mTerminalID;
+    return m_TerminalID;
 }
 
 //---------------------------------------------------------------------------
 bool LoginResponse::needEncashment() const {
-    return mStatusCode == "1";
+    return m_StatusCode == "1";
 }
 
 //---------------------------------------------------------------------------
@@ -220,37 +220,37 @@ ConsoleResponse::ConsoleResponse(const BaseResponse &aResponse) : BaseResponse(a
         return result;
     };
 
-    mMessage = readTo1B(mData);
+    m_Message = readTo1B(m_Data);
 }
 
 //---------------------------------------------------------------------------
 QString ConsoleResponse::getMessage() const {
-    return mMessage;
+    return m_Message;
 }
 
 //---------------------------------------------------------------------------
 MessageResponse::MessageResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
-    QByteArray response = mData.right(6);
+    QByteArray response = m_Data.right(6);
 
     if (response.size() == 6) {
-        mCurrentTransactionCount = response.left(3);
-        mTimeUpload = response.mid(3, 2);
-        mStatusCode = response.right(1);
+        m_CurrentTransactionCount = response.left(3);
+        m_TimeUpload = response.mid(3, 2);
+        m_StatusCode = response.right(1);
     }
 }
 
 //---------------------------------------------------------------------------
 bool MessageResponse::needEncashment() const {
-    if (mStatusCode == "1") {
+    if (m_StatusCode == "1") {
         return true;
     }
 
-    if (!mTimeUpload.isEmpty() && mTimeUpload.toUInt() < ::EncashmentThreshold) {
+    if (!m_TimeUpload.isEmpty() && m_TimeUpload.toUInt() < ::EncashmentThreshold) {
         return true;
     }
 
-    if (!mCurrentTransactionCount.isEmpty() &&
-        mCurrentTransactionCount.toUInt() < ::EncashmentThreshold) {
+    if (!m_CurrentTransactionCount.isEmpty() &&
+        m_CurrentTransactionCount.toUInt() < ::EncashmentThreshold) {
         return true;
     }
 

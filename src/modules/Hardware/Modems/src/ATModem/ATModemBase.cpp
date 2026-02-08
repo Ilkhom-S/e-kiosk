@@ -1,6 +1,6 @@
 /* @file Базовый класс AT-совместимого модема. */
 
-#include "ATModemBase.h"
+#include "ATModem_Base.h"
 
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QRegularExpression>
@@ -9,7 +9,7 @@ using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------------
-ATModemBase::ATModemBase() {
+ATModem_Base::ATModem_Base() {
     // данные порта
     m_PortParameters[EParameters::BaudRate].append(
         EBaudRate::BR115200); // preferable for work, but not works in autobauding mode
@@ -24,11 +24,11 @@ ATModemBase::ATModemBase() {
     // Отключено - записи в лог дублируются.
     // m_IOMessageLogging = true;
 
-    m_ModemConfigTimeout = CATGSMModem::Timeouts::Config;
+    m_Modem_ConfigTimeout = CATGSMModem::Timeouts::Config;
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::checkAT(int aTimeout) {
+bool ATModem_Base::checkAT(int aTimeout) {
     m_IOPort->clear();
 
     int index = 0;
@@ -42,7 +42,7 @@ bool ATModemBase::checkAT(int aTimeout) {
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::isConnected() {
+bool ATModem_Base::isConnected() {
     if (!checkAT(CATGSMModem::Timeouts::Default)) {
         m_IOPort->close();
         return false;
@@ -60,13 +60,13 @@ bool ATModemBase::isConnected() {
     setDeviceName(answer);
 
     // Выводим конфигурацию модема в лог.
-    if (processCommand(AT::Commands::ATandV, answer, m_ModemConfigTimeout)) {
+    if (processCommand(AT::Commands::ATandV, answer, m_Modem_ConfigTimeout)) {
         toLog(LogLevel::Normal,
-              QString("Modem configuration: %1").arg(QString::fromLatin1(answer)));
+              QString("Modem configuration: %1").arg(QString::from_Latin1(answer)));
     }
 
-    QString modemInfo;
-    getInfo(modemInfo);
+    QString modem_Info;
+    getInfo(modem_Info);
 
     m_IOPort->close();
 
@@ -74,9 +74,9 @@ bool ATModemBase::isConnected() {
 }
 
 //--------------------------------------------------------------------------------
-void ATModemBase::setDeviceName(const QByteArray &aFullName) {
+void ATModem_Base::setDeviceName(const QByteArray &aFullName) {
     if (!isAutoDetecting()) {
-        toLog(LogLevel::Normal, QString("Full modem info: %1").arg(QString::fromLatin1(aFullName)));
+        toLog(LogLevel::Normal, QString("Full modem info: %1").arg(QString::from_Latin1(aFullName)));
     }
 
     QString deviceName = aFullName.simplified();
@@ -87,7 +87,7 @@ void ATModemBase::setDeviceName(const QByteArray &aFullName) {
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::reset() {
+bool ATModem_Base::reset() {
     if (!checkConnectionAbility()) {
         return false;
     }
@@ -106,7 +106,7 @@ bool ATModemBase::reset() {
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::setInitString(const QString &aInitString) {
+bool ATModem_Base::setInitString(const QString &aInitString) {
     toLog(LogLevel::Normal, QString("Setting initialization string '%1'.").arg(aInitString));
 
     if (!checkConnectionAbility()) {
@@ -126,26 +126,26 @@ bool ATModemBase::setInitString(const QString &aInitString) {
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::enableLocalEcho(bool aEnable) {
+bool ATModem_Base::enableLocalEcho(bool aEnable) {
     QByteArray command = QByteArray(AT::Commands::ATE) + (aEnable ? "1" : "0");
 
     return processCommand(command);
 }
 
 //--------------------------------------------------------------------------------
-QByteArray ATModemBase::makeCommand(const QString &aCommand) {
+QByteArray ATModem_Base::makeCommand(const QString &aCommand) {
     return QByteArray("AT").append(aCommand.toLatin1()).append(ASCII::CR);
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::processCommand(const QByteArray &aCommand, int aTimeout) {
+bool ATModem_Base::processCommand(const QByteArray &aCommand, int aTimeout) {
     QByteArray answer;
 
     return processCommand(aCommand, answer, aTimeout);
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::processCommand(const QByteArray &aCommand, QByteArray &aAnswer, int aTimeout) {
+bool ATModem_Base::processCommand(const QByteArray &aCommand, QByteArray &aAnswer, int aTimeout) {
     aAnswer.clear();
 
     if (!m_IOPort->write(makeCommand(aCommand))) {

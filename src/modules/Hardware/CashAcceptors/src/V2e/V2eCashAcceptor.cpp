@@ -152,7 +152,7 @@ bool V2eCashAcceptor::setDefaultParameters() {
     }
 
     // устанавливаем режим связи с устройством
-    if (!processCommand(CV2e::Commands::SetCommMode, QByteArray(1, CV2e::CommunicationMode))) {
+    if (!processCommand(CV2e::Commands::SetComm_Mode, QByteArray(1, CV2e::CommunicationMode))) {
         toLog(LogLevel::Error, this->m_DeviceName + ": Failed to set communication mode");
         return false;
     }

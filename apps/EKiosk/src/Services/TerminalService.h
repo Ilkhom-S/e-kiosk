@@ -137,24 +137,24 @@ private slots:
     void checkConfigsIntegrity();
 
 private:
-    IApplication *mApplication;
-    SDK::PaymentProcessor::IEventService *mEventService;
-    IHardwareDatabaseUtils *mDbUtils;
+    IApplication *m_Application;
+    SDK::PaymentProcessor::IEventService *m_EventService;
+    IHardwareDatabaseUtils *m_DbUtils;
 
     /// Содержит имя конфигурации устройства, находящегося в состоянии ошибки.
-    QMultiMap<QString, int> mDeviceErrorFlags;
+    QMultiMap<QString, int> m_DeviceErrorFlags;
 
-    SDK::PaymentProcessor::SCommonSettings mSettings;
+    SDK::PaymentProcessor::SCommonSettings m_Settings;
 
-    QSharedPointer<IWatchServiceClient> mClient;
+    QSharedPointer<IWatchServiceClient> m_Client;
 
     /// Кэш значения блокировки терминала (т.к. флаг блокировки должен сохраняться, даже если БД
     /// сломана)
-    mutable boost::optional<bool> mLocked;
+    mutable boost::optional<bool> m_Locked;
 
     /// Кэш статуса терминала
-    QMap<QString, SDK::PaymentProcessor::Event> mTerminalStatusHash;
-    QPair<SDK::Driver::EWarningLevel::Enum, QString> mTerminalStatusCache;
+    QMap<QString, SDK::PaymentProcessor::Event> m_TerminalStatusHash;
+    QPair<SDK::Driver::EWarningLevel::Enum, QString> m_TerminalStatusCache;
 };
 
 //---------------------------------------------------------------------------

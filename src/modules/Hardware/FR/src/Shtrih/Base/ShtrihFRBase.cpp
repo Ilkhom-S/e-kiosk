@@ -135,7 +135,7 @@ template <class T> bool ShtrihFRBase<T>::getStatus(TStatusCodes &aStatusCodes) {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool ShtrihFRBase<T>::performZReport(bool aPrintDeferredReports) {
+template <class T> bool ShtrihFRBase<T>::perform_ZReport(bool aPrintDeferredReports) {
     toLog(LogLevel::Normal, "ShtrihFR: Begin processing Z-report");
     bool printDeferredZReportsOK = true;
 

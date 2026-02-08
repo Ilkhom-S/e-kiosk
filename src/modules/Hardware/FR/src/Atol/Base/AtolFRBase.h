@@ -54,12 +54,12 @@ protected:
     virtual bool printLine(const QByteArray &aString);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt,
+    virtual bool perform_Fiscal(const QStringList &aReceipt,
                                const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Печать Z отчета.
-    virtual bool performZReport(bool aPrintDeferredReports);
+    virtual bool perform_ZReport(bool aPrintDeferredReports);
 
     /// Печать отложенных Z-отчетов.
     virtual bool printDeferredZReports();
@@ -91,7 +91,7 @@ protected:
                                 QByteArray *aAnswer = nullptr);
 
     /// Выполнить команду.
-    virtual TResult performCommand(const QByteArray & /*aCommandData*/,
+    virtual TResult perform_Command(const QByteArray & /*aCommandData*/,
                                    QByteArray & /*aAnswer*/,
                                    int /*aTimeout*/) {
         return CommandResult::NoAnswer;
@@ -198,37 +198,37 @@ protected:
     char getError(char aCommand, const QByteArray &aAnswer);
 
     /// Данные устройства.
-    CAtolFR::SModelData mModelData;
+    CAtolFR::SModelData m_ModelData;
 
     /// Номер сборки прошивки ПО ФР.
-    int mFRBuild;
+    int m_FRBuild;
 
     /// Текущий режим.
-    char mMode;
+    char m_Mode;
 
     /// Текущий подрежим.
-    char mSubmode;
+    char m_Submode;
 
     /// Заблокирован ли ФР.
-    bool mLocked;
+    bool m_Locked;
 
     /// Список поддерживаемых плагином моделей.
-    QStringList mSupportedModels;
+    QStringList m_SupportedModels;
 
     /// Количество рекламных строк.
-    char mDocumentCapStrings;
+    char m_DocumentCapStrings;
 
     /// Необнуляемая сумма;
-    double mNonNullableAmount;
+    double m_NonNullableAmount;
 
     /// Данные команд.
-    CAtolFR::CommandData mCommandData;
+    CAtolFR::CommandData m_CommandData;
 
     /// Данные регистров.
-    CAtolFR::Registers::CData mRegisterData;
+    CAtolFR::Registers::CData m_RegisterData;
 
     /// Режим выполнения фискального документа.
-    char mFDExecutionMode;
+    char m_FDExecutionMode;
 };
 
 //--------------------------------------------------------------------------------

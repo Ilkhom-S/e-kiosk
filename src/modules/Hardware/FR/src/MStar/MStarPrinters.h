@@ -33,13 +33,13 @@ protected:
     virtual bool printLine(const QByteArray &aString);
 
     /// Фискальная печать.
-    virtual bool performFiscal(const QStringList &aReceipt, double aAmount);
+    virtual bool perform_Fiscal(const QStringList &aReceipt, double aAmount);
 
     /// Печать Z отчета.
-    virtual bool performZReport(bool aPrintDeferredReports);
+    virtual bool perform_ZReport(bool aPrintDeferredReports);
 
     /// Печать инкассации.
-    virtual bool performEncashment(const QStringList &aReceipt);
+    virtual bool perform_Encashment(const QStringList &aReceipt);
 
     /// Обработка чека после печати.
     virtual bool receiptProcessing();
@@ -66,7 +66,7 @@ protected:
     virtual bool isSessionOpened();
 
     /// Режим работы.
-    EFRMode::Enum mMode;
+    EFRMode::Enum m_Mode;
 };
 
 //--------------------------------------------------------------------------------

@@ -41,13 +41,13 @@ QList<Ad::Campaign> AdGetChannelResponse::getCampaigns() const {
     c.type = getParameter(Ad::Parameters::Channel).toString();
     c.id = getParameter(Ad::Parameters::ID).toLongLong();
     c.md5 = getParameter(Ad::Parameters::MD5).toString();
-    c.expired = QDateTime::fromString(getParameter(Ad::Parameters::Expired).toString(),
+    c.expired = QDateTime::from_String(getParameter(Ad::Parameters::Expired).toString(),
                                       Ad::Parameters::DateTimeFormat);
-    c.url = QUrl::fromEncoded(getParameter(Ad::Parameters::Url).toByteArray());
+    c.url = QUrl::from_Encoded(getParameter(Ad::Parameters::Url).toByteArray());
     {
         QStringDecoder decoder("windows-1251");
         c.text = decoder.decode(
-            QByteArray::fromBase64(getParameter(Ad::Parameters::Text).toByteArray()));
+            QByteArray::from_Base64(getParameter(Ad::Parameters::Text).toByteArray()));
     }
 
     result << c;
@@ -56,11 +56,11 @@ QList<Ad::Campaign> AdGetChannelResponse::getCampaigns() const {
     c.id = getParameter(Ad::Parameters::DefaultID).toInt();
     c.md5 = getParameter(Ad::Parameters::DefaultMD5).toString();
     c.expired = QDateTime(QDate(2999, 12, 31), QTime(23, 59, 59));
-    c.url = QUrl::fromEncoded(getParameter(Ad::Parameters::DefaultUrl).toByteArray());
+    c.url = QUrl::from_Encoded(getParameter(Ad::Parameters::DefaultUrl).toByteArray());
     {
         QStringDecoder decoder("windows-1251");
         c.text = decoder.decode(
-            QByteArray::fromBase64(getParameter(Ad::Parameters::DefaultText).toByteArray()));
+            QByteArray::from_Base64(getParameter(Ad::Parameters::DefaultText).toByteArray()));
     }
 
     result << c;

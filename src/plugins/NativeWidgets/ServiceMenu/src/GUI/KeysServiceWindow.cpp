@@ -16,24 +16,24 @@ KeysServiceWindow::KeysServiceWindow(ServiceMenuBackend *aBackend, QWidget *aPar
     : QFrame(aParent), ServiceWindowBase(aBackend) {
     setupUi(this);
 
-    mWindow = new KeysWindow(aBackend, this);
+    m_Window = new KeysWindow(aBackend, this);
 
-    connect(mWindow, SIGNAL(beginGenerating()), SLOT(onBeginGenerating()));
-    connect(mWindow, SIGNAL(endGenerating()), SLOT(onEndGenerating()));
-    connect(mWindow, SIGNAL(error(QString)), SLOT(onError(QString)));
+    connect(m_Window, SIGNAL(beginGenerating()), SLOT(onBeginGenerating()));
+    connect(m_Window, SIGNAL(endGenerating()), SLOT(onEndGenerating()));
+    connect(m_Window, SIGNAL(error(QString)), SLOT(onError(QString)));
 
-    mWindow->setParent(this);
+    m_Window->setParent(this);
     wContainer->setLayout(new QHBoxLayout);
     wContainer->layout()->setSpacing(0);
     wContainer->layout()->setContentsMargins(0, 0, 0, 0);
-    wContainer->layout()->addWidget(mWindow);
+    wContainer->layout()->addWidget(m_Window);
 }
 
 //------------------------------------------------------------------------
 bool KeysServiceWindow::activate() {
-    auto tokenStatus = mBackend->getKeysManager()->tokenStatus();
+    auto tokenStatus = m_Backend->getKeysManager()->tokenStatus();
 
-    mWindow->initialize(tokenStatus.available, tokenStatus.initialized);
+    m_Window->initialize(tokenStatus.available, tokenStatus.initialized);
 
     return true;
 }
@@ -45,9 +45,9 @@ bool KeysServiceWindow::deactivate() {
 
 //------------------------------------------------------------------------
 bool KeysServiceWindow::initialize() {
-    auto tokenStatus = mBackend->getKeysManager()->tokenStatus();
+    auto tokenStatus = m_Backend->getKeysManager()->tokenStatus();
 
-    mWindow->initialize(tokenStatus.available, tokenStatus.initialized);
+    m_Window->initialize(tokenStatus.available, tokenStatus.initialized);
 
     return true;
 }
@@ -63,7 +63,7 @@ void KeysServiceWindow::onBeginGenerating() {
         GUI::MessageBox::hide();
         GUI::MessageBox::wait(tr("#creating_keys"));
 
-        mWindow->doGenerate();
+        m_Window->doGenerate();
     }
 }
 
@@ -72,29 +72,29 @@ void KeysServiceWindow::onEndGenerating() {
     GUI::MessageBox::hide();
 
     QString generateResult;
-    generateResult = "\n" + tr("#sd") + " " + mBackend->getKeysManager()->getSD() + "\n";
-    generateResult += tr("#ap") + " " + mBackend->getKeysManager()->getAP() + "\n";
-    generateResult += tr("#op") + " " + mBackend->getKeysManager()->getOP();
+    generateResult = "\n" + tr("#sd") + " " + m_Backend->getKeysManager()->getSD() + "\n";
+    generateResult += tr("#ap") + " " + m_Backend->getKeysManager()->getAP() + "\n";
+    generateResult += tr("#op") + " " + m_Backend->getKeysManager()->getOP();
 
     if (GUI::MessageBox::question(tr("#question_save_and_register_keys") + generateResult)) {
-        if (mWindow->save()) {
-            mBackend->saveConfiguration();
+        if (m_Window->save()) {
+            m_Backend->saveConfiguration();
 
-            if (mBackend->getKeysManager()->isDefaultKeyOP(mBackend->getKeysManager()->getOP())) {
+            if (m_Backend->getKeysManager()->isDefaultKeyOP(m_Backend->getKeysManager()->getOP())) {
                 if (GUI::MessageBox::question(tr("#question_need_new_config"))) {
-                    mBackend->needUpdateConfigs();
+                    m_Backend->needUpdateConfigs();
                 }
             }
 
             QVariantMap params;
             params["signal"] = "close";
-            mBackend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, params);
-            mBackend->sendEvent(SDK::PaymentProcessor::EEventType::CloseApplication);
+            m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, params);
+            m_Backend->sendEvent(SDK::PaymentProcessor::EEventType::CloseApplication);
         }
     } else {
-        auto tokenStatus = mBackend->getKeysManager()->tokenStatus();
+        auto tokenStatus = m_Backend->getKeysManager()->tokenStatus();
 
-        mWindow->initialize(tokenStatus.available, tokenStatus.initialized);
+        m_Window->initialize(tokenStatus.available, tokenStatus.initialized);
     }
 }
 

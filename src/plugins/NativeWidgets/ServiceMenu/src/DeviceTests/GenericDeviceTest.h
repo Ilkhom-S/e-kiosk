@@ -38,10 +38,10 @@ private slots:
     void onTestFinished();
 
 private:
-    QFutureWatcher<void> mResult;
-    ObjectPointer<SDK::Driver::IDevice> mDevice;
+    QFutureWatcher<void> m_Result;
+    ObjectPointer<SDK::Driver::IDevice> m_Device;
 
-    const QString mGenericTest;
+    const QString m_GenericTest;
 };
 
 //------------------------------------------------------------------------------

@@ -20,7 +20,7 @@ protected:
     virtual bool updateParameters();
 
     /// Печать Z отчета.
-    virtual bool performZReport(bool aPrintDeferredReports);
+    virtual bool perform_ZReport(bool aPrintDeferredReports);
 
     /// Обработка ответа на предыдущей команды. Автоисправление некоторых ошибок.
     virtual bool processAnswer(const QByteArray &aCommand, char aError);
@@ -44,7 +44,7 @@ protected:
     bool waitForChangeZReportMode();
 
     /// Список поддерживаемых плагином моделей.
-    QStringList mSupportedModels;
+    QStringList m_SupportedModels;
 };
 
 //--------------------------------------------------------------------------------

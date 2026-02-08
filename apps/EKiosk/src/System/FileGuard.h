@@ -15,13 +15,13 @@ class FileGuard {
 public:
     //----------------------------------------------------------------------------
     // Конструктор
-    FileGuard() { mFileList.clear(); }
+    FileGuard() { m_FileList.clear(); }
 
     //----------------------------------------------------------------------------
     // Деструктор - восстанавливает файлы из бэкапа
     ~FileGuard() {
-        for (int i = 0; i < mFileList.size(); i++) {
-            TStringPair curPair = mFileList.at(i);
+        for (int i = 0; i < m_FileList.size(); i++) {
+            TStringPair curPair = m_FileList.at(i);
 
             if (QFile::exists(curPair.first)) {
                 if (!QFile::remove(curPair.first)) {
@@ -36,15 +36,15 @@ public:
     //----------------------------------------------------------------------------
     // Добавляет пару имён файла, для восстановления
     void addFile(const QString &aOldName, const QString &aNewName) {
-        mFileList.append(TStringPair(aOldName, aNewName));
+        m_FileList.append(TStringPair(aOldName, aNewName));
     }
 
     //----------------------------------------------------------------------------
     // Очищает список файлов для восстановления
-    void release() { mFileList.clear(); }
+    void release() { m_FileList.clear(); }
 
 private:
-    QList<TStringPair> mFileList;
+    QList<TStringPair> m_FileList;
 };
 
 //----------------------------------------------------------------------------

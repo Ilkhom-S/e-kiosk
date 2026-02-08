@@ -568,8 +568,8 @@ template <class T> void PrinterBase<T>::cleanStatusCodes(TStatusCodes &aStatusCo
         aStatusCodes -= availableErrors;
     }
 
-    if (this->containsConfigParameter(CHardware::Printer::Settings::PaperJamSensor) &&
-        (this->getConfigParameter(CHardware::Printer::Settings::PaperJamSensor) ==
+    if (this->containsConfigParameter(CHardware::Printer::Settings::PaperJam_Sensor) &&
+        (this->getConfigParameter(CHardware::Printer::Settings::PaperJam_Sensor) ==
          CHardwareSDK::Values::NotUse)) {
         aStatusCodes.remove(PrinterStatusCode::Error::PaperJam);
     }
@@ -607,7 +607,7 @@ template <class T> bool PrinterBase<T>::execSpecialTag(const Tags::SLexeme &aTag
     if (aTagLexeme.tags.contains(Tags::Type::Image)) {
         QImage image;
 
-        if (image.loadFromData(QByteArray::fromBase64(aTagLexeme.data.toLatin1())) &&
+        if (image.loadFrom_Data(QByteArray::from_Base64(aTagLexeme.data.toLatin1())) &&
             !image.isNull()) {
             for (int i = 0; i < image.width(); ++i) {
                 for (int j = 0; j < image.height(); ++j) {

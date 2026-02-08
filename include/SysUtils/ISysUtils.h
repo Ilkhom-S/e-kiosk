@@ -28,10 +28,10 @@ typedef QMap<QString, TStatusNames> TStatusGroupNames;
 class ISysUtils {
 public:
     /// Перезагрузить систему. Возвращает код ошибки или 0 - в случае успеха.
-    static int systemReboot();
+    static int system_Reboot();
 
     /// Выключить терминал. Возвращает код ошибки или 0 - в случае успеха.
-    static int systemShutdown();
+    static int system_Shutdown();
 
     /// Получить строку с полным описанием версии операционной системы
     static QString getOSVersionInfo();
@@ -46,7 +46,7 @@ public:
     static void runScreenSaver();
 
     /// Установить локальное время системы
-    static void setSystemTime(QDateTime aDateTime) noexcept(false);
+    static void setSystem_Time(QDateTime aDateTime) noexcept(false);
 
     /// Suspends the execution of the current thread until the time-out interval
     /// elapses.
@@ -115,7 +115,7 @@ public:
 
     /// Удалить сигнатуру BOM из файла
     /// WORKAROUND для QTBUG-23381
-    static QString rmBOM(const QString &aFile);
+    static QString rm_BOM(const QString &aFile);
 
     /// Получить описание последней системной ошибки.
     static QString getLastErrorMessage();

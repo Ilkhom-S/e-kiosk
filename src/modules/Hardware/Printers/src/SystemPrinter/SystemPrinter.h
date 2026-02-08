@@ -13,7 +13,7 @@
 
 //--------------------------------------------------------------------------------
 /// Константы системного принтера.
-namespace CSystemPrinter {
+namespace CSystem_Printer {
 /// Тег конца строки.
 extern const char BRtag[];
 
@@ -38,12 +38,12 @@ public:
                      "'/></div>");
     }
 };
-} // namespace CSystemPrinter
+} // namespace CSystem_Printer
 
 //--------------------------------------------------------------------------------
-class SystemPrinter : public PrinterBase<PollingDeviceBase<ProtoPrinter>> {
+class System_Printer : public PrinterBase<PollingDeviceBase<ProtoPrinter>> {
 public:
-    SystemPrinter();
+    System_Printer();
 
 protected:
     /// Попытка самоидентификации.
@@ -59,13 +59,13 @@ protected:
     virtual bool printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt);
 
     /// Qt-принтер.
-    QPrinter mPrinter;
+    QPrinter m_Printer;
 
     /// Боковой отступ.
-    qreal mSideMargin;
+    qreal m_SideMargin;
 
     /// Боковой отступ.
-    TStatusGroupNames mLastStatusesNames;
+    TStatusGroupNames m_LastStatusesNames;
 };
 
 //--------------------------------------------------------------------------------

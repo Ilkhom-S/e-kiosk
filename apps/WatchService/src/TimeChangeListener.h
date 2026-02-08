@@ -41,15 +41,15 @@ protected:
     static LRESULT CALLBACK MsgProc(int aCode, WPARAM aWParam, LPARAM aLParam);
 
 private:
-    static HHOOK mHook;
+    static HHOOK m_Hook;
 #endif // Q_OS_WIN
 
 private:
-    static QMutex mHookMutex;
+    static QMutex m_HookMutex;
 
 private:
-    QDateTime mLastCheckTime;
-    qint64 mTimeOffset;
+    QDateTime m_LastCheckTime;
+    qint64 m_TimeOffset;
 };
 
 //------------------------------------------------------------------------

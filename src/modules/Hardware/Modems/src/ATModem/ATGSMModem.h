@@ -5,7 +5,7 @@
 #include <QtCore/QCoreApplication>
 
 #include "ATData.h"
-#include "ATModemBase.h"
+#include "ATModem_Base.h"
 
 //--------------------------------------------------------------------------------
 namespace ENetworkAccessability {
@@ -20,7 +20,7 @@ enum Enum {
 } // namespace ENetworkAccessability
 
 //--------------------------------------------------------------------------------
-class ATGSMModem : public ATModemBase {
+class ATGSMModem : public ATModem_Base {
 public:
     ATGSMModem();
 
@@ -73,10 +73,10 @@ protected:
 
     bool parseFieldInternal(const QByteArray &aBuffer, const QString &aFieldName, QString &aValue);
     bool getSiemensCellList(QString &aValue);
-    bool getSimCOMCellList(QString &aValue);
+    bool getSim_COMCellList(QString &aValue);
 
     /// Определение диалекта модема
-    AT::EModemDialect::Enum mGsmDialect;
+    AT::EModem_Dialect::Enum m_Gsm_Dialect;
 };
 
 //--------------------------------------------------------------------------------

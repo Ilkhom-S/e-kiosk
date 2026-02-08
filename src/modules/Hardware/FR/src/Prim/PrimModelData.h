@@ -10,8 +10,8 @@
 #include "Hardware/Printers/PrinterStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-/// Константы PrimFR протокола.
-namespace CPrimFR {
+/// Константы Prim_FR протокола.
+namespace CPrim_FR {
 /// Модели.
 namespace Models {
 enum Enum {
@@ -100,7 +100,7 @@ public:
         statusData[2][5] = PrinterStatusCode::Error::PaperEnd;
         statusData[2][6] = PrinterStatusCode::Error::PrinterFR;
 
-        statusData[3][2] = DeviceStatusCode::Error::MechanismPosition;
+        statusData[3][2] = DeviceStatusCode::Error::Mechanism_Position;
         statusData[3][3] = PrinterStatusCode::Error::Cutter;
         statusData[3][5] = PrinterStatusCode::Error::PrinterFRCollapse;
         statusData[3][6] = PrinterStatusCode::Error::Temperature;
@@ -181,6 +181,6 @@ inline QStringList getModelList(const TModels &aModels) {
 
     return models;
 }
-} // namespace CPrimFR
+} // namespace CPrim_FR
 
 //--------------------------------------------------------------------------------

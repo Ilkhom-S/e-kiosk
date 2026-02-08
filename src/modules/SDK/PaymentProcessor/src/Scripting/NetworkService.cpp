@@ -4,7 +4,7 @@
 #include <QtCore/QFuture>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
-#include <QtCore/QRandomGenerator>
+#include <QtCore/QRandom_Generator>
 #include <QtCore/QUrl>
 
 #include <SDK/PaymentProcessor/Core/ICore.h>
@@ -52,47 +52,47 @@ Response::Response(const SDK::PaymentProcessor::Humo::Request &aRequest,
 
 //------------------------------------------------------------------------------
 NetworkService::NetworkService(ICore *aCore)
-    : mCore(aCore), mCurrentTask(0), mNetworkService(aCore->getNetworkService()) {
-    if (mNetworkService) {
-        mTaskManager = mNetworkService->getNetworkTaskManager();
-        mRequestSender = QSharedPointer<PPSDK::Humo::RequestSender>(new PPSDK::Humo::RequestSender(
-            mTaskManager, mCore->getCryptService()->getCryptEngine()));
-        mRequestSender->setResponseCreator(std::bind(
+    : m_Core(aCore), m_CurrentTask(0), m_NetworkService(aCore->getNetworkService()) {
+    if (m_NetworkService) {
+        m_TaskManager = m_NetworkService->getNetworkTaskManager();
+        m_RequestSender = QSharedPointer<PPSDK::Humo::RequestSender>(new PPSDK::Humo::RequestSender(
+            m_TaskManager, m_Core->getCryptService()->getCryptEngine()));
+        m_RequestSender->setResponseCreator(std::bind(
             &NetworkService::createResponse, this, std::placeholders::_1, std::placeholders::_2));
 
-        connect(&mResponseWatcher, SIGNAL(finished()), SLOT(onResponseFinished()));
-        connect(&mResponseSendReceiptWatcher,
+        connect(&m_ResponseWatcher, SIGNAL(finished()), SLOT(onResponseFinished()));
+        connect(&m_ResponseSendReceiptWatcher,
                 SIGNAL(finished()),
                 SLOT(onResponseSendReceiptFinished()));
     }
 
-    mCore->getEventService()->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
+    m_Core->getEventService()->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
 
-    mSD = static_cast<PPSDK::TerminalSettings *>(
-              mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
+    m_SD = static_cast<PPSDK::TerminalSettings *>(
+              m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
               ->getKeys()[0]
               .sd;
 
-    mAP = static_cast<PPSDK::TerminalSettings *>(
-              mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
+    m_AP = static_cast<PPSDK::TerminalSettings *>(
+              m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
               ->getKeys()[0]
               .ap;
 
-    mOP = static_cast<PPSDK::TerminalSettings *>(
-              mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
+    m_OP = static_cast<PPSDK::TerminalSettings *>(
+              m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
               ->getKeys()[0]
               .op;
 }
 
 //------------------------------------------------------------------------------
 NetworkService::~NetworkService() {
-    if (mTaskManager && mCurrentTask) {
-        disconnect(mCurrentTask, SIGNAL(onComplete()), this, SLOT(taskComplete()));
+    if (m_TaskManager && m_CurrentTask) {
+        disconnect(m_CurrentTask, SIGNAL(onComplete()), this, SLOT(taskComplete()));
 
-        mTaskManager->removeTask(mCurrentTask);
-        mCurrentTask->deleteLater();
+        m_TaskManager->removeTask(m_CurrentTask);
+        m_CurrentTask->deleteLater();
 
-        mCurrentTask = 0;
+        m_CurrentTask = 0;
     }
 }
 
@@ -108,7 +108,7 @@ void NetworkService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
 
 //------------------------------------------------------------------------------
 bool NetworkService::isConnected() {
-    return mNetworkService->isConnected(true);
+    return m_NetworkService->isConnected(true);
 }
 
 //------------------------------------------------------------------------------
@@ -120,14 +120,14 @@ int NetworkService::get(const QString & /*aUrl*/, const QString & /*aData*/) {
 
 //------------------------------------------------------------------------------
 bool NetworkService::post(const QString &aUrl, const QString &aData) {
-    if (mTaskManager) {
-        if (mCurrentTask) {
-            disconnect(mCurrentTask, SIGNAL(onComplete()), this, SLOT(taskComplete()));
+    if (m_TaskManager) {
+        if (m_CurrentTask) {
+            disconnect(m_CurrentTask, SIGNAL(onComplete()), this, SLOT(taskComplete()));
 
-            mTaskManager->removeTask(mCurrentTask);
-            mCurrentTask->deleteLater();
+            m_TaskManager->removeTask(m_CurrentTask);
+            m_CurrentTask->deleteLater();
 
-            mCurrentTask = 0;
+            m_CurrentTask = 0;
         }
 
         std::unique_ptr<NetworkTask> task(new NetworkTask());
@@ -139,7 +139,7 @@ bool NetworkService::post(const QString &aUrl, const QString &aData) {
 
         connect(task.get(), SIGNAL(onComplete()), SLOT(taskComplete()));
 
-        mTaskManager->addTask(mCurrentTask = task.release());
+        m_TaskManager->addTask(m_CurrentTask = task.release());
 
         return true;
     }
@@ -149,15 +149,15 @@ bool NetworkService::post(const QString &aUrl, const QString &aData) {
 
 //------------------------------------------------------------------------------
 void NetworkService::taskComplete() {
-    if (mCurrentTask && (mCurrentTask->getError() == NetworkTask::NoError)) {
-        emit complete(false, QString::fromUtf8(mCurrentTask->getDataStream()->takeAll()));
+    if (m_CurrentTask && (m_CurrentTask->getError() == NetworkTask::NoError)) {
+        emit complete(false, QString::from_Utf8(m_CurrentTask->getDataStream()->takeAll()));
 
-        mCurrentTask->deleteLater();
+        m_CurrentTask->deleteLater();
     } else {
         emit complete(true, QString());
     }
 
-    mCurrentTask = 0;
+    m_CurrentTask = 0;
 }
 
 //---------------------------------------------------------------------------
@@ -169,12 +169,12 @@ NetworkService::createResponse(const SDK::PaymentProcessor::Humo::Request &aRequ
 
 //------------------------------------------------------------------------------
 void NetworkService::sendRequest(const QString &aUrl, QVariantMap aParameters) {
-    if (mRequestSender.isNull()) {
+    if (m_RequestSender.isNull()) {
         // TODO
         return;
     }
 
-    mResponseWatcher.setFuture(QtConcurrent::run(
+    m_ResponseWatcher.setFuture(QtConcurrent::run(
         [this, aUrl, aParameters]() mutable { return postRequest(aUrl, aParameters); }));
 }
 
@@ -183,7 +183,7 @@ Response *NetworkService::sendRequestInternal(Request *aRequest, const QString &
     PPSDK::Humo::RequestSender::ESendError error;
 
     std::unique_ptr<SDK::PaymentProcessor::Humo::Response> response(
-        mRequestSender->post(aUrl, *aRequest, PPSDK::Humo::RequestSender::Solid, error));
+        m_RequestSender->post(aUrl, *aRequest, PPSDK::Humo::RequestSender::Solid, error));
 
     delete aRequest;
     aRequest = nullptr;
@@ -206,8 +206,8 @@ void NetworkService::sendReceipt(const QString &aEmail, const QString &aContact)
     params.insert("CONTACT", aContact);
 
     QString queryStr = QString("SELECT `response` FROM `fiscal_client` WHERE `payment` = %1")
-                           .arg(mCore->getPaymentService()->getActivePayment());
-    QSharedPointer<IDatabaseQuery> query(mCore->getDatabaseService()->createAndExecQuery(queryStr));
+                           .arg(m_Core->getPaymentService()->getActivePayment());
+    QSharedPointer<IDatabaseQuery> query(m_Core->getDatabaseService()->createAndExecQuery(queryStr));
 
     QString fiscalResponse;
     QVariantMap fiscalResult;
@@ -216,7 +216,7 @@ void NetworkService::sendReceipt(const QString &aEmail, const QString &aContact)
     }
 
     if (!fiscalResponse.isEmpty()) {
-        QJsonDocument doc = QJsonDocument::fromJson(fiscalResponse.toUtf8());
+        QJsonDocument doc = QJsonDocument::from_Json(fiscalResponse.toUtf8());
         QVariantMap payment;
         if (doc.isObject()) {
             QVariantMap root = doc.object().toVariantMap();
@@ -248,7 +248,7 @@ void NetworkService::sendReceipt(const QString &aEmail, const QString &aContact)
     }
 
     QString message =
-        mCore->getPrinterService()->loadReceipt(mCore->getPaymentService()->getActivePayment());
+        m_Core->getPrinterService()->loadReceipt(m_Core->getPaymentService()->getActivePayment());
     message.append("-----------------------------------");
 
     foreach (auto key, fiscalResult.keys()) {
@@ -258,12 +258,12 @@ void NetworkService::sendReceipt(const QString &aEmail, const QString &aContact)
     params.insert("PAYER_EMAIL_MESSAGE", message.toLocal8Bit().toPercentEncoding());
 
     PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
     Request *request = new Request(params);
 
     QString receiptUrl = terminalSettings->getReceiptMailURL();
-    mResponseSendReceiptWatcher.setFuture(QtConcurrent::run(
+    m_ResponseSendReceiptWatcher.setFuture(QtConcurrent::run(
         [this, request, receiptUrl]() { return sendRequestInternal(request, receiptUrl); }));
 }
 
@@ -277,24 +277,24 @@ NetworkService::postRequest(const QString &aUrl, QVariantMap &aRequestParameters
         }
     }
 
-    aRequestParameters.insert(CRequest::SD, mSD);
-    aRequestParameters.insert(CRequest::AP, mAP);
-    aRequestParameters.insert(CRequest::OP, mOP);
+    aRequestParameters.insert(CRequest::SD, m_SD);
+    aRequestParameters.insert(CRequest::AP, m_AP);
+    aRequestParameters.insert(CRequest::OP, m_OP);
     aRequestParameters.insert(
         CRequest::SESSION,
         QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz") +
-            QString("%1").arg(QRandomGenerator::global()->bounded(1000), 3, 10, QChar('0')));
+            QString("%1").arg(QRandom_Generator::global()->bounded(1000), 3, 10, QChar('0')));
 
     Request request(aRequestParameters);
 
     PPSDK::Humo::RequestSender::ESendError e;
 
-    return mRequestSender->post(QUrl(aUrl), request, PPSDK::Humo::RequestSender::Solid, e);
+    return m_RequestSender->post(QUrl(aUrl), request, PPSDK::Humo::RequestSender::Solid, e);
 }
 
 //------------------------------------------------------------------------------
 void NetworkService::onResponseFinished() {
-    std::unique_ptr<SDK::PaymentProcessor::Humo::Response> response(mResponseWatcher.result());
+    std::unique_ptr<SDK::PaymentProcessor::Humo::Response> response(m_ResponseWatcher.result());
     emit requestCompleted(response == nullptr
                               ? QVariantMap()
                               : dynamic_cast<Response *>(response.release())->getParameters());
@@ -303,7 +303,7 @@ void NetworkService::onResponseFinished() {
 //------------------------------------------------------------------------------
 void NetworkService::onResponseSendReceiptFinished() {
     std::unique_ptr<SDK::PaymentProcessor::Humo::Response> response(
-        mResponseSendReceiptWatcher.result());
+        m_ResponseSendReceiptWatcher.result());
     emit sendReceiptComplete(response != nullptr && response->isOk());
 }
 

@@ -56,19 +56,19 @@ signals:
 private slots:
     void onScreenshot();
     void exit(int aResultCode);
-    void closeBySystemRequest(QSessionManager &aSessionManager);
+    void closeBySystem_Request(QSessionManager &aSessionManager);
 
 private:
     /// Обработка системных сообщений, отключение скринсейвера, монитора и т.п.
     virtual bool nativeEventFilter(const QByteArray &aEventType, void *aMessage, qintptr *aResult);
 
 private:
-    ServiceController *mServiceController;
-    QList<QImage> mScreenshots;
-    QWaitCondition mScreenshotCondition;
-    QMutex mScreenshotMutex;
-    QVariantMap mArguments;
-    QSharedMemory mProtection;
+    ServiceController *m_ServiceController;
+    QList<QImage> m_Screenshots;
+    QWaitCondition m_ScreenshotCondition;
+    QMutex m_ScreenshotMutex;
+    QVariantMap m_Arguments;
+    QSharedMemory m_Protection;
 };
 
 //------------------------------------------------------------------------

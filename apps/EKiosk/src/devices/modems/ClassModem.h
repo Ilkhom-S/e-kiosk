@@ -13,20 +13,20 @@ class ClassModem : public QThread {
 public:
     ClassModem(QObject *parent = 0);
 
-    bool execCommand(ModemProtocolCommands::Enum aCommand, bool thread);
+    bool execCommand(Modem_ProtocolCommands::Enum aCommand, bool thread);
     void setPort(QString port_name);
     bool isItYou(QString &modem_coment);
     bool
-    isItYou(QStringList &comList, QString &modem_name, QString &com_str, QString &modem_coment);
+    isItYou(QStringList &com_List, QString &modem_name, QString &com_str, QString &modem_coment);
 
-    QString nowModemName;
-    QString nowModemComment;
+    QString nowModem_Name;
+    QString nowModem_Comment;
     QString nowPortName;
     QString nowProviderSim;
     QString nowNumberSim;
     QString nowBalanceSim;
-    bool nowSimPresent;
-    QString nowModemQuality;
+    bool nowSim_Present;
+    QString nowModem_Quality;
 
     QString ussdRequestBalanseSim;
     QString ussdRequestNumberSim;
@@ -34,7 +34,7 @@ public:
 
     QString SMSTEXT_TO;
     void setBalanceRequest(QString text1, QString text2, int position);
-    void setSimNumberRequest(QString text1, QString text2);
+    void setSim_NumberRequest(QString text1, QString text2);
     void sendSmsToAgentFew(QStringList smsId);
     void close();
 

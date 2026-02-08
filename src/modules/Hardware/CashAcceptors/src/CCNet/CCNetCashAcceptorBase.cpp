@@ -134,11 +134,11 @@ TResult CCNetCashAcceptorBase::execCommand(const QByteArray &aCommand,
     m_Protocol.setPort(m_IOPort);
     m_Protocol.setLog(m_Log);
 
-    return performCommand(aCommand, aCommandData, aAnswer);
+    return perform_Command(aCommand, aCommandData, aAnswer);
 }
 
 //---------------------------------------------------------------------------------
-TResult CCNetCashAcceptorBase::performCommand(const QByteArray &aCommand,
+TResult CCNetCashAcceptorBase::perform_Command(const QByteArray &aCommand,
                                               const QByteArray &aCommandData,
                                               QByteArray *aAnswer) {
     QByteArray answer;
@@ -461,7 +461,7 @@ bool CCNetCashAcceptorBase::loadParTable() {
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetCashAcceptorBase::performUpdateFirmware(const QByteArray &aBuffer) {
+bool CCNetCashAcceptorBase::perform_UpdateFirmware(const QByteArray &aBuffer) {
     SleepHelper::msleep(CCCNet::UpdatingPause);
 
     if (!processCommand(CCCNet::Commands::UpdateFirmware)) {
@@ -559,7 +559,7 @@ bool CCNetCashAcceptorBase::changeBaudRate(bool aHigh) {
 
     portParameters[EParameters::BaudRate] = baudRate;
 
-    if (!performBaudRateChanging(portParameters)) {
+    if (!perform_BaudRateChanging(portParameters)) {
         toLog(LogLevel::Error,
               QString("%1: Failed to change baud rate to %2.").arg(m_DeviceName).arg(baudRate));
         return false;
@@ -574,7 +574,7 @@ bool CCNetCashAcceptorBase::changeBaudRate(bool aHigh) {
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetCashAcceptorBase::performBaudRateChanging(const TPortParameters & /*aPortParameters*/) {
+bool CCNetCashAcceptorBase::perform_BaudRateChanging(const TPortParameters & /*aPortParameters*/) {
     return false;
 }
 
@@ -585,7 +585,7 @@ bool CCNetCashAcceptorBase::processBlockUpdating(uint aAddress,
                                                  int &aIndex) {
     QByteArray commandData;
     QString hexAddress = QString("%1").arg(aAddress, 6, 16, QChar(ASCII::Zero));
-    commandData.append(ProtocolUtils::getBufferFromString(hexAddress));
+    commandData.append(ProtocolUtils::getBufferFrom_String(hexAddress));
     commandData.append(aBuffer);
 
     QByteArray answer;

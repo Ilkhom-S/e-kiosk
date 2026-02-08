@@ -64,7 +64,7 @@ public:
     // Возвращает виджет.
     virtual QQuickItem *getWidget() const;
 
-    virtual QWidget *getNativeWidget() const { return mWizardFrame; }
+    virtual QWidget *getNativeWidget() const { return m_WizardFrame; }
 
     /// Возвращает контекст виджета.
     virtual QVariantMap getContext() const;
@@ -72,14 +72,14 @@ public:
 #pragma endregion
 
 private:
-    bool mIsReady;
-    QString mInstancePath;
-    SDK::Plugin::IEnvironment *mEnvironment;
-    QVariantMap mParameters;
+    bool m_IsReady;
+    QString m_InstancePath;
+    SDK::Plugin::IEnvironment *m_Environment;
+    QVariantMap m_Parameters;
 
-    QGraphicsProxyWidget *mMainWidget;
-    WizardFrame *mWizardFrame;
-    QSharedPointer<HumoServiceBackend> mBackend;
+    QGraphicsProxyWidget *m_MainWidget;
+    WizardFrame *m_WizardFrame;
+    QSharedPointer<HumoServiceBackend> m_Backend;
 };
 
 //--------------------------------------------------------------------------

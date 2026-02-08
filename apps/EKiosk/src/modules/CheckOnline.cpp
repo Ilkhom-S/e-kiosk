@@ -6,20 +6,20 @@ CheckOnline::CheckOnline(QObject *parent) : SendRequest(parent) {
     senderName = "CHECK_ONLINE";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
+    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
 }
 
 void CheckOnline::resendRequest() {
     emit emit_CheckOnlineResult("", "", "", QVariantList());
 }
 
-void CheckOnline::setDataNote(const QDomNode &domElement) {
+void CheckOnline::setDataNote(const QDom_Node &dom_Element) {
     getData = false;
     resultCode = "";
     items.clear();
 
     // Парсим данные
-    parcerNote(domElement);
+    parcerNote(dom_Element);
 
     if (resultCode != "") {
         // Тут отправляем сигнал с балансом
@@ -31,39 +31,39 @@ void CheckOnline::setDataNote(const QDomNode &domElement) {
     return;
 }
 
-void CheckOnline::parcerNote(const QDomNode &domElement) {
+void CheckOnline::parcerNote(const QDom_Node &dom_Element) {
     // Необходимо отпарсить документ
-    QDomNode domNode = domElement.firstChild();
+    QDom_Node dom_Node = dom_Element.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!dom_Node.isNull()) {
+        if (dom_Node.isElement()) {
 
-            QDomElement domElement = domNode.toElement();
-            QString strTag = domElement.tagName();
+            QDom_Element dom_Element = dom_Node.toElement();
+            QString strTag = dom_Element.tagName();
 
             if (strTag == "resultCode") {
-                resultCode = domElement.text();
+                resultCode = dom_Element.text();
             }
 
             if (strTag == "status") {
-                status = domElement.text();
+                status = dom_Element.text();
             }
 
             if (strTag == "message") {
-                message = domElement.text();
+                message = dom_Element.text();
             }
 
             if (strTag == "item") {
                 QVariantMap item;
-                item["label"] = domElement.attribute("label");
-                item["value"] = domElement.attribute("value");
+                item["label"] = dom_Element.attribute("label");
+                item["value"] = dom_Element.attribute("value");
 
                 items.append(item);
             }
         }
 
-        parcerNote(domNode);
-        domNode = domNode.nextSibling();
+        parcerNote(dom_Node);
+        dom_Node = dom_Node.nextSibling();
     }
 }
 
@@ -73,12 +73,12 @@ void CheckOnline::sendCheckOnlineRequest(
 
     QString footer_xml = getFooterRequest();
 
-    QString json = QJsonDocument::fromVariant(param).toJson(QJsonDocument::Compact);
-    QString paramStr = param.isEmpty() ? "" : QString("<param>%1</param>\n").arg(json);
+    QString json = QJsonDocument::from_Variant(param).toJson(QJsonDocument::Compact);
+    QString param_Str = param.isEmpty() ? "" : QString("<param>%1</param>\n").arg(json);
     QString amountStr = amount > 0 ? QString("<amount>%1</amount>\n").arg(amount) : "";
 
     QString xml = QString(header_xml + "<trn>%1</trn>\n" + "<prv_id>%2</prv_id>\n" +
-                          "<account>%3</account>\n" + amountStr + paramStr + footer_xml)
+                          "<account>%3</account>\n" + amountStr + param_Str + footer_xml)
                       .arg(trn, prvId, account);
 
     sendRequest(xml, 30000);

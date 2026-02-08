@@ -125,7 +125,7 @@ public:
     /// <ID>\t<дата_создания>\t<начальная_сессия>\t<сессия>\t<провайдер>\t<сумма_платежа>\t<принятая_сумма>\t<статус>\t<поля>\t<купюры>\r\n
     /// Дополнительно: <поля> хранятся в UTF-8, <имя>:<значение>|<имя>:<значение>...
     ///                <купюры> хранятся в формате <номинал>:<количество>|<номинал>:<количество>...
-    virtual EncashmentResult::Enum performEncashment(const QVariantMap &aParameters,
+    virtual EncashmentResult::Enum perform_Encashment(const QVariantMap &aParameters,
                                                      SEncashment &aEncashment) = 0;
 
     /// Получение информации о последней инкассации

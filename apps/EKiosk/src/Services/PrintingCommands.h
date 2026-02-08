@@ -38,7 +38,7 @@ class PrintCommand {
     Q_DECLARE_TR_FUNCTIONS(PrintCommand)
 
 public:
-    PrintCommand(const QString &aReceiptType) : mReceiptType(aReceiptType) {}
+    PrintCommand(const QString &aReceiptType) : m_ReceiptType(aReceiptType) {}
     virtual ~PrintCommand() {}
 
     /// Проверка возможности печати.
@@ -53,14 +53,14 @@ public:
     void setReceiptTemplate(const QString &aTemplateName);
 
     /// Возвращает тип чека.
-    QString getReceiptType() const { return mReceiptType; }
+    QString getReceiptType() const { return m_ReceiptType; }
 
     /// Получить параметры принтера для печати.
     QVariantMap getPrintingParameters(SDK::Driver::IPrinter *aPrinter);
 
 protected:
-    QString mReceiptType;
-    QString mReceiptTemplate;
+    QString m_ReceiptType;
+    QString m_ReceiptTemplate;
 };
 
 //---------------------------------------------------------------------------
@@ -83,9 +83,9 @@ protected:
     /// Получить строки с фискальной информацией чека
     bool getFiscalInfo(QVariantMap &aParameters, QStringList &aReceiptLines, bool aWaitResult);
 
-    FiscalCommand::Enum mFiscalCommand;
+    FiscalCommand::Enum m_FiscalCommand;
 
-    PrintingService *mService;
+    PrintingService *m_Service;
 };
 
 //---------------------------------------------------------------------------
@@ -93,7 +93,7 @@ protected:
 class PrintPayment : public PrintFiscalCommand {
     Q_DECLARE_TR_FUNCTIONS(PrintPayment)
 
-    SDK::Driver::TFiscalFieldData mFiscalFieldData;
+    SDK::Driver::TFiscalFieldData m_FiscalFieldData;
 
 public:
     PrintPayment(const QString &aReceiptType, PrintingService *aService)
@@ -124,10 +124,10 @@ private:
 class PrintBalance : public PrintFiscalCommand {
 public:
     PrintBalance(const QString &aReceiptType, PrintingService *aService)
-        : PrintFiscalCommand(aReceiptType, FiscalCommand::XReport, aService), mFiscalMode(true) {}
+        : PrintFiscalCommand(aReceiptType, FiscalCommand::XReport, aService), m_FiscalMode(true) {}
 
     /// Установить признак фискальной печати
-    void setFiscal(bool aFiscal) { mFiscalMode = aFiscal; }
+    void setFiscal(bool aFiscal) { m_FiscalMode = aFiscal; }
 
     /// Печать.
     virtual bool print(SDK::Driver::IPrinter *aPrinter, const QVariantMap &aParameters);
@@ -137,7 +137,7 @@ protected:
     QVariantMap expandFields(const QVariantMap &aParameters);
 
     /// Признак фискальной печати
-    bool mFiscalMode;
+    bool m_FiscalMode;
 };
 
 //---------------------------------------------------------------------------
@@ -155,7 +155,7 @@ public:
 class PrintZReport : public PrintFiscalCommand {
 public:
     PrintZReport(const QString &aReceiptType, PrintingService *aService, bool aFull)
-        : PrintFiscalCommand(aReceiptType, FiscalCommand::ZReport, aService), mFull(aFull) {}
+        : PrintFiscalCommand(aReceiptType, FiscalCommand::ZReport, aService), m_Full(aFull) {}
 
     virtual bool canPrint(SDK::Driver::IPrinter *aPrinter, bool aRealCheck);
 
@@ -163,7 +163,7 @@ public:
     virtual bool print(SDK::Driver::IPrinter *aPrinter, const QVariantMap & /*aParameters*/);
 
 private:
-    bool mFull;
+    bool m_Full;
 };
 
 //---------------------------------------------------------------------------
@@ -171,11 +171,11 @@ private:
 class PrintReceipt : public PrintCommand {
 public:
     PrintReceipt(const QString &aReceiptType, PrintingService *aService)
-        : PrintCommand(aReceiptType), mService(aService) {}
+        : PrintCommand(aReceiptType), m_Service(aService) {}
 
     /// Печать.
     virtual bool print(SDK::Driver::IPrinter *aPrinter, const QVariantMap &aParameters);
 
 private:
-    PrintingService *mService;
+    PrintingService *m_Service;
 };

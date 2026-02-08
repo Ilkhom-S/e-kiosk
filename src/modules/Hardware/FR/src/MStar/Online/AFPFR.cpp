@@ -151,7 +151,7 @@ bool AFPFR::loadSectionNames() {
     }
 
     setConfigParameter(CHardwareSDK::FR::SectionNames,
-                       QVariant::fromValue<TSectionNames>(sectionNames));
+                       QVariant::from_Value<TSectionNames>(sectionNames));
 
     return true;
 }
@@ -226,7 +226,7 @@ void AFPFR::processDeviceData() {
     QVariant portData;
     m_OFDDataError = !getFRParameter(CAFPFR::FRParameters::OFDAddress, addressData) ||
                     !getFRParameter(CAFPFR::FRParameters::OFDPort, portData);
-    portData = getBufferFromString(QByteArray::number(portData.toInt(), 16));
+    portData = getBufferFrom_String(QByteArray::number(portData.toInt(), 16));
     m_OFDDataError =
         m_OFDDataError || !checkOFDData(addressData.toByteArray(), portData.toByteArray());
 
@@ -375,7 +375,7 @@ TResult AFPFR::processCommand(char aCommand,
         QByteArray data;
 
         if (type == QMetaType::QString)
-            data = m_Codec->fromUnicode(dataItem.toString());
+            data = m_Codec->from_Unicode(dataItem.toString());
         else if ((type == QMetaType::QByteArray) || (type == QMetaType::Double))
             data = dataItem.toByteArray();
         else
@@ -464,7 +464,7 @@ TResult AFPFR::processCommand(char aCommand,
                     break;
                 }
                 case CAFPFR::EAnswerTypes::Date: {
-                    QDate result = QDate::fromString(part.insert(4, "20"), CAFPFR::DateFormat);
+                    QDate result = QDate::from_String(part.insert(4, "20"), CAFPFR::DateFormat);
 
                     if (!result.isValid()) {
                         toLog(LogLevel::Error,
@@ -480,7 +480,7 @@ TResult AFPFR::processCommand(char aCommand,
                     break;
                 }
                 case CAFPFR::EAnswerTypes::Time: {
-                    QTime result = QTime::fromString(part, CAFPFR::TimeFormat);
+                    QTime result = QTime::from_String(part, CAFPFR::TimeFormat);
 
                     if (!result.isValid()) {
                         toLog(LogLevel::Error,
@@ -632,7 +632,7 @@ bool AFPFR::processAnswer(char aCommand, char aError) {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::performFiscal(const QStringList &aReceipt,
+bool AFPFR::perform_Fiscal(const QStringList &aReceipt,
                           const SPaymentData &aPaymentData,
                           quint32 *aFDNumber) {
     if ((getDocumentState() == EDocumentState::Opened) &&
@@ -745,7 +745,7 @@ bool AFPFR::getFiscalFields(quint32 aFDNumber,
         return false;
     }
 
-    QByteArray data = getBufferFromString(rawData);
+    QByteArray data = getBufferFrom_String(rawData);
     int i = 0;
 
     while ((i + 4) < data.size()) {
@@ -808,7 +808,7 @@ bool AFPFR::sale(const SUnitData &aUnitData) {
 
 //--------------------------------------------------------------------------------
 EResult::Enum
-AFPFR::performCommand(TStatusCodes &aStatusCodes, char aCommand, CAFPFR::TData &aAnswerData) {
+AFPFR::perform_Command(TStatusCodes &aStatusCodes, char aCommand, CAFPFR::TData &aAnswerData) {
     TResult result = processCommand(aCommand, &aAnswerData);
 
     if (result == CommandResult::Device) {
@@ -827,7 +827,7 @@ AFPFR::performCommand(TStatusCodes &aStatusCodes, char aCommand, CAFPFR::TData &
 bool AFPFR::getStatus(TStatusCodes &aStatusCodes) {
     CAFPFR::TData answerData;
     EResult::Enum result =
-        performCommand(aStatusCodes, CAFPFR::Commands::GetPrinterStatus, answerData);
+        perform_Command(aStatusCodes, CAFPFR::Commands::GetPrinterStatus, answerData);
 
     if (result == EResult::Fail) {
         return false;
@@ -835,7 +835,7 @@ bool AFPFR::getStatus(TStatusCodes &aStatusCodes) {
         CAFPFR::Statuses::Printer.getSpecification(char(answerData[0].toInt()), aStatusCodes);
     }
 
-    result = performCommand(aStatusCodes, CAFPFR::Commands::GetFRStatus, answerData);
+    result = perform_Command(aStatusCodes, CAFPFR::Commands::GetFRStatus, answerData);
 
     if (result == EResult::Fail) {
         return false;
@@ -843,7 +843,7 @@ bool AFPFR::getStatus(TStatusCodes &aStatusCodes) {
         CAFPFR::Statuses::FR.getSpecification(char(answerData[0].toInt()), aStatusCodes);
     }
 
-    result = performCommand(aStatusCodes, CAFPFR::Commands::GetOFDStatus, answerData);
+    result = perform_Command(aStatusCodes, CAFPFR::Commands::GetOFDStatus, answerData);
 
     if (result == EResult::Fail) {
         return false;
@@ -898,7 +898,7 @@ bool AFPFR::openDocument(char aType) {
 
     if (aType != CAFPFR::DocumentTypes::NonFiscal) {
         QString cashier = m_FFEngine.getConfigParameter(CFiscalSDK::Cashier).toString();
-        commandData[2] = m_Codec->fromUnicode(cashier);
+        commandData[2] = m_Codec->from_Unicode(cashier);
     }
 
     return processCommand(CAFPFR::Commands::OpenDocument, commandData);
@@ -964,7 +964,7 @@ bool AFPFR::processXReport() {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::performZReport(bool /*aPrintDeferredReports*/) {
+bool AFPFR::perform_ZReport(bool /*aPrintDeferredReports*/) {
     return execZReport(false);
 }
 

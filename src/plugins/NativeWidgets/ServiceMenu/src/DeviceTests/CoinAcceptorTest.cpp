@@ -8,7 +8,7 @@ const QString TestStacked = QT_TRANSLATE_NOOP("CoinAcceptorTest", "#test_stacked
 
 //------------------------------------------------------------------------------
 CoinAcceptorTest::CoinAcceptorTest(SDK::Driver::IDevice *aDevice) {
-    mCoinAcceptor = dynamic_cast<SDK::Driver::ICashAcceptor *>(aDevice);
+    m_CoinAcceptor = dynamic_cast<SDK::Driver::ICashAcceptor *>(aDevice);
 }
 
 //------------------------------------------------------------------------------
@@ -20,8 +20,8 @@ QList<QPair<QString, QString>> CoinAcceptorTest::getTestNames() const {
 //------------------------------------------------------------------------------
 bool CoinAcceptorTest::run(const QString &aName) {
     if (aName == CCoinAcceptorTest::TestStacked) {
-        if (mCoinAcceptor->isDeviceReady() && mCoinAcceptor->setEnable(true)) {
-            mCoinAcceptor->subscribe(SDK::Driver::ICashAcceptor::StackedSignal,
+        if (m_CoinAcceptor->isDeviceReady() && m_CoinAcceptor->setEnable(true)) {
+            m_CoinAcceptor->subscribe(SDK::Driver::ICashAcceptor::StackedSignal,
                                      this,
                                      SLOT(onStacked(SDK::Driver::TParList)));
             return true;
@@ -33,13 +33,13 @@ bool CoinAcceptorTest::run(const QString &aName) {
 
 //------------------------------------------------------------------------------
 void CoinAcceptorTest::stop() {
-    mCoinAcceptor->setEnable(false);
-    mCoinAcceptor->unsubscribe(SDK::Driver::ICashAcceptor::StackedSignal, this);
+    m_CoinAcceptor->setEnable(false);
+    m_CoinAcceptor->unsubscribe(SDK::Driver::ICashAcceptor::StackedSignal, this);
 }
 
 //------------------------------------------------------------------------------
 bool CoinAcceptorTest::isReady() {
-    return mCoinAcceptor && mCoinAcceptor->isDeviceReady();
+    return m_CoinAcceptor && m_CoinAcceptor->isDeviceReady();
 }
 
 //------------------------------------------------------------------------------

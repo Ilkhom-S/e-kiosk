@@ -27,7 +27,7 @@ SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
     return new NativeBackend(aFactory, aInstancePath);
 }
 
-QVector<SDK::Plugin::SPluginParameter> EnumParameters() {
+QVector<SDK::Plugin::SPluginParameter> Enum_Parameters() {
     return QVector<SDK::Plugin::SPluginParameter>(1) << SDK::Plugin::SPluginParameter(
                SDK::Plugin::Parameters::Debug,
                SDK::Plugin::SPluginParameter::Bool,
@@ -44,12 +44,12 @@ REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
                                          SDK::PaymentProcessor::CComponents::GraphicsBackend,
                                          CNativeBackend::PluginName),
                                 &CreatePlugin,
-                                &EnumParameters,
+                                &Enum_Parameters,
                                 NativeBackend);
 
 //------------------------------------------------------------------------------
 NativeBackend::NativeBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mFactory(aFactory), mInstancePath(aInstancePath), mEngine(0), mCore(0) {}
+    : m_Factory(aFactory), m_InstancePath(aInstancePath), m_Engine(0), m_Core(0) {}
 
 //------------------------------------------------------------------------------
 NativeBackend::~NativeBackend() {}
@@ -61,17 +61,17 @@ QString NativeBackend::getPluginName() const {
 
 //------------------------------------------------------------------------------
 QVariantMap NativeBackend::getConfiguration() const {
-    return mParameters;
+    return m_Parameters;
 }
 
 //------------------------------------------------------------------------------
 void NativeBackend::setConfiguration(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 }
 
 //------------------------------------------------------------------------------
 QString NativeBackend::getConfigurationName() const {
-    return mInstancePath;
+    return m_InstancePath;
 }
 
 //------------------------------------------------------------------------------
@@ -87,33 +87,33 @@ bool NativeBackend::isReady() const {
 
 //------------------------------------------------------------------------------
 std::weak_ptr<SDK::GUI::IGraphicsItem>
-NativeBackend::getItem(const SDK::GUI::GraphicsItemInfo &aInfo) {
+NativeBackend::getItem(const SDK::GUI::GraphicsItem_Info &aInfo) {
     // TODO Context
-    TGraphicItemsCache::iterator it = mCachedItems.find(aInfo.name);
+    TGraphicItemsCache::iterator it = m_CachedItems.find(aInfo.name);
 
-    if (it == mCachedItems.end()) {
-        auto plugin = mFactory->getPluginLoader()->createPluginPtr(aInfo.directory + aInfo.name);
+    if (it == m_CachedItems.end()) {
+        auto plugin = m_Factory->getPluginLoader()->createPluginPtr(aInfo.directory + aInfo.name);
 
         if (!plugin.expired()) {
-            mLoadedPlugins.push_back(plugin);
+            m_LoadedPlugins.push_back(plugin);
 
             auto item = std::dynamic_pointer_cast<SDK::GUI::IGraphicsItem, SDK::Plugin::IPlugin>(
                 plugin.lock());
-            it = mCachedItems.insert(aInfo.name, item);
+            it = m_CachedItems.insert(aInfo.name, item);
         } else {
-            mEngine->getLog()->write(
+            m_Engine->getLog()->write(
                 LogLevel::Error, QString("Failed to create '%1' graphics item.").arg(aInfo.name));
         }
     }
 
-    return it == mCachedItems.end() ? std::weak_ptr<SDK::GUI::IGraphicsItem>() : it.value();
+    return it == m_CachedItems.end() ? std::weak_ptr<SDK::GUI::IGraphicsItem>() : it.value();
 }
 
 //------------------------------------------------------------------------------
-bool NativeBackend::removeItem(const SDK::GUI::GraphicsItemInfo &aInfo) {
-    foreach (auto item, mCachedItems.values(aInfo.name)) {
+bool NativeBackend::removeItem(const SDK::GUI::GraphicsItem_Info &aInfo) {
+    foreach (auto item, m_CachedItems.values(aInfo.name)) {
         if (item->getContext() == aInfo.context) {
-            return mCachedItems.remove(aInfo.name, item) != 0;
+            return m_CachedItems.remove(aInfo.name, item) != 0;
         }
     }
 
@@ -126,28 +126,28 @@ QString NativeBackend::getType() const {
 }
 
 //------------------------------------------------------------------------------
-QList<SDK::GUI::GraphicsItemInfo> NativeBackend::getItemList() {
-    if (mItemList.isEmpty()) {
-        QStringList items = mFactory->getPluginLoader()->getPluginList(
+QList<SDK::GUI::GraphicsItem_Info> NativeBackend::getItem_List() {
+    if (m_Item_List.isEmpty()) {
+        QStringList items = m_Factory->getPluginLoader()->getPluginList(
             QRegularExpression("PaymentProcessor\\.GraphicsItem\\..*"));
 
         foreach (const QString &item, items) {
-            SDK::GUI::GraphicsItemInfo itemInfo;
-            itemInfo.name = item.split(".").last(); // Последняя секция - имя айтема
-            itemInfo.type = CNativeBackend::Type;
-            itemInfo.directory = "PaymentProcessor.GraphicsItem.";
+            SDK::GUI::GraphicsItem_Info item_Info;
+            item_Info.name = item.split(".").last(); // Последняя секция - имя айтема
+            item_Info.type = CNativeBackend::Type;
+            item_Info.directory = "PaymentProcessor.GraphicsItem.";
 
-            mItemList[itemInfo.name] = itemInfo;
+            m_Item_List[item_Info.name] = item_Info;
         }
     }
 
-    return mItemList.values();
+    return m_Item_List.values();
 }
 
 //------------------------------------------------------------------------------
 bool NativeBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine) {
-    mEngine = aEngine;
-    mCore = mEngine->getGraphicsHost()->getInterface<SDK::PaymentProcessor::ICore>(
+    m_Engine = aEngine;
+    m_Core = m_Engine->getGraphicsHost()->getInterface<SDK::PaymentProcessor::ICore>(
         SDK::PaymentProcessor::CInterfaces::ICore);
 
     return true;
@@ -155,14 +155,14 @@ bool NativeBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine) {
 
 //------------------------------------------------------------------------------
 void NativeBackend::shutdown() {
-    mCachedItems.clear();
+    m_CachedItems.clear();
 
-    while (!mLoadedPlugins.empty()) {
-        auto ptr = mLoadedPlugins.front();
+    while (!m_LoadedPlugins.empty()) {
+        auto ptr = m_LoadedPlugins.front();
 
-        mFactory->getPluginLoader()->destroyPluginPtr(ptr);
+        m_Factory->getPluginLoader()->destroyPluginPtr(ptr);
 
-        mLoadedPlugins.pop_front();
+        m_LoadedPlugins.pop_front();
     }
 }
 

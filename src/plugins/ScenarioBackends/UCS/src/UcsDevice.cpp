@@ -21,7 +21,7 @@ const char ModelName[] = "UCS";
 } // namespace Ucs
 
 //--------------------------------------------------------------------------------
-UcsDevice::UcsDevice() : mCore(nullptr) {}
+UcsDevice::UcsDevice() : m_Core(nullptr) {}
 
 //--------------------------------------------------------------------------------
 UcsDevice::~UcsDevice() {}
@@ -76,13 +76,13 @@ bool UcsDevice::unsubscribe(const char *aSignal, QObject *aReceiver) {
 
 //--------------------------------------------------------------------------------
 bool UcsDevice::release() {
-    Ucs::API::getInstance(mCore, getLog())->disable();
+    Ucs::API::getInstance(m_Core, getLog())->disable();
     return true;
 }
 
 //--------------------------------------------------------------------------------
 void UcsDevice::initialize() {
-    QSharedPointer<Ucs::API> api = Ucs::API::getInstance(mCore, getLog());
+    QSharedPointer<Ucs::API> api = Ucs::API::getInstance(m_Core, getLog());
     connect(api.data(), SIGNAL(ready()), this, SLOT(onReady()));
 
     DeviceStatusCode::CSpecifications specifications;
@@ -125,23 +125,23 @@ void UcsDevice::onEjected() {}
 void UcsDevice::sendStatus(EWarningLevel::Enum aLevel, const QString &aMessage, int aStatus) {
     QString s = QString("%1%2%3").arg(aLevel).arg(aMessage).arg(aStatus);
 
-    if (s != mLastGeneralizedStatus) {
+    if (s != m_LastGeneralizedStatus) {
         emit status(aLevel, aMessage, aStatus);
     }
 
-    mLastGeneralizedStatus = s;
+    m_LastGeneralizedStatus = s;
 }
 
 //--------------------------------------------------------------------------------
 bool UcsDevice::isDeviceReady() const {
-    QSharedPointer<Ucs::API> api = Ucs::API::getInstance(mCore, getLog());
+    QSharedPointer<Ucs::API> api = Ucs::API::getInstance(m_Core, getLog());
 
     return api && api->isReady();
 }
 
 //--------------------------------------------------------------------------------
 bool UcsDevice::find() {
-    if (Ucs::API::getInstance(mCore, getLog())->isReady()) {
+    if (Ucs::API::getInstance(m_Core, getLog())->isReady()) {
         setConfigParameter(CHardwareSDK::ModelName, Ucs::DeviceName);
 
         return true;
@@ -152,30 +152,30 @@ bool UcsDevice::find() {
 
 //--------------------------------------------------------------------------------
 QVariantMap UcsDevice::getDeviceConfiguration() const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mConfiguration;
+    return m_Configuration;
 }
 
 //--------------------------------------------------------------------------------
 void UcsDevice::setConfigParameter(const QString &aName, const QVariant &aValue) {
-    QWriteLocker lock(&mConfigurationGuard);
+    QWriteLocker lock(&m_ConfigurationGuard);
 
-    mConfiguration.insert(aName, aValue);
+    m_Configuration.insert(aName, aValue);
 }
 
 //--------------------------------------------------------------------------------
 QVariant UcsDevice::getConfigParameter(const QString &aName) const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mConfiguration.value(aName);
+    return m_Configuration.value(aName);
 }
 
 //--------------------------------------------------------------------------------
 bool UcsDevice::containsConfigParameter(const QString &aName) const {
-    QReadLocker lock(&mConfigurationGuard);
+    QReadLocker lock(&m_ConfigurationGuard);
 
-    return mConfiguration.contains(aName);
+    return m_Configuration.contains(aName);
 }
 
 //------------------------------------------------------------------------------
@@ -183,7 +183,7 @@ void UcsDevice::eject() {}
 
 //------------------------------------------------------------------------------
 void UcsDevice::setCore(SDK::PaymentProcessor::ICore *aCore) {
-    mCore = aCore;
+    m_Core = aCore;
 }
 
 //--------------------------------------------------------------------------------

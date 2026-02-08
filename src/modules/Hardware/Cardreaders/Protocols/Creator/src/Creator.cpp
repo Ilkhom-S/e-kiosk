@@ -81,7 +81,7 @@ bool Creator::checkUSBData(QByteArray &aData, int &aBase) const {
 }
 
 //--------------------------------------------------------------------------------
-void Creator::trimUSBData(QByteArray &aData) {
+void Creator::trim_USBData(QByteArray &aData) {
     for (int i = 0; i < aData.size(); i += CCreator::USBDataSize) {
         aData.remove(i, 1);
     }
@@ -162,7 +162,7 @@ bool Creator::receivePacket(QByteArray &aData) {
 
     toLog(LogLevel::Debug, "USB << \n" + logBuffer.join("\n"));
 
-    trimUSBData(aData);
+    trim_USBData(aData);
 
     return true;
 }

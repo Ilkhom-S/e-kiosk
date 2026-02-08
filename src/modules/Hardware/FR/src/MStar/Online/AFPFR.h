@@ -72,13 +72,13 @@ protected:
 
     /// Выполнить команду.
     EResult::Enum
-    performCommand(TStatusCodes &aStatusCodes, char aCommand, CAFPFR::TData &aAnswerData);
+    perform_Command(TStatusCodes &aStatusCodes, char aCommand, CAFPFR::TData &aAnswerData);
 
     /// Обработка ответа на предыдущей команды. Автоисправление некоторых ошибок.
     virtual bool processAnswer(char aCommand, char aError);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt,
+    virtual bool perform_Fiscal(const QStringList &aReceipt,
                                const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
@@ -121,7 +121,7 @@ protected:
     virtual bool processXReport();
 
     /// Печать Z отчета.
-    virtual bool performZReport(bool aPrintDeferredReports);
+    virtual bool perform_ZReport(bool aPrintDeferredReports);
 
     /// Снять Z-отчет.
     virtual bool execZReport(bool aAuto);
@@ -142,10 +142,10 @@ protected:
     virtual bool setNotPrintDocument(bool aEnabled, bool aZReport = false);
 
     /// Данные модели.
-    CAFPFR::Models::SData mModelData;
+    CAFPFR::Models::SData m_ModelData;
 
     /// Протокол.
-    AFPFRProtocol mProtocol;
+    AFPFRProtocol m_Protocol;
 };
 
 //--------------------------------------------------------------------------------
