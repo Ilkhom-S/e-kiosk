@@ -6,7 +6,7 @@
 - [x] Update .pro for Qt 5
 - [x] Migrate build system to CMake
 - [x] Integrate clang-tidy for static analysis
-- [ ] Set up clang-format for code styling
+- [x] Set up clang-format for code styling
 - [ ] Review code for Qt 4 deprecated APIs
 - [ ] Test build with Qt 5
 - [ ] Update documentation
