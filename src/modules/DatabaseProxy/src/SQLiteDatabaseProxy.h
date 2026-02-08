@@ -80,10 +80,10 @@ protected:
     virtual bool safeExec(QSqlQuery *aQuery, const QString &aQueryMessage);
 
 private:
-    QSharedPointer<QSqlDatabase> mDb;
-    QRecursiveMutex mMutex;
-    QString mCurrentBase;
-    IDatabaseQueryChecker *mQueryChecker;
+    QSharedPointer<QSqlDatabase> m_Db;
+    QRecursiveMutex m_Mutex;
+    QString m_CurrentBase;
+    IDatabaseQueryChecker *m_QueryChecker;
 };
 
 //---------------------------------------------------------------------------

@@ -6,12 +6,12 @@
 
 //---------------------------------------------------------------------------
 class DatabaseTransaction {
-    IDatabaseProxy *mProxy;
-    bool mTransactionOpened;
+    IDatabaseProxy *m_Proxy;
+    bool m_TransactionOpened;
 
 public:
     /// Конструктор. Начинает транзакцию.
-    DatabaseTransaction(IDatabaseProxy *aProxy) : mProxy(aProxy), mTransactionOpened(false) {
+    DatabaseTransaction(IDatabaseProxy *aProxy) : m_Proxy(aProxy), m_TransactionOpened(false) {
         begin();
     }
 
@@ -19,8 +19,8 @@ public:
     ~DatabaseTransaction() {
         rollback();
 
-        mTransactionOpened = false;
-        mProxy = nullptr;
+        m_TransactionOpened = false;
+        m_Proxy = nullptr;
     }
 
     /// Проверяет, открыта ли транзакция.
@@ -28,20 +28,20 @@ public:
 
     /// Начинает транзакцию.
     bool begin() {
-        if (mProxy && !mTransactionOpened) {
-            mTransactionOpened = mProxy->transaction();
+        if (m_Proxy && !m_TransactionOpened) {
+            m_TransactionOpened = m_Proxy->transaction();
         }
 
-        return mTransactionOpened;
+        return m_TransactionOpened;
     }
 
     /// Фиксирует транзакцию.
     bool commit() {
         bool result = false;
 
-        if (mProxy && mTransactionOpened) {
-            result = mProxy->commit();
-            mTransactionOpened = false;
+        if (m_Proxy && m_TransactionOpened) {
+            result = m_Proxy->commit();
+            m_TransactionOpened = false;
         }
 
         return result;
@@ -51,9 +51,9 @@ public:
     bool rollback() {
         bool result = false;
 
-        if (mProxy && mTransactionOpened) {
-            result = mProxy->rollback();
-            mTransactionOpened = false;
+        if (m_Proxy && m_TransactionOpened) {
+            result = m_Proxy->rollback();
+            m_TransactionOpened = false;
         }
 
         return result;

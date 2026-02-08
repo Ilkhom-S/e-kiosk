@@ -1,38 +1,38 @@
 {
-  "configurations": [
-    {
-      "name": "Win64",
-      "includePath": [
-        "${workspaceFolder}/include",
-        "${workspaceFolder}/src",
-        "${workspaceFolder}/thirdparty",
-        "${workspaceFolder}/**"
-      ],
-      "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
-      "windowsSdkVersion": "10.0.26100.0",
-      "compilerPath": "cl.exe",
-      "cStandard": "c11",
-      "cppStandard": "c++14",
-      "intelliSenseMode": "windows-msvc-x64",
-      "compileCommands": "${workspaceFolder}/build/compile_commands.json"
-    },
-    {
-      "name": "Mac",
-      "includePath": [
-        "${workspaceFolder}/include",
-        "${workspaceFolder}/src",
-        "${workspaceFolder}/thirdparty",
-        "${workspaceFolder}/**",
-        "/Users/ilkhom/Qt/6.10.1/macos/include",
-        "/Users/ilkhom/Qt/6.10.1/macos/include/QtCore"
-      ],
-      "defines": [],
-      "compilerPath": "/usr/bin/clang++",
-      "cStandard": "c11",
-      "cppStandard": "c++14",
-      "intelliSenseMode": "macos-clang-arm64",
-      "compileCommands": "${workspaceFolder}/build/macos-qt6/compile_commands.json"
-    }
-  ],
-  "version": 4
+    "configurations": [
+        {
+            "name": "Win64",
+            "includePath": [
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/thirdparty",
+                "${workspaceFolder}/**"
+            ],
+            "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
+            "windowsSdkVersion": "10.0.26100.0",
+            "compilerPath": "cl.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "windows-msvc-x64",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+        },
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/thirdparty",
+                "${workspaceFolder}/**",
+                "/Users/ilkhom/Qt/6.10.1/macos/include",
+                "/Users/ilkhom/Qt/6.10.1/macos/include/QtCore"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang++",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "macos-clang-arm64",
+            "compileCommands": "${workspaceFolder}/build/macos-qt6/compile_commands.json"
+        }
+    ],
+    "version": 4
 }

@@ -75,11 +75,11 @@ protected:
     virtual bool safeExec(QSqlQuery *query, const QString &queryMessage);
 
 private:
-    QRecursiveMutex mMutex;
-    QSqlDatabase *mDb;
-    QString mCurrentBase;
-    ILog *mLog;
-    IDatabaseQueryChecker *mQueryChecker;
+    QRecursiveMutex m_Mutex;
+    QSqlDatabase *m_Db;
+    QString m_CurrentBase;
+    ILog *m_Log;
+    IDatabaseQueryChecker *m_QueryChecker;
 };
 
 //---------------------------------------------------------------------------

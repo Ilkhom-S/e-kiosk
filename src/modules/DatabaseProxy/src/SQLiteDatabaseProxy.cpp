@@ -17,14 +17,14 @@ const int MaxTryCount = 3;
 
 //---------------------------------------------------------------------------
 SQLiteDatabaseProxy::SQLiteDatabaseProxy()
-    : ILogable(CIDatabaseProxy::LogName), mMutex(), mQueryChecker(nullptr) {}
+    : ILogable(CIDatabaseProxy::LogName), m_Mutex(), m_QueryChecker(nullptr) {}
 
 //---------------------------------------------------------------------------
 SQLiteDatabaseProxy::~SQLiteDatabaseProxy() {}
 
 //---------------------------------------------------------------------------
 void SQLiteDatabaseProxy::setQueryChecker(IDatabaseQueryChecker *aQueryChecker) {
-    mQueryChecker = aQueryChecker;
+    m_QueryChecker = aQueryChecker;
 }
 
 //---------------------------------------------------------------------------
@@ -33,37 +33,37 @@ bool SQLiteDatabaseProxy::open(const QString &aDbName,
                                const QString &aPassword,
                                const QString &aHost,
                                const int /*aPort*/) {
-    mCurrentBase = aDbName;
+    m_CurrentBase = aDbName;
 
-    if (QDir::isRelativePath(mCurrentBase)) {
-        mCurrentBase = QDir::cleanPath(BasicApplication::getInstance()->getWorkingDirectory() +
-                                       QDir::separator() + mCurrentBase);
+    if (QDir::isRelativePath(m_CurrentBase)) {
+        m_CurrentBase = QDir::cleanPath(BasicApplication::getInstance()->getWorkingDirectory() +
+                                       QDir::separator() + m_CurrentBase);
     }
 
-    if (mDb && mDb->isOpen()) {
+    if (m_Db && m_Db->isOpen()) {
         toLog(LogLevel::Normal, "Before open new database, current database must be closed.");
 
         close();
     }
 
-    mDb = QSharedPointer<QSqlDatabase>(new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE")));
+    m_Db = QSharedPointer<QSqlDatabase>(new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE")));
 
-    mDb->setDatabaseName(mCurrentBase);
-    mDb->setUserName(aUser);
-    mDb->setPassword(aPassword);
-    mDb->setHostName(aHost);
-    mDb->setConnectOptions(
+    m_Db->setDatabaseName(m_CurrentBase);
+    m_Db->setUserName(aUser);
+    m_Db->setPassword(aPassword);
+    m_Db->setHostName(aHost);
+    m_Db->setConnectOptions(
         QString("QSQLITE_BUSY_TIMEOUT=%1").arg(CSQLiteDatabaseProxy::BusyTimeout));
 
-    if (mDb->open()) {
-        toLog(LogLevel::Normal, QString("Database opened: %1.").arg(mCurrentBase));
+    if (m_Db->open()) {
+        toLog(LogLevel::Normal, QString("Database opened: %1.").arg(m_CurrentBase));
 
         return true;
     } else {
         toLog(LogLevel::Error,
               QString("Cannot open database %1. Following error occured: %2.")
-                  .arg(mCurrentBase)
-                  .arg(mDb->lastError().driverText()));
+                  .arg(m_CurrentBase)
+                  .arg(m_Db->lastError().driverText()));
 
         return false;
     }
@@ -72,34 +72,34 @@ bool SQLiteDatabaseProxy::open(const QString &aDbName,
 //---------------------------------------------------------------------------
 void SQLiteDatabaseProxy::close() {
     if (isConnected()) {
-        mDb->close();
+        m_Db->close();
     }
 
-    mDb.clear();
-    mCurrentBase.clear();
+    m_Db.clear();
+    m_CurrentBase.clear();
 
-    toLog(LogLevel::Normal, QString("Database has been closed: %1.").arg(mCurrentBase));
+    toLog(LogLevel::Normal, QString("Database has been closed: %1.").arg(m_CurrentBase));
 }
 
 //---------------------------------------------------------------------------
 bool SQLiteDatabaseProxy::isConnected() const {
-    return (mDb && mDb->isOpen());
+    return (m_Db && m_Db->isOpen());
 }
 
 //---------------------------------------------------------------------------
 const QString &SQLiteDatabaseProxy::getCurrentBaseName() const {
-    return mCurrentBase;
+    return m_CurrentBase;
 }
 
 //---------------------------------------------------------------------------
 bool SQLiteDatabaseProxy::safeExec(QSqlQuery *aQuery, const QString &aQueryMessage) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
     int tryCount = 0;
 
     while (tryCount < CSQLiteDatabaseProxy::MaxTryCount) {
         if (!aQuery->exec(aQueryMessage)) {
-            mQueryChecker->isGood(!aQuery->lastError().isValid() ||
+            m_QueryChecker->isGood(!aQuery->lastError().isValid() ||
                                   aQuery->lastError().type() == QSqlError::NoError);
 
             toLog(LogLevel::Error,
@@ -126,7 +126,7 @@ bool SQLiteDatabaseProxy::safeExec(QSqlQuery *aQuery, const QString &aQueryMessa
 
 //---------------------------------------------------------------------------
 bool SQLiteDatabaseProxy::execDML(const QString &aQuery, long &aRowsAffected) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
     if (!isConnected()) {
         toLog(LogLevel::Error,
@@ -135,7 +135,7 @@ bool SQLiteDatabaseProxy::execDML(const QString &aQuery, long &aRowsAffected) {
         return false;
     }
 
-    QSqlQuery dbQuery(*mDb);
+    QSqlQuery dbQuery(*m_Db);
 
     if (safeExec(&dbQuery, aQuery)) {
         aRowsAffected = dbQuery.numRowsAffected();
@@ -148,7 +148,7 @@ bool SQLiteDatabaseProxy::execDML(const QString &aQuery, long &aRowsAffected) {
 
 //---------------------------------------------------------------------------
 bool SQLiteDatabaseProxy::execScalar(const QString &aQuery, long &aResult) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
     if (!isConnected()) {
         toLog(LogLevel::Error,
@@ -157,7 +157,7 @@ bool SQLiteDatabaseProxy::execScalar(const QString &aQuery, long &aResult) {
         return false;
     }
 
-    QSqlQuery dbQuery(*mDb);
+    QSqlQuery dbQuery(*m_Db);
 
     if (safeExec(&dbQuery, aQuery) && dbQuery.first() && dbQuery.record().count()) {
         aResult = static_cast<long>(dbQuery.value(0).toLongLong());
@@ -170,7 +170,7 @@ bool SQLiteDatabaseProxy::execScalar(const QString &aQuery, long &aResult) {
 
 //---------------------------------------------------------------------------
 IDatabaseQuery *SQLiteDatabaseProxy::execQuery(const QString &aQuery) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
     if (!isConnected()) {
         toLog(LogLevel::Error,
@@ -198,9 +198,9 @@ bool SQLiteDatabaseProxy::transaction() {
         return false;
     }
 
-    if (!mQueryChecker->isGood(mDb->transaction())) {
+    if (!m_QueryChecker->isGood(m_Db->transaction())) {
         toLog(LogLevel::Error,
-              QString("Cannot start transaction. Error: %1.").arg(mDb->lastError().text()));
+              QString("Cannot start transaction. Error: %1.").arg(m_Db->lastError().text()));
 
         return false;
     }
@@ -216,9 +216,9 @@ bool SQLiteDatabaseProxy::commit() {
         return false;
     }
 
-    if (!mQueryChecker->isGood(mDb->commit())) {
+    if (!m_QueryChecker->isGood(m_Db->commit())) {
         toLog(LogLevel::Error,
-              QString("Cannot commit transaction. Error: %1.").arg(mDb->lastError().text()));
+              QString("Cannot commit transaction. Error: %1.").arg(m_Db->lastError().text()));
 
         return false;
     }
@@ -234,9 +234,9 @@ bool SQLiteDatabaseProxy::rollback() {
         return false;
     }
 
-    if (!mQueryChecker->isGood(mDb->rollback())) {
+    if (!m_QueryChecker->isGood(m_Db->rollback())) {
         toLog(LogLevel::Error,
-              QString("Cannot rollback transaction. Error: %1.").arg(mDb->lastError().text()));
+              QString("Cannot rollback transaction. Error: %1.").arg(m_Db->lastError().text()));
 
         return false;
     }
@@ -252,14 +252,14 @@ IDatabaseQuery *SQLiteDatabaseProxy::createQuery() {
         return nullptr;
     }
 
-    return new DatabaseQuery(*mDb, mQueryChecker);
+    return new DatabaseQuery(*m_Db, m_QueryChecker);
 }
 
 //---------------------------------------------------------------------------
 IDatabaseQuery *SQLiteDatabaseProxy::createQuery(const QString &aQueryString) {
     IDatabaseQuery *query = createQuery();
 
-    if (!mQueryChecker->isGood(query->prepare(aQueryString))) {
+    if (!m_QueryChecker->isGood(query->prepare(aQueryString))) {
         delete query;
         query = nullptr;
     }
@@ -279,7 +279,7 @@ bool SQLiteDatabaseProxy::checkIntegrity(QStringList &aListErrors) {
         return false;
     }
 
-    if (!mQueryChecker->isGood(query->exec())) {
+    if (!m_QueryChecker->isGood(query->exec())) {
         aListErrors << dynamic_cast<DatabaseQuery *>(query.data())->lastError().databaseText();
 
         toLog(LogLevel::Error, "Failed exec integrity check.");

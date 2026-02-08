@@ -32,8 +32,8 @@ public:
     virtual QVariant value(int i) const override;
 
 private:
-    ILog *mLog;
-    IDatabaseQueryChecker *mQueryChecker;
+    ILog *m_Log;
+    IDatabaseQueryChecker *m_QueryChecker;
 };
 
 //---------------------------------------------------------------------------

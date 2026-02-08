@@ -4,8 +4,8 @@
 #include <DatabaseProxy/IDatabaseProxy.h>
 
 DatabaseQuery::DatabaseQuery(QSqlDatabase db, IDatabaseQueryChecker *aQueryChecker)
-    : QSqlQuery(db), mQueryChecker(aQueryChecker) {
-    mLog = ILog::getInstance(CIDatabaseQuery::DefaultLog);
+    : QSqlQuery(db), m_QueryChecker(aQueryChecker) {
+    m_Log = ILog::getInstance(CIDatabaseQuery::DefaultLog);
 }
 
 //---------------------------------------------------------------------------
@@ -44,9 +44,9 @@ QVariant DatabaseQuery::value(int i) const {
 //---------------------------------------------------------------------------
 bool DatabaseQuery::prepare(const QString &aQuery) {
     if (!QSqlQuery::prepare(aQuery)) {
-        mQueryChecker->isGood(false);
+        m_QueryChecker->isGood(false);
 
-        LOG(mLog,
+        LOG(m_Log,
             LogLevel::Error,
             QString("Can't prepare query: %1. Error: %2.")
                 .arg(aQuery)
@@ -71,9 +71,9 @@ void DatabaseQuery::bindValue(int aPos, const QVariant &aValue) {
 //---------------------------------------------------------------------------
 bool DatabaseQuery::exec() {
     if (!QSqlQuery::exec()) {
-        mQueryChecker->isGood(false);
+        m_QueryChecker->isGood(false);
 
-        LOG(mLog,
+        LOG(m_Log,
             LogLevel::Error,
             QString("Can't execute query: %1. Error: %2.")
                 .arg(QSqlQuery::lastQuery())

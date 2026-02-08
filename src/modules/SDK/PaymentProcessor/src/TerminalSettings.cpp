@@ -64,7 +64,7 @@ SConnection TerminalSettings::getConnection() const {
                                                                      : EConnectionTypes::Dialup;
         connection.checkInterval =
             m_Properties.get("config.terminal.connection_check_interval.<xmlattr>.value",
-                            CConnection::DefaultCheckInterval);
+                             CConnection::DefaultCheckInterval);
         connection.checkInterval = connection.checkInterval < 1 ? 1 : connection.checkInterval;
 
         QNetworkProxy proxy;
@@ -101,7 +101,7 @@ SConnection TerminalSettings::getConnection() const {
 void TerminalSettings::setConnection(const SConnection &aConnection) {
     m_Properties.put("terminal.connection.name", aConnection.name);
     m_Properties.put("terminal.connection.type",
-                    (aConnection.type == EConnectionTypes::Dialup) ? "modem" : "unmanaged");
+                     (aConnection.type == EConnectionTypes::Dialup) ? "modem" : "unmanaged");
 
     if (aConnection.proxy.type() != QNetworkProxy::NoProxy) {
         m_Properties.put("terminal.proxy.host", aConnection.proxy.hostName());
@@ -142,7 +142,7 @@ QList<IConnection::CheckUrl> TerminalSettings::getCheckHosts() const {
     for (int i = 1;; i++) {
         try {
             QUrl url = m_Properties.get(QString("system.check_hosts.host%1").arg(i).toStdString(),
-                                       QString());
+                                        QString());
             QString response = m_Properties.get(
                 QString("system.check_hosts.response%1").arg(i).toStdString(), QString());
 
@@ -167,7 +167,8 @@ SDatabaseSettings TerminalSettings::getDatabaseSettings() const {
     databaseSettings.name =
         m_Properties.get("system.database.name", QString(CDefaults::DefaultDatabaseName));
     databaseSettings.host = m_Properties.get("system.database.host", QString());
-    databaseSettings.port = m_Properties.get("system.database.port", CDefaults::DefaultDatabasePort);
+    databaseSettings.port =
+        m_Properties.get("system.database.port", CDefaults::DefaultDatabasePort);
     databaseSettings.user = m_Properties.get("system.database.user", QString());
     databaseSettings.password = m_Properties.get("system.database.password", QString());
 
@@ -437,14 +438,14 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
         SCommonSettings::ValidatorError,
         m_Properties.get("config.hardware.validator_settings.block_terminal_on_error", true));
     settings.autoEncashment = m_Properties.get("config.hardware.validator_settings.auto_encashment",
-                                              settings.autoEncashment);
+                                               settings.autoEncashment);
     settings.printFailedReceipts = m_Properties.get(
         "config.hardware.printer_settings.print_failed_receipts", settings.printFailedReceipts);
     settings.randomReceiptsID = m_Properties.get(
         "config.hardware.printer_settings.random_receipts_id", settings.randomReceiptsID);
     settings.enableBlankFiscalData =
         m_Properties.get("config.hardware.printer_settings.enable_blank_fiscal_data",
-                        settings.enableBlankFiscalData);
+                         settings.enableBlankFiscalData);
 
     QString defaultZReportTime =
         (!settings.autoZReportTime.isNull() && settings.autoZReportTime.isValid())
@@ -545,7 +546,7 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
 
     settings.disableAmountOverflow =
         m_Properties.get("config.hardware.validator_settings.disable_amount_overflow",
-                        settings.disableAmountOverflow);
+                         settings.disableAmountOverflow);
 
     return settings;
 }
