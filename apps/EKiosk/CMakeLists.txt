@@ -90,7 +90,7 @@ if(EKIOSK_TEST_MODE)
 endif()
 
 # Static analysis (optional, but recommended)
-# ek_enable_static_analysis(ekiosk CPPCHECK CLANG_TIDY)
+ek_enable_static_analysis(ekiosk CLANG_TIDY)
 
 # Translations
 file(GLOB TS_FILES src/locale/ekiosk_*.ts)

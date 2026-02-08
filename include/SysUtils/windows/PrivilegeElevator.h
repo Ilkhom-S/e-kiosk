@@ -19,13 +19,14 @@ public:
         // Get a token for this process.
         if (::OpenProcessToken(
                 ::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &m_HandleToken)) {
-            if (::LookupPrivilegeValue(NULL, aPrivilegeName, &m_TokenPrivileges.Privileges[0].Luid)) {
+            if (::LookupPrivilegeValue(
+                    NULL, aPrivilegeName, &m_TokenPrivileges.Privileges[0].Luid)) {
                 // Get the LUID for the privilege.
                 m_TokenPrivileges.PrivilegeCount = 1; // one privilege to set
                 m_TokenPrivileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-                m_Result =
-                    ::AdjustTokenPrivileges(m_HandleToken, FALSE, &m_TokenPrivileges, 0, (PTOKEN_PRIVILEGES)NULL, 0);
+                m_Result = ::AdjustTokenPrivileges(
+                    m_HandleToken, FALSE, &m_TokenPrivileges, 0, (PTOKEN_PRIVILEGES)NULL, 0);
                 // Get the privilege for this process.
             }
         }

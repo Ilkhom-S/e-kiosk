@@ -245,8 +245,8 @@ QVariant Provider::getFields() {
 
 //------------------------------------------------------------------------------
 PaymentService::PaymentService(ICore *aCore)
-    : m_Core(aCore), m_PaymentService(m_Core->getPaymentService()), m_ProviderWithExternalLimits(-1),
-      m_ForcePayOffline(false) {
+    : m_Core(aCore), m_PaymentService(m_Core->getPaymentService()),
+      m_ProviderWithExternalLimits(-1), m_ForcePayOffline(false) {
     connect(m_PaymentService,
             SIGNAL(stepCompleted(qint64, int, bool)),
             SLOT(onStepCompleted(qint64, int, bool)));
@@ -258,8 +258,8 @@ PaymentService::PaymentService(ICore *aCore)
     m_DealerSettings = static_cast<PPSDK::DealerSettings *>(
         aCore->getSettingsService()->getAdapter(CAdapterNames::DealerAdapter));
     m_CommonSettings = static_cast<PPSDK::TerminalSettings *>(
-                          aCore->getSettingsService()->getAdapter(CAdapterNames::TerminalAdapter))
-                          ->getCommonSettings();
+                           aCore->getSettingsService()->getAdapter(CAdapterNames::TerminalAdapter))
+                           ->getCommonSettings();
 }
 
 //------------------------------------------------------------------------------
@@ -514,7 +514,7 @@ QObject *PaymentService::getProviderForNumber(qint64 aNumber) {
 
     foreach (const SProvider &p,
              m_DealerSettings->getProvidersByRange(m_Directory->getRangesForNumber(aNumber),
-                                                  m_Directory->getOverlappedIDs())) {
+                                                   m_Directory->getOverlappedIDs())) {
         result->append(new PPSDK::Scripting::Provider(updateSkipCheckFlag(p), this));
     }
 

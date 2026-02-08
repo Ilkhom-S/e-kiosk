@@ -1,5 +1,6 @@
 # WatchServiceController (controller) application - refactored to EKiosk CMake helpers
 
+include(${CMAKE_SOURCE_DIR}/cmake/EKStaticAnalysis.cmake)
 
 include_directories(${CMAKE_SOURCE_DIR}/thirdparty/SingleApplication)
 # Генерация ini-файлов для всех конфигураций через хелпер
@@ -33,6 +34,9 @@ ek_add_application(controller
     QT_MODULES Widgets
     DEPENDS WatchServiceClient MessageQueue SysUtils DebugUtils
 )
+
+# Enable static analysis
+ek_enable_static_analysis(controller CLANG_TIDY)
 
 if(APPLE)
     # Configure as background app that only shows in menu bar, not dock

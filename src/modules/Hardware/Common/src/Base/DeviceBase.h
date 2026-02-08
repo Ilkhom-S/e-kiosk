@@ -176,10 +176,10 @@ protected:
     getWarningLevel(const TStatusCollection &aStatusCollection);
 
     /// Счетчик отсутствия ответа на полловые посылки.
-    int mBadAnswerCounter;
+    int m_BadAnswerCounter;
 
     /// Максимальное число демпфируемых полловых запросов c некорректным ответом.
-    int mMaxBadAnswers;
+    int m_MaxBadAnswers;
 
     /// Признак принудительного включения буфера статусов.
     bool mForceStatusBufferEnabled;

@@ -15,11 +15,11 @@ public:
         m_FuncName = aFuncName;
 
         ILog::getInstance(m_LogName)->write(LogLevel::Normal,
-                                           QString("%1Entering %2() (%3:%4)")
-                                               .arg(QString(" ").repeated(m_Indent))
-                                               .arg(m_FuncName)
-                                               .arg(m_FileName)
-                                               .arg(aLineNumber));
+                                            QString("%1Entering %2() (%3:%4)")
+                                                .arg(QString(" ").repeated(m_Indent))
+                                                .arg(m_FuncName)
+                                                .arg(m_FileName)
+                                                .arg(aLineNumber));
 
         m_Indent++;
     }
@@ -29,10 +29,10 @@ public:
         m_Indent--;
 
         ILog::getInstance(m_LogName)->write(LogLevel::Normal,
-                                           QString("%1Leaving  %2() (%3)")
-                                               .arg(QString(" ").repeated(m_Indent))
-                                               .arg(m_FuncName)
-                                               .arg(m_FileName));
+                                            QString("%1Leaving  %2() (%3)")
+                                                .arg(QString(" ").repeated(m_Indent))
+                                                .arg(m_FuncName)
+                                                .arg(m_FileName));
     }
 
 private:
@@ -47,5 +47,5 @@ private:
 #define LOG_TRACE() TraceLogger traceLogger(__FILE__, __FUNCTION__, __LINE__)
 
 #define ENABLE_TRACE_LOGGER(aLogName)                                                              \
-    int TraceLogger::m_Indent = 0;                                                                  \
+    int TraceLogger::m_Indent = 0;                                                                 \
     const char *TraceLogger::m_LogName = aLogName;
