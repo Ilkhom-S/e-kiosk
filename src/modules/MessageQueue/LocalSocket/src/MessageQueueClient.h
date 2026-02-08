@@ -53,11 +53,11 @@ signals:
     void onDisconnected();
 
 private:
-    QLocalSocket mSocket;
-    QByteArray mBuffer;
+    QLocalSocket m_Socket;
+    QByteArray m_Buffer;
 
     /// Таймер, который будет следить за ответом сервера на пинг.
-    QTimer mAnswerTimer;
+    QTimer m_AnswerTimer;
 };
 
 //----------------------------------------------------------------------------

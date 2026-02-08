@@ -52,12 +52,12 @@ private slots:
     void onSocketReadyRead(QObject *aObject);
 
 private:
-    QSignalMapper mDisconnectSignalMapper;
-    QSignalMapper mReadyReadSignalMapper;
-    TLocalSocketMap mSockets;
-    TSocketBufferMap mBuffers;
-    QString mQueueName;
-    ILog *mLog;
+    QSignalMapper m_DisconnectSignalMapper;
+    QSignalMapper m_ReadyReadSignalMapper;
+    TLocalSocketMap m_Sockets;
+    TSocketBufferMap m_Buffers;
+    QString m_QueueName;
+    ILog *m_Log;
 };
 
 //----------------------------------------------------------------------------

@@ -54,10 +54,10 @@ private slots:
     void onSocketReadyRead(QTcpSocket *socket);
 
 private:
-    TLocalSocketMap mSockets;
-    TSocketBufferMap mBuffers;
-    QString mQueueName;
-    ILog *mLog;
+    TLocalSocketMap m_Sockets;
+    TSocketBufferMap m_Buffers;
+    QString m_QueueName;
+    ILog *m_Log;
 };
 
 //----------------------------------------------------------------------------

@@ -224,7 +224,7 @@ void PinLoader::onLoadPinList() {
 
     // меняем таймаут в зависимости от результата.
     m_PinTimer.start((failedCount ? CPinLoader::ErrorRetryTimeout : CPinLoader::NextLoadTimeout) *
-                    1000);
+                     1000);
 }
 
 //------------------------------------------------------------------------------

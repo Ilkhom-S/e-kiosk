@@ -3,20 +3,20 @@
 #include "MessageQueue/MessageQueueConstants.h"
 
 MessageQueueClient::MessageQueueClient() : ILogable(CIMessageQueueClient::DefaultLog) {
-    QObject::connect(&mSocket, SIGNAL(readyRead()), this, SLOT(onSocketReadyRead()));
+    QObject::connect(&m_Socket, SIGNAL(readyRead()), this, SLOT(onSocketReadyRead()));
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QObject::connect(&mSocket,
+    QObject::connect(&m_Socket,
                      SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
                      this,
                      SLOT(onSocketError(QAbstractSocket::SocketError)));
 #else
-    QObject::connect(&mSocket,
+    QObject::connect(&m_Socket,
                      SIGNAL(error(QAbstractSocket::SocketError)),
                      this,
                      SLOT(onSocketError(QAbstractSocket::SocketError)));
 #endif
-    QObject::connect(&mSocket, SIGNAL(disconnected()), this, SLOT(onSocketDisconnected()));
-    // QObject::connect(&mAnswerTimer, SIGNAL(timeout()), this, SLOT(onSocketDisconnected()));
+    QObject::connect(&m_Socket, SIGNAL(disconnected()), this, SLOT(onSocketDisconnected()));
+    // QObject::connect(&m_AnswerTimer, SIGNAL(timeout()), this, SLOT(onSocketDisconnected()));
 }
 
 //----------------------------------------------------------------------------
@@ -24,27 +24,27 @@ MessageQueueClient::~MessageQueueClient() {}
 
 //----------------------------------------------------------------------------
 bool MessageQueueClient::connect(const QString &aQueueName) {
-    mSocket.connectToHost("127.0.0.1", aQueueName.toUShort());
-    mSocket.waitForConnected(CIMessageQueueClient::ConnectionTimeout);
+    m_Socket.connectToHost("127.0.0.1", aQueueName.toUShort());
+    m_Socket.waitForConnected(CIMessageQueueClient::ConnectionTimeout);
 
     return isConnected();
 }
 
 //----------------------------------------------------------------------------
 void MessageQueueClient::disconnect() {
-    mSocket.disconnectFromHost();
+    m_Socket.disconnectFromHost();
 }
 
 //----------------------------------------------------------------------------
 bool MessageQueueClient::isConnected() const {
-    return (mSocket.state() == QAbstractSocket::ConnectedState);
+    return (m_Socket.state() == QAbstractSocket::ConnectedState);
 }
 
 //----------------------------------------------------------------------------
 void MessageQueueClient::sendMessage(const QByteArray &aMessage) {
-    if (mSocket.state() == QTcpSocket::ConnectedState) {
-        mSocket.write(aMessage + '\0');
-        mSocket.flush();
+    if (m_Socket.state() == QTcpSocket::ConnectedState) {
+        m_Socket.write(aMessage + '\0');
+        m_Socket.flush();
     }
 }
 
@@ -74,19 +74,19 @@ bool MessageQueueClient::subscribeOnEvents(QObject *aObject) {
 
 //----------------------------------------------------------------------------
 void MessageQueueClient::onSocketReadyRead() {
-    while (mSocket.bytesAvailable() > 0) {
-        QByteArray buffer = mSocket.readAll();
+    while (m_Socket.bytesAvailable() > 0) {
+        QByteArray buffer = m_Socket.readAll();
 
         toLog(LogLevel::Normal, QString::fromUtf8(buffer));
 
-        mBuffer += buffer;
-        parseInputBuffer(mBuffer);
+        m_Buffer += buffer;
+        parseInputBuffer(m_Buffer);
     }
 }
 
 //----------------------------------------------------------------------------
 void MessageQueueClient::onSocketError(QAbstractSocket::SocketError aErrorCode) {
-    emit onError(static_cast<CIMessageQueueClient::ErrorCode>(aErrorCode), mSocket.errorString());
+    emit onError(static_cast<CIMessageQueueClient::ErrorCode>(aErrorCode), m_Socket.errorString());
 }
 
 //----------------------------------------------------------------------------
@@ -111,7 +111,7 @@ void MessageQueueClient::parseInputBuffer(QByteArray &aBuffer) {
 //----------------------------------------------------------------------------
 void MessageQueueClient::pingServer() {
     sendMessage(MessageQueueConstants::PingMessage);
-    mAnswerTimer.start(MessageQueueConstants::AnswerFromServerTime);
+    m_AnswerTimer.start(MessageQueueConstants::AnswerFromServerTime);
 }
 
 //----------------------------------------------------------------------------

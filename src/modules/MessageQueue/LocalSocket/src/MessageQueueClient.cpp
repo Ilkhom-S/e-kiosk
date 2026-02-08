@@ -3,13 +3,13 @@
 #include "MessageQueue/MessageQueueConstants.h"
 
 MessageQueueClient::MessageQueueClient() {
-    QObject::connect(&mSocket, SIGNAL(readyRead()), this, SLOT(onSocketReadyRead()));
-    QObject::connect(&mSocket,
+    QObject::connect(&m_Socket, SIGNAL(readyRead()), this, SLOT(onSocketReadyRead()));
+    QObject::connect(&m_Socket,
                      SIGNAL(error(QLocalSocket::LocalSocketError)),
                      this,
                      SLOT(onSocketError(QLocalSocket::LocalSocketError)));
-    QObject::connect(&mSocket, SIGNAL(disconnected()), this, SLOT(onSocketDisconnected()));
-    // QObject::connect(&mAnswerTimer, SIGNAL(timeout()), this, SLOT(onSocketDisconnected()));
+    QObject::connect(&m_Socket, SIGNAL(disconnected()), this, SLOT(onSocketDisconnected()));
+    // QObject::connect(&m_AnswerTimer, SIGNAL(timeout()), this, SLOT(onSocketDisconnected()));
 }
 
 //----------------------------------------------------------------------------
@@ -17,28 +17,28 @@ MessageQueueClient::~MessageQueueClient() {}
 
 //----------------------------------------------------------------------------
 bool MessageQueueClient::connect(const QString &aQueueName) {
-    mSocket.connectToServer(aQueueName);
-    mSocket.waitForConnected(CIMessageQueueClient::ConnectionTimeout);
+    m_Socket.connectToServer(aQueueName);
+    m_Socket.waitForConnected(CIMessageQueueClient::ConnectionTimeout);
 
-    return mSocket.isOpen();
+    return m_Socket.isOpen();
 }
 
 //----------------------------------------------------------------------------
 void MessageQueueClient::disconnect() {
-    mSocket.disconnectFromServer();
+    m_Socket.disconnectFromServer();
 }
 
 //----------------------------------------------------------------------------
 bool MessageQueueClient::isConnected() const {
-    return mSocket.isOpen();
+    return m_Socket.isOpen();
 }
 
 //----------------------------------------------------------------------------
 void MessageQueueClient::sendMessage(const QByteArray &aMessage) {
-    if (mSocket.state() == QLocalSocket::ConnectedState) {
-        mSocket.write(aMessage + '\0');
-        mSocket.flush();
-        mSocket.waitForBytesWritten(100);
+    if (m_Socket.state() == QLocalSocket::ConnectedState) {
+        m_Socket.write(aMessage + '\0');
+        m_Socket.flush();
+        m_Socket.waitForBytesWritten(100);
     }
 }
 
@@ -69,20 +69,20 @@ bool MessageQueueClient::subscribeOnEvents(QObject *aObject) {
 
 //----------------------------------------------------------------------------
 void MessageQueueClient::onSocketReadyRead() {
-    QByteArray buffer = m_socket.readAll();
+    QByteArray buffer = m_Socket.readAll();
     /*if (buffer.indexOf(MessageQueueConstants::PingMessage) >= 0)
     {
-            mAnswerTimer.stop();
+            m_AnswerTimer.stop();
             QTimer::singleShot(MessageQueueConstants::PingTime, this, SLOT(pingServer()));
             return;
     }*/
-    mBuffer += buffer;
-    parseInputBuffer(mBuffer);
+    m_Buffer += buffer;
+    parseInputBuffer(m_Buffer);
 }
 
 //----------------------------------------------------------------------------
 void MessageQueueClient::onSocketError(QLocalSocket::LocalSocketError aErrorCode) {
-    emit onError(static_cast<CIMessageQueueClient::ErrorCode>(aErrorCode), mSocket.errorString());
+    emit onError(static_cast<CIMessageQueueClient::ErrorCode>(aErrorCode), m_Socket.errorString());
 }
 
 //----------------------------------------------------------------------------
@@ -107,7 +107,7 @@ void MessageQueueClient::parseInputBuffer(QByteArray &aBuffer) {
 //----------------------------------------------------------------------------
 void MessageQueueClient::pingServer() {
     sendMessage(MessageQueueConstants::PingMessage);
-    mAnswerTimer.start(MessageQueueConstants::AnswerFromServerTime);
+    m_AnswerTimer.start(MessageQueueConstants::AnswerFromServerTime);
 }
 
 //----------------------------------------------------------------------------
