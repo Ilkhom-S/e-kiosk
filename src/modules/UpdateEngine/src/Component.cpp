@@ -16,7 +16,7 @@ Component::Component(const QString &aId,
                      const TFileList &aFiles,
                      const QStringList &aActions,
                      const QString &aURL)
-    : mPostActions(aActions), mURL(aURL), mId(aId), mVersion(aVersion), mSkipExisting(false),
+    : mPostActions(aActions), mURL(aURL), mId(aId), m_Version(aVersion), mSkipExisting(false),
       mOptional(false) {
     QRegularExpression removeFirstSlash("^/+");
 
@@ -42,12 +42,12 @@ QString Component::getId() const {
 
 //---------------------------------------------------------------------------
 QString Component::getVersion() const {
-    return mVersion;
+    return m_Version;
 }
 
 //---------------------------------------------------------------------------
 QString Component::getTemporaryFolder() const {
-    QDir dir(QDir::tempPath() + QDir::separator() + "Humo." + mId + "." + mVersion + ".temp");
+    QDir dir(QDir::tempPath() + QDir::separator() + "Humo." + mId + "." + m_Version + ".temp");
 
     if (!dir.exists()) {
         if (!dir.mkpath(dir.path())) {

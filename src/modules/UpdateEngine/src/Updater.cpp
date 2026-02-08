@@ -64,9 +64,9 @@ Updater::Updater(QObject *aParent)
       mUseBITS(false), mJobPriority(0)
 #endif
 {
-    mNetworkTaskManager.setLog(ILog::getInstance(CUpdater::Name));
+    m_NetworkTaskManager.setLog(ILog::getInstance(CUpdater::Name));
 
-    mNetworkTaskManager.setDownloadSpeedLimit(80);
+    m_NetworkTaskManager.setDownloadSpeedLimit(80);
 
     connect(&mProgressTimer, SIGNAL(timeout()), this, SLOT(showProgress()));
 }
@@ -78,10 +78,10 @@ Updater::Updater(const QString &aConfigURL,
                  const QString &aAppId,
                  const QString &aConfiguration,
                  const QString &aPointId)
-    : mConfigURL(aConfigURL), mUpdateURL(aUpdateURL + "/" + aAppId + "/" + aConfiguration),
-      mVersion(aVersion), mAppId(aAppId), mConfiguration(aConfiguration),
-      mNetworkTaskManager(ILog::getInstance(CUpdater::Name)), mCurrentTaskSize(0),
-      mWaitUpdateServer(false), mFailCount(0), mAP(aPointId), mAllTasksCount(0),
+    : m_ConfigURL(aConfigURL), m_UpdateURL(aUpdateURL + "/" + aAppId + "/" + aConfiguration),
+      m_Version(aVersion), m_AppId(aAppId), m_Configuration(aConfiguration),
+      m_NetworkTaskManager(ILog::getInstance(CUpdater::Name)), mCurrentTaskSize(0),
+      mWaitUpdateServer(false), mFailCount(0), m_AP(aPointId), mAllTasksCount(0),
       mProgressPercent(0),
 #ifdef Q_OS_WIN32
       mBitsManager(ILog::getInstance(CUpdater::Name)), mUseBITS(true), mJobPriority(CBITS::HIGH)
@@ -89,7 +89,7 @@ Updater::Updater(const QString &aConfigURL,
       mUseBITS(false), mJobPriority(0)
 #endif
 {
-    mNetworkTaskManager.setDownloadSpeedLimit(80);
+    m_NetworkTaskManager.setDownloadSpeedLimit(80);
 
     connect(&mProgressTimer, SIGNAL(timeout()), this, SLOT(showProgress()));
 }
@@ -107,7 +107,7 @@ void Updater::setProxy(const QString &aProxy) {
                                 match.captured(3),
                                 match.captured(4));
 
-            mNetworkTaskManager.setProxy(proxy);
+            m_NetworkTaskManager.setProxy(proxy);
         } else {
             Log(LogLevel::Error, QString("Failed to set up proxy: cannot parse %1.").arg(aProxy));
         }
@@ -125,12 +125,12 @@ CUpdaterErrors::Enum Updater::getComponents(Updater::TComponentList &aComponents
     // Получаем с сервера файл с описанием.
     NetworkTask *task = new NetworkTask();
 
-    QUrl url = mConfigURL;
+    QUrl url = m_ConfigURL;
     QUrlQuery urlQuery;
-    urlQuery.addQueryItem("name", mAppId);
-    urlQuery.addQueryItem("conf", mConfiguration);
-    urlQuery.addQueryItem("rev", mVersion);
-    urlQuery.addQueryItem("AP", mAP);
+    urlQuery.addQueryItem("name", m_AppId);
+    urlQuery.addQueryItem("conf", m_Configuration);
+    urlQuery.addQueryItem("rev", m_Version);
+    urlQuery.addQueryItem("AP", m_AP);
     url.setQuery(urlQuery);
 
     Log(LogLevel::Normal,
@@ -139,9 +139,9 @@ CUpdaterErrors::Enum Updater::getComponents(Updater::TComponentList &aComponents
     task->setDataStream(new MemoryDataStream);
     task->setUrl(url);
     task->setType(NetworkTask::Get);
-    task->getRequestHeader().insert(CUpdater::HumoAcceptKeysTag, mAcceptedKeys.toLatin1());
+    task->getRequestHeader().insert(CUpdater::HumoAcceptKeysTag, m_AcceptedKeys.toLatin1());
 
-    mNetworkTaskManager.addTask(task);
+    m_NetworkTaskManager.addTask(task);
 
     task->waitForFinished();
 
@@ -170,14 +170,14 @@ CUpdaterErrors::Enum Updater::getComponents(Updater::TComponentList &aComponents
         return CUpdaterErrors::UpdateBlocked;
     }
 
-    mComponentsSignature = QByteArray::fromPercentEncoding(
+    m_ComponentsSignature = QByteArray::fromPercentEncoding(
         responseHeader.value(CUpdater::HumoSignatureTag, QByteArray()));
 
     auto dataStream = task->getDataStream();
-    mComponentsContent = dataStream->takeAll();
+    m_ComponentsContent = dataStream->takeAll();
     dataStream->close();
 
-    auto result = loadComponents(mComponentsContent, aComponents, mComponentsRevision);
+    auto result = loadComponents(m_ComponentsContent, aComponents, m_ComponentsRevision);
 
     if (result == CUpdaterErrors::OK && getSavedConfigurations().isEmpty()) {
         saveUpdateConfiguration();
@@ -188,7 +188,7 @@ CUpdaterErrors::Enum Updater::getComponents(Updater::TComponentList &aComponents
 
 //---------------------------------------------------------------------------
 QByteArray Updater::loadUpdateConfiguration(const QString &aRevision) {
-    QFile file(QDir(mWorkingDir + CUpdater::UpdaterConfigurationDir)
+    QFile file(QDir(m_WorkingDir + CUpdater::UpdaterConfigurationDir)
                    .absoluteFilePath(CUpdater::UpdaterConfiguration.arg(aRevision) + ".xml"));
 
     if (file.open(QIODevice::ReadOnly)) {
@@ -202,9 +202,9 @@ QByteArray Updater::loadUpdateConfiguration(const QString &aRevision) {
 
 //---------------------------------------------------------------------------
 void Updater::saveUpdateConfiguration() {
-    QDir dir(mWorkingDir + CUpdater::UpdaterConfigurationDir);
+    QDir dir(m_WorkingDir + CUpdater::UpdaterConfigurationDir);
 
-    if (mUpdateComponents.isEmpty()) {
+    if (m_UpdateComponents.isEmpty()) {
         // Обновили полностью дистрибутив - чистим старые конфигурации обновления
         foreach (const auto file,
                  dir.entryInfoList(QStringList(CUpdater::UpdaterConfiguration.arg("*.*")))) {
@@ -213,23 +213,23 @@ void Updater::saveUpdateConfiguration() {
     }
 
     QFile file(
-        dir.absoluteFilePath(CUpdater::UpdaterConfiguration.arg(mComponentsRevision + ".xml")));
+        dir.absoluteFilePath(CUpdater::UpdaterConfiguration.arg(m_ComponentsRevision + ".xml")));
     if (file.open(QIODevice::WriteOnly)) {
-        file.write(mComponentsContent);
+        file.write(m_ComponentsContent);
         file.close();
     }
 
     QFile fileSignature(
-        dir.absoluteFilePath(CUpdater::UpdaterConfiguration.arg(mComponentsRevision + ".ipriv")));
+        dir.absoluteFilePath(CUpdater::UpdaterConfiguration.arg(m_ComponentsRevision + ".ipriv")));
     if (fileSignature.open(QIODevice::WriteOnly)) {
-        fileSignature.write(mComponentsSignature);
+        fileSignature.write(m_ComponentsSignature);
         fileSignature.close();
     }
 }
 
 //---------------------------------------------------------------------------
 QStringList Updater::getSavedConfigurations() {
-    QDir dir(mWorkingDir + CUpdater::UpdaterConfigurationDir);
+    QDir dir(m_WorkingDir + CUpdater::UpdaterConfigurationDir);
     QRegularExpression rx(QString(CUpdater::UpdaterConfiguration).arg("(.*)\\.xml"));
     QStringList revisions;
 
@@ -246,18 +246,18 @@ QStringList Updater::getSavedConfigurations() {
 
 //---------------------------------------------------------------------------
 void Updater::setWorkingDir(const QString &aDir) {
-    mWorkingDir = aDir;
+    m_WorkingDir = aDir;
 
     QDir dir = QDir::currentPath();
 
-    if (!dir.exists(mWorkingDir)) {
-        dir.mkpath(mWorkingDir);
+    if (!dir.exists(m_WorkingDir)) {
+        dir.mkpath(m_WorkingDir);
     }
 }
 
 //---------------------------------------------------------------------------
 void Updater::addComponentForUpdate(const QStringList &aComponents) {
-    mUpdateComponents.append(aComponents);
+    m_UpdateComponents.append(aComponents);
 }
 
 //---------------------------------------------------------------------------
@@ -269,7 +269,7 @@ TFileList Updater::getWorkingDirStructure() const noexcept(false) {
 void Updater::addExceptionDirs(const QStringList &aDirs) {
     foreach (auto dir, aDirs) {
         QString cleanedDir = QString(dir).replace(QRegularExpression("^/+|/+$"), "");
-        mExceptionDirs.push_back(QString("/") + cleanedDir);
+        m_ExceptionDirs.push_back(QString("/") + cleanedDir);
     }
 }
 
@@ -277,11 +277,11 @@ void Updater::addExceptionDirs(const QStringList &aDirs) {
 TFileList Updater::getWorkingDirStructure(const QString &aDir) const noexcept(false) {
     TFileList list;
 
-    if (mExceptionDirs.contains(aDir, Qt::CaseInsensitive)) {
+    if (m_ExceptionDirs.contains(aDir, Qt::CaseInsensitive)) {
         return list;
     }
 
-    QDir current(mWorkingDir + "/" + aDir);
+    QDir current(m_WorkingDir + "/" + aDir);
 
     foreach (auto fileInfo,
              current.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files)) {
@@ -363,11 +363,11 @@ void Updater::copyFiles(const QString &aSrcDir,
 //---------------------------------------------------------------------------
 void Updater::deleteFiles(const TFileList &aFiles, bool aIgnoreError) noexcept(false) {
     foreach (auto file, aFiles) {
-        if (QFile::exists(mWorkingDir + "/" + file.name()) &&
-            !mExceptionDirs.contains("/" + file.dir(), Qt::CaseInsensitive)) {
+        if (QFile::exists(m_WorkingDir + "/" + file.name()) &&
+            !m_ExceptionDirs.contains("/" + file.dir(), Qt::CaseInsensitive)) {
             Log(LogLevel::Normal, QString("Deleting file %1.").arg(file.name()));
 
-            if (!QFile::remove(mWorkingDir + "/" + file.name())) {
+            if (!QFile::remove(m_WorkingDir + "/" + file.name())) {
                 if (aIgnoreError) {
                     Log(LogLevel::Warning, QString("Failed to remove file %1.").arg(file.name()));
                 } else {
@@ -384,7 +384,7 @@ void Updater::deleteFiles(const TFileList &aFiles, bool aIgnoreError) noexcept(f
 //---------------------------------------------------------------------------
 void Updater::download() {
     // Если список пуст, инициируем следующий шаг обновления.
-    if (mActiveTasks.empty()) {
+    if (m_ActiveTasks.empty()) {
         mProgressTimer.stop();
 
         Log(LogLevel::Normal, "Download complete.");
@@ -399,12 +399,12 @@ void Updater::download() {
 #else
     if (true) { // Always use network download on non-Windows
 #endif
-        auto task = mActiveTasks.front();
+        auto task = m_ActiveTasks.front();
         task->connect(
             task, SIGNAL(onComplete()), this, SLOT(downloadComplete()), Qt::UniqueConnection);
 
         mCurrentTaskSize = task->getDataStream()->size();
-        mNetworkTaskManager.addTask(task);
+        m_NetworkTaskManager.addTask(task);
 
         Log(LogLevel::Normal, QString("%1 downloading...").arg(task->getUrl().toString()));
     }
@@ -420,13 +420,13 @@ void closeFileTask(NetworkTask *aTask) {
 
 //---------------------------------------------------------------------------
 void Updater::downloadComplete() {
-    auto task = mActiveTasks.front();
+    auto task = m_ActiveTasks.front();
     task->disconnect(this, SLOT(downloadComplete()));
 
     auto goToNextFile = [&]() {
         // Удаляем старое задание.
         task->getDataStream()->close();
-        mActiveTasks.pop_front();
+        m_ActiveTasks.pop_front();
         mFailCount = 0;
 
         // Продолжаем закачку другого файла.
@@ -527,7 +527,7 @@ void Updater::checkTaskVerifierResult(NetworkTask *aTask) {
 //---------------------------------------------------------------------------
 void Updater::showProgress() {
     if (mAllTasksCount > 0) {
-        mProgressPercent = (mAllTasksCount - mActiveTasks.size()) * 100 / mAllTasksCount;
+        mProgressPercent = (mAllTasksCount - m_ActiveTasks.size()) * 100 / mAllTasksCount;
     } else {
         mProgressPercent = ++mProgressPercent > 100 ? 1 : mProgressPercent;
     }
@@ -537,19 +537,19 @@ void Updater::showProgress() {
 
 //---------------------------------------------------------------------------
 void Updater::downloadComponents(const TComponentList &aComponents) {
-    mComponents = aComponents;
+    m_Components = aComponents;
 
     try {
         Log(LogLevel::Normal, "Calculating local files checksum.");
         TFileList currentStructure = getWorkingDirStructure();
 
         // Формируем список файлов для загрузки.
-        foreach (auto comp, mComponents) {
-            mActiveTasks +=
-                comp->download(mUpdateURL, comp->getFiles().intersect(currentStructure));
+        foreach (auto comp, m_Components) {
+            m_ActiveTasks +=
+                comp->download(m_UpdateURL, comp->getFiles().intersect(currentStructure));
         }
 
-        mAllTasksCount = mActiveTasks.size();
+        mAllTasksCount = m_ActiveTasks.size();
         mProgressTimer.start(3 * 60 * 1000);
 
         // Запускаем загрузку.
@@ -561,7 +561,7 @@ void Updater::downloadComponents(const TComponentList &aComponents) {
 
 //---------------------------------------------------------------------------
 bool Updater::haveSkippedComponents() const {
-    return !mUpdateComponents.isEmpty();
+    return !m_UpdateComponents.isEmpty();
 }
 
 //---------------------------------------------------------------------------
@@ -611,7 +611,7 @@ void Updater::deploy() {
     Log(LogLevel::Normal, "Start deploy.");
 
     QString backupDir =
-        mWorkingDir + "/backup/" + QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
+        m_WorkingDir + "/backup/" + QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
 
     try {
         Log(LogLevel::Normal, QString("Backup into '%1'.").arg(backupDir));
@@ -625,7 +625,7 @@ void Updater::deploy() {
         }
 
         // Делаем резервную копию.
-        foreach (auto comp, mComponents) {
+        foreach (auto comp, m_Components) {
             downloadedFiles += comp->getFiles();
         }
 
@@ -642,7 +642,7 @@ void Updater::deploy() {
         oldFiles.subtract(downloadedFiles);
 
         // убираем из списка старых файлов все файлы компонент, имеющих флаг skip_existing
-        foreach (auto comp, mComponents) {
+        foreach (auto comp, m_Components) {
             if (comp->skipExisting() || comp->optional()) {
                 substractByName(oldFiles, comp->getFiles());
             }
@@ -652,7 +652,7 @@ void Updater::deploy() {
         newFiles.subtract(currentFiles);
 
         // Делаем резервные копии.
-        copyFiles(mWorkingDir, backupDir, oldFiles);
+        copyFiles(m_WorkingDir, backupDir, oldFiles);
     } catch (Exception &e) {
         // На этом этапе дальнейшая установка обновления невозможна.
         Log(LogLevel::Fatal, e.getMessage());
@@ -672,20 +672,20 @@ void Updater::deploy() {
         Log(LogLevel::Normal, "Deploy new files.");
 
         // Копируем новые файлы.
-        foreach (auto comp, mComponents) {
-            comp->deploy(comp->getFiles().intersect(newFiles), mWorkingDir);
+        foreach (auto comp, m_Components) {
+            comp->deploy(comp->getFiles().intersect(newFiles), m_WorkingDir);
         }
 
         Log(LogLevel::Normal, "Applying post actions.");
 
         // Выполняем общие действия.
-        foreach (auto comp, mComponents) {
-            comp->applyPostActions(mWorkingDir);
+        foreach (auto comp, m_Components) {
+            comp->applyPostActions(m_WorkingDir);
         }
 
         Log(LogLevel::Normal, "Removing empty folders.");
 
-        removeEmptyFolders(mWorkingDir);
+        removeEmptyFolders(m_WorkingDir);
 
         // Сохраняем успешную конфигурацию на диск
         saveUpdateConfiguration();
@@ -704,7 +704,7 @@ void Updater::deploy() {
 
             Log(LogLevel::Normal, "Restoring old files from backup.");
             // Восстанавливаем удаленные файлы.
-            copyFiles(backupDir, mWorkingDir, oldFiles, true);
+            copyFiles(backupDir, m_WorkingDir, oldFiles, true);
         } catch (Exception &e) {
             Log(LogLevel::Fatal, QString("Failed to restore backup. %1.").arg(e.getMessage()));
         }
@@ -848,7 +848,7 @@ int Updater::removeEmptyFolders(const QString &aDir) {
 
 //---------------------------------------------------------------------------
 void Updater::setMD5(const QString &aMD5) {
-    mMD5 = aMD5;
+    m_MD5 = aMD5;
 }
 
 //---------------------------------------------------------------------------
@@ -856,19 +856,19 @@ void Updater::downloadPackage() {
     Package *package = nullptr;
     QList<NetworkTask *> tasks;
 
-    if (!mConfigURL.contains("=") && !mConfigURL.contains("?")) {
+    if (!m_ConfigURL.contains("=") && !m_ConfigURL.contains("?")) {
         // Фиктивный список файлов (реальный состав может отличаться).
-        QString fileName = mConfigURL.section("/", -1, -1);
+        QString fileName = m_ConfigURL.section("/", -1, -1);
         QFileInfo fileInfo(fileName);
         auto fileList = TFileList() << File("config.xml", "", "");
         package =
-            new Package(fileInfo.completeBaseName(), "1", fileList, QStringList(), "", mMD5, 0);
-        tasks = package->download(mConfigURL + "?", TFileList());
+            new Package(fileInfo.completeBaseName(), "1", fileList, QStringList(), "", m_MD5, 0);
+        tasks = package->download(m_ConfigURL + "?", TFileList());
     } else {
         // Обманываем алгоритм для скачивания файла через запрос к скрипту
         auto fileList = TFileList() << File("config.xml", "", "");
-        package = new Package(mMD5, "1", fileList, QStringList(), "", mMD5, 0);
-        tasks = package->download(mConfigURL, TFileList());
+        package = new Package(m_MD5, "1", fileList, QStringList(), "", m_MD5, 0);
+        tasks = package->download(m_ConfigURL, TFileList());
     }
 
     if (tasks.isEmpty()) {
@@ -887,11 +887,11 @@ void Updater::downloadPackage() {
                 SLOT(packageDownloaded(QObject *)),
                 Qt::UniqueConnection);
 
-        Log(LogLevel::Normal, QString("Downloading file %1...").arg(mConfigURL));
+        Log(LogLevel::Normal, QString("Downloading file %1...").arg(m_ConfigURL));
 
         // Запускаем закачку.
         mCurrentTaskSize = task->getDataStream()->size();
-        mNetworkTaskManager.addTask(task);
+        m_NetworkTaskManager.addTask(task);
     }
 }
 
@@ -953,7 +953,7 @@ void Updater::deployDownloadedPackage(QObject *aPackage) {
 
     // Распаковываем архив.
     try {
-        package->deploy(package->getFiles(), mWorkingDir);
+        package->deploy(package->getFiles(), m_WorkingDir);
 
         Log(LogLevel::Normal,
             QString("File %1.zip was successfully unpacked.").arg(package->getId()));
@@ -971,12 +971,12 @@ void Updater::deployDownloadedPackage(QObject *aPackage) {
 
 //---------------------------------------------------------------------------
 void Updater::setOptionalComponents(const QStringList &aComponents) {
-    mOptionalComponents = aComponents;
+    m_OptionalComponents = aComponents;
 }
 
 //---------------------------------------------------------------------------
 void Updater::setConfigurationRequiredFiles(const QStringList &aRequiredFiles) {
-    mRequiredFiles = aRequiredFiles;
+    m_RequiredFiles = aRequiredFiles;
 }
 
 //---------------------------------------------------------------------------
@@ -987,7 +987,7 @@ bool Updater::validateConfiguration(const TComponentList &aComponents) {
         return false;
     }
 
-    foreach (auto requiredFile, mRequiredFiles) {
+    foreach (auto requiredFile, m_RequiredFiles) {
         bool exist = false;
 
         foreach (auto component, aComponents) {
@@ -1027,11 +1027,11 @@ bool Updater::bitsDownload() {
 
     // Устанавливаем после выполнения задачи запуск себя с теми же самыми параметрами
     mBitsManager.setNotify(qApp->applicationFilePath(),
-                           QString("--command bits --workdir %1").arg(mWorkingDir));
+                           QString("--command bits --workdir %1").arg(m_WorkingDir));
 
     CBITS::SJob job;
     if (mBitsManager.createJob(bitsJobName(), job, mJobPriority)) {
-        foreach (auto task, mActiveTasks) {
+        foreach (auto task, m_ActiveTasks) {
             auto fileTask = dynamic_cast<FileDownloadTask *>(task);
             if (fileTask) {
                 fileTask->closeFile();
@@ -1190,7 +1190,7 @@ void Updater::bitsCleanupOldTasks() {
 //---------------------------------------------------------------------------
 QString Updater::bitsJobName() const {
     return CUpdater::BitsJobNamePrefix +
-           QString("%1_%2_%3").arg(mAppId).arg(mConfiguration).arg(mVersion);
+           QString("%1_%2_%3").arg(m_AppId).arg(m_Configuration).arg(m_Version);
 }
 
 //---------------------------------------------------------------------------
@@ -1277,14 +1277,14 @@ CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent,
 
             if (newComponent) {
                 newComponent->setOptional(
-                    mOptionalComponents.contains(componentName, Qt::CaseInsensitive) ||
+                    m_OptionalComponents.contains(componentName, Qt::CaseInsensitive) ||
                     componentOptional.contains("true", Qt::CaseInsensitive));
                 newComponent->setSkipExisting(skipExisting.contains("true", Qt::CaseInsensitive));
 
                 // если список разрешенных компонент пустой или в нем есть текущая компонента, то
                 // добавляем её в список
-                if (mUpdateComponents.isEmpty() ||
-                    mUpdateComponents.contains(componentName, Qt::CaseInsensitive)) {
+                if (m_UpdateComponents.isEmpty() ||
+                    m_UpdateComponents.contains(componentName, Qt::CaseInsensitive)) {
                     aComponents.append(newComponent);
                 }
 
@@ -1303,13 +1303,13 @@ CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent,
 
 //---------------------------------------------------------------------------
 void Updater::setAcceptedKeys(const QString &aAcceptedKeys) {
-    mAcceptedKeys = aAcceptedKeys;
+    m_AcceptedKeys = aAcceptedKeys;
 }
 
 //---------------------------------------------------------------------------
 void Updater::bitsSaveState() {
     QSettings settings(
-        QDir(mWorkingDir + CUpdater::UpdaterConfigurationDir).absoluteFilePath("bits.ini"),
+        QDir(m_WorkingDir + CUpdater::UpdaterConfigurationDir).absoluteFilePath("bits.ini"),
         QSettings::IniFormat);
 
     settings.beginGroup("bits");
@@ -1320,13 +1320,13 @@ void Updater::bitsSaveState() {
     settings.endGroup();
 
     settings.beginGroup("updater");
-    settings.setValue("working_dir", mWorkingDir);
-    settings.setValue("config_url", mConfigURL);
-    settings.setValue("update_url", mUpdateURL);
-    settings.setValue("version", mVersion);
-    settings.setValue("app_id", mAppId);
-    settings.setValue("configuration", mConfiguration);
-    settings.setValue("ap", mAP);
+    settings.setValue("working_dir", m_WorkingDir);
+    settings.setValue("config_url", m_ConfigURL);
+    settings.setValue("update_url", m_UpdateURL);
+    settings.setValue("version", m_Version);
+    settings.setValue("app_id", m_AppId);
+    settings.setValue("configuration", m_Configuration);
+    settings.setValue("ap", m_AP);
     settings.endGroup();
 
     auto params = qApp->arguments();
@@ -1343,7 +1343,7 @@ void Updater::bitsSaveState() {
 //---------------------------------------------------------------------------
 bool Updater::bitsLoadState(QStringList *aParameters) {
     QSettings settings(
-        QDir(mWorkingDir + CUpdater::UpdaterConfigurationDir).absoluteFilePath("bits.ini"),
+        QDir(m_WorkingDir + CUpdater::UpdaterConfigurationDir).absoluteFilePath("bits.ini"),
         QSettings::IniFormat);
 
     if (settings.status() != QSettings::NoError) {
@@ -1351,13 +1351,13 @@ bool Updater::bitsLoadState(QStringList *aParameters) {
     }
 
     settings.beginGroup("updater");
-    mWorkingDir = settings.value("working_dir").toString();
-    mConfigURL = settings.value("config_url").toString();
-    mUpdateURL = settings.value("update_url").toString();
-    mVersion = settings.value("version").toString();
-    mAppId = settings.value("app_id").toString();
-    mConfiguration = settings.value("configuration").toString();
-    mAP = settings.value("ap").toString();
+    m_WorkingDir = settings.value("working_dir").toString();
+    m_ConfigURL = settings.value("config_url").toString();
+    m_UpdateURL = settings.value("update_url").toString();
+    m_Version = settings.value("version").toString();
+    m_AppId = settings.value("app_id").toString();
+    m_Configuration = settings.value("configuration").toString();
+    m_AP = settings.value("ap").toString();
     settings.endGroup();
 
     if (aParameters) {
@@ -1369,7 +1369,7 @@ bool Updater::bitsLoadState(QStringList *aParameters) {
         settings.endArray();
     }
 
-    return !mAppId.isEmpty() && !mConfiguration.isEmpty() && !mVersion.isEmpty();
+    return !m_AppId.isEmpty() && !m_Configuration.isEmpty() && !m_Version.isEmpty();
 }
 
 //---------------------------------------------------------------------------

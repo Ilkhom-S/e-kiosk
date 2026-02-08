@@ -44,8 +44,8 @@ private:
     void updateTimestamp();
 
 private:
-    QString mWorkDirectory;
-    QSharedPointer<QSettings> mReport;
+    QString m_WorkDirectory;
+    QSharedPointer<QSettings> m_Report;
 };
 
 //------------------------------------------------------------------------

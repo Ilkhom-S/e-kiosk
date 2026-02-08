@@ -69,7 +69,7 @@ public:
     /// Установить рабочую папку.
     void setWorkingDir(const QString &aDir);
 
-    QString getWorkingDir() const { return mWorkingDir; }
+    QString getWorkingDir() const { return m_WorkingDir; }
 
     /// Добавить папку в список исключений. Файлы из этих папок не будут удалены после обновления,
     /// а также в случае обновления для них не будут созданы бекапы.
@@ -99,7 +99,7 @@ public slots:
     /// Запуск процедуры обновления.
     void runUpdate();
 
-    /// Запрос на скачивание архива по адресу mURL и его распаковка в папку mWorkingDir.
+    /// Запрос на скачивание архива по адресу mURL и его распаковка в папку m_WorkingDir.
     void downloadPackage();
 
 private:
@@ -200,36 +200,36 @@ private:
     void bitsSaveState();
 
 private:
-    QString mConfigURL;
-    QString mUpdateURL;
-    QString mVersion;
-    QString mAP;
-    QString mAcceptedKeys;
-    QString mAppId;                  // Id приложения, например Ekiosk
-    QString mConfiguration;          // Конфигурация, например 17tj
-    QStringList mUpdateComponents;   // список компонент, подлежащих обновлению
-    QStringList mOptionalComponents; // список компонент, необязательных к обновлению
-    QStringList mRequiredFiles;
-    QString mMD5; // контрольная сумма для скачиваемой конфигурации или пользовательского архива
+    QString m_ConfigURL;
+    QString m_UpdateURL;
+    QString m_Version;
+    QString m_AP;
+    QString m_AcceptedKeys;
+    QString m_AppId;                  // Id приложения, например Ekiosk
+    QString m_Configuration;          // Конфигурация, например 17tj
+    QStringList m_UpdateComponents;   // список компонент, подлежащих обновлению
+    QStringList m_OptionalComponents; // список компонент, необязательных к обновлению
+    QStringList m_RequiredFiles;
+    QString m_MD5; // контрольная сумма для скачиваемой конфигурации или пользовательского архива
 
-    NetworkTaskManager mNetworkTaskManager;
+    NetworkTaskManager m_NetworkTaskManager;
 
-    QString mWorkingDir;        // Рабочий каталог
-    QStringList mExceptionDirs; // Список подкаталогов в которых обновление не ведется.
+    QString m_WorkingDir;        // Рабочий каталог
+    QStringList m_ExceptionDirs; // Список подкаталогов в которых обновление не ведется.
 
     //
     // Следующие поля описывают состояние во время установки конкретного обновления.
 
     // Содержимое конкретного обновления
-    QByteArray mComponentsContent;
-    QByteArray mComponentsSignature;
-    QString mComponentsRevision;
+    QByteArray m_ComponentsContent;
+    QByteArray m_ComponentsSignature;
+    QString m_ComponentsRevision;
 
     // Список обновляемых компонентов.
-    TComponentList mComponents;
+    TComponentList m_Components;
 
     // Список задач для закачки.
-    QList<NetworkTask *> mActiveTasks;
+    QList<NetworkTask *> m_ActiveTasks;
 
     // Размер таска на момент начала загрузки
     qint64 mCurrentTaskSize;
