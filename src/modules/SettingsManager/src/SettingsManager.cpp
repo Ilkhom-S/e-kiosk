@@ -34,7 +34,7 @@ SSettingsSource::SSettingsSource(const QString &aFileName,
       symlinkName(QString::fromLatin1(aSymlinkName)), readOnly(true) {}
 
 //---------------------------------------------------------------------------
-SettingsManager::SettingsManager(const QString &aConfigPath) : mConfigPath(aConfigPath) {}
+SettingsManager::SettingsManager(const QString &aConfigPath) : m_ConfigPath(aConfigPath) {}
 
 //---------------------------------------------------------------------------
 SettingsManager::~SettingsManager() {}
@@ -42,16 +42,16 @@ SettingsManager::~SettingsManager() {}
 //---------------------------------------------------------------------------
 TPtree &SettingsManager::getProperties(const QString &aAdapterName) {
     if (aAdapterName.isEmpty()) {
-        return mProperties;
+        return m_Properties;
     }
 
     static TPtree emptyTree;
-    return mProperties.get_child(aAdapterName.toStdString(), emptyTree);
+    return m_Properties.get_child(aAdapterName.toStdString(), emptyTree);
 }
 
 //---------------------------------------------------------------------------
 bool SettingsManager::isEqual(const SettingsManager &aManager) const {
-    return mProperties == aManager.mProperties;
+    return m_Properties == aManager.m_Properties;
 }
 
 //---------------------------------------------------------------------------
@@ -69,7 +69,7 @@ bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources
 
         QFileInfo path(QDir::isAbsolutePath(source.configFileName)
                            ? source.configFileName
-                           : mConfigPath + "/" + source.configFileName);
+                           : m_ConfigPath + "/" + source.configFileName);
 
         toLog(LogLevel::Normal, QString("Loading configuration file %1.").arg(path.filePath()));
 
@@ -91,11 +91,11 @@ bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources
         SSettingsSource workingSource(source);
         std::string branchName = source.adapterName.toStdString();
 
-        TPtree::assoc_iterator ai = mProperties.find(branchName);
+        TPtree::assoc_iterator ai = m_Properties.find(branchName);
 
-        TPtree &branch = (ai != mProperties.not_found())
-                             ? mProperties.to_iterator(ai)->second
-                             : mProperties.push_back(std::make_pair(branchName, TPtree()))->second;
+        TPtree &branch = (ai != m_Properties.not_found())
+                             ? m_Properties.to_iterator(ai)->second
+                             : m_Properties.push_back(std::make_pair(branchName, TPtree()))->second;
 
         // Сохраняем имена полей, которые были подгружены.
         BOOST_FOREACH (TPtree::value_type &value, newBranch) {
@@ -108,7 +108,7 @@ bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources
             tree.swap(value.second);
         }
 
-        mSettingSources.append(workingSource);
+        m_SettingSources.append(workingSource);
 
         toLog(LogLevel::Debug,
               QString("Load config file %1 elapsed %2 ms.")
@@ -124,7 +124,7 @@ bool SettingsManager::saveSettings() {
     bool result = true;
 
     // Сохраняем все не readOnly настройки.
-    foreach (const SSettingsSource &source, mSettingSources) {
+    foreach (const SSettingsSource &source, m_SettingSources) {
         if (source.readOnly) {
             continue;
         }
@@ -137,12 +137,12 @@ bool SettingsManager::saveSettings() {
 
             static TPtree emptyTreeForSave;
             branchToSave.add_child(fieldName.toStdString(),
-                                   mProperties.get_child(path.toStdString(), emptyTreeForSave));
+                                   m_Properties.get_child(path.toStdString(), emptyTreeForSave));
         }
 
         QFileInfo path(QDir::isAbsolutePath(source.configFileName)
                            ? source.configFileName
-                           : mConfigPath + "/" + source.configFileName);
+                           : m_ConfigPath + "/" + source.configFileName);
 
         toLog(LogLevel::Normal, QString("Saving configuration file %1.").arg(path.filePath()));
 
@@ -152,7 +152,7 @@ bool SettingsManager::saveSettings() {
             std::string branchName = path.baseName().toStdString();
             branchToSave.add_child(
                 branchName,
-                mProperties.get_child((source.adapterName + "." + path.baseName()).toStdString()));
+                m_Properties.get_child((source.adapterName + "." + path.baseName()).toStdString()));
         }
 
         // Здесь храним оригинальную конфигурацию

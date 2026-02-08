@@ -67,10 +67,10 @@ private:
     /// Делает резервную копию файла.
     void createBackup(const QString &aFilePath);
 
-    TPtree mProperties;
+    TPtree m_Properties;
 
-    QString mConfigPath;
-    QList<SSettingsSource> mSettingSources;
+    QString m_ConfigPath;
+    QList<SSettingsSource> m_SettingSources;
 };
 
 //---------------------------------------------------------------------------
