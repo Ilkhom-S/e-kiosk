@@ -35,19 +35,19 @@ class EnumItem : public QObject {
 public:
     /// Конструктор.
     EnumItem(const SProviderField::SEnumItem &aItem, QObject *aParent)
-        : QObject(aParent), mItem(aItem) {}
+        : QObject(aParent), m_Item(aItem) {}
 
 private:
     /// Получить имя.
-    QString getName() { return mItem.title; }
+    QString getName() { return m_Item.title; }
     /// Получить значение.
-    QString getValue() { return mItem.value; }
+    QString getValue() { return m_Item.value; }
     /// Получить ID.
-    QString getID() { return mItem.id; }
+    QString getID() { return m_Item.id; }
 
 private:
     /// Элемент перечисления.
-    SProviderField::SEnumItem mItem;
+    SProviderField::SEnumItem m_Item;
 };
 
 //------------------------------------------------------------------------------
@@ -403,12 +403,12 @@ public:
     void addProviderProvider(QWeakPointer<IProviderProvider> aProvider);
 
 private:
-    ICore *mCore;
-    IPaymentService *mPaymentService;
-    SDK::PaymentProcessor::Directory *mDirectory;
-    SDK::PaymentProcessor::DealerSettings *mDealerSettings;
-    SDK::PaymentProcessor::SCommonSettings mCommonSettings;
-    bool mForcePayOffline;
+    ICore *m_Core;
+    IPaymentService *m_PaymentService;
+    SDK::PaymentProcessor::Directory *m_Directory;
+    SDK::PaymentProcessor::DealerSettings *m_DealerSettings;
+    SDK::PaymentProcessor::SCommonSettings m_CommonSettings;
+    bool m_ForcePayOffline;
 
 private:
     /// Получить список купюр из баланса
@@ -418,12 +418,12 @@ private:
     SProvider updateSkipCheckFlag(SProvider aProvider);
 
     /// Провайдер, которому меняли лимиты платежа из сценария
-    qint64 mProviderWithExternalLimits;
+    qint64 m_ProviderWithExternalLimits;
 
 private:
-    QList<SDK::PaymentProcessor::SBlockByNote> mBlockNotesList;
+    QList<SDK::PaymentProcessor::SBlockByNote> m_BlockNotesList;
     typedef QList<QWeakPointer<IProviderProvider>> TProviderProvider;
-    TProviderProvider mProviderProviders;
+    TProviderProvider m_ProviderProviders;
 };
 
 //------------------------------------------------------------------------------

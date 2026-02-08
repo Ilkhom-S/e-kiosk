@@ -245,19 +245,19 @@ QVariant Provider::getFields() {
 
 //------------------------------------------------------------------------------
 PaymentService::PaymentService(ICore *aCore)
-    : mCore(aCore), mPaymentService(mCore->getPaymentService()), mProviderWithExternalLimits(-1),
-      mForcePayOffline(false) {
-    connect(mPaymentService,
+    : m_Core(aCore), m_PaymentService(m_Core->getPaymentService()), m_ProviderWithExternalLimits(-1),
+      m_ForcePayOffline(false) {
+    connect(m_PaymentService,
             SIGNAL(stepCompleted(qint64, int, bool)),
             SLOT(onStepCompleted(qint64, int, bool)));
-    connect(mPaymentService, SIGNAL(amountUpdated(qint64)), SIGNAL(amountUpdated(qint64)));
-    connect(mPaymentService, SIGNAL(changeUpdated(double)), SIGNAL(changeUpdated(double)));
+    connect(m_PaymentService, SIGNAL(amountUpdated(qint64)), SIGNAL(amountUpdated(qint64)));
+    connect(m_PaymentService, SIGNAL(changeUpdated(double)), SIGNAL(changeUpdated(double)));
 
-    mDirectory = static_cast<PPSDK::Directory *>(
+    m_Directory = static_cast<PPSDK::Directory *>(
         aCore->getSettingsService()->getAdapter(CAdapterNames::Directory));
-    mDealerSettings = static_cast<PPSDK::DealerSettings *>(
+    m_DealerSettings = static_cast<PPSDK::DealerSettings *>(
         aCore->getSettingsService()->getAdapter(CAdapterNames::DealerAdapter));
-    mCommonSettings = static_cast<PPSDK::TerminalSettings *>(
+    m_CommonSettings = static_cast<PPSDK::TerminalSettings *>(
                           aCore->getSettingsService()->getAdapter(CAdapterNames::TerminalAdapter))
                           ->getCommonSettings();
 }
@@ -325,7 +325,7 @@ QVariantMap PaymentService::calculateLimits(const QString &aAmount, bool aFixedA
     // TODO Код из paymentbase::calculateLimits
 
     PPSDK::DealerSettings *dealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
-        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
+        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
 
     double minAmount = aAmount.toDouble();
     double maxAmount = aAmount.toDouble();
@@ -481,7 +481,7 @@ QObject *PaymentService::getProvider() {
 
 //------------------------------------------------------------------------------
 QObject *PaymentService::getProvider(qint64 aID) {
-    foreach (auto pp, mProviderProviders) {
+    foreach (auto pp, m_ProviderProviders) {
         auto ppRef = pp.toStrongRef();
         if (!ppRef.isNull() && ppRef->getId().contains(aID)) {
             return new Provider(updateSkipCheckFlag(ppRef->getProvider(aID)), this);
@@ -493,7 +493,7 @@ QObject *PaymentService::getProvider(qint64 aID) {
 
 //------------------------------------------------------------------------------
 QObject *PaymentService::getMNPProvider() {
-    return new Provider(updateSkipCheckFlag(mDealerSettings->getMNPProvider(
+    return new Provider(updateSkipCheckFlag(m_DealerSettings->getMNPProvider(
                             getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong(),
                             getParameter(PPSDK::CPayment::Parameters::MNPGatewayIn).toLongLong(),
                             getParameter(PPSDK::CPayment::Parameters::MNPGatewayOut).toLongLong())),
@@ -502,7 +502,7 @@ QObject *PaymentService::getMNPProvider() {
 
 //------------------------------------------------------------------------------
 QObject *PaymentService::getProviderByGateway(qint64 aCID) {
-    auto providers = mDealerSettings->getProvidersByCID(aCID);
+    auto providers = m_DealerSettings->getProvidersByCID(aCID);
 
     return new Provider(
         providers.isEmpty() ? PPSDK::SProvider() : updateSkipCheckFlag(providers.at(0)), this);
@@ -513,8 +513,8 @@ QObject *PaymentService::getProviderForNumber(qint64 aNumber) {
     ScriptArray *result = new ScriptArray(this);
 
     foreach (const SProvider &p,
-             mDealerSettings->getProvidersByRange(mDirectory->getRangesForNumber(aNumber),
-                                                  mDirectory->getOverlappedIDs())) {
+             m_DealerSettings->getProvidersByRange(m_Directory->getRangesForNumber(aNumber),
+                                                  m_Directory->getOverlappedIDs())) {
         result->append(new PPSDK::Scripting::Provider(updateSkipCheckFlag(p), this));
     }
 
@@ -588,9 +588,9 @@ void PaymentService::setParameters(const QVariantMap &aParameters) {
 
 //------------------------------------------------------------------------------
 void PaymentService::updateLimits(qint64 aProviderId, double aExternalMin, double aExternalMax) {
-    mDealerSettings->setExternalLimits(aProviderId, aExternalMin, aExternalMax);
+    m_DealerSettings->setExternalLimits(aProviderId, aExternalMin, aExternalMax);
 
-    mProviderWithExternalLimits = aProviderId;
+    m_ProviderWithExternalLimits = aProviderId;
 }
 
 //------------------------------------------------------------------------------
@@ -631,7 +631,7 @@ PaymentService::EProcessResult PaymentService::process(bool aOnline) {
         return OfflineIsNotSupported;
     }
 
-    if (!aOnline && mCommonSettings.blockCheatedPayment &&
+    if (!aOnline && m_CommonSettings.blockCheatedPayment &&
         getParameter(PPSDK::CPayment::Parameters::Cheated).toInt()) {
         stop(PPSDK::Humo::EServerError::Cheated, "Cheated");
 
@@ -737,7 +737,7 @@ void PaymentService::reset() {
     mPaymentService->deactivatePayment();
 
     // Вернем платежные лимиты по умолчанию
-    mDealerSettings->setExternalLimits(mProviderWithExternalLimits, 0.0, 0.0);
+    m_DealerSettings->setExternalLimits(m_ProviderWithExternalLimits, 0.0, 0.0);
 }
 
 //------------------------------------------------------------------------------
@@ -747,12 +747,12 @@ bool PaymentService::isFinalStep() {
 
 //------------------------------------------------------------------------------
 void PaymentService::setExternalCommissions(const QVariantList &aCommissions) {
-    mDealerSettings->setExternalCommissions(PPSDK::Commissions::fromVariant(aCommissions));
+    m_DealerSettings->setExternalCommissions(PPSDK::Commissions::fromVariant(aCommissions));
 }
 
 //------------------------------------------------------------------------------
 void PaymentService::resetExternalCommissions() {
-    mDealerSettings->resetExternalCommissions();
+    m_DealerSettings->resetExternalCommissions();
 }
 
 //------------------------------------------------------------------------------
@@ -798,7 +798,7 @@ bool PaymentService::convert(const QString &aTargetType) {
 
 //------------------------------------------------------------------------------
 void PaymentService::setForcePayOffline(bool aForcePayOffline) {
-    mForcePayOffline = aForcePayOffline;
+    m_ForcePayOffline = aForcePayOffline;
 }
 
 //------------------------------------------------------------------------------
@@ -818,9 +818,9 @@ bool isEmptyRequiredResponseFields(const SProvider &aProvider) {
 
 //------------------------------------------------------------------------------
 PPSDK::SProvider PaymentService::updateSkipCheckFlag(SProvider aProvider) {
-    if (!aProvider.processor.payOnline && mForcePayOffline) {
+    if (!aProvider.processor.payOnline && m_ForcePayOffline) {
         // Изменяем параметр проверки платежа для возможности проведения его в оффлайне
-        if (!mCore->getNetworkService()->isConnected(true) && !aProvider.processor.skipCheck) {
+        if (!m_Core->getNetworkService()->isConnected(true) && !aProvider.processor.skipCheck) {
             aProvider.processor.skipCheck = isEmptyRequiredResponseFields(aProvider);
         }
     }
@@ -834,7 +834,7 @@ void PaymentService::onStepCompleted(qint64 aPayment, int aStep, bool aError) {
         auto provider = updateSkipCheckFlag(mPaymentService->getProvider(
             getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong()));
 
-        if (mForcePayOffline && isEmptyRequiredResponseFields(provider) &&
+        if (m_ForcePayOffline && isEmptyRequiredResponseFields(provider) &&
             !provider.processor.payOnline) {
             // проверка на сетевую ошибку, константа далеко закопана в проекте
             if (getParameter(PPSDK::CPayment::Parameters::ServerError).toInt() == -1) {
@@ -850,7 +850,7 @@ void PaymentService::onStepCompleted(qint64 aPayment, int aStep, bool aError) {
 
 //------------------------------------------------------------------------------
 void PaymentService::addProviderProvider(QWeakPointer<IProviderProvider> aProvider) {
-    mProviderProviders << aProvider;
+    m_ProviderProviders << aProvider;
 }
 
 //------------------------------------------------------------------------------
@@ -869,14 +869,14 @@ QVariantMap PaymentService::getStatistic() {
 //------------------------------------------------------------------------------
 void PaymentService::checkStatus() {
     PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
-        mCore->getSettingsService()->getAdapter(CAdapterNames::TerminalAdapter));
+        m_Core->getSettingsService()->getAdapter(CAdapterNames::TerminalAdapter));
 
     QList<SDK::PaymentProcessor::SBlockByNote> notes =
         terminalSettings->getCommonSettings().blockNotes;
 
     QString currencyName = terminalSettings->getCurrencySettings().name;
 
-    PPSDK::IDatabaseService *db = mCore->getDatabaseService();
+    PPSDK::IDatabaseService *db = m_Core->getDatabaseService();
 
     QString queryStr =
         QString("SELECT `create_date` FROM `device_status` WHERE `fk_device_id` = 1 AND "
@@ -903,8 +903,8 @@ void PaymentService::checkStatus() {
             setExternalParameter(PPSDK::CPayment::Parameters::Cheated,
                                  PPSDK::EPaymentCheatedType::NotesCount);
 
-            mCore->getEventService()->sendEvent(PPSDK::Event(PPSDK::EEventType::TerminalLock));
-            mCore->getEventService()->sendEvent(
+            m_Core->getEventService()->sendEvent(PPSDK::Event(PPSDK::EEventType::TerminalLock));
+            m_Core->getEventService()->sendEvent(
                 PPSDK::Event(SDK::PaymentProcessor::EEventType::Critical,
                              "Payment",
                              QString("Terminal blocked by nominal limit reached: %1 %2 * %3")
