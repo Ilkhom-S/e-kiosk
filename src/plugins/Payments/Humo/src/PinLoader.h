@@ -57,10 +57,10 @@ private:
 private:
     PaymentFactoryBase *mPaymentFactoryBase;
 
-    bool mIsStopping;
-    QTimer mPinTimer;
-    QThread mPinThread;
-    QMutex mPinMutex;
+    bool m_IsStopping;
+    QTimer m_PinTimer;
+    QThread m_PinThread;
+    QMutex m_PinMutex;
 
     /// Список загруженных пинов для оператора
     struct SProviderPins {

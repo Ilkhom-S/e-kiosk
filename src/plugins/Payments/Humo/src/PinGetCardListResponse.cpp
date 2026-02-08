@@ -21,7 +21,7 @@ PinGetCardListResponse::PinGetCardListResponse(const Request &aRequest,
         card.amount = cardParams.takeFirst().trimmed().toDouble();
         card.fields = cardParams;
 
-        mCards << card;
+        m_Cards << card;
     }
 }
 
@@ -32,7 +32,7 @@ bool PinGetCardListResponse::isOk() {
 
 //---------------------------------------------------------------------------
 const QList<SPinCard> &PinGetCardListResponse::getCards() const {
-    return mCards;
+    return m_Cards;
 }
 
 //---------------------------------------------------------------------------

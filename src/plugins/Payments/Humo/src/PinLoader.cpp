@@ -39,36 +39,36 @@ const QString HumoPin = "humo_pin";
 
 //------------------------------------------------------------------------------
 PinLoader::PinLoader(PaymentFactoryBase *aPaymentFactoryBase)
-    : QObject(aPaymentFactoryBase), mPaymentFactoryBase(aPaymentFactoryBase), mIsStopping(false) {
+    : QObject(aPaymentFactoryBase), mPaymentFactoryBase(aPaymentFactoryBase), m_IsStopping(false) {
     ILogable::setLog(aPaymentFactoryBase->getLog("PinLoader"));
 
-    mPinThread.setObjectName(CPinLoader::ThreadName);
+    m_PinThread.setObjectName(CPinLoader::ThreadName);
 
-    mPinTimer.moveToThread(&mPinThread);
+    m_PinTimer.moveToThread(&m_PinThread);
 
-    connect(&mPinThread, SIGNAL(started()), SLOT(onPinThreadStarted()), Qt::DirectConnection);
-    connect(&mPinThread, SIGNAL(finished()), &mPinTimer, SLOT(stop()), Qt::DirectConnection);
+    connect(&m_PinThread, SIGNAL(started()), SLOT(onPinThreadStarted()), Qt::DirectConnection);
+    connect(&m_PinThread, SIGNAL(finished()), &m_PinTimer, SLOT(stop()), Qt::DirectConnection);
 
-    connect(&mPinTimer, SIGNAL(timeout()), SLOT(onLoadPinList()), Qt::DirectConnection);
+    connect(&m_PinTimer, SIGNAL(timeout()), SLOT(onLoadPinList()), Qt::DirectConnection);
 
-    mIsStopping = false;
-    mPinThread.start();
+    m_IsStopping = false;
+    m_PinThread.start();
 }
 
 //------------------------------------------------------------------------------
 PinLoader::~PinLoader(void) {
-    mIsStopping = true;
+    m_IsStopping = true;
 
-    mPinThread.quit();
-    if (!mPinThread.wait(3000)) {
+    m_PinThread.quit();
+    if (!m_PinThread.wait(3000)) {
         toLog(LogLevel::Error, "Terminate PinLoader thread.");
-        mPinThread.terminate();
+        m_PinThread.terminate();
     }
 }
 
 //------------------------------------------------------------------------------
 PPSDK::SProvider PinLoader::getProviderSpecification(const PPSDK::SProvider &aProvider) {
-    QMutexLocker lock(&mPinMutex);
+    QMutexLocker lock(&m_PinMutex);
 
     if (mPinProviders.contains(aProvider.id) && mPinProviders[aProvider.id].lastLoad.isValid()) {
         // Возвращаем описание с заполненными номиналами.
@@ -80,7 +80,7 @@ PPSDK::SProvider PinLoader::getProviderSpecification(const PPSDK::SProvider &aPr
 
 //------------------------------------------------------------------------------
 void PinLoader::onPinThreadStarted() {
-    mPinTimer.start(CPinLoader::FirstLoadPinTimeout * 1000);
+    m_PinTimer.start(CPinLoader::FirstLoadPinTimeout * 1000);
 }
 
 //------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ void PinLoader::findPinProviders() {
             PPSDK::SProvider provider = dealerSettings->getProvider(providerId);
 
             if (provider.processor.requests.contains(CPinLoader::GetCardsRequestName)) {
-                QMutexLocker lock(&mPinMutex);
+                QMutexLocker lock(&m_PinMutex);
 
                 mPinProviders.insert(provider.id, SProviderPins(provider));
             }
@@ -154,7 +154,7 @@ void PinLoader::onLoadPinList() {
     int failedCount = 0;
 
     foreach (qint64 id, mPinProviders.keys()) {
-        if (mIsStopping) {
+        if (m_IsStopping) {
             toLog(LogLevel::Normal, "Updating providers stopped.");
             break;
         }
@@ -223,13 +223,13 @@ void PinLoader::onLoadPinList() {
     }
 
     // меняем таймаут в зависимости от результата.
-    mPinTimer.start((failedCount ? CPinLoader::ErrorRetryTimeout : CPinLoader::NextLoadTimeout) *
+    m_PinTimer.start((failedCount ? CPinLoader::ErrorRetryTimeout : CPinLoader::NextLoadTimeout) *
                     1000);
 }
 
 //------------------------------------------------------------------------------
 void PinLoader::updatePinList(qint64 aProvider, const QList<SPinCard> &aCards) {
-    QMutexLocker lock(&mPinMutex);
+    QMutexLocker lock(&m_PinMutex);
 
     mPinProviders[aProvider].pins = aCards;
     mPinProviders[aProvider].lastLoad = QDateTime::currentDateTime();
@@ -258,7 +258,7 @@ void PinLoader::updatePinList(qint64 aProvider, const QList<SPinCard> &aCards) {
 
 //------------------------------------------------------------------------------
 QList<SPinCard> PinLoader::getPinCardList(qint64 aProvider) {
-    QMutexLocker lock(&mPinMutex);
+    QMutexLocker lock(&m_PinMutex);
 
     if (mPinProviders.contains(aProvider) && mPinProviders[aProvider].lastLoad.isValid()) {
         // Возвращаем описание с заполненными номиналами.

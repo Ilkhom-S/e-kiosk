@@ -22,7 +22,7 @@ public:
     virtual const QList<SPinCard> &getCards() const;
 
 private:
-    QList<SPinCard> mCards;
+    QList<SPinCard> m_Cards;
 };
 
 //---------------------------------------------------------------------------
