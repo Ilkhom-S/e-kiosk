@@ -189,8 +189,8 @@ protected:
         TParameterList;
 
 private:
-    mutable QReadWriteLock mParametersLock;
-    TParameterList mParameters;
+    mutable QReadWriteLock m_ParametersLock;
+    TParameterList m_Parameters;
 
 protected:
     SDK::PaymentProcessor::IPaymentFactory *mFactory;
@@ -200,5 +200,5 @@ protected:
     SDK::PaymentProcessor::SProvider mProviderSettings;
 
     /// Флаг - true, если идёт восстановление платежа из списка параметров.
-    bool mIsRestoring;
+    bool m_IsRestoring;
 };
