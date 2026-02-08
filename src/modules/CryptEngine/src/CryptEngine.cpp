@@ -34,17 +34,17 @@ ICryptEngine &instance() {
 } // namespace CCryptEngine
 
 //---------------------------------------------------------------------------
-CryptEngine::CryptEngine() : mMutex(), mInitialized(false), mEngine(CCrypt::ETypeEngine::File) {}
+CryptEngine::CryptEngine() : m_Mutex(), m_Initialized(false), mEngine(CCrypt::ETypeEngine::File) {}
 
 //---------------------------------------------------------------------------
 CryptEngine::~CryptEngine() {}
 
 //---------------------------------------------------------------------------
 bool CryptEngine::initialize() {
-    if (!mInitialized) {
+    if (!m_Initialized) {
         if (CRYPT_IS_SUCCESS(Crypt_Initialize())) {
             Crypt_SetHashAlg(CCryptEngine::IprivHashAlg);
-            mInitialized = true;
+            m_Initialized = true;
 
             return true;
         } else {
@@ -59,15 +59,15 @@ bool CryptEngine::initialize() {
 void CryptEngine::shutdown() {
     releaseKeyPairs();
 
-    if (mInitialized) {
+    if (m_Initialized) {
         Crypt_Done();
-        mInitialized = false;
+        m_Initialized = false;
     }
 }
 
 //---------------------------------------------------------------------------
 QSet<CCrypt::ETypeEngine> CryptEngine::availableEngines() {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
     QSet<CCrypt::ETypeEngine> result;
 
@@ -93,7 +93,7 @@ QSet<CCrypt::ETypeEngine> CryptEngine::availableEngines() {
 
 //---------------------------------------------------------------------------
 CCrypt::TokenStatus CryptEngine::getTokenStatus(CCrypt::ETypeEngine aEngine) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
     CCrypt::TokenStatus result;
 
@@ -126,7 +126,7 @@ CCrypt::TokenStatus CryptEngine::getTokenStatus(CCrypt::ETypeEngine aEngine) {
 //---------------------------------------------------------------------------
 bool CryptEngine::initializeToken(CCrypt::ETypeEngine aEngine) {
 #ifdef TC_USE_TOKEN
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
     Crypt_Ctrl_Int(aEngine, IPRIV_ENGCMD_SET_PKCS11_SLOT, 0);
     Crypt_Ctrl_String(aEngine, IPRIV_ENGCMD_SET_PIN, getRootPassword()[0].data());
@@ -144,7 +144,7 @@ bool CryptEngine::createKeyPair(const QString &aPath,
                                 const QString &aPassword,
                                 const ulong aSerialNumber,
                                 QString &aErrorDescription) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
     IPRIV_KEY secretKey, publicKey;
 
@@ -202,15 +202,15 @@ QByteArray CryptEngine::generatePassword() const {
 bool CryptEngine::exportSecretKey(int aKeyPair,
                                   QByteArray &aSecretKey,
                                   const QByteArray &aPassword) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    if (!mKeyPairs.contains(aKeyPair)) {
+    if (!m_KeyPairs.contains(aKeyPair)) {
         return false;
     }
 
     aSecretKey.resize(CCryptEngine::KeyExportBufferSize);
 
-    TKeyPair pair = mKeyPairs[aKeyPair];
+    TKeyPair pair = m_KeyPairs[aKeyPair];
 
     int result =
         Crypt_ExportSecretKey(aSecretKey.data(), aSecretKey.size(), aPassword.data(), &pair.first);
@@ -247,15 +247,15 @@ bool CryptEngine::exportSecretKeyToFile(int aKeyPair,
 
 //---------------------------------------------------------------------------
 bool CryptEngine::exportPublicKey(int aKeyPair, QByteArray &aPublicKey, ulong &aSerialNumber) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    if (!mKeyPairs.contains(aKeyPair)) {
+    if (!m_KeyPairs.contains(aKeyPair)) {
         return false;
     }
 
     aPublicKey.resize(CCryptEngine::KeyExportBufferSize);
 
-    TKeyPair pair = mKeyPairs[aKeyPair];
+    TKeyPair pair = m_KeyPairs[aKeyPair];
 
     int result =
         Crypt_ExportPublicKey(aPublicKey.data(), aPublicKey.size(), &pair.second, &pair.first);
@@ -297,10 +297,10 @@ bool CryptEngine::exportPublicKeyToFile(int aKeyPair,
 
 //---------------------------------------------------------------------------
 bool CryptEngine::replacePublicKey(int aKeyPair, const QByteArray &aPublicKey) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
     // Проверяем есть ли такая пара.
-    if (!mKeyPairs.contains(aKeyPair)) {
+    if (!m_KeyPairs.contains(aKeyPair)) {
         return false;
     }
 
@@ -311,9 +311,9 @@ bool CryptEngine::replacePublicKey(int aKeyPair, const QByteArray &aPublicKey) {
         return false;
     }
 
-    Crypt_CloseKey(&mKeyPairs[aKeyPair].second);
+    Crypt_CloseKey(&m_KeyPairs[aKeyPair].second);
 
-    mKeyPairs[aKeyPair].second = key;
+    m_KeyPairs[aKeyPair].second = key;
 
     return true;
 }
@@ -336,13 +336,13 @@ bool CryptEngine::createKeyPair(int aKeyPair,
         return false;
     }
 
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
     std::optional<TKeyPair> oldPair;
 
     // Если уже загружена эта пара, то выгружаем и перетираем.
-    if (mKeyPairs.contains(aKeyPair)) {
-        oldPair = mKeyPairs.take(aKeyPair);
+    if (m_KeyPairs.contains(aKeyPair)) {
+        oldPair = m_KeyPairs.take(aKeyPair);
     }
 
     if (aEngine == CCrypt::ETypeEngine::RuToken) {
@@ -358,7 +358,7 @@ bool CryptEngine::createKeyPair(int aKeyPair,
         aErrorDescription = errorToString(result);
 
         if (oldPair.has_value()) {
-            mKeyPairs.insert(aKeyPair, oldPair.value());
+            m_KeyPairs.insert(aKeyPair, oldPair.value());
         }
 
         return false;
@@ -369,7 +369,7 @@ bool CryptEngine::createKeyPair(int aKeyPair,
         }
     }
 
-    mKeyPairs[aKeyPair] = pair;
+    m_KeyPairs[aKeyPair] = pair;
 
     return true;
 }
@@ -391,9 +391,9 @@ bool CryptEngine::loadKeyPair(int aKeyPair,
     }
 #endif
 
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    if (mKeyPairs.contains(aKeyPair)) {
+    if (m_KeyPairs.contains(aKeyPair)) {
         // Пара ключей с таким номером уже загружена, выгружаем.
         releaseKeyPair(aKeyPair);
     }
@@ -439,17 +439,17 @@ bool CryptEngine::loadKeyPair(int aKeyPair,
         return false;
     }
 
-    mKeyPairs[aKeyPair] = keyPair;
+    m_KeyPairs[aKeyPair] = keyPair;
 
     return true;
 }
 
 //---------------------------------------------------------------------------
 QString CryptEngine::getKeyPairSerialNumber(int aKeyPair) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    TKeyPairList::iterator keyPair = m_KeyPairs.find(aKeyPair);
+    if (keyPair == m_KeyPairs.end()) {
         return QString();
     }
 
@@ -462,15 +462,15 @@ QString CryptEngine::getKeyPairSerialNumber(int aKeyPair) {
 
 //---------------------------------------------------------------------------
 bool CryptEngine::releaseKeyPair(int aKeyPair) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    TKeyPairList::iterator it = mKeyPairs.find(aKeyPair);
+    TKeyPairList::iterator it = m_KeyPairs.find(aKeyPair);
 
-    if (it != mKeyPairs.end()) {
+    if (it != m_KeyPairs.end()) {
         Crypt_CloseKey(&it.value().first);
         Crypt_CloseKey(&it.value().second);
 
-        mKeyPairs.erase(it);
+        m_KeyPairs.erase(it);
 
         return true;
     } else {
@@ -480,10 +480,10 @@ bool CryptEngine::releaseKeyPair(int aKeyPair) {
 
 //---------------------------------------------------------------------------
 void CryptEngine::releaseKeyPairs() {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    while (!mKeyPairs.isEmpty()) {
-        releaseKeyPair(mKeyPairs.keys()[0]);
+    while (!m_KeyPairs.isEmpty()) {
+        releaseKeyPair(m_KeyPairs.keys()[0]);
     }
 }
 
@@ -492,10 +492,10 @@ bool CryptEngine::sign(int aKeyPair,
                        const QByteArray &aRequest,
                        QByteArray &aSignature,
                        QString &aErrorDescription) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    TKeyPairList::iterator keyPair = m_KeyPairs.find(aKeyPair);
+    if (keyPair == m_KeyPairs.end()) {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -526,10 +526,10 @@ bool CryptEngine::signDetach(int aKeyPair,
                              const QByteArray &aRequest,
                              QByteArray &aSignature,
                              QString &aErrorDescription) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    TKeyPairList::iterator keyPair = m_KeyPairs.find(aKeyPair);
+    if (keyPair == m_KeyPairs.end()) {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -560,10 +560,10 @@ bool CryptEngine::verify(int aKeyPair,
                          const QByteArray &aResponseString,
                          QByteArray &aOriginalResponse,
                          QString &aErrorDescription) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    TKeyPairList::iterator keyPair = m_KeyPairs.find(aKeyPair);
+    if (keyPair == m_KeyPairs.end()) {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -594,10 +594,10 @@ bool CryptEngine::verifyDetach(int aKeyPair,
                                const QByteArray &aResponseString,
                                const QByteArray &aSignature,
                                QString &aErrorDescription) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    TKeyPairList::iterator keyPair = m_KeyPairs.find(aKeyPair);
+    if (keyPair == m_KeyPairs.end()) {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -624,10 +624,10 @@ bool CryptEngine::encrypt(int aKeyPair,
                           QByteArray &aResult,
                           CCrypt::ETypeKey aKey,
                           QString &aErrorDescription) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    TKeyPairList::iterator keyPair = m_KeyPairs.find(aKeyPair);
+    if (keyPair == m_KeyPairs.end()) {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -665,10 +665,10 @@ bool CryptEngine::encryptLong(int aKeyPair,
                               QByteArray &aResult,
                               CCrypt::ETypeKey aKey,
                               QString &aErrorDescription) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    TKeyPairList::iterator keyPair = m_KeyPairs.find(aKeyPair);
+    if (keyPair == m_KeyPairs.end()) {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -706,10 +706,10 @@ bool CryptEngine::decrypt(int aKeyPair,
                           QByteArray &aResult,
                           CCrypt::ETypeKey aKey,
                           QString &aErrorDescription) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    TKeyPairList::iterator keyPair = m_KeyPairs.find(aKeyPair);
+    if (keyPair == m_KeyPairs.end()) {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -747,10 +747,10 @@ bool CryptEngine::decryptLong(int aKeyPair,
                               QByteArray &aResult,
                               CCrypt::ETypeKey aKey,
                               QString &aErrorDescription) {
-    QMutexLocker locker(&mMutex);
+    QMutexLocker locker(&m_Mutex);
 
-    TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    TKeyPairList::iterator keyPair = m_KeyPairs.find(aKeyPair);
+    if (keyPair == m_KeyPairs.end()) {
         aErrorDescription = "key pair not found";
 
         return false;

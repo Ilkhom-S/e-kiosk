@@ -203,12 +203,12 @@ private:
     QString errorToString(int aError) const;
 
 private:
-    bool mInitialized;
+    bool m_Initialized;
     CCrypt::ETypeEngine mEngine;
 
-    QRecursiveMutex mMutex;
+    QRecursiveMutex m_Mutex;
 
-    TKeyPairList mKeyPairs;
+    TKeyPairList m_KeyPairs;
 };
 
 //---------------------------------------------------------------------------
