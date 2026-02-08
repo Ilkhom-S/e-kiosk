@@ -6,14 +6,14 @@ def rename_member_vars(file_path):
     try:
         with open(file_path, 'r') as f:
             content = f.read()
-        
+
         # Pattern: m[A-Z][a-zA-Z0-9_]* -> m_[A-Z][a-zA-Z0-9_]*
         # This converts mDeviceName to m_DeviceName
         pattern = r'\bm([A-Z][a-zA-Z0-9_]*)\b'
         replacement = r'm_\1'
-        
+
         new_content = re.sub(pattern, replacement, content)
-        
+
         if new_content != content:
             with open(file_path, 'w') as f:
                 f.write(new_content)

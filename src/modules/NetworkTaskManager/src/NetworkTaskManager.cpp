@@ -65,7 +65,7 @@ void NetworkTaskManager::removeTask(NetworkTask *aTask) {
 
 //------------------------------------------------------------------------
 void NetworkTaskManager::onSetProxy(QNetworkProxy aProxy) {
-    mNetwork->setProxy(aProxy);
+    m_Network->setProxy(aProxy);
 }
 
 //------------------------------------------------------------------------
@@ -113,13 +113,13 @@ void NetworkTaskManager::onAddTask(NetworkTask *aTask) {
     case NetworkTask::Head: {
         aTask->getDataStream()->clear();
 
-        reply = mNetwork->head(request);
+        reply = m_Network->head(request);
 
         break;
     }
 
     case NetworkTask::Get: {
-        reply = mNetwork->get(request);
+        reply = m_Network->get(request);
 
         break;
     }
@@ -129,7 +129,7 @@ void NetworkTaskManager::onAddTask(NetworkTask *aTask) {
 
         toLog(LogLevel::Debug, QString("> POST %1 bytes").arg(postData.size()));
 
-        reply = mNetwork->post(request, postData);
+        reply = m_Network->post(request, postData);
 
         break;
     }
@@ -146,8 +146,8 @@ void NetworkTaskManager::onAddTask(NetworkTask *aTask) {
     }
     }
 
-    // TODO mTasks[reply] = aTask;
-    mTasks[reply] = QPointer<NetworkTask>(aTask);
+    // TODO m_Tasks[reply] = aTask;
+    m_Tasks[reply] = QPointer<NetworkTask>(aTask);
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), SLOT(onTaskProgress(qint64, qint64)));
     connect(
@@ -164,7 +164,7 @@ void NetworkTaskManager::onAddTask(NetworkTask *aTask) {
 
 //------------------------------------------------------------------------
 void NetworkTaskManager::onRemoveTask(NetworkTask *aTask) {
-    for (TTaskMap::iterator it = mTasks.begin(); it != mTasks.end(); ++it) {
+    for (TTaskMap::iterator it = m_Tasks.begin(); it != m_Tasks.end(); ++it) {
         if (it.value().data() == aTask && !it.value().isNull()) {
             disconnect(it.key(), 0, this, 0);
 
@@ -183,7 +183,7 @@ void NetworkTaskManager::onRemoveTask(NetworkTask *aTask) {
 
             it.key()->deleteLater();
 
-            mTasks.erase(it);
+            m_Tasks.erase(it);
 
             return;
         }
@@ -192,9 +192,9 @@ void NetworkTaskManager::onRemoveTask(NetworkTask *aTask) {
 
 //------------------------------------------------------------------------
 void NetworkTaskManager::onTaskProgress(qint64 aReceived, qint64 aTotal) {
-    TTaskMap::iterator it = mTasks.find(dynamic_cast<QNetworkReply *>(sender()));
+    TTaskMap::iterator it = m_Tasks.find(dynamic_cast<QNetworkReply *>(sender()));
 
-    if (it != mTasks.end() && !it.value().isNull()) {
+    if (it != m_Tasks.end() && !it.value().isNull()) {
         auto task = it.value().data();
 
         task->setSize(aReceived, aTotal);
@@ -204,9 +204,9 @@ void NetworkTaskManager::onTaskProgress(qint64 aReceived, qint64 aTotal) {
 
 //------------------------------------------------------------------------
 void NetworkTaskManager::onTaskUploadProgress(qint64, qint64) {
-    TTaskMap::iterator it = mTasks.find(dynamic_cast<QNetworkReply *>(sender()));
+    TTaskMap::iterator it = m_Tasks.find(dynamic_cast<QNetworkReply *>(sender()));
 
-    if (it != mTasks.end() && !it.value().isNull()) {
+    if (it != m_Tasks.end() && !it.value().isNull()) {
         it.value().data()->resetTimer();
     }
 }
@@ -215,8 +215,8 @@ void NetworkTaskManager::onTaskUploadProgress(qint64, qint64) {
 void NetworkTaskManager::onTaskReadyRead() {
     QNetworkReply *reply = dynamic_cast<QNetworkReply *>(sender());
 
-    if (reply && mTasks.contains(reply) && !mTasks.value(reply).isNull()) {
-        auto task = mTasks.value(reply).data();
+    if (reply && m_Tasks.contains(reply) && !m_Tasks.value(reply).isNull()) {
+        auto task = m_Tasks.value(reply).data();
 
         if (task) {
             QVariant httpStatusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
@@ -306,7 +306,7 @@ void NetworkTaskManager::onTaskReadyRead() {
 
 //------------------------------------------------------------------------
 void NetworkTaskManager::onTaskError(QNetworkReply::NetworkError aError) {
-    for (TTaskMap::iterator it = mTasks.begin(); it != mTasks.end(); ++it) {
+    for (TTaskMap::iterator it = m_Tasks.begin(); it != m_Tasks.end(); ++it) {
         if (it.key() == sender() && !it.value().isNull()) {
             it.value().data()->setError(aError, it.key()->errorString());
 
@@ -351,7 +351,7 @@ void NetworkTaskManager::onTaskSslErrors(const QList<QSslError> &aErrors) {
 void NetworkTaskManager::onTaskComplete() {
     QNetworkReply *reply = dynamic_cast<QNetworkReply *>(sender());
 
-    for (TTaskMap::iterator it = mTasks.begin(); it != mTasks.end(); ++it) {
+    for (TTaskMap::iterator it = m_Tasks.begin(); it != m_Tasks.end(); ++it) {
         if (it.key() == reply && !it.value().isNull()) {
             auto task = it.value().data();
 
@@ -400,13 +400,13 @@ void NetworkTaskManager::onTaskComplete() {
 
 //------------------------------------------------------------------------
 void NetworkTaskManager::run() {
-    mNetwork = QSharedPointer<QNetworkAccessManager>(new QNetworkAccessManager());
+    m_Network = QSharedPointer<QNetworkAccessManager>(new QNetworkAccessManager());
 
     QThread::exec();
 
     onClearTasks();
 
-    mNetwork.clear();
+    m_Network.clear();
 }
 
 //------------------------------------------------------------------------
@@ -452,12 +452,12 @@ void NetworkTaskManager::loadCerts() {
 
 //------------------------------------------------------------------------
 void NetworkTaskManager::setUserAgent(const QString &aUserAgent) {
-    mUserAgent = aUserAgent;
+    m_UserAgent = aUserAgent;
 }
 
 //------------------------------------------------------------------------
 QString NetworkTaskManager::getUserAgent() const {
-    return mUserAgent;
+    return m_UserAgent;
 }
 
 //------------------------------------------------------------------------
@@ -467,8 +467,8 @@ void NetworkTaskManager::clearTasks() {
 
 //------------------------------------------------------------------------
 void NetworkTaskManager::onClearTasks() {
-    while (!mTasks.isEmpty()) {
-        onRemoveTask(mTasks.begin().value().data());
+    while (!m_Tasks.isEmpty()) {
+        onRemoveTask(m_Tasks.begin().value().data());
     }
 }
 

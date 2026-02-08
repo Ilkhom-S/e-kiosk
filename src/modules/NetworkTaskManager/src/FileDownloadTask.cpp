@@ -7,15 +7,15 @@
 #include "FileDataStream.h"
 
 FileDownloadTask::FileDownloadTask(const QUrl &aUrl, const QString &aPath)
-    : mUrl(aUrl), mPath(aPath) {
-    setUrl(mUrl);
-    setDataStream(new FileDataStream(mPath));
+    : m_Url(aUrl), m_Path(aPath) {
+    setUrl(m_Url);
+    setDataStream(new FileDataStream(m_Path));
     setFlags(NetworkTask::Continue);
 }
 
 //------------------------------------------------------------------------
 QString FileDownloadTask::getPath() const {
-    return mPath;
+    return m_Path;
 }
 
 //------------------------------------------------------------------------
@@ -27,9 +27,9 @@ void FileDownloadTask::closeFile() {
 void FileDownloadTask::resetFile() {
     closeFile();
 
-    QFile::remove(mPath);
+    QFile::remove(m_Path);
 
-    setDataStream(new FileDataStream(mPath));
+    setDataStream(new FileDataStream(m_Path));
 }
 
 //------------------------------------------------------------------------

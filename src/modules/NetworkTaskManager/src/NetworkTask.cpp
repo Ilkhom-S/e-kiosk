@@ -10,12 +10,12 @@
 #include "NetworkTaskManager.h"
 
 NetworkTask::NetworkTask()
-    : mType(Get), mTimeout(0), mError(NotReady), mHttpError(0), mProcessing(false),
-      mParentThread(QThread::currentThread()), mFlags(None), mSize(0), mCurrentSize(0) {
-    mTimer.setParent(this);
-    mTimer.setSingleShot(true);
+    : m_Type(Get), m_Timeout(0), m_Error(NotReady), m_HttpError(0), m_Processing(false),
+      mParentThread(QThread::currentThread()), m_Flags(None), mSize(0), mCurrentSize(0) {
+    m_Timer.setParent(this);
+    m_Timer.setSingleShot(true);
 
-    connect(&mTimer, SIGNAL(timeout()), SLOT(onTimeout()));
+    connect(&m_Timer, SIGNAL(timeout()), SLOT(onTimeout()));
 }
 
 //------------------------------------------------------------------------
@@ -108,12 +108,12 @@ QString NetworkTask::errorString() {
         return "task is in progress";
 
     default:
-        if (mNetworkReplyError.isEmpty()) {
+        if (m_NetworkReplyError.isEmpty()) {
             return QString("(%1) %2")
                 .arg(getError())
                 .arg(qtNetworkError((QNetworkReply::NetworkError)getError()));
         } else {
-            return QString("(%1) %2").arg(getError()).arg(mNetworkReplyError);
+            return QString("(%1) %2").arg(getError()).arg(m_NetworkReplyError);
         }
     }
 }
@@ -121,27 +121,27 @@ QString NetworkTask::errorString() {
 //------------------------------------------------------------------------
 void NetworkTask::setProcessing(NetworkTaskManager *aManager, bool aProcessing) {
     mManager = aManager;
-    mProcessing = aProcessing;
+    m_Processing = aProcessing;
 
     if (aProcessing) {
-        if (mTimer.interval()) {
-            mTimer.start();
+        if (m_Timer.interval()) {
+            m_Timer.start();
         }
 
         clearErrors();
 
         this->moveToThread(getManager()->thread());
 
-        mProcessingMutex.lock();
+        m_ProcessingMutex.lock();
     } else {
-        mTimer.stop();
+        m_Timer.stop();
 
         if (mParentThread != nullptr && mParentThread->isRunning()) {
             this->moveToThread(mParentThread);
         }
 
-        if (mVerifier) {
-            if (!mVerifier->verify(this, getDataStream()->readAll())) {
+        if (m_Verifier) {
+            if (!m_Verifier->verify(this, getDataStream()->readAll())) {
                 if (getError() == NoError) {
                     setError(VerifyFailed);
                 }
@@ -154,64 +154,64 @@ void NetworkTask::setProcessing(NetworkTaskManager *aManager, bool aProcessing) 
 
         emit onComplete();
 
-        mProcessingCondition.wakeAll();
+        m_ProcessingCondition.wakeAll();
     }
 }
 
 //------------------------------------------------------------------------
 void NetworkTask::resetTimer() {
-    if (mProcessing) {
-        if (mTimer.interval()) {
-            mTimer.start();
+    if (m_Processing) {
+        if (m_Timer.interval()) {
+            m_Timer.start();
         }
     }
 }
 
 //------------------------------------------------------------------------
 void NetworkTask::clearErrors() {
-    mError = QNetworkReply::NoError;
-    mNetworkReplyError.clear();
-    mHttpError = 0;
+    m_Error = QNetworkReply::NoError;
+    m_NetworkReplyError.clear();
+    m_HttpError = 0;
 }
 
 //------------------------------------------------------------------------
 void NetworkTask::setType(Type aType) {
-    mType = aType;
+    m_Type = aType;
 }
 
 //------------------------------------------------------------------------
 NetworkTask::Type NetworkTask::getType() const {
-    return mType;
+    return m_Type;
 }
 
 //------------------------------------------------------------------------
 void NetworkTask::setUrl(const QUrl &aUrl) {
-    mUrl = aUrl;
+    m_Url = aUrl;
 }
 
 //------------------------------------------------------------------------
 const QUrl &NetworkTask::getUrl() const {
-    return mUrl;
+    return m_Url;
 }
 
 //------------------------------------------------------------------------
 void NetworkTask::setTimeout(int aMsec) {
-    mTimer.setInterval(aMsec);
+    m_Timer.setInterval(aMsec);
 }
 
 //------------------------------------------------------------------------
 int NetworkTask::getTimeout() const {
-    return mTimeout;
+    return m_Timeout;
 }
 
 //------------------------------------------------------------------------
 void NetworkTask::setFlags(Flags aFlags) {
-    mFlags = aFlags;
+    m_Flags = aFlags;
 }
 
 //------------------------------------------------------------------------
 NetworkTask::Flags NetworkTask::getFlags() const {
-    return mFlags;
+    return m_Flags;
 }
 
 //------------------------------------------------------------------------
@@ -221,33 +221,33 @@ void NetworkTask::setError(int aError, const QString &aMessage) {
         return;
     }
 
-    mError = aError;
-    mNetworkReplyError = aMessage;
+    m_Error = aError;
+    m_NetworkReplyError = aMessage;
 }
 
 //------------------------------------------------------------------------
 int NetworkTask::getError() const {
-    return mError;
+    return m_Error;
 }
 
 //------------------------------------------------------------------------
 void NetworkTask::setHttpError(int aError) {
-    mHttpError = aError;
+    m_HttpError = aError;
 }
 
 //------------------------------------------------------------------------
 int NetworkTask::getHttpError() const {
-    return mHttpError;
+    return m_HttpError;
 }
 
 //------------------------------------------------------------------------
 void NetworkTask::setVerifier(IVerifier *aVerifier) {
-    mVerifier = QSharedPointer<IVerifier>(aVerifier);
+    m_Verifier = QSharedPointer<IVerifier>(aVerifier);
 }
 
 //------------------------------------------------------------------------
 IVerifier *NetworkTask::getVerifier() const {
-    return mVerifier.data();
+    return m_Verifier.data();
 }
 
 //------------------------------------------------------------------------
@@ -279,13 +279,13 @@ NetworkTask::TByteMap &NetworkTask::getResponseHeader() {
 
 //------------------------------------------------------------------------
 void NetworkTask::waitForFinished() {
-    if (mProcessing) {
-        mProcessingCondition.wait(&mProcessingMutex);
+    if (m_Processing) {
+        m_ProcessingCondition.wait(&m_ProcessingMutex);
     }
 
     // Асинхронно разблокируем мьютекс, если задача не завершена
-    mProcessingMutex.tryLock();
-    mProcessingMutex.unlock();
+    m_ProcessingMutex.tryLock();
+    m_ProcessingMutex.unlock();
 }
 
 //------------------------------------------------------------------------

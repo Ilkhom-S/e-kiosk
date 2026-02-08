@@ -32,8 +32,8 @@ QString Packer::getToolExecutableName() {
 
 //------------------------------------------------------------------------------
 Packer::Packer(const QString &aToolPath, ILog *aLog)
-    : mExitCode(0), mUpdateMode(false), mFormat(Zip), mLevel(9), mRecursive(false),
-      mTimeout(CPacker::DefaultTimeout), mToolPath(getToolExecutableName()) {
+    : m_ExitCode(0), m_UpdateMode(false), m_Format(Zip), m_Level(9), m_Recursive(false),
+      m_Timeout(CPacker::DefaultTimeout), m_ToolPath(getToolExecutableName()) {
     if (aLog) {
         setLog(aLog);
     }
@@ -44,16 +44,16 @@ Packer::Packer(const QString &aToolPath, ILog *aLog)
 //------------------------------------------------------------------------------
 void Packer::setToolPath(const QString &aToolPath) {
     if (!aToolPath.isEmpty()) {
-        mToolPath = QDir::toNativeSeparators(
+        m_ToolPath = QDir::toNativeSeparators(
             QDir::cleanPath(aToolPath + QDir::separator() + getToolExecutableName()));
 
-        toLog(LogLevel::Debug, QString("Zip tool path: '%1'").arg(mToolPath));
+        toLog(LogLevel::Debug, QString("Zip tool path: '%1'").arg(m_ToolPath));
     }
 }
 
 //------------------------------------------------------------------------------
 void Packer::setUpdateMode(bool aUpdateMode) {
-    mUpdateMode = aUpdateMode;
+    m_UpdateMode = aUpdateMode;
 }
 
 //---------------------------------------------------------------------------
@@ -283,10 +283,10 @@ QStringList Packer::pack(const QString &aTargetName,
                          const QStringList &aExcludeWildcard,
                          int aMaxPartSize) {
     QStringList zipArguments =
-        QStringList() << (mUpdateMode ? "u" : "a") << (mFormat == SevenZip ? "-t7z" : "-tzip")
-                      << "-bd" << QString("-mx=%1").arg(mLevel) << "-ssw" << "-y" << aTargetName;
+        QStringList() << (m_UpdateMode ? "u" : "a") << (m_Format == SevenZip ? "-t7z" : "-tzip")
+                      << "-bd" << QString("-mx=%1").arg(m_Level) << "-ssw" << "-y" << aTargetName;
 
-    if (mRecursive) {
+    if (m_Recursive) {
         zipArguments << "-r";
     }
 
@@ -306,7 +306,7 @@ QStringList Packer::pack(const QString &aTargetName,
 
     QFileInfo info(aTargetName);
 
-    if (!mUpdateMode) {
+    if (!m_UpdateMode) {
         // remove old archive
         for (const QString &file : QDir(info.absolutePath(), info.fileName() + "*").entryList()) {
             QFile::remove(QDir::toNativeSeparators(
@@ -315,39 +315,39 @@ QStringList Packer::pack(const QString &aTargetName,
     }
 
     toLog(LogLevel::Normal,
-          QString("Executing command: %1 %2").arg(mToolPath).arg(zipArguments.join(" ")));
+          QString("Executing command: %1 %2").arg(m_ToolPath).arg(zipArguments.join(" ")));
 
-    mZipProcess.start(mToolPath, zipArguments);
-    if (!mZipProcess.waitForFinished(mTimeout)) {
-        mExitCode = -1;
+    m_ZipProcess.start(m_ToolPath, zipArguments);
+    if (!m_ZipProcess.waitForFinished(m_Timeout)) {
+        m_ExitCode = -1;
         toLog(LogLevel::Error,
               QString("Unknown error while executing command or timeout expired(%1 sec): %2 %3")
-                  .arg(mTimeout / 1000., 0, 'f', 1)
-                  .arg(mToolPath)
+                  .arg(m_Timeout / 1000., 0, 'f', 1)
+                  .arg(m_ToolPath)
                   .arg(zipArguments.join(" ")));
 
         return QStringList();
     }
 
-    mExitCode = mZipProcess.exitCode();
-    mMessages = QString::fromLocal8Bit(mZipProcess.readAllStandardOutput()).remove("\r");
+    m_ExitCode = m_ZipProcess.exitCode();
+    m_Messages = QString::fromLocal8Bit(m_ZipProcess.readAllStandardOutput()).remove("\r");
 
-    if (mExitCode == 1) {
+    if (m_ExitCode == 1) {
         toLog(
             LogLevel::Warning,
             QString("Execute command have some warning: %1 %2. Return code: %3. Output stream: %4")
-                .arg(mToolPath)
+                .arg(m_ToolPath)
                 .arg(zipArguments.join(" "))
-                .arg(mExitCode)
-                .arg(mMessages));
+                .arg(m_ExitCode)
+                .arg(m_Messages));
     } else {
-        if (mExitCode > 1) {
+        if (m_ExitCode > 1) {
             toLog(LogLevel::Error,
                   QString("Can't execute command: %1 %2. Return code: %3. Output stream: %4")
-                      .arg(mToolPath)
+                      .arg(m_ToolPath)
                       .arg(zipArguments.join(" "))
-                      .arg(mExitCode)
-                      .arg(mMessages));
+                      .arg(m_ExitCode)
+                      .arg(m_Messages));
 
             return QStringList();
         }
@@ -360,21 +360,22 @@ QStringList Packer::pack(const QString &aTargetName,
 bool Packer::test(const QString &aTargetName) {
     QString zipCommand = QString("t \"%1\"").arg(QDir::toNativeSeparators(aTargetName));
 
-    mZipProcess.setArguments(QStringList() << zipCommand);
-    mZipProcess.start(mToolPath);
-    if (!mZipProcess.waitForFinished(mTimeout)) {
-        mExitCode = -1;
-        toLog(
-            LogLevel::Error,
-            QString("Unknown error while executing command: %1 %2").arg(mToolPath).arg(zipCommand));
+    m_ZipProcess.setArguments(QStringList() << zipCommand);
+    m_ZipProcess.start(m_ToolPath);
+    if (!m_ZipProcess.waitForFinished(m_Timeout)) {
+        m_ExitCode = -1;
+        toLog(LogLevel::Error,
+              QString("Unknown error while executing command: %1 %2")
+                  .arg(m_ToolPath)
+                  .arg(zipCommand));
 
         return false;
     }
 
-    mExitCode = mZipProcess.exitCode();
-    mMessages = QString::fromLocal8Bit(mZipProcess.readAllStandardOutput()).remove("\r");
+    m_ExitCode = m_ZipProcess.exitCode();
+    m_Messages = QString::fromLocal8Bit(m_ZipProcess.readAllStandardOutput()).remove("\r");
 
-    return mExitCode == 0;
+    return m_ExitCode == 0;
 }
 
 //------------------------------------------------------------------------------
@@ -395,63 +396,63 @@ bool Packer::unpack(const QString &aSourceName,
     commanParams << aSourceName;
     commanParams.append(aExtractFiles);
 
-    mZipProcess.start(mToolPath, commanParams);
+    m_ZipProcess.start(m_ToolPath, commanParams);
 
-    if (!mZipProcess.waitForFinished(mTimeout)) {
-        mExitCode = -1;
+    if (!m_ZipProcess.waitForFinished(m_Timeout)) {
+        m_ExitCode = -1;
         toLog(LogLevel::Error,
               QString("Unknown error while executing command: %1 %2.")
-                  .arg(mToolPath)
+                  .arg(m_ToolPath)
                   .arg(commanParams.join(" ")));
 
         return false;
     }
 
-    mExitCode = mZipProcess.exitCode();
-    mMessages = QString::fromLocal8Bit(mZipProcess.readAllStandardOutput()).remove("\r");
+    m_ExitCode = m_ZipProcess.exitCode();
+    m_Messages = QString::fromLocal8Bit(m_ZipProcess.readAllStandardOutput()).remove("\r");
 
-    return mExitCode == 0;
+    return m_ExitCode == 0;
 }
 
 //------------------------------------------------------------------------------
 int Packer::exitCode() const {
-    return mExitCode;
+    return m_ExitCode;
 }
 
 //------------------------------------------------------------------------------
 const QString &Packer::messages() const {
-    return mMessages;
+    return m_Messages;
 }
 
 //------------------------------------------------------------------------------
 void Packer::setLevel(int aLevel) {
     Q_ASSERT(aLevel >= 3 && aLevel <= 9);
 
-    mLevel = aLevel;
+    m_Level = aLevel;
 }
 
 //------------------------------------------------------------------------------
 void Packer::setFormat(Packer::Format aFormat) {
-    mFormat = aFormat;
+    m_Format = aFormat;
 }
 
 //------------------------------------------------------------------------------
 void Packer::setTimeout(int aTimeout) {
-    mTimeout = aTimeout;
+    m_Timeout = aTimeout;
 }
 
 //------------------------------------------------------------------------------
 void Packer::terminate() {
-    if (mZipProcess.state() != QProcess::NotRunning) {
+    if (m_ZipProcess.state() != QProcess::NotRunning) {
         toLog(LogLevel::Error, "Terminate packer process.");
 
-        mZipProcess.kill();
+        m_ZipProcess.kill();
     }
 }
 
 //------------------------------------------------------------------------------
 QString Packer::exitCodeDescription() const {
-    switch (mExitCode) {
+    switch (m_ExitCode) {
     case -1:
         return QString("Error or timeout execution %1").arg(getToolExecutableName());
     case 0:
@@ -467,13 +468,13 @@ QString Packer::exitCodeDescription() const {
     case 255:
         return "7zip: User stopped the process";
     default:
-        return QString("7zip: Unknown exit code: %1").arg(mExitCode);
+        return QString("7zip: Unknown exit code: %1").arg(m_ExitCode);
     }
 }
 
 //------------------------------------------------------------------------------
 void Packer::setRecursive(bool aRecursive) {
-    mRecursive = aRecursive;
+    m_Recursive = aRecursive;
 }
 
 //------------------------------------------------------------------------------
