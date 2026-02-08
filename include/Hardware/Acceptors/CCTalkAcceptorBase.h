@@ -45,10 +45,10 @@ protected:
     virtual bool canApplySimpleStatusCodes(const TStatusCodes &aStatusCodes);
 
     /// Признак включенности на прием денег.
-    bool mEnabled;
+    bool m_Enabled;
 
     /// Валюта. Нужна для установки предупреждения о старой прошивке.
-    int mCurrency;
+    int m_Currency;
 };
 
 //--------------------------------------------------------------------------------

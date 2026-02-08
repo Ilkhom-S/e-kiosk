@@ -12,7 +12,7 @@
 template <class T1, class T2> class CSpecification {
 public:
     // Инициализация значения по умолчанию
-    CSpecification(const T2 &aDefault = T2()) : mDefaultValue(aDefault) {}
+    CSpecification(const T2 &aDefault = T2()) : m_DefaultValue(aDefault) {}
 
     virtual ~CSpecification() = default;
 
@@ -20,52 +20,52 @@ public:
     const T2 &operator[](const T1 &aKey) const { return value(aKey); }
 
     // Неконстантный оператор для записи.
-    T2 &operator[](const T1 &aKey) { return mBuffer[aKey]; }
+    T2 &operator[](const T1 &aKey) { return m_Buffer[aKey]; }
 
     // Поиск ключа по значению (работает через итераторы мапы внутри Qt)
-    T1 key(const T2 &aValue) const { return mBuffer.key(aValue); }
+    T1 key(const T2 &aValue) const { return m_Buffer.key(aValue); }
 
     // В C++14/17 для константного метода правильно возвращать только константную ссылку.
-    // Если объект не найден, возвращаем ссылку на mDefaultValue.
+    // Если объект не найден, возвращаем ссылку на m_DefaultValue.
     const T2 &value(const T1 &aKey) const {
-        auto it = mBuffer.constFind(aKey);
-        if (it != mBuffer.constEnd()) {
+        auto it = m_Buffer.constFind(aKey);
+        if (it != m_Buffer.constEnd()) {
             return it.value();
         }
-        return mDefaultValue;
+        return m_DefaultValue;
     }
 
-    void append(const T1 &aKey, const T2 &aParameter) { mBuffer.insert(aKey, aParameter); }
+    void append(const T1 &aKey, const T2 &aParameter) { m_Buffer.insert(aKey, aParameter); }
 
     // Возвращаем ссылку на данные для модификации
-    QMap<T1, T2> &data() { return mBuffer; }
+    QMap<T1, T2> &data() { return m_Buffer; }
 
     // В Qt 6 для константных данных лучше возвращать копию (из-за Implicit Sharing)
     // или константную ссылку. Копия дешевле, если мапа не меняется.
-    const QMap<T1, T2> &constData() const { return mBuffer; }
+    const QMap<T1, T2> &constData() const { return m_Buffer; }
 
-    void setDefault(const T2 &aDefaultValue) { mDefaultValue = aDefaultValue; }
+    void setDefault(const T2 &aDefaultValue) { m_DefaultValue = aDefaultValue; }
 
     // Исправлено: константный геттер возвращает константную ссылку.
-    const T2 &getDefault() const { return mDefaultValue; }
+    const T2 &getDefault() const { return m_DefaultValue; }
 
 protected:
-    QMap<T1, T2> mBuffer;
-    T2 mDefaultValue; // Значение, возвращаемое при отсутствии ключа
+    QMap<T1, T2> m_Buffer;
+    T2 m_DefaultValue; // Значение, возвращаемое при отсутствии ключа
 };
 
 //--------------------------------------------------------------------------------
 // Класс для хранения произвольных описателей данных
 template <class T> class CDescription : public CSpecification<T, QString> {
 public:
-    using CSpecification<T, QString>::mBuffer;
-    using CSpecification<T, QString>::mDefaultValue;
+    using CSpecification<T, QString>::m_Buffer;
+    using CSpecification<T, QString>::m_DefaultValue;
 
     void append(const T &aKey, const char *aParameter) {
-        mBuffer.insert(aKey, QString::fromUtf8(aParameter));
+        m_Buffer.insert(aKey, QString::fromUtf8(aParameter));
     }
-    void append(const T &aKey, const QString &aParameter) { mBuffer.insert(aKey, aParameter); }
-    void setDefault(const char *aDefaultValue) { mDefaultValue = QString::fromUtf8(aDefaultValue); }
+    void append(const T &aKey, const QString &aParameter) { m_Buffer.insert(aKey, aParameter); }
+    void setDefault(const char *aDefaultValue) { m_DefaultValue = QString::fromUtf8(aDefaultValue); }
 };
 
 //--------------------------------------------------------------------------------
@@ -74,9 +74,9 @@ public:
 // временем их создания.
 template <class T1, class T2> class CStaticSpecification : public CSpecification<T1, T2> {
 public:
-    using CSpecification<T1, T2>::mBuffer;
+    using CSpecification<T1, T2>::m_Buffer;
 
-    CStaticSpecification() { mBuffer = process(T1(), T2(), true); }
+    CStaticSpecification() { m_Buffer = process(T1(), T2(), true); }
 
     static QMap<T1, T2> &process(const T1 &aKey, const T2 aValue, bool aControl = false) {
         static QMap<T1, T2> data;
@@ -122,9 +122,9 @@ protected:
 // заполнением данных
 template <class T1, class T2> class CSSpecification : public CSpecification<T1, T2> {
 public:
-    using CSpecification<T1, T2>::mBuffer;
+    using CSpecification<T1, T2>::m_Buffer;
 
-    CSSpecification() { mBuffer = addData(T1(), T2(), true); }
+    CSSpecification() { m_Buffer = addData(T1(), T2(), true); }
 
     static QMap<T1, T2> addData(const T1 &aKey, const T2 &aValue, bool aMode = false) {
         static QMap<T1, T2> data;

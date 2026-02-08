@@ -50,7 +50,7 @@ public:
     SDK::Driver::EWarningLevel::Enum
     warningLevelByStatus(int aStatus) // именно статус, а не статус-код!
     {
-        foreach (const SStatusCodeSpecification &statusCodeSpecification, mBuffer.values()) {
+        foreach (const SStatusCodeSpecification &statusCodeSpecification, m_Buffer.values()) {
             if (statusCodeSpecification.status == aStatus) {
                 return statusCodeSpecification.warningLevel;
             }

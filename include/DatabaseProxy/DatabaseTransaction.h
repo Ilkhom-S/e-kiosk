@@ -24,7 +24,7 @@ public:
     }
 
     /// Проверяет, открыта ли транзакция.
-    operator bool() const { return mTransactionOpened; }
+    operator bool() const { return m_TransactionOpened; }
 
     /// Начинает транзакцию.
     bool begin() {

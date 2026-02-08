@@ -274,7 +274,7 @@ private:
     void append(const QByteArray &aCountryCode,
                 const QString &aCountry,
                 int aCode = Currency::NoCurrency) {
-        mBuffer.insert(aCountryCode, SCurrencyData(aCountry, aCode));
+        m_Buffer.insert(aCountryCode, SCurrencyData(aCountry, aCode));
     }
 };
 

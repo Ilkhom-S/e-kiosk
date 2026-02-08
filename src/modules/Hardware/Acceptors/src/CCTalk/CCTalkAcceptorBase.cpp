@@ -17,13 +17,13 @@ const char TeachMode[] = "TM";
 
 //---------------------------------------------------------------------------
 template <class T>
-CCTalkAcceptorBase<T>::CCTalkAcceptorBase() : mEnabled(false), mCurrency(Currency::NoCurrency) {
+CCTalkAcceptorBase<T>::CCTalkAcceptorBase() : m_Enabled(false), m_Currency(Currency::NoCurrency) {
     // параметры порта
-    this->mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
-    this->mPortParameters[EParameters::Parity].append(EParity::No);
+    this->m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    this->m_PortParameters[EParameters::Parity].append(EParity::No);
 
     // данные устройства
-    this->mMaxBadAnswers = 5;
+    this->m_MaxBadAnswers = 5;
 }
 
 //--------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ template <class T> bool CCTalkAcceptorBase<T>::enableMoneyAcceptingMode(bool aEn
         return false;
     }
 
-    mEnabled = aEnabled;
+    m_Enabled = aEnabled;
 
     return true;
 }
@@ -42,7 +42,7 @@ template <class T> QByteArray CCTalkAcceptorBase<T>::getParTableData() {
     QByteArray result = QByteArray(2, ASCII::NUL);
 
     for (int i = 1; i <= 16; ++i) {
-        SPar par = this->mEscrowParTable[i];
+        SPar par = this->m_EscrowParTable[i];
 
         if (par.enabled && !par.inhibit) {
             int index = (i - 1) / 8;
@@ -63,7 +63,7 @@ bool CCTalkAcceptorBase<T>::parseCurrencyData(const QByteArray &aData,
 
     if (!CCCTalk::CurrencyData.data().contains(aData)) {
         this->toLog(LogLevel::Error,
-                    this->mDeviceName + QString(": Unknown country = %1").arg(aData.data()));
+                    this->m_DeviceName + QString(": Unknown country = %1").arg(aData.data()));
         return false;
     }
 
@@ -72,7 +72,7 @@ bool CCTalkAcceptorBase<T>::parseCurrencyData(const QByteArray &aData,
     if (aCurrencyData.code == Currency::NoCurrency) {
         this->toLog(LogLevel::Error,
                     QString("%1: Unknown currency code for country %2 (code %3)")
-                        .arg(this->mDeviceName)
+                        .arg(this->m_DeviceName)
                         .arg(aCurrencyData.country)
                         .arg(aData.data()));
         return false;
@@ -88,12 +88,12 @@ template <class T> bool CCTalkAcceptorBase<T>::applyParTable() {
 
 //---------------------------------------------------------------------------
 template <class T> bool CCTalkAcceptorBase<T>::getStatus(TStatusCodes &aStatusCodes) {
-    TDeviceCodes lastCodes(this->mCodes);
-    this->mCodes.clear();
+    TDeviceCodes lastCodes(this->m_Codes);
+    this->m_Codes.clear();
 
     QByteArray answer;
 
-    if (!this->mErrorData || !getBufferedStatuses(answer)) {
+    if (!this->m_ErrorData || !getBufferedStatuses(answer)) {
         return false;
     }
 
@@ -108,13 +108,13 @@ template <class T> bool CCTalkAcceptorBase<T>::getStatus(TStatusCodes &aStatusCo
     }
 
     uchar fault = answer[0];
-    this->mCodes.insert(fault);
+    this->m_Codes.insert(fault);
 
-    int statusCode = (fault && (fault == this->mModelData.fault))
+    int statusCode = (fault && (fault == this->m_ModelData.fault))
                          ? BillAcceptorStatusCode::Busy::Unknown
                          : CCCTalk::Fault[fault].statusCode;
     SStatusCodeSpecification statusCodeSpecification =
-        this->mStatusCodesSpecification->value(statusCode);
+        this->m_StatusCodesSpecification->value(statusCode);
 
     if (!lastCodes.contains(fault)) {
         QString description = CCCTalk::Fault.getDescription(answer);
@@ -122,11 +122,11 @@ template <class T> bool CCTalkAcceptorBase<T>::getStatus(TStatusCodes &aStatusCo
 
         if (description.isEmpty()) {
             this->toLog(logLevel,
-                        this->mDeviceName + QString(": Self check status = ") +
+                        this->m_DeviceName + QString(": Self check status = ") +
                             statusCodeSpecification.description);
         } else {
             this->toLog(logLevel,
-                        this->mDeviceName + QString(": Self check status = %1 -> %2")
+                        this->m_DeviceName + QString(": Self check status = %1 -> %2")
                                                 .arg(description)
                                                 .arg(statusCodeSpecification.description));
         }
@@ -140,7 +140,7 @@ template <class T> bool CCTalkAcceptorBase<T>::getStatus(TStatusCodes &aStatusCo
 //---------------------------------------------------------------------------
 template <class T>
 bool CCTalkAcceptorBase<T>::canApplySimpleStatusCodes(const TStatusCodes & /*aStatusCodes*/) {
-    return this->mStatusCollectionHistory.isEmpty();
+    return this->m_StatusCollectionHistory.isEmpty();
 }
 
 //---------------------------------------------------------------------------
@@ -149,63 +149,63 @@ void CCTalkAcceptorBase<T>::parseBufferedStatuses(const QByteArray &aAnswer,
                                                   TStatusCodes &aStatusCodes) {
     int size = aAnswer[0];
 
-    if (!size || (size == this->mEventIndex)) {
+    if (!size || (size == this->m_EventIndex)) {
         if (canApplySimpleStatusCodes(aStatusCodes)) {
-            aStatusCodes.insert(mEnabled ? BillAcceptorStatusCode::Normal::Enabled
+            aStatusCodes.insert(m_Enabled ? BillAcceptorStatusCode::Normal::Enabled
                                          : BillAcceptorStatusCode::Normal::Disabled);
         } else {
-            aStatusCodes += this->getStatusCodes(this->mStatusCollectionHistory.lastValue());
+            aStatusCodes += this->getStatusCodes(this->m_StatusCollectionHistory.lastValue());
         }
 
         return;
     }
 
-    for (int i = 0; i < (size - this->mEventIndex); ++i) {
+    for (int i = 0; i < (size - this->m_EventIndex); ++i) {
         uchar credit = aAnswer[2 * i + 1];
         uchar error = aAnswer[2 * i + 2];
 
         if (credit) {
             parseCreditData(credit, error, aStatusCodes);
         } else if (error) {
-            this->mCodes.insert(error);
+            this->m_Codes.insert(error);
 
-            if (error == this->mModelData.error) {
+            if (error == this->m_ModelData.error) {
                 aStatusCodes.insert(BillAcceptorStatusCode::Busy::Unknown);
             } else {
-                int statusCode = this->mErrorData->value(error).statusCode;
+                int statusCode = this->m_ErrorData->value(error).statusCode;
                 aStatusCodes.insert(statusCode);
 
                 SStatusCodeSpecification codeSpecification =
-                    this->mStatusCodesSpecification->value(statusCode);
-                QString localDescription = this->mErrorData->value(error).description;
+                    this->m_StatusCodesSpecification->value(statusCode);
+                QString localDescription = this->m_ErrorData->value(error).description;
 
                 if (!localDescription.isEmpty()) {
                     LogLevel::Enum logLevel = this->getLogLevel(codeSpecification.warningLevel);
                     this->toLog(logLevel,
-                                this->mDeviceName + QString(": %1 -> %2")
+                                this->m_DeviceName + QString(": %1 -> %2")
                                                         .arg(localDescription)
                                                         .arg(codeSpecification.description));
                 }
 
-                if (this->mErrorData->value(error).isRejected) {
+                if (this->m_ErrorData->value(error).isRejected) {
                     aStatusCodes.insert(BillAcceptorStatusCode::Reject::Unknown);
                 } else if (statusCode == DeviceStatusCode::OK::OK) {
-                    aStatusCodes.insert(mEnabled ? BillAcceptorStatusCode::Normal::Enabled
+                    aStatusCodes.insert(m_Enabled ? BillAcceptorStatusCode::Normal::Enabled
                                                  : BillAcceptorStatusCode::Normal::Disabled);
                 }
             }
         }
     }
 
-    this->mEventIndex = size;
+    this->m_EventIndex = size;
 }
 
 //---------------------------------------------------------------------------
 template <class T> void CCTalkAcceptorBase<T>::finalizeInitialization() {
     CCTalkDeviceBase<T>::finalizeInitialization();
 
-    this->mOldFirmware = (this->mCurrency != Currency::NoCurrency) &&
-                         (this->mFWVersion < this->mModelData.minVersions[this->mCurrency]);
+    this->m_OldFirmware = (this->m_Currency != Currency::NoCurrency) &&
+                         (this->m_FWVersion < this->m_ModelData.minVersions[this->m_Currency]);
 }
 
 //--------------------------------------------------------------------------------

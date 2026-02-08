@@ -30,30 +30,30 @@ const char UnknownDeviceCodeDescription[] = "unknown device code";
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
-template <class T> DeviceBase<T>::DeviceBase() : mExternalMutex(), mResourceMutex() {
-    this->moveToThread(&this->mThread);
+template <class T> DeviceBase<T>::DeviceBase() : m_ExternalMutex(), m_ResourceMutex() {
+    this->moveToThread(&this->m_Thread);
 
-    this->mDeviceName = CDevice::DefaultName;
-    this->mBadAnswerCounter = 0;
-    this->mMaxBadAnswers = 0;
-    this->mPostPollingAction = true, this->mVerified = true;
-    this->mModelCompatibility = true;
-    this->mLastWarningLevel = static_cast<EWarningLevel::Enum>(-1);
-    this->mConnected = false;
-    this->mInitialized = ERequestStatus::Fail;
-    this->mVersion = Humo::getVersion();
-    this->mOldFirmware = false;
-    this->mInitializeRepeatCount = 1;
-    this->mAutoDetectable = true;
-    this->mNeedReboot = false;
-    this->mForceStatusBufferEnabled = false;
+    this->m_DeviceName = CDevice::DefaultName;
+    this->m_BadAnswerCounter = 0;
+    this->m_MaxBadAnswers = 0;
+    this->m_PostPollingAction = true, this->m_Verified = true;
+    this->m_ModelCompatibility = true;
+    this->m_LastWarningLevel = static_cast<EWarningLevel::Enum>(-1);
+    this->m_Connected = false;
+    this->m_Initialized = ERequestStatus::Fail;
+    this->m_Version = Humo::getVersion();
+    this->m_OldFirmware = false;
+    this->m_InitializeRepeatCount = 1;
+    this->m_AutoDetectable = true;
+    this->m_NeedReboot = false;
+    this->m_ForceStatusBufferEnabled = false;
 
-    this->mStatusCodesSpecification =
+    this->m_StatusCodesSpecification =
         DeviceStatusCode::PSpecifications(new DeviceStatusCode::CSpecifications());
 
-    this->mRecoverableErrors.insert(DeviceStatusCode::Error::Initialization);
+    this->m_RecoverableErrors.insert(DeviceStatusCode::Error::Initialization);
 
-    this->mUnsafeStatusCodes = TStatusCodes()
+    this->m_UnsafeStatusCodes = TStatusCodes()
                                << DeviceStatusCode::OK::Busy << DeviceStatusCode::OK::Initialization
 
                                << DeviceStatusCode::Warning::ThirdPartyDriver
@@ -61,8 +61,8 @@ template <class T> DeviceBase<T>::DeviceBase() : mExternalMutex(), mResourceMute
                                << DeviceStatusCode::Warning::OperationError
                                << DeviceStatusCode::Warning::UnknownDataExchange;
 
-    mStatusCollectionHistory.setSize(CDevice::StatusCollectionHistoryCount);
-    mReplaceableStatuses << DeviceStatusCode::Error::NotAvailable
+    m_StatusCollectionHistory.setSize(CDevice::StatusCollectionHistoryCount);
+    m_ReplaceableStatuses << DeviceStatusCode::Error::NotAvailable
                          << DeviceStatusCode::Error::Unknown;
 }
 
@@ -103,54 +103,54 @@ template <class T> bool DeviceBase<T>::environmentChanged() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool DeviceBase<T>::isPowerReboot() {
-    TStatusCollection statusCollection1 = mStatusCollectionHistory.lastValue(1);
-    TStatusCollection statusCollection2 = mStatusCollectionHistory.lastValue(2);
+    TStatusCollection statusCollection1 = m_StatusCollectionHistory.lastValue(1);
+    TStatusCollection statusCollection2 = m_StatusCollectionHistory.lastValue(2);
 
-    return mStatusCollectionHistory.isEmpty() ||
+    return m_StatusCollectionHistory.isEmpty() ||
            (statusCollection2.contains(DeviceStatusCode::Error::NotAvailable) &&
             !statusCollection1.contains(DeviceStatusCode::Error::NotAvailable));
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool DeviceBase<T>::checkExistence() {
-    MutexLocker locker(&mExternalMutex);
+    MutexLocker locker(&m_ExternalMutex);
 
     bool autoDetecting = this->isAutoDetecting();
 
-    if (!this->mAutoDetectable && autoDetecting) {
+    if (!this->m_AutoDetectable && autoDetecting) {
         this->toLog(LogLevel::Normal,
-                    this->mDeviceName + " can not be found via autodetecting at all.");
+                    this->m_DeviceName + " can not be found via autodetecting at all.");
         return false;
     }
 
-    this->toLog(LogLevel::Normal, "Trying to identify device " + this->mDeviceName);
+    this->toLog(LogLevel::Normal, "Trying to identify device " + this->m_DeviceName);
 
-    this->mVerified = true;
-    this->mModelCompatibility = true;
-    this->mOldFirmware = false;
+    this->m_Verified = true;
+    this->m_ModelCompatibility = true;
+    this->m_OldFirmware = false;
 
     bool doPostPollingAction = false;
 
-    qSwap(this->mPostPollingAction, doPostPollingAction);
-    this->mThread.setObjectName(this->mDeviceName);
-    this->mConnected = this->isConnected();
-    this->mThread.setObjectName(this->mDeviceName);
-    qSwap(this->mPostPollingAction, doPostPollingAction);
+    qSwap(this->m_PostPollingAction, doPostPollingAction);
+    this->m_Thread.setObjectName(this->m_DeviceName);
+    this->m_Connected = this->isConnected();
+    this->m_Thread.setObjectName(this->m_DeviceName);
+    qSwap(this->m_PostPollingAction, doPostPollingAction);
 
-    if (!this->mModelCompatibility && autoDetecting) {
+    if (!this->m_ModelCompatibility && autoDetecting) {
         this->toLog(LogLevel::Error,
-                    this->mDeviceName +
+                    this->m_DeviceName +
                         " can not be found via autodetecting as unsupported by plugin " +
                         this->getConfigParameter(CHardware::PluginPath).toString());
         return false;
-    } else if (!this->mConnected) {
-        this->toLog(LogLevel::Error, QString("Failed to identify %1.").arg(this->mDeviceName));
+    } else if (!this->m_Connected) {
+        this->toLog(LogLevel::Error, QString("Failed to identify %1.").arg(this->m_DeviceName));
         return false;
     }
 
-    this->setConfigParameter(CHardwareSDK::ModelName, this->mDeviceName);
+    this->setConfigParameter(CHardwareSDK::ModelName, this->m_DeviceName);
 
-    this->toLog(LogLevel::Normal, QString("Device %1 is identified.").arg(this->mDeviceName));
+    this->toLog(LogLevel::Normal, QString("Device %1 is identified.").arg(this->m_DeviceName));
 
     return true;
 }
@@ -164,7 +164,7 @@ template <class T> void DeviceBase<T>::initialize() {
     QString deviceName = this->getConfigParameter(CHardwareSDK::ModelName).toString();
 
     if (deviceName.isEmpty()) {
-        deviceName = this->mDeviceName;
+        deviceName = this->m_DeviceName;
     }
 
     this->toLog(LogLevel::Normal,
@@ -172,24 +172,24 @@ template <class T> void DeviceBase<T>::initialize() {
     this->toLog(LogLevel::Normal,
                 QStringLiteral("Initializing device: %1. Version: %2.")
                     .arg(deviceName)
-                    .arg(this->mVersion));
+                    .arg(this->m_Version));
     this->toLog(LogLevel::Normal,
                 QStringLiteral("**********************************************************"));
 
-    this->mInitialized = ERequestStatus::InProcess;
-    this->mInitializationError = false;
+    this->m_Initialized = ERequestStatus::InProcess;
+    this->m_InitializationError = false;
 
-    // mResourceMutex должен вызываться через this-> если он в базовом шаблоне
-    MutexLocker resourceLocker(&this->mResourceMutex);
+    // m_ResourceMutex должен вызываться через this-> если он в базовом шаблоне
+    MutexLocker resourceLocker(&this->m_ResourceMutex);
 
     if (this->checkConnectionAbility()) {
-        if (this->isPowerReboot() || !this->mConnected) {
+        if (this->isPowerReboot() || !this->m_Connected) {
             this->checkExistence();
         }
 
-        if (this->mConnected) {
+        if (this->m_Connected) {
             this->emitStatusCode(DeviceStatusCode::OK::Initialization, EStatus::Interface);
-            this->mStatusCollection.clear();
+            this->m_StatusCollection.clear();
 
             int count = 0;
             bool isCriticalError = false;
@@ -200,7 +200,7 @@ template <class T> void DeviceBase<T>::initialize() {
                                 QStringLiteral("Try to repeat initialization #%1.").arg(count + 1));
                 }
 
-                MutexLocker externalLocker(&this->mExternalMutex);
+                MutexLocker externalLocker(&this->m_ExternalMutex);
 
                 this->setInitialData();
 
@@ -208,18 +208,18 @@ template <class T> void DeviceBase<T>::initialize() {
                     break;
                 }
 
-                int errorSize = this->mStatusCollection.size(EWarningLevel::Error);
+                int errorSize = this->m_StatusCollection.size(EWarningLevel::Error);
                 isCriticalError =
                     (errorSize > 1) ||
                     ((errorSize == 1) &&
-                     !this->mStatusCollection.contains(DeviceStatusCode::Error::Initialization));
-            } while ((++count < this->mInitializeRepeatCount) && !isCriticalError);
+                     !this->m_StatusCollection.contains(DeviceStatusCode::Error::Initialization));
+            } while ((++count < this->m_InitializeRepeatCount) && !isCriticalError);
 
-            this->mInitialized = (!isCriticalError && (count < this->mInitializeRepeatCount))
+            this->m_Initialized = (!isCriticalError && (count < this->m_InitializeRepeatCount))
                                      ? ERequestStatus::Success
                                      : ERequestStatus::Fail;
 
-            if (this->mInitialized == ERequestStatus::Fail) {
+            if (this->m_Initialized == ERequestStatus::Fail) {
                 this->toLog(
                     LogLevel::Error,
                     isCriticalError
@@ -228,14 +228,14 @@ template <class T> void DeviceBase<T>::initialize() {
                               "The maximum quantity of initialization attempts is exceeded."));
             }
         } else {
-            this->mInitialized = ERequestStatus::Fail;
+            this->m_Initialized = ERequestStatus::Fail;
             this->processStatusCodes(TStatusCodes() << DeviceStatusCode::Error::NotAvailable);
         }
 
         this->finalizeInitialization();
     } else {
-        this->mConnected = false;
-        this->mInitialized = ERequestStatus::Fail;
+        this->m_Connected = false;
+        this->m_Initialized = ERequestStatus::Fail;
         this->processStatusCodes(TStatusCodes() << DeviceStatusCode::Error::NotAvailable);
     }
 
@@ -251,20 +251,20 @@ template <class T> void DeviceBase<T>::initialize() {
     this->logDeviceData(logData);
     this->removeConfigParameter(CHardware::CallingType);
 
-    if (this->mInitialized == ERequestStatus::Success) {
+    if (this->m_Initialized == ERequestStatus::Success) {
         this->toLog(LogLevel::Normal,
-                    QStringLiteral("Device %1 is initialized.").arg(this->mDeviceName));
+                    QStringLiteral("Device %1 is initialized.").arg(this->m_DeviceName));
 
         emit(this->initialized());
     } else {
         this->toLog(LogLevel::Error,
-                    QStringLiteral("Failed to initialize %1.").arg(this->mDeviceName));
+                    QStringLiteral("Failed to initialize %1.").arg(this->m_DeviceName));
     }
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void DeviceBase<T>::finalizeInitialization() {
-    if (!this->mConnected) {
+    if (!this->m_Connected) {
         this->processStatusCodes(TStatusCodes() << DeviceStatusCode::Error::NotAvailable);
     }
 
@@ -277,9 +277,9 @@ template <class T> void DeviceBase<T>::finalizeInitialization() {
 template <class T> bool DeviceBase<T>::release() {
     bool result = this->release();
 
-    this->mConnected = false;
-    this->mLastWarningLevel = static_cast<EWarningLevel::Enum>(-1);
-    mStatusCollection.clear();
+    this->m_Connected = false;
+    this->m_LastWarningLevel = static_cast<EWarningLevel::Enum>(-1);
+    m_StatusCollection.clear();
 
     return result;
 }
@@ -295,26 +295,26 @@ template <class T> bool DeviceBase<T>::isPluginMismatch() {
         return aVersion.split(" build ").first().simplified();
     };
 
-    return trimBuild(version) != trimBuild(this->mVersion);
+    return trimBuild(version) != trimBuild(this->m_Version);
 }
 
 //---------------------------------------------------------------------------
 template <class T> bool DeviceBase<T>::isInitializationError(TStatusCodes &aStatusCodes) {
     bool powerTurnOn = !aStatusCodes.contains(DeviceStatusCode::Error::NotAvailable) &&
-                       this->mStatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
+                       this->m_StatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
 
-    return (this->mInitialized == ERequestStatus::Fail) && !powerTurnOn;
+    return (this->m_Initialized == ERequestStatus::Fail) && !powerTurnOn;
     /*
     TODO: рассмотреть вариант формирования ошибки инициализации только когда нет и не было ошибки
-    NotAvailable, т.е. - return (mInitialized == ERequestStatus::Fail) &&
+    NotAvailable, т.е. - return (m_Initialized == ERequestStatus::Fail) &&
     !aStatusCodes.contains(DeviceStatusCode::Error::NotAvailable) &&
-    !mStatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
+    !m_StatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
     */
 }
 
 //---------------------------------------------------------------------------
 template <class T> void DeviceBase<T>::cleanStatusCodes(TStatusCodes &aStatusCodes) {
-    if (this->isInitializationError(aStatusCodes) || this->mInitializationError) {
+    if (this->isInitializationError(aStatusCodes) || this->m_InitializationError) {
         aStatusCodes.insert(DeviceStatusCode::Error::Initialization);
     }
 
@@ -329,8 +329,8 @@ template <class T> void DeviceBase<T>::cleanStatusCodes(TStatusCodes &aStatusCod
             aStatusCodes.insert(DeviceStatusCode::Error::NotAvailable);
         }
 
-        this->mNeedReboot = false;
-        this->mInitializationError = false;
+        this->m_NeedReboot = false;
+        this->m_InitializationError = false;
     }
 
     if ((aStatusCodes.size() > 1) &&
@@ -339,23 +339,23 @@ template <class T> void DeviceBase<T>::cleanStatusCodes(TStatusCodes &aStatusCod
         aStatusCodes.insert(DeviceStatusCode::Error::ThirdPartyDriverFail);
     }
 
-    if (mOldFirmware) {
+    if (m_OldFirmware) {
         aStatusCodes.insert(DeviceStatusCode::Warning::Firmware);
     }
 
-    if (mNeedReboot) {
+    if (m_NeedReboot) {
         aStatusCodes.insert(DeviceStatusCode::Warning::NeedReboot);
     }
 
-    if (!mVerified) {
+    if (!m_Verified) {
         aStatusCodes.insert(DeviceStatusCode::Warning::ModelNotVerified);
     }
 
-    if (!mModelCompatibility) {
+    if (!m_ModelCompatibility) {
         aStatusCodes.insert(DeviceStatusCode::Warning::ModelNotCompatible);
     }
 
-    if (!this->mOperatorPresence && isPluginMismatch()) {
+    if (!this->m_OperatorPresence && isPluginMismatch()) {
         aStatusCodes.insert(DeviceStatusCode::Warning::Compatibility);
     }
 
@@ -383,23 +383,23 @@ template <class T> void DeviceBase<T>::cleanStatusCodes(TStatusCodes &aStatusCod
 
 //---------------------------------------------------------------------------
 template <class T> void DeviceBase<T>::recoverErrors(TStatusCodes &aStatusCodes) {
-    TStatusCodes recoverableErrors = aStatusCodes & mRecoverableErrors;
+    TStatusCodes recoverableErrors = aStatusCodes & m_RecoverableErrors;
 
-    if ((mUnsafeStatusCodes & aStatusCodes).isEmpty() &&
-        mStatusCollection.contains(EWarningLevel::Error) && !recoverableErrors.isEmpty()) {
-        TStatusCodes oldErrors = mStatusCollection.value(EWarningLevel::Error);
-        TStatusCodes oldRecoverableErrors = oldErrors & mRecoverableErrors;
-        TStatusCodes otherStatusCodes = aStatusCodes - mRecoverableErrors;
+    if ((m_UnsafeStatusCodes & aStatusCodes).isEmpty() &&
+        m_StatusCollection.contains(EWarningLevel::Error) && !recoverableErrors.isEmpty()) {
+        TStatusCodes oldErrors = m_StatusCollection.value(EWarningLevel::Error);
+        TStatusCodes oldRecoverableErrors = oldErrors & m_RecoverableErrors;
+        TStatusCodes otherStatusCodes = aStatusCodes - m_RecoverableErrors;
         bool effectiveErrors =
             std::find_if(otherStatusCodes.begin(), otherStatusCodes.end(), [&](int aCode) -> bool {
-                return mStatusCodesSpecification->value(aCode).warningLevel == EWarningLevel::Error;
+                return m_StatusCodesSpecification->value(aCode).warningLevel == EWarningLevel::Error;
             }) != otherStatusCodes.end();
-        TStatusCodes oldUnsafeStatusCodes = getStatusCodes(mStatusCollection) & mUnsafeStatusCodes;
+        TStatusCodes oldUnsafeStatusCodes = getStatusCodes(m_StatusCollection) & m_UnsafeStatusCodes;
 
         if (((oldErrors + oldUnsafeStatusCodes).size() > oldRecoverableErrors.size()) &&
             !effectiveErrors) {
-            foreach (int statusCode, mRecoverableErrors) {
-                if (mStatusCodesSpecification->value(statusCode).warningLevel ==
+            foreach (int statusCode, m_RecoverableErrors) {
+                if (m_StatusCodesSpecification->value(statusCode).warningLevel ==
                     EWarningLevel::Error) {
                     aStatusCodes.remove(statusCode);
                 }
@@ -414,49 +414,49 @@ template <class T> void DeviceBase<T>::recoverErrors(TStatusCodes &aStatusCodes)
 
 //---------------------------------------------------------------------------
 template <class T> bool DeviceBase<T>::isStatusesReplaceable(TStatusCodes &aStatusCodes) {
-    TStatusCodes errors = mStatusCollection.value(EWarningLevel::Error);
+    TStatusCodes errors = m_StatusCollection.value(EWarningLevel::Error);
 
-    return std::find_if(mReplaceableStatuses.begin(),
-                        mReplaceableStatuses.end(),
+    return std::find_if(m_ReplaceableStatuses.begin(),
+                        m_ReplaceableStatuses.end(),
                         [&](int aStatusCode) -> bool {
                             return aStatusCodes.contains(aStatusCode) &&
                                    !errors.contains(aStatusCode);
-                        }) != mReplaceableStatuses.end();
+                        }) != m_ReplaceableStatuses.end();
 }
 
 //---------------------------------------------------------------------------
 template <class T> bool DeviceBase<T>::canApplyStatusBuffer() {
-    return mMaxBadAnswers &&
-           (mForceStatusBufferEnabled || (!this->mOperatorPresence && this->mPostPollingAction)) &&
-           !getStatusCodes(mStatusCollection).isEmpty() &&
-           !mStatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
+    return m_MaxBadAnswers &&
+           (m_ForceStatusBufferEnabled || (!this->m_OperatorPresence && this->m_PostPollingAction)) &&
+           !getStatusCodes(m_StatusCollection).isEmpty() &&
+           !m_StatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
 }
 
 //---------------------------------------------------------------------------
 template <class T> void DeviceBase<T>::applyStatusBuffer(TStatusCodes &aStatusCodes) {
     // задействуем буфер статусов
     if (canApplyStatusBuffer() && isStatusesReplaceable(aStatusCodes)) {
-        if (mBadAnswerCounter <= mMaxBadAnswers) {
-            ++mBadAnswerCounter;
+        if (m_BadAnswerCounter <= m_MaxBadAnswers) {
+            ++m_BadAnswerCounter;
         }
 
-        if (mBadAnswerCounter <= mMaxBadAnswers) {
-            aStatusCodes = getStatusCodes(mStatusCollection);
+        if (m_BadAnswerCounter <= m_MaxBadAnswers) {
+            aStatusCodes = getStatusCodes(m_StatusCollection);
             QStringList descriptions;
 
             foreach (int statusCode, aStatusCodes) {
-                descriptions << mStatusCodesSpecification->value(statusCode).description;
+                descriptions << m_StatusCodesSpecification->value(statusCode).description;
             }
 
             this->toLog(LogLevel::Error,
                         QString("%1: bad answer counter = %2 of %3, return previous statuses: %4")
-                            .arg(this->mDeviceName)
-                            .arg(this->mBadAnswerCounter)
-                            .arg(this->mMaxBadAnswers)
+                            .arg(this->m_DeviceName)
+                            .arg(this->m_BadAnswerCounter)
+                            .arg(this->m_MaxBadAnswers)
                             .arg(descriptions.join(", ")));
         }
     } else {
-        this->mBadAnswerCounter = 0;
+        this->m_BadAnswerCounter = 0;
     }
 }
 
@@ -481,9 +481,9 @@ template <class T> bool DeviceBase<T>::getStatus(TStatusCodes & /*aStatuses*/) {
 template <class T> void DeviceBase<T>::simplePoll() {
     bool doPostPollingAction = false;
 
-    qSwap(this->mPostPollingAction, doPostPollingAction);
+    qSwap(this->m_PostPollingAction, doPostPollingAction);
     this->onPoll();
-    qSwap(this->mPostPollingAction, doPostPollingAction);
+    qSwap(this->m_PostPollingAction, doPostPollingAction);
 }
 
 //--------------------------------------------------------------------------------
@@ -491,7 +491,7 @@ template <class T> void DeviceBase<T>::onPoll() {
     TStatusCodes statusCodes;
     this->doPoll(statusCodes);
 
-    MutexLocker locker(&this->mResourceMutex);
+    MutexLocker locker(&this->m_ResourceMutex);
 
     this->processStatusCodes(statusCodes);
 }
@@ -504,12 +504,12 @@ template <class T> bool DeviceBase<T>::processStatus(TStatusCodes &aStatusCodes)
 //--------------------------------------------------------------------------------
 template <class T> void DeviceBase<T>::doPoll(TStatusCodes &aStatusCodes) {
     {
-        MutexLocker locker(&this->mExternalMutex);
+        MutexLocker locker(&this->m_ExternalMutex);
 
         QDate currentDate = QDate::currentDate();
 
-        if (this->mLogDate.day() != currentDate.day()) {
-            this->mLogDate = currentDate;
+        if (this->m_LogDate.day() != currentDate.day()) {
+            this->m_LogDate = currentDate;
             this->logDeviceData(this->getDeviceData());
         }
 
@@ -520,7 +520,7 @@ template <class T> void DeviceBase<T>::doPoll(TStatusCodes &aStatusCodes) {
         aStatusCodes.insert(resultStatus);
     }
 
-    MutexLocker locker(&this->mResourceMutex);
+    MutexLocker locker(&this->m_ResourceMutex);
 
     this->cleanStatusCodes(aStatusCodes);
     this->recoverErrors(aStatusCodes);
@@ -530,7 +530,7 @@ template <class T> void DeviceBase<T>::doPoll(TStatusCodes &aStatusCodes) {
 //--------------------------------------------------------------------------------
 template <class T>
 SStatusCodeSpecification DeviceBase<T>::getStatusCodeSpecification(int aStatusCode) const {
-    return this->mStatusCodesSpecification->value(aStatusCode);
+    return this->m_StatusCodesSpecification->value(aStatusCode);
 }
 
 //--------------------------------------------------------------------------------
@@ -573,7 +573,7 @@ DeviceBase<T>::getStatusCollection(const TStatusCodes &aStatusCodes,
                                    TStatusCodeSpecification *aStatusCodeSpecification) {
     TStatusCodeSpecification *statusCodeSpecification =
         aStatusCodeSpecification ? aStatusCodeSpecification
-                                 : this->mStatusCodesSpecification.data();
+                                 : this->m_StatusCodesSpecification.data();
     TStatusCollection result;
 
     foreach (int statusCode, aStatusCodes) {
@@ -606,7 +606,7 @@ void DeviceBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollection,
         for (int level = EWarningLevel::OK; level <= EWarningLevel::Error; ++level) {
             EWarningLevel::Enum warningLevel = static_cast<EWarningLevel::Enum>(level);
             aStatusCollection[warningLevel] =
-                aStatusCollection[warningLevel] - this->mExcessStatusCollection[warningLevel];
+                aStatusCollection[warningLevel] - this->m_ExcessStatusCollection[warningLevel];
         }
     };
 
@@ -628,7 +628,7 @@ void DeviceBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollection,
     if (this->environmentChanged() ||
         ((newStatusCollection != oldStatusCollection) &&
          (aNewStatusCollection != aOldStatusCollection)) ||
-        (warningLevel != this->mLastWarningLevel)) {
+        (warningLevel != this->m_LastWarningLevel)) {
         this->emitStatusCodes(newStatusCollection);
     }
 }
@@ -636,10 +636,10 @@ void DeviceBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollection,
 //--------------------------------------------------------------------------------
 template <class T> void DeviceBase<T>::emitStatusCode(int aStatusCode, int aExtendedStatus) {
     EWarningLevel::Enum warningLevel =
-        this->mStatusCodesSpecification->value(aStatusCode).warningLevel;
+        this->m_StatusCodesSpecification->value(aStatusCode).warningLevel;
 
     if (aExtendedStatus < EStatus::Service) {
-        this->mLastWarningLevel = warningLevel;
+        this->m_LastWarningLevel = warningLevel;
     }
 
     QString translation = this->getStatusTranslations(TStatusCodes() << aStatusCode, true);
@@ -657,7 +657,7 @@ void DeviceBase<T>::emitStatusCodes(TStatusCollection &aStatusCollection, int aE
     EWarningLevel::Enum warningLevel = this->getWarningLevel(aStatusCollection);
 
     if (aExtendedStatus < EStatus::Service) {
-        mLastWarningLevel = warningLevel;
+        m_LastWarningLevel = warningLevel;
     }
 
     QString translation = this->getStatusTranslations(statusCodes, true);
@@ -684,7 +684,7 @@ template <class T> void DeviceBase<T>::reInitialize() {
     // 2. Используем QStringLiteral для оптимизации памяти.
     this->setConfigParameter(CHardware::CallingType, CHardware::CallingTypes::Internal);
 
-    if (this->mOperatorPresence) {
+    if (this->m_OperatorPresence) {
         this->initialize();
     } else {
         // 3. В Qt 6 рекомендуется использовать синтаксис указателей на методы для
@@ -713,7 +713,7 @@ void DeviceBase<T>::postPollingAction(const TStatusCollection &aNewStatusCollect
 
         this->toLog(LogLevel::Normal, log);
 
-        this->mOperatorPresence
+        this->m_OperatorPresence
             ? this->checkExistence()
             : QMetaObject::invokeMethod(this, "checkExistence", Qt::QueuedConnection);
 
@@ -737,7 +737,7 @@ template <class T> void DeviceBase<T>::processStatusCodes(const TStatusCodes &aS
     newStatusCollection[EWarningLevel::Warning];
     newStatusCollection[EWarningLevel::Error];
 
-    if ((newStatusCollection != this->mStatusCollection) || this->environmentChanged()) {
+    if ((newStatusCollection != this->m_StatusCollection) || this->environmentChanged()) {
         QString errorsLog = this->getTrOfNewProcessed(newStatusCollection, EWarningLevel::Error);
         QString warningsLog =
             this->getTrOfNewProcessed(newStatusCollection, EWarningLevel::Warning);
@@ -747,7 +747,7 @@ template <class T> void DeviceBase<T>::processStatusCodes(const TStatusCodes &aS
             this->toLog(LogLevel::Normal, "Status changed:");
         }
 
-        this->mLog->adjustPadding(1);
+        this->m_Log->adjustPadding(1);
 
         if (!errorsLog.isEmpty())
             this->toLog(LogLevel::Error, "Errors   : " + errorsLog);
@@ -756,17 +756,17 @@ template <class T> void DeviceBase<T>::processStatusCodes(const TStatusCodes &aS
         if (!normalsLog.isEmpty())
             this->toLog(LogLevel::Normal, "Normal   : " + normalsLog);
 
-        this->mLog->adjustPadding(-1);
-        TStatusCollection lastStatusCollection = this->mStatusCollectionHistory.lastValue();
+        this->m_Log->adjustPadding(-1);
+        TStatusCollection lastStatusCollection = this->m_StatusCollectionHistory.lastValue();
 
         if (lastStatusCollection != newStatusCollection) {
-            this->mStatusCollectionHistory.append(newStatusCollection);
+            this->m_StatusCollectionHistory.append(newStatusCollection);
         }
 
         QString debugLog = "Status codes history :";
 
-        for (int i = 0; i < this->mStatusCollectionHistory.size(); ++i) {
-            TStatusCollection statusCollection = this->mStatusCollectionHistory[i];
+        for (int i = 0; i < this->m_StatusCollectionHistory.size(); ++i) {
+            TStatusCollection statusCollection = this->m_StatusCollectionHistory[i];
             QString statusLog;
 
 #define DEBUG_STATUS(aWarningLevel)                                                                \
@@ -790,18 +790,18 @@ template <class T> void DeviceBase<T>::processStatusCodes(const TStatusCodes &aS
         this->toLog(LogLevel::Debug, debugLog);
     }
 
-    TStatusCollection oldStatusCollection(this->mStatusCollection);
-    this->mStatusCollection = newStatusCollection;
+    TStatusCollection oldStatusCollection(this->m_StatusCollection);
+    this->m_StatusCollection = newStatusCollection;
     this->sendStatuses(newStatusCollection, oldStatusCollection);
 
-    if (this->mPostPollingAction) {
+    if (this->m_PostPollingAction) {
         this->postPollingAction(newStatusCollection, oldStatusCollection);
     }
 
-    this->mConnected = !aStatusCodes.contains(DeviceStatusCode::Error::NotAvailable);
+    this->m_Connected = !aStatusCodes.contains(DeviceStatusCode::Error::NotAvailable);
 
-    if (this->mPostPollingAction && (this->mInitialized != ERequestStatus::InProcess)) {
-        this->mInitialized = (this->mConnected && (this->mInitialized == ERequestStatus::Success))
+    if (this->m_PostPollingAction && (this->m_Initialized != ERequestStatus::InProcess)) {
+        this->m_Initialized = (this->m_Connected && (this->m_Initialized == ERequestStatus::Success))
                                  ? ERequestStatus::Success
                                  : ERequestStatus::Fail;
     }

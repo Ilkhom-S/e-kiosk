@@ -38,7 +38,7 @@ protected:
     void changeStatusCode(int aStatusCode);
 
     /// Текущие статус-коды.
-    TStatusCodes mStatusCodes;
+    TStatusCodes m_StatusCodes;
 };
 
 #include <Hardware/Common/VirtualDeviceBase.tpp>

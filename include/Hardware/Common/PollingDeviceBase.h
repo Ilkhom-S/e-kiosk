@@ -54,19 +54,19 @@ public:
     void releasePolling();
 
     /// Таймер для поллинга.
-    QTimer mPolling;
+    QTimer m_Polling;
 
     /// Интервал поллинга, [мс].
-    int mPollingInterval;
+    int m_PollingInterval;
 
     /// Поллинг активирован. QTimer::isActive() не всегда работает корректно.
-    bool mPollingActive;
+    bool m_PollingActive;
 
     /// Список задач для выполнения после поллинга, если нет ошибок.
-    TTaskList mPPTaskList;
+    TTaskList m_PPTaskList;
 
     /// Принудительно не ждать первого полла на инициализации.
-    bool mForceNotWaitFirst;
+    bool m_ForceNotWaitFirst;
 };
 
 //--------------------------------------------------------------------------------
