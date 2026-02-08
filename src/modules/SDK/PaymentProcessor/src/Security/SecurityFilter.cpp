@@ -11,7 +11,7 @@ namespace PaymentProcessor {
 //------------------------------------------------------------------------------
 SecurityFilter::SecurityFilter(const SProvider &aProvider,
                                SProviderField::SecuritySubsystem aSubsystem)
-    : mProvider(aProvider), mSubsystem(aSubsystem) {}
+    : m_Provider(aProvider), m_Subsystem(aSubsystem) {}
 
 //------------------------------------------------------------------------------
 bool SecurityFilter::haveFilter(const QString &aParameterName) const {
@@ -50,10 +50,10 @@ QString SecurityFilter::apply(const QString &aParameterName, const QString &aVal
 
 //------------------------------------------------------------------------------
 QRegularExpression SecurityFilter::getMask(const QString &aParameterName) const {
-    foreach (auto field, mProvider.fields) {
+    foreach (auto field, m_Provider.fields) {
         if (aParameterName.contains(field.id, Qt::CaseInsensitive)) {
             auto subsystem =
-                field.security.contains(mSubsystem) ? mSubsystem : SProviderField::Default;
+                field.security.contains(m_Subsystem) ? m_Subsystem : SProviderField::Default;
             QString regExp = field.security.value(subsystem, QString());
 
             if (!regExp.isEmpty()) {

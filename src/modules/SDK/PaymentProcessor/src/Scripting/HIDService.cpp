@@ -20,14 +20,14 @@ namespace PaymentProcessor {
 namespace Scripting {
 
 //------------------------------------------------------------------------------
-HIDService::HIDService(ICore *aCore) : mCore(aCore), mService(mCore->getHIDService()) {
-    connect(mService, SIGNAL(error()), SIGNAL(error()));
+HIDService::HIDService(ICore *aCore) : m_Core(aCore), m_Service(m_Core->getHIDService()) {
+    connect(m_Service, SIGNAL(error()), SIGNAL(error()));
 
     // Сигналы из ядра завернем в общий скртптовый сигнал hiddata
-    connect(mService, SIGNAL(ejected()), this, SLOT(onEjected()));
-    connect(mService, SIGNAL(inserted(QVariantMap)), this, SLOT(onInserted(QVariantMap)));
+    connect(m_Service, SIGNAL(ejected()), this, SLOT(onEjected()));
+    connect(m_Service, SIGNAL(inserted(QVariantMap)), this, SLOT(onInserted(QVariantMap)));
 
-    connect(mService,
+    connect(m_Service,
             SIGNAL(data(const QVariantMap &)),
             this,
             SLOT(onData(const QVariantMap &)),
@@ -36,25 +36,25 @@ HIDService::HIDService(ICore *aCore) : mCore(aCore), mService(mCore->getHIDServi
 
 //------------------------------------------------------------------------------
 void HIDService::enable(const QString &aName) {
-    mService->setEnable(true, aName);
+    m_Service->setEnable(true, aName);
 }
 
 //------------------------------------------------------------------------------
 void HIDService::disable(const QString &aName) {
-    mService->setEnable(false, aName);
+    m_Service->setEnable(false, aName);
 }
 
 //------------------------------------------------------------------------------
 void HIDService::updateParameters(const QVariantMap &aParameters) {
-    mParameters = aParameters;
+    m_Parameters = aParameters;
 }
 
 //------------------------------------------------------------------------------
 QString HIDService::getExternalData() {
     qint64 providerId =
-        mParameters[SDK::PaymentProcessor::CPayment::Parameters::Provider].toLongLong();
+        m_Parameters[SDK::PaymentProcessor::CPayment::Parameters::Provider].toLongLong();
 
-    return mCore->getPaymentService()->getProvider(providerId).externalDataHandler;
+    return m_Core->getPaymentService()->getProvider(providerId).externalDataHandler;
 }
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ void HIDService::onData(const QVariantMap &aDataMap) {
     QString value;
 
     if (aDataMap.contains(CHardwareSDK::HID::Text)) {
-        value = mService->valueToString(aDataMap.value(CHardwareSDK::HID::Text));
+        value = m_Service->valueToString(aDataMap.value(CHardwareSDK::HID::Text));
 
         parameters.insert(HID::SOURCE, HID::SOURCE_SCANNER);
         parameters.insert(HID::STRING, value);

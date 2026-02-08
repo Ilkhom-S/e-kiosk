@@ -82,11 +82,11 @@ private:
 
 private:
     /// Указатель на ядро.
-    ICore *mCore;
+    ICore *m_Core;
     /// Указатель на сервис HID.
-    IHIDService *mService;
+    IHIDService *m_Service;
     /// Параметры.
-    QVariantMap mParameters;
+    QVariantMap m_Parameters;
 };
 
 //------------------------------------------------------------------------------

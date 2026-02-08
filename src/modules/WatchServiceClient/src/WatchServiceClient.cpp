@@ -18,7 +18,7 @@ IWatchServiceClient *createWatchServiceClient(const QString &aClientName,
 }
 
 //---------------------------------------------------------------------------
-WatchServiceClient::WatchServiceClient(const QString &aName, PingThread aThread) : mName(aName) {
+WatchServiceClient::WatchServiceClient(const QString &aName, PingThread aThread) : m_Name(aName) {
     qRegisterMetaType<WatchServiceClient::TMethod>("WatchServiceClient::TMethod");
 
     connect(this,
@@ -27,13 +27,13 @@ WatchServiceClient::WatchServiceClient(const QString &aName, PingThread aThread)
 
     moveToThread(this);
 
-    connect(&mPingTimer,
+    connect(&m_PingTimer,
             SIGNAL(timeout()),
             SLOT(onPing()),
             aThread == DedicateThread ? Qt::AutoConnection : Qt::QueuedConnection);
 
     if (aThread == DedicateThread) {
-        mPingTimer.moveToThread(this);
+        m_PingTimer.moveToThread(this);
     }
 }
 
@@ -48,40 +48,40 @@ bool WatchServiceClient::start() {
         return false;
     }
 
-    mInitMutex.lock();
+    m_InitMutex.lock();
 
     QThread::start();
 
-    mInitCondition.wait(&mInitMutex);
-    mInitMutex.unlock();
+    m_InitCondition.wait(&m_InitMutex);
+    m_InitMutex.unlock();
 
     return isConnected();
 }
 
 //---------------------------------------------------------------------------
 void WatchServiceClient::run() {
-    mClient = QSharedPointer<IMessageQueueClient>(createMessageQueueClient());
-    mClient->subscribeOnMessageReceived(this);
-    mClient->subscribeOnDisconnected(this);
+    m_Client = QSharedPointer<IMessageQueueClient>(createMessageQueueClient());
+    m_Client->subscribeOnMessageReceived(this);
+    m_Client->subscribeOnDisconnected(this);
 
-    mInitMutex.lock();
+    m_InitMutex.lock();
 
-    if (mClient->connect(CWatchService::MessageQueue)) {
-        QMetaObject::invokeMethod(&mPingTimer, "start", Q_ARG(int, CWatchService::PingInterval));
+    if (m_Client->connect(CWatchService::MessageQueue)) {
+        QMetaObject::invokeMethod(&m_PingTimer, "start", Q_ARG(int, CWatchService::PingInterval));
 
-        mInitCondition.wakeAll();
-        mInitMutex.unlock();
+        m_InitCondition.wakeAll();
+        m_InitMutex.unlock();
 
         QThread::exec();
 
-        mClient.clear();
+        m_Client.clear();
 
-        QMetaObject::invokeMethod(&mPingTimer, "stop");
+        QMetaObject::invokeMethod(&m_PingTimer, "stop");
     } else {
-        mClient.clear();
+        m_Client.clear();
 
-        mInitCondition.wakeAll();
-        mInitMutex.unlock();
+        m_InitCondition.wakeAll();
+        m_InitMutex.unlock();
     }
 }
 
@@ -95,16 +95,16 @@ void WatchServiceClient::stop() {
 
 //---------------------------------------------------------------------------
 bool WatchServiceClient::isConnected() const {
-    if (!mClient) {
+    if (!m_Client) {
         return false;
     } else {
-        return mClient->isConnected();
+        return m_Client->isConnected();
     }
 }
 
 //---------------------------------------------------------------------------
 void WatchServiceClient::execute(QString aCommand, QString aModule, QString aParams) {
-    QString command = QString::fromLatin1("%1=%2;").arg(CWatchService::Fields::Sender).arg(mName);
+    QString command = QString::fromLatin1("%1=%2;").arg(CWatchService::Fields::Sender).arg(m_Name);
 
     if (!aCommand.isEmpty()) {
         command += QString::fromLatin1("%1=%2;").arg(CWatchService::Fields::Type).arg(aCommand);
@@ -222,8 +222,8 @@ void WatchServiceClient::ping() {
 
 //---------------------------------------------------------------------------
 void WatchServiceClient::sendMessage(const QByteArray &aMessage) {
-    if (mClient) {
-        mClient->sendMessage(aMessage);
+    if (m_Client) {
+        m_Client->sendMessage(aMessage);
     }
 }
 
@@ -258,7 +258,7 @@ void WatchServiceClient::onMessageReceived(QByteArray aMessage) {
             }
         }
 
-        if (target.isEmpty() || (target == mName)) {
+        if (target.isEmpty() || (target == m_Name)) {
             if ((sender == CWatchService::Name) && (type == CWatchService::Commands::Close)) {
                 emit onCloseCommandReceived();
             } else if ((sender == CWatchService::Name) &&

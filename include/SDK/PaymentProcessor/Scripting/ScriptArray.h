@@ -27,23 +27,23 @@ public:
 
     /// Добавить объект.
     ScriptArray &append(QObject *aObject) {
-        mContainer.append(aObject);
+        m_Container.append(aObject);
         return *this;
     }
 
 public slots:
     /// Проверка контейнера на пустоту.
-    bool isEmpty() const { return mContainer.isEmpty(); }
+    bool isEmpty() const { return m_Container.isEmpty(); }
 
 private:
     /// Получить значения.
-    QObjectList getValues() const { return mContainer; }
+    QObjectList getValues() const { return m_Container; }
     /// Получить длину.
-    int getLength() const { return mContainer.size(); }
+    int getLength() const { return m_Container.size(); }
 
 private:
     /// Контейнер объектов.
-    QObjectList mContainer;
+    QObjectList m_Container;
 };
 
 //------------------------------------------------------------------------------

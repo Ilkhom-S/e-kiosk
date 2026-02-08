@@ -28,8 +28,8 @@ private:
     QRegularExpression getMask(const QString &aParameterName) const;
 
 private:
-    const SProvider &mProvider;
-    SProviderField::SecuritySubsystem mSubsystem;
+    const SProvider &m_Provider;
+    SProviderField::SecuritySubsystem m_Subsystem;
 
     Q_DISABLE_COPY(SecurityFilter)
 };

@@ -132,14 +132,14 @@ protected slots:
     void onDisconnected();
 
 private:
-    QSharedPointer<IMessageQueueClient> mClient;
+    QSharedPointer<IMessageQueueClient> m_Client;
 
-    QTimer mPingTimer;
+    QTimer m_PingTimer;
 
-    QString mName;
+    QString m_Name;
 
-    QWaitCondition mInitCondition;
-    QMutex mInitMutex;
+    QWaitCondition m_InitCondition;
+    QMutex m_InitMutex;
 };
 
 //---------------------------------------------------------------------------

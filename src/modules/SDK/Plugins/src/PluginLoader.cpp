@@ -18,13 +18,13 @@ namespace SDK {
 namespace Plugin {
 
 //------------------------------------------------------------------------------
-PluginLoader::PluginLoader(IKernel *aKernel) : mKernel(aKernel) {}
+PluginLoader::PluginLoader(IKernel *aKernel) : m_Kernel(aKernel) {}
 
 //------------------------------------------------------------------------------
 PluginLoader::~PluginLoader() {
-    foreach (QSharedPointer<QPluginLoader> library, mLibraries) {
-        mKernel->getLog()->write(LogLevel::Debug,
-                                 QString("Plugin '%1' will be unloaded.").arg(library->fileName()));
+    foreach (QSharedPointer<QPluginLoader> library, m_Libraries) {
+        m_Kernel->getLog()->write(
+            LogLevel::Debug, QString("Plugin '%1' will be unloaded.").arg(library->fileName()));
 
         // Не делаем этого, т.к. из главного модуля могут быть ссылки на данные/функции внутри
         // библиотеки (а они есть - баг Qt). library->unload();
@@ -33,20 +33,20 @@ PluginLoader::~PluginLoader() {
 
 //------------------------------------------------------------------------------
 QStringList PluginLoader::getPluginList(const QRegularExpression &aFilter) const {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
     getPluginPathList(aFilter);
 
-    return QStringList(mPlugins.keys()).filter(aFilter);
+    return QStringList(m_Plugins.keys()).filter(aFilter);
 }
 
 //------------------------------------------------------------------------------
 QStringList PluginLoader::getPluginPathList(const QRegularExpression &aFilter) const {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
     QStringList result;
 
-    foreach (QSharedPointer<QPluginLoader> p, mLibraries) {
+    foreach (QSharedPointer<QPluginLoader> p, m_Libraries) {
         result << p->fileName();
     }
 
@@ -56,36 +56,38 @@ QStringList PluginLoader::getPluginPathList(const QRegularExpression &aFilter) c
 //------------------------------------------------------------------------------
 QVariantMap PluginLoader::getPluginInstanceConfiguration(const QString &aInstancePath,
                                                          const QString &aConfigPath) {
-    if (!mPlugins.contains(aInstancePath)) {
-        mKernel->getLog()->write(LogLevel::Error, QString("No such plugin %1.").arg(aInstancePath));
+    if (!m_Plugins.contains(aInstancePath)) {
+        m_Kernel->getLog()->write(LogLevel::Error,
+                                  QString("No such plugin %1.").arg(aInstancePath));
         return QVariantMap();
     }
 
     QString configPath = aConfigPath.section(CPlugin::InstancePathSeparator, 0, 0);
     QString configPostfix = aConfigPath.section(CPlugin::InstancePathSeparator, 1, 1);
 
-    return mPlugins[aInstancePath]->getPluginInstanceConfiguration(configPath, configPostfix);
+    return m_Plugins[aInstancePath]->getPluginInstanceConfiguration(configPath, configPostfix);
 }
 
 //------------------------------------------------------------------------------
 IPlugin *PluginLoader::createPlugin(const QString &aInstancePath,
                                     const QString &aConfigInstancePath) {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
     SDK::Plugin::IPlugin *plugin = 0;
 
     QString path = aInstancePath.section(CPlugin::InstancePathSeparator, 0, 0);
 
-    if (mPlugins.contains(path)) {
+    if (m_Plugins.contains(path)) {
         QString configInstancePath =
             aConfigInstancePath.isEmpty() ? aInstancePath : aConfigInstancePath;
-        plugin = mPlugins[path]->createPlugin(aInstancePath, configInstancePath);
+        plugin = m_Plugins[path]->createPlugin(aInstancePath, configInstancePath);
 
         if (plugin) {
-            mCreatedPlugins[plugin] = mPlugins[path];
+            m_CreatedPlugins[plugin] = m_Plugins[path];
         }
     } else {
-        mKernel->getLog()->write(LogLevel::Error, QString("No such plugin %1.").arg(aInstancePath));
+        m_Kernel->getLog()->write(LogLevel::Error,
+                                  QString("No such plugin %1.").arg(aInstancePath));
     }
 
     return plugin;
@@ -94,38 +96,38 @@ IPlugin *PluginLoader::createPlugin(const QString &aInstancePath,
 //------------------------------------------------------------------------------
 std::weak_ptr<IPlugin> PluginLoader::createPluginPtr(const QString &aInstancePath,
                                                      const QString &aConfigInstancePath) {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
     QString path = aInstancePath.section(CPlugin::InstancePathSeparator, 0, 0);
 
-    if (mPlugins.contains(path)) {
+    if (m_Plugins.contains(path)) {
         QString configInstancePath =
             aConfigInstancePath.isEmpty() ? aInstancePath : aConfigInstancePath;
-        auto p = mPlugins[path]->createPluginPtr(aInstancePath, configInstancePath);
+        auto p = m_Plugins[path]->createPluginPtr(aInstancePath, configInstancePath);
         if (!p.expired()) {
             TPluginPtr plugin = p.lock();
-            mCreatedPluginsPtr[plugin] = mPlugins[path];
+            m_CreatedPluginsPtr[plugin] = m_Plugins[path];
             return p;
         }
     }
 
-    mKernel->getLog()->write(LogLevel::Error, QString("No such plugin %1.").arg(aInstancePath));
+    m_Kernel->getLog()->write(LogLevel::Error, QString("No such plugin %1.").arg(aInstancePath));
 
     return std::weak_ptr<IPlugin>();
 }
 
 //------------------------------------------------------------------------------
 bool PluginLoader::destroyPlugin(IPlugin *aPlugin) {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
-    if (mCreatedPlugins.contains(aPlugin)) {
-        mCreatedPlugins[aPlugin]->destroyPlugin(aPlugin);
-        mCreatedPlugins.remove(aPlugin);
+    if (m_CreatedPlugins.contains(aPlugin)) {
+        m_CreatedPlugins[aPlugin]->destroyPlugin(aPlugin);
+        m_CreatedPlugins.remove(aPlugin);
 
         return true;
     }
 
-    mKernel->getLog()->write(
+    m_Kernel->getLog()->write(
         LogLevel::Error,
         QString("Failed to destroy plugin 0x%1, doesn't exist.").arg(qlonglong(aPlugin), 0, 16));
 
@@ -134,19 +136,19 @@ bool PluginLoader::destroyPlugin(IPlugin *aPlugin) {
 
 //------------------------------------------------------------------------------
 bool PluginLoader::destroyPluginPtr(const std::weak_ptr<IPlugin> &aPlugin) {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
     auto ptr = aPlugin.lock();
 
-    if (mCreatedPluginsPtr.find(ptr) != mCreatedPluginsPtr.end()) {
-        auto fabric = mCreatedPluginsPtr[ptr];
-        mCreatedPluginsPtr.erase(ptr);
+    if (m_CreatedPluginsPtr.find(ptr) != m_CreatedPluginsPtr.end()) {
+        auto fabric = m_CreatedPluginsPtr[ptr];
+        m_CreatedPluginsPtr.erase(ptr);
         fabric->destroyPlugin(ptr);
 
         return true;
     }
 
-    mKernel->getLog()->write(
+    m_Kernel->getLog()->write(
         LogLevel::Error,
         QString("Failed to destroy plugin 0x%1, doesn't exist.").arg(qlonglong(ptr.get()), 0, 16));
 
@@ -155,9 +157,9 @@ bool PluginLoader::destroyPluginPtr(const std::weak_ptr<IPlugin> &aPlugin) {
 
 //------------------------------------------------------------------------------
 int PluginLoader::addDirectory(const QString &aDirectory) {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
-    mDirectories << aDirectory;
+    m_Directories << aDirectory;
 
     QStringList fileNameFilter;
 #ifdef Q_OS_WIN
@@ -196,8 +198,8 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
                 qobject_cast<SDK::Plugin::IPluginFactory *>(rootObject);
 
             if (factory) {
-                if (factory->initialize(mKernel, dirEntry.fileInfo().absolutePath())) {
-                    mKernel->getLog()->write(
+                if (factory->initialize(m_Kernel, dirEntry.fileInfo().absolutePath())) {
+                    m_Kernel->getLog()->write(
                         LogLevel::Normal,
                         QString("Loading %1. Name: %3. Author: %4. Version: %5.")
                             .arg(dirEntry.filePath())
@@ -205,7 +207,7 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
                             .arg(factory->getAuthor())
                             .arg(factory->getVersion()));
 
-                    mLibraries << library;
+                    m_Libraries << library;
 
                     // Загрузка локализации
                     QDir translations(dirEntry.fileInfo().absolutePath(),
@@ -219,10 +221,10 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
                         if (translator->load(translation)) {
                             qApp->installTranslator(translator.release());
 
-                            mKernel->getLog()->write(LogLevel::Normal,
-                                                     QString("Translation %1 for %2 loaded.")
-                                                         .arg(translation)
-                                                         .arg(factory->getName()));
+                            m_Kernel->getLog()->write(LogLevel::Normal,
+                                                      QString("Translation %1 for %2 loaded.")
+                                                          .arg(translation)
+                                                          .arg(factory->getName()));
                         }
                     }
 
@@ -230,31 +232,31 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
 
                     // Загрузка информации о плагинах
                     foreach (QString path, factory->getPluginList()) {
-                        if (mPlugins.contains(path)) {
-                            mKernel->getLog()->write(
+                        if (m_Plugins.contains(path)) {
+                            m_Kernel->getLog()->write(
                                 LogLevel::Warning,
                                 QString(
                                     "Plugin %1 is already registered in %2, ignoring this one...")
                                     .arg(path)
-                                    .arg(mPlugins[path]->getName()));
+                                    .arg(m_Plugins[path]->getName()));
                         } else {
-                            mPlugins[path] = factory;
+                            m_Plugins[path] = factory;
                         }
                     }
                 } else {
-                    mKernel->getLog()->write(LogLevel::Warning,
-                                             QString("Failed to initialize plugin factory in %1.")
-                                                 .arg(dirEntry.filePath()));
+                    m_Kernel->getLog()->write(LogLevel::Warning,
+                                              QString("Failed to initialize plugin factory in %1.")
+                                                  .arg(dirEntry.filePath()));
                     library->unload();
                 }
             } else {
-                mKernel->getLog()->write(
+                m_Kernel->getLog()->write(
                     LogLevel::Warning,
                     QString("%1 doesn't support base plugin interface.").arg(dirEntry.filePath()));
                 library->unload();
             }
         } else {
-            mKernel->getLog()->write(
+            m_Kernel->getLog()->write(
                 LogLevel::Warning,
                 QString("Skipping %1: %2").arg(dirEntry.filePath()).arg(library->errorString()));
         }
@@ -268,15 +270,15 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
     // No explicit reset needed as it's an environment variable
 #endif
 
-    return mPlugins.count();
+    return m_Plugins.count();
 }
 
 //------------------------------------------------------------------------------
 TParameterList PluginLoader::getPluginParametersDescription(const QString &aPath) const {
-    QMutexLocker lock(&mAccessMutex);
+    QMutexLocker lock(&m_AccessMutex);
 
-    if (mPlugins.contains(aPath)) {
-        return mPlugins.value(aPath)->getPluginParametersDescription(aPath);
+    if (m_Plugins.contains(aPath)) {
+        return m_Plugins.value(aPath)->getPluginParametersDescription(aPath);
     }
 
     return TParameterList();

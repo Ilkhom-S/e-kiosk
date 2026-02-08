@@ -61,27 +61,27 @@ public:
 
 private:
     /// Интерфейс приложения для плагинов.
-    IKernel *mKernel;
+    IKernel *m_Kernel;
 
     /// Каталоги для поиска плагинов.
-    QStringList mDirectories;
+    QStringList m_Directories;
 
     /// Загрузчики библиотек. Нужны для выгрузки библиотек.
-    QList<QSharedPointer<QPluginLoader>> mLibraries;
+    QList<QSharedPointer<QPluginLoader>> m_Libraries;
 
     /// Список доступных плагинов.
-    QMap<QString, SDK::Plugin::IPluginFactory *> mPlugins;
+    QMap<QString, SDK::Plugin::IPluginFactory *> m_Plugins;
 
     /// Список созданных плагинов.
-    QMap<SDK::Plugin::IPlugin *, SDK::Plugin::IPluginFactory *> mCreatedPlugins;
+    QMap<SDK::Plugin::IPlugin *, SDK::Plugin::IPluginFactory *> m_CreatedPlugins;
 
     /// Список созданных плагинов.
     typedef std::shared_ptr<IPlugin> TPluginPtr;
     typedef std::map<TPluginPtr, SDK::Plugin::IPluginFactory *> TPluginMapPtr;
-    TPluginMapPtr mCreatedPluginsPtr;
+    TPluginMapPtr m_CreatedPluginsPtr;
 
     /// Синхронизация создания/удаления плагина.
-    mutable QRecursiveMutex mAccessMutex;
+    mutable QRecursiveMutex m_AccessMutex;
 };
 
 } // namespace Plugin
