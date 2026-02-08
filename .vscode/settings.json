@@ -51,5 +51,8 @@
     "chat.tools.terminal.autoApprove": {
         "clang++": true
     },
-    "svg.preview.background": "dark-transparent"
+    "svg.preview.background": "dark-transparent",
+    "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
+        "cppcoreguidelines-pro-bounds-array-to-pointer-decay"
+    ]
 }

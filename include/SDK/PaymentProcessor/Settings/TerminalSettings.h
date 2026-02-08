@@ -264,10 +264,10 @@ private:
     Q_DISABLE_COPY(TerminalSettings)
 
 private:
-    TPtree &mProperties;
+    TPtree &m_Properties;
 
     /// Список критичных ошибок процессинга
-    QSet<int> mCriticalErrors;
+    QSet<int> m_CriticalErrors;
 };
 
 } // namespace PaymentProcessor

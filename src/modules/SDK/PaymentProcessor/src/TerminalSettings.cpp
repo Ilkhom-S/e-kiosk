@@ -33,7 +33,7 @@ QString TerminalSettings::getAdapterName() {
 
 //---------------------------------------------------------------------------
 TerminalSettings::TerminalSettings(TPtree &aProperties)
-    : mProperties(aProperties.get_child(CAdapterNames::TerminalAdapter, aProperties)) {}
+    : m_Properties(aProperties.get_child(CAdapterNames::TerminalAdapter, aProperties)) {}
 
 //---------------------------------------------------------------------------
 TerminalSettings::~TerminalSettings() {}
@@ -41,13 +41,13 @@ TerminalSettings::~TerminalSettings() {}
 //---------------------------------------------------------------------------
 void TerminalSettings::initialize() {
     foreach (auto error,
-             mProperties.get("config.terminal.critical_errors", QString())
+             m_Properties.get("config.terminal.critical_errors", QString())
                  .split(",", Qt::SkipEmptyParts)) {
         bool ok = false;
         int errorId = error.toInt(&ok);
 
         if (ok) {
-            mCriticalErrors << errorId;
+            m_CriticalErrors << errorId;
         }
     }
 }
@@ -57,19 +57,19 @@ SConnection TerminalSettings::getConnection() const {
     SConnection connection;
 
     try {
-        connection.name = mProperties.get<QString>("terminal.connection.name");
+        connection.name = m_Properties.get<QString>("terminal.connection.name");
 
-        QString type = mProperties.get<QString>("terminal.connection.type");
+        QString type = m_Properties.get<QString>("terminal.connection.type");
         connection.type = type.compare("modem", Qt::CaseInsensitive) ? EConnectionTypes::Unmanaged
                                                                      : EConnectionTypes::Dialup;
         connection.checkInterval =
-            mProperties.get("config.terminal.connection_check_interval.<xmlattr>.value",
+            m_Properties.get("config.terminal.connection_check_interval.<xmlattr>.value",
                             CConnection::DefaultCheckInterval);
         connection.checkInterval = connection.checkInterval < 1 ? 1 : connection.checkInterval;
 
         QNetworkProxy proxy;
 
-        auto proxyType = mProperties.get<QString>("terminal.proxy.type", QString("none"));
+        auto proxyType = m_Properties.get<QString>("terminal.proxy.type", QString("none"));
 
         if (proxyType == "http") {
             proxy.setType(QNetworkProxy::HttpProxy);
@@ -82,10 +82,10 @@ SConnection TerminalSettings::getConnection() const {
         }
 
         if (proxy.type() != QNetworkProxy::NoProxy) {
-            proxy.setHostName(mProperties.get<QString>("terminal.proxy.host"));
-            proxy.setPort(mProperties.get<QString>("terminal.proxy.port").toUShort());
-            proxy.setPassword(mProperties.get("terminal.proxy.password", QString()));
-            proxy.setUser(mProperties.get("terminal.proxy.login", QString()));
+            proxy.setHostName(m_Properties.get<QString>("terminal.proxy.host"));
+            proxy.setPort(m_Properties.get<QString>("terminal.proxy.port").toUShort());
+            proxy.setPassword(m_Properties.get("terminal.proxy.password", QString()));
+            proxy.setUser(m_Properties.get("terminal.proxy.login", QString()));
         }
 
         connection.proxy = proxy;
@@ -99,15 +99,15 @@ SConnection TerminalSettings::getConnection() const {
 
 //---------------------------------------------------------------------------
 void TerminalSettings::setConnection(const SConnection &aConnection) {
-    mProperties.put("terminal.connection.name", aConnection.name);
-    mProperties.put("terminal.connection.type",
+    m_Properties.put("terminal.connection.name", aConnection.name);
+    m_Properties.put("terminal.connection.type",
                     (aConnection.type == EConnectionTypes::Dialup) ? "modem" : "unmanaged");
 
     if (aConnection.proxy.type() != QNetworkProxy::NoProxy) {
-        mProperties.put("terminal.proxy.host", aConnection.proxy.hostName());
-        mProperties.put("terminal.proxy.password", aConnection.proxy.password());
-        mProperties.put("terminal.proxy.login", aConnection.proxy.user());
-        mProperties.put("terminal.proxy.port", QString("%1").arg(aConnection.proxy.port()));
+        m_Properties.put("terminal.proxy.host", aConnection.proxy.hostName());
+        m_Properties.put("terminal.proxy.password", aConnection.proxy.password());
+        m_Properties.put("terminal.proxy.login", aConnection.proxy.user());
+        m_Properties.put("terminal.proxy.port", QString("%1").arg(aConnection.proxy.port()));
 
         QString proxyType;
 
@@ -125,10 +125,10 @@ void TerminalSettings::setConnection(const SConnection &aConnection) {
             proxyType = "http";
         }
 
-        mProperties.put("terminal.proxy.type", proxyType);
+        m_Properties.put("terminal.proxy.type", proxyType);
     } else {
         try {
-            mProperties.get_child("terminal.proxy").clear();
+            m_Properties.get_child("terminal.proxy").clear();
         } catch (std::exception &) {
             // Ветвь не была найдена.
         }
@@ -141,9 +141,9 @@ QList<IConnection::CheckUrl> TerminalSettings::getCheckHosts() const {
 
     for (int i = 1;; i++) {
         try {
-            QUrl url = mProperties.get(QString("system.check_hosts.host%1").arg(i).toStdString(),
+            QUrl url = m_Properties.get(QString("system.check_hosts.host%1").arg(i).toStdString(),
                                        QString());
-            QString response = mProperties.get(
+            QString response = m_Properties.get(
                 QString("system.check_hosts.response%1").arg(i).toStdString(), QString());
 
             if (url.isEmpty())
@@ -165,11 +165,11 @@ SDatabaseSettings TerminalSettings::getDatabaseSettings() const {
     SDatabaseSettings databaseSettings;
 
     databaseSettings.name =
-        mProperties.get("system.database.name", QString(CDefaults::DefaultDatabaseName));
-    databaseSettings.host = mProperties.get("system.database.host", QString());
-    databaseSettings.port = mProperties.get("system.database.port", CDefaults::DefaultDatabasePort);
-    databaseSettings.user = mProperties.get("system.database.user", QString());
-    databaseSettings.password = mProperties.get("system.database.password", QString());
+        m_Properties.get("system.database.name", QString(CDefaults::DefaultDatabaseName));
+    databaseSettings.host = m_Properties.get("system.database.host", QString());
+    databaseSettings.port = m_Properties.get("system.database.port", CDefaults::DefaultDatabasePort);
+    databaseSettings.user = m_Properties.get("system.database.user", QString());
+    databaseSettings.password = m_Properties.get("system.database.password", QString());
 
     return databaseSettings;
 }
@@ -180,7 +180,7 @@ QStringList TerminalSettings::getDeviceList() const {
 
     static TPtree emptyTreeDeviceList;
     BOOST_FOREACH (const TPtree::value_type &value,
-                   mProperties.get_child("terminal.hardware", emptyTreeDeviceList)) {
+                   m_Properties.get_child("terminal.hardware", emptyTreeDeviceList)) {
         deviceList.append(value.second.get_value<QString>());
     }
 
@@ -197,30 +197,30 @@ void TerminalSettings::setDeviceList(const QStringList &aHardware) {
         id++;
     }
 
-    mProperties.put_child("terminal.hardware", branch);
+    m_Properties.put_child("terminal.hardware", branch);
 }
 
 //---------------------------------------------------------------------------
 SMonitoringSettings TerminalSettings::getMonitoringSettings() const {
     SMonitoringSettings settings;
 
-    settings.url = QUrl(mProperties.get<QString>("system.monitoring.url", QString()));
-    settings.restUrl = QUrl(mProperties.get<QString>("system.monitoring.rest_url", QString()));
+    settings.url = QUrl(m_Properties.get<QString>("system.monitoring.url", QString()));
+    settings.restUrl = QUrl(m_Properties.get<QString>("system.monitoring.rest_url", QString()));
     settings.heartbeatTimeout =
-        mProperties.get<int>("system.monitoring.heartbeat", settings.heartbeatTimeout);
+        m_Properties.get<int>("system.monitoring.heartbeat", settings.heartbeatTimeout);
     settings.restCheckTimeout =
-        mProperties.get<int>("system.monitoring.rest_check_timeout", settings.restCheckTimeout);
-    settings.restLimit = mProperties.get<int>("config.terminal.block_by_rest", 0);
+        m_Properties.get<int>("system.monitoring.rest_check_timeout", settings.restCheckTimeout);
+    settings.restLimit = m_Properties.get<int>("config.terminal.block_by_rest", 0);
 
     settings.cleanupItems =
-        mProperties.get<QString>("system.user_cleanup.remove", "").split(",", Qt::SkipEmptyParts);
+        m_Properties.get<QString>("system.user_cleanup.remove", "").split(",", Qt::SkipEmptyParts);
     for (QString &item : settings.cleanupItems) {
         item = item.trimmed();
     }
     settings.cleanupItems.removeAll("");
 
     settings.cleanupExclude =
-        mProperties.get<QString>("system.user_cleanup.exclude", "").split(",", Qt::SkipEmptyParts);
+        m_Properties.get<QString>("system.user_cleanup.exclude", "").split(",", Qt::SkipEmptyParts);
     for (QString &item : settings.cleanupExclude) {
         item = item.trimmed();
     }
@@ -234,7 +234,7 @@ QMap<int, SKeySettings> TerminalSettings::getKeys() const {
     QMap<int, SKeySettings> keys;
 
     static TPtree emptyTreeKeys;
-    BOOST_FOREACH (const TPtree::value_type &value, mProperties.get_child("keys", emptyTreeKeys)) {
+    BOOST_FOREACH (const TPtree::value_type &value, m_Properties.get_child("keys", emptyTreeKeys)) {
         try {
             if (value.first == "<xmlattr>") {
                 continue;
@@ -284,7 +284,7 @@ void TerminalSettings::setKey(const SKeySettings &aKey, bool aReplaceIfExists) {
     };
 
     static TPtree emptyTreeSetKey;
-    BOOST_FOREACH (TPtree::value_type &value, mProperties.get_child("keys", emptyTreeSetKey)) {
+    BOOST_FOREACH (TPtree::value_type &value, m_Properties.get_child("keys", emptyTreeSetKey)) {
         try {
             if (value.first == "<xmlattr>") {
                 continue;
@@ -310,25 +310,25 @@ void TerminalSettings::setKey(const SKeySettings &aKey, bool aReplaceIfExists) {
         pair.put("<xmlattr>.id", aKey.id);
         applyConfig(pair);
 
-        mProperties.add_child("keys.pair", pair);
+        m_Properties.add_child("keys.pair", pair);
     }
 }
 
 //---------------------------------------------------------------------------
 void TerminalSettings::cleanKeys() {
     static TPtree emptyTreeCleanKeys;
-    while (mProperties.get_child("keys", emptyTreeCleanKeys).erase("pair") > 0)
+    while (m_Properties.get_child("keys", emptyTreeCleanKeys).erase("pair") > 0)
         ;
 }
 
 //---------------------------------------------------------------------------
 SCurrencySettings TerminalSettings::getCurrencySettings() const {
     SCurrencySettings currencySettings;
-    currencySettings.id = mProperties.get("system.currency.id", -1);
+    currencySettings.id = m_Properties.get("system.currency.id", -1);
 
     if (currencySettings.id != -1) {
-        currencySettings.code = mProperties.get("system.currency.code", QString());
-        currencySettings.name = mProperties.get("system.currency.name", QString());
+        currencySettings.code = m_Properties.get("system.currency.code", QString());
+        currencySettings.name = m_Properties.get("system.currency.name", QString());
 
         if (currencySettings.code.isEmpty() || currencySettings.name.isEmpty()) {
             toLog(LogLevel::Warning,
@@ -336,11 +336,11 @@ SCurrencySettings TerminalSettings::getCurrencySettings() const {
                       .arg(currencySettings.id));
         }
 
-        foreach (auto coin, mProperties.get("system.currency.coins", QString()).split(",")) {
+        foreach (auto coin, m_Properties.get("system.currency.coins", QString()).split(",")) {
             currencySettings.coins << Currency::Nominal(coin.toDouble());
         }
 
-        foreach (auto note, mProperties.get("system.currency.notes", QString()).split(",")) {
+        foreach (auto note, m_Properties.get("system.currency.notes", QString()).split(",")) {
             currencySettings.notes << Currency::Nominal(note.toInt());
         }
     }
@@ -350,12 +350,12 @@ SCurrencySettings TerminalSettings::getCurrencySettings() const {
 
 //----------------------------------------------------------------------------
 const QSet<int> &TerminalSettings::getCriticalErrors() const {
-    return mCriticalErrors;
+    return m_CriticalErrors;
 }
 
 //---------------------------------------------------------------------------
 QString TerminalSettings::getKeygenURL() const {
-    QString url = mProperties.get("system.common.keygen_url", QString());
+    QString url = m_Properties.get("system.common.keygen_url", QString());
 
     if (url.isEmpty()) {
         toLog(LogLevel::Error, "Keygen url is not set!");
@@ -366,7 +366,7 @@ QString TerminalSettings::getKeygenURL() const {
 
 //---------------------------------------------------------------------------
 QString TerminalSettings::getReceiptMailURL() const {
-    QString url = mProperties.get("system.common.receipt_mail_url", QString());
+    QString url = m_Properties.get("system.common.receipt_mail_url", QString());
 
     if (url.isEmpty()) {
         toLog(LogLevel::Error, "Url for receipt mail is not set!");
@@ -377,7 +377,7 @@ QString TerminalSettings::getReceiptMailURL() const {
 
 //---------------------------------------------------------------------------
 QString TerminalSettings::getFeedbackURL() const {
-    QString url = mProperties.get("system.common.feedback_url", QString());
+    QString url = m_Properties.get("system.common.feedback_url", QString());
 
     if (url.isEmpty()) {
         toLog(LogLevel::Error, "Url for feedback is not set!");
@@ -392,7 +392,7 @@ QVariantMap TerminalSettings::getChargeProviderAccess() const {
 
     static TPtree emptyTreeChargeAccess;
     BOOST_FOREACH (const TPtree::value_type &value,
-                   mProperties.get_child("system.charge_access", emptyTreeChargeAccess)) {
+                   m_Properties.get_child("system.charge_access", emptyTreeChargeAccess)) {
         result.insert(QString::fromStdString(value.first),
                       value.second.get_value<QString>().split(","));
     }
@@ -404,22 +404,22 @@ QVariantMap TerminalSettings::getChargeProviderAccess() const {
 SAppEnvironment TerminalSettings::getAppEnvironment() const {
     SAppEnvironment environment;
 
-    environment.userDataPath = mProperties.get("environment.user_data_path", QString());
-    environment.contentPath = mProperties.get("environment.content_path", QString());
-    environment.interfacePath = mProperties.get("environment.interface_path", QString());
-    environment.adPath = mProperties.get("environment.ad_path", QString());
-    environment.version = mProperties.get("environment.version", QString());
+    environment.userDataPath = m_Properties.get("environment.user_data_path", QString());
+    environment.contentPath = m_Properties.get("environment.content_path", QString());
+    environment.interfacePath = m_Properties.get("environment.interface_path", QString());
+    environment.adPath = m_Properties.get("environment.ad_path", QString());
+    environment.version = m_Properties.get("environment.version", QString());
 
     return environment;
 }
 
 //---------------------------------------------------------------------------
 void TerminalSettings::setAppEnvironment(const SAppEnvironment &aEnv) {
-    mProperties.put("environment.user_data_path", aEnv.userDataPath);
-    mProperties.put("environment.content_path", aEnv.contentPath);
-    mProperties.put("environment.interface_path", aEnv.interfacePath);
-    mProperties.put("environment.ad_path", aEnv.adPath);
-    mProperties.put("environment.version", aEnv.version);
+    m_Properties.put("environment.user_data_path", aEnv.userDataPath);
+    m_Properties.put("environment.content_path", aEnv.contentPath);
+    m_Properties.put("environment.interface_path", aEnv.interfacePath);
+    m_Properties.put("environment.ad_path", aEnv.adPath);
+    m_Properties.put("environment.version", aEnv.version);
 }
 
 //---------------------------------------------------------------------------
@@ -427,7 +427,7 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
     SCommonSettings settings;
 
     static TPtree emptyTreeCommonSettings;
-    if (mProperties.get_child("config.hardware", emptyTreeCommonSettings).empty()) {
+    if (m_Properties.get_child("config.hardware", emptyTreeCommonSettings).empty()) {
         settings.isValid = false;
 
         return settings;
@@ -435,15 +435,15 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
 
     settings.setBlockOn(
         SCommonSettings::ValidatorError,
-        mProperties.get("config.hardware.validator_settings.block_terminal_on_error", true));
-    settings.autoEncashment = mProperties.get("config.hardware.validator_settings.auto_encashment",
+        m_Properties.get("config.hardware.validator_settings.block_terminal_on_error", true));
+    settings.autoEncashment = m_Properties.get("config.hardware.validator_settings.auto_encashment",
                                               settings.autoEncashment);
-    settings.printFailedReceipts = mProperties.get(
+    settings.printFailedReceipts = m_Properties.get(
         "config.hardware.printer_settings.print_failed_receipts", settings.printFailedReceipts);
-    settings.randomReceiptsID = mProperties.get(
+    settings.randomReceiptsID = m_Properties.get(
         "config.hardware.printer_settings.random_receipts_id", settings.randomReceiptsID);
     settings.enableBlankFiscalData =
-        mProperties.get("config.hardware.printer_settings.enable_blank_fiscal_data",
+        m_Properties.get("config.hardware.printer_settings.enable_blank_fiscal_data",
                         settings.enableBlankFiscalData);
 
     QString defaultZReportTime =
@@ -451,19 +451,19 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
             ? settings.autoZReportTime.toString("hh:mm")
             : "";
     settings.autoZReportTime = QTime::fromString(
-        mProperties.get("config.hardware.printer_settings.auto_z_report_time", defaultZReportTime),
+        m_Properties.get("config.hardware.printer_settings.auto_z_report_time", defaultZReportTime),
         "hh:mm");
 
-    settings.timeZoneOffset = mProperties.get_optional<int>("config.terminal.timezone");
+    settings.timeZoneOffset = m_Properties.get_optional<int>("config.terminal.timezone");
 
     // Получаем минимальный разрешенный номинал.
-    auto minNote = mProperties.get_optional<double>("config.hardware.validator_settings.min_note");
+    auto minNote = m_Properties.get_optional<double>("config.hardware.validator_settings.min_note");
     if (minNote.is_initialized()) {
         settings.minPar = minNote.get();
 
         // Парсим список активированных купюр.
         foreach (const QString &str,
-                 mProperties.get("config.hardware.validator_settings.notes", QString())
+                 m_Properties.get("config.hardware.validator_settings.notes", QString())
                      .split(",", Qt::SkipEmptyParts)) {
             auto nominal = Currency::Nominal(str.toDouble());
 
@@ -478,7 +478,7 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
 
         // Парсим список активированных монет.
         foreach (auto str,
-                 mProperties.get("config.hardware.validator_settings.coins", QString())
+                 m_Properties.get("config.hardware.validator_settings.coins", QString())
                      .split(",", Qt::SkipEmptyParts)) {
             auto nominal = Currency::Nominal(str.toDouble());
             settings.minPar = qMin(nominal, settings.minPar);
@@ -487,7 +487,7 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
 
         // Парсим список активированных купюр.
         foreach (auto str,
-                 mProperties.get("config.hardware.validator_settings.notes", QString())
+                 m_Properties.get("config.hardware.validator_settings.notes", QString())
                      .split(",", Qt::SkipEmptyParts)) {
             auto nominal = Currency::Nominal(str.toInt());
             settings.minPar = qMin(nominal, settings.minPar);
@@ -495,19 +495,19 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
         }
     }
 
-    settings.skipCheckWhileNetworkError = mProperties.get(
+    settings.skipCheckWhileNetworkError = m_Properties.get(
         "config.terminal.skip_check_while_network_error", settings.skipCheckWhileNetworkError);
 
     settings.setBlockOn(
         SCommonSettings::PrinterError,
-        mProperties.get("config.hardware.printer_settings.block_terminal_on_error", true));
+        m_Properties.get("config.hardware.printer_settings.block_terminal_on_error", true));
     settings.setBlockOn(
         SCommonSettings::CardReaderError,
-        mProperties.get("config.hardware.cardreader_settings.block_terminal_on_error", false));
+        m_Properties.get("config.hardware.cardreader_settings.block_terminal_on_error", false));
     settings.setBlockOn(SCommonSettings::AccountBalance,
                         getMonitoringSettings().isBlockByAccountBalance());
 
-    switch (mProperties.get("config.terminal.block_by_penetration", 0)) {
+    switch (m_Properties.get("config.terminal.block_by_penetration", 0)) {
     case 2:
         settings.penetrationEventLevel = EEventType::Critical;
         break;
@@ -529,11 +529,11 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
     };
 
     settings.blockCheatedPayment =
-        mProperties.get("config.terminal.block_cheated_payment", settings.blockCheatedPayment);
+        m_Properties.get("config.terminal.block_cheated_payment", settings.blockCheatedPayment);
 
     static TPtree emptyTreeBlockByNote;
     BOOST_FOREACH (const TPtree::value_type &notes,
-                   mProperties.get_child("config.terminal.block_by_note", emptyTreeBlockByNote)) {
+                   m_Properties.get_child("config.terminal.block_by_note", emptyTreeBlockByNote)) {
         BOOST_FOREACH (const TPtree::value_type &note, notes.second) {
             if (note.first == "<xmlattr>") {
                 updateBlockNotes(note.second.get<int>("nominal"),
@@ -544,7 +544,7 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
     }
 
     settings.disableAmountOverflow =
-        mProperties.get("config.hardware.validator_settings.disable_amount_overflow",
+        m_Properties.get("config.hardware.validator_settings.disable_amount_overflow",
                         settings.disableAmountOverflow);
 
     return settings;
@@ -554,8 +554,8 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
 SServiceMenuPasswords TerminalSettings::getServiceMenuPasswords() const {
     SServiceMenuPasswords passwords;
 
-    passwords.phone = mProperties.get("config.service_menu.phone", QString());
-    passwords.operatorId = mProperties.get("config.service_menu.operator", -1);
+    passwords.phone = m_Properties.get("config.service_menu.phone", QString());
+    passwords.operatorId = m_Properties.get("config.service_menu.operator", -1);
 
     std::array<QString, 4> passwordTypes = {CServiceMenuPasswords::Service,
                                             CServiceMenuPasswords::Screen,
@@ -564,7 +564,7 @@ SServiceMenuPasswords TerminalSettings::getServiceMenuPasswords() const {
 
     for (size_t i = 0; i < passwordTypes.size(); i++) {
         try {
-            passwords.passwords[passwordTypes[i]] = mProperties.get<QString>(
+            passwords.passwords[passwordTypes[i]] = m_Properties.get<QString>(
                 (QString("config.service_menu.") + passwordTypes[i]).toStdString());
         } catch (std::exception &e) {
             toLog(LogLevel::Error, QString("Error %1.").arg(e.what()));
@@ -578,7 +578,7 @@ SServiceMenuPasswords TerminalSettings::getServiceMenuPasswords() const {
 SServiceMenuSettings TerminalSettings::getServiceMenuSettings() const {
     SServiceMenuSettings settings;
 
-    settings.allowAnyKeyPair = mProperties.get("config.service_menu.alloy_any_keypair", false);
+    settings.allowAnyKeyPair = m_Properties.get("config.service_menu.alloy_any_keypair", false);
 
     return settings;
 }
@@ -586,12 +586,12 @@ SServiceMenuSettings TerminalSettings::getServiceMenuSettings() const {
 //---------------------------------------------------------------------------
 QString TerminalSettings::getPrinterForReceipt(const QString &aReceiptType) {
     static TPtree emptyTreeReceipts;
-    auto receipts = mProperties.get_child("terminal.receipts", emptyTreeReceipts);
+    auto receipts = m_Properties.get_child("terminal.receipts", emptyTreeReceipts);
     auto deviceAlias = receipts.get(aReceiptType.toStdString(), QString());
 
     // Ищем девайс с таким алиасом в списке всех устройств.
     static TPtree emptyTreePrinterDevices;
-    auto devices = mProperties.get_child("terminal.hardware", emptyTreePrinterDevices);
+    auto devices = m_Properties.get_child("terminal.hardware", emptyTreePrinterDevices);
     return devices.get(deviceAlias.toStdString(), QString());
 }
 
@@ -606,7 +606,7 @@ bool TerminalSettings::isValid() const {
 
     foreach (const QString &aConfig, configs) {
         static TPtree emptyTreeIsValid;
-        if (mProperties.get_child(aConfig.toStdString(), emptyTreeIsValid).empty()) {
+        if (m_Properties.get_child(aConfig.toStdString(), emptyTreeIsValid).empty()) {
             errorConfigs << aConfig;
         }
     }
@@ -623,29 +623,29 @@ bool TerminalSettings::isValid() const {
 
 //---------------------------------------------------------------------------
 int TerminalSettings::getLogsMaxSize() const {
-    return mProperties.get("config.terminal.logs.<xmlattr>.max_size", 100);
+    return m_Properties.get("config.terminal.logs.<xmlattr>.max_size", 100);
 }
 
 //---------------------------------------------------------------------------
 QStringList TerminalSettings::getUpdaterUrls() const {
     QStringList result;
 
-    result << mProperties.get("system.updater.url", QString())
-           << mProperties.get("system.updater.data_url", QString());
+    result << m_Properties.get("system.updater.url", QString())
+           << m_Properties.get("system.updater.data_url", QString());
 
     return result;
 }
 
 //---------------------------------------------------------------------------
 QString TerminalSettings::getAdProfile() const {
-    return mProperties.get("config.terminal.ad.<xmlattr>.profile", QString());
+    return m_Properties.get("config.terminal.ad.<xmlattr>.profile", QString());
 }
 
 //---------------------------------------------------------------------------
 QTime TerminalSettings::autoUpdate() const {
-    if (mProperties.get<bool>("config.terminal.check_update", false)) {
+    if (m_Properties.get<bool>("config.terminal.check_update", false)) {
         return QTime::fromString(
-            mProperties.get<QString>("config.terminal.check_update.<xmlattr>.start", ""), "hh:mm");
+            m_Properties.get<QString>("config.terminal.check_update.<xmlattr>.start", ""), "hh:mm");
     }
 
     return QTime();
@@ -654,9 +654,9 @@ QTime TerminalSettings::autoUpdate() const {
 //---------------------------------------------------------------------------
 QString TerminalSettings::energySave() const {
     QStringList result =
-        QStringList() << mProperties.get<QString>("config.hardware.energy_save.<xmlattr>.from", "")
-                      << mProperties.get<QString>("config.hardware.energy_save.<xmlattr>.till", "")
-                      << mProperties.get<QString>("config.hardware.energy_save", "");
+        QStringList() << m_Properties.get<QString>("config.hardware.energy_save.<xmlattr>.from", "")
+                      << m_Properties.get<QString>("config.hardware.energy_save.<xmlattr>.till", "")
+                      << m_Properties.get<QString>("config.hardware.energy_save", "");
 
     return result.join(";");
 }
