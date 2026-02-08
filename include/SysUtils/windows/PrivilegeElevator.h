@@ -9,33 +9,33 @@
 //--------------------------------------------------------------------------------
 /// Класс для повышения привилегий для определенной операции Windows.
 class PrivilegeElevator {
-    ::HANDLE hToken;
-    ::TOKEN_PRIVILEGES tkp;
-    int result;
+    ::HANDLE m_HandleToken;
+    ::TOKEN_PRIVILEGES m_TokenPrivileges;
+    int m_Result;
 
 public:
     /// Конструктор, повышающий указанную привилегию.
-    PrivilegeElevator(LPCTSTR aPrivilegeName) : result(ERROR_NOT_ALL_ASSIGNED) {
+    PrivilegeElevator(LPCTSTR aPrivilegeName) : m_Result(ERROR_NOT_ALL_ASSIGNED) {
         // Get a token for this process.
         if (::OpenProcessToken(
-                ::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
-            if (::LookupPrivilegeValue(NULL, aPrivilegeName, &tkp.Privileges[0].Luid)) {
+                ::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &m_HandleToken)) {
+            if (::LookupPrivilegeValue(NULL, aPrivilegeName, &m_TokenPrivileges.Privileges[0].Luid)) {
                 // Get the LUID for the privilege.
-                tkp.PrivilegeCount = 1; // one privilege to set
-                tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+                m_TokenPrivileges.PrivilegeCount = 1; // one privilege to set
+                m_TokenPrivileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-                result =
-                    ::AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
+                m_Result =
+                    ::AdjustTokenPrivileges(m_HandleToken, FALSE, &m_TokenPrivileges, 0, (PTOKEN_PRIVILEGES)NULL, 0);
                 // Get the privilege for this process.
             }
         }
     }
 
     /// Деструктор, закрывающий дескриптор токена процесса.
-    ~PrivilegeElevator() { ::CloseHandle(hToken); }
+    ~PrivilegeElevator() { ::CloseHandle(m_HandleToken); }
 
     /// Проверяет, успешно ли повышение привилегии.
-    bool OK() const { return result == ERROR_SUCCESS; }
+    bool OK() const { return m_Result == ERROR_SUCCESS; }
 };
 
 //--------------------------------------------------------------------------------
