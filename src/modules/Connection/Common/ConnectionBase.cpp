@@ -29,15 +29,15 @@ const QString DefaultCheckResponse = "";
 
 //--------------------------------------------------------------------------------
 ConnectionBase::ConnectionBase(const QString &aName, NetworkTaskManager *aNetwork, ILog *aLog)
-    : mNetwork(aNetwork), mName(aName), mConnected(false), mCheckCount(0), mWatch(false),
-      mLog(aLog) {
+    : m_Network(aNetwork), m_Name(aName), m_Connected(false), m_CheckCount(0), m_Watch(false),
+      m_Log(aLog) {
     // Таймер будет взводится заново после каждой удачной проверки
-    mCheckTimer.setSingleShot(true);
-    mCheckTimer.setInterval(CConnection::DefaultCheckPeriod);
-    QObject::connect(&mCheckTimer, SIGNAL(timeout()), this, SLOT(onCheckTimeout()));
+    m_CheckTimer.setSingleShot(true);
+    m_CheckTimer.setInterval(CConnection::DefaultCheckPeriod);
+    QObject::connect(&m_CheckTimer, SIGNAL(timeout()), this, SLOT(onCheckTimeout()));
 
-    mCheckHosts << IConnection::CheckUrl(QUrl(CConnection::DefaultCheckHost),
-                                         CConnection::DefaultCheckResponse);
+    m_CheckHosts << IConnection::CheckUrl(QUrl(CConnection::DefaultCheckHost),
+                                          CConnection::DefaultCheckResponse);
 }
 
 //--------------------------------------------------------------------------------
@@ -49,9 +49,9 @@ void ConnectionBase::open(bool aWatch) noexcept(false) {
 
     if (aWatch) {
         toLog(LogLevel::Normal,
-              QString("Check interval: %1 sec").arg(mCheckTimer.interval() / 1000));
+              QString("Check interval: %1 sec").arg(m_CheckTimer.interval() / 1000));
         toLog(LogLevel::Normal,
-              QString("Ping interval: %1 sec").arg(mCheckTimer.interval() * mPingPeriod / 1000));
+              QString("Ping interval: %1 sec").arg(m_CheckTimer.interval() * m_PingPeriod / 1000));
     } else {
         toLog(LogLevel::Normal, "Check interval: uncontrolled connection");
     }
@@ -64,49 +64,49 @@ void ConnectionBase::open(bool aWatch) noexcept(false) {
         toLog(LogLevel::Normal, "Already connected.");
     }
 
-    mWatch = aWatch;
-    mCheckCount = 0;
-    mConnected = true;
+    m_Watch = aWatch;
+    m_CheckCount = 0;
+    m_Connected = true;
 
     // Если нужно наблюдение за соединением
-    if (mWatch) {
+    if (m_Watch) {
         toLog(LogLevel::Normal, "Check timer START.");
-        mCheckTimer.start();
+        m_CheckTimer.start();
 
         // пропингуем сервер на следующем шаге проверки
-        mCheckCount = mPingPeriod - 1;
+        m_CheckCount = m_PingPeriod - 1;
     }
 }
 
 //--------------------------------------------------------------------------------
 void ConnectionBase::close() noexcept(false) {
     toLog(LogLevel::Debug, "Check timer STOP.");
-    mCheckTimer.stop();
+    m_CheckTimer.stop();
 
     if (isConnected(true)) {
         doDisconnect();
     }
 
-    mConnected = false;
+    m_Connected = false;
 }
 
 //--------------------------------------------------------------------------------
 QString ConnectionBase::getName() const {
-    return mName;
+    return m_Name;
 }
 
 //--------------------------------------------------------------------------------
 void ConnectionBase::setCheckPeriod(int aMinutes) {
-    mPingPeriod = aMinutes;
+    m_PingPeriod = aMinutes;
 }
 
 //--------------------------------------------------------------------------------
 bool ConnectionBase::isConnected(bool aUseCache) noexcept(false) {
     if (!aUseCache) {
-        mConnected = doIsConnected();
+        m_Connected = doIsConnected();
     }
 
-    return mConnected;
+    return m_Connected;
 }
 
 //--------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ bool ConnectionBase::checkConnection(const IConnection::CheckUrl &aHost) noexcep
     if (aHost.first.isValid() && !aHost.first.isEmpty()) {
         hosts << aHost;
     } else {
-        hosts = mCheckHosts;
+        hosts = m_CheckHosts;
     }
 
     if (hosts.isEmpty()) {
@@ -141,27 +141,27 @@ void ConnectionBase::setCheckHosts(const QList<IConnection::CheckUrl> &aHosts) {
     if (aHosts.isEmpty()) {
         toLog(LogLevel::Warning, QString("No check hosts specified, using previous/default ones."));
     } else {
-        mCheckHosts = aHosts;
+        m_CheckHosts = aHosts;
     }
 }
 
 //--------------------------------------------------------------------------------
 void ConnectionBase::onCheckTimeout() {
-    ++mCheckCount;
+    ++m_CheckCount;
 
-    toLog(LogLevel::Debug, QString("Check timeout. count: %1.").arg(mCheckCount));
+    toLog(LogLevel::Debug, QString("Check timeout. count: %1.").arg(m_CheckCount));
 
     try {
         // Проверяем состояние соединения через апи ОС и делаем http запрос если
         // подошло время
-        if (isConnected(false) && mCheckCount >= mPingPeriod) {
-            mCheckCount = 0;
-            mConnected = checkConnection();
+        if (isConnected(false) && m_CheckCount >= m_PingPeriod) {
+            m_CheckCount = 0;
+            m_Connected = checkConnection();
         }
 
         if (isConnected(true)) {
             toLog(LogLevel::Debug, "Check timer START.");
-            mCheckTimer.start();
+            m_CheckTimer.start();
         } else {
             emit connectionLost();
         }
@@ -176,7 +176,7 @@ void ConnectionBase::onCheckTimeout() {
 bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
     toLog(LogLevel::Normal, QString("Checking connection on %1...").arg(aHost.first.toString()));
 
-    if (!mNetwork) {
+    if (!m_Network) {
         toLog(LogLevel::Error, "Failed to check connection. Network interface is not specified.");
 
         return false;
@@ -191,7 +191,7 @@ bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
     task->setType(NetworkTask::Get);
     task->setDataStream(new MemoryDataStream());
 
-    mNetwork->addTask(task.data());
+    m_Network->addTask(task.data());
 
     task->waitForFinished();
 
@@ -243,7 +243,7 @@ bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
 
 //----------------------------------------------------------------------------
 void ConnectionBase::toLog(LogLevel::Enum aLevel, const QString &aMessage) const {
-    mLog->write(aLevel, aMessage);
+    m_Log->write(aLevel, aMessage);
 }
 
 //----------------------------------------------------------------------------

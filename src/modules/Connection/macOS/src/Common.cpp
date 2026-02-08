@@ -6,7 +6,7 @@
 #include <Connection/IConnection.h>
 #include <Connection/NetworkError.h>
 
-ILog *IConnection::mLog = nullptr;
+ILog *IConnection::m_Log = nullptr;
 
 //--------------------------------------------------------------------------------
 /// Создание экземпляра соединения.
@@ -14,7 +14,7 @@ IConnection *IConnection::create(const QString &aName,
                                  EConnectionTypes::Enum aType,
                                  NetworkTaskManager *aNetwork,
                                  ILog *aLog) {
-    IConnection::mLog = aLog;
+    IConnection::m_Log = aLog;
 
     // macOS doesn't support dial-up connections like Windows
     // Return nullptr for dial-up, or a basic connection for other types

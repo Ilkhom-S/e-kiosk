@@ -180,64 +180,64 @@ void IpAddress::setByte(size_t index, char byte) {
 
 //------------------------------------------------------------------------------
 PhonebookEntryName::PhonebookEntryName() {
-    std::memset(&mEntry, 0, sizeof(mEntry));
-    mEntry.dwSize = sizeof(mEntry);
+    std::memset(&m_Entry, 0, sizeof(m_Entry));
+    m_Entry.dwSize = sizeof(m_Entry);
 }
 
 //--------------------------------------------------------------------------------
 PhonebookEntryName::PhonebookEntryName(const RASENTRYNAME &aEntry) {
-    mEntry = aEntry;
+    m_Entry = aEntry;
 }
 
 //--------------------------------------------------------------------------------
 PhonebookEntryName::operator RASENTRYNAME *() {
-    return &mEntry;
+    return &m_Entry;
 }
 
 //--------------------------------------------------------------------------------
 std::wstring PhonebookEntryName::name() const {
-    return mEntry.szEntryName;
+    return m_Entry.szEntryName;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntryName::setName(const std::wstring &aName) {
-    std::memset(mEntry.szEntryName, 0, sizeof(mEntry.szEntryName));
-    aName.copy(mEntry.szEntryName, aName.size());
+    std::memset(m_Entry.szEntryName, 0, sizeof(m_Entry.szEntryName));
+    aName.copy(m_Entry.szEntryName, aName.size());
 }
 
 //--------------------------------------------------------------------------------
 std::wstring PhonebookEntryName::phonebookPath() const {
-    return mEntry.szPhonebookPath;
+    return m_Entry.szPhonebookPath;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntryName::setPhonebookPath(const std::wstring &aPath) {
-    std::memset(mEntry.szPhonebookPath, 0, sizeof(mEntry.szPhonebookPath));
-    aPath.copy(mEntry.szPhonebookPath, aPath.size());
+    std::memset(m_Entry.szPhonebookPath, 0, sizeof(m_Entry.szPhonebookPath));
+    aPath.copy(m_Entry.szPhonebookPath, aPath.size());
 }
 
 //--------------------------------------------------------------------------------
 bool PhonebookEntryName::isSystem() const {
-    return mEntry.dwFlags == EPhonebookEntry::AllUsers;
+    return m_Entry.dwFlags == EPhonebookEntry::AllUsers;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntryName::setIsSystem(bool aIsSystem) {
-    mEntry.dwFlags = aIsSystem ? EPhonebookEntry::AllUsers : EPhonebookEntry::Private;
+    m_Entry.dwFlags = aIsSystem ? EPhonebookEntry::AllUsers : EPhonebookEntry::Private;
 }
 
 //------------------------------------------------------------------------------
 PhonebookEntry::PhonebookEntry() {
-    mEntry = 0;
+    m_Entry = 0;
     DWORD size = 0;
 
-    mLastError = RasGetEntryProperties(0, 0, 0, &size, 0, 0);
+    m_LastError = RasGetEntryProperties(0, 0, 0, &size, 0, 0);
 
-    if (mLastError == ERROR_BUFFER_TOO_SMALL) {
-        mEntry = reinterpret_cast<LPRASENTRY>(new unsigned char[size]);
-        std::memset(mEntry, 0, size);
-        mEntry->dwSize = sizeof(RASENTRY);
-        mLastError = ERROR_SUCCESS;
+    if (m_LastError == ERROR_BUFFER_TOO_SMALL) {
+        m_Entry = reinterpret_cast<LPRASENTRY>(new unsigned char[size]);
+        std::memset(m_Entry, 0, size);
+        m_Entry->dwSize = sizeof(RASENTRY);
+        m_LastError = ERROR_SUCCESS;
     }
 }
 
@@ -245,702 +245,702 @@ PhonebookEntry::PhonebookEntry() {
 /*
 PhonebookEntry::PhonebookEntry(const RASENTRY & aEntry)
 {
-        mEntry = aEntry;
+        m_Entry = aEntry;
 }
 */
 //--------------------------------------------------------------------------------
 PhonebookEntry::~PhonebookEntry() {
-    delete[] mEntry;
+    delete[] m_Entry;
 }
 
 //--------------------------------------------------------------------------------
 PhonebookEntry::operator RASENTRY *() {
-    return mEntry;
+    return m_Entry;
 }
 
 //--------------------------------------------------------------------------------
 EConnectionOption::OptionSet PhonebookEntry::options() const {
-    return mEntry->dwfOptions;
+    return m_Entry->dwfOptions;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setOptions(EConnectionOption::OptionSet aOptions) {
-    mEntry->dwfOptions = aOptions;
+    m_Entry->dwfOptions = aOptions;
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::countryId() const {
-    return mEntry->dwCountryID;
+    return m_Entry->dwCountryID;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setCountryId(size_t aId) {
-    mEntry->dwCountryID = aId;
+    m_Entry->dwCountryID = aId;
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::countryCode() const {
-    return mEntry->dwCountryCode;
+    return m_Entry->dwCountryCode;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setCountryCode(size_t aCode) {
-    mEntry->dwCountryCode = aCode;
+    m_Entry->dwCountryCode = aCode;
 }
 
 //--------------------------------------------------------------------------------
 std::wstring PhonebookEntry::areaCode() const {
-    return mEntry->szAreaCode;
+    return m_Entry->szAreaCode;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setAreaCode(const std::wstring &aCode) {
-    std::memset(mEntry->szAreaCode, 0, sizeof(mEntry->szAreaCode));
-    aCode.copy(mEntry->szAreaCode, aCode.size());
+    std::memset(m_Entry->szAreaCode, 0, sizeof(m_Entry->szAreaCode));
+    aCode.copy(m_Entry->szAreaCode, aCode.size());
 }
 
 //--------------------------------------------------------------------------------
 std::wstring PhonebookEntry::localPhoneNumber() const {
-    return mEntry->szLocalPhoneNumber;
+    return m_Entry->szLocalPhoneNumber;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setLocalPhoneNumber(const std::wstring &aNumber) {
-    std::memset(mEntry->szLocalPhoneNumber, 0, sizeof(mEntry->szLocalPhoneNumber));
-    aNumber.copy(mEntry->szLocalPhoneNumber, aNumber.size());
+    std::memset(m_Entry->szLocalPhoneNumber, 0, sizeof(m_Entry->szLocalPhoneNumber));
+    aNumber.copy(m_Entry->szLocalPhoneNumber, aNumber.size());
 }
 
 //--------------------------------------------------------------------------------
 IpAddress PhonebookEntry::ip() const {
-    return mEntry->ipaddr;
+    return m_Entry->ipaddr;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setIp(const IpAddress &aIp) {
-    mEntry->ipaddr = *static_cast<const RASIPADDR *>(aIp);
+    m_Entry->ipaddr = *static_cast<const RASIPADDR *>(aIp);
 }
 
 //--------------------------------------------------------------------------------
 IpAddress PhonebookEntry::dnsIp() const {
-    return mEntry->ipaddrDns;
+    return m_Entry->ipaddrDns;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setDnsIp(const IpAddress &aIp) {
-    mEntry->ipaddrDns = *static_cast<const RASIPADDR *>(aIp);
+    m_Entry->ipaddrDns = *static_cast<const RASIPADDR *>(aIp);
 }
 
 //--------------------------------------------------------------------------------
 IpAddress PhonebookEntry::dnsAltIp() const {
-    return mEntry->ipaddrDnsAlt;
+    return m_Entry->ipaddrDnsAlt;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setDnsAltIp(const IpAddress &aIp) {
-    mEntry->ipaddrDnsAlt = *static_cast<const RASIPADDR *>(aIp);
+    m_Entry->ipaddrDnsAlt = *static_cast<const RASIPADDR *>(aIp);
 }
 
 //--------------------------------------------------------------------------------
 IpAddress PhonebookEntry::winsIp() const {
-    return mEntry->ipaddrWins;
+    return m_Entry->ipaddrWins;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setWinsIp(const IpAddress &aIp) {
-    mEntry->ipaddrWins = *static_cast<const RASIPADDR *>(aIp);
+    m_Entry->ipaddrWins = *static_cast<const RASIPADDR *>(aIp);
 }
 
 //--------------------------------------------------------------------------------
 IpAddress PhonebookEntry::winsAltIp() const {
-    return mEntry->ipaddrWinsAlt;
+    return m_Entry->ipaddrWinsAlt;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setWinsAltIp(const IpAddress &aIp) {
-    mEntry->ipaddrWinsAlt = *static_cast<const RASIPADDR *>(aIp);
+    m_Entry->ipaddrWinsAlt = *static_cast<const RASIPADDR *>(aIp);
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::frameSize() const {
-    return mEntry->dwFrameSize;
+    return m_Entry->dwFrameSize;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setFrameSize(size_t aSize) {
-    mEntry->dwFrameSize = aSize;
+    m_Entry->dwFrameSize = aSize;
 }
 
 //--------------------------------------------------------------------------------
 ENetworkProtocol::ProtocolSet PhonebookEntry::netProtocols() const {
-    return mEntry->dwfNetProtocols;
+    return m_Entry->dwfNetProtocols;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setNetProtocols(ENetworkProtocol::ProtocolSet aProtocols) {
-    mEntry->dwfNetProtocols = aProtocols;
+    m_Entry->dwfNetProtocols = aProtocols;
 }
 
 //--------------------------------------------------------------------------------
 EFramingProtocol::Enum PhonebookEntry::framingProtocol() const {
-    return EFramingProtocol::Enum(mEntry->dwFramingProtocol);
+    return EFramingProtocol::Enum(m_Entry->dwFramingProtocol);
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setFramingProtocol(EFramingProtocol::Enum aProtocol) {
-    mEntry->dwFramingProtocol = aProtocol;
+    m_Entry->dwFramingProtocol = aProtocol;
 }
 
 //--------------------------------------------------------------------------------
 std::wstring PhonebookEntry::script() const {
-    return mEntry->szScript;
+    return m_Entry->szScript;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setScript(const std::wstring &aScript) {
-    std::memset(mEntry->szScript, 0, sizeof(mEntry->szScript));
-    aScript.copy(mEntry->szScript, aScript.size());
+    std::memset(m_Entry->szScript, 0, sizeof(m_Entry->szScript));
+    aScript.copy(m_Entry->szScript, aScript.size());
 }
 
 //--------------------------------------------------------------------------------
 EDeviceType::Enum PhonebookEntry::deviceType() const {
-    return EDeviceType::ToEnum(mEntry->szDeviceType);
+    return EDeviceType::ToEnum(m_Entry->szDeviceType);
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setDeviceType(EDeviceType::Enum aType) {
     std::wstring type = EDeviceType::ToString(aType);
-    std::memset(mEntry->szDeviceType, 0, sizeof(mEntry->szDeviceType));
-    type.copy(mEntry->szDeviceType, type.size());
+    std::memset(m_Entry->szDeviceType, 0, sizeof(m_Entry->szDeviceType));
+    type.copy(m_Entry->szDeviceType, type.size());
 }
 
 //--------------------------------------------------------------------------------
 std::wstring PhonebookEntry::deviceName() const {
-    return mEntry->szDeviceName;
+    return m_Entry->szDeviceName;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setDeviceName(const std::wstring &aName) {
-    std::memset(mEntry->szDeviceName, 0, sizeof(mEntry->szDeviceName));
-    aName.copy(mEntry->szDeviceName, aName.size());
+    std::memset(m_Entry->szDeviceName, 0, sizeof(m_Entry->szDeviceName));
+    aName.copy(m_Entry->szDeviceName, aName.size());
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::subEntries() const {
-    return mEntry->dwSubEntries;
+    return m_Entry->dwSubEntries;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setSubEntries(size_t aEntries) {
-    mEntry->dwSubEntries = aEntries;
+    m_Entry->dwSubEntries = aEntries;
 }
 
 //--------------------------------------------------------------------------------
 EDialMode::Enum PhonebookEntry::dialMode() const {
-    return EDialMode::Enum(mEntry->dwDialMode);
+    return EDialMode::Enum(m_Entry->dwDialMode);
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setDialMode(EDialMode::Enum aMode) {
-    mEntry->dwDialMode = aMode;
+    m_Entry->dwDialMode = aMode;
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::dialExtraPercent() const {
-    return mEntry->dwDialExtraPercent;
+    return m_Entry->dwDialExtraPercent;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setDialExtraPercent(size_t aPercent) {
-    mEntry->dwDialExtraPercent = aPercent;
+    m_Entry->dwDialExtraPercent = aPercent;
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::dialExtraSampleSeconds() const {
-    return mEntry->dwDialExtraSampleSeconds;
+    return m_Entry->dwDialExtraSampleSeconds;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setDialExtraSampleSeconds(size_t aSeconds) {
-    mEntry->dwDialExtraSampleSeconds = aSeconds;
+    m_Entry->dwDialExtraSampleSeconds = aSeconds;
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::hangUpExtraPercent() const {
-    return mEntry->dwHangUpExtraPercent;
+    return m_Entry->dwHangUpExtraPercent;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setHangUpExtraPercent(size_t aPercent) {
-    mEntry->dwHangUpExtraPercent = aPercent;
+    m_Entry->dwHangUpExtraPercent = aPercent;
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::hangUpExtraSampleSeconds() const {
-    return mEntry->dwHangUpExtraSampleSeconds;
+    return m_Entry->dwHangUpExtraSampleSeconds;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setHangUpExtraSampleSeconds(size_t aSeconds) {
-    mEntry->dwHangUpExtraSampleSeconds = aSeconds;
+    m_Entry->dwHangUpExtraSampleSeconds = aSeconds;
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::idleDisconnectSeconds() const {
-    return mEntry->dwIdleDisconnectSeconds;
+    return m_Entry->dwIdleDisconnectSeconds;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setIdleDisconnectSeconds(size_t aSeconds) {
-    mEntry->dwIdleDisconnectSeconds = aSeconds;
+    m_Entry->dwIdleDisconnectSeconds = aSeconds;
 }
 
 //--------------------------------------------------------------------------------
 EPhonebookEntry::TypeEnum PhonebookEntry::phonebookEntryType() const {
-    return EPhonebookEntry::TypeEnum(mEntry->dwType);
+    return EPhonebookEntry::TypeEnum(m_Entry->dwType);
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setPhonebookEntryType(EPhonebookEntry::TypeEnum aType) {
-    mEntry->dwType = aType;
+    m_Entry->dwType = aType;
 }
 
 //--------------------------------------------------------------------------------
 EEncryptionType::Enum PhonebookEntry::encriptionType() const {
-    return EEncryptionType::Enum(mEntry->dwEncryptionType);
+    return EEncryptionType::Enum(m_Entry->dwEncryptionType);
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setEncriptionType(EEncryptionType::Enum aType) {
-    mEntry->dwEncryptionType = aType;
+    m_Entry->dwEncryptionType = aType;
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::customAuthKey() const {
-    return mEntry->dwCustomAuthKey;
+    return m_Entry->dwCustomAuthKey;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setCustomAuthKey(size_t aKey) {
-    mEntry->dwCustomAuthKey = aKey;
+    m_Entry->dwCustomAuthKey = aKey;
 }
 
 //--------------------------------------------------------------------------------
 GUID PhonebookEntry::bookEntryGuid() const {
-    return mEntry->guidId;
+    return m_Entry->guidId;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setBookEntryGuid(const GUID &aGuid) {
-    mEntry->guidId = aGuid;
+    m_Entry->guidId = aGuid;
 }
 
 //--------------------------------------------------------------------------------
 std::wstring PhonebookEntry::customDialDll() const {
-    return mEntry->szCustomDialDll;
+    return m_Entry->szCustomDialDll;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setCustomDialDll(const std::wstring &aDll) {
-    std::memset(mEntry->szCustomDialDll, 0, sizeof(mEntry->szCustomDialDll));
-    aDll.copy(mEntry->szCustomDialDll, aDll.size());
+    std::memset(m_Entry->szCustomDialDll, 0, sizeof(m_Entry->szCustomDialDll));
+    aDll.copy(m_Entry->szCustomDialDll, aDll.size());
 }
 
 //--------------------------------------------------------------------------------
 EVpnStrategy::Enum PhonebookEntry::vpnStrategy() const {
-    return EVpnStrategy::Enum(mEntry->dwVpnStrategy);
+    return EVpnStrategy::Enum(m_Entry->dwVpnStrategy);
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setVpnStrategy(EVpnStrategy::Enum aStrategy) {
-    mEntry->dwVpnStrategy = aStrategy;
+    m_Entry->dwVpnStrategy = aStrategy;
 }
 
 //--------------------------------------------------------------------------------
 EConnectionOption2::OptionSet PhonebookEntry::options2() const {
-    return EConnectionOption2::OptionSet(mEntry->dwfOptions2);
+    return EConnectionOption2::OptionSet(m_Entry->dwfOptions2);
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setOptions2(EConnectionOption2::OptionSet aOptions) {
-    mEntry->dwfOptions2 = aOptions;
+    m_Entry->dwfOptions2 = aOptions;
 }
 
 //--------------------------------------------------------------------------------
 std::wstring PhonebookEntry::dnsSuffix() const {
-    return mEntry->szDnsSuffix;
+    return m_Entry->szDnsSuffix;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setDnsSuffix(const std::wstring &aSuffix) {
-    std::memset(mEntry->szDnsSuffix, 0, sizeof(mEntry->szDnsSuffix));
-    aSuffix.copy(mEntry->szDnsSuffix, aSuffix.size());
+    std::memset(m_Entry->szDnsSuffix, 0, sizeof(m_Entry->szDnsSuffix));
+    aSuffix.copy(m_Entry->szDnsSuffix, aSuffix.size());
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::tcpWindowSize() const {
-    return mEntry->dwTcpWindowSize;
+    return m_Entry->dwTcpWindowSize;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setTcpWindowSize(size_t aSize) {
-    mEntry->dwTcpWindowSize = aSize;
+    m_Entry->dwTcpWindowSize = aSize;
 }
 
 //--------------------------------------------------------------------------------
 std::wstring PhonebookEntry::prerequisitePhonebook() const {
-    return mEntry->szPrerequisitePbk;
+    return m_Entry->szPrerequisitePbk;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setPrerequisitePhonebook(const std::wstring &aPhonebook) {
-    std::memset(mEntry->szPrerequisitePbk, 0, sizeof(mEntry->szPrerequisitePbk));
-    aPhonebook.copy(mEntry->szPrerequisitePbk, aPhonebook.size());
+    std::memset(m_Entry->szPrerequisitePbk, 0, sizeof(m_Entry->szPrerequisitePbk));
+    aPhonebook.copy(m_Entry->szPrerequisitePbk, aPhonebook.size());
 }
 
 //--------------------------------------------------------------------------------
 std::wstring PhonebookEntry::prerequisiteEntry() const {
-    return mEntry->szPrerequisiteEntry;
+    return m_Entry->szPrerequisiteEntry;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setPrerequisiteEntry(const std::wstring &aEntry) {
-    std::memset(mEntry->szPrerequisiteEntry, 0, sizeof(mEntry->szPrerequisiteEntry));
-    aEntry.copy(mEntry->szPrerequisiteEntry, aEntry.size());
+    std::memset(m_Entry->szPrerequisiteEntry, 0, sizeof(m_Entry->szPrerequisiteEntry));
+    aEntry.copy(m_Entry->szPrerequisiteEntry, aEntry.size());
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::redialCount() const {
-    return mEntry->dwRedialCount;
+    return m_Entry->dwRedialCount;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setRedialCount(size_t aCount) {
-    mEntry->dwRedialCount = aCount;
+    m_Entry->dwRedialCount = aCount;
 }
 
 //--------------------------------------------------------------------------------
 size_t PhonebookEntry::redialPause() const {
-    return mEntry->dwRedialPause;
+    return m_Entry->dwRedialPause;
 }
 
 //--------------------------------------------------------------------------------
 void PhonebookEntry::setRedialPause(size_t aPause) {
-    mEntry->dwRedialPause = aPause;
+    m_Entry->dwRedialPause = aPause;
 }
 
 //------------------------------------------------------------------------------
 Connection::Connection() {
-    std::memset(&mConnection, 0, sizeof(mConnection));
-    mConnection.dwSize = sizeof(mConnection);
+    std::memset(&m_Connection, 0, sizeof(m_Connection));
+    m_Connection.dwSize = sizeof(m_Connection);
 }
 
 //--------------------------------------------------------------------------------
 Connection::Connection(const RASCONN &aConnection) {
-    mConnection = aConnection;
+    m_Connection = aConnection;
 }
 
 //--------------------------------------------------------------------------------
 void Connection::reset(const RASCONN &aConnection) {
-    mConnection = aConnection;
+    m_Connection = aConnection;
 }
 
 //--------------------------------------------------------------------------------
 Connection::operator RASCONN *() {
-    return &mConnection;
+    return &m_Connection;
 }
 
 //--------------------------------------------------------------------------------
 HRASCONN Connection::handle() const {
-    return mConnection.hrasconn;
+    return m_Connection.hrasconn;
 }
 
 //--------------------------------------------------------------------------------
 void Connection::setHandle(HRASCONN aHandle) {
-    mConnection.hrasconn = aHandle;
+    m_Connection.hrasconn = aHandle;
 }
 
 //--------------------------------------------------------------------------------
 std::wstring Connection::entryName() const {
-    return mConnection.szEntryName;
+    return m_Connection.szEntryName;
 }
 
 //--------------------------------------------------------------------------------
 void Connection::setEntryName(const std::wstring &aName) {
-    std::memset(mConnection.szEntryName, 0, sizeof(mConnection.szEntryName));
-    aName.copy(mConnection.szEntryName, aName.size());
+    std::memset(m_Connection.szEntryName, 0, sizeof(m_Connection.szEntryName));
+    aName.copy(m_Connection.szEntryName, aName.size());
 }
 
 //--------------------------------------------------------------------------------
 EDeviceType::Enum Connection::deviceType() const {
-    return EDeviceType::ToEnum(mConnection.szDeviceType);
+    return EDeviceType::ToEnum(m_Connection.szDeviceType);
 }
 
 //--------------------------------------------------------------------------------
 void Connection::setDeviceType(EDeviceType::Enum aType) {
     std::wstring typeStr = EDeviceType::ToString(aType);
-    std::memset(mConnection.szDeviceType, 0, sizeof(mConnection.szDeviceType));
-    typeStr.copy(mConnection.szDeviceType, typeStr.size());
+    std::memset(m_Connection.szDeviceType, 0, sizeof(m_Connection.szDeviceType));
+    typeStr.copy(m_Connection.szDeviceType, typeStr.size());
 }
 
 //--------------------------------------------------------------------------------
 std::wstring Connection::deviceName() const {
-    return mConnection.szDeviceName;
+    return m_Connection.szDeviceName;
 }
 
 //--------------------------------------------------------------------------------
 void Connection::setDeviceName(const std::wstring &aName) {
-    std::memset(mConnection.szDeviceName, 0, sizeof(mConnection.szDeviceName));
-    aName.copy(mConnection.szDeviceName, aName.size());
+    std::memset(m_Connection.szDeviceName, 0, sizeof(m_Connection.szDeviceName));
+    aName.copy(m_Connection.szDeviceName, aName.size());
 }
 
 //--------------------------------------------------------------------------------
 std::wstring Connection::phonebookPath() const {
-    return mConnection.szPhonebook;
+    return m_Connection.szPhonebook;
 }
 
 //--------------------------------------------------------------------------------
 void Connection::setPhonebookPath(const std::wstring &aPath) {
-    std::memset(mConnection.szPhonebook, 0, sizeof(mConnection.szPhonebook));
-    aPath.copy(mConnection.szPhonebook, aPath.size());
+    std::memset(m_Connection.szPhonebook, 0, sizeof(m_Connection.szPhonebook));
+    aPath.copy(m_Connection.szPhonebook, aPath.size());
 }
 
 //--------------------------------------------------------------------------------
 size_t Connection::subEntryIndex() const {
-    return mConnection.dwSubEntry;
+    return m_Connection.dwSubEntry;
 }
 
 //--------------------------------------------------------------------------------
 void Connection::setSubEntryIndex(size_t aIndex) {
-    mConnection.dwSubEntry = aIndex;
+    m_Connection.dwSubEntry = aIndex;
 }
 
 //--------------------------------------------------------------------------------
 GUID Connection::entryGuid() const {
-    return mConnection.guidEntry;
+    return m_Connection.guidEntry;
 }
 
 //--------------------------------------------------------------------------------
 void Connection::setEntryGuid(const GUID &aGuid) {
-    mConnection.guidEntry = aGuid;
+    m_Connection.guidEntry = aGuid;
 }
 
 //--------------------------------------------------------------------------------
 bool Connection::isSystem() const {
-    return mConnection.dwFlags & EConnectionFlag::AllUsers;
+    return m_Connection.dwFlags & EConnectionFlag::AllUsers;
 }
 
 //--------------------------------------------------------------------------------
 void Connection::setIsSystem(bool aIsSystem) {
     if (aIsSystem) {
-        mConnection.dwFlags |= EConnectionFlag::AllUsers;
+        m_Connection.dwFlags |= EConnectionFlag::AllUsers;
     } else {
-        mConnection.dwFlags &= ~EConnectionFlag::AllUsers;
+        m_Connection.dwFlags &= ~EConnectionFlag::AllUsers;
     }
 }
 
 //--------------------------------------------------------------------------------
 bool Connection::isGlobalCredsUsed() const {
-    return (mConnection.dwFlags & EConnectionFlag::GlobalCreds) != 0;
+    return (m_Connection.dwFlags & EConnectionFlag::GlobalCreds) != 0;
 }
 
 //--------------------------------------------------------------------------------
 void Connection::setIsGlobalCredsUsed(bool aIsGlobalCredsUsed) {
     if (aIsGlobalCredsUsed) {
-        mConnection.dwFlags |= EConnectionFlag::GlobalCreds;
+        m_Connection.dwFlags |= EConnectionFlag::GlobalCreds;
     } else {
-        mConnection.dwFlags &= ~EConnectionFlag::GlobalCreds;
+        m_Connection.dwFlags &= ~EConnectionFlag::GlobalCreds;
     }
 }
 
 //--------------------------------------------------------------------------------
 LUID Connection::localSessionId() const {
-    return mConnection.luid;
+    return m_Connection.luid;
 }
 
 //--------------------------------------------------------------------------------
 void Connection::setLocalSessionId(const LUID &aId) {
-    mConnection.luid = aId;
+    m_Connection.luid = aId;
 }
 
 //------------------------------------------------------------------------------
 Device::Device() {
-    std::memset(&mDevice, 0, sizeof(mDevice));
-    mDevice.dwSize = sizeof(mDevice);
+    std::memset(&m_Device, 0, sizeof(m_Device));
+    m_Device.dwSize = sizeof(m_Device);
 }
 
 //--------------------------------------------------------------------------------
 Device::Device(const RASDEVINFO &aDevice) {
-    mDevice = aDevice;
+    m_Device = aDevice;
 }
 
 //--------------------------------------------------------------------------------
 Device::operator RASDEVINFO *() {
-    return &mDevice;
+    return &m_Device;
 }
 
 //--------------------------------------------------------------------------------
 std::wstring Device::type() const {
-    return mDevice.szDeviceType;
+    return m_Device.szDeviceType;
 }
 
 //--------------------------------------------------------------------------------
 void Device::setType(const std::wstring &aType) {
-    std::memset(mDevice.szDeviceType, 0, sizeof(mDevice.szDeviceType));
-    aType.copy(mDevice.szDeviceType, aType.size());
+    std::memset(m_Device.szDeviceType, 0, sizeof(m_Device.szDeviceType));
+    aType.copy(m_Device.szDeviceType, aType.size());
 }
 
 //--------------------------------------------------------------------------------
 std::wstring Device::name() const {
-    return mDevice.szDeviceName;
+    return m_Device.szDeviceName;
 }
 
 //--------------------------------------------------------------------------------
 void Device::setName(const std::wstring &aName) {
-    std::memset(mDevice.szDeviceName, 0, sizeof(mDevice.szDeviceName));
-    aName.copy(mDevice.szDeviceName, aName.size());
+    std::memset(m_Device.szDeviceName, 0, sizeof(m_Device.szDeviceName));
+    aName.copy(m_Device.szDeviceName, aName.size());
 }
 
 //------------------------------------------------------------------------------
 DialParams::DialParams() {
-    std::memset(&mParams, 0, sizeof(mParams));
-    mParams.dwSize = sizeof(mParams);
-    mHasSavedPassword = false;
-    mRemovePassword = false;
+    std::memset(&m_Params, 0, sizeof(m_Params));
+    m_Params.dwSize = sizeof(m_Params);
+    m_HasSavedPassword = false;
+    m_RemovePassword = false;
 }
 
 //--------------------------------------------------------------------------------
 DialParams::DialParams(const RASDIALPARAMS &aParams) {
-    mParams = aParams;
-    mHasSavedPassword = false;
-    mRemovePassword = false;
+    m_Params = aParams;
+    m_HasSavedPassword = false;
+    m_RemovePassword = false;
 }
 
 //--------------------------------------------------------------------------------
 DialParams::operator RASDIALPARAMS *() {
-    return &mParams;
+    return &m_Params;
 }
 
 //--------------------------------------------------------------------------------
 std::wstring DialParams::entryName() const {
-    return mParams.szEntryName;
+    return m_Params.szEntryName;
 }
 
 //--------------------------------------------------------------------------------
 void DialParams::setEntryName(const std::wstring &aName) {
-    std::memset(mParams.szEntryName, 0, sizeof(mParams.szEntryName));
-    aName.copy(mParams.szEntryName, sizeof(mParams.szEntryName));
+    std::memset(m_Params.szEntryName, 0, sizeof(m_Params.szEntryName));
+    aName.copy(m_Params.szEntryName, sizeof(m_Params.szEntryName));
 }
 
 //--------------------------------------------------------------------------------
 std::wstring DialParams::phoneNumber() const {
-    return mParams.szPhoneNumber;
+    return m_Params.szPhoneNumber;
 }
 
 //--------------------------------------------------------------------------------
 void DialParams::setPhoneNumber(const std::wstring &aNumber) {
-    std::memset(mParams.szPhoneNumber, 0, sizeof(mParams.szPhoneNumber));
-    aNumber.copy(mParams.szPhoneNumber, sizeof(mParams.szPhoneNumber));
+    std::memset(m_Params.szPhoneNumber, 0, sizeof(m_Params.szPhoneNumber));
+    aNumber.copy(m_Params.szPhoneNumber, sizeof(m_Params.szPhoneNumber));
 }
 
 //--------------------------------------------------------------------------------
 std::wstring DialParams::callbackNumber() const {
-    return mParams.szCallbackNumber;
+    return m_Params.szCallbackNumber;
 }
 
 //--------------------------------------------------------------------------------
 void DialParams::setCallbackNumber(const std::wstring &aNumber) {
-    std::memset(mParams.szCallbackNumber, 0, sizeof(mParams.szCallbackNumber));
-    aNumber.copy(mParams.szCallbackNumber, sizeof(mParams.szCallbackNumber));
+    std::memset(m_Params.szCallbackNumber, 0, sizeof(m_Params.szCallbackNumber));
+    aNumber.copy(m_Params.szCallbackNumber, sizeof(m_Params.szCallbackNumber));
 }
 
 //--------------------------------------------------------------------------------
 std::wstring DialParams::userName() const {
-    return mParams.szUserName;
+    return m_Params.szUserName;
 }
 
 //--------------------------------------------------------------------------------
 void DialParams::setUserName(const std::wstring &aName) {
-    std::memset(mParams.szUserName, 0, sizeof(mParams.szUserName));
-    aName.copy(mParams.szUserName, sizeof(mParams.szUserName));
+    std::memset(m_Params.szUserName, 0, sizeof(m_Params.szUserName));
+    aName.copy(m_Params.szUserName, sizeof(m_Params.szUserName));
 }
 
 //--------------------------------------------------------------------------------
 std::wstring DialParams::password() const {
-    return mParams.szPassword;
+    return m_Params.szPassword;
 }
 
 //--------------------------------------------------------------------------------
 void DialParams::setPassword(const std::wstring &aPassword) {
-    std::memset(mParams.szPassword, 0, sizeof(mParams.szPassword));
-    aPassword.copy(mParams.szPassword, sizeof(mParams.szPassword));
+    std::memset(m_Params.szPassword, 0, sizeof(m_Params.szPassword));
+    aPassword.copy(m_Params.szPassword, sizeof(m_Params.szPassword));
 }
 
 //--------------------------------------------------------------------------------
 std::wstring DialParams::domain() const {
-    return mParams.szDomain;
+    return m_Params.szDomain;
 }
 
 //--------------------------------------------------------------------------------
 void DialParams::setDomain(const std::wstring &aDomain) {
-    std::memset(mParams.szDomain, 0, sizeof(mParams.szDomain));
-    aDomain.copy(mParams.szDomain, sizeof(mParams.szDomain));
+    std::memset(m_Params.szDomain, 0, sizeof(m_Params.szDomain));
+    aDomain.copy(m_Params.szDomain, sizeof(m_Params.szDomain));
 }
 
 //--------------------------------------------------------------------------------
 unsigned int DialParams::subEntry() const {
-    return mParams.dwSubEntry;
+    return m_Params.dwSubEntry;
 }
 
 //--------------------------------------------------------------------------------
 void DialParams::setSubEntry(unsigned int aIndex) {
-    mParams.dwSubEntry = aIndex;
+    m_Params.dwSubEntry = aIndex;
 }
 
 //--------------------------------------------------------------------------------
 unsigned long DialParams::callbackId() const {
-    return mParams.dwCallbackId;
+    return m_Params.dwCallbackId;
 }
 
 //--------------------------------------------------------------------------------
 void DialParams::setCallbackId(unsigned long aValue) {
-    mParams.dwCallbackId = aValue;
+    m_Params.dwCallbackId = aValue;
 }
 
 //--------------------------------------------------------------------------------
 bool DialParams::hasSavedPassword() const {
-    return mHasSavedPassword;
+    return m_HasSavedPassword;
 }
 
 //--------------------------------------------------------------------------------
 void DialParams::setHasSavedPassword(bool aHasPassword) {
-    mHasSavedPassword = aHasPassword;
+    m_HasSavedPassword = aHasPassword;
 }
 
 //--------------------------------------------------------------------------------
 bool DialParams::removePassword() const {
-    return mRemovePassword;
+    return m_RemovePassword;
 }
 
 //--------------------------------------------------------------------------------
 void DialParams::setRemovePassword(bool aRemove) {
-    mRemovePassword = aRemove;
+    m_RemovePassword = aRemove;
 }
 
 //------------------------------------------------------------------------------
 PhonebookEntryEnumerator::PhonebookEntryEnumerator(const std::wstring &aPhonebookPath)
-    : mRequestedBufSize(0), mEntries(0) {
+    : m_RequestedBufSize(0), m_Entries(0) {
     reset(aPhonebookPath);
 }
 
 //------------------------------------------------------------------------------
 PhonebookEntryEnumerator::~PhonebookEntryEnumerator() {
-    delete[] mEntries;
+    delete[] m_Entries;
 }
 
 //------------------------------------------------------------------------------
 bool PhonebookEntryEnumerator::getEntry(PhonebookEntryName &aEntry) {
-    if (mCurrentIndex < mEntryCount) {
-        aEntry = mEntries[mCurrentIndex++];
+    if (m_CurrentIndex < m_EntryCount) {
+        aEntry = m_Entries[m_CurrentIndex++];
         return true;
     }
 
@@ -949,45 +949,45 @@ bool PhonebookEntryEnumerator::getEntry(PhonebookEntryName &aEntry) {
 
 //------------------------------------------------------------------------------
 void PhonebookEntryEnumerator::reset(const std::wstring &aPhonebookPath) {
-    mCurrentIndex = 0;
-    mEntryCount = 0;
-    mRequestedBufSize = 0;
+    m_CurrentIndex = 0;
+    m_EntryCount = 0;
+    m_RequestedBufSize = 0;
     RASENTRYNAME dummy;
     dummy.dwSize = sizeof(dummy);
 
-    mLastError = RasEnumEntries(
+    m_LastError = RasEnum_Entries(
         0,
         0,
         GetOSVersion() < EOSVersion::WindowsVista ? &dummy : 0, // различие(баг) в апи
-        &mRequestedBufSize,
-        &mEntryCount);
+        &m_RequestedBufSize,
+        &m_EntryCount);
 
-    if (mLastError == ERROR_BUFFER_TOO_SMALL) {
-        delete[] mEntries;
-        mEntries = reinterpret_cast<LPRASENTRYNAME>(new char[mRequestedBufSize]);
-        mEntries[0].dwSize = sizeof(mEntries[0]);
-        mLastError = RasEnumEntries(0,
+    if (m_LastError == ERROR_BUFFER_TOO_SMALL) {
+        delete[] m_Entries;
+        m_Entries = reinterpret_cast<LPRASENTRYNAME>(new char[m_RequestedBufSize]);
+        m_Entries[0].dwSize = sizeof(m_Entries[0]);
+        m_LastError = RasEnum_Entries(0,
                                     aPhonebookPath.empty() ? 0 : aPhonebookPath.data(),
-                                    mEntries,
-                                    &mRequestedBufSize,
-                                    &mEntryCount);
+                                    m_Entries,
+                                    &m_RequestedBufSize,
+                                    &m_EntryCount);
     }
 }
 
 //------------------------------------------------------------------------------
-ConnectionEnumerator::ConnectionEnumerator() : mRequestedBufSize(0), mConnections(0) {
+ConnectionEnumerator::ConnectionEnumerator() : m_RequestedBufSize(0), m_Connections(0) {
     reset();
 }
 
 //--------------------------------------------------------------------------------
 ConnectionEnumerator::~ConnectionEnumerator() {
-    delete[] mConnections;
+    delete[] m_Connections;
 }
 
 //--------------------------------------------------------------------------------
 bool ConnectionEnumerator::getConnection(Connection &aConnection) {
-    if (mCurrentIndex < mConnectionCount) {
-        aConnection.reset(mConnections[mCurrentIndex++]);
+    if (m_CurrentIndex < m_ConnectionCount) {
+        aConnection.reset(m_Connections[m_CurrentIndex++]);
         return true;
     }
 
@@ -996,44 +996,44 @@ bool ConnectionEnumerator::getConnection(Connection &aConnection) {
 
 //--------------------------------------------------------------------------------
 void ConnectionEnumerator::reset() {
-    mCurrentIndex = 0;
-    mConnectionCount = 0;
+    m_CurrentIndex = 0;
+    m_ConnectionCount = 0;
     DWORD connectionsCount = 0;
     DWORD reqBytesCount = 0;
 
     RASCONN dummy;
     dummy.dwSize = sizeof(dummy);
 
-    mLastError = RasEnumConnections(
+    m_LastError = RasEnum_Connections(
         GetOSVersion() < EOSVersion::WindowsVista ? &dummy : 0, // различие(баг) в апи
         &reqBytesCount,
         &connectionsCount);
 
-    mRequestedBufSize = reqBytesCount;
-    mConnectionCount = connectionsCount;
+    m_RequestedBufSize = reqBytesCount;
+    m_ConnectionCount = connectionsCount;
 
-    if (mLastError == ERROR_BUFFER_TOO_SMALL) {
-        delete[] mConnections;
-        mConnections = reinterpret_cast<LPRASCONN>(new char[mRequestedBufSize]);
-        mConnections[0].dwSize = sizeof(mConnections[0]);
-        mLastError = RasEnumConnections(mConnections, &mRequestedBufSize, &mConnectionCount);
+    if (m_LastError == ERROR_BUFFER_TOO_SMALL) {
+        delete[] m_Connections;
+        m_Connections = reinterpret_cast<LPRASCONN>(new char[m_RequestedBufSize]);
+        m_Connections[0].dwSize = sizeof(m_Connections[0]);
+        m_LastError = RasEnum_Connections(m_Connections, &m_RequestedBufSize, &m_ConnectionCount);
     }
 }
 
 //------------------------------------------------------------------------------
-DeviceEnumerator::DeviceEnumerator() : mRequestedBufSize(0), mDevices(0) {
+DeviceEnumerator::DeviceEnumerator() : m_RequestedBufSize(0), m_Devices(0) {
     reset();
 }
 
 //--------------------------------------------------------------------------------
 DeviceEnumerator::~DeviceEnumerator() {
-    delete[] mDevices;
+    delete[] m_Devices;
 }
 
 //--------------------------------------------------------------------------------
 bool DeviceEnumerator::getDevice(Device &aDevice) {
-    if (mCurrentIndex < mDeviceCount) {
-        aDevice = mDevices[mCurrentIndex++];
+    if (m_CurrentIndex < m_DeviceCount) {
+        aDevice = m_Devices[m_CurrentIndex++];
 
         return true;
     }
@@ -1043,16 +1043,16 @@ bool DeviceEnumerator::getDevice(Device &aDevice) {
 
 //--------------------------------------------------------------------------------
 void DeviceEnumerator::reset() {
-    mCurrentIndex = 0;
-    mDeviceCount = 0;
+    m_CurrentIndex = 0;
+    m_DeviceCount = 0;
 
-    mLastError = RasEnumDevices(0, &mRequestedBufSize, &mDeviceCount);
+    m_LastError = RasEnum_Devices(0, &m_RequestedBufSize, &m_DeviceCount);
 
-    if (mLastError == ERROR_BUFFER_TOO_SMALL && mDeviceCount) {
-        delete[] mDevices;
-        mDevices = new RASDEVINFO[mRequestedBufSize / mDeviceCount];
-        mDevices[0].dwSize = sizeof(mDevices[0]);
-        mLastError = RasEnumDevices(mDevices, &mRequestedBufSize, &mDeviceCount);
+    if (m_LastError == ERROR_BUFFER_TOO_SMALL && m_DeviceCount) {
+        delete[] m_Devices;
+        m_Devices = new RASDEVINFO[m_RequestedBufSize / m_DeviceCount];
+        m_Devices[0].dwSize = sizeof(m_Devices[0]);
+        m_LastError = RasEnum_Devices(m_Devices, &m_RequestedBufSize, &m_DeviceCount);
     }
 }
 

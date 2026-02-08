@@ -249,11 +249,11 @@ enum Enum { Disabled = RASIDS_Disabled, UseGlobalValue = RASIDS_UseGlobalValue }
 // База для классов, возвращающих результат операции
 class RasBase {
 public:
-    DWORD getLastError() const { return mLastError; }
-    bool isValid() const { return mLastError == ERROR_SUCCESS; }
+    DWORD getLastError() const { return m_LastError; }
+    bool isValid() const { return m_LastError == ERROR_SUCCESS; }
 
 protected:
-    DWORD mLastError;
+    DWORD m_LastError;
 };
 
 //------------------------------------------------------------------------------
@@ -421,7 +421,7 @@ public:
     void setRedialPause(size_t aPause);
 
 private:
-    LPRASENTRY mEntry;
+    LPRASENTRY m_Entry;
 };
 
 //------------------------------------------------------------------------------
@@ -465,7 +465,7 @@ public:
     void setLocalSessionId(const LUID &aId);
 
 private:
-    RASCONN mConnection;
+    RASCONN m_Connection;
 };
 
 //------------------------------------------------------------------------------
@@ -484,7 +484,7 @@ public:
     void setName(const std::wstring &aName);
 
 private:
-    RASDEVINFO mDevice;
+    RASDEVINFO m_Device;
 };
 
 //------------------------------------------------------------------------------
@@ -527,9 +527,9 @@ public:
     void setRemovePassword(bool aRemove);
 
 private:
-    RASDIALPARAMS mParams;
-    bool mHasSavedPassword;
-    bool mRemovePassword;
+    RASDIALPARAMS m_Params;
+    bool m_HasSavedPassword;
+    bool m_RemovePassword;
 };
 
 //------------------------------------------------------------------------------
@@ -543,10 +543,10 @@ public:
     void reset(const std::wstring &aPhonebookPath = L"");
 
 private:
-    DWORD mEntryCount;
-    size_t mCurrentIndex;
-    DWORD mRequestedBufSize;
-    LPRASENTRYNAME mEntries;
+    DWORD m_EntryCount;
+    size_t m_CurrentIndex;
+    DWORD m_RequestedBufSize;
+    LPRASENTRYNAME m_Entries;
 };
 
 //------------------------------------------------------------------------------
@@ -560,10 +560,10 @@ public:
     void reset();
 
 private:
-    DWORD mConnectionCount;
-    size_t mCurrentIndex;
-    DWORD mRequestedBufSize;
-    LPRASCONN mConnections;
+    DWORD m_ConnectionCount;
+    size_t m_CurrentIndex;
+    DWORD m_RequestedBufSize;
+    LPRASCONN m_Connections;
 };
 
 //------------------------------------------------------------------------------
@@ -577,10 +577,10 @@ public:
     void reset();
 
 private:
-    DWORD mDeviceCount;
-    size_t mCurrentIndex;
-    DWORD mRequestedBufSize;
-    LPRASDEVINFO mDevices;
+    DWORD m_DeviceCount;
+    size_t m_CurrentIndex;
+    DWORD m_RequestedBufSize;
+    LPRASDEVINFO m_Devices;
 };
 
 //------------------------------------------------------------------------------

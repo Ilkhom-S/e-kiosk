@@ -93,7 +93,7 @@ public:
     static void removeDialupConnection(const QString &aName) noexcept(false);
 
 public:
-    static ILog *mLog;
+    static ILog *m_Log;
 };
 
 //--------------------------------------------------------------------------------

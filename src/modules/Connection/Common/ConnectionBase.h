@@ -64,16 +64,16 @@ protected:
 
     void toLog(LogLevel::Enum aLevel, const QString &aMessage) const;
 
-    NetworkTaskManager *mNetwork;
+    NetworkTaskManager *m_Network;
 
-    QString mName;
-    bool mConnected;
-    bool mWatch;
-    int mPingPeriod;
-    int mCheckCount;
-    QTimer mCheckTimer;
-    QList<CheckUrl> mCheckHosts;
-    ILog *mLog;
+    QString m_Name;
+    bool m_Connected;
+    bool m_Watch;
+    int m_PingPeriod;
+    int m_CheckCount;
+    QTimer m_CheckTimer;
+    QList<CheckUrl> m_CheckHosts;
+    ILog *m_Log;
 };
 
 //--------------------------------------------------------------------------------
