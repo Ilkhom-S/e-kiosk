@@ -134,7 +134,7 @@ private:
     SDK::Plugin::IPluginLoader *mPluginLoader;
 
     /// Список свободных системных зависимых устройств
-    QSet<QString> mFreeSystemNames;
+    QSet<QString> m_FreeSystemNames;
 
     /// Таблица принадлежности драйвера и системного имени зависимого устройства
     QMultiMap<QString, QString> mRDSystemNames;
@@ -143,28 +143,28 @@ private:
     QMap<QString, QString> mRequiredResources;
 
     /// Таблица зависимостей.
-    TDeviceDependencyMap mDeviceDependencyMap;
+    TDeviceDependencyMap m_DeviceDependencyMap;
 
     /// Таблица драйверов для конкретного устройства.
     QMap<QString, QStringList> mDriverList;
 
     /// Флаг остановки поиска устройств.
-    char mStopFlag;
+    char m_StopFlag;
 
     /// Таблица всех возможных значений параметров устройств.
     QMap<QString, SDK::Plugin::TParameterList> mDriverParameters;
 
     /// Список типов найденных устройств.
-    QSet<QString> mDetectedDeviceTypes;
-    QMutex mAccessMutex;
+    QSet<QString> m_DetectedDeviceTypes;
+    QMutex m_AccessMutex;
 
     /// Данные логов устройств.
     typedef QMap<bool, int> TLogData;
     typedef QMap<SDK::Driver::IDevice *, TLogData> TDevicesLogData;
-    TDevicesLogData mDevicesLogData;
+    TDevicesLogData m_DevicesLogData;
 
     /// Список путей всех использованных устройств.
-    QStringList mAcquiredDevices;
+    QStringList m_AcquiredDevices;
 };
 
 //--------------------------------------------------------------------------------
