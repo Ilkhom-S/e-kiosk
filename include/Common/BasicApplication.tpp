@@ -14,14 +14,14 @@
 template <typename T>
 BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &aVersion, int &aArgumentCount,
                                           char **aArguments)
-    : BasicApplication(aName, aVersion, aArgumentCount, aArguments), mQtApplication(aArgumentCount, aArguments, true)
+    : BasicApplication(aName, aVersion, aArgumentCount, aArguments), m_QtApplication(aArgumentCount, aArguments, true)
 {
     // Set application name and version on the Qt application instance
-    mQtApplication.setApplicationName(aName);
-    mQtApplication.setApplicationVersion(aVersion);
+    m_QtApplication.setApplicationName(aName);
+    m_QtApplication.setApplicationVersion(aVersion);
 
     // Load translations automatically
-    QFileInfo fileInfo(mQtApplication.applicationFilePath());
+    QFileInfo fileInfo(m_QtApplication.applicationFilePath());
     QString appName = fileInfo.baseName();
 
     // Check multiple possible locations for translation files
@@ -31,7 +31,7 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
 
     // On macOS, also check app bundle locations
 #ifdef Q_OS_MACOS
-    QString appDir = mQtApplication.applicationDirPath();
+    QString appDir = m_QtApplication.applicationDirPath();
     searchPaths << QDir(appDir).absoluteFilePath("../Resources/locale"); // Contents/Resources/locale
     searchPaths << QDir(appDir).absoluteFilePath("locale");              // Contents/MacOS/locale (fallback)
 #endif
@@ -51,11 +51,11 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
         if (!translationFiles.isEmpty())
         {
             QString translationFile = translationsDir.absoluteFilePath(translationFiles.first());
-            mTranslator = QSharedPointer<QTranslator>(new QTranslator(&mQtApplication));
+            m_Translator = QSharedPointer<QTranslator>(new QTranslator(&m_QtApplication));
 
-            if (mTranslator->load(translationFile))
+            if (m_Translator->load(translationFile))
             {
-                mQtApplication.installTranslator(mTranslator.data());
+                m_QtApplication.installTranslator(m_Translator.data());
                 getLog()->write(LogLevel::Normal, QString("Translation %1 loaded.").arg(translationFile));
                 translationLoaded = true;
                 break; // Stop after loading the first translation file

@@ -72,22 +72,22 @@ protected:
     void setInstance();
 
     // Singleton instance pointer
-    static BasicApplication *mInstance;
+    static BasicApplication *m_Instance;
 
 private:
     // Internal helpers
     void detectTestMode();
 
-    QString mName;
-    QString mVersion;
-    QString mWorkingDirectory;
-    QScopedPointer<QSettings> mSettings; // initialized in constructor
-    int mArgumentCount;
-    char **mArguments;
-    ILog *mLog = nullptr; // initialized in constructor
+    QString m_Name;
+    QString m_Version;
+    QString m_WorkingDirectory;
+    QScopedPointer<QSettings> m_Settings; // initialized in constructor
+    int m_ArgumentCount;
+    char **m_Arguments;
+    ILog *m_Log = nullptr; // initialized in constructor
 
     // Runtime state
-    bool mTestMode = false;
+    bool m_TestMode = false;
 };
 
 //---------------------------------------------------------------------------
@@ -111,11 +111,11 @@ public:
     QStringList getArguments() const { return mQtApplication.arguments(); }
 
     /// Возвращает экземпляр Qt приложения.
-    TApplication &getQtApplication() { return mQtApplication; }
+    TApplication &getQtApplication() { return m_QtApplication; }
 
 private:
-    TApplication mQtApplication;
-    QSharedPointer<QTranslator> mTranslator;
+    TApplication m_QtApplication;
+    QSharedPointer<QTranslator> m_Translator;
 };
 
 //---------------------------------------------------------------------------
