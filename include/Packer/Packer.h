@@ -9,9 +9,9 @@
 
 //------------------------------------------------------------------------------
 class Packer : public ILogable {
-    int mExitCode;
+    int m_ExitCode;
 
-    QString mMessages;
+    QString m_Messages;
 
 public:
     typedef enum { Zip, SevenZip } Format;
@@ -84,13 +84,13 @@ public:
     const QString &messages() const;
 
 private:
-    QString mToolPath;
-    bool mUpdateMode;
-    Format mFormat;
-    int mLevel;
-    bool mRecursive;
-    int mTimeout;
-    QProcess mZipProcess;
+    QString m_ToolPath;
+    bool m_UpdateMode;
+    Format m_Format;
+    int m_Level;
+    bool m_Recursive;
+    int m_Timeout;
+    QProcess m_ZipProcess;
 
     /// Возвращает имя исполняемого файла 7za в зависимости от платформы
     static QString getToolExecutableName();
