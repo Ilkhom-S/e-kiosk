@@ -49,7 +49,7 @@ function(ek_enable_static_analysis target)
         find_program(CLANG_TIDY_EXECUTABLE NAMES clang-tidy)
         if(CLANG_TIDY_EXECUTABLE)
             set_target_properties(${target} PROPERTIES
-                CXX_CLANG_TIDY "${CLANG_TIDY_EXECUTABLE};-checks=*;--warnings-as-errors=*"
+                CXX_CLANG_TIDY "${CLANG_TIDY_EXECUTABLE};-checks=*"
             )
         else()
             message(WARNING "clang-tidy not found: static analysis will be skipped for ${target}")

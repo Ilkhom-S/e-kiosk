@@ -257,17 +257,17 @@ bool Utils::fileExist(const QString &aPath) const {
 QString Utils::toHtml(const QString &aSource) const {
     return QString(aSource)
         .replace("[br]", " ")
-        .replace(QRegExp("\\s+"), " ")
-        .replace(QRegExp("\\[(/*\\w+)\\]"), "<" + QString("\\1") + ">");
+        .replace(QRegularExpression("\\s+"), " ")
+        .replace(QRegularExpression("\\[(/*\\w+)\\]"), "<" + QString("\\1") + ">");
 }
 
 //------------------------------------------------------------------------------
 QString Utils::toPlain(const QString &aSource) const {
     return QString(aSource)
         .replace("[br]", "")
-        .replace(QRegExp("\\s+"), " ")
-        .replace(QRegExp("\\[(/*\\w+)\\]"), "")
-        .replace(QRegExp("<(/*\\w+)>"), "");
+        .replace(QRegularExpression("\\s+"), " ")
+        .replace(QRegularExpression("\\[(/*\\w+)\\]"), "")
+        .replace(QRegularExpression("<(/*\\w+)>"), "");
 }
 
 //------------------------------------------------------------------------------

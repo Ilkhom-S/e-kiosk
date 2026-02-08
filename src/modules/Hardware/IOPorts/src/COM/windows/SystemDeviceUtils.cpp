@@ -289,10 +289,11 @@ bool System_DeviceUtils::enumerateSystem_Devices(const QUuid &aUuid,
                 }
             }
 
-            regexp = QRegExp("pid_([0-9a-fA-F]+)");
+            QRegularExpression regexp("pid_([0-9a-fA-F]+)");
 
-            if (regexp.match(path).capturedStart() != -1) {
-                QString data = regexp.capturedTexts()[1];
+            QRegularExpressionMatch match = regexp.match(path);
+            if (match.hasMatch()) {
+                QString data = match.captured(1);
                 qint32 value = data.toInt(&parseOK, 16);
 
                 if (parseOK) {

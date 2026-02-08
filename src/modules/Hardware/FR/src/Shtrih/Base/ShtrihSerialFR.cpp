@@ -133,8 +133,8 @@ void ShtrihSerialFR::parseDeviceData(const QByteArray &aData) {
 
         totalData = totalData.mid(0, totalData.size() - 1);
         QString EKLZData = totalData.join(" ")
-                               .replace(QRegExp("[\r\n\t]+"), " ")
-                               .replace(QRegExp(" +"), " ")
+                               .replace(QRegularExpression("[\r\n\t]+"), " ")
+                               .replace(QRegularExpression(" +"), " ")
                                .toUpper()
                                .simplified();
 

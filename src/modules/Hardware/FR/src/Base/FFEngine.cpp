@@ -930,7 +930,7 @@ bool FFEngine::checkINN(const QString &aINN, int aType) const {
         return false;
     }
 
-    if (QRegExp("^[0-9]+$").indexIn(aINN) == -1) {
+    if (!QRegularExpression("^[0-9]+$").match(aINN).hasMatch()) {
         toLog(LogLevel::Error, m_DeviceName + ": Wrong INN = " + aINN);
         return false;
     }
@@ -987,7 +987,7 @@ QString FFEngine::filterPhone(const QString &aData) const {
                          .remove(QRegularExpression("\\n\\r\\t"), "")
                          .remove(QRegularExpression("^[^0-9]+"), "");
     int index = 1 + result.lastIndexOf(QRegularExpression("[0-9]+"));
-    int last = 1 + result.indexOf(QRegExp("[\\+\\(]"), index);
+    int last = 1 + result.indexOf(QRegularExpression("[\\+\\(]"), index);
     result = revert(result.left(last ? last : index));
 
     if (result.startsWith("(")) {

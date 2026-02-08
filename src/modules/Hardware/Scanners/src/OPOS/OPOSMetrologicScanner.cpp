@@ -37,7 +37,7 @@ bool OPOSMetrologicScanner::isConnected() {
     }
 
     QString deviceName = getConfigParameter(CHardwareSDK::ModelName).toString();
-    deviceName = deviceName.replace("/", " ").replace(QRegExp(" +"), " ");
+    deviceName = deviceName.replace("/", " ").replace(QRegularExpression(" +"), " ");
 
     if (!deviceName.isEmpty()) {
         m_DeviceName = deviceName;
