@@ -30,7 +30,7 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 namespace CCashAcceptor {
-const char *CashPaymentMethod = "cash";
+const char CashPaymentMethod[] = "cash";
 } // namespace CCashAcceptor
 
 //---------------------------------------------------------------------------

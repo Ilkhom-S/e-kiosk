@@ -7,7 +7,7 @@
 
 namespace UcsDB {
 
-const char *DateFormat = "yyyy-MM-dd hh:mm:ss";
+const char DateFormat[] = "yyyy-MM-dd hh:mm:ss";
 
 //------------------------------------------------------------------------------
 DatabaseUtils::DatabaseUtils(SDK::PaymentProcessor::IDatabaseService *aDatabaseService, ILog *aLog)

@@ -40,12 +40,8 @@ private:
 static CVendorData VendorData;
 
 //--------------------------------------------------------------------------------
-const char *DefaultDeviceName =
-    "Unknown cash device based on ccTalk protocol"; /// Название устройства по умолчанию.
-const char *DeviceNamePostfix =
-    "cash device, unknown model based on ccTalk protocol"; /// Оконание названия устройства
-                                                           /// известного производителя по
-                                                           /// умолчанию.
+extern const char DefaultDeviceName[];
+extern const char DeviceNamePostfix[];
 
 /// Производители монетников, номиналы прошивки которых нуждаются в коррекции.
 const QStringList WrongFirmwareVendors = QStringList() << "NRI" << "Microcoin" << "ICT";

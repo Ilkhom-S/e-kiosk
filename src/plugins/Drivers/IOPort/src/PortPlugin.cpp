@@ -8,21 +8,21 @@
 #include "Hardware/Plugins/CommonParameters.h"
 
 namespace PortParameterTranslations {
-static const char *Name = QT_TRANSLATE_NOOP("PortParameters", "PortParameters#name");
+static const char Name[] = QT_TRANSLATE_NOOP("PortParameters", "PortParameters#name");
 
 namespace COM {
-static const char *BaudRate =
+static const char BaudRate[] =
     QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_baud_rate");
-static const char *Parity = QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_parity");
-static const char *ByteSize =
+static const char Parity[] = QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_parity");
+static const char ByteSize[] =
     QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_byte_size");
-static const char *RTS = QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_rts");
-static const char *DTR = QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_dtr");
+static const char RTS[] = QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_rts");
+static const char DTR[] = QT_TRANSLATE_NOOP("ComPortParameters", "ComPortParameters#com_dtr");
 } // namespace COM
 
 namespace TCP {
-static const char *Address = QT_TRANSLATE_NOOP("PortParameters", "PortParameters#tcp_address");
-static const char *Number = QT_TRANSLATE_NOOP("PortParameters", "PortParameters#tcp_number");
+static const char Address[] = QT_TRANSLATE_NOOP("PortParameters", "PortParameters#tcp_address");
+static const char Number[] = QT_TRANSLATE_NOOP("PortParameters", "PortParameters#tcp_number");
 } // namespace TCP
 }; // namespace PortParameterTranslations
 

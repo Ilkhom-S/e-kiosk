@@ -21,7 +21,7 @@ const char Uniteller::LogName[] = "Uniteller";
 namespace PPSDK = SDK::PaymentProcessor;
 
 namespace CUniteller {
-const char *DefaultTerminalID = "0000000000";
+const char DefaultTerminalID[] = "0000000000";
 const int ReconnectTimeout = 5000;
 const int PollTimeout = 1000;
 

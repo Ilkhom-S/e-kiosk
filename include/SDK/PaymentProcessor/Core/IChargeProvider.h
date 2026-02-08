@@ -10,7 +10,7 @@ namespace SDK {
 namespace PaymentProcessor {
 
 namespace CChargeProvider {
-static const char *StackedSignal = SIGNAL(stacked(SDK::PaymentProcessor::SNote));
+static const char StackedSignal[] = SIGNAL(stacked(SDK::PaymentProcessor::SNote));
 } // namespace CChargeProvider
 
 //------------------------------------------------------------------------------

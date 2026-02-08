@@ -18,7 +18,7 @@
 #include "SetupServiceWindow.h"
 
 namespace CMainServiceWindow {
-const char *DigitProperty = "cyberDigit";
+const char DigitProperty[] = "cyberDigit";
 
 // Интервал обновления текущей даты/времени на экране.
 const int DateTimeRefreshInterval = 60 * 1000; // 1 минута

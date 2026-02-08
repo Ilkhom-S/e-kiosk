@@ -33,13 +33,13 @@ const char EncashmentTask[] = "ucs_encash_sync";
 } // namespace Ucs
 
 namespace CUcs {
-const char *DefaultTerminalID = "0000000000";
+const char DefaultTerminalID[] = "0000000000";
 const int ReconnectTimeout = 5000;
 const int PollTimeout = 30 * 60 * 1000;  // Проверяем раз в 30 мин.
 const int LoginTimeout = 60 * 60 * 1000; // Проверяем раз в 1 час.
 const int ExecuteEncashmentTimeout = 100;
 
-const char *LibraryName = "ucs_ms";
+const char LibraryName[] = "ucs_ms";
 
 const int USE_STATUS =
     0; // Запрещаем выполнение запроса статуса, т.к. для новых прошивок POS она кривая.

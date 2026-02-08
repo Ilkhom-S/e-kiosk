@@ -9,12 +9,12 @@ using namespace SDK::Driver;
 
 //------------------------------------------------------------------------
 namespace VirtualDevicesPluginParameterTranslations {
-static const char *NotesPerEscrow =
+static const char NotesPerEscrow[] =
     QT_TRANSLATE_NOOP("VirtualCashAcceptor", "VirtualCashAcceptor#notes_per_escrow");
-static const char *Units = QT_TRANSLATE_NOOP("VirtualDispenser", "VirtualDispenser#units");
-static const char *NearEndCount =
+static const char Units[] = QT_TRANSLATE_NOOP("VirtualDispenser", "VirtualDispenser#units");
+static const char NearEndCount[] =
     QT_TRANSLATE_NOOP("VirtualDispenser", "VirtualDispenser#near_end_count");
-static const char *JammedItem =
+static const char JammedItem[] =
     QT_TRANSLATE_NOOP("VirtualDispenser", "VirtualDispenser#jammed_item");
 }; // namespace VirtualDevicesPluginParameterTranslations
 
