@@ -222,7 +222,7 @@ void PluginService::verifyPlugins() {
                                     .length());
     };
 
-    QStringList modules = mPluginLoader->getPluginPathList(QRegExp(".*"));
+    QStringList modules = mPluginLoader->getPluginPathList(QRegularExpression(".*"));
 
     // Добавим проверку исполняемых файлов
 

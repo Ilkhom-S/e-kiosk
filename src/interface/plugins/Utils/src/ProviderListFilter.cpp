@@ -77,7 +77,7 @@ QString ProviderListFilter::getFilter() const {
 
 //------------------------------------------------------------------------------
 void ProviderListFilter::setFilter(const QString &aFilter) {
-    static QRegExp spaceRegExp("\\s+");
+    static QRegularExpression spaceRegExp("\\s+");
 
     beginResetModel();
 

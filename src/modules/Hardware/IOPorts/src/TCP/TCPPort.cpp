@@ -85,7 +85,7 @@ bool TCPPort::performOpen() {
         m_LastErrorLog = aLog;
     };
 
-    if (QRegExp(CTCPPort::AddressMask).indexIn(IP) == -1) {
+    if (!QRegularExpression(CTCPPort::AddressMask).match(IP).hasMatch()) {
         writeLog(QString("Failed to open the TCP socket with IP = %1, need like %2")
                      .arg(IP)
                      .arg(CTCPPort::AddressMaskLog));
