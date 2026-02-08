@@ -153,12 +153,12 @@ private:
 
 private:
     SDK::PaymentProcessor::ICore *mCore;
-    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;
+    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings{};
     QString mTerminalID;
-    QDateTime mLoggedIn;
+    QDateTime mLoggedIn{};
     bool mLastLineReceived;
 
-    QStringList mCurrentReceipt;
+    QStringList mCurrentReceipt{};
 
     bool isLoggedIn() const;
     bool isLoggedInExpired() const;
@@ -177,14 +177,14 @@ private:
     EftpDo mEftpDo;
     void *mPySelf; // Управляющий объект библиотеки
 
-    QFutureWatcher<TResponse> mResponseWatcher;
+    QFutureWatcher<TResponse> mResponseWatcher{};
     APIState::Enum mTerminalState;
     SDK::PaymentProcessor::TPaymentAmount mMaxAmount;
     bool mNeedEncashment;
     bool mNeedPrintAllEncashmentReports;
     UcsDB::DatabaseUtils mDatabase;
-    QSharedPointer<Ucs::AuthResponse> mAuthResponse;
-    QMap<int, UcsDB::Encashment> mEncashmentInPrint;
+    QSharedPointer<Ucs::AuthResponse> mAuthResponse{};
+    QMap<int, UcsDB::Encashment> mEncashmentInPrint{};
 
 private:
     UscEncashTask *mEncashmentTask;

@@ -47,7 +47,7 @@ public:
 
     /// Начать приём денег для указанного платежа.
     virtual bool enable(qint64 aPayment,
-                        const QString &aPaymentType,
+                        const QString &aPaymentMethod,
                         SDK::PaymentProcessor::TPaymentAmount aMaxAmount);
 
     /// Завершить приём денег для указанного платежа.
@@ -71,24 +71,24 @@ private:
 
 private slots:
     /// Валидатор распознал купюру.
-    void onEscrow(SDK::Driver::SPar aPar);
+    void onEscrow(const SDK::Driver::SPar &aPar);
 
     /// Валидатор распознал купюру (с контролем переполнения суммы платежа)
-    void onEscrowChangeControl(SDK::Driver::SPar aPar);
+    void onEscrowChangeControl(const SDK::Driver::SPar &aPar);
 
     /// Изменение статуса валидатора.
-    void onStatusChanged(SDK::Driver::EWarningLevel::Enum aWarningLevel,
+    void onStatusChanged(SDK::Driver::EWarningLevel::Enum aLevel,
                          const QString &aTranslation,
                          int aStatus);
 
     /// Валидатор успешно уложил купюру.
-    void onStacked(SDK::Driver::TParList aPar);
+    void onStacked(SDK::Driver::TParList aNotes);
 
     /// Обновление списка устройств.
     void updateHardwareConfiguration();
 
     /// Провайдер денег получил указанную сумму.
-    void onChargeProviderStacked(SDK::PaymentProcessor::SNote aNote);
+    void onChargeProviderStacked(const SDK::PaymentProcessor::SNote &aNote);
 
 private:
     IApplication *mApplication;

@@ -15,6 +15,7 @@
 #include <DebugUtils/DebugUtils.h>
 #include <SysUtils/ISysUtils.h>
 #include <singleapplication.h>
+#include <utility>
 
 #ifdef Q_OS_WIN
 #include <comdef.h>
@@ -42,10 +43,11 @@ LONG WINAPI ExceptionFilter(EXCEPTION_POINTERS *aException) {
 #endif
 
 BasicApplication::BasicApplication(const QString &aName,
-                                   const QString &aVersion,
+                                   QString aVersion,
                                    int aArgumentCount,
                                    char **aArguments)
-    : m_Name(aName), m_Version(aVersion), m_ArgumentCount(aArgumentCount), m_Arguments(aArguments) {
+    : m_Name(aName), m_Version(std::move(aVersion)), m_ArgumentCount(aArgumentCount),
+      m_Arguments(aArguments) {
     // Parse provided argv for quick checks (e.g., 'test')
     QStringList args;
     for (int i = 0; i < aArgumentCount; ++i) {
@@ -107,10 +109,11 @@ BasicApplication::BasicApplication(const QString &aName,
     QSettings userSettings(ISysUtils::rmBOM(userFilePath), QSettings::IniFormat);
     if (userSettings.contains("log/level")) {
         int level = userSettings.value("log/level").toInt();
-        if (level < LogLevel::Off)
+        if (level < LogLevel::Off) {
             level = LogLevel::Off;
-        else if (level > LogLevel::Max)
+        } else if (level > LogLevel::Max) {
             level = LogLevel::Max;
+        }
         ILog::setGlobalLevel(static_cast<LogLevel::Enum>(level));
     }
 
@@ -187,16 +190,18 @@ BasicApplication *BasicApplication::getInstance() {
 //---------------------------------------------------------------------------
 // Возвращает имя приложения.
 QString BasicApplication::getName() const {
-    if (!m_Name.isEmpty())
+    if (!m_Name.isEmpty()) {
         return m_Name;
+    }
     return QCoreApplication::applicationName();
 }
 
 //---------------------------------------------------------------------------
 // Возвращает версию приложения.
 QString BasicApplication::getVersion() const {
-    if (!m_Version.isEmpty())
+    if (!m_Version.isEmpty()) {
         return m_Version;
+    }
     return QCoreApplication::applicationVersion();
 }
 
@@ -206,18 +211,16 @@ QString BasicApplication::getFileName() const {
     // If QApplication exists, use its applicationFilePath
     if (QCoreApplication::instance()) {
         return QFileInfo(QCoreApplication::applicationFilePath()).fileName();
-    } else {
-        // Fallback: use the executable path from arguments
-        if (m_ArgumentCount > 0) {
-            return QFileInfo(QString::fromLocal8Bit(m_Arguments[0])).fileName();
-        }
-        return QString(); // Empty string if no arguments
+    } // Fallback: use the executable path from arguments
+    if (m_ArgumentCount > 0) {
+        return QFileInfo(QString::fromLocal8Bit(m_Arguments[0])).fileName();
     }
+    return QString(); // Empty string if no arguments
 }
 
 //---------------------------------------------------------------------------
 // Возвращает тип/версию операционной системы.
-QString BasicApplication::getOSVersion() const {
+QString BasicApplication::getOSVersion() {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     return ISysUtils::getOSVersionInfo();
 #else

@@ -112,13 +112,13 @@ private:
     virtual void timerEvent(QTimerEvent *aEvent);
 
 private:
-    quint16 mPort;
-    QTcpSocket mSocket;
-    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;
+    quint16 mPort{};
+    QTcpSocket mSocket{};
+    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings{};
     QString mTerminalID;
     bool mLoggedIn;
 
-    QStringList mCurrentReceipt;
+    QStringList mCurrentReceipt{};
 
 private:
     bool mEnabled;
@@ -126,9 +126,9 @@ private:
     int mLastError;
     QString mLastErrorString;
     int mGetStateTimerID;
-    QMap<QString, int> mDeviceState; // Объединенное состояние для всех устройств
-    QTimer mCheckStateTimer;
-    int mLoginCheckTimer;
+    QMap<QString, int> mDeviceState{}; // Объединенное состояние для всех устройств
+    QTimer mCheckStateTimer{};
+    int mLoginCheckTimer{};
     bool mLastReadyState;
     QString mRuntimePath;
 };

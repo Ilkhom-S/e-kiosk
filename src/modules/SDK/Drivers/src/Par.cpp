@@ -4,6 +4,7 @@
 #include <SDK/Drivers/CashAcceptor/Par.h>
 
 #include <algorithm>
+#include <utility>
 
 namespace SDK {
 namespace Driver {
@@ -15,14 +16,12 @@ SPar::SPar()
 
 //--------------------------------------------------------------------------------
 SPar::SPar(double aNominal,
-           const QString &aCurrency,
+           QString aCurrency,
            ECashReceiver::Enum aCashReceiver,
            bool aEnabled,
            bool aInhibit)
-    : nominal(aNominal), currencyId(Currency::NoCurrency), currency(aCurrency), enabled(aEnabled),
-      inhibit(aInhibit), cashReceiver(aCashReceiver) {
-    inhibit = aInhibit || !aNominal;
-}
+    : nominal(aNominal), currencyId(Currency::NoCurrency), currency(std::move(aCurrency)),
+      enabled(aEnabled), inhibit(aInhibit || !aNominal), cashReceiver(aCashReceiver) {}
 
 //--------------------------------------------------------------------------------
 SPar::SPar(double aNominal,
@@ -30,10 +29,8 @@ SPar::SPar(double aNominal,
            ECashReceiver::Enum aCashReceiver,
            bool aEnabled,
            bool aInhibit)
-    : nominal(aNominal), currencyId(aCurrencyId), enabled(aEnabled), inhibit(aInhibit),
-      cashReceiver(aCashReceiver) {
-    inhibit = aInhibit || !aNominal;
-}
+    : nominal(aNominal), currencyId(aCurrencyId), enabled(aEnabled), inhibit(aInhibit || !aNominal),
+      cashReceiver(aCashReceiver) {}
 
 //--------------------------------------------------------------------------------
 bool SPar::operator==(const SPar &aPar) const {

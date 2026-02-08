@@ -25,13 +25,13 @@ class SQLiteDatabaseProxy : public IDatabaseProxy, protected ILogable {
 public:
     SQLiteDatabaseProxy();
 
-    virtual ~SQLiteDatabaseProxy();
+    virtual ~SQLiteDatabaseProxy() override;
 
     /// Установить интерфейс контроля над ошибками БД
     virtual void setQueryChecker(IDatabaseQueryChecker *aQueryChecker) override;
 
     /// IDatabaseProxy: Открытие соединения с БД.
-    virtual bool open(const QString &aDatabaseName = CIDatabaseProxy::DefaultDatabase,
+    virtual bool open(const QString &aDbName = CIDatabaseProxy::DefaultDatabase,
                       const QString &aUser = CIDatabaseProxy::DefaultUser,
                       const QString &aPassword = CIDatabaseProxy::DefaultPassword,
                       const QString &aHost = CIDatabaseProxy::DefaultHost,

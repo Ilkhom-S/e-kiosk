@@ -41,7 +41,7 @@ const int ExecuteEncashmentTimeout = 100;
 
 const char LibraryName[] = "ucs_ms";
 
-const int USE_STATUS =
+const int UseStatus =
     0; // Запрещаем выполнение запроса статуса, т.к. для новых прошивок POS она кривая.
 const int ReceiveBufferSize = 320;
 } // namespace CUcs
@@ -57,7 +57,8 @@ API::API(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
       mRuntimeInit(false), mPySelf(nullptr), mEftpCreate(nullptr), mEftpDestroy(nullptr),
       mEftpDo(nullptr), mTerminalState(APIState::None), mMaxAmount(0.0), mNeedEncashment(false),
       mNeedPrintAllEncashmentReports(false),
-      mDatabase(mCore->getDatabaseService(), ILog::getInstance(Ucs::LogName)) {
+      mDatabase(mCore->getDatabaseService(), ILog::getInstance(Ucs::LogName)),
+      mEncashmentTask(new UscEncashTask(Ucs::EncashmentTask, getLog()->getName(), QString())) {
     toLog(LogLevel::Normal, QString("UCS API created."));
 
     connect(&mResponseWatcher, SIGNAL(finished()), this, SLOT(onResponseFinished()));
@@ -65,7 +66,7 @@ API::API(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
     killOldUCSProcess();
 
     // Заводим задачу в планировщике на ежесуточную инкассацию
-    mEncashmentTask = new UscEncashTask(Ucs::EncashmentTask, getLog()->getName(), QString());
+
     connect(mEncashmentTask,
             SIGNAL(finished(const QString &, bool)),
             this,
@@ -74,7 +75,7 @@ API::API(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
 }
 
 //---------------------------------------------------------------------------
-QSharedPointer<API> API::getInstance(SDK::PaymentProcessor::ICore *aCore, ILog *aLog) {
+static QSharedPointer<API> API::getInstance(SDK::PaymentProcessor::ICore *aCore, ILog *aLog) {
     static QSharedPointer<API> gApi = QSharedPointer<API>(new API(aCore, aLog));
 
     return gApi;
@@ -202,7 +203,7 @@ void API::onResponseFinished() {
 
         BaseResponsePtr response = BaseResponse::createResponse(nextAnswer);
 
-        if (!response) {
+        if (response == 0) {
             toLog(LogLevel::Debug, QString("BaseResponsePtr corrupted."));
             continue;
             ;
@@ -360,7 +361,7 @@ void API::status() {
         return;
     }
 
-    if (CUcs::USE_STATUS) {
+    if (CUcs::UseStatus != 0) {
         toLog(LogLevel::Normal, "> Request status.");
 
         mTerminalState = APIState::Status;
@@ -393,7 +394,7 @@ void API::onEncashTaskFinished(const QString &aName, bool aComplete) {
 void API::printAllEncashments() {
     mNeedPrintAllEncashmentReports = false;
 
-    auto printingService = mCore->getPrinterService();
+    auto *printingService = mCore->getPrinterService();
     QVariantMap parameters;
 
     toLog(LogLevel::Normal, "Start print all unprinted encashment.");
@@ -404,7 +405,7 @@ void API::printAllEncashments() {
         int job = printingService->printReceipt(
             "", parameters, "emv_encashment", DSDK::EPrintingModes::Continuous);
 
-        if (job) {
+        if (job != 0) {
             toLog(LogLevel::Normal,
                   QString("Encashment [%1] print started.")
                       .arg(encashment.date.toString("yyyy.MM.dd hh:mm:ss")));
@@ -420,15 +421,18 @@ void API::printAllEncashments() {
 
 //---------------------------------------------------------------------------
 void API::killOldUCSProcess() {
-    unsigned long processes[2048], cbNeeded, cProcesses;
+    unsigned long processes[2048];
+    unsigned long cbNeeded;
+    unsigned long cProcesses;
     QSet<unsigned long> lprocess;
 
     if (EnumProcesses(processes, sizeof(processes), &cbNeeded)) {
         cProcesses = cbNeeded / sizeof(processes[0]);
 
         for (unsigned int i = 0; i < cProcesses; i++) {
-            if (processes[i] == 0)
+            if (processes[i] == 0) {
                 continue;
+            }
 
             HANDLE hProcess =
                 OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, 0, processes[i]);
@@ -715,14 +719,12 @@ void API::printReceipt() {
     parameters["EMV_DATA"] =
         mCurrentReceipt.join("").replace("||", "|\n|").replace("\n", "[br]").replace("|", "");
 
-    SDK::PaymentProcessor::Scripting::Core *scriptingCore =
-        static_cast<SDK::PaymentProcessor::Scripting::Core *>(
-            dynamic_cast<SDK::GUI::IGraphicsHost *>(mCore->getGUIService())
-                ->getInterface<QObject>(SDK::PaymentProcessor::Scripting::CProxyNames::Core));
+    auto *scriptingCore = static_cast<SDK::PaymentProcessor::Scripting::Core *>(
+        dynamic_cast<SDK::GUI::IGraphicsHost *>(mCore->getGUIService())
+            ->getInterface<QObject>(SDK::PaymentProcessor::Scripting::CProxyNames::Core));
 
-    SDK::PaymentProcessor::Scripting::PrinterService *ps =
-        static_cast<SDK::PaymentProcessor::Scripting::PrinterService *>(
-            scriptingCore->property("printer").value<QObject *>());
+    auto *ps = static_cast<SDK::PaymentProcessor::Scripting::PrinterService *>(
+        scriptingCore->property("printer").value<QObject *>());
 
     ps->printReceiptExt("", parameters, "emv", DSDK::EPrintingModes::Glue);
 }
@@ -763,7 +765,7 @@ bool API::isLoggedInExpired() const {
 }
 
 //---------------------------------------------------------------------------
-QByteArray API::makeRequest(char aClass, char aCode, const QByteArray &aData) {
+static QByteArray API::makeRequest(char aClass, char aCode, const QByteArray &aData) {
     QByteArray request;
 
     request.append(aClass);
@@ -790,7 +792,7 @@ void API::timerEvent(QTimerEvent *aEvent) {
 API::TResponse API::send(const QByteArray &aRequest, bool aWaitOperationComplete /*= true*/) {
     if (!mRuntimeInit) {
         toLog(LogLevel::Error, "USC runtime was not loaded. Send command error.");
-        return TResponse();
+        return {};
     }
 
     if (!mPySelf) {
@@ -798,7 +800,7 @@ API::TResponse API::send(const QByteArray &aRequest, bool aWaitOperationComplete
 
         if (!mPySelf) {
             toLog(LogLevel::Error, "Could not create EFTP Object. Request aborted.");
-            return TResponse();
+            return {};
         }
 
         toLog(LogLevel::Debug, "EFTP Object created.");

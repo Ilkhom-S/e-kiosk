@@ -50,20 +50,20 @@ CashAcceptorManager::CashAcceptorManager(IApplication *aApplication)
       mDeviceService(nullptr), mDisableAmountOverflow(false) {}
 
 //---------------------------------------------------------------------------
-CashAcceptorManager::~CashAcceptorManager() {}
+CashAcceptorManager::~CashAcceptorManager() = default;
 
 //---------------------------------------------------------------------------
 bool CashAcceptorManager::initialize(IPaymentDatabaseUtils *aDatabase) {
     mDatabase = aDatabase;
 
-    auto pluginLoader = PluginService::instance(mApplication)->getPluginLoader();
+    auto *pluginLoader = PluginService::instance(mApplication)->getPluginLoader();
     QStringList providers = pluginLoader->getPluginList(QRegularExpression(
         QString("%1\\.%2\\..*").arg(PPSDK::Application, PPSDK::CComponents::ChargeProvider)));
 
     foreach (const QString &path, providers) {
         SDK::Plugin::IPlugin *plugin = pluginLoader->createPlugin(path);
         if (plugin) {
-            PPSDK::IChargeProvider *provider = dynamic_cast<PPSDK::IChargeProvider *>(plugin);
+            auto *provider = dynamic_cast<PPSDK::IChargeProvider *>(plugin);
             if (provider) {
                 mChargeProviders << provider;
 
@@ -78,8 +78,7 @@ bool CashAcceptorManager::initialize(IPaymentDatabaseUtils *aDatabase) {
 
     mDeviceService = DeviceService::instance(mApplication);
 
-    PPSDK::TerminalSettings *settings =
-        SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+    auto *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
 
     mDisableAmountOverflow = settings->getCommonSettings().disableAmountOverflow;
 
@@ -132,20 +131,15 @@ QStringList CashAcceptorManager::getPaymentMethods() {
     qint64 id = ps->getActivePayment();
     QString procType = ps->getPaymentField(id, PPSDK::CPayment::Parameters::Type).value.toString();
 
-    PPSDK::TerminalSettings *settings =
-        SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+    auto *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
     QVariantMap chargeAccess = settings->getChargeProviderAccess();
 
     QSet<QString> result;
 
     auto checkMethod = [&chargeAccess, &procType](const QString &aName) -> bool {
-        if ((!chargeAccess.isEmpty() &&
-             chargeAccess.value(procType).toStringList().contains(aName)) ||
-            (chargeAccess.isEmpty() && !aName.isEmpty())) {
-            return true;
-        }
-
-        return false;
+        return (!chargeAccess.isEmpty() &&
+                chargeAccess.value(procType).toStringList().contains(aName)) ||
+               (chargeAccess.isEmpty() && !aName.isEmpty());
     };
 
     foreach (SDK::PaymentProcessor::IChargeProvider *provider, mChargeProviders) {
@@ -163,14 +157,13 @@ QStringList CashAcceptorManager::getPaymentMethods() {
         result.insert(CCashAcceptor::CashPaymentMethod);
     }
 
-    return QList<QString>(result.begin(), result.end());
+    return {result.begin(), result.end()};
 }
 
 //---------------------------------------------------------------------------
 void CashAcceptorManager::updateHardwareConfiguration() {
     // Получаем список всех доступных устройств.
-    PPSDK::TerminalSettings *settings =
-        SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+    auto *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
     QStringList deviceList = settings->getDeviceList().filter(
         QRegularExpression(QString("(%1|%2)")
                                .arg(DSDK::CComponents::BillAcceptor)
@@ -179,7 +172,7 @@ void CashAcceptorManager::updateHardwareConfiguration() {
     mDeviceList.clear();
 
     foreach (const QString &configurationName, deviceList) {
-        DSDK::ICashAcceptor *device =
+        auto *device =
             dynamic_cast<DSDK::ICashAcceptor *>(mDeviceService->acquireDevice(configurationName));
 
         if (device) {
@@ -319,8 +312,8 @@ bool CashAcceptorManager::disable(qint64 aPayment) {
 }
 
 //---------------------------------------------------------------------------
-void CashAcceptorManager::onEscrowChangeControl(SDK::Driver::SPar aPar) {
-    DSDK::ICashAcceptor *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
+void CashAcceptorManager::onEscrowChangeControl(const SDK::Driver::SPar &aPar) {
+    auto *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
 
     if (mPaymentData && mPaymentData->validators.contains(acceptor) &&
         !isFixedAmountPayment(mPaymentData->paymentId) && !allowMoreMoney(aPar.nominal)) {
@@ -341,8 +334,8 @@ void CashAcceptorManager::onEscrowChangeControl(SDK::Driver::SPar aPar) {
 }
 
 //---------------------------------------------------------------------------
-void CashAcceptorManager::onEscrow(DSDK::SPar aPar) {
-    DSDK::ICashAcceptor *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
+void CashAcceptorManager::onEscrow(const DSDK::SPar &aPar) {
+    auto *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
 
     if (mPaymentData && mPaymentData->validators.contains(acceptor)) {
         // TODO по флажку в настройках проверять будущую сумму платежа и выбрасывать, если
@@ -371,7 +364,7 @@ void CashAcceptorManager::onEscrow(DSDK::SPar aPar) {
 
 //---------------------------------------------------------------------------
 void CashAcceptorManager::onStacked(DSDK::TParList aNotes) {
-    DSDK::ICashAcceptor *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
+    auto *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
 
     if (mPaymentData && mPaymentData->validators.contains(acceptor)) {
         double amount = std::accumulate(
@@ -428,7 +421,7 @@ void CashAcceptorManager::onStacked(DSDK::TParList aNotes) {
 }
 
 //---------------------------------------------------------------------------
-void CashAcceptorManager::onChargeProviderStacked(SDK::PaymentProcessor::SNote aNote) {
+void CashAcceptorManager::onChargeProviderStacked(const SDK::PaymentProcessor::SNote &aNote) {
     if (mPaymentData) {
         double amount = aNote.nominal;
         auto paymentId = mPaymentData->paymentId;
@@ -464,7 +457,7 @@ void CashAcceptorManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel,
             emit error(mPaymentData->paymentId, aTranslation);
         }
     } else {
-        DSDK::ICashAcceptor *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
+        auto *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
 
         // Нормальные статусы.
         if (aStatus == DSDK::ECashAcceptorStatus::Rejected) {
@@ -504,7 +497,7 @@ void CashAcceptorManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel,
 
 //---------------------------------------------------------------------------
 int CashAcceptorManager::getRejectCount() const {
-    auto dbUtils =
+    auto *dbUtils =
         DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
     return dbUtils
         ->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
@@ -514,7 +507,7 @@ int CashAcceptorManager::getRejectCount() const {
 
 //---------------------------------------------------------------------------
 void CashAcceptorManager::incrementRejectCount() {
-    auto dbUtils =
+    auto *dbUtils =
         DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
     dbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                             PPSDK::CDatabaseConstants::Parameters::RejectCount,
@@ -524,8 +517,7 @@ void CashAcceptorManager::incrementRejectCount() {
 //---------------------------------------------------------------------------
 void CashAcceptorManager::initWorkingParList() {
     // Получаем список поддерживаемых номиналов.
-    PPSDK::TerminalSettings *settings =
-        SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+    auto *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
     PPSDK::SCommonSettings commonSettings = settings->getCommonSettings();
 
     foreach (auto nominal, commonSettings.enabledParNotesList) {

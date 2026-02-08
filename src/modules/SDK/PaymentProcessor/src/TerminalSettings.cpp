@@ -36,7 +36,7 @@ TerminalSettings::TerminalSettings(TPtree &aProperties)
     : m_Properties(aProperties.get_child(CAdapterNames::TerminalAdapter, aProperties)) {}
 
 //---------------------------------------------------------------------------
-TerminalSettings::~TerminalSettings() {}
+TerminalSettings::~TerminalSettings() = default;
 
 //---------------------------------------------------------------------------
 void TerminalSettings::initialize() {
@@ -59,9 +59,10 @@ SConnection TerminalSettings::getConnection() const {
     try {
         connection.name = m_Properties.get<QString>("terminal.connection.name");
 
-        QString type = m_Properties.get<QString>("terminal.connection.type");
-        connection.type = type.compare("modem", Qt::CaseInsensitive) ? EConnectionTypes::Unmanaged
-                                                                     : EConnectionTypes::Dialup;
+        auto type = m_Properties.get<QString>("terminal.connection.type");
+        connection.type = (type.compare("modem", Qt::CaseInsensitive) != 0)
+                              ? EConnectionTypes::Unmanaged
+                              : EConnectionTypes::Dialup;
         connection.checkInterval =
             m_Properties.get("config.terminal.connection_check_interval.<xmlattr>.value",
                              CConnection::DefaultCheckInterval);
@@ -146,8 +147,9 @@ QList<IConnection::CheckUrl> TerminalSettings::getCheckHosts() const {
             QString response = m_Properties.get(
                 QString("system.check_hosts.response%1").arg(i).toStdString(), QString());
 
-            if (url.isEmpty())
+            if (url.isEmpty()) {
                 break;
+            }
 
             hosts << IConnection::CheckUrl(url, response);
         } catch (std::exception &e) {
@@ -318,8 +320,9 @@ void TerminalSettings::setKey(const SKeySettings &aKey, bool aReplaceIfExists) {
 //---------------------------------------------------------------------------
 void TerminalSettings::cleanKeys() {
     static TPtree emptyTreeCleanKeys;
-    while (m_Properties.get_child("keys", emptyTreeCleanKeys).erase("pair") > 0)
+    while (m_Properties.get_child("keys", emptyTreeCleanKeys).erase("pair") > 0) {
         ;
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -563,10 +566,10 @@ SServiceMenuPasswords TerminalSettings::getServiceMenuPasswords() const {
                                             CServiceMenuPasswords::Collection,
                                             CServiceMenuPasswords::Technician};
 
-    for (size_t i = 0; i < passwordTypes.size(); i++) {
+    for (const auto &passwordType : passwordTypes) {
         try {
-            passwords.passwords[passwordTypes[i]] = m_Properties.get<QString>(
-                (QString("config.service_menu.") + passwordTypes[i]).toStdString());
+            passwords.passwords[passwordType] = m_Properties.get<QString>(
+                (QString("config.service_menu.") + passwordType).toStdString());
         } catch (std::exception &e) {
             toLog(LogLevel::Error, QString("Error %1.").arg(e.what()));
         }
@@ -649,7 +652,7 @@ QTime TerminalSettings::autoUpdate() const {
             m_Properties.get<QString>("config.terminal.check_update.<xmlattr>.start", ""), "hh:mm");
     }
 
-    return QTime();
+    return {};
 }
 
 //---------------------------------------------------------------------------

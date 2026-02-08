@@ -30,46 +30,46 @@ class MySqlDatabaseProxy : public IDatabaseProxy {
 
 public:
     MySqlDatabaseProxy();
-    ~MySqlDatabaseProxy();
+    virtual ~MySqlDatabaseProxy() override;
 
     /// Установить интерфейс контроля над ошибками БД
-    virtual void setQueryChecker(IDatabaseQueryChecker *aQueryChecker);
+    virtual void setQueryChecker(IDatabaseQueryChecker *aQueryChecker) override;
 
-    virtual bool open(const QString &aDatabaseName,
+    virtual bool open(const QString &dbName,
                       const QString &aUser = CMySqlDatabaseProxy::DefaultUser,
                       const QString &aPassword = CMySqlDatabaseProxy::DefaultPass,
                       const QString &aHost = CMySqlDatabaseProxy::DefaultHost,
-                      const int aPort = CMySqlDatabaseProxy::DefaultPort);
-    virtual void close();
+                      const int aPort = CMySqlDatabaseProxy::DefaultPort) override;
+    virtual void close() override;
 
-    virtual bool isConnected() const;
-    virtual const QString &getCurrentBaseName() const;
+    virtual bool isConnected() const override;
+    virtual const QString &getCurrentBaseName() const override;
 
     // Создаёт экземпляр запроса к БД.
-    virtual IDatabaseQuery *createQuery();
+    virtual IDatabaseQuery *createQuery() override;
 
     /// Создает и подготавливает экземпляр запроса к БД.
-    virtual IDatabaseQuery *createQuery(const QString &aQueryString);
+    virtual IDatabaseQuery *createQuery(const QString &aQueryString) override;
 
     /*!< Выполнение DML запроса. Помещает в rowsAffected количество затронутых строк. */
-    virtual bool execDML(const QString &strQuery, long &rowsAffected);
+    virtual bool execDML(const QString &strQuery, long &rowsAffected) override;
     /*!< Выполнение запроса, содержащего, к примеру, COUNT(*). В result записывает значение ячейки
      * (1,1). */
-    virtual bool execScalar(const QString &strQuery, long &result);
+    virtual bool execScalar(const QString &strQuery, long &result) override;
     /*!< Выполнение произвольного запроса. Если запрос успешно выполнен, то результат функции будет
      * не нулевым. */
-    virtual IDatabaseQuery *execQuery(const QString &strQuery);
+    virtual IDatabaseQuery *execQuery(const QString &strQuery) override;
 
     /*!< Пытается создать новую транзакцию. */
-    virtual bool transaction();
+    virtual bool transaction() override;
     /*!< Принимает изменения, внесённые во время последней транзакции. */
-    virtual bool commit();
+    virtual bool commit() override;
     /*!< Сбрасывает изменения, внесённые во время последней транзакции. */
-    virtual bool rollback();
+    virtual bool rollback() override;
 
 public:
     /// Проверка целостности базы
-    virtual bool checkIntegrity(QStringList &aListErrors);
+    virtual bool checkIntegrity(QStringList &aListErrors) override;
 
 protected:
     virtual bool safeExec(QSqlQuery *query, const QString &queryMessage);

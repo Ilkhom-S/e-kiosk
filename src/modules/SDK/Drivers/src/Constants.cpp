@@ -284,7 +284,7 @@ extern const char External[] = "External";
 
 // Dummy function to ensure constants are not optimized away
 void dummyReference() {
-    volatile const char *dummy;
+    volatile const char *dummy = nullptr;
     dummy = Application;
     // CComponents
     dummy = CComponents::Driver;

@@ -50,7 +50,7 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------------
 AdRequest::AdRequest(SDK::PaymentProcessor::ICore *aCore) {
-    PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
+    PPSDK::TerminalSettings *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
         aCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
     addParameter("SD", terminalSettings->getKeys()[0].sd);

@@ -67,7 +67,7 @@ Client::Client(SDK::PaymentProcessor::ICore *aCore, ILog *aLog, int aKeyPair)
     mThread.setObjectName(CClient::ThreadName);
     moveToThread(&mThread);
 
-    auto terminalSettings = static_cast<PPSDK::TerminalSettings *>(
+    auto *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
         mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
     mContentPath = terminalSettings->getAppEnvironment().adPath;
 
@@ -90,10 +90,12 @@ Client::Client(SDK::PaymentProcessor::ICore *aCore, ILog *aLog, int aKeyPair)
     mDatabaseUtils = QSharedPointer<DatabaseUtils>(new DatabaseUtils(mContentPath, getLog()));
     mHttp = QSharedPointer<RequestSender>(
         new RequestSender(mCore->getNetworkService()->getNetworkTaskManager(),
-                          static_cast<ICryptEngine *>(mCore->getCryptService()->getCryptEngine())));
+                          mCore->getCryptService()->getCryptEngine()));
 
     mHttp->setCryptKeyPair(aKeyPair);
-    mHttp->setResponseCreator(std::bind(&Client::createResponse, this, _1, _2));
+    mHttp->setResponseCreator([this](auto &&PH1, auto &&PH2) {
+        return createResponse(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+    });
 
     connect(mCore->getRemoteService(),
             SIGNAL(commandStatusChanged(int, int, QVariantMap)),
@@ -165,7 +167,7 @@ Response *Client::sendRequest(const QUrl &aUrl, Request &aRequest) {
         return response.release();
     }
 
-    return 0;
+    return nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -174,7 +176,8 @@ Response *Client::createResponse(const Request &aRequest, const QString &aRespon
 
     if (requestType == Ad::Requests::ChannelList) {
         return new AdGetChannelsResponse(aRequest, aResponseString);
-    } else if (requestType == Ad::Requests::Channel) {
+    }
+    if (requestType == Ad::Requests::Channel) {
         return new AdGetChannelResponse(aRequest, aResponseString);
     }
 
@@ -199,7 +202,7 @@ void Client::doUpdate() {
 
         QTimer::singleShot(CClient::ReinitInterval, this, SLOT(doUpdate()));
     } else {
-        mTypeList = static_cast<AdGetChannelsResponse *>(response.get())->channels();
+        mTypeList = dynamic_cast<AdGetChannelsResponse *>(response.get())->channels();
 
         QTimer::singleShot(0, this, SLOT(updateTypes()));
     }
@@ -221,13 +224,12 @@ void Client::updateTypes() {
 
             QTimer::singleShot(CClient::ReinitInterval, this, SLOT(updateTypes()));
             break;
-        } else {
-            foreach (auto campaign,
-                     static_cast<AdGetChannelResponse *>(response.get())->getCampaigns()) {
-                toLog(LogLevel::Debug, QString("Receive campaign: %1").arg(campaign.toString()));
+        }
+        foreach (auto campaign,
+                 static_cast<AdGetChannelResponse *>(response.get())->getCampaigns()) {
+            toLog(LogLevel::Debug, QString("Receive campaign: %1").arg(campaign.toString()));
 
-                mCampaigns.insert(campaign.type, campaign);
-            }
+            mCampaigns.insert(campaign.type, campaign);
         }
     }
 
@@ -259,7 +261,7 @@ void Client::download() {
     if (mTypeDownloadList.isEmpty()) {
         toLog(LogLevel::Normal, "Download nothing. All up to date.");
 
-        if (mSavedTypes) {
+        if (mSavedTypes != 0) {
             emit contentUpdated();
         }
 
@@ -280,7 +282,7 @@ void Client::download() {
                                                              QUrl(),
                                                              mCampaigns[campaignName].md5);
 
-        if (!mCurrentDownloadCommand) {
+        if (mCurrentDownloadCommand == 0) {
             toLog(LogLevel::Warning, "Failed try to start update ad. Try later.");
 
             QTimer::singleShot(CClient::ReinitInterval, this, SLOT(download()));

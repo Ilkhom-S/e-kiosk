@@ -20,7 +20,7 @@ SQLiteDatabaseProxy::SQLiteDatabaseProxy()
     : ILogable(CIDatabaseProxy::LogName), m_Mutex(), m_QueryChecker(nullptr) {}
 
 //---------------------------------------------------------------------------
-SQLiteDatabaseProxy::~SQLiteDatabaseProxy() {}
+SQLiteDatabaseProxy::~SQLiteDatabaseProxy() = default;
 
 //---------------------------------------------------------------------------
 void SQLiteDatabaseProxy::setQueryChecker(IDatabaseQueryChecker *aQueryChecker) {
@@ -37,7 +37,7 @@ bool SQLiteDatabaseProxy::open(const QString &aDbName,
 
     if (QDir::isRelativePath(m_CurrentBase)) {
         m_CurrentBase = QDir::cleanPath(BasicApplication::getInstance()->getWorkingDirectory() +
-                                       QDir::separator() + m_CurrentBase);
+                                        QDir::separator() + m_CurrentBase);
     }
 
     if (m_Db && m_Db->isOpen()) {
@@ -59,14 +59,13 @@ bool SQLiteDatabaseProxy::open(const QString &aDbName,
         toLog(LogLevel::Normal, QString("Database opened: %1.").arg(m_CurrentBase));
 
         return true;
-    } else {
-        toLog(LogLevel::Error,
-              QString("Cannot open database %1. Following error occured: %2.")
-                  .arg(m_CurrentBase)
-                  .arg(m_Db->lastError().driverText()));
-
-        return false;
     }
+    toLog(LogLevel::Error,
+          QString("Cannot open database %1. Following error occured: %2.")
+              .arg(m_CurrentBase)
+              .arg(m_Db->lastError().driverText()));
+
+    return false;
 }
 
 //---------------------------------------------------------------------------
@@ -100,7 +99,7 @@ bool SQLiteDatabaseProxy::safeExec(QSqlQuery *aQuery, const QString &aQueryMessa
     while (tryCount < CSQLiteDatabaseProxy::MaxTryCount) {
         if (!aQuery->exec(aQueryMessage)) {
             m_QueryChecker->isGood(!aQuery->lastError().isValid() ||
-                                  aQuery->lastError().type() == QSqlError::NoError);
+                                   aQuery->lastError().type() == QSqlError::NoError);
 
             toLog(LogLevel::Error,
                   QString("Can't execute query: %1. Error: %2.")
@@ -159,7 +158,7 @@ bool SQLiteDatabaseProxy::execScalar(const QString &aQuery, long &aResult) {
 
     QSqlQuery dbQuery(*m_Db);
 
-    if (safeExec(&dbQuery, aQuery) && dbQuery.first() && dbQuery.record().count()) {
+    if (safeExec(&dbQuery, aQuery) && dbQuery.first() && (dbQuery.record().count() != 0)) {
         aResult = static_cast<long>(dbQuery.value(0).toLongLong());
 
         return true;
@@ -181,7 +180,7 @@ IDatabaseQuery *SQLiteDatabaseProxy::execQuery(const QString &aQuery) {
 
     std::unique_ptr<IDatabaseQuery> dbQuery(createQuery());
 
-    QSqlQuery *dbQtQuery = dynamic_cast<QSqlQuery *>(dbQuery.get());
+    auto *dbQtQuery = dynamic_cast<QSqlQuery *>(dbQuery.get());
 
     if (safeExec(dbQtQuery, aQuery)) {
         return dbQuery.release();

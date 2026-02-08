@@ -117,39 +117,34 @@ QMap<qint64, TPaymentParameters> DatabaseUtils::getPaymentParameters(const QList
             QString("Payment %1. Failed to load main data.").arg(ids.join(",")));
 
         return result;
-    } else {
-        for (query->first(); query->isValid(); query->next()) {
-            qint64 id = query->value(13).toLongLong();
-
-            result[id] << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::ID, id)
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::CreationDate,
-                                                      query->value(0))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::LastUpdateDate,
-                                                      query->value(1))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Type,
-                                                      query->value(2))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::InitialSession,
-                                                      query->value(3))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Session,
-                                                      query->value(4))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::ServerResult,
-                                                      query->value(5))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::ServerError,
-                                                      query->value(6))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::NumberOfTries,
-                                                      query->value(7))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Provider,
-                                                      query->value(8))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Status,
-                                                      query->value(9))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Priority,
-                                                      query->value(10))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Signature,
-                                                      query->value(11))
-                       << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::ReceiptPrinted,
-                                                      query->value(12));
-        }
     }
+    for (query->first(); query->isValid(); query->next()) {
+        qint64 id = query->value(13).toLongLong();
+
+        result[id]
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::ID, id)
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::CreationDate,
+                                           query->value(0))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::LastUpdateDate,
+                                           query->value(1))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Type, query->value(2))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::InitialSession,
+                                           query->value(3))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Session, query->value(4))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::ServerResult,
+                                           query->value(5))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::ServerError,
+                                           query->value(6))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::NumberOfTries,
+                                           query->value(7))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Provider, query->value(8))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Status, query->value(9))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Priority, query->value(10))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::Signature, query->value(11))
+            << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::ReceiptPrinted,
+                                           query->value(12));
+    }
+
     query->clear();
 
     strQuery = QString("SELECT `name`, `value`, `type`, `fk_payment_id`, `external` FROM "
@@ -173,15 +168,14 @@ QMap<qint64, TPaymentParameters> DatabaseUtils::getPaymentParameters(const QList
 
         result.clear();
         return result;
-    } else {
-        for (query->first(); query->isValid(); query->next()) {
-            result[query->value(3).toLongLong()]
-                << PPSDK::IPayment::SParameter(query->value(0).toString(),
-                                               query->value(1),
-                                               false,
-                                               query->value(2).toInt() ? true : false,
-                                               query->value(4).toInt() ? true : false);
-        }
+    }
+    for (query->first(); query->isValid(); query->next()) {
+        result[query->value(3).toLongLong()]
+            << PPSDK::IPayment::SParameter(query->value(0).toString(),
+                                           query->value(1),
+                                           false,
+                                           query->value(2).toInt() ? true : false,
+                                           query->value(4).toInt() ? true : false);
     }
 
     return result;
@@ -691,7 +685,7 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
     } catch (QString &error) {
         LOG(mLog, LogLevel::Error, QString("Failed to get terminal balance: %1.").arg(error));
 
-        return PPSDK::SBalance();
+        return {};
     }
 
     return result;
@@ -787,7 +781,7 @@ void DatabaseUtils::fillEncashmentReport(PPSDK::SEncashment &aEncashment) {
         // Формируем строку с заполненными полями
         QStringList providerFields;
 
-        PPSDK::DealerSettings *settings =
+        auto *settings =
             SettingsService::instance(mApplication)->getAdapter<PPSDK::DealerSettings>();
         auto provider = settings->getProvider(
             PPSDK::IPayment::parameterByName(PPSDK::CPayment::Parameters::Provider, parameters)
@@ -857,12 +851,12 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
     if (!result.balance.isValid) {
         LOG(mLog, LogLevel::Error, "Failed to load current encashment info.");
 
-        return PPSDK::SEncashment();
+        return {};
     }
 
     if (result.balance.payments.isEmpty()) {
         LOG(mLog, LogLevel::Error, "Cannot perform encashment without payments.");
-        return PPSDK::SEncashment();
+        return {};
     }
 
     result.date = QDateTime::currentDateTime();
@@ -871,7 +865,7 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
 
     if (!transaction) {
         LOG(mLog, LogLevel::Error, "Failed to start database transaction before encashment.");
-        return PPSDK::SEncashment();
+        return {};
     }
 
     try {
@@ -892,10 +886,11 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
         }
 
         // Формируем списки купюр и монет.
-        QStringList notes, coins;
+        QStringList notes;
+        QStringList coins;
 
         foreach (auto &bal, result.balance.detailedSums) {
-            for (auto &amount : bal.amounts) {
+            for (const auto &amount : bal.amounts) {
                 auto elem = QString("%1:%2").arg(amount.value.toString()).arg(amount.count);
 
                 switch (bal.type) {
@@ -983,7 +978,7 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
     } catch (QString &error) {
         LOG(mLog, LogLevel::Error, QString("Encashment error: %1").arg(error));
 
-        return PPSDK::SEncashment();
+        return {};
     }
 
     LOG(mLog, LogLevel::Normal, "Encashment complete.");
@@ -1318,13 +1313,13 @@ bool DatabaseUtils::backupOldPayments() {
         }
     }
 
-    QString filePath = mApplication->getWorkingDirectory() + "/backup";
+    QString filePath = IApplication::getWorkingDirectory() + "/backup";
 
     QDir dir(filePath);
     if (!dir.mkpath(filePath)) {
         LOG(mLog, LogLevel::Warning, "Failed to create backup path. Using root directory.");
 
-        filePath = mApplication->getWorkingDirectory();
+        filePath = IApplication::getWorkingDirectory();
     }
 
     QFile file(filePath + QString("/payments_before_%1.xml").arg(date.toString("yyyy.MM.dd")));
@@ -1389,9 +1384,8 @@ void DatabaseUtils::removePayment(qint64 aPayment) {
         QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(aQuery));
         if (!query) {
             return false;
-        } else {
-            query->bindValue(":id", aPayment);
         }
+        query->bindValue(":id", aPayment);
 
         query->exec();
         return true;

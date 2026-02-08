@@ -5,7 +5,7 @@
 #include <windows.h>
 #endif
 
-#include <string.h>
+#include <cstring>
 
 // stl
 #include <QtCore/QDateTime>
@@ -53,12 +53,12 @@ int main(int argc, char **argv) {
         // EXCEPTION_FILTER_NO_THROW(???);
         std::cout << "Exited due to exception: " << aException.what();
 
-        if (!result) {
+        if (result == 0) {
             result = ExitCode::Error;
         }
     }
 
-    qInstallMessageHandler(0);
+    qInstallMessageHandler(nullptr);
 
     ILog::getInstance(Humo::Application)
         ->write(LogLevel::Debug, QString("Exit main() with %1 result.").arg(result));

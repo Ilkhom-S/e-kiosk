@@ -312,8 +312,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    bool testMode;
-    bool hasProcess(const QString &process);
+    bool testMode{};
+    static bool hasProcess(const QString &process);
 
     void init();
 
@@ -322,48 +322,48 @@ private:
 
     Logger *logger;
     LoggerValidator *loggerValidator;
-    LogClean *logClean;
-    SystemInfo *systemInfo;
-    ConnectionPart *connObject;
+    LogClean *logClean{};
+    SystemInfo *systemInfo{};
+    ConnectionPart *connObject{};
 
     // Devices
-    ClassPrinter *clsPrinter;
-    ClassValidator *clsValidator;
-    ClassAcceptor *clsCoinAcceptor;
-    ClassModem *clsModem;
-    WatchDogs *watchDogs;
-    SearchDevices *searchDevices;
+    ClassPrinter *clsPrinter{};
+    ClassValidator *clsValidator{};
+    ClassAcceptor *clsCoinAcceptor{};
+    ClassModem *clsModem{};
+    WatchDogs *watchDogs{};
+    SearchDevices *searchDevices{};
 
     // UI
     RegistrationForm *registrationForm;
-    AdminDialog *adminDialog;
-    SearchDevicesForm *sDevicesForm;
+    AdminDialog *adminDialog{};
+    SearchDevicesForm *sDevicesForm{};
     LoadingGprsForm *loadingGprs;
-    MainPageLoader *mainPage;
-    IncasaciyaForm *incasaciyaForm;
-    AvtorizationToAdminIn *adminAuthDialog;
-    ChangePassword *changePassword;
+    MainPageLoader *mainPage{};
+    IncasaciyaForm *incasaciyaForm{};
+    AvtorizationToAdminIn *adminAuthDialog{};
+    ChangePassword *changePassword{};
 
     // Modules
-    AuthRequest *authRequest;
-    GetServices *getServices;
-    PayDaemons *payDaemons;
-    StatusDaemons *statusDaemons;
-    CollectDaemons *collectDaemons;
-    UserDaemons *userDaemons;
-    CheckOnline *checkOnline;
-    SendReceipt *sendReceipt;
-    SendOtp *sendOtp;
-    ConfirmOtp *confirmOtp;
-    CommandConfirm *commandConfirm;
-    SendLogInfo *sendLogInfo;
-    GetBalanceAgent *getBalanceAgent;
-    JsonRequest *jsonRequest;
+    AuthRequest *authRequest{};
+    GetServices *getServices{};
+    PayDaemons *payDaemons{};
+    StatusDaemons *statusDaemons{};
+    CollectDaemons *collectDaemons{};
+    UserDaemons *userDaemons{};
+    CheckOnline *checkOnline{};
+    SendReceipt *sendReceipt{};
+    SendOtp *sendOtp{};
+    ConfirmOtp *confirmOtp{};
+    CommandConfirm *commandConfirm{};
+    SendLogInfo *sendLogInfo{};
+    GetBalanceAgent *getBalanceAgent{};
+    JsonRequest *jsonRequest{};
 
     // Timers
-    QTimer *statusValidatorTimer;
-    QTimer *statusCoinAcceptorTimer;
-    QTimer *lockerTimer;
+    QTimer *statusValidatorTimer{};
+    QTimer *statusCoinAcceptorTimer{};
+    QTimer *lockerTimer{};
     QTimer cmdTimer;
     QTimer cmdExecTimer;
     QTimer wsReconnectTimer;
@@ -374,12 +374,12 @@ private:
     QWebSocket webSocket;
 
     // Updater
-    DownloadManager *downManager;
+    DownloadManager *downManager{};
 
 private:
     QString lang;
     QString senderName;
-    QString versionFull();
+    static QString versionFull();
 
     // Database
     QSqlDatabase db;
@@ -387,15 +387,15 @@ private:
 
     // Config / settings
     Config config;
-    QString settingsPath();
+    static QString settingsPath();
     void settingsSave();
     void settingsGet();
     void settingsSet(const QString key, const QVariant value);
 
     // Browser settings
-    void loadWebSettings();
+    static void loadWebSettings();
 
-    bool getPrinterState;
+    bool getPrinterState{};
 
     QString textSms;
 
@@ -406,7 +406,7 @@ private:
     QStringList coinAcceptorList;
     QStringList printerList;
 
-    QStringList portList();
+    static QStringList portList();
 
     QMap<Lock::Data, LockItem> lockList;
     void setLockList();
@@ -414,7 +414,7 @@ private:
 
     QMap<QString, QString> serverAddress;
 
-    QString interfaceText(QString key);
+    static QString interfaceText(QString key);
 
     CommandInit::Cmd cmdExec;
     QVariantMap cmdMeta;
@@ -432,7 +432,7 @@ private:
     bool oneLoadingGprs = true;
     bool systemInfoGot = false;
 
-    bool whenRasReboot;
+    bool whenRasReboot{};
     int countGS = 0;
     int countOtherErrRas = 0;
     int countRepEntires = 0;
@@ -463,14 +463,14 @@ private:
 
     void applyAuthToModules();
 
-    QString printerStatusList();
+    QString printerStatusList() const;
 
     void deleteSearchParam();
 
     QString systemHash;
-    QString systemHashGet();
+    QString systemHashGet() const;
 
-    QStringList getWinPrinterNames();
+    static QStringList getWinPrinterNames();
 
     bool isModemConnectionUp(QString &connectionName);
 
@@ -478,8 +478,8 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void loadStyleSheet();
-    qint32 generateEncodeKey();
+    static void loadStyleSheet();
+    static qint32 generateEncodeKey();
 
     // Connection
     void connectionError();
@@ -610,7 +610,7 @@ private slots:
     void gotoPage(Page page);
     void getDataToSendStatus();
     void toSendMonitoringStatus();
-    void killSheller();
+    static void killSheller();
 
     void filesUpdated(QVariantMap files);
     void updaterLock(bool lock);

@@ -14,7 +14,7 @@ class IDatabaseQueryChecker;
 class DatabaseQuery : public IDatabaseQuery, public QSqlQuery {
 public:
     DatabaseQuery(QSqlDatabase db, IDatabaseQueryChecker *aQueryChecker);
-    virtual ~DatabaseQuery();
+    virtual ~DatabaseQuery() override;
 
     virtual bool prepare(const QString &aQuery) override;
     virtual void bindValue(const QString &aName, const QVariant &aValue) override;

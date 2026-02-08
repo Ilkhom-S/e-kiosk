@@ -30,7 +30,7 @@ public:
     /// Конструктор инициализирует имя и версию приложения и принимает
     /// аргументы командной строки (для распознавания `test` режимов и пр.)
     explicit BasicApplication(const QString &aName = QString(),
-                              const QString &aVersion = QString(),
+                              QString aVersion = QString(),
                               int aArgumentCount = 0,
                               char **aArguments = nullptr);
     virtual ~BasicApplication();
@@ -45,7 +45,7 @@ public:
     QString getFileName() const;
 
     /// Возвращает тип/версию операционной системы.
-    QString getOSVersion() const;
+    static QString getOSVersion();
 
     /// Возвращает рабочий каталог приложения (может быть задан в .ini файле).
     virtual QString getWorkingDirectory() const;
@@ -66,7 +66,8 @@ public:
     /// Runtime helpers
     bool isTestMode() const;
 
-    bool startDetachedProcess(const QString &program, const QStringList &args = QStringList());
+    static bool startDetachedProcess(const QString &program,
+                                     const QStringList &args = QStringList());
 
 protected:
     void setInstance();

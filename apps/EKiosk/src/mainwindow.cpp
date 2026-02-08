@@ -6,15 +6,13 @@
 
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::MainWindow), lang(Lang::RU), senderName("MAIN"),
+      logger(new Logger()), loggerValidator(new LoggerValidator()), registrationForm(nullptr),
+      loadingGprs(nullptr) {
     ui->setupUi(this);
 
-    lang = Lang::RU;
-    senderName = "MAIN";
-
     // Логирование данных
-    logger = new Logger();
-    loggerValidator = new LoggerValidator();
 
     billValidatorList << ValidatorModel::CashCodeCCNET << ValidatorModel::MeiEBDS;
     coinAcceptorList << AcceptorModel::CCTalk;
@@ -51,9 +49,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     // Настройки браузера
     loadWebSettings();
-
-    registrationForm = nullptr;
-    loadingGprs = nullptr;
 }
 
 MainWindow::~MainWindow() {
@@ -214,8 +209,8 @@ void MainWindow::init() {
 
         registrationForm->dialupDevice = lstDevDialup;
 
-        registrationForm->move(x() + (width() - registrationForm->width()) / 2,
-                               y() + (height() - registrationForm->height()) / 2);
+        registrationForm->move(x() + ((width() - registrationForm->width()) / 2),
+                               y() + ((height() - registrationForm->height()) / 2));
         registrationForm->showMe();
     }
 
@@ -238,7 +233,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
                    << "Загрузить Лог"
                    << "Перезагрузить купюроприемник"
                    << "Загрузить Лог на сервер"
-                   << "Отложенная инкасация";
+                   << "Отложенная инкассация";
 
     //*************************************************
     // Снят валидатор купюр
@@ -264,7 +259,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
                   << "Ошибка температуры."
                   << "Открыта крышка принтера."
                   << "Ошибка фискальной памяти."
-                  << "Ошибка позиции механима."
+                  << "Ошибка позиции механизма."
                   << "Ошибка отрезчика."
                   << "Сбой в электроника."
                   << "Заканчивается фискальная память."
@@ -639,7 +634,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
     rebootCountSet();
     QTimer::singleShot(config.timerRasReb * 60000, this, SLOT(rebootCountClear()));
 
-    QString IpServerName = config.serverAddress + "update";
+    QString ipServerName = config.serverAddress + "update";
 
     // updater
     downManager = new DownloadManager();
@@ -655,7 +650,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
     connect(downManager, SIGNAL(emit_killSheller()), SLOT(killSheller()));
 
     downManager->setDbName(dbUpdater);
-    downManager->setUrlServerIp(IpServerName);
+    downManager->setUrlServerIp(ipServerName);
     downManager->settingsPath = settingsPath();
 
     toLog(LoggerLevel::Info, senderName, "Поиск устройств...");
@@ -688,7 +683,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
             this,
             SLOT(editAdminAuthData(QString, QString)));
 
-    // Удаляем старые логи (больше 2 месяцов)
+    // Удаляем старые логи (больше 2 месяцев)
     logClean->start();
 
     // Очищаем базу данных
@@ -957,7 +952,7 @@ void MainWindow::deleteSearchParam() {
     if (sDevicesForm) {
         ui->searchDevicesLayout->removeWidget(sDevicesForm);
         delete sDevicesForm;
-        sDevicesForm = 0;
+        sDevicesForm = nullptr;
     }
 
     if (searchDevices) {
@@ -1018,12 +1013,12 @@ void MainWindow::connectionError(QString errNum, QString errComment) {
         // rebootModemEntries();
 
         /// Проверяем счетчик перезагрузок
-        int count_reboot = rebootCount();
+        int countReboot = rebootCount();
         toLog(LoggerLevel::Info,
               "MAIN",
-              QString("Количество перезагрузок по ошибке 756 - %1").arg(count_reboot));
+              QString("Количество перезагрузок по ошибке 756 - %1").arg(countReboot));
 
-        if (count_reboot < 3 && count_reboot != 99) {
+        if (countReboot < 3 && countReboot != 99) {
             toLog(LoggerLevel::Info, "MAIN", QString("Даем каманду на перезагрузку по ошибке 756"));
             whenRasReboot = true;
 
@@ -1317,7 +1312,11 @@ void MainWindow::editAdminAuthData(QString login, QString password) {
 
 void MainWindow::createDialUpConnection(QVariantMap data) {
 
-    QString conName, devName, phone, login, pass;
+    QString conName;
+    QString devName;
+    QString phone;
+    QString login;
+    QString pass;
 
     devName = data.value("device").toString();
     conName = data.value("connection").toString();
@@ -1474,7 +1473,7 @@ void MainWindow::authResponse(QString resultCode, QString login, QString token, 
     }
 }
 
-QString MainWindow::systemHashGet() {
+QString MainWindow::systemHashGet() const {
     auto disk = config.systemInfo.value("disk").toMap();
     auto mboard = config.systemInfo.value("mboard").toMap();
 
@@ -1517,18 +1516,18 @@ void MainWindow::openAdminDialog() {
     getBalanceAgentData(balance, overdraft);
 
     // Новые платежи
-    int i_count = 0;
-    payDaemons->getCountPayment(i_count);
+    int iCount = 0;
+    payDaemons->getCountPayment(iCount);
 
     data.clear();
-    data["payment_count"] = i_count;
+    data["payment_count"] = iCount;
     adminDialog->setDataToAdmin(AdminCommand::aCmdGetNewOperation, data);
 
     // Список инкасаций
     QStringList lstIncash;
     lstIncash << adminDialog->titleDataIncashment;
-    int count_inc = 0;
-    collectDaemons->getDataCollectList(lstIncash, count_inc);
+    int countInc = 0;
+    collectDaemons->getDataCollectList(lstIncash, countInc);
     data["encash_list"] = lstIncash;
     adminDialog->setDataToAdmin(AdminCommand::aCmdListAllIncash, data);
 
@@ -1651,8 +1650,9 @@ void MainWindow::openAdminDialog() {
     // Список устройств для создания Dialup подключения
     QStringList lstDevDialup;
     bool dialDev = connObject->hasInstalledModems(lstDevDialup);
-    if (!dialDev)
+    if (!dialDev) {
         toLog(LoggerLevel::Error, "CONNECTION", "На терминале нет установленных модемов...");
+    }
     adminDialog->dialupDevice = lstDevDialup;
 
     // Параметры модема
@@ -1816,13 +1816,13 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
         proc.start("taskkill", QStringList() << "/f" << "/IM" << "osk.exe");
         proc.waitForFinished(2000);
 
-        proc.startDetached("osk.exe", QStringList());
+        QProcess::startDetached("osk.exe", QStringList());
     } break;
     case AdminCommand::aCmdShowExplorer: {
-        proc.startDetached("explorer.exe", QStringList());
+        QProcess::startDetached("explorer.exe", QStringList());
         proc.waitForFinished(2000);
 
-        proc.startDetached("taskmgr.exe", QStringList());
+        QProcess::startDetached("taskmgr.exe", QStringList());
         proc.waitForFinished(2000);
 
         wsQuery("state_stop");
@@ -1830,7 +1830,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
         close();
     } break;
     case AdminCommand::aCmdHideExplorer: {
-        proc.startDetached("taskkill", QStringList() << "/f" << "/IM" << "explorer.exe");
+        QProcess::startDetached("taskkill", QStringList() << "/f" << "/IM" << "explorer.exe");
     } break;
     case AdminCommand::aCmdPrintTestCheck: {
         // если это km1x
@@ -1855,7 +1855,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
         QStringList vrmLst;
         int prtStatus = printerStatusList().toInt();
 
-        if (prtStatus) {
+        if (prtStatus != 0) {
             auto data = QVariantMap({{"message", printerStatus.at(prtStatus)}});
             adminDialog->setDataToAdmin(AdminCommand::aCmdInfrmationPanel, data);
             toLog(LoggerLevel::Error, "PRINTER", QString("Статус (%1)").arg(vrmLst.at(0)));
@@ -2034,16 +2034,16 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
 
                 clsModem->setPort(config.modemData.port);
 
-                bool nowSimPresent;
+                bool nowSimPresent = false;
                 QString signalQuality;
                 QString operatorName;
                 QString modemComment;
                 QString simNumber;
                 QString simBalance;
-                bool modem_p = false;
+                bool modemP = false;
 
                 if (clsModem->isItYou(modemComment)) {
-                    modem_p = true;
+                    modemP = true;
                     // toDebuging("--- EXIT MODEM isItYou ---");
                     nowSimPresent = clsModem->nowSimPresent;
                     signalQuality = clsModem->nowModemQuality;
@@ -2059,7 +2059,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
                 }
 
                 // Проверяем номер и баланс если есть ответ от модема
-                if (modem_p) {
+                if (modemP) {
                     clsModem->ussdRequestNumberSim = config.simNumberRequest;
                     clsModem->execCommand(ModemProtocolCommands::GetSimNumber, false);
                     simNumber = clsModem->nowNumberSim;
@@ -2429,9 +2429,9 @@ bool MainWindow::saveLockDuplicateNominal(bool lock) {
 }
 
 void MainWindow::deviceSearchResult(
-    int device, int result, QString dev_name, QString dev_comment, QString dev_port) {
+    int device, int result, QString devName, QString devComment, QString devPort) {
     if (registrationForm) {
-        registrationForm->deviceSearchResult(device, result, dev_name, dev_comment, dev_port);
+        registrationForm->deviceSearchResult(device, result, devName, devComment, devPort);
         return;
     }
 
@@ -2445,8 +2445,8 @@ void MainWindow::deviceSearchResult(
         } break;
         case SearchDev::device_found: {
             auto inf = interfaceText("validator_info_found")
-                           .replace("[v1]", QString("%1 %2").arg(dev_name, dev_comment))
-                           .replace("[v2]", dev_port);
+                           .replace("[v1]", QString("%1 %2").arg(devName, devComment))
+                           .replace("[v2]", devPort);
             sDevicesForm->setValidatorSearchText(SearchDev::device_found, inf);
             toLog(LoggerLevel::Info, senderName, inf);
         } break;
@@ -2466,8 +2466,8 @@ void MainWindow::deviceSearchResult(
         } break;
         case SearchDev::device_found: {
             auto inf = interfaceText("coin_acceptor_info_found")
-                           .replace("[v1]", QString("%1 %2").arg(dev_name, dev_comment))
-                           .replace("[v2]", dev_port);
+                           .replace("[v1]", QString("%1 %2").arg(devName, devComment))
+                           .replace("[v2]", devPort);
             sDevicesForm->setCoinAcceptorSearchText(SearchDev::device_found, inf);
             toLog(LoggerLevel::Info, senderName, inf);
         } break;
@@ -2487,8 +2487,8 @@ void MainWindow::deviceSearchResult(
         } break;
         case SearchDev::device_found: {
             auto inf = interfaceText("printer_info_found")
-                           .replace("[v1]", QString("%1 %2").arg(dev_name, dev_comment))
-                           .replace("[v2]", dev_port);
+                           .replace("[v1]", QString("%1 %2").arg(devName, devComment))
+                           .replace("[v2]", devPort);
             sDevicesForm->setPrinterSearchText(SearchDev::device_found, inf);
             toLog(LoggerLevel::Info, senderName, inf);
         } break;
@@ -2509,8 +2509,8 @@ void MainWindow::deviceSearchResult(
         } break;
         case SearchDev::device_found: {
             auto inf = interfaceText("modem_info_found")
-                           .replace("[v1]", QString("%1 %2").arg(dev_name, dev_comment))
-                           .replace("[v2]", dev_port);
+                           .replace("[v1]", QString("%1 %2").arg(devName, devComment))
+                           .replace("[v2]", devPort);
             sDevicesForm->setModemSearchText(SearchDev::device_found, inf);
             toLog(LoggerLevel::Info, senderName, inf);
         } break;
@@ -2530,8 +2530,8 @@ void MainWindow::deviceSearchResult(
         } break;
         case SearchDev::device_found: {
             auto inf = interfaceText("wd_info_found")
-                           .replace("[v1]", QString("%1 %2").arg(dev_name, dev_comment))
-                           .replace("[v2]", dev_port);
+                           .replace("[v1]", QString("%1 %2").arg(devName, devComment))
+                           .replace("[v2]", devPort);
             sDevicesForm->setWDSearchText(SearchDev::device_found, inf);
             toLog(LoggerLevel::Info, senderName, inf);
         } break;
@@ -2664,7 +2664,7 @@ void MainWindow::devicesInitialization() {
         // Заблокируем интерфейс
         lockUnlockCenter(Lock::ErrorValidator, true);
 
-        QTimer::singleShot(10000, this, [=] {
+        QTimer::singleShot(10000, this, [this] {
             clsValidator->firmwareVersion = "";
             clsValidator->execCommand(ValidatorCommands::FirmwareUpdate);
         });
@@ -2798,7 +2798,7 @@ QString MainWindow::getWinprinterFromDB() {
     QString strSelect = QString("SELECT * FROM terminal_devices WHERE id = 2");
 
     if (!select.exec(strSelect)) {
-        return QString();
+        return {};
     }
 
     QSqlRecord record = select.record();
@@ -2824,7 +2824,7 @@ void MainWindow::toPrintText(QString text) {
 void MainWindow::statusPrinter(int status) {
     config.printerData.state = status;
 
-    if (status == PrinterState::PrinterOK || status & PrinterState::PaperNearEnd) {
+    if (status == PrinterState::PrinterOK || ((status & PrinterState::PaperNearEnd) != 0)) {
 
         mainPage->printerStatus = true;
 
@@ -2844,52 +2844,73 @@ void MainWindow::statusPrinter(int status) {
     }
 }
 
-QString MainWindow::printerStatusList() {
+QString MainWindow::printerStatusList() const {
     QStringList status;
-    if (config.printerData.state & PrinterState::PaperNearEnd)
+    if ((config.printerData.state & PrinterState::PaperNearEnd) != 0) {
         status << PrinterState::Param::PaperNearEnd;
-    if (config.printerData.state & PrinterState::ControlPaperEnd)
+    }
+    if ((config.printerData.state & PrinterState::ControlPaperEnd) != 0) {
         status << PrinterState::Param::ControlPaperEnd;
-    if (config.printerData.state & PrinterState::CoverIsOpened)
+    }
+    if ((config.printerData.state & PrinterState::CoverIsOpened) != 0) {
         status << PrinterState::Param::CoverIsOpened;
-    if (config.printerData.state & PrinterState::CutterError)
+    }
+    if ((config.printerData.state & PrinterState::CutterError) != 0) {
         status << PrinterState::Param::CutterError;
-    if (config.printerData.state & PrinterState::EKLZError)
+    }
+    if ((config.printerData.state & PrinterState::EKLZError) != 0) {
         status << PrinterState::Param::EKLZError;
-    if (config.printerData.state & PrinterState::EKLZNearEnd)
+    }
+    if ((config.printerData.state & PrinterState::EKLZNearEnd) != 0) {
         status << PrinterState::Param::EKLZNearEnd;
-    if (config.printerData.state & PrinterState::ElectronicError)
+    }
+    if ((config.printerData.state & PrinterState::ElectronicError) != 0) {
         status << PrinterState::Param::ElectronicError;
-    if (config.printerData.state & PrinterState::FiscalMemoryError)
+    }
+    if ((config.printerData.state & PrinterState::FiscalMemoryError) != 0) {
         status << PrinterState::Param::FiscalMemoryError;
-    if (config.printerData.state & PrinterState::FiscalMemoryNearEnd)
+    }
+    if ((config.printerData.state & PrinterState::FiscalMemoryNearEnd) != 0) {
         status << PrinterState::Param::FiscalMemoryNearEnd;
-    if (config.printerData.state & PrinterState::MechanismPositionError)
+    }
+    if ((config.printerData.state & PrinterState::MechanismPositionError) != 0) {
         status << PrinterState::Param::MechanismPositionError;
+    }
     //    if(config.printerData.state & PrinterState::NoStatus)
     //        status << PrinterState::Param::NoStatus;
-    if (config.printerData.state & PrinterState::PaperEnd)
+    if ((config.printerData.state & PrinterState::PaperEnd) != 0) {
         status << PrinterState::Param::PaperEnd;
-    if (config.printerData.state & PrinterState::PaperJam)
+    }
+    if ((config.printerData.state & PrinterState::PaperJam) != 0) {
         status << PrinterState::Param::PaperJam;
-    if (config.printerData.state & PrinterState::PortError)
+    }
+    if ((config.printerData.state & PrinterState::PortError) != 0) {
         status << PrinterState::Param::PortError;
-    if (config.printerData.state & PrinterState::PowerSupplyError)
+    }
+    if ((config.printerData.state & PrinterState::PowerSupplyError) != 0) {
         status << PrinterState::Param::PowerSupplyError;
-    if (config.printerData.state & PrinterState::PrinterError)
+    }
+    if ((config.printerData.state & PrinterState::PrinterError) != 0) {
         status << PrinterState::Param::PrinterError;
-    if (config.printerData.state & PrinterState::PrinterNotAvailable)
+    }
+    if ((config.printerData.state & PrinterState::PrinterNotAvailable) != 0) {
         status << PrinterState::Param::PrinterNotAvailable;
-    if (config.printerData.state & PrinterState::PrinterOK)
+    }
+    if ((config.printerData.state & PrinterState::PrinterOK) != 0) {
         status << PrinterState::Param::PrinterOK;
-    if (config.printerData.state & PrinterState::PrintingHeadError)
+    }
+    if ((config.printerData.state & PrinterState::PrintingHeadError) != 0) {
         status << PrinterState::Param::PrintingHeadError;
-    if (config.printerData.state & PrinterState::TemperatureError)
+    }
+    if ((config.printerData.state & PrinterState::TemperatureError) != 0) {
         status << PrinterState::Param::TemperatureError;
-    if (config.printerData.state & PrinterState::UnknownCommand)
+    }
+    if ((config.printerData.state & PrinterState::UnknownCommand) != 0) {
         status << PrinterState::Param::UnknownCommand;
-    if (config.printerData.state & PrinterState::UnknownError)
+    }
+    if ((config.printerData.state & PrinterState::UnknownError) != 0) {
         status << PrinterState::Param::UnknownError;
+    }
 
     // toDebuging("status.count() - " + count);
 
@@ -3072,16 +3093,16 @@ void MainWindow::openValidatorBox() {
     QString nonCollectPay = "0";
     int moneyOutCount = 0;
     double moneyOutSum = 0;
-    QString c_id = "";
-    QString c_trn = "";
+    QString cId = "";
+    QString cTrn = "";
     QString trnFrom = "";
     QString trnTo = "";
     QString htmlCenter = collectDaemons->getHtmlInfoBox(
-        nonCollectPay, moneyOutCount, moneyOutSum, "", c_id, c_trn, trnFrom, trnTo);
+        nonCollectPay, moneyOutCount, moneyOutSum, "", cId, cTrn, trnFrom, trnTo);
 
     // Количество новых платежей
-    int count_new = 0;
-    payDaemons->getCountPayment(count_new);
+    int countNew = 0;
+    payDaemons->getCountPayment(countNew);
 
     // Делаем небольшой html
     QString header =
@@ -3090,7 +3111,7 @@ void MainWindow::openValidatorBox() {
                 nonCollectPay +
                 "</li>"
                 "<li>Новых платежей             - " +
-                QString::number(count_new) +
+                QString::number(countNew) +
                 "</li>"
                 "<li>Количество купюр мимо      - " +
                 QString::number(moneyOutCount) + " на сумму - " + QString::number(moneyOutSum) +
@@ -3286,7 +3307,10 @@ void MainWindow::commandCheck() {
         return;
     }
 
-    QString trn, account, comment, status;
+    QString trn;
+    QString account;
+    QString comment;
+    QString status;
     int cmd = 0;
 
     getActiveCommand(trn, cmd, account, comment, status);
@@ -3369,11 +3393,7 @@ bool MainWindow::commandStatusUpdate(QString trn, QString status) {
     strUpdateCollect =
         QString("UPDATE terminal_commands SET status='%2' WHERE trn = '%1'").arg(trn, status);
 
-    if (!updateCollect.exec(strUpdateCollect)) {
-        return false;
-    }
-
-    return true;
+    return updateCollect.exec(strUpdateCollect);
 }
 
 void MainWindow::commandExecute() {
@@ -3465,7 +3485,7 @@ void MainWindow::commandExecution(CommandInit::Cmd cmd, QVariantMap meta) {
         toLog(LoggerLevel::Info, "MAIN", log);
 
         QString text;
-        QString cid = comment;
+        const QString &cid = comment;
 
         collectDaemons->getCheckText(text, false, "", cid);
     } break;
@@ -3572,7 +3592,7 @@ void MainWindow::errorDBLock() {
 }
 
 void MainWindow::avtorizationLockUnlock(bool lock, int sts) {
-    if (sts) {
+    if (sts != 0) {
         // Есть какойто статус
         Lock::Data lockType = Lock::Ok;
 
@@ -3918,7 +3938,7 @@ QVariantList MainWindow::getServicesInputsFromDB() {
         return inputs;
     }
 
-    return QVariantList();
+    return {};
 }
 
 QVariantList MainWindow::getServicesFieldsFromDB() {
@@ -3945,7 +3965,7 @@ QVariantList MainWindow::getServicesFieldsFromDB() {
         return fields;
     }
 
-    return QVariantList();
+    return {};
 }
 
 QVariantList MainWindow::getServicesFromDB() {
@@ -4012,7 +4032,7 @@ QVariantList MainWindow::getServicesFromDB() {
         return services;
     }
 
-    return QVariantList();
+    return {};
 }
 
 QVariantList MainWindow::getCategoriesFromDB() {
@@ -4041,18 +4061,14 @@ QVariantList MainWindow::getCategoriesFromDB() {
         return categories;
     }
 
-    return QVariantList();
+    return {};
 }
 
 bool MainWindow::updateHashConfig(QString hash) {
     QSqlQuery sqlQuery(db);
     QString strUpdate = QString("UPDATE terminal_extra SET hash = \"%1\" WHERE id = 1").arg(hash);
 
-    if (!sqlQuery.exec(strUpdate)) {
-        return false;
-    }
-
-    return true;
+    return sqlQuery.exec(strUpdate);
 }
 
 void MainWindow::createSmsSendTable() {
@@ -4245,11 +4261,7 @@ bool MainWindow::updateBillValidatorEvent(QString status) {
                                                "status='%2' WHERE date_time = '%1'")
                                            .arg(dateTime, status);
 
-            if (!updateCollect.exec(strUpdateCollect)) {
-                return false;
-            }
-
-            return true;
+            return updateCollect.exec(strUpdateCollect);
         }
     }
 
@@ -4539,7 +4551,7 @@ QVariantMap MainWindow::nominalData() {
     QFile file(QString("%1/%2/nominals.json").arg(ConstData::Path::Nominals, config.tpl));
 
     if (!file.open(QIODevice::ReadOnly)) {
-        return QVariantMap();
+        return {};
     }
 
     auto json = QJsonDocument::fromJson(file.readAll());
@@ -4599,7 +4611,7 @@ void MainWindow::updaterLock(bool lock) {
 
 void MainWindow::killSheller() {
     QProcess proc;
-    proc.startDetached("taskkill", QStringList() << "/f" << "/IM" << sheller);
+    QProcess::startDetached("taskkill", QStringList() << "/f" << "/IM" << sheller);
 }
 
 bool MainWindow::hasProcess(const QString &process) {
@@ -4640,15 +4652,15 @@ QString MainWindow::versionFull() {
 
 qint32 MainWindow::generateEncodeKey() {
     QString vrmCodeData = "YTBnMFdXUjRXV3BM";
-    QByteArray vrm_CodeData = QByteArray::fromBase64(vrmCodeData.toLatin1());
+    QByteArray vrmCodeData = QByteArray::fromBase64(vrmCodeData.toLatin1());
     vrmCodeData = "";
-    vrmCodeData.append(vrm_CodeData);
-    vrm_CodeData.clear();
-    vrm_CodeData = QByteArray::fromBase64(vrmCodeData.toLatin1());
-    QString vrm_strCodeData;
-    vrm_strCodeData.append(vrm_CodeData);
+    vrmCodeData.append(vrmCodeData);
+    vrmCodeData.clear();
+    vrmCodeData = QByteArray::fromBase64(vrmCodeData.toLatin1());
+    QString vrmStrCodeData;
+    vrmStrCodeData.append(vrmCodeData);
 
-    return vrm_strCodeData.toInt();
+    return vrmStrCodeData.toInt();
 }
 
 #ifdef Q_OS_WIN32
@@ -4686,7 +4698,7 @@ QStringList MainWindow::getWinPrinterNames() {
 #else
 QStringList MainWindow::getWinPrinterNames() {
     // Windows printer enumeration not available on this platform
-    return QStringList();
+    return {};
 }
 #endif // Q_OS_WIN32
 
@@ -4699,9 +4711,9 @@ void MainWindow::loadWebSettings() {
     // For font settings, we can store them for reference but QtWebEngine will use
     // system defaults
 
-    QFont standardFont =
+    auto standardFont =
         qvariant_cast<QFont>(settings.value(QLatin1String("standardFont"), QFont()));
-    QFont fixedFont = qvariant_cast<QFont>(settings.value(QLatin1String("fixedFont"), QFont()));
+    auto fixedFont = qvariant_cast<QFont>(settings.value(QLatin1String("fixedFont"), QFont()));
 
     // Note: In QtWebEngine, font configuration is done through CSS/webpage
     // preferences These font settings from Qt4 era are stored but may need to be

@@ -74,7 +74,7 @@ DatabaseUtils::DatabaseUtils(const QString &aWorkingDirectory, ILog *aLog) : ILo
 }
 
 //------------------------------------------------------------------------
-DatabaseUtils::~DatabaseUtils() {}
+DatabaseUtils::~DatabaseUtils() = default;
 
 //------------------------------------------------------------------------
 bool DatabaseUtils::addStatisticRecord(qint64 aId, const QString &aChannel) {

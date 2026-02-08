@@ -54,7 +54,7 @@ private slots:
     // Для обработки сигналов цифровой клавиатуры
     void onBackspaceClicked();
     void onClearClicked();
-    void onDigitClicked();
+    static void onDigitClicked();
 
     void onIdleTimeout();
     void onDateTimeRefresh();

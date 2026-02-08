@@ -65,9 +65,9 @@ void API::enable() {
 }
 
 //---------------------------------------------------------------------------
-QSharedPointer<API> API::getInstance(ILog *aLog,
-                                     SDK::PaymentProcessor::ICore *aCore,
-                                     quint16 aPort /*= CUniteller::DefaultPort*/) {
+static QSharedPointer<API> API::getInstance(ILog *aLog,
+                                            SDK::PaymentProcessor::ICore *aCore,
+                                            quint16 aPort /*= CUniteller::DefaultPort*/) {
     static QSharedPointer<API> gApi = QSharedPointer<API>(new API(aLog, aCore, aPort));
 
     return gApi;
@@ -167,7 +167,7 @@ void API::getState() {
 }
 
 //---------------------------------------------------------------------------
-void API::doConnect() {
+void API::doConnect() const {
     if (mEnabled) {
         mSocket.connectToHost(QHostAddress::LocalHost, mPort);
     }
@@ -192,14 +192,14 @@ void API::onDisconnected() {
 }
 
 //---------------------------------------------------------------------------
-void API::timerEvent(QTimerEvent *) {
+void API::timerEvent(QTimerEvent * /*unused*/) {
     if (mEnabled && !mLoggedIn) {
         login();
     }
 }
 
 //---------------------------------------------------------------------------
-void API::onError(QAbstractSocket::SocketError) {
+void API::onError(QAbstractSocket::SocketError /*unused*/) {
     QString e = mSocket.errorString();
     if (mLastErrorString != e) {
         mLastErrorString = e;
@@ -433,7 +433,7 @@ void API::onReadyRead() {
 }
 
 //---------------------------------------------------------------------------
-QByteArray API::makeRequest(char aClass, char aCode, const QByteArray &aData) {
+static QByteArray API::makeRequest(char aClass, char aCode, const QByteArray &aData) {
     QByteArray request;
 
     request.append(aClass);

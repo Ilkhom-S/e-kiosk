@@ -11,14 +11,14 @@
 
 #include "DatabaseQuery.h"
 
-MySqlDatabaseProxy::MySqlDatabaseProxy() : m_Mutex(), m_Db(nullptr), m_QueryChecker(nullptr) {
-    m_Log = ILog::getInstance(CMySqlDatabaseProxy::DefaultLog);
-}
+MySqlDatabaseProxy::MySqlDatabaseProxy()
+    : m_Mutex(), m_Db(nullptr), m_Log(ILog::getInstance(CMySqlDatabaseProxy::DefaultLog)),
+      m_QueryChecker(nullptr) {}
 
 //---------------------------------------------------------------------------
 MySqlDatabaseProxy::~MySqlDatabaseProxy() {
     delete m_Db;
-    m_Db = NULL;
+    m_Db = nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -34,7 +34,7 @@ bool MySqlDatabaseProxy::open(const QString &dbName,
                               const int aPort) {
     try {
         m_Db = new QSqlDatabase(QSqlDatabase::addDatabase(CMySqlDatabaseProxy::DriverName,
-                                                         CMySqlDatabaseProxy::ConnectionName));
+                                                          CMySqlDatabaseProxy::ConnectionName));
 
         m_CurrentBase = dbName;
 
@@ -49,11 +49,11 @@ bool MySqlDatabaseProxy::open(const QString &dbName,
         if (openResult) {
             LOG(m_Log, LogLevel::Normal, QString("Database has been opened: %1.").arg(dbName));
             return true;
-        } else {
-            LOG(m_Log,
-                LogLevel::Error,
-                QString("Following error occured: %1.").arg(m_Db->lastError().driverText()));
         }
+        LOG(m_Log,
+            LogLevel::Error,
+            QString("Following error occured: %1.").arg(m_Db->lastError().driverText()));
+
     } catch (...) {
         EXCEPTION_FILTER(m_Log);
     }
@@ -74,7 +74,7 @@ void MySqlDatabaseProxy::close() {
     }
 
     delete m_Db;
-    m_Db = NULL;
+    m_Db = nullptr;
 
     QSqlDatabase::removeDatabase(CMySqlDatabaseProxy::ConnectionName);
 
@@ -139,8 +139,9 @@ bool MySqlDatabaseProxy::execScalar(const QString &strQuery, long &result) {
 
     bool execResult = safeExec(&dbQuery, strQuery);
 
-    if (dbQuery.first())
+    if (dbQuery.first()) {
         result = static_cast<long>(dbQuery.value(0).toLongLong());
+    }
 
     return execResult;
 }
@@ -153,7 +154,7 @@ IDatabaseQuery *MySqlDatabaseProxy::execQuery(const QString &strQuery) {
 
     std::unique_ptr<IDatabaseQuery> dbQuery(new DatabaseQuery(*m_Db, m_QueryChecker));
 
-    QSqlQuery *dbQtQuery = dynamic_cast<QSqlQuery *>(dbQuery.get());
+    auto *dbQtQuery = dynamic_cast<QSqlQuery *>(dbQuery.get());
 
     return safeExec(dbQtQuery, strQuery) ? dbQuery.release() : nullptr;
 }

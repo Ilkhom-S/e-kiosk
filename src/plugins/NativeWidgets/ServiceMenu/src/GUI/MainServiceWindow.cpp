@@ -114,7 +114,7 @@ void MainServiceWindow::shutdown() {
         twServiceScreens, SIGNAL(currentChanged(int)), this, SLOT(onCurrentPageChanged(int)));
 
     IServiceWindow *current =
-        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(mCurrentPageIndex));
+        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(mCurrentPageIndex)) = nullptr;
     if (current) {
         current->deactivate();
     }
@@ -154,7 +154,7 @@ bool MainServiceWindow::applyAccessRights() {
         mServiceWindowList << aServiceWindow;
 
         if (aServiceWindow->initialize()) {
-            QWidget *window = dynamic_cast<QWidget *>(aServiceWindow);
+            auto *window = dynamic_cast<QWidget *>(aServiceWindow);
 
             connectAllAbstractButtons(window);
             twServiceScreens->addTab(window, aTitle);
@@ -227,7 +227,7 @@ void MainServiceWindow::connectAllAbstractButtons(QWidget *aParentWidget) {
 //------------------------------------------------------------------------
 void MainServiceWindow::onCurrentPageChanged(int aIndex) {
     IServiceWindow *prev =
-        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(mCurrentPageIndex));
+        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(mCurrentPageIndex)) = nullptr;
 
     if (prev) {
         if (!prev->deactivate()) {
@@ -240,7 +240,8 @@ void MainServiceWindow::onCurrentPageChanged(int aIndex) {
         }
     }
 
-    IServiceWindow *next = dynamic_cast<IServiceWindow *>(twServiceScreens->widget(aIndex));
+    IServiceWindow *next = dynamic_cast<IServiceWindow *>(twServiceScreens->widget(aIndex)) =
+        nullptr;
 
     if (next) {
         next->activate();
@@ -248,7 +249,7 @@ void MainServiceWindow::onCurrentPageChanged(int aIndex) {
 
     mCurrentPageIndex = aIndex;
 
-    QWidget *currentPage = twServiceScreens->widget(mCurrentPageIndex);
+    QWidget *currentPage = twServiceScreens->widget(mCurrentPageIndex) = nullptr;
     if (currentPage) {
         mBackend->toLog(QString("Page activated: %1.").arg(currentPage->objectName()));
     }
@@ -342,7 +343,7 @@ void MainServiceWindow::onRebootTerminal() {
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onToggleLock() {
-    bool isLocked = mTerminalInfo[CServiceTags::TerminalLocked].toBool();
+    bool isLocked = mTerminalInfo[CServiceTags::TerminalLocked].toBool() = false;
     if (closeServiceMenu(
             false, isLocked ? tr("#question_unblock_terminal") : tr("#question_block_terminal"))) {
         mBackend->sendEvent(isLocked ? SDK::PaymentProcessor::EEventType::TerminalUnlock
@@ -370,9 +371,9 @@ bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
         }
     }
 
-    if (GUI::MessageBox::question(aMessage)) {
+    if (GUI::MessageBox::question(aMessage) != 0) {
         IServiceWindow *window =
-            dynamic_cast<IServiceWindow *>(twServiceScreens->widget(mCurrentPageIndex));
+            dynamic_cast<IServiceWindow *>(twServiceScreens->widget(mCurrentPageIndex)) = nullptr;
         if (window) {
             window->deactivate();
         }
@@ -380,7 +381,8 @@ bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
         lastExitQuestionTime = QTime::currentTime();
         closeMenu(aStartIdle);
         return true;
-    } else if (aExitByNotify) {
+    }
+    if (aExitByNotify) {
         lastExitQuestionTime = QTime::currentTime();
     }
 
