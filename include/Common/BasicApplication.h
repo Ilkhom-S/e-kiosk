@@ -105,10 +105,10 @@ public:
     virtual ~BasicQtApplication() override = default;
 
     /// Запускает цикл обработки событий.
-    int exec() { return mQtApplication.exec(); }
+    int exec() { return m_QtApplication.exec(); }
 
     /// Возвращает аргументы командной строки.
-    QStringList getArguments() const { return mQtApplication.arguments(); }
+    QStringList getArguments() const { return m_QtApplication.arguments(); }
 
     /// Возвращает экземпляр Qt приложения.
     TApplication &getQtApplication() { return m_QtApplication; }
