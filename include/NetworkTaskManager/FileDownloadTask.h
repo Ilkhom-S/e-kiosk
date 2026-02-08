@@ -23,8 +23,8 @@ public slots:
     void resetFile();
 
 protected:
-    QUrl mUrl;
-    QString mPath;
+    QUrl m_Url;
+    QString m_Path;
 };
 
 //------------------------------------------------------------------------

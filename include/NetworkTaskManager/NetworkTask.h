@@ -128,19 +128,19 @@ protected:
     void clearErrors();
 
 private:
-    bool mProcessing;
-    QMutex mProcessingMutex;
-    QWaitCondition mProcessingCondition;
-    QTimer mTimer;
+    bool m_Processing;
+    QMutex m_ProcessingMutex;
+    QWaitCondition m_ProcessingCondition;
+    QTimer m_Timer;
     NetworkTaskManager *mManager;
-    Type mType;
-    QUrl mUrl;
-    Flags mFlags;
-    int mTimeout;
-    int mError;
-    int mHttpError;
-    QString mNetworkReplyError;
-    QSharedPointer<IVerifier> mVerifier;
+    Type m_Type;
+    QUrl m_Url;
+    Flags m_Flags;
+    int m_Timeout;
+    int m_Error;
+    int m_HttpError;
+    QString m_NetworkReplyError;
+    QSharedPointer<IVerifier> m_Verifier;
     QSharedPointer<DataStream> mDataStream;
     TByteMap mRequestHeader;
     TByteMap mResponseHeader;

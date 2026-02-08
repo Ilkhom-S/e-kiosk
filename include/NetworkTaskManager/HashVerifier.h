@@ -26,12 +26,12 @@ public:
 
     virtual bool verify(NetworkTask *aTask, const QByteArray &aData);
 
-    QString referenceHash() const { return mMD5; }
-    QString calculatedHash() const { return mCalculatedMD5; }
+    QString referenceHash() const { return m_MD5; }
+    QString calculatedHash() const { return m_CalculatedMD5; }
 
 private:
-    QString mMD5;
-    QString mCalculatedMD5;
+    QString m_MD5;
+    QString m_CalculatedMD5;
 };
 
 //------------------------------------------------------------------------
@@ -41,12 +41,12 @@ public:
 
     virtual bool verify(NetworkTask *aTask, const QByteArray &aData);
 
-    QString referenceHash() const { return mSha256; }
-    QString calculatedHash() const { return mCalculatedSha256; }
+    QString referenceHash() const { return m_Sha256; }
+    QString calculatedHash() const { return m_CalculatedSha256; }
 
 private:
-    QString mSha256;
-    QString mCalculatedSha256;
+    QString m_Sha256;
+    QString m_CalculatedSha256;
 };
 
 //------------------------------------------------------------------------

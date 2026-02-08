@@ -94,9 +94,9 @@ signals:
 private:
     typedef QMap<QNetworkReply *, QPointer<NetworkTask>> TTaskMap;
 
-    TTaskMap mTasks;
-    QSharedPointer<QNetworkAccessManager> mNetwork;
-    QString mUserAgent;
+    TTaskMap m_Tasks;
+    QSharedPointer<QNetworkAccessManager> m_Network;
+    QString m_UserAgent;
     void loadCerts();
 };
 
