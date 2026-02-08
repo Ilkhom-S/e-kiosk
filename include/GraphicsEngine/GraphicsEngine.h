@@ -92,7 +92,7 @@ private:
     }
 
 private:
-    QPoint mMousePos;
+    QPoint m_MousePos;
 };
 
 } // namespace
@@ -248,28 +248,28 @@ private: // Данные
     QQuickWindow *mQuickView;
 
     // Список каталогов с контентом.
-    QStringList mContentDirectories;
+    QStringList m_ContentDirectories;
 
-    QStringList mHandledKeyList;
+    QStringList m_HandledKeyList;
 
     // Список доступных бэкэндов.
     QMap<QString, SDK::GUI::IGraphicsBackend *> mBackends;
 
     // Список доступных виджетов.
-    TWidgetList mWidgets;
+    TWidgetList m_Widgets;
 
-    QQmlEngine mEngine;
+    QQmlEngine m_Engine;
 
     // Текущий виджет.
     TWidgetList::Iterator mTopWidget;
     // Popup виджет
     TWidgetList::Iterator mPopupWidget;
 
-    bool mShowingModal;
-    ModalBackgroundWidget mModalBackgroundWidget;
-    DebugWidget mDebugWidget;
-    QVariantMap mModalResult;
-    bool mIsVirtualKeyboardVisible;
+    bool m_ShowingModal;
+    ModalBackgroundWidget m_ModalBackgroundWidget;
+    DebugWidget m_DebugWidget;
+    QVariantMap m_ModalResult;
+    bool m_IsVirtualKeyboardVisible;
 };
 
 } // namespace GUI
