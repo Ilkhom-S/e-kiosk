@@ -182,7 +182,7 @@ bool SettingsManager::saveSettings() {
         } else {
             result = false;
             toLog(LogLevel::Error,
-                  QString("Unable to save cofiguration file %1: unsupported file extension.")
+                  QString("Unable to save configuration file %1: unsupported file extension.")
                       .arg(source.configFileName));
             continue;
         }
