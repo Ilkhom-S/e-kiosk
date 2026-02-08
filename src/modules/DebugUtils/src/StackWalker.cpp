@@ -169,8 +169,8 @@ public:
         mParent = parent;
         mHDbhHelp = NULL;
         pSC = NULL;
-        mHProcess = hProcess;
-        mSzSymPath = NULL;
+        m_HProcess = hProcess;
+        m_SzSymPath = NULL;
         pSFTA = NULL;
         pSGLFA = NULL;
         pSGMB = NULL;
@@ -186,14 +186,14 @@ public:
     }
     ~StackWalkerInternal() {
         if (pSC != NULL)
-            pSC(mHProcess); // SymCleanup
+            pSC(m_HProcess); // SymCleanup
         if (mHDbhHelp != NULL)
             FreeLibrary(mHDbhHelp);
         mHDbhHelp = NULL;
         mParent = NULL;
-        if (mSzSymPath != NULL)
-            free(mSzSymPath);
-        mSzSymPath = NULL;
+        if (m_SzSymPath != NULL)
+            free(m_SzSymPath);
+        m_SzSymPath = NULL;
     }
     BOOL Init(LPCSTR szSymPath) {
         if (mParent == NULL)
@@ -256,26 +256,26 @@ public:
 
         // SymInitialize
         if (szSymPath != NULL)
-            mSzSymPath = _strdup(szSymPath);
-        if (this->pSI(mHProcess, mSzSymPath, FALSE) == FALSE)
+            m_SzSymPath = _strdup(szSymPath);
+        if (this->pSI(m_HProcess, m_SzSymPath, FALSE) == FALSE)
             this->m_parent->OnDbgHelpErr("SymInitialize", GetLastError(), 0);
 
-        DWORD symOptions = this->pSGO(); // SymGetOptions
-        symOptions |= SYMOPT_LOAD_LINES;
-        symOptions |= SYMOPT_FAIL_CRITICAL_ERRORS;
-        // symOptions |= SYMOPT_NO_PROMPTS;
+        DWORD sym_Options = this->pSGO(); // SymGetOptions
+        sym_Options |= SYMOPT_LOAD_LINES;
+        sym_Options |= SYMOPT_FAIL_CRITICAL_ERRORS;
+        // sym_Options |= SYMOPT_NO_PROMPTS;
         //  SymSetOptions
-        symOptions = this->pSSO(symOptions);
+        sym_Options = this->pSSO(sym_Options);
 
         char buf[StackWalker::STACKWALK_MAX_NAMELEN] = {0};
         if (this->pSGSP != NULL) {
-            if (this->pSGSP(mHProcess, buf, StackWalker::STACKWALK_MAX_NAMELEN) == FALSE)
+            if (this->pSGSP(m_HProcess, buf, StackWalker::STACKWALK_MAX_NAMELEN) == FALSE)
                 this->m_parent->OnDbgHelpErr("SymGetSearchPath", GetLastError(), 0);
         }
         char szUserName[1024] = {0};
         DWORD dwSize = 1024;
         GetUserNameA(szUserName, &dwSize);
-        this->m_parent->OnSymInit(buf, symOptions, szUserName);
+        this->m_parent->OnSymInit(buf, sym_Options, szUserName);
 
         return TRUE;
     }
@@ -383,7 +383,7 @@ public:
     tSLM pSLM;
 
     // SymSetOptions()
-    typedef DWORD(__stdcall *tSSO)(IN DWORD SymOptions);
+    typedef DWORD(__stdcall *tSSO)(IN DWORD Sym_Options);
     tSSO pSSO;
 
     // StackWalk64()
@@ -597,7 +597,7 @@ private:
         ULONGLONG fileVersion = 0;
         if ((m_parent != NULL) && (szImg != NULL)) {
             // try to retrive the file-version:
-            if ((this->mParent->mOptions & StackWalker::RetrieveFileVersion) != 0) {
+            if ((this->mParent->m_Options & StackWalker::RetrieveFileVersion) != 0) {
                 VS_FIXEDFILEINFO *fInfo = NULL;
                 DWORD dwHandle;
                 DWORD dwSize = GetFileVersionInfoSizeA(szImg, &dwHandle);
@@ -713,46 +713,46 @@ public:
 
 // #############################################################
 StackWalker::StackWalker(DWORD dwProcessId, HANDLE hProcess) {
-    this->mOptions = OptionsAll;
-    this->mModulesLoaded = FALSE;
-    this->mHProcess = hProcess;
-    this->mSw = new StackWalkerInternal(this, this->mHProcess);
-    this->mDwProcessId = dwProcessId;
-    this->mSzSymPath = NULL;
+    this->m_Options = OptionsAll;
+    this->m_ModulesLoaded = FALSE;
+    this->m_HProcess = hProcess;
+    this->m_Sw = new StackWalkerInternal(this, this->m_HProcess);
+    this->m_DwProcessId = dwProcessId;
+    this->m_SzSymPath = NULL;
 }
 StackWalker::StackWalker(int options, LPCSTR szSymPath, DWORD dwProcessId, HANDLE hProcess) {
-    this->mOptions = options;
-    this->mModulesLoaded = FALSE;
-    this->mHProcess = hProcess;
-    this->mSw = new StackWalkerInternal(this, this->mHProcess);
-    this->mDwProcessId = dwProcessId;
+    this->m_Options = options;
+    this->m_ModulesLoaded = FALSE;
+    this->m_HProcess = hProcess;
+    this->m_Sw = new StackWalkerInternal(this, this->m_HProcess);
+    this->m_DwProcessId = dwProcessId;
     if (szSymPath != NULL) {
-        this->mSzSymPath = _strdup(szSymPath);
-        this->mOptions |= SymBuildPath;
+        this->m_SzSymPath = _strdup(szSymPath);
+        this->m_Options |= SymBuildPath;
     } else
-        this->mSzSymPath = NULL;
+        this->m_SzSymPath = NULL;
 }
 
 StackWalker::~StackWalker() {
-    if (mSzSymPath != NULL)
-        free(mSzSymPath);
-    mSzSymPath = NULL;
-    if (this->mSw != NULL)
-        delete this->mSw;
-    this->mSw = NULL;
+    if (m_SzSymPath != NULL)
+        free(m_SzSymPath);
+    m_SzSymPath = NULL;
+    if (this->m_Sw != NULL)
+        delete this->m_Sw;
+    this->m_Sw = NULL;
 }
 
 BOOL StackWalker::LoadModules() {
-    if (this->mSw == NULL) {
+    if (this->m_Sw == NULL) {
         SetLastError(ERROR_DLL_INIT_FAILED);
         return FALSE;
     }
-    if (mModulesLoaded != FALSE)
+    if (m_ModulesLoaded != FALSE)
         return TRUE;
 
     // Build the sym-path:
     char *szSymPath = NULL;
-    if ((this->mOptions & SymBuildPath) != 0) {
+    if ((this->m_Options & SymBuildPath) != 0) {
         const size_t nSymPathLen = 4096;
         szSymPath = (char *)malloc(nSymPathLen);
         if (szSymPath == NULL) {
@@ -812,7 +812,7 @@ BOOL StackWalker::LoadModules() {
             strcat_s(szSymPath, nSymPathLen, ";");
         }
 
-        if ((this->mOptions & SymBuildPath) != 0) {
+        if ((this->m_Options & SymBuildPath) != 0) {
             if (GetEnvironmentVariableA("SYSTEMDRIVE", szTemp, nTempLen) > 0) {
                 szTemp[nTempLen - 1] = 0;
                 strcat_s(szSymPath, nSymPathLen, "SRV*");
@@ -827,7 +827,7 @@ BOOL StackWalker::LoadModules() {
     }
 
     // First Init the whole stuff...
-    BOOL bRet = this->mSw->Init(szSymPath);
+    BOOL bRet = this->m_Sw->Init(szSymPath);
     if (szSymPath != NULL)
         free(szSymPath);
     szSymPath = NULL;
@@ -837,9 +837,9 @@ BOOL StackWalker::LoadModules() {
         return FALSE;
     }
 
-    bRet = this->mSw->LoadModules(this->mHProcess, this->mDwProcessId);
+    bRet = this->m_Sw->LoadModules(this->m_HProcess, this->m_DwProcessId);
     if (bRet != FALSE)
-        mModulesLoaded = TRUE;
+        m_ModulesLoaded = TRUE;
     return bRet;
 }
 
@@ -863,10 +863,10 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread,
     IMAGEHLP_LINE64 Line;
     int frameNum;
 
-    if (mModulesLoaded == FALSE)
+    if (m_ModulesLoaded == FALSE)
         this->LoadModules(); // ignore the result...
 
-    if (this->mSw->m_hDbhHelp == NULL) {
+    if (this->m_Sw->m_hDbhHelp == NULL) {
         SetLastError(ERROR_DLL_INIT_FAILED);
         return FALSE;
     }
@@ -944,14 +944,14 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread,
         // ERROR_NOACCESS (998), you can assume that either you are done, or that
         // the stack is so hosed that the next deeper frame could not be found.
         // CONTEXT need not to be suplied if imageTyp is IMAGE_FILE_MACHINE_I386!
-        if (!this->mSw->pSW(imageType,
-                            this->mHProcess,
+        if (!this->m_Sw->pSW(imageType,
+                            this->m_HProcess,
                             hThread,
                             &s,
                             &c,
                             myReadProcMem,
-                            this->mSw->pSFTA,
-                            this->mSw->pSGMB,
+                            this->m_Sw->pSFTA,
+                            this->m_Sw->pSGMB,
                             NULL)) {
             this->OnDbgHelpErr("StackWalk64", GetLastError(), s.AddrPC.Offset);
             break;
@@ -974,23 +974,23 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread,
         if (s.AddrPC.Offset != 0) {
             // we seem to have a valid PC
             // show procedure info (SymGetSymFromAddr64())
-            if (this->mSw->pSGSFA(
-                    this->mHProcess, s.AddrPC.Offset, &(csEntry.offsetFromSymbol), pSym) != FALSE) {
+            if (this->m_Sw->pSGSFA(
+                    this->m_HProcess, s.AddrPC.Offset, &(csEntry.offsetFromSymbol), pSym) != FALSE) {
                 // TODO: Mache dies sicher...!
                 strcpy_s(csEntry.name, pSym->Name);
                 // UnDecorateSymbolName()
-                this->mSw->pUDSN(
+                this->m_Sw->pUDSN(
                     pSym->Name, csEntry.undName, STACKWALK_MAX_NAMELEN, UNDNAME_NAME_ONLY);
-                this->mSw->pUDSN(
+                this->m_Sw->pUDSN(
                     pSym->Name, csEntry.undFullName, STACKWALK_MAX_NAMELEN, UNDNAME_COMPLETE);
             } else {
                 this->OnDbgHelpErr("SymGetSymFromAddr64", GetLastError(), s.AddrPC.Offset);
             }
 
             // show line number info, NT5.0-method (SymGetLineFromAddr64())
-            if (this->mSw->pSGLFA != NULL) { // yes, we have SymGetLineFromAddr64()
-                if (this->mSw->pSGLFA(
-                        this->mHProcess, s.AddrPC.Offset, &(csEntry.offsetFromLine), &Line) !=
+            if (this->m_Sw->pSGLFA != NULL) { // yes, we have SymGetLineFromAddr64()
+                if (this->m_Sw->pSGLFA(
+                        this->m_HProcess, s.AddrPC.Offset, &(csEntry.offsetFromLine), &Line) !=
                     FALSE) {
                     csEntry.lineNumber = Line.LineNumber;
                     // TODO: Mache dies sicher...!
@@ -1001,7 +1001,7 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread,
             } // yes, we have SymGetLineFromAddr64()
 
             // show module info (SymGetModuleInfo64())
-            if (this->mSw->GetModuleInfo(this->mHProcess, s.AddrPC.Offset, &Module) !=
+            if (this->m_Sw->GetModuleInfo(this->m_HProcess, s.AddrPC.Offset, &Module) !=
                 FALSE) { // got module info OK
                 switch (Module.SymType) {
                 case SymNone:
@@ -1182,13 +1182,13 @@ void StackWalker::OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr) {
     OnOutput(buffer);
 }
 
-void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName) {
+void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD sym_Options, LPCSTR szUserName) {
     CHAR buffer[STACKWALK_MAX_NAMELEN];
     _snprintf_s(buffer,
                 STACKWALK_MAX_NAMELEN,
-                "SymInit: Symbol-SearchPath: '%s', symOptions: %d, UserName: '%s'\n",
+                "SymInit: Symbol-SearchPath: '%s', sym_Options: %d, UserName: '%s'\n",
                 szSearchPath,
-                symOptions,
+                sym_Options,
                 szUserName);
     OnOutput(buffer);
     // Also display the OS-version

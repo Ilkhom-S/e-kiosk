@@ -128,13 +128,13 @@ protected:
     virtual void OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr);
     virtual void OnOutput(LPCSTR szText);
 
-    StackWalkerInternal *mSw;
-    HANDLE mHProcess;
-    DWORD mDwProcessId;
-    BOOL mModulesLoaded;
-    LPSTR mSzSymPath;
+    StackWalkerInternal *m_Sw;
+    HANDLE m_HProcess;
+    DWORD m_DwProcessId;
+    BOOL m_ModulesLoaded;
+    LPSTR m_SzSymPath;
 
-    int mOptions;
+    int m_Options;
 
     static BOOL __stdcall myReadProcMem(HANDLE hProcess,
                                         DWORD64 qwBaseAddress,

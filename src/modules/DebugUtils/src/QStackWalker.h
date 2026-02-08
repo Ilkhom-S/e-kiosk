@@ -10,11 +10,11 @@ public:
     virtual ~QStackWalker() {}
 
     inline QStringList getCallstack(void *aContext) {
-        mCallstack.clear();
+        m_Callstack.clear();
 
         StackWalker::ShowCallstack(GetCurrentThread(), static_cast<CONTEXT *>(aContext));
 
-        return mCallstack;
+        return m_Callstack;
     }
 
 protected:
@@ -57,12 +57,12 @@ protected:
                             entry.name);
             }
 
-            mCallstack.push_back(buffer);
+            m_Callstack.push_back(buffer);
         }
     }
 
 private:
-    QStringList mCallstack;
+    QStringList m_Callstack;
 };
 
 //---------------------------------------------------------------------------
