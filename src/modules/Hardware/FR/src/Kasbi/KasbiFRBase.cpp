@@ -39,7 +39,7 @@ KasbiFRBase::KasbiFRBase() {
     // ошибки
     m_ErrorData = PErrorData(new CKasbiFR::Errors::Data());
     m_UnprocessedErrorData.add(CKasbiFR::Commands::GetFiscalTLVData,
-                              CKasbiFR::Errors::NoRequiedDataInFS);
+                               CKasbiFR::Errors::NoRequiedDataInFS);
 }
 
 //--------------------------------------------------------------------------------
@@ -268,7 +268,7 @@ void KasbiFRBase::processDeviceData() {
         if (TLVs.contains(CKasbiFR::FiscalFields::OFDAddress) &&
             TLVs.contains(CKasbiFR::FiscalFields::OFDPort)) {
             m_OFDDataError = !checkOFDData(TLVs[CKasbiFR::FiscalFields::OFDAddress],
-                                          revert(TLVs[CKasbiFR::FiscalFields::OFDPort]));
+                                           revert(TLVs[CKasbiFR::FiscalFields::OFDPort]));
         }
     }
 
@@ -318,7 +318,8 @@ TResult KasbiFRBase::execCommand(const QByteArray &aCommand,
 
     m_LastError = answer[1];
     m_LastCommand = aCommand;
-    toLog(LogLevel::Error, m_DeviceName + ": Error: " + m_ErrorData->value(m_LastError).description);
+    toLog(LogLevel::Error,
+          m_DeviceName + ": Error: " + m_ErrorData->value(m_LastError).description);
 
     if (m_LastError == CKasbiFR::Errors::Protocol) {
         return CommandResult::Protocol;
@@ -533,11 +534,11 @@ bool KasbiFRBase::sale(const SUnitData &aUnitData) {
     QByteArray commandData = QByteArray() +
                              m_FFEngine.getTLVData(CFR::FiscalFields::UnitName, aUnitData.name) +
                              m_FFEngine.getTLVData(CFR::FiscalFields::PayOffSubjectUnitPrice,
-                                                  qRound64(aUnitData.sum * 100.0)) +
+                                                   qRound64(aUnitData.sum * 100.0)) +
                              m_FFEngine.getTLVData(CFR::FiscalFields::PayOffSubjectQuantity, 1.0) +
                              m_FFEngine.getTLVData(CFR::FiscalFields::VATRate, char(section)) +
                              m_FFEngine.getTLVData(CFR::FiscalFields::PayOffSubjectMethodType,
-                                                  aUnitData.payOffSubjectMethodType);
+                                                   aUnitData.payOffSubjectMethodType);
 
     return processCommand(CKasbiFR::Commands::Sale,
                           m_FFEngine.getTLVData(CFR::FiscalFields::PayOffSubject, commandData));
@@ -545,8 +546,8 @@ bool KasbiFRBase::sale(const SUnitData &aUnitData) {
 
 //--------------------------------------------------------------------------------
 bool KasbiFRBase::perform_Fiscal(const QStringList &aReceipt,
-                                const SPaymentData &aPaymentData,
-                                quint32 *aFDNumber) {
+                                 const SPaymentData &aPaymentData,
+                                 quint32 *aFDNumber) {
     if (((getDocumentState() == EDocumentState::Opened) &&
          !processCommand(CKasbiFR::Commands::CancelDocument)) ||
         !receiptProcessing()) {
@@ -571,15 +572,16 @@ bool KasbiFRBase::perform_Fiscal(const QStringList &aReceipt,
     };
     QByteArray commandData =
         m_FFEngine.getTLVData(CFR::FiscalFields::TaxSystem, char(aPaymentData.taxSystem)) +
-        m_FFEngine.getTLVData(CFR::FiscalFields::CashFiscalTotal, totalPayTypeSum(EPayTypes::Cash)) +
+        m_FFEngine.getTLVData(CFR::FiscalFields::CashFiscalTotal,
+                              totalPayTypeSum(EPayTypes::Cash)) +
         m_FFEngine.getTLVData(CFR::FiscalFields::CardFiscalTotal,
-                             totalPayTypeSum(EPayTypes::EMoney)) +
+                              totalPayTypeSum(EPayTypes::EMoney)) +
         m_FFEngine.getTLVData(CFR::FiscalFields::PrePaymentFiscalTotal,
-                             totalPayTypeSum(EPayTypes::PrePayment)) +
+                              totalPayTypeSum(EPayTypes::PrePayment)) +
         m_FFEngine.getTLVData(CFR::FiscalFields::PostPaymentFiscalTotal,
-                             totalPayTypeSum(EPayTypes::PostPayment)) +
+                              totalPayTypeSum(EPayTypes::PostPayment)) +
         m_FFEngine.getTLVData(CFR::FiscalFields::CounterOfferFiscalTotal,
-                             totalPayTypeSum(EPayTypes::CounterOffer));
+                              totalPayTypeSum(EPayTypes::CounterOffer));
 
     QString cashier = m_FFEngine.getConfigParameter(CFiscalSDK::Cashier).toString();
     QString cashierINN = m_FFEngine.getConfigParameter(CFiscalSDK::CashierINN).toString();

@@ -32,7 +32,7 @@ void ReportBuilder::open(const QString &aCommand, const QString &aUrl, const QSt
 
     if (writeCreateDate) {
         m_Report->setValue("create_date",
-                          QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss"));
+                           QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss"));
     }
 
     updateTimestamp();
@@ -71,7 +71,7 @@ void ReportBuilder::setProgress(int aProgress) {
 void ReportBuilder::updateTimestamp() {
     if (m_Report) {
         m_Report->setValue("last_update",
-                          QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss"));
+                           QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss"));
         m_Report->sync();
     }
 }

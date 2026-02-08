@@ -31,8 +31,8 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
 IdleScenario::IdleScenario(IApplication *aApplication)
-    : Scenario("Idle", aApplication->getLog()), m_Application(aApplication), m_Command(Command::None),
-      m_Active(false), m_NoGui(false), m_InterfaceLockedTimer(0) {
+    : Scenario("Idle", aApplication->getLog()), m_Application(aApplication),
+      m_Command(Command::None), m_Active(false), m_NoGui(false), m_InterfaceLockedTimer(0) {
     m_Application->getCore()->getEventService()->subscribe(
         this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
 }

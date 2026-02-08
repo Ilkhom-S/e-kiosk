@@ -24,9 +24,9 @@ const char USBPDO[] = "USBPDO";
 } // namespace CUSBPort
 
 //--------------------------------------------------------------------------------
-    m_Type = EPortTypes::USB;
-    // Удалены привязки к Windows GUID и DWORD свойствам
-    setOpeningTimeout(CAsyncSerialPort::OpeningTimeout + CUSBPort::OpeningPause);
+m_Type = EPortTypes::USB;
+// Удалены привязки к Windows GUID и DWORD свойствам
+setOpeningTimeout(CAsyncSerialPort::OpeningTimeout + CUSBPort::OpeningPause);
 }
 
 //--------------------------------------------------------------------------------

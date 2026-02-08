@@ -184,10 +184,10 @@ bool PollingExpector::wait(std::function<bool()> aOnPoll,
         QMutexLocker locker(&m_Guard);
 
         m_WorkingThread.process(aOnPoll,
-                               aCondition,
-                               aErrorCondition,
-                               aWaitingData.pollingInterval,
-                               aWaitingData.pollingSensible);
+                                aCondition,
+                                aErrorCondition,
+                                aWaitingData.pollingInterval,
+                                aWaitingData.pollingSensible);
         m_WaitCondition.wait(&m_Guard, aWaitingData.timeout);
     }
 

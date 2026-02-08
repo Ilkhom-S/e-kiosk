@@ -13,9 +13,9 @@ using namespace SDK::Driver::IOPort::COM;
 
 //--------------------------------------------------------------------------------
 AsyncSerialPort::AsyncSerialPort()
-    : m_PortHandle(0), m_Exist(false), m_ReadMutex(QMutex::Recursive), m_WriteMutex(QMutex::Recursive),
-      m_ReadEventMask(0), m_LastError(0), m_LastErrorChecking(0), m_MaxReadingSize(0),
-      m_WaitResult(false), m_ReadBytes(0) {
+    : m_PortHandle(0), m_Exist(false), m_ReadMutex(QMutex::Recursive),
+      m_WriteMutex(QMutex::Recursive), m_ReadEventMask(0), m_LastError(0), m_LastErrorChecking(0),
+      m_MaxReadingSize(0), m_WaitResult(false), m_ReadBytes(0) {
     setBaudRate(EBaudRate::BR9600);
     setParity(EParity::No);
     setByteSize(8);
@@ -79,7 +79,8 @@ void AsyncSerialPort::setDeviceConfiguration(const QVariantMap &aConfiguration) 
 
     // TODO: при увеличении номенклатуры виртуальных/эмуляторных портов продумать логику загрузки
     // девайса с отсутствующим портом
-    if ((m_Type == EPortTypes::COM) && (unknownSystem_Name || (portType == EPortTypes::VirtualCOM))) {
+    if ((m_Type == EPortTypes::COM) &&
+        (unknownSystem_Name || (portType == EPortTypes::VirtualCOM))) {
         m_Type = EPortTypes::VirtualCOM;
     }
 
@@ -92,8 +93,9 @@ void AsyncSerialPort::setDeviceConfiguration(const QVariantMap &aConfiguration) 
     }
 
     if (m_Type == EPortTypes::VirtualCOM) {
-        m_WaitResult = !cannotWaitResult &&
-                      aConfiguration.value(CHardware::Port::COM::WaitResult, m_WaitResult).toBool();
+        m_WaitResult =
+            !cannotWaitResult &&
+            aConfiguration.value(CHardware::Port::COM::WaitResult, m_WaitResult).toBool();
     }
 
     if (aConfiguration.contains(CHardware::Port::MaxReadingSize)) {
@@ -220,7 +222,8 @@ bool AsyncSerialPort::open() {
     }
 
     if (getConfigParameter(CHardware::Port::Suspended).toBool()) {
-        toLog(LogLevel::Error, m_System_Name + ": Failed to open due to there is a suspended task.");
+        toLog(LogLevel::Error,
+              m_System_Name + ": Failed to open due to there is a suspended task.");
         return false;
     }
 
@@ -244,12 +247,12 @@ bool AsyncSerialPort::open() {
 bool AsyncSerialPort::perform_Open() {
     QByteArray fileName = "\\\\.\\" + m_System_Name.toLatin1();
     m_PortHandle = CreateFileA(fileName.data(),
-                              GENERIC_READ | GENERIC_WRITE,
-                              0,
-                              0,
-                              OPEN_EXISTING,
-                              FILE_FLAG_OVERLAPPED,
-                              0);
+                               GENERIC_READ | GENERIC_WRITE,
+                               0,
+                               0,
+                               OPEN_EXISTING,
+                               FILE_FLAG_OVERLAPPED,
+                               0);
 
     if (!checkHandle()) {
         handleError("CreateFileA");

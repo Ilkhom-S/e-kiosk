@@ -42,7 +42,7 @@ QList<Ad::Campaign> AdGetChannelResponse::getCampaigns() const {
     c.id = getParameter(Ad::Parameters::ID).toLongLong();
     c.md5 = getParameter(Ad::Parameters::MD5).toString();
     c.expired = QDateTime::from_String(getParameter(Ad::Parameters::Expired).toString(),
-                                      Ad::Parameters::DateTimeFormat);
+                                       Ad::Parameters::DateTimeFormat);
     c.url = QUrl::from_Encoded(getParameter(Ad::Parameters::Url).toByteArray());
     {
         QStringDecoder decoder("windows-1251");

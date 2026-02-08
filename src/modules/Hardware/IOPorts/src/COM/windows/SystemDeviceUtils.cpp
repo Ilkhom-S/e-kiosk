@@ -1,9 +1,9 @@
 /* @file Набор функционала для работы с системными ресурсами с использованием SetupDi. */
 
-#include "System_DeviceUtils.h"
-
 #include <QtCore/QRegularExpression>
 #include <QtCore/QSettings>
+
+#include "System_DeviceUtils.h"
 
 // Registry constants definitions
 namespace CRegistrySerialPort {
@@ -53,13 +53,13 @@ QStringList System_DeviceUtils::getSerialDeviceNames() {
     forever {
         DWORD keySyze = MAXSHORT / sizeof(wchar_t);
         LONG ret = ::RegEnum_Value(hKey,
-                                  i,
-                                  LPTSTR(key.data()),
-                                  &keySyze,
-                                  nullptr,
-                                  nullptr,
-                                  LPBYTE(value.data()),
-                                  &valueSize);
+                                   i,
+                                   LPTSTR(key.data()),
+                                   &keySyze,
+                                   nullptr,
+                                   nullptr,
+                                   LPBYTE(value.data()),
+                                   &valueSize);
 
         if (ret == ERROR_MORE_DATA) {
             value.resize(valueSize);
@@ -84,7 +84,7 @@ QStringList System_DeviceUtils::getSerialDeviceNames() {
 
 //--------------------------------------------------------------------------------
 QString System_DeviceUtils::getRelevantPortName(const QString &aPortName,
-                                               const QStringList &aPortNames) {
+                                                const QStringList &aPortNames) {
     auto getPropertyData = [](const QString &aData) -> QString {
         return " " + aData.simplified().toLower() + " ";
     };
@@ -108,7 +108,7 @@ QString System_DeviceUtils::getRelevantPortName(const QString &aPortName,
 
 //--------------------------------------------------------------------------------
 QString System_DeviceUtils::getRelevantWinProperty(const QString &aWinProperty,
-                                                  const QStringList &aWinProperties) {
+                                                   const QStringList &aWinProperties) {
     auto getData = [](const QString &aData) -> QString {
         return aData.simplified()
             .toLower()
@@ -173,8 +173,8 @@ TWinDeviceProperties System_DeviceUtils::enumerateRegistryDevices(bool aQuick) {
 
 //--------------------------------------------------------------------------------
 QString System_DeviceUtils::getProperty(const HDEVINFO &aHDevInfo,
-                                       SP_DEVINFO_DATA &aDeviceInfoData,
-                                       DWORD aProperty) {
+                                        SP_DEVINFO_DATA &aDeviceInfoData,
+                                        DWORD aProperty) {
     DWORD DataT;
     LPTSTR buffer = NULL;
     DWORD buffersize = 0;
@@ -222,9 +222,9 @@ QString System_DeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty) {
 
 //--------------------------------------------------------------------------------
 bool System_DeviceUtils::enumerateSystem_Devices(const QUuid &aUuid,
-                                               TWinDeviceProperties &aDeviceProperties,
-                                               DWORD aPathProperty,
-                                               bool aQuick) {
+                                                 TWinDeviceProperties &aDeviceProperties,
+                                                 DWORD aPathProperty,
+                                                 bool aQuick) {
     GUID guid = aUuid;
     HDEVINFO deviceInfo =
         SetupDiGetClassDevs(&guid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);

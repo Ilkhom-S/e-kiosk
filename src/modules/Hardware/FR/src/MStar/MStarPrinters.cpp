@@ -242,9 +242,9 @@ bool MStarPrinters::setMode(EFRMode::Enum aMode) {
               .arg(isPrinterMode ? "printer" : "fiscal"));
 
     if (!m_Protocol->processCommand(m_IOPort,
-                                   isPrinterMode ? FRProtocolCommands::SetPrinterMode
-                                                 : FRProtocolCommands::SetFiscalMode,
-                                   QVariantMap())) {
+                                    isPrinterMode ? FRProtocolCommands::SetPrinterMode
+                                                  : FRProtocolCommands::SetFiscalMode,
+                                    QVariantMap())) {
         toLog(LogLevel::Error,
               QString("MStarPrinters: Failed to process command 'set to %1 mode'")
                   .arg(isPrinterMode ? "printer" : "fiscal"));

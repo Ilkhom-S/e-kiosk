@@ -15,8 +15,9 @@ BarcodeProvider::BarcodeProvider()
 //------------------------------------------------------------------------------
 QImage
 BarcodeProvider::requestImage(const QString &aId, QSize *aSize, const QSize &aRequestedSize) {
-    QSize barcodeSize = aRequestedSize.isValid() && !aRequestedSize.isEmpty() ? aRequestedSize
-                                                                              : m_DefaultBarcodeSize;
+    QSize barcodeSize = aRequestedSize.isValid() && !aRequestedSize.isEmpty()
+                            ? aRequestedSize
+                            : m_DefaultBarcodeSize;
     QString path = QString("%1|%2x%3").arg(aId).arg(barcodeSize.width()).arg(barcodeSize.height());
 
     if (m_BarcodeCache.contains(path)) {

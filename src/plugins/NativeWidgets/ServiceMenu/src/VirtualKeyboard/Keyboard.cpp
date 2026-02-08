@@ -54,10 +54,10 @@ Keyboard::Keyboard(SDK::Plugin::IEnvironment *aFactory, const QString &aInstance
         m_MainWidget->setFlag(QGraphicsItem::Item_IsFocusable, false);
 
         m_MainWidget->setScale(qMin(1.0,
-                                   qreal(qMin(core->getGUIService()->getScreenSize(0).width() /
-                                                  qreal(m_KeyboardWindow->width()),
-                                              core->getGUIService()->getScreenSize(0).height() /
-                                                  qreal(m_KeyboardWindow->height())))));
+                                    qreal(qMin(core->getGUIService()->getScreenSize(0).width() /
+                                                   qreal(m_KeyboardWindow->width()),
+                                               core->getGUIService()->getScreenSize(0).height() /
+                                                   qreal(m_KeyboardWindow->height())))));
     }
 }
 

@@ -59,8 +59,8 @@ bool AFPFR::getFRData(const CAFPFR::FRInfo::SData &aInfo, CAFPFR::TData &aData) 
     } else if (aInfo.index != aData[0].toInt()) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Invalid data index in answer = %1 at the request of %2")
-                                .arg(aData[0].toInt())
-                                .arg(log));
+                                 .arg(aData[0].toInt())
+                                 .arg(log));
         return false;
     }
 
@@ -121,8 +121,8 @@ bool AFPFR::updateParameters() {
 
         toLog(LogLevel::Normal,
               m_DeviceName + QString(": Add %1 = \"%2\" to config data")
-                                .arg(m_FFData.getTextLog(field))
-                                .arg(value));
+                                 .arg(m_FFData.getTextLog(field))
+                                 .arg(value));
     }
 
     return !m_OperatorPresence || loadSectionNames();
@@ -225,7 +225,7 @@ void AFPFR::processDeviceData() {
     QVariant addressData;
     QVariant portData;
     m_OFDDataError = !getFRParameter(CAFPFR::FRParameters::OFDAddress, addressData) ||
-                    !getFRParameter(CAFPFR::FRParameters::OFDPort, portData);
+                     !getFRParameter(CAFPFR::FRParameters::OFDPort, portData);
     portData = getBufferFrom_String(QByteArray::number(portData.toInt(), 16));
     m_OFDDataError =
         m_OFDDataError || !checkOFDData(addressData.toByteArray(), portData.toByteArray());
@@ -434,8 +434,8 @@ TResult AFPFR::processCommand(char aCommand,
             if (answerSize < size) {
                 toLog(LogLevel::Error,
                       m_DeviceName + QString(": Wrong answer quantity of parts = %1, need = %2")
-                                        .arg(size)
-                                        .arg(size));
+                                         .arg(size)
+                                         .arg(size));
                 return CommandResult::Answer;
             }
 
@@ -454,8 +454,8 @@ TResult AFPFR::processCommand(char aCommand,
                     if (part.isEmpty()) {
                         toLog(LogLevel::Error,
                               m_DeviceName + QString(": Failed to parse string of answer part [%1] "
-                                                    "due to it is empty")
-                                                .arg(i));
+                                                     "due to it is empty")
+                                                 .arg(i));
                         return CommandResult::Answer;
                     }
 
@@ -500,9 +500,10 @@ TResult AFPFR::processCommand(char aCommand,
                     if (part.isEmpty()) {
                         if (answerType == CAFPFR::EAnswerTypes::FInt) {
                             toLog(LogLevel::Error,
-                                  m_DeviceName + QString(": Failed to parse int of answer part [%1] "
-                                                        "due to it is empty")
-                                                    .arg(i));
+                                  m_DeviceName +
+                                      QString(": Failed to parse int of answer part [%1] "
+                                              "due to it is empty")
+                                          .arg(i));
                             return CommandResult::Answer;
                         }
 
@@ -559,7 +560,8 @@ TResult AFPFR::processCommand(char aCommand,
         return CommandResult::OK;
     }
 
-    toLog(LogLevel::Error, m_DeviceName + ": Error: " + m_ErrorData->value(m_LastError).description);
+    toLog(LogLevel::Error,
+          m_DeviceName + ": Error: " + m_ErrorData->value(m_LastError).description);
 
     if (!answerData.isEmpty()) {
         QStringList logData;
@@ -633,8 +635,8 @@ bool AFPFR::processAnswer(char aCommand, char aError) {
 
 //--------------------------------------------------------------------------------
 bool AFPFR::perform_Fiscal(const QStringList &aReceipt,
-                          const SPaymentData &aPaymentData,
-                          quint32 *aFDNumber) {
+                           const SPaymentData &aPaymentData,
+                           quint32 *aFDNumber) {
     if ((getDocumentState() == EDocumentState::Opened) &&
         !processCommand(CAFPFR::Commands::CancelDocument)) {
         return false;
@@ -647,8 +649,8 @@ bool AFPFR::perform_Fiscal(const QStringList &aReceipt,
         !processCommand(CAFPFR::Commands::SetTaxSystem, taxSystem)) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Failed to set taxation system %1 (%2)")
-                                .arg(toHexLog(taxSystem))
-                                .arg(CFR::TaxSystems[taxSystem]));
+                                 .arg(toHexLog(taxSystem))
+                                 .arg(CFR::TaxSystems[taxSystem]));
         return false;
     }
 
@@ -658,8 +660,8 @@ bool AFPFR::perform_Fiscal(const QStringList &aReceipt,
     if (!processCommand(CAFPFR::Commands::SetAgentFlag, agentFlag)) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Failed to set agent flag %1 (%2)")
-                                .arg(toHexLog(agentFlag))
-                                .arg(CFR::AgentFlags[agentFlag]));
+                                 .arg(toHexLog(agentFlag))
+                                 .arg(CFR::AgentFlags[agentFlag]));
         return false;
     }
 
@@ -788,7 +790,7 @@ bool AFPFR::sale(const SUnitData &aUnitData) {
                         << ""             // артикул или штриховой код товара/номер ТРК
                         << 1              // количество
                         << aUnitData.sum  // цена
-                        << m_TaxData[aUnitData.VAT].group     // номер ставки налога
+                        << m_TaxData[aUnitData.VAT].group    // номер ставки налога
                         << ""                                // номер товарной позиции
                         << section                           // номер секции
                         << ""                                // код товара

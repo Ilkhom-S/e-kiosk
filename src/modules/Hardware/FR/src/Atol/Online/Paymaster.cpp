@@ -63,12 +63,12 @@ template <class T> bool Paymaster<T>::updateParameters() {
 
 #define SET_LCONFIG_FISCAL_FIELD(aName)                                                            \
     if (getTLV(CFR::FiscalFields::aName, data)) {                                                  \
-        m_FFEngine.setConfigParameter(CFiscalSDK::aName, m_Codec->toUnicode(data));                  \
-        QString value = m_FFEngine.getConfigParameter(CFiscalSDK::aName, data).toString();          \
+        m_FFEngine.setConfigParameter(CFiscalSDK::aName, m_Codec->toUnicode(data));                \
+        QString value = m_FFEngine.getConfigParameter(CFiscalSDK::aName, data).toString();         \
         toLog(LogLevel::Normal,                                                                    \
-              m_DeviceName + QString(": Add %1 = \"%2\" to config data")                            \
-                                .arg(m_FFData.getTextLog(CFR::FiscalFields::aName))                 \
-                                .arg(value));                                                      \
+              m_DeviceName + QString(": Add %1 = \"%2\" to config data")                           \
+                                 .arg(m_FFData.getTextLog(CFR::FiscalFields::aName))               \
+                                 .arg(value));                                                     \
     }
 
     SET_LCONFIG_FISCAL_FIELD(OFDURL);

@@ -69,19 +69,19 @@ NetworkService::NetworkService(ICore *aCore)
     m_Core->getEventService()->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
 
     m_SD = static_cast<PPSDK::TerminalSettings *>(
-              m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
-              ->getKeys()[0]
-              .sd;
+               m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
+               ->getKeys()[0]
+               .sd;
 
     m_AP = static_cast<PPSDK::TerminalSettings *>(
-              m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
-              ->getKeys()[0]
-              .ap;
+               m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
+               ->getKeys()[0]
+               .ap;
 
     m_OP = static_cast<PPSDK::TerminalSettings *>(
-              m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
-              ->getKeys()[0]
-              .op;
+               m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
+               ->getKeys()[0]
+               .op;
 }
 
 //------------------------------------------------------------------------------
@@ -207,7 +207,8 @@ void NetworkService::sendReceipt(const QString &aEmail, const QString &aContact)
 
     QString queryStr = QString("SELECT `response` FROM `fiscal_client` WHERE `payment` = %1")
                            .arg(m_Core->getPaymentService()->getActivePayment());
-    QSharedPointer<IDatabaseQuery> query(m_Core->getDatabaseService()->createAndExecQuery(queryStr));
+    QSharedPointer<IDatabaseQuery> query(
+        m_Core->getDatabaseService()->createAndExecQuery(queryStr));
 
     QString fiscalResponse;
     QVariantMap fiscalResult;

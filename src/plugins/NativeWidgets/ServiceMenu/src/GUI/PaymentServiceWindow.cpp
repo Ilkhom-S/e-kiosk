@@ -122,8 +122,9 @@ void PaymentServiceWindow::setupWidgets() {
 void PaymentServiceWindow::setupConnections() {
     connect(&m_PaymentTaskWatcher, SIGNAL(finished()), SLOT(onPaymentsUpdated()));
     connect(m_Model, SIGNAL(updatePayments(QString)), SLOT(onUpdatePayments(QString)));
-    connect(
-        m_Model, SIGNAL(showProcessWindow(bool, QString)), SLOT(onShowProcessWindow(bool, QString)));
+    connect(m_Model,
+            SIGNAL(showProcessWindow(bool, QString)),
+            SLOT(onShowProcessWindow(bool, QString)));
     connect(btnPrintCurrentReceipt, SIGNAL(clicked()), SLOT(printCurrentReceipt()));
     connect(btnPrintReceipts, SIGNAL(clicked()), m_Model, SLOT(printAllReceipts()));
     connect(btnPrintFilteredReceipts, SIGNAL(clicked()), this, SLOT(printFilteredReceipts()));
@@ -141,7 +142,8 @@ void PaymentServiceWindow::setupConnections() {
     connect(dateEdit, SIGNAL(dateChanged(QDate)), this, SLOT(updateDateRange()));
 
     connect(rbAllPayments, SIGNAL(toggled(bool)), m_ProxyModel, SLOT(disablePaymentsFilter()));
-    connect(rbProcessed, SIGNAL(toggled(bool)), m_ProxyModel, SLOT(enableProcessedPaymentsFilter()));
+    connect(
+        rbProcessed, SIGNAL(toggled(bool)), m_ProxyModel, SLOT(enableProcessedPaymentsFilter()));
     connect(rbPrinted, SIGNAL(toggled(bool)), m_ProxyModel, SLOT(enablePrintedPaymentsFilter()));
 
     connect(leSearch, SIGNAL(textChanged(QString)), m_ProxyModel, SLOT(setFilterWildcard(QString)));
@@ -181,13 +183,14 @@ bool PaymentServiceWindow::activate() {
             SIGNAL(receiptPrinted(qint64, bool)),
             m_Model,
             SLOT(onReceiptPrinted(qint64, bool)));
-    connect(m_PaymentManager, SIGNAL(paymentChanged(qint64)), m_Model, SLOT(onUpdatePayment(qint64)));
+    connect(
+        m_PaymentManager, SIGNAL(paymentChanged(qint64)), m_Model, SLOT(onUpdatePayment(qint64)));
 
     QVariantMap parameters = m_Backend->getConfiguration();
     QVariantList columns = parameters[CPaymentServiceWindow::ColumnVisibility].toList();
     for (int i = 0; i < columns.size(); i++) {
         m_ColumnCheckboxs.contains(i) ? m_ColumnCheckboxs[i]->setChecked(columns[i].toBool())
-                                     : m_ProxyModel->showColumn(i, columns[i].toBool());
+                                      : m_ProxyModel->showColumn(i, columns[i].toBool());
     }
 
     return true;
@@ -515,7 +518,7 @@ void PaymentTableModel::printAllReceipts() {
     foreach (const PaymentInfo &paymentInfo, m_PaymentInfoList) {
         if (paymentInfo.canPrint() && !paymentInfo.getPrinted()) {
             if (m_PaymentManager->printReceipt(paymentInfo.getId(),
-                                              DSDK::EPrintingModes::Continuous)) {
+                                               DSDK::EPrintingModes::Continuous)) {
                 m_PrintingQueue.insert(paymentInfo.getId());
             }
         }
@@ -533,8 +536,8 @@ void PaymentServiceWindow::printFilteredReceipts() {
     QSet<qint64> payments;
 
     for (int i = 0; i < m_ProxyModel->rowCount(); ++i) {
-        payments
-            << m_ProxyModel->data(m_ProxyModel->index(i, 0), PaymentTableModel::IDRole).toLongLong();
+        payments << m_ProxyModel->data(m_ProxyModel->index(i, 0), PaymentTableModel::IDRole)
+                        .toLongLong();
     }
 
     m_Model->printFilteredReceipts(payments);
@@ -546,7 +549,7 @@ void PaymentTableModel::printFilteredReceipts(const QSet<qint64> &aPaymentsID) {
         if (paymentInfo.canPrint() && !paymentInfo.getPrinted() &&
             aPaymentsID.contains(paymentInfo.getId())) {
             if (m_PaymentManager->printReceipt(paymentInfo.getId(),
-                                              DSDK::EPrintingModes::Continuous)) {
+                                               DSDK::EPrintingModes::Continuous)) {
                 m_PrintingQueue.insert(paymentInfo.getId());
             }
         }

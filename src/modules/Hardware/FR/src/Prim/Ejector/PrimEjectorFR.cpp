@@ -1,10 +1,9 @@
 /* @file Базовый ФР ПРИМ c эжектором. */
 
-#include "Prim_EjectorFR.h"
-
 #include "../Prim_ModelData.h"
 #include "Hardware/Printers/Custom_VKP80.h"
 #include "Hardware/Printers/POSPrinterData.h"
+#include "Prim_EjectorFR.h"
 #include "Prim_EjectorFRConstants.h"
 
 //--------------------------------------------------------------------------------
@@ -134,7 +133,7 @@ template <class T> bool Prim_EjectorFR<T>::setPresentationMode() {
 
     if (m_Mode == EFRMode::Printer) {
         return m_IOPort->write(loopEnable ? CPOSPrinter::Command::LoopEnable
-                                         : CPOSPrinter::Command::LoopDisable);
+                                          : CPOSPrinter::Command::LoopDisable);
     }
 
     return processEjectorAction(loopEnable ? CPrim_EjectorFRActions::SetLoopEnabled

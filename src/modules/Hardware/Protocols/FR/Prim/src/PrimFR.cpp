@@ -1,11 +1,10 @@
 /* @file Протокол ФР ПРИМ. */
 
-#include "Prim_FR.h"
-
 #include <numeric>
 
 #include "Hardware/Common/HardwareConstants.h"
 #include "Hardware/Common/LoggingType.h"
+#include "Prim_FR.h"
 #include "Prim_FRConstants.h"
 
 using namespace ProtocolUtils;
@@ -170,7 +169,8 @@ TResult Prim_FRProtocol::getCommandResult(char &aAnswer, bool aOnline) {
     m_RTProtocol.setLog(getLog());
 
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging, QVariant().from_Value(ELoggingType::ReadWrite));
+    configuration.insert(CHardware::Port::IOLogging,
+                         QVariant().from_Value(ELoggingType::ReadWrite));
     m_Port->setDeviceConfiguration(configuration);
 
     TResult result = m_RTProtocol.processCommand(0, aAnswer);
@@ -184,9 +184,9 @@ TResult Prim_FRProtocol::getCommandResult(char &aAnswer, bool aOnline) {
 
 //--------------------------------------------------------------------------------
 TResult Prim_FRProtocol::execCommand(const QByteArray &aRequest,
-                                    QByteArray &aAnswer,
-                                    int aTimeout,
-                                    EPrim_FRCommandConditions::Enum aConditions) {
+                                     QByteArray &aAnswer,
+                                     int aTimeout,
+                                     EPrim_FRCommandConditions::Enum aConditions) {
     int index = 0;
     QByteArray request(aRequest);
     TResult result = CommandResult::OK;

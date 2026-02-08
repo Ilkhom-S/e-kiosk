@@ -171,8 +171,8 @@ bool HIDService::setEnable(bool aEnable, const QString &aDevice) {
 
         foreach (const QString &configurationName,
                  settings->getDeviceList().filter(QRegularExpression(aDevice))) {
-            SDK::Driver::IHID *device =
-                dynamic_cast<SDK::Driver::IHID *>(m_DeviceService->acquireDevice(configurationName));
+            SDK::Driver::IHID *device = dynamic_cast<SDK::Driver::IHID *>(
+                m_DeviceService->acquireDevice(configurationName));
 
             if (device) {
                 // Подписываемся на сигнал от устройства.

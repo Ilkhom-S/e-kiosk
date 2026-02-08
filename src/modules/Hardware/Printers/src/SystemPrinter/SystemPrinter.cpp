@@ -1,7 +1,5 @@
 /* @file Системный принтер. */
 
-#include "System_Printer.h"
-
 #include <QtCore/QBuffer>
 #include <QtCore/QRegularExpression>
 #include <QtGui/QFontDatabase>
@@ -12,6 +10,7 @@
 #include <algorithm>
 
 #include "SysUtils/ISysUtils.h"
+#include "System_Printer.h"
 
 namespace PrinterSettings = CHardware::Printer::Settings;
 
@@ -121,8 +120,8 @@ bool System_Printer::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
     }
 
     qreal bottom_Margin = getConfigParameter(PrinterSettings::PrintPageNumber).toBool()
-                             ? 12.7
-                             : CSystem_Printer::DefaultMargin;
+                              ? 12.7
+                              : CSystem_Printer::DefaultMargin;
     qreal leftMargin = getConfigParameter(PrinterSettings::LeftMargin, m_SideMargin).toDouble();
     qreal rightMargin = getConfigParameter(PrinterSettings::RightMargin, m_SideMargin).toDouble();
 

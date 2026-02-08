@@ -30,7 +30,8 @@ WizardFrame::WizardFrame(HumoServiceBackend *aBackend, QWidget *aParent)
     m_SignalMapper.connect(btnForward, SIGNAL(clicked()), SLOT(map()));
 
     connect(this, SIGNAL(changePage(const QString &)), this, SLOT(onChangePage(const QString &)));
-    connect(&m_SignalMapper, SIGNAL(mapped(const QString &)), SLOT(onControlEvent(const QString &)));
+    connect(
+        &m_SignalMapper, SIGNAL(mapped(const QString &)), SLOT(onControlEvent(const QString &)));
     connect(btnExit, SIGNAL(clicked()), SLOT(onExit()));
 
     m_Backend->toLog("Welcome to the First Setup Wizard!");

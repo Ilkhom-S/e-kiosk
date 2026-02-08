@@ -63,9 +63,10 @@ const QString DislayPostfix = "_DISPLAY";
 //---------------------------------------------------------------------------
 PrintingService::PrintingService(IApplication *aApplication)
     : m_Application(aApplication), m_DatabaseUtils(nullptr), m_DeviceService(nullptr),
-      m_PrintingMode(DSDK::EPrintingModes::None), m_ServiceOperation(false), m_Random_ReceiptsID(false),
-      m_NextReceiptIndex(1), m_Random_Generator(static_cast<unsigned>(
-                                QDateTime::currentDateTime().currentMSecsSinceEpoch())),
+      m_PrintingMode(DSDK::EPrintingModes::None), m_ServiceOperation(false),
+      m_Random_ReceiptsID(false), m_NextReceiptIndex(1),
+      m_Random_Generator(
+          static_cast<unsigned>(QDateTime::currentDateTime().currentMSecsSinceEpoch())),
       m_EnableBlankFiscalData(false), m_FiscalRegister(nullptr) {
     setLog(m_Application->getLog());
 }
@@ -101,8 +102,8 @@ QVariantMap PrintingService::getParameters() const {
 void PrintingService::resetParameters(const QSet<QString> &aParameters) {
     if (aParameters.contains(PPSDK::CServiceParameters::Printing::ReceiptCount)) {
         m_DatabaseUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                                       PPSDK::CDatabaseConstants::Parameters::ReceiptCount,
-                                       0);
+                                        PPSDK::CDatabaseConstants::Parameters::ReceiptCount,
+                                        0);
     }
 }
 
@@ -267,13 +268,13 @@ template <class ResultT, class T> ResultT &joinMap(ResultT &aResult, const T &aP
 
 //---------------------------------------------------------------------------
 int PrintingService::perform_Print(PrintCommand *aCommand,
-                                  const QVariantMap &aParameters,
-                                  QStringList aReceiptTemplate) {
+                                   const QVariantMap &aParameters,
+                                   QStringList aReceiptTemplate) {
     // Функция, в которой прозводится печать. Должно быть исключено обращение к общим для разных
     // принтеров данным.
     m_PrintingFunction = [this, aReceiptTemplate](int aJobIndex,
-                                                 PrintCommand *aCommand,
-                                                 QVariantMap aParameters) -> bool {
+                                                  PrintCommand *aCommand,
+                                                  QVariantMap aParameters) -> bool {
         QVariantMap staticParameters;
         joinMap(staticParameters, m_StaticParameters);
         QVariantMap paymentParameters = joinMap(aParameters, staticParameters);
@@ -358,7 +359,8 @@ int PrintingService::printReport(const QString &aReceiptType, const QVariantMap 
 
     QVariantMap parameters;
 
-    return perform_Print(printCommand, joinMap(joinMap(parameters, m_StaticParameters), aParameters));
+    return perform_Print(printCommand,
+                         joinMap(joinMap(parameters, m_StaticParameters), aParameters));
 }
 
 //---------------------------------------------------------------------------
@@ -446,11 +448,11 @@ void PrintingService::incrementReceiptCount(DSDK::IPrinter *aPrinter) const {
     // Увеличиваем количество напечатанных чеков для терминала.
     receiptCount =
         m_DatabaseUtils->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                                       PPSDK::CDatabaseConstants::Parameters::ReceiptCount);
+                                        PPSDK::CDatabaseConstants::Parameters::ReceiptCount);
     receiptCount = QVariant::from_Value(receiptCount.toInt() + 1);
     m_DatabaseUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                                   PPSDK::CDatabaseConstants::Parameters::ReceiptCount,
-                                   receiptCount);
+                                    PPSDK::CDatabaseConstants::Parameters::ReceiptCount,
+                                    receiptCount);
 }
 
 //---------------------------------------------------------------------------
@@ -466,7 +468,7 @@ unsigned PrintingService::getReceiptID() const {
 int PrintingService::getReceiptCount() const {
     QVariant receiptCount =
         m_DatabaseUtils->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                                       PPSDK::CDatabaseConstants::Parameters::ReceiptCount);
+                                        PPSDK::CDatabaseConstants::Parameters::ReceiptCount);
 
     return receiptCount.isNull() ? 0 : receiptCount.toInt();
 }
@@ -501,8 +503,8 @@ bool PrintingService::loadTags() {
     m_StaticParameters.insert(CPrintConstants::DealerSupportPhone, dealer.phone);
     m_StaticParameters.insert(CPrintConstants::DealerAddress, dealer.address);
     m_StaticParameters.insert(CPrintConstants::DealerBusinessAddress,
-                             dealer.businessAddress.isEmpty() ? dealer.address
-                                                              : dealer.businessAddress);
+                              dealer.businessAddress.isEmpty() ? dealer.address
+                                                               : dealer.businessAddress);
     m_StaticParameters.insert(CPrintConstants::DealerInn, dealer.inn);
     m_StaticParameters.insert(CPrintConstants::DealerKbk, dealer.kbk);
     m_StaticParameters.insert(CPrintConstants::DealerIsBank, dealer.isBank);
@@ -519,7 +521,7 @@ bool PrintingService::loadTags() {
 
     if (!currency.isEmpty()) {
         m_StaticParameters.insert(CPrintConstants::Currency,
-                                 terminalSettings->getCurrencySettings().name);
+                                  terminalSettings->getCurrencySettings().name);
     } else {
         toLog(LogLevel::Warning,
               "Failed to retrieve currency settings from configs. Tag <CURRENCY> will be printed "
@@ -569,7 +571,7 @@ QString PrintingService::convertImage2base64(const QString &aString) {
             QRegularExpression::CaseInsensitiveOption);
 
         ////////imgPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
-        ///compatibility //
+        /// compatibility //
         /// Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
         int offset = 0;
@@ -644,7 +646,7 @@ QString PrintingService::generateQR(const QString &aString) {
         QRegularExpression::CaseInsensitiveOption);
 
     ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
-    ///compatibility // Removed
+    /// compatibility // Removed
     /// for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
@@ -723,7 +725,7 @@ QString PrintingService::generatePDF417(const QString &aString) {
                                  QRegularExpression::CaseInsensitiveOption);
 
     ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
-    ///compatibility // Removed
+    /// compatibility // Removed
     /// for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
@@ -801,7 +803,7 @@ QString PrintingService::generate1D(const QString &aString) {
         QRegularExpression::CaseInsensitiveOption);
 
     ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
-    ///compatibility // Removed
+    /// compatibility // Removed
     /// for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
@@ -868,7 +870,7 @@ QString PrintingService::generateLine(const QString &aString) {
         QRegularExpression::CaseInsensitiveOption);
 
     ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
-    ///compatibility // Removed
+    /// compatibility // Removed
     /// for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
@@ -946,7 +948,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
         QRegularExpression tagPattern("%(.*)%", QRegularExpression::CaseInsensitiveOption);
 
         ////////tagPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
-        ///compatibility //
+        /// compatibility //
         /// Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
         int offset = 0;
@@ -1016,7 +1018,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                                                     QRegularExpression::CaseInsensitiveOption);
 
             ////////operatorFieldPattern.setMinimal(true); // Removed for Qt5/6 compatibility //
-            ///Removed for Qt5/6
+            /// Removed for Qt5/6
             /// compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
             if (operatorFieldPattern.match(tag).capturedStart() != -1) {

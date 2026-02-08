@@ -1,5 +1,4 @@
 #include "Com_PortLin.h"
-
 #include "SerialDevice.h"
 
 //-----------------------------------------------------------------------------
@@ -65,9 +64,9 @@ bool Com_PortLin::clear() {
 
 //-----------------------------------------------------------------------------
 bool Com_PortLin::readData(QByteArray &aData,
-                          unsigned int aMaxSize,
-                          bool aIsTimeOut,
-                          bool aIsFirstData) {
+                           unsigned int aMaxSize,
+                           bool aIsTimeOut,
+                           bool aIsFirstData) {
     Q_UNUSED(aIsFirstData);
 
     const ulong oldTimeout = m_device->getTimeout();
@@ -159,10 +158,11 @@ bool Com_PortLin::setBaudRate(PortParameters::BaudRate::Enum aBaudRate) {
                     PortParameters::BaudRate::toString(m_COMParameters.baudRate))) {
                 saveLastError("Error set value : " + root + "/" +
                               CRegistry::Values::Ports::BaudRate);
-                LOG_WRITE(CCom_PortLin::LogName,
-                          LogLevel::Error,
-                          "COM" + QString::number(m_COMParameters.portNumber) +
-                              ", Com_PortLin::setBaundRate(): IRegistry::setValue() returned error");
+                LOG_WRITE(
+                    CCom_PortLin::LogName,
+                    LogLevel::Error,
+                    "COM" + QString::number(m_COMParameters.portNumber) +
+                        ", Com_PortLin::setBaundRate(): IRegistry::setValue() returned error");
             }
         }
     }

@@ -13,8 +13,7 @@ const char PaperJam_Sensor[] =
 const char PaperWeightSensors[] =
     QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#paper_weight_sensors");
 const char FontSize[] = QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#font_size");
-const char LineSpacing[] =
-    QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#line_spacing");
+const char LineSpacing[] = QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#line_spacing");
 const char FeedingFactor[] =
     QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#feeding_factor");
 const char LeftReceiptTimeout[] =
@@ -30,6 +29,5 @@ const char Loop[] = QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#lo
 const char PresentLength[] =
     QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#present_length");
 const char BackFeed[] = QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#back_feed");
-const char LeftMargin[] =
-    QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#left_margin");
+const char LeftMargin[] = QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#left_margin");
 } // namespace PluginParameterTranslations

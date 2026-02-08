@@ -59,13 +59,13 @@ bool getPrinterStatusData(const QString &aPrinterName,
     JOB_INFO_2 *jobStorage = reinterpret_cast<JOB_INFO_2 *>(jobsInfoBuffer.data());
 
     bool enum_JobsOK = Enum_Jobs(printer,
-                               0,
-                               printerInfo->cJobs,
-                               2,
-                               (LPBYTE)jobStorage,
-                               byteNeeded,
-                               (LPDWORD)&byteUsed,
-                               (LPDWORD)&returned);
+                                 0,
+                                 printerInfo->cJobs,
+                                 2,
+                                 (LPBYTE)jobStorage,
+                                 byteNeeded,
+                                 (LPDWORD)&byteUsed,
+                                 (LPDWORD)&returned);
 
     if (enum_JobsOK) {
         for (DWORD i = 0; i < returned; ++i) {

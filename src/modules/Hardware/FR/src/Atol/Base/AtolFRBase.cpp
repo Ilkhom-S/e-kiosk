@@ -64,7 +64,7 @@ AtolFRBase::AtolFRBase() {
 
     // ошибки
     m_UnprocessedErrorData.add(CAtolFR::Commands::GetFRParameter,
-                              CAtolFR::Errors::WrongSeriesNumber);
+                               CAtolFR::Errors::WrongSeriesNumber);
 
     // налоги
     m_TaxData.add(10, 2);
@@ -101,7 +101,8 @@ bool AtolFRBase::checkTaxValue(TVAT aVAT,
 
     if (!getFRParameter(aFRParameterData(aData.group), taxData)) {
         toLog(LogLevel::Error,
-              m_DeviceName + QString(": Failed to get tax value for %1 tax group").arg(aData.group));
+              m_DeviceName +
+                  QString(": Failed to get tax value for %1 tax group").arg(aData.group));
         return false;
     }
 
@@ -267,7 +268,7 @@ TResult AtolFRBase::execCommand(const QByteArray &aCommand,
     bool isSessionInZBufferOpened = false;
 
     if (m_CanProcessZBuffer && ((aCommand[0] == CAtolFR::Commands::OpenDocument) ||
-                               (aCommand[0] == CAtolFR::Commands::Encashment))) {
+                                (aCommand[0] == CAtolFR::Commands::Encashment))) {
         isSessionInZBufferOpened = getSessionState() == ESessionState::Closed;
     }
 
@@ -306,7 +307,8 @@ TResult AtolFRBase::execCommand(const QByteArray &aCommand,
     m_LastError = error;
     m_LastCommand = aCommand;
 
-    toLog(LogLevel::Error, m_DeviceName + ": Error: " + m_ErrorData->value(m_LastError).description);
+    toLog(LogLevel::Error,
+          m_DeviceName + ": Error: " + m_ErrorData->value(m_LastError).description);
 
     if (!isErrorUnprocessed(aCommand, m_LastError)) {
         setErrorFlags(aCommand, m_LastError);
@@ -429,8 +431,9 @@ bool AtolFRBase::processAnswer(const QByteArray &aCommand, char aError) {
             simplePoll();
 
             if ((aCommand[0] == CAtolFR::Commands::ZReport) && m_CanProcessZBuffer) {
-                bool &ZBufferFlag =
-                    (getSessionState() == ESessionState::Expired) ? m_ZBufferOverflow : m_ZBufferFull;
+                bool &ZBufferFlag = (getSessionState() == ESessionState::Expired)
+                                        ? m_ZBufferOverflow
+                                        : m_ZBufferFull;
                 ZBufferFlag = true;
             } else {
                 m_ProcessingErrors.append(aError);
@@ -572,8 +575,8 @@ void AtolFRBase::execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine) {
 
 //--------------------------------------------------------------------------------
 bool AtolFRBase::perform_Fiscal(const QStringList &aReceipt,
-                               const SPaymentData &aPaymentData,
-                               quint32 * /*aFDNumber*/) {
+                                const SPaymentData &aPaymentData,
+                                quint32 * /*aFDNumber*/) {
     if (!enterInnerMode(CAtolFR::InnerModes::Register) ||
         (!openDocument(aPaymentData.payOffType) && !m_Locked)) {
         return false;
@@ -1029,8 +1032,8 @@ TResult AtolFRBase::getRegister(const QString &aRegister,
     CAtolFR::Registers::SData registerData = m_RegisterData[aRegister];
     toLog(LogLevel::Normal,
           m_DeviceName + QString(": Begin to get FR register %1 (%2)")
-                            .arg(toHexLog(registerData.number))
-                            .arg(aRegister));
+                             .arg(toHexLog(registerData.number))
+                             .arg(aRegister));
 
     QByteArray commandData;
     commandData.append(registerData.number);
@@ -1046,9 +1049,9 @@ TResult AtolFRBase::getRegister(const QString &aRegister,
     if (aData.size() < (2 + registerData.size)) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": invalid answer size for register %1: %2, need %3 minimum")
-                                .arg(toHexLog(registerData.number))
-                                .arg(aData.size())
-                                .arg(2 + registerData.size));
+                                 .arg(toHexLog(registerData.number))
+                                 .arg(aData.size())
+                                 .arg(2 + registerData.size));
         return CommandResult::Answer;
     }
 

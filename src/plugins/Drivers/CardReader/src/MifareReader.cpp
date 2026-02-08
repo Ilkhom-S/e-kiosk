@@ -63,9 +63,9 @@ bool MifareReader::getStatus(TStatusCodes &aStatusCodes) {
 
     aStatusCodes.unite(m_Reader.getStatusCodes());
     m_Ready = std::find_if(aStatusCodes.begin(), aStatusCodes.end(), [&](int aStatusCode) -> bool {
-                 return m_StatusCodesSpecification->value(aStatusCode).warningLevel ==
-                        EWarningLevel::Error;
-             }) == aStatusCodes.end();
+                  return m_StatusCodesSpecification->value(aStatusCode).warningLevel ==
+                         EWarningLevel::Error;
+              }) == aStatusCodes.end();
 
     return true;
 }

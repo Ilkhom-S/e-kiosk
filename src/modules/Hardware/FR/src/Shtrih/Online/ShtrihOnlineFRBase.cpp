@@ -37,9 +37,9 @@ template <class T> ShtrihOnlineFRBase<T>::ShtrihOnlineFRBase() {
     // ошибки
     m_ErrorData = PErrorData(new CShtrihOnlineFR::Errors::Data);
     m_UnprocessedErrorData.add(CShtrihOnlineFR::Commands::FS::StartFiscalTLVData,
-                              CShtrihOnlineFR::Errors::NoRequiedDataInFS);
+                               CShtrihOnlineFR::Errors::NoRequiedDataInFS);
     m_UnprocessedErrorData.add(CShtrihOnlineFR::Commands::FS::GetFiscalTLVData,
-                              CShtrihFR::Errors::BadModeForCommand);
+                               CShtrihFR::Errors::BadModeForCommand);
 }
 
 //--------------------------------------------------------------------------------
@@ -302,12 +302,12 @@ template <class T> void ShtrihOnlineFRBase<T>::processDeviceData() {
         m_RNM = CFR::RNMToString(data);
 
 #define SET_LCONFIG_FISCAL_FIELD(aName)                                                            \
-    QString aName##Log = m_FFData.getTextLog(CFR::FiscalFields::aName);                             \
+    QString aName##Log = m_FFData.getTextLog(CFR::FiscalFields::aName);                            \
     if (getFRParameter(aName, data)) {                                                             \
-        m_FFEngine.setConfigParameter(CFiscalSDK::aName, m_Codec->toUnicode(data));                  \
-        QString value = m_FFEngine.getConfigParameter(CFiscalSDK::aName, data).toString();          \
+        m_FFEngine.setConfigParameter(CFiscalSDK::aName, m_Codec->toUnicode(data));                \
+        QString value = m_FFEngine.getConfigParameter(CFiscalSDK::aName, data).toString();         \
         toLog(LogLevel::Normal,                                                                    \
-              m_DeviceName +                                                                        \
+              m_DeviceName +                                                                       \
                   QString(": Add %1 = \"%2\" to config data").arg(aName##Log).arg(value));         \
     } else                                                                                         \
         toLog(LogLevel::Error,                                                                     \
@@ -315,10 +315,10 @@ template <class T> void ShtrihOnlineFRBase<T>::processDeviceData() {
 
 #define SET_BCONFIG_FISCAL_FIELD(aName)                                                            \
     if (value & CShtrihOnlineFR::OperationModeMask::aName) {                                       \
-        m_FFEngine.setConfigParameter(CFiscalSDK::aName, 1);                                        \
+        m_FFEngine.setConfigParameter(CFiscalSDK::aName, 1);                                       \
         toLog(LogLevel::Normal,                                                                    \
-              m_DeviceName + QString(": Add %1 = 1 to config data")                                 \
-                                .arg(m_FFData.getTextLog(CFR::FiscalFields::aName)));               \
+              m_DeviceName + QString(": Add %1 = 1 to config data")                                \
+                                 .arg(m_FFData.getTextLog(CFR::FiscalFields::aName)));             \
     }
 
     SET_LCONFIG_FISCAL_FIELD(FTSURL);
@@ -491,7 +491,7 @@ bool ShtrihOnlineFRBase<T>::sale(const SUnitData &aUnitData, EPayOffTypes::Enum 
     commandData.append(section);                                 // отдел
     commandData.append(char(aUnitData.payOffSubjectMethodType)); // признак способа расчета (1214)
     commandData.append(char(aUnitData.payOffSubjectType));       // признак предмета расчета (1212)
-    commandData.append(m_Codec->from_Unicode(name));               // наименование товара (1030)
+    commandData.append(m_Codec->from_Unicode(name));             // наименование товара (1030)
 
     if (!processCommand(CShtrihOnlineFR::Commands::FS::Sale, commandData)) {
         toLog(LogLevel::Error,
@@ -537,8 +537,8 @@ bool ShtrihOnlineFRBase<T>::closeDocument(double aSum, EPayTypes::Enum aPayType)
 //--------------------------------------------------------------------------------
 template <class T>
 bool ShtrihOnlineFRBase<T>::perform_Fiscal(const QStringList &aReceipt,
-                                          const SPaymentData &aPaymentData,
-                                          quint32 *aFDNumber) {
+                                           const SPaymentData &aPaymentData,
+                                           quint32 *aFDNumber) {
     // СНО ставится либо параметром системной таблицы, либо параметром команды закрытия чека.
     m_OFDFiscalFields.remove(CFR::FiscalFields::TaxSystem);
 
@@ -658,7 +658,8 @@ template <class T> bool ShtrihOnlineFRBase<T>::execZReport(bool aAuto) {
     bool result = checkNotPrinting(aAuto, true);
 
     if (!result && aAuto) {
-        m_NeedCloseSession = m_NeedCloseSession || (m_Mode == CShtrihFR::InnerModes::SessionExpired);
+        m_NeedCloseSession =
+            m_NeedCloseSession || (m_Mode == CShtrihFR::InnerModes::SessionExpired);
 
         return false;
     }

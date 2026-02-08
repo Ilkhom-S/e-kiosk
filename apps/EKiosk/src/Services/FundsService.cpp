@@ -41,8 +41,8 @@ FundsService *FundsService::instance(IApplication *aApplication) {
 
 //---------------------------------------------------------------------------
 FundsService::FundsService(IApplication *aApplication)
-    : ILogable(CFundsService::LogName), m_Application(aApplication), m_CashDispenserManager(nullptr),
-      m_CashAcceptorManager(nullptr) {}
+    : ILogable(CFundsService::LogName), m_Application(aApplication),
+      m_CashDispenserManager(nullptr), m_CashAcceptorManager(nullptr) {}
 
 //---------------------------------------------------------------------------
 FundsService::~FundsService() {}

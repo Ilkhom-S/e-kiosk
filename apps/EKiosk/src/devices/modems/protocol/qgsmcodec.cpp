@@ -310,7 +310,8 @@ QString QGsm_Codec::convertToUnicode(const char *in, int length, ConverterState 
 
         \sa convertToUnicode()
 */
-QByteArray QGsm_Codec::convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const {
+QByteArray
+QGsm_Codec::convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const {
     QByteArray result;
     unsigned int unicode;
     if (noLoss) {

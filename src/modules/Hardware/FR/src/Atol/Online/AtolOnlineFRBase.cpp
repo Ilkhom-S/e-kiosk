@@ -42,8 +42,8 @@ template <class T> AtolOnlineFRBase<T>::AtolOnlineFRBase() {
     // ошибки
     m_ErrorData = PErrorData(new CAtolOnlineFR::Errors::Data());
     m_UnprocessedErrorData.add(CAtolOnlineFR::Commands::FS::GetFiscalTLVData,
-                              TErrors() << CAtolOnlineFR::Errors::NoRequiedDataInFS
-                                        << CAtolOnlineFR::Errors::NeedExtendedErrorCode);
+                               TErrors() << CAtolOnlineFR::Errors::NoRequiedDataInFS
+                                         << CAtolOnlineFR::Errors::NeedExtendedErrorCode);
 }
 
 //--------------------------------------------------------------------------------
@@ -71,22 +71,22 @@ template <class T> bool AtolOnlineFRBase<T>::updateParameters() {
 
 #define SET_LCONFIG_FISCAL_FIELD(aName)                                                            \
     if (getTLV(CFR::FiscalFields::aName, data)) {                                                  \
-        m_FFEngine.setConfigParameter(CFiscalSDK::aName, m_Codec->toUnicode(data));                  \
-        QString value = m_FFEngine.getConfigParameter(CFiscalSDK::aName, data).toString();          \
+        m_FFEngine.setConfigParameter(CFiscalSDK::aName, m_Codec->toUnicode(data));                \
+        QString value = m_FFEngine.getConfigParameter(CFiscalSDK::aName, data).toString();         \
         toLog(LogLevel::Normal,                                                                    \
-              m_DeviceName + QString(": Add %1 = \"%2\" to config data")                            \
-                                .arg(m_FFData.getTextLog(CFR::FiscalFields::aName))                 \
-                                .arg(value));                                                      \
+              m_DeviceName + QString(": Add %1 = \"%2\" to config data")                           \
+                                 .arg(m_FFData.getTextLog(CFR::FiscalFields::aName))               \
+                                 .arg(value));                                                     \
     }
 
 #define SET_BCONFIG_FISCAL_FIELD(aName)                                                            \
     if (getTLV(CFR::FiscalFields::aName, data)) {                                                  \
         char value = data[0];                                                                      \
-        m_FFEngine.setConfigParameter(CFiscalSDK::aName, value);                                    \
+        m_FFEngine.setConfigParameter(CFiscalSDK::aName, value);                                   \
         toLog(LogLevel::Normal,                                                                    \
-              m_DeviceName + QString(": Add %1 = %2 to config data")                                \
-                                .arg(m_FFData.getTextLog(CFR::FiscalFields::aName))                 \
-                                .arg(uchar(value)));                                               \
+              m_DeviceName + QString(": Add %1 = %2 to config data")                               \
+                                 .arg(m_FFData.getTextLog(CFR::FiscalFields::aName))               \
+                                 .arg(uchar(value)));                                              \
     }
 
     SET_LCONFIG_FISCAL_FIELD(FTSURL);
@@ -204,7 +204,7 @@ template <class T> void AtolOnlineFRBase<T>::processDeviceData() {
         QByteArray addressData;
         QByteArray portData;
         m_OFDDataError = !getFRParameter(CAtolOnlineFR::FRParameters::OFDAddress, addressData) ||
-                        !getFRParameter(CAtolOnlineFR::FRParameters::OFDPort, portData);
+                         !getFRParameter(CAtolOnlineFR::FRParameters::OFDPort, portData);
         m_OFDDataError = m_OFDDataError || !checkOFDData(addressData, portData);
     }
 
@@ -322,10 +322,10 @@ template <class T> bool AtolOnlineFRBase<T>::isPrintingNeed(const QStringList &a
 //--------------------------------------------------------------------------------
 template <class T>
 bool AtolOnlineFRBase<T>::perform_Fiscal(const QStringList &aReceipt,
-                                        const SPaymentData &aPaymentData,
-                                        quint32 *aFDNumber) {
+                                         const SPaymentData &aPaymentData,
+                                         quint32 *aFDNumber) {
     m_FDExecutionMode = isTradeWithoutPrinting() ? CAtolOnlineFR::FiscalFlags::NotPrinting
-                                                : CAtolFR::FiscalFlags::ExecutionMode;
+                                                 : CAtolFR::FiscalFlags::ExecutionMode;
 
     if (!T::perform_Fiscal(aReceipt, aPaymentData)) {
         return false;
@@ -443,10 +443,10 @@ template <class T> bool AtolOnlineFRBase<T>::getExtendedErrorCode(const QByteArr
     if (command != aCommand[0]) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Wrong command = %1 in register %2 (%3), need %4")
-                                .arg(toHexLog(command))
-                                .arg(toHexLog(registerNumber))
-                                .arg(registerName)
-                                .arg(toHexLog(aCommand[0])));
+                                 .arg(toHexLog(command))
+                                 .arg(toHexLog(registerNumber))
+                                 .arg(registerName)
+                                 .arg(toHexLog(aCommand[0])));
         return false;
     }
 
@@ -495,18 +495,18 @@ template <class T> bool AtolOnlineFRBase<T>::sale(const SUnitData &aUnitData) {
     QByteArray payOffSubjectMethodType = getBCD(aUnitData.payOffSubjectMethodType, 1);
 
     QByteArray commandData;
-    commandData.append(CAtolOnlineFR::FiscalFlags::Saling);  // флаги
-    commandData.append(sum);                                 // сумма
-    commandData.append(getBCD(10, 5, 2));                    // количество = 1 штука
-    commandData.append(sum);                                 // стоимость
-    commandData.append(uchar(taxGroup));                     // налог (тип)
-    commandData.append(getBCD(0, 7, 2, 3));                  // налог (сумма) - ФР считает налог сам
-    commandData.append(uchar(section));                      // секция
-    commandData.append(payOffSubjectType);                   // признак предмета расчета
-    commandData.append(payOffSubjectMethodType);             // признак способа расчета
-    commandData.append(CAtolOnlineFR::DiscountSign);         // знак скидки
-    commandData.append(getBCD(0, 7, 2, 3));                  // информация о скидке
-    commandData.append(QByteArray(2, ASCII::NUL));           // зарезервировано
+    commandData.append(CAtolOnlineFR::FiscalFlags::Saling); // флаги
+    commandData.append(sum);                                // сумма
+    commandData.append(getBCD(10, 5, 2));                   // количество = 1 штука
+    commandData.append(sum);                                // стоимость
+    commandData.append(uchar(taxGroup));                    // налог (тип)
+    commandData.append(getBCD(0, 7, 2, 3));                 // налог (сумма) - ФР считает налог сам
+    commandData.append(uchar(section));                     // секция
+    commandData.append(payOffSubjectType);                  // признак предмета расчета
+    commandData.append(payOffSubjectMethodType);            // признак способа расчета
+    commandData.append(CAtolOnlineFR::DiscountSign);        // знак скидки
+    commandData.append(getBCD(0, 7, 2, 3));                 // информация о скидке
+    commandData.append(QByteArray(2, ASCII::NUL));          // зарезервировано
     commandData.append(m_Codec->from_Unicode(aUnitData.name)); // товар
 
     return processCommand(CAtolOnlineFR::Commands::EndSale, commandData);

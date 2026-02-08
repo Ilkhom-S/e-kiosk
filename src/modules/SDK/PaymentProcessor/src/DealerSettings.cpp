@@ -445,7 +445,8 @@ bool DealerSettings::loadProvidersFrom_Buffer(const std::string &aBuffer, SProvi
                     aProvider.externalDataHandler = externalDataHandler;
                 }
 
-                loadProviderEnum_Items(field.enum_Items, fieldIt.second.get_child("enum", emptyTree));
+                loadProviderEnum_Items(field.enum_Items,
+                                       fieldIt.second.get_child("enum", emptyTree));
 
                 auto security = fieldIt.second.get_child("security", emptyTree);
                 if (!security.empty()) {
@@ -766,7 +767,7 @@ TCommissions DealerSettings::getCommissions(qint64 aProvider, const QVariantMap 
 
     // Игнорируем настройки customer комиссии если комиссия процессинга не нулевая.
     return it == m_Customers.end() ? m_Commissions.getCommissions(aProvider)
-                                  : it->commissions.getCommissions(aProvider);
+                                   : it->commissions.getCommissions(aProvider);
 }
 
 //---------------------------------------------------------------------------
@@ -780,7 +781,7 @@ DealerSettings::getCommission(qint64 aProvider, const QVariantMap &aParameters, 
 
     // Игнорируем настройки customer комиссии если комиссия процессинга не нулевая.
     return it == m_Customers.end() ? m_Commissions.getCommission(aProvider, aSum)
-                                  : it->commissions.getCommission(aProvider, aSum);
+                                   : it->commissions.getCommission(aProvider, aSum);
 }
 
 //---------------------------------------------------------------------------

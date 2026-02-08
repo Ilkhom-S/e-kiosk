@@ -137,7 +137,8 @@ void EditorPane::selectEmptyParameter() {
     if (m_FirstShow) {
         // Всё заполнено, выделяем последний параметр.
         if (m_Ui.lwParameters->count()) {
-            m_Ui.lwParameters->setCurrentItem(m_Ui.lwParameters->item(m_Ui.lwParameters->count() - 1));
+            m_Ui.lwParameters->setCurrentItem(
+                m_Ui.lwParameters->item(m_Ui.lwParameters->count() - 1));
 
             m_FirstShow = false;
         }
@@ -216,13 +217,15 @@ void EditorPane::showCurrentParameterValues() {
                     QString title;
 
                     if (!m_Values[parameter.name].isNull()) {
-                        if (parameter.possibleValues.contains(m_Values[parameter.name].toString())) {
+                        if (parameter.possibleValues.contains(
+                                m_Values[parameter.name].toString())) {
                             title = m_Values[parameter.name].toString();
                         } else {
                             for (QVariantMap::const_iterator it = parameter.possibleValues.begin();
                                  it != parameter.possibleValues.end();
                                  ++it) {
-                                if (!it.value().isNull() && m_Values[parameter.name] == it.value()) {
+                                if (!it.value().isNull() &&
+                                    m_Values[parameter.name] == it.value()) {
                                     title = it.key();
 
                                     break;
@@ -311,7 +314,8 @@ void EditorPane::onBoolValueChanged() {
 //------------------------------------------------------------------------
 void EditorPane::onNumberValueChanged() {
     QString value = QString::number(m_Ui.sbDigit1->value()) +
-                    QString::number(m_Ui.sbDigit2->value()) + QString::number(m_Ui.sbDigit3->value());
+                    QString::number(m_Ui.sbDigit2->value()) +
+                    QString::number(m_Ui.sbDigit3->value());
 
     setCurrentParameterValue(QString::number(value.toInt()));
 }

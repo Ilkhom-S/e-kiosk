@@ -51,7 +51,7 @@ bool DialupWizardPage::initialize() {
     QVariantMap networkInfo;
     m_Backend->getNetworkManager()->getNetworkInfo(networkInfo);
     m_ConnectionWindow->fillConnectionList(m_Backend->getNetworkManager()->getRemoteConnections(),
-                                          networkInfo[CServiceTags::Connection].toString());
+                                           networkInfo[CServiceTags::Connection].toString());
 
     emit pageEvent("#can_proceed", false);
 
@@ -96,8 +96,8 @@ void DialupWizardPage::onCreateConnection(const QString &aConnection,
     connection.name = aConnection;
 
     if (m_Backend->getNetworkManager()->createDialupConnection(connection, aNetworkDevice)) {
-        m_ConnectionWindow->fillConnectionList(m_Backend->getNetworkManager()->getRemoteConnections(),
-                                              aConnection);
+        m_ConnectionWindow->fillConnectionList(
+            m_Backend->getNetworkManager()->getRemoteConnections(), aConnection);
         m_ConnectionWindow->switchToListPage();
     } else {
         GUI::MessageBox::warning(tr("#failed_create_connection"));
@@ -115,8 +115,8 @@ void DialupWizardPage::onTestConnection(const QString &aConnection) {
     GUI::MessageBox::wait(tr("#testing_connection"));
 
     m_TaskWatcher.setFuture(QtConcurrent::run(boost::bind(&NetworkManager::testConnection,
-                                                         m_Backend->getNetworkManager(),
-                                                         boost::ref(m_ConnectionError))));
+                                                          m_Backend->getNetworkManager(),
+                                                          boost::ref(m_ConnectionError))));
 }
 
 //------------------------------------------------------------------------
@@ -127,8 +127,8 @@ void DialupWizardPage::onRemoveConnection(const QString &aConnection) {
     connection.name = aConnection;
 
     if (m_Backend->getNetworkManager()->removeDialupConnection(connection)) {
-        m_ConnectionWindow->fillConnectionList(m_Backend->getNetworkManager()->getRemoteConnections(),
-                                              aConnection);
+        m_ConnectionWindow->fillConnectionList(
+            m_Backend->getNetworkManager()->getRemoteConnections(), aConnection);
         m_ConnectionWindow->switchToListPage();
     } else {
         GUI::MessageBox::warning(tr("#failed_remove_connection"));

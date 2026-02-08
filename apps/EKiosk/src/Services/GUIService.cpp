@@ -61,7 +61,8 @@ GUIService *GUIService::instance(IApplication *aApplication) {
 //---------------------------------------------------------------------------
 GUIService::GUIService(IApplication *aApplication)
     : ILogable(CGUIService::LogName), m_Application(aApplication), m_PluginService(nullptr),
-      m_EventManager(nullptr), m_ScriptingCore(nullptr), m_Disabled(false), m_Width(0), m_Height(0) {}
+      m_EventManager(nullptr), m_ScriptingCore(nullptr), m_Disabled(false), m_Width(0),
+      m_Height(0) {}
 
 //---------------------------------------------------------------------------
 GUIService::~GUIService() {}
@@ -95,7 +96,8 @@ bool GUIService::initialize() {
     connect(&m_GraphicsEngine, SIGNAL(keyPressed(QString)), SLOT(onKeyPressed(QString)));
 
     m_ScenarioEngine.injectScriptObject(PPSDK::Scripting::CProxyNames::Core, m_ScriptingCore);
-    m_ScenarioEngine.injectScriptObject<PPSDK::EEventType>(PPSDK::Scripting::CProxyNames::EventType);
+    m_ScenarioEngine.injectScriptObject<PPSDK::EEventType>(
+        PPSDK::Scripting::CProxyNames::EventType);
     m_ScenarioEngine.injectScriptObject<PPSDK::EPaymentStep>(
         PPSDK::Scripting::CProxyNames::PaymentStep);
 

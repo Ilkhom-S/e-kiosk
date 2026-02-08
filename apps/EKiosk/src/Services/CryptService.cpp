@@ -170,7 +170,8 @@ void CryptService::loadKey(SDK::PaymentProcessor::SKeySettings &aKey) {
     QString secretKeyPath;
 
     if (!QDir::isAbsolutePath(aKey.secretKeyPath)) {
-        secretKeyPath = QDir::cleanPath(m_Application->getUserDataPath() + "/" + aKey.secretKeyPath);
+        secretKeyPath =
+            QDir::cleanPath(m_Application->getUserDataPath() + "/" + aKey.secretKeyPath);
     } else {
         secretKeyPath = QDir::cleanPath(aKey.secretKeyPath);
     }
@@ -178,7 +179,8 @@ void CryptService::loadKey(SDK::PaymentProcessor::SKeySettings &aKey) {
     QString publicKeyPath;
 
     if (!QDir::isAbsolutePath(aKey.publicKeyPath)) {
-        publicKeyPath = QDir::cleanPath(m_Application->getUserDataPath() + "/" + aKey.publicKeyPath);
+        publicKeyPath =
+            QDir::cleanPath(m_Application->getUserDataPath() + "/" + aKey.publicKeyPath);
     } else {
         publicKeyPath = QDir::cleanPath(aKey.publicKeyPath);
     }
@@ -453,7 +455,9 @@ SDK::PaymentProcessor::ICryptService::SKeyInfo CryptService::getKeyInfo(int aKey
 
 //---------------------------------------------------------------------------
 bool CryptService::saveKey() {
-    LOG(m_Application->getLog(), LogLevel::Normal, QString("Saving key pair %1.").arg(m_KeyPair.id));
+    LOG(m_Application->getLog(),
+        LogLevel::Normal,
+        QString("Saving key pair %1.").arg(m_KeyPair.id));
 
     // Формируем и сохраняем ключ.
     ICryptEngine *crypt = &CCryptEngine::instance();

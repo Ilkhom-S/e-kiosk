@@ -112,8 +112,8 @@ bool SuzoHopper::getStatus(TStatusCodes &aStatusCodes) {
 
             toLog(logLevel,
                   m_DeviceName + QString(": %1 -> %2")
-                                    .arg(specification.description)
-                                    .arg(statusCodeData.description));
+                                     .arg(specification.description)
+                                     .arg(statusCodeData.description));
         }
     }
 

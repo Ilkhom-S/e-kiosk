@@ -82,8 +82,9 @@ TResult CreatorReader::processCommand(const QByteArray &aCommand,
         QByteArray errorBuffer = answer.mid(1, 2);
         bool OK;
         int error = errorBuffer.toInt(&OK);
-        QString log =
-            QString("%1: Error: %2").arg(m_DeviceName).arg(CCreatorReader::ErrorDescriptions[error]);
+        QString log = QString("%1: Error: %2")
+                          .arg(m_DeviceName)
+                          .arg(CCreatorReader::ErrorDescriptions[error]);
 
         if (!OK) {
             log += QString(" (0x%1)").arg(errorBuffer.toHex().data());

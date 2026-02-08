@@ -370,8 +370,8 @@ int RasConnection::createNewDialupConnection(
              sizeof(tRasEntry.szDeviceName) / sizeof(wchar_t),
              (const wchar_t *)devName.utf16());
     wcscpy_s(tRasEntry.szDeviceType, sizeof(tRasEntry.szDeviceType) / sizeof(wchar_t), L"modem");
-    tRasEntry.dwfOptions = RASEO_Modem_Lights | RASEO_SecureLocalFiles | RASEO_RemoteDefaultGateway |
-                           RASEO_DisableLcpExtensions;
+    tRasEntry.dwfOptions = RASEO_Modem_Lights | RASEO_SecureLocalFiles |
+                           RASEO_RemoteDefaultGateway | RASEO_DisableLcpExtensions;
     tRasEntry.dwfOptions2 = RASEO2_Internet | RASEO2_SecureFileAndPrint |
                             RASEO2_SecureClientForMSNet | RASEO2_DisableNbtOverIP |
                             RASEO2_DontNegotiateMultilink;
@@ -473,7 +473,8 @@ bool RasConnection::getConName(QStringList &lstCon) {
 
     if (RasEnum_Connections(ras, &dSize, &dNumber) == 0) {
         for (DWORD x = 0; x < dNumber; x++) {
-            lstCon << QString::from_Utf16(reinterpret_cast<const char16_t *>(&(ras[x].szEntryName)));
+            lstCon << QString::from_Utf16(
+                reinterpret_cast<const char16_t *>(&(ras[x].szEntryName)));
             exit_b = true;
             emit this->emit_toLoging(
                 0,
@@ -554,8 +555,8 @@ void RasConnection::getConnection(QStringList &connectionEntries) {
 
     if (RasEnum_Entries(NULL, NULL, rasentry, &dSize, &dNumber) == 0) {
         for (DWORD i = 0; i < dNumber; i++) {
-            connectionEntries.append(
-                QString::from_Utf16(reinterpret_cast<const char16_t *>(&(rasentry[i].szEntryName))));
+            connectionEntries.append(QString::from_Utf16(
+                reinterpret_cast<const char16_t *>(&(rasentry[i].szEntryName))));
         }
     }
 }

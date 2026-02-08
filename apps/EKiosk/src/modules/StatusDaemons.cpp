@@ -172,10 +172,10 @@ void StatusDaemons::sendStatusToServer(Sender::Data &a_Data) {
                                    mboard.value("manufacturer").toString());
 
         auto ram_Info = QString("<ram size=\"%1 MB\" speed=\"%2\" memorytype=\"%3\">%4</ram>\n")
-                           .arg(ram.value("capacity").toString(),
-                                ram.value("speed").toString(),
-                                ram.value("memorytype").toString(),
-                                ram.value("manufacturer").toString());
+                            .arg(ram.value("capacity").toString(),
+                                 ram.value("speed").toString(),
+                                 ram.value("memorytype").toString(),
+                                 ram.value("manufacturer").toString());
 
         auto diskInfo = QString("<disk serialnumber=\"%1\" size=\"%2 GB\" freespace=\"%3 GB\" "
                                 "local_disks=\"%4\" model=\"%5\">\n"

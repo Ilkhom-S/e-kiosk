@@ -10,8 +10,6 @@ const char RequiredResource[] =
     QT_TRANSLATE_NOOP("CommonParameters", "CommonParameters#required_resource");
 const char InteractionType[] =
     QT_TRANSLATE_NOOP("CommonParameters", "CommonParameters#interaction_type");
-const char ProtocolName[] =
-    QT_TRANSLATE_NOOP("CommonParameters", "CommonParameters#protocol_name");
-const char ProtocolType[] =
-    QT_TRANSLATE_NOOP("CommonParameters", "CommonParameters#protocol_type");
+const char ProtocolName[] = QT_TRANSLATE_NOOP("CommonParameters", "CommonParameters#protocol_name");
+const char ProtocolType[] = QT_TRANSLATE_NOOP("CommonParameters", "CommonParameters#protocol_type");
 } // namespace CommonPluginParameterTranslations

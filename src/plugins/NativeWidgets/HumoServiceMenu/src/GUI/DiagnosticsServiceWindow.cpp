@@ -181,7 +181,7 @@ void DiagnosticsServiceWindow::onClickedTestServer() {
 void DiagnosticsServiceWindow::onTestServerFinished() {
     btnTestServer->setEnabled(true);
     m_TaskWatcher.result() ? lbNetworkStatus->setText(tr("#connection_test_ok"))
-                          : lbNetworkStatus->setText(tr("#connection_test_failed"));
+                           : lbNetworkStatus->setText(tr("#connection_test_failed"));
 }
 
 //---------------------------------------------------------------------------

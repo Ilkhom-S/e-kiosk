@@ -22,8 +22,8 @@ bool CoinAcceptorTest::run(const QString &aName) {
     if (aName == CCoinAcceptorTest::TestStacked) {
         if (m_CoinAcceptor->isDeviceReady() && m_CoinAcceptor->setEnable(true)) {
             m_CoinAcceptor->subscribe(SDK::Driver::ICashAcceptor::StackedSignal,
-                                     this,
-                                     SLOT(onStacked(SDK::Driver::TParList)));
+                                      this,
+                                      SLOT(onStacked(SDK::Driver::TParList)));
             return true;
         }
     }

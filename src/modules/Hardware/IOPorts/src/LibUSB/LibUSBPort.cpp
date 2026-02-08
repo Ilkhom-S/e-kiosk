@@ -298,8 +298,8 @@ bool LibUSBPort::perform_Write(const QByteArray &aData) {
     if (bytesWritten != actualSize) {
         toLog(LogLevel::Normal,
               m_ConnectedDeviceName + QString(": %1 bytes instead of %2 bytes have been written.")
-                                         .arg(bytesWritten)
-                                         .arg(actualSize));
+                                          .arg(bytesWritten)
+                                          .arg(actualSize));
         return false;
     }
 
@@ -323,7 +323,8 @@ TResult LibUSBPort::handleResult(const QString &aFunctionName, int aResult) {
 //--------------------------------------------------------------------------------
 bool LibUSBPort::deviceConnected() {
     CLibUSB::TDeviceProperties devicesProperties = getDevicesProperties(true);
-    int result = (devicesProperties.size() - m_DevicesProperties.size()) * m_DevicesProperties.size();
+    int result =
+        (devicesProperties.size() - m_DevicesProperties.size()) * m_DevicesProperties.size();
 
     m_DevicesProperties = devicesProperties;
 

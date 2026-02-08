@@ -1,9 +1,9 @@
 /* @file Принтеры Custom. */
 
-#include "Custom_Printers.h"
-
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QtMath>
+
+#include "Custom_Printers.h"
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний принтеров Custom.
@@ -116,7 +116,8 @@ bool Custom_Printer<T>::printImageDefault(const QImage &aImage, const Tags::TTyp
 
     if (!this->m_IOPort->write(CPOSPrinter::Command::SetLineSpacing(0))) {
         this->toLog(LogLevel::Error,
-                    this->m_DeviceName + ": Failed to set null line spacing for printing the image");
+                    this->m_DeviceName +
+                        ": Failed to set null line spacing for printing the image");
         return false;
     }
 
@@ -130,7 +131,7 @@ bool Custom_Printer<T>::printImageDefault(const QImage &aImage, const Tags::TTyp
 
             if (index < height) {
                 lineData << QByteArray::from_RawData((const char *)aImage.scanLine(index),
-                                                    widthInBytes);
+                                                     widthInBytes);
             } else {
                 lineData << QByteArray(widthInBytes, ASCII::NUL);
             }

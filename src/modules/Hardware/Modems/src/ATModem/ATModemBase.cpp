@@ -1,9 +1,9 @@
 /* @file Базовый класс AT-совместимого модема. */
 
-#include "ATModem_Base.h"
-
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QRegularExpression>
+
+#include "ATModem_Base.h"
 
 using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
@@ -76,7 +76,8 @@ bool ATModem_Base::isConnected() {
 //--------------------------------------------------------------------------------
 void ATModem_Base::setDeviceName(const QByteArray &aFullName) {
     if (!isAutoDetecting()) {
-        toLog(LogLevel::Normal, QString("Full modem info: %1").arg(QString::from_Latin1(aFullName)));
+        toLog(LogLevel::Normal,
+              QString("Full modem info: %1").arg(QString::from_Latin1(aFullName)));
     }
 
     QString deviceName = aFullName.simplified();

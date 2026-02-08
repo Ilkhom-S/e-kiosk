@@ -72,7 +72,8 @@ template <class T> CCashAcceptor::TStatuses CashAcceptorBase<T>::getLastStatuses
     }
 
     HistoryList<TStatusCollection>::const_iterator lastStatusCollectionIt =
-        this->m_StatusCollectionHistory.end() - qMin(this->m_StatusCollectionHistory.size(), aLevel);
+        this->m_StatusCollectionHistory.end() -
+        qMin(this->m_StatusCollectionHistory.size(), aLevel);
     TStatusCodes lastStatusCodes;
 
     foreach (const TStatusCodes &statusCodes, *lastStatusCollectionIt) {
@@ -439,8 +440,8 @@ template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
 
         if (this->m_DeviceType == CHardware::Types::CashAcceptor) {
             this->m_DeviceType = (cashReceiver == ECashReceiver::BillAcceptor)
-                                    ? CHardware::Types::BillAcceptor
-                                    : CHardware::Types::CoinAcceptor;
+                                     ? CHardware::Types::BillAcceptor
+                                     : CHardware::Types::CoinAcceptor;
         } else if (((this->m_DeviceType == CHardware::Types::BillAcceptor) &&
                     (cashReceiver == ECashReceiver::CoinAcceptor)) ||
                    ((this->m_DeviceType == CHardware::Types::CoinAcceptor) &&
@@ -948,8 +949,8 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
             QSet<ECashAcceptorStatus::Enum>(statusBuffer.keys().begin(), statusBuffer.keys().end());
 
         this->m_Ready = (this->m_Initialized == ERequestStatus::Success) && !statusSet.isEmpty() &&
-                       statusSet.intersect(CCashAcceptor::Set::ErrorStatuses).isEmpty() &&
-                       !statusBuffer.contains(BillAcceptorStatusCode::Busy::Pause);
+                        statusSet.intersect(CCashAcceptor::Set::ErrorStatuses).isEmpty() &&
+                        !statusBuffer.contains(BillAcceptorStatusCode::Busy::Pause);
     }
 }
 

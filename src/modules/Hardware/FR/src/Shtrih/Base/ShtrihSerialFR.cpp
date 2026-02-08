@@ -238,7 +238,8 @@ void ShtrihSerialFR::appendStatusCodes(ushort aFlags, TStatusCodes &aStatusCodes
 
 //--------------------------------------------------------------------------------
 bool ShtrihSerialFR::isHeadSensorsExist() const {
-    return (m_Type == CShtrihFR::Types::KKM) && (m_Model == CShtrihFR::Models::ID::ATOLElvesMiniFRF);
+    return (m_Type == CShtrihFR::Types::KKM) &&
+           (m_Model == CShtrihFR::Models::ID::ATOLElvesMiniFRF);
 }
 
 //--------------------------------------------------------------------------------

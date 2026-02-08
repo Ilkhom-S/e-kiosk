@@ -9,7 +9,8 @@
 
 //---------------------------------------------------------------------------
 CodecBase::CodecBase()
-    : m_MIB(3000), m_MinValueActive(0x0080), m_Name("Base"), m_DataGuard(QReadWriteLock::Recursive) {}
+    : m_MIB(3000), m_MinValueActive(0x0080), m_Name("Base"),
+      m_DataGuard(QReadWriteLock::Recursive) {}
 
 //---------------------------------------------------------------------------
 QByteArray CodecBase::name() const {

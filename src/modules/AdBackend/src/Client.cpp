@@ -278,9 +278,9 @@ void Client::download() {
 
         m_CurrentDownloadCommand =
             m_Core->getRemoteService()->registerUpdateCommand(PPSDK::IRemoteService::AdUpdate,
-                                                             m_Campaigns[campaignName].url,
-                                                             QUrl(),
-                                                             m_Campaigns[campaignName].md5);
+                                                              m_Campaigns[campaignName].url,
+                                                              QUrl(),
+                                                              m_Campaigns[campaignName].md5);
 
         if (m_CurrentDownloadCommand == 0) {
             toLog(LogLevel::Warning, "Failed try to start update ad. Try later.");
@@ -352,7 +352,7 @@ Ad::Campaign Client::getAdInternal(const QString &aType) const {
     camp.url = m_Settings->value(Settings::Source).toUrl();
     camp.md5 = m_Settings->value(Settings::MD5).toString();
     camp.expired = QDateTime::from_String(m_Settings->value(Settings::Expired).toString(),
-                                         Ad::Parameters::DateTimeFormat);
+                                          Ad::Parameters::DateTimeFormat);
     camp.text = m_Settings->value(Settings::Text).toString();
 
     m_Settings->endGroup();
@@ -390,7 +390,7 @@ void Client::saveChannel(const Campaign &aCampaign) {
     m_Settings->setValue(Settings::Source, aCampaign.url.toString());
     m_Settings->setValue(Settings::MD5, aCampaign.md5);
     m_Settings->setValue(Settings::Expired,
-                        aCampaign.expired.toString(Ad::Parameters::DateTimeFormat));
+                         aCampaign.expired.toString(Ad::Parameters::DateTimeFormat));
     m_Settings->setValue(Settings::Text, aCampaign.text);
 
     m_Settings->endGroup();

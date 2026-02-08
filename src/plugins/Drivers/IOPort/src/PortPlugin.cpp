@@ -13,7 +13,8 @@ static const char Name[] = QT_TRANSLATE_NOOP("PortParameters", "PortParameters#n
 namespace COM {
 static const char BaudRate[] =
     QT_TRANSLATE_NOOP("Com_PortParameters", "Com_PortParameters#com_baud_rate");
-static const char Parity[] = QT_TRANSLATE_NOOP("Com_PortParameters", "Com_PortParameters#com_parity");
+static const char Parity[] =
+    QT_TRANSLATE_NOOP("Com_PortParameters", "Com_PortParameters#com_parity");
 static const char ByteSize[] =
     QT_TRANSLATE_NOOP("Com_PortParameters", "Com_PortParameters#com_byte_size");
 static const char RTS[] = QT_TRANSLATE_NOOP("Com_PortParameters", "Com_PortParameters#com_rts");

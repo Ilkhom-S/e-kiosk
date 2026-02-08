@@ -193,7 +193,7 @@ QByteArray CryptEngine::generatePassword() const {
     // automatically seeded with high-quality system entropy.
     // fillRange() is the most efficient way to fill a buffer.
     QRandom_Generator::global()->fillRange(reinterpret_cast<uint *>(phrase.data()),
-                                          phrase.size() / sizeof(uint));
+                                           phrase.size() / sizeof(uint));
 
     return phrase;
 }
@@ -404,9 +404,9 @@ bool CryptEngine::loadKeyPair(int aKeyPair,
     switch (aEngine) {
     case CCrypt::ETypeEngine::File:
         res = ::Crypt_OpenSecretKeyFrom_File(aEngine,
-                                            aSecretKeyPath.toLocal8Bit().data(),
-                                            aPassword.toLatin1().data(),
-                                            &keyPair.first);
+                                             aSecretKeyPath.toLocal8Bit().data(),
+                                             aPassword.toLatin1().data(),
+                                             &keyPair.first);
         break;
 
     case CCrypt::ETypeEngine::RuToken:
@@ -425,10 +425,10 @@ bool CryptEngine::loadKeyPair(int aKeyPair,
     }
 
     res = ::Crypt_OpenPublicKeyFrom_File(CCrypt::ETypeEngine::File,
-                                        aPublicKeyPath.toLocal8Bit(),
-                                        aBankSerialNumber,
-                                        &keyPair.second,
-                                        0);
+                                         aPublicKeyPath.toLocal8Bit(),
+                                         aBankSerialNumber,
+                                         &keyPair.second,
+                                         0);
 
     if (res != 0) {
         aErrorDescription = errorToString(res);

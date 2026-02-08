@@ -940,7 +940,8 @@ void DeviceManager::setDeviceConfiguration(IDevice *aDevice, const QVariantMap &
     // Проверка свободности системного устройства
     foreach (IDevice *system_Device, m_DeviceDependencyMap.values(aDevice)) {
         // При изменении имени системного устройства меняем его доступность
-        oldSystem_Name = system_Device->getDeviceConfiguration()[CHardwareSDK::System_Name].toString();
+        oldSystem_Name =
+            system_Device->getDeviceConfiguration()[CHardwareSDK::System_Name].toString();
         newSystem_Name = aConfig[CHardwareSDK::System_Name].toString();
 
         if (oldSystem_Name != newSystem_Name) {
@@ -948,7 +949,8 @@ void DeviceManager::setDeviceConfiguration(IDevice *aDevice, const QVariantMap &
             QString driverPath =
                 plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
 
-            if (m_RDSystem_Names.contains(driverPath) && !m_FreeSystem_Names.contains(newSystem_Name)) {
+            if (m_RDSystem_Names.contains(driverPath) &&
+                !m_FreeSystem_Names.contains(newSystem_Name)) {
                 // Указанное системное имя недоступно.
                 toLog(LogLevel::Error,
                       QString("Required system name %1 is not available.").arg(newSystem_Name));
@@ -1102,7 +1104,8 @@ QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting)
         }
 
         logIndex = filterIndexes();
-    } else if (m_DevicesLogData.contains(aDevice) && m_DevicesLogData[aDevice].contains(aDetecting)) {
+    } else if (m_DevicesLogData.contains(aDevice) &&
+               m_DevicesLogData[aDevice].contains(aDetecting)) {
         logIndex = m_DevicesLogData[aDevice][aDetecting];
     } else {
         for (auto it = m_DevicesLogData.begin(); it != m_DevicesLogData.end(); ++it) {

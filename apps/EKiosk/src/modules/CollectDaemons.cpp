@@ -842,11 +842,11 @@ void CollectDaemons::getXmlForSend(QString &xml,
     }
 
     QString strDenom_Log = QString("===================================================\n"
-                                  "%1"
-                                  "%2"
-                                  "%3"
-                                  "===================================================\n")
-                              .arg(bills, coins, total);
+                                   "%1"
+                                   "%2"
+                                   "%3"
+                                   "===================================================\n")
+                               .arg(bills, coins, total);
 
     emit emit_Loging(0,
                      senderName,

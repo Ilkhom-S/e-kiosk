@@ -88,12 +88,12 @@ bool AtolSerialFR::getShortStatus(TStatusCodes &aStatusCodes) {
     }
 
     m_EKLZError = m_EKLZError || ((m_Mode == CAtolFR::InnerModes::ExtraCommand) &&
-                                (m_Submode == CAtolFR::InnerSubmodes::EKLZError));
+                                  (m_Submode == CAtolFR::InnerSubmodes::EKLZError));
     m_FMError = m_FMError || ((m_Mode == CAtolFR::InnerModes::ExtraCommand) &&
-                            ((m_Submode == CAtolFR::InnerSubmodes::EnterDate) ||
-                             (m_Submode == CAtolFR::InnerSubmodes::EnterTime) ||
-                             (m_Submode == CAtolFR::InnerSubmodes::FMDataTimeError) ||
-                             (m_Submode == CAtolFR::InnerSubmodes::FMDataTimeConfirm)));
+                              ((m_Submode == CAtolFR::InnerSubmodes::EnterDate) ||
+                               (m_Submode == CAtolFR::InnerSubmodes::EnterTime) ||
+                               (m_Submode == CAtolFR::InnerSubmodes::FMDataTimeError) ||
+                               (m_Submode == CAtolFR::InnerSubmodes::FMDataTimeConfirm)));
 
     return true;
 }

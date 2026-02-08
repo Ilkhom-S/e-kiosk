@@ -147,12 +147,13 @@ void IConnection::createDialupConnection(const QString &aName,
                                    "is busy or unavailable (%1)")
                                .arg(raserror));
     } else if (raserror != ERROR_SUCCESS) {
-        throw NetworkError(ECategory::Network,
-                           ESeverity::Major,
-                           raserror,
-                           QString("RasApi: ValidatePhonebookEntryName failed: %1 (%2)")
-                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
-                               .arg(raserror));
+        throw NetworkError(
+            ECategory::Network,
+            ESeverity::Major,
+            raserror,
+            QString("RasApi: ValidatePhonebookEntryName failed: %1 (%2)")
+                .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
+                .arg(raserror));
     }
 
     // Заполняем параметры
@@ -208,12 +209,13 @@ void IConnection::createDialupConnection(const QString &aName,
                                    "busy or unavailable (%1)")
                                .arg(raserror));
     } else if (raserror != ERROR_SUCCESS) {
-        throw NetworkError(ECategory::Network,
-                           ESeverity::Major,
-                           raserror,
-                           QString("RasApi: CreateNewPhonebookEntry failed: %1 (%2)")
-                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
-                               .arg(raserror));
+        throw NetworkError(
+            ECategory::Network,
+            ESeverity::Major,
+            raserror,
+            QString("RasApi: CreateNewPhonebookEntry failed: %1 (%2)")
+                .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
+                .arg(raserror));
     }
 
     // Установка параметров соединения
@@ -234,12 +236,13 @@ void IConnection::createDialupConnection(const QString &aName,
                 "RasApi: SetEntryDialParams failed because RPC server is busy or unavailable (%1)")
                 .arg(raserror));
     } else if (raserror != ERROR_SUCCESS) {
-        throw NetworkError(ECategory::Network,
-                           ESeverity::Major,
-                           raserror,
-                           QString("RasApi: SetEntryDialParams failed: %1 (%2)")
-                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
-                               .arg(raserror));
+        throw NetworkError(
+            ECategory::Network,
+            ESeverity::Major,
+            raserror,
+            QString("RasApi: SetEntryDialParams failed: %1 (%2)")
+                .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
+                .arg(raserror));
     }
 }
 
@@ -279,12 +282,13 @@ void IConnection::removeDialupConnection(const QString &aName) {
                                    "or unavailable (%1)")
                                .arg(raserror));
     } else if (raserror != ERROR_SUCCESS) {
-        throw NetworkError(ECategory::Network,
-                           ESeverity::Major,
-                           raserror,
-                           QString("RasApi: RemovePhonebookEntry failed: %1 (%2)")
-                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
-                               .arg(raserror));
+        throw NetworkError(
+            ECategory::Network,
+            ESeverity::Major,
+            raserror,
+            QString("RasApi: RemovePhonebookEntry failed: %1 (%2)")
+                .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
+                .arg(raserror));
     }
 }
 

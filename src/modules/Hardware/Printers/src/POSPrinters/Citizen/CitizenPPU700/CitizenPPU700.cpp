@@ -66,8 +66,8 @@ template <class T> bool CitizenPPU700<T>::isConnected() {
 
         if (!this->m_IOPort->write(CCitizenPPU700::Command::GetMemorySwitch5) ||
             !this->m_IOPort->read(answer,
-                                 CCitizenPPU700::MemorySwitches::ReadingTimeout,
-                                 CCitizenPPU700::MemorySwitches::AnswerSize)) {
+                                  CCitizenPPU700::MemorySwitches::ReadingTimeout,
+                                  CCitizenPPU700::MemorySwitches::AnswerSize)) {
             return false;
         }
 

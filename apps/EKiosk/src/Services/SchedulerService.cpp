@@ -175,19 +175,19 @@ SchedulerService::Item::Item(const QString &aName,
 
     QVariant params = aSettings.value(CScheduler::Config::Params);
     m_Params = params.typeId() == QMetaType::QStringList ? params.toStringList().join(",")
-                                                        : params.toString();
+                                                         : params.toString();
 
     m_Period = aSettings.value(CScheduler::Config::Period, "0").toInt();
     m_TriggeredOnStart = aSettings.value(CScheduler::Config::TriggeredOnStart, "false")
-                            .toString()
-                            .compare("true", Qt::CaseInsensitive) == 0;
+                             .toString()
+                             .compare("true", Qt::CaseInsensitive) == 0;
     m_RepeatCountIfFail = aSettings.value(CScheduler::Config::RepeatCountIfFail, "0").toInt();
     m_TimeThreshold = aSettings.value(CScheduler::Config::TimeThreshold, "0").toInt();
     m_RetryTimeout = aSettings.value(CScheduler::Config::RetryTimeout, "-1").toInt();
 
     m_LastExecute =
         QDateTime::from_String(aUserSettings.value(CScheduler::UserConfig::LastExecute).toString(),
-                              CScheduler::DateTimeFormat);
+                               CScheduler::DateTimeFormat);
     m_FailExecuteCounter =
         aUserSettings.value(CScheduler::UserConfig::FailExecuteCounter, 0).toInt();
 
@@ -247,7 +247,8 @@ QTimer *SchedulerService::Item::createTimer() {
     timer->setSingleShot(true);
 
     // если последний запуск неудачный, то проверяем нужно ли перезапустить задачу
-    if (m_FailExecuteCounter && m_FailExecuteCounter <= m_RepeatCountIfFail && m_RetryTimeout >= 0) {
+    if (m_FailExecuteCounter && m_FailExecuteCounter <= m_RepeatCountIfFail &&
+        m_RetryTimeout >= 0) {
         timer->setInterval(m_RetryTimeout * 1000);
         return timer;
     }

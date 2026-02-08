@@ -69,10 +69,10 @@ template <class T> bool TCPDeviceBase<T>::checkPort() {
 
 // Исправленный макрос: используем QStringLiteral для оптимизации и явный this-> для логов
 #define MAKE_TCP_PORT_PARAMETER(aName, aType)                                                      \
-    TTCPDevicePortParameter aName = this->m_PortParameters.value(CHardwareSDK::Port::TCP::aType);   \
+    TTCPDevicePortParameter aName = this->m_PortParameters.value(CHardwareSDK::Port::TCP::aType);  \
     if (aName.isEmpty()) {                                                                         \
         this->toLog(LogLevel::Error,                                                               \
-                    this->m_DeviceName + QStringLiteral(": %1 are empty").arg(#aName));             \
+                    this->m_DeviceName + QStringLiteral(": %1 are empty").arg(#aName));            \
         return false;                                                                              \
     }
 

@@ -400,18 +400,18 @@ static QAtCodeInfo const ext_codes[] = {
     {QAtResult::PhoneAdapterLinkReserved, "phone-adaptor link reserved"},                  // no tr
     {QAtResult::OperationNotAllowed, "operation not allowed"},                             // no tr
     {QAtResult::OperationNotSupported, "operation not supported"},                         // no tr
-    {QAtResult::PhSim_PinRequired, "PH-SIM PIN required"},                                  // no tr
-    {QAtResult::PhFSim_PinRequired, "PH-FSIM PIN required"},                                // no tr
-    {QAtResult::PhFSim_PukRequired, "PH-FSIM PUK required"},                                // no tr
-    {QAtResult::Sim_NotInserted, "SIM not inserted"},                                       // no tr
-    {QAtResult::Sim_PinRequired, "SIM PIN required"},                                       // no tr
-    {QAtResult::Sim_PukRequired, "SIM PUK required"},                                       // no tr
-    {QAtResult::Sim_Failure, "SIM failure"},                                                // no tr
-    {QAtResult::Sim_Busy, "SIM busy"},                                                      // no tr
-    {QAtResult::Sim_Wrong, "SIM wrong"},                                                    // no tr
+    {QAtResult::PhSim_PinRequired, "PH-SIM PIN required"},                                 // no tr
+    {QAtResult::PhFSim_PinRequired, "PH-FSIM PIN required"},                               // no tr
+    {QAtResult::PhFSim_PukRequired, "PH-FSIM PUK required"},                               // no tr
+    {QAtResult::Sim_NotInserted, "SIM not inserted"},                                      // no tr
+    {QAtResult::Sim_PinRequired, "SIM PIN required"},                                      // no tr
+    {QAtResult::Sim_PukRequired, "SIM PUK required"},                                      // no tr
+    {QAtResult::Sim_Failure, "SIM failure"},                                               // no tr
+    {QAtResult::Sim_Busy, "SIM busy"},                                                     // no tr
+    {QAtResult::Sim_Wrong, "SIM wrong"},                                                   // no tr
     {QAtResult::IncorrectPassword, "incorrect password"},                                  // no tr
-    {QAtResult::Sim_Pin2Required, "SIM PIN2 required"},                                     // no tr
-    {QAtResult::Sim_Puk2Required, "SIM PUK2 required"},                                     // no tr
+    {QAtResult::Sim_Pin2Required, "SIM PIN2 required"},                                    // no tr
+    {QAtResult::Sim_Puk2Required, "SIM PUK2 required"},                                    // no tr
     {QAtResult::MemoryFull, "memory full"},                                                // no tr
     {QAtResult::InvalidIndex, "invalid index"},                                            // no tr
     {QAtResult::NotFound, "not found"},                                                    // no tr
@@ -456,7 +456,7 @@ static QAtCodeInfo const ext_codes[] = {
     {QAtResult::Congestion, "Congestion"},                                           // no tr
     {QAtResult::NetworkFailure, "Network failure"},                                  // no tr
     {QAtResult::UplinkBusy, "Uplink busy"},                                          // no tr
-    {QAtResult::NoAccessRightsForSim_File, "No access rights for SIM file"},          // no tr
+    {QAtResult::NoAccessRightsForSim_File, "No access rights for SIM file"},         // no tr
     {QAtResult::NoSubscriptionForPriority, "No subscription for priority"},          // no tr
     {QAtResult::OperationNotApplicable, "operation not applicable or not possible"}, // no tr
 
@@ -466,15 +466,15 @@ static QAtCodeInfo const ext_codes[] = {
     {QAtResult::SMSOperationNotSupported, "operation not supported"},     // no tr
     {QAtResult::InvalidPDUModeParameter, "invalid PDU mode parameter"},   // no tr
     {QAtResult::InvalidTextModeParameter, "invalid text mode parameter"}, // no tr
-    {QAtResult::USim_NotInserted, "(U)SIM not inserted"},                  // no tr
-    {QAtResult::USim_PinRequired, "(U)SIM PIN required"},                  // no tr
-    {QAtResult::PHUSim_PinRequired, "PH-(U)SIM PIN required"},             // no tr
-    {QAtResult::USim_Failure, "(U)SIM failure"},                           // no tr
-    {QAtResult::USim_Busy, "(U)SIM busy"},                                 // no tr
-    {QAtResult::USim_Wrong, "(U)SIM wrong"},                               // no tr
-    {QAtResult::USim_PukRequired, "(U)SIM PUK required"},                  // no tr
-    {QAtResult::USim_Pin2Required, "(U)SIM PIN2 required"},                // no tr
-    {QAtResult::USim_Puk2Required, "(U)SIM PUK2 required"},                // no tr
+    {QAtResult::USim_NotInserted, "(U)SIM not inserted"},                 // no tr
+    {QAtResult::USim_PinRequired, "(U)SIM PIN required"},                 // no tr
+    {QAtResult::PHUSim_PinRequired, "PH-(U)SIM PIN required"},            // no tr
+    {QAtResult::USim_Failure, "(U)SIM failure"},                          // no tr
+    {QAtResult::USim_Busy, "(U)SIM busy"},                                // no tr
+    {QAtResult::USim_Wrong, "(U)SIM wrong"},                              // no tr
+    {QAtResult::USim_PukRequired, "(U)SIM PUK required"},                 // no tr
+    {QAtResult::USim_Pin2Required, "(U)SIM PIN2 required"},               // no tr
+    {QAtResult::USim_Puk2Required, "(U)SIM PUK2 required"},               // no tr
     {QAtResult::SMSMemoryFailure, "memory failure"},                      // no tr
     {QAtResult::InvalidMemoryIndex, "invalid memory index"},              // no tr
     {QAtResult::MemoryFull, "memory full"},                               // no tr

@@ -96,7 +96,7 @@ bool CCNetCashAcceptorBase::waitNotBusyPowerUp() {
                                       CCCNet::NotBusyPowerUpWaiting)) {
         toLog(LogLevel::Error,
               m_DeviceName + ": Failed to wait not busy and power-up status from the cash acceptor "
-                            "after reset command");
+                             "after reset command");
         return false;
     }
 
@@ -139,8 +139,8 @@ TResult CCNetCashAcceptorBase::execCommand(const QByteArray &aCommand,
 
 //---------------------------------------------------------------------------------
 TResult CCNetCashAcceptorBase::perform_Command(const QByteArray &aCommand,
-                                              const QByteArray &aCommandData,
-                                              QByteArray *aAnswer) {
+                                               const QByteArray &aCommandData,
+                                               QByteArray *aAnswer) {
     QByteArray answer;
     CCCNet::Commands::SData data = m_CommandData[aCommand];
     TResult result = m_Protocol.processCommand(aCommand + aCommandData, answer, data);
@@ -597,8 +597,8 @@ bool CCNetCashAcceptorBase::processBlockUpdating(uint aAddress,
     } else if (++aRepeat < CCCNet::WriteFirmwareDataMaxRepeats) {
         toLog(LogLevel::Warning,
               m_DeviceName + QString(": No answer for writing data block %1, trying attempt #%2")
-                                .arg(aIndex + 1)
-                                .arg(aRepeat + 1));
+                                 .arg(aIndex + 1)
+                                 .arg(aRepeat + 1));
 
         aIndex--;
     }
@@ -610,8 +610,8 @@ bool CCNetCashAcceptorBase::processBlockUpdating(uint aAddress,
         (!empty && (answerData.warningLevel == EWarningLevel::Error))) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Failed to write data block %1%2")
-                                .arg(aIndex + 1)
-                                .arg(empty ? "" : (", error: " + answerData.description)));
+                                 .arg(aIndex + 1)
+                                 .arg(empty ? "" : (", error: " + answerData.description)));
         return false;
     }
 
@@ -637,10 +637,10 @@ bool CCNetCashAcceptorBase::processUpdating(const QByteArray &aBuffer, int aSect
 
     toLog(LogLevel::Normal,
           m_DeviceName + QString(": section size for updating the firmware = %1, buffer size = %2, "
-                                "amount of sections = %3")
-                            .arg(aSectionSize)
-                            .arg(aBuffer.size())
-                            .arg(addressedBlockList.size()));
+                                 "amount of sections = %3")
+                             .arg(aSectionSize)
+                             .arg(aBuffer.size())
+                             .arg(addressedBlockList.size()));
 
     int repeat = 0;
     bool result = true;

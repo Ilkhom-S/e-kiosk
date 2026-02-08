@@ -263,8 +263,8 @@ void PuloonLCDM::perform_Dispense(int aUnit, int aItems) {
             if (rejectedItems) {
                 toLog(LogLevel::Warning,
                       m_DeviceName + QString(": emit rejected %1 notes from %2 unit")
-                                        .arg(rejectedItems)
-                                        .arg(aUnit));
+                                         .arg(rejectedItems)
+                                         .arg(aUnit));
 
                 emit rejected(aUnit, rejectedItems);
             }

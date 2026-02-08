@@ -957,7 +957,7 @@ PPSDK::SEncashment DatabaseUtils::perform_Encashment(const QVariantMap &aParamet
         // 5. Сохраняем параметры инкассации.
         query.reset(
             m_Database.createQuery(QString("INSERT INTO `encashment_param`(`fk_encashment_id`, "
-                                          "`name`, `value`) VALUES(:id, :name, :value)")));
+                                           "`name`, `value`) VALUES(:id, :name, :value)")));
         query->bindValue(":id", result.id);
 
         foreach (auto name, result.parameters.keys()) {
@@ -1358,7 +1358,7 @@ bool DatabaseUtils::backupOldPayments() {
 
     // Удаляем купюры
     query.reset(m_Database.execQuery("DELETE FROM `payment_note` WHERE `fk_payment_id` NOT "
-                                    "IN(SELECT `id` FROM `payment`) AND `ejection` NOT NULL"));
+                                     "IN(SELECT `id` FROM `payment`) AND `ejection` NOT NULL"));
     if (!query) {
         LOG(m_Log, LogLevel::Error, "Failed to delete payment params records.");
 

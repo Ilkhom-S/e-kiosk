@@ -76,10 +76,10 @@ bool DatabaseService::initialize() {
         for (int retryCount = 0; retryCount < 2; ++retryCount) {
             // Подключаемся к БД.
             if (!m_Database->open(dbSettings.name,
-                                 dbSettings.user,
-                                 dbSettings.password,
-                                 dbSettings.host,
-                                 dbSettings.port)) {
+                                  dbSettings.user,
+                                  dbSettings.password,
+                                  dbSettings.host,
+                                  dbSettings.port)) {
                 throw QString("cannot open database");
             }
 
@@ -221,7 +221,7 @@ bool DatabaseService::isGood(bool aQueryResult) {
 
         if (!feedbackSent) {
             m_Application->getCore()->getTerminalService()->sendFeedback(CServices::DatabaseService,
-                                                                        message);
+                                                                         message);
 
             feedbackSent = true;
         }

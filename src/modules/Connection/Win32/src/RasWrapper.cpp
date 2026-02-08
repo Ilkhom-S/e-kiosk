@@ -85,34 +85,48 @@ std::wstring EDeviceType::ToString(EDeviceType::Enum type) {
 
 //------------------------------------------------------------------------------
 EDeviceType::Enum EDeviceType::ToEnum(const std::wstring &type) {
-    if (!_wcsicmp(type.c_str(), RASDT_Modem))
+    if (!_wcsicmp(type.c_str(), RASDT_Modem)) {
         return Modem;
-    if (!_wcsicmp(type.c_str(), RASDT_Isdn))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_Isdn)) {
         return Isdn;
-    if (!_wcsicmp(type.c_str(), RASDT_X25))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_X25)) {
         return X25;
-    if (!_wcsicmp(type.c_str(), RASDT_Vpn))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_Vpn)) {
         return Vpn;
-    if (!_wcsicmp(type.c_str(), RASDT_Pad))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_Pad)) {
         return Pad;
-    if (!_wcsicmp(type.c_str(), RASDT_Generic))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_Generic)) {
         return Generic;
-    if (!_wcsicmp(type.c_str(), RASDT_Serial))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_Serial)) {
         return Serial;
-    if (!_wcsicmp(type.c_str(), RASDT_FrameRelay))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_FrameRelay)) {
         return FrameRelay;
-    if (!_wcsicmp(type.c_str(), RASDT_Atm))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_Atm)) {
         return Atm;
-    if (!_wcsicmp(type.c_str(), RASDT_Sonet))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_Sonet)) {
         return Sonet;
-    if (!_wcsicmp(type.c_str(), RASDT_SW56))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_SW56)) {
         return SW56;
-    if (!_wcsicmp(type.c_str(), RASDT_Irda))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_Irda)) {
         return Irda;
-    if (!_wcsicmp(type.c_str(), RASDT_Parallel))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_Parallel)) {
         return Parallel;
-    if (!_wcsicmp(type.c_str(), RASDT_PPPoE))
+    }
+    if (!_wcsicmp(type.c_str(), RASDT_PPPoE)) {
         return PPPoE;
+    }
 
     return Unknown;
 }
@@ -967,10 +981,10 @@ void PhonebookEntryEnumerator::reset(const std::wstring &aPhonebookPath) {
         m_Entries = reinterpret_cast<LPRASENTRYNAME>(new char[m_RequestedBufSize]);
         m_Entries[0].dwSize = sizeof(m_Entries[0]);
         m_LastError = RasEnum_Entries(0,
-                                    aPhonebookPath.empty() ? 0 : aPhonebookPath.data(),
-                                    m_Entries,
-                                    &m_RequestedBufSize,
-                                    &m_EntryCount);
+                                      aPhonebookPath.empty() ? 0 : aPhonebookPath.data(),
+                                      m_Entries,
+                                      &m_RequestedBufSize,
+                                      &m_EntryCount);
     }
 }
 

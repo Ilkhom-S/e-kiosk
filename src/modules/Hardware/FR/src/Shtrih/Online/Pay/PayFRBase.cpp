@@ -19,7 +19,7 @@ template <class T> void PayFRBase<T>::processDeviceData() {
     bool SDCardError = SDCardData.isEmpty() || SDCardData.startsWith(CDeviceData::Error) ||
                        SDCardData.startsWith(CDeviceData::NotConnected);
     m_CanProcessZBuffer = m_CanProcessZBuffer && !SDCardError &&
-                         (m_ModelData.date >= CShtrihOnlineFR::MinFWDate::ZBuffer);
+                          (m_ModelData.date >= CShtrihOnlineFR::MinFWDate::ZBuffer);
 }
 
 //--------------------------------------------------------------------------------

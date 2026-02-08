@@ -42,8 +42,9 @@ template <class T> TParameterList Prim_Parameters(const QStringList &aModels) {
 
 //------------------------------------------------------------------------------
 template <class T> TParameterList PresenterPrim_Parameters(const QStringList &aModels) {
-    return Prim_Parameters<T>(aModels) << setLoopEnabled() << setBackFeed(PPT::ForNonFiscalDocuments)
-                                      << setPrinterModel("Epson EU-422");
+    return Prim_Parameters<T>(aModels)
+           << setLoopEnabled() << setBackFeed(PPT::ForNonFiscalDocuments)
+           << setPrinterModel("Epson EU-422");
 }
 
 //------------------------------------------------------------------------------

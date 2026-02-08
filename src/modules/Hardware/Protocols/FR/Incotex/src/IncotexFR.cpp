@@ -799,8 +799,8 @@ const bool IncotexFR::setFRParameters(SDK::Driver::IIOPort * /*aPort*/) {
 
 //--------------------------------------------------------------------------------
 const bool IncotexFR::programm_FRParameter(SDK::Driver::IIOPort * /*aPort*/,
-                                          uchar /*aNumber*/,
-                                          uchar /*aValue*/) {
+                                           uchar /*aNumber*/,
+                                           uchar /*aValue*/) {
     // TODO: реализовать
     return true;
 }

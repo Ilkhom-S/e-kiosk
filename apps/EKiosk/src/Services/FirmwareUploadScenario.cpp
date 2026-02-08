@@ -54,7 +54,7 @@ void FirmwareUploadScenario::start(const QVariantMap &aContext) {
     lockGUI();
 
     m_Command = RemoteService::instance(m_Application)
-                   ->findUpdateCommand(PPSDK::IRemoteService::FirmwareUpload);
+                    ->findUpdateCommand(PPSDK::IRemoteService::FirmwareUpload);
 
     if (!m_Command.isValid()) {
         toLog(LogLevel::Error, "Not found active FirmwareUpload command.");

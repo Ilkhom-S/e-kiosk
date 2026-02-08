@@ -52,7 +52,7 @@ bool SettingsService::initialize() {
     // user.ini. Такой подход обеспечивает гибкость и удобство конфигурирования.
     QList<SSettingsSource> settingsSources;
     settingsSources << SSettingsSource(ISysUtils::rm_BOM(m_Application->getWorkingDirectory() +
-                                                        "/data/system.ini"),
+                                                         "/data/system.ini"),
                                        AdapterNames::TerminalAdapter,
                                        true)
                     << SSettingsSource("terminal.ini", AdapterNames::TerminalAdapter, false)

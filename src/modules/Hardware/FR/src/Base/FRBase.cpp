@@ -26,19 +26,19 @@ template <class T> FRBase<T>::FRBase() : m_FFEngine(m_Log) {
 
     // ошибки, при которых возможно выполнение определенных команд
     m_UnnecessaryErrors.insert(EFiscalPrinterCommand::Print,
-                              getFiscalStatusCodes(EWarningLevel::Error));
+                               getFiscalStatusCodes(EWarningLevel::Error));
     m_UnnecessaryErrors.insert(EFiscalPrinterCommand::ZReport,
-                              TStatusCodes() << FRStatusCode::Error::ZBufferOverflow
-                                             << FRStatusCode::Error::NeedCloseSession
-                                             << DeviceStatusCode::Error::Initialization);
+                               TStatusCodes() << FRStatusCode::Error::ZBufferOverflow
+                                              << FRStatusCode::Error::NeedCloseSession
+                                              << DeviceStatusCode::Error::Initialization);
     m_UnnecessaryErrors.insert(EFiscalPrinterCommand::Encashment,
-                              TStatusCodes() << FRStatusCode::Error::ZBufferOverflow
-                                             << FRStatusCode::Error::NeedCloseSession);
+                               TStatusCodes() << FRStatusCode::Error::ZBufferOverflow
+                                              << FRStatusCode::Error::NeedCloseSession);
     m_UnnecessaryErrors.insert(EFiscalPrinterCommand::XReport,
-                              TStatusCodes()
-                                  << FRStatusCode::Error::ZBufferOverflow
-                                  << FRStatusCode::Error::NeedCloseSession
-                                  << FRStatusCode::Error::EKLZ << FRStatusCode::Error::ZBuffer);
+                               TStatusCodes()
+                                   << FRStatusCode::Error::ZBufferOverflow
+                                   << FRStatusCode::Error::NeedCloseSession
+                                   << FRStatusCode::Error::EKLZ << FRStatusCode::Error::ZBuffer);
 
     // данные устройства
     setInitialData();
@@ -54,7 +54,7 @@ template <class T> FRBase<T>::FRBase() : m_FFEngine(m_Log) {
     setConfigParameter(CHardware::CanSoftReboot, false);
 
     m_OFDFiscalFields << CFR::FiscalFields::Cashier << CFR::FiscalFields::CashierINN
-                     << CFR::FiscalFields::UserContact;
+                      << CFR::FiscalFields::UserContact;
 
     m_PayTypeData.add(EPayTypes::Cash, 1);
     m_PayTypeData.add(EPayTypes::EMoney, 2);
@@ -118,7 +118,8 @@ template <class T> void FRBase<T>::setDeviceConfiguration(const QVariantMap &aCo
 
     if (aConfiguration.contains(CHardware::FR::FiscalMode)) {
         bool isFiscal = aConfiguration[CHardware::FR::FiscalMode].toBool();
-        m_StatusCodesSpecification.dynamicCast<FRStatusCode::CSpecifications>()->setFiscal(isFiscal);
+        m_StatusCodesSpecification.dynamicCast<FRStatusCode::CSpecifications>()->setFiscal(
+            isFiscal);
     }
 
     if (aConfiguration.contains(CHardwareSDK::FR::WithoutPrinting)) {
@@ -144,10 +145,10 @@ template <class T> void FRBase<T>::setDeviceConfiguration(const QVariantMap &aCo
 
     if (aConfiguration.contains(CHardwareSDK::FR::DealerTaxSystem))
         m_FFEngine.setConfigParameter(CHardwareSDK::FR::DealerTaxSystem,
-                                     getConfigParameter(CHardwareSDK::FR::DealerTaxSystem));
+                                      getConfigParameter(CHardwareSDK::FR::DealerTaxSystem));
     if (aConfiguration.contains(CHardwareSDK::FR::DealerAgentFlag))
         m_FFEngine.setConfigParameter(CHardwareSDK::FR::DealerAgentFlag,
-                                     getConfigParameter(CHardwareSDK::FR::DealerAgentFlag));
+                                      getConfigParameter(CHardwareSDK::FR::DealerAgentFlag));
     if (aConfiguration.contains(CHardwareSDK::OperatorPresence))
         m_FFEngine.setConfigParameter(CHardwareSDK::OperatorPresence, m_OperatorPresence);
 
@@ -241,7 +242,8 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
     }
 
     setDeviceParameter(CDeviceData::FS::SerialNumber, m_FSSerialNumber);
-    setDeviceParameter(CDeviceData::FR::TaxSystems, QStringList(taxSystem_Data.values()).join(", "));
+    setDeviceParameter(CDeviceData::FR::TaxSystems,
+                       QStringList(taxSystem_Data.values()).join(", "));
     setDeviceParameter(CDeviceData::FR::OperationModes, operationModeDescriptions.join(", "));
     setDeviceParameter(CDeviceData::FR::FFDFR, CFR::FFD[m_FFDFR].description);
     setDeviceParameter(CDeviceData::FR::FFDFS, CFR::FFD[m_FFDFS].description);
@@ -259,12 +261,13 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
                                    SFiscalFieldData(data.translationPF, data.isMoney()));
         }
 
-        setConfigParameter(CHardwareSDK::FR::FiscalFieldData, QVariant::from_Value(fiscalFieldData));
+        setConfigParameter(CHardwareSDK::FR::FiscalFieldData,
+                           QVariant::from_Value(fiscalFieldData));
 
         m_FFEngine.setConfigParameter(CFiscalSDK::SerialFSNumber,
-                                     getDeviceParameter(CDeviceData::FS::SerialNumber));
+                                      getDeviceParameter(CDeviceData::FS::SerialNumber));
         m_FFEngine.setConfigParameter(CFiscalSDK::SerialFRNumber,
-                                     getDeviceParameter(CDeviceData::SerialNumber));
+                                      getDeviceParameter(CDeviceData::SerialNumber));
         m_FFEngine.setConfigParameter(CFiscalSDK::INN, getDeviceParameter(CDeviceData::FR::INN));
         m_FFEngine.setConfigParameter(CFiscalSDK::RNM, getDeviceParameter(CDeviceData::FR::RNM));
     }
@@ -421,7 +424,8 @@ template <class T> bool FRBase<T>::checkOperationModes(char aData) {
     if (!m_OperatorPresence && !m_FiscalServerPresence &&
         m_OperationModes.contains(char(EOperationModes::Internet))) {
         m_WrongFiscalizationSettings = true;
-        toLog(LogLevel::Error, m_DeviceName + ": There is \"FR for internet\" flag and no operator");
+        toLog(LogLevel::Error,
+              m_DeviceName + ": There is \"FR for internet\" flag and no operator");
     }
 
     return result;
@@ -485,8 +489,8 @@ template <class T> bool FRBase<T>::checkNotPrinting(bool aEnabled, bool aZReport
 
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Failed to check %1 %2 printing")
-                                .arg(notPrintDocument ? "disabling" : "enabling")
-                                .arg(aZReport ? "Z-report" : "fiscal document"));
+                                 .arg(notPrintDocument ? "disabling" : "enabling")
+                                 .arg(aZReport ? "Z-report" : "fiscal document"));
         return false;
     }
 
@@ -1187,7 +1191,7 @@ template <class T> bool FRBase<T>::processStatus(TStatusCodes &aStatusCodes) {
                 addPhone(CFiscalSDK::AgentPhone,
                          getConfigParameter(CHardwareSDK::FR::DealerSupportPhone));
                 m_FFEngine.setConfigParameter(CFiscalSDK::AgentPhone,
-                                             getConfigParameter(CFiscalSDK::AgentPhone));
+                                              getConfigParameter(CFiscalSDK::AgentPhone));
                 bool OK;
 
                 if (!m_FFEngine.checkFiscalField(CFR::FiscalFields::AgentPhone, OK)) {
@@ -1393,8 +1397,8 @@ template <class T> bool FRBase<T>::checkAmountsOnPayment(const SPaymentData &aPa
         if (unitData.sum <= 0) {
             toLog(LogLevel::Error,
                   m_DeviceName + QString(": Failed to process %1 for sum = %2")
-                                    .arg(payOffType)
-                                    .arg(unitData.sum, 0, 'f', 2));
+                                     .arg(payOffType)
+                                     .arg(unitData.sum, 0, 'f', 2));
             return false;
         }
     }
@@ -1419,9 +1423,9 @@ template <class T> bool FRBase<T>::checkSum_InCash(const SPaymentData &aPaymentD
     } else if (totalAmount > amountInCash) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Failed to process %1 for %2 > %3 in cash")
-                                .arg(payOffType)
-                                .arg(totalAmount, 0, 'f', 2)
-                                .arg(amountInCash, 0, 'f', 2));
+                                 .arg(payOffType)
+                                 .arg(totalAmount, 0, 'f', 2)
+                                 .arg(amountInCash, 0, 'f', 2));
 
         emitStatusCode(FRStatusCode::Error::NoMoney, EFRStatus::NoMoneyForSellingBack);
 
@@ -1445,7 +1449,7 @@ template <class T> bool FRBase<T>::checkTaxesOnPayment(const SPaymentData &aPaym
         if (!m_TaxData.data().contains(unitData.VAT)) {
             toLog(LogLevel::Error,
                   m_DeviceName + QString(": The taxes specification does not contain VAT = %1")
-                                    .arg(unitData.VAT));
+                                     .arg(unitData.VAT));
             return false;
         }
     }
@@ -1524,7 +1528,7 @@ template <class T> void FRBase<T>::addFiscalFieldsOnPayment(const SPaymentData &
                     aPaymentData.fiscalParameters.value(CPrintConstants::BankName));
 
     QString agentOperation = QString::from_Utf8(aPaymentData.back() ? CFR::AgentOperation::Payout
-                                                                   : CFR::AgentOperation::Payment);
+                                                                    : CFR::AgentOperation::Payment);
     m_FFEngine.setConfigParameter(CFiscalSDK::AgentOperation, agentOperation);
 
     bool isBankAgent = CFR::isBankAgent(aPaymentData.agentFlag);
@@ -1604,9 +1608,10 @@ template <class T> bool FRBase<T>::checkPayTypeOnPayment(const SPaymentData &aPa
         return false;
     } else if (!m_PayTypeData.data().contains(aPaymentData.payType)) {
         toLog(LogLevel::Error,
-              m_DeviceName + QString(": The pay types specification does not contain type = %1 (%2)")
-                                .arg(aPaymentData.payType)
-                                .arg(CFR::PayTypeDescription[aPaymentData.payType]));
+              m_DeviceName +
+                  QString(": The pay types specification does not contain type = %1 (%2)")
+                      .arg(aPaymentData.payType)
+                      .arg(CFR::PayTypeDescription[aPaymentData.payType]));
         return false;
     }
 

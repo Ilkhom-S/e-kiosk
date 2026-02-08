@@ -18,9 +18,10 @@ namespace PaymentProcessor {
 
 //----------------------------------------------------------------------------
 Commission::Commission()
-    : m_Value(0.0), m_Above(CCommissions::DefaultAboveValue), m_Below(CCommissions::DefaultBelowValue),
-      m_MinCharge(CCommissions::MinChargeValue), m_MaxCharge(CCommissions::MaxChargeValue),
-      m_Type(Absolute), m_Round(Bank), m_Base(AmountAll) {}
+    : m_Value(0.0), m_Above(CCommissions::DefaultAboveValue),
+      m_Below(CCommissions::DefaultBelowValue), m_MinCharge(CCommissions::MinChargeValue),
+      m_MaxCharge(CCommissions::MaxChargeValue), m_Type(Absolute), m_Round(Bank),
+      m_Base(AmountAll) {}
 
 //----------------------------------------------------------------------------
 bool Commission::contains(double aSum) const {
@@ -68,7 +69,9 @@ double Commission::getValueFor(double aSum, bool aAtAmount) const {
         commission = m_Value;
     }
 
-    return commission < m_MinCharge ? m_MinCharge : commission > m_MaxCharge ? m_MaxCharge : commission;
+    return commission < m_MinCharge   ? m_MinCharge
+           : commission > m_MaxCharge ? m_MaxCharge
+                                      : commission;
 }
 
 //----------------------------------------------------------------------------
@@ -542,7 +545,7 @@ Commission Commissions::getCommission(qint64 aProvider, double aSum) const {
 //----------------------------------------------------------------------------
 ProcessingCommission Commissions::getProcessingCommission(qint64 aProvider) {
     return m_ProcessingCommissions.contains(aProvider) ? m_ProcessingCommissions[aProvider]
-                                                      : ProcessingCommission();
+                                                       : ProcessingCommission();
 }
 
 //----------------------------------------------------------------------------
@@ -574,13 +577,13 @@ Commissions Commissions::from_Settings(const TPtree &aSettings) {
     for (TPtree::const_assoc_iterator it = searchBounds.first; it != searchBounds.second; ++it) {
         try {
             result.m_ProviderCommissions.insert(it->second.get<qint64>("<xmlattr>.id"),
-                                               result.loadCommissions(it->second));
+                                                result.loadCommissions(it->second));
 
             ProcessingCommission processingCommission =
                 ProcessingCommission::from_Settings(it->second);
             if (!processingCommission.isNull()) {
                 result.m_ProcessingCommissions.insert(it->second.get<qint64>("<xmlattr>.id"),
-                                                     processingCommission);
+                                                      processingCommission);
             }
         } catch (std::runtime_error &) {
         }
@@ -598,13 +601,13 @@ SDK::PaymentProcessor::Commissions Commissions::from_Variant(const QVariantList 
 
     foreach (QVariant com, aCommissions) {
         result.m_ProviderCommissions.insert(com.toMap()["provider"].toInt(),
-                                           result.loadCommissions(com));
+                                            result.loadCommissions(com));
 
         ProcessingCommission processingCommission = ProcessingCommission::from_Variant(com);
 
         if (!processingCommission.isNull()) {
             result.m_ProcessingCommissions.insert(com.toMap()["provider"].toInt(),
-                                                 processingCommission);
+                                                  processingCommission);
         }
     }
 

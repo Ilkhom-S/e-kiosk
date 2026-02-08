@@ -32,7 +32,7 @@ template <class T> TParameterList CCTalkParameters() {
     using namespace CHardware::CashDevice;
 
     return Enum_Parameters<T>() << setProtocolType(CCTalkTypes::CRC8,
-                                                  QStringList() << CCTalkTypes::CRC8);
+                                                   QStringList() << CCTalkTypes::CRC8);
 }
 
 //------------------------------------------------------------------------------

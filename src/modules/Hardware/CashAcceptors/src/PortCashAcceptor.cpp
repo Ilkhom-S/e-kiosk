@@ -144,8 +144,8 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
         if (this->m_DeviceCodeBuffers.isEmpty()) {
             this->toLog(logLevel,
                         this->m_DeviceName + QString(": %1 -> %2")
-                                                .arg(UnknownDeviceCodeDescription)
-                                                .arg(defaultDescriptionLog.join(", ")));
+                                                 .arg(UnknownDeviceCodeDescription)
+                                                 .arg(defaultDescriptionLog.join(", ")));
         } else {
             for (TDeviceCodeSpecifications::iterator it = deviceCodeSpecifications.begin();
                  it != deviceCodeSpecifications.end();
@@ -163,9 +163,9 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
 
                     this->toLog(logLevel,
                                 this->m_DeviceName + QString(": %1%2 -> %3")
-                                                        .arg(it->description)
-                                                        .arg(codeLog)
-                                                        .arg(statusCodeData.description));
+                                                         .arg(it->description)
+                                                         .arg(codeLog)
+                                                         .arg(statusCodeData.description));
                 }
             }
         }
@@ -242,9 +242,9 @@ template <class T> void PortCashAcceptor<T>::restoreStatuses() {
 
     this->toLog(LogLevel::Normal,
                 this->m_DeviceName + QString(", restoreStatuses: post polling action is %1enabled, "
-                                            "checking disable state is %2enabled")
-                                        .arg(this->m_PostPollingAction ? "" : "not ")
-                                        .arg(this->m_CheckDisable ? "" : "not "));
+                                             "checking disable state is %2enabled")
+                                         .arg(this->m_PostPollingAction ? "" : "not ")
+                                         .arg(this->m_CheckDisable ? "" : "not "));
 
     auto canRestore = [&]() -> bool { return !this->m_CheckDisable && this->m_PostPollingAction; };
     CCashAcceptor::TStatusHistory statusHistory;
@@ -377,7 +377,7 @@ template <class T> bool PortCashAcceptor<T>::setEnable(bool aEnabled) {
     auto cancelSetEnable = [&]() -> bool {
         this->toLog(LogLevel::Normal,
                     this->m_DeviceName + (aEnabled ? ": An error is occured, Enable return false"
-                                                  : ": An error is occured, Disable return true"));
+                                                   : ": An error is occured, Disable return true"));
 
         this->setConfigParameter(CHardware::CashAcceptor::ProcessEnabling, false);
         this->setConfigParameter(CHardware::CashAcceptor::ProcessDisabling, false);
@@ -738,7 +738,7 @@ template <class T> bool PortCashAcceptor<T>::canUpdateFirmware() {
     if (this->isEnabled() && !this->setEnable(false)) {
         this->toLog(LogLevel::Error,
                     this->m_DeviceName + ": Failed to disable for updating the firmware due to "
-                                        "incorrect state of cash acceptor");
+                                         "incorrect state of cash acceptor");
         return false;
     }
 
@@ -766,7 +766,8 @@ template <class T> void PortCashAcceptor<T>::updateFirmware(const QByteArray &aB
 }
 
 //---------------------------------------------------------------------------
-template <class T> bool PortCashAcceptor<T>::perform_UpdateFirmware(const QByteArray & /*aBuffer*/) {
+template <class T>
+bool PortCashAcceptor<T>::perform_UpdateFirmware(const QByteArray & /*aBuffer*/) {
     return false;
 }
 
@@ -800,8 +801,9 @@ void PortCashAcceptor<T>::postPollingAction(const TStatusCollection &aNewStatusC
 
         if (!this->setEnable(false)) {
             this->toLog(LogLevel::Error,
-                        this->m_DeviceName + QString(": Failed to disable for updating the firmware "
-                                                    "due to incorrect state of cash acceptor"));
+                        this->m_DeviceName +
+                            QString(": Failed to disable for updating the firmware "
+                                    "due to incorrect state of cash acceptor"));
             return;
         }
     }
@@ -822,7 +824,7 @@ void PortCashAcceptor<T>::postPollingAction(const TStatusCollection &aNewStatusC
     bool enabling = this->getConfigParameter(CHardware::CashAcceptor::ProcessEnabling).toBool();
     bool disabling = this->getConfigParameter(CHardware::CashAcceptor::ProcessDisabling).toBool();
     bool exitFrom_Error = !aOldStatusCollection.isEmpty(EWarningLevel::Error) &&
-                         aNewStatusCollection.isEmpty(EWarningLevel::Error);
+                          aNewStatusCollection.isEmpty(EWarningLevel::Error);
     bool beforeRejected =
         this->m_StatusHistory.lastValue(2).statuses.contains(ECashAcceptorStatus::Rejected);
 

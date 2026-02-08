@@ -106,10 +106,10 @@ void WatchService::initialize() {
 
     // Настраиваем защитный экран
     QString custom_Background = BasicApplication::getInstance()
-                                   ->getSettings()
-                                   .value(QString(CWatchService::ExtensionsSection) + "/" +
-                                          CWatchService::UseCustom_Background)
-                                   .toString();
+                                    ->getSettings()
+                                    .value(QString(CWatchService::ExtensionsSection) + "/" +
+                                           CWatchService::UseCustom_Background)
+                                    .toString();
     if (!custom_Background.isEmpty()) {
         if (!QDir::isAbsolutePath(custom_Background)) {
             custom_Background = QDir::cleanPath(
@@ -458,9 +458,9 @@ void WatchService::messageReceived(const QByteArray &aMessage) {
                       .arg(sender));
 
             m_Server->sendMessage(QString("sender=%1;type=%2")
-                                     .arg(CWatchService::Name)
-                                     .arg(CWatchService::Commands::CloseLogs)
-                                     .toUtf8());
+                                      .arg(CWatchService::Name)
+                                      .arg(CWatchService::Commands::CloseLogs)
+                                      .toUtf8());
 
             ILog::logRotateAll();
         }
@@ -703,9 +703,9 @@ void WatchService::onModuleFinished(int aExitCode, QProcess::ExitStatus aExitSta
                 if (aExitCode != CWatchService::ContinueExecutionExitCode) {
                     // Уведомляем о закрытии модуля
                     m_Server->sendMessage(QString("type=%1;sender=%2")
-                                             .arg(CWatchService::Notification::ModuleClosed)
-                                             .arg(it.key())
-                                             .toUtf8());
+                                              .arg(CWatchService::Notification::ModuleClosed)
+                                              .arg(it.key())
+                                              .toUtf8());
                 }
 
                 emit stateReset(it.key());
@@ -797,8 +797,8 @@ void WatchService::doCloseModules(QString aSender) {
     } else {
         // Иначе выгружаем сам апдейтер, т.к. он может быть запущен не из под WatchService
         m_Server->sendMessage(QString("sender=watch_service;target=%1;type=close")
-                                 .arg(CWatchService::Modules::Updater)
-                                 .toUtf8());
+                                  .arg(CWatchService::Modules::Updater)
+                                  .toUtf8());
     }
 
     if (canClose) {

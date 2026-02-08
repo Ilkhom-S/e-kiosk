@@ -107,7 +107,8 @@ bool Provider::isCheckStepSettingsOK() {
     QSet<QString> responseFieldsSet(responseFields.begin(), responseFields.end());
     return limitsSet.intersect(responseFieldsSet).isEmpty()
                ? true
-               : (m_Provider.processor.showAddInfo ? true : m_Provider.processor.skipCheck == false);
+               : (m_Provider.processor.showAddInfo ? true
+                                                   : m_Provider.processor.skipCheck == false);
 }
 
 //------------------------------------------------------------------------------
@@ -148,7 +149,7 @@ QString Provider::xmlFields2Json(const QString &aXmlFields) {
     std::function<void(SProviderField::TEnum_Items &, const TPtreeOperators &)>
         loadProviderEnum_Items;
     loadProviderEnum_Items = [&](SProviderField::TEnum_Items &aItem_List,
-                                const TPtreeOperators &aTree) {
+                                 const TPtreeOperators &aTree) {
         auto searchBounds = aTree.equal_range("item");
 
         for (auto item_It = searchBounds.first; item_It != searchBounds.second; ++item_It) {
@@ -205,7 +206,8 @@ QString Provider::xmlFields2Json(const QString &aXmlFields) {
 
                 field.dependency = fieldIt.second.get<QString>("dependency", QString());
 
-                loadProviderEnum_Items(field.enum_Items, fieldIt.second.get_child("enum", emptyTree));
+                loadProviderEnum_Items(field.enum_Items,
+                                       fieldIt.second.get_child("enum", emptyTree));
 
                 fields << field;
             }
@@ -524,12 +526,12 @@ QObject *PaymentService::getProviderForNumber(qint64 aNumber) {
 //------------------------------------------------------------------------------
 void PaymentService::setExternalParameter(const QString &aName, const QVariant &aValue) {
     m_PaymentService->updatePaymentField(getActivePaymentID(),
-                                        IPayment::SParameter(aName, aValue, true, false, true));
+                                         IPayment::SParameter(aName, aValue, true, false, true));
 }
 
 //------------------------------------------------------------------------------
 QString PaymentService::findAliasFrom_Request(const QString &aParam_Name,
-                                             const QString &aRequestName) {
+                                              const QString &aRequestName) {
     auto provider = m_PaymentService->getProvider(
         getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong());
 
@@ -557,7 +559,7 @@ void PaymentService::setParameter(const QString &aName,
                                   const QVariant &aValue,
                                   bool aCrypted /*= false*/) {
     m_PaymentService->updatePaymentField(getActivePaymentID(),
-                                        IPayment::SParameter(aName, aValue, true, aCrypted));
+                                         IPayment::SParameter(aName, aValue, true, aCrypted));
 }
 
 //------------------------------------------------------------------------------
@@ -611,7 +613,7 @@ void PaymentService::stepForward() {
 //------------------------------------------------------------------------------
 void PaymentService::processStep(int aStep) {
     m_PaymentService->processPaymentStep(getActivePaymentID(),
-                                        static_cast<EPaymentStep::Enum>(aStep));
+                                         static_cast<EPaymentStep::Enum>(aStep));
 }
 
 //------------------------------------------------------------------------------

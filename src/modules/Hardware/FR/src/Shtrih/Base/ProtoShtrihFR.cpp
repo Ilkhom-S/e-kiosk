@@ -39,7 +39,7 @@ template <class T> ProtoShtrihFR<T>::ProtoShtrihFR() {
 
     // данные ошибок
     m_UnprocessedErrorData.add(CShtrihFR::Commands::GetFRParameter,
-                              CShtrihFR::Errors::WrongParametersInCommand);
+                               CShtrihFR::Errors::WrongParametersInCommand);
 }
 
 //--------------------------------------------------------------------------------
@@ -134,9 +134,9 @@ template <class T> bool ProtoShtrihFR<T>::checkTax(TVAT aVAT, CFR::Taxes::SData 
     if (value != FRValue) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Wrong tax value = %1% (%2 tax group), need %3%")
-                                .arg(FRValue / 100.0, 5, 'f', 2, ASCII::Zero)
-                                .arg(aData.group)
-                                .arg(aVAT, 5, 'f', 2, ASCII::Zero));
+                                 .arg(FRValue / 100.0, 5, 'f', 2, ASCII::Zero)
+                                 .arg(aData.group)
+                                 .arg(aVAT, 5, 'f', 2, ASCII::Zero));
 
         if (!setTaxValue(aVAT, group)) {
             return false;
@@ -153,8 +153,8 @@ template <class T> bool ProtoShtrihFR<T>::checkTax(TVAT aVAT, CFR::Taxes::SData 
                         true)) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Failed to set description for tax value %1% (%2 tax group)")
-                                .arg(aVAT, 5, 'f', 2, ASCII::Zero)
-                                .arg(aData.group));
+                                 .arg(aVAT, 5, 'f', 2, ASCII::Zero)
+                                 .arg(aData.group));
     }
 
     return true;
@@ -163,8 +163,8 @@ template <class T> bool ProtoShtrihFR<T>::checkTax(TVAT aVAT, CFR::Taxes::SData 
 //--------------------------------------------------------------------------------
 template <class T>
 bool ProtoShtrihFR<T>::perform_Fiscal(const QStringList &aReceipt,
-                                     const SPaymentData &aPaymentData,
-                                     quint32 * /*aFDNumber*/) {
+                                      const SPaymentData &aPaymentData,
+                                      quint32 * /*aFDNumber*/) {
     EDocumentState::Enum documentState = getDocumentState();
 
     if ((documentState == EDocumentState::Error) ||
@@ -264,16 +264,16 @@ void ProtoShtrihFR<T>::appendStatusCodes(ushort aFlags, TStatusCodes &aStatusCod
 
 //--------------------------------------------------------------------------------
 template <class T> bool ProtoShtrihFR<T>::isPaperWeightSensor() const {
-    bool result =
-        !((m_Type == CShtrihFR::Types::Printer) ||
-          (m_Type == CShtrihFR::Types::KKM && ((m_Model == CShtrihFR::Models::ID::ShtrihElvesFRK) ||
-                                              (m_Model == CShtrihFR::Models::ID::Yarus01K) ||
-                                              (m_Model == CShtrihFR::Models::ID::Yarus02K) ||
-                                              (m_Model == CShtrihFR::Models::ID::ShtrihKioskFRK_2) ||
-                                              (m_Model == CShtrihFR::Models::ID::NeoService) ||
+    bool result = !(
+        (m_Type == CShtrihFR::Types::Printer) ||
+        (m_Type == CShtrihFR::Types::KKM && ((m_Model == CShtrihFR::Models::ID::ShtrihElvesFRK) ||
+                                             (m_Model == CShtrihFR::Models::ID::Yarus01K) ||
+                                             (m_Model == CShtrihFR::Models::ID::Yarus02K) ||
+                                             (m_Model == CShtrihFR::Models::ID::ShtrihKioskFRK_2) ||
+                                             (m_Model == CShtrihFR::Models::ID::NeoService) ||
 
-                                              (m_Model == CShtrihFR::Models::ID::PayOnline01FA) ||
-                                              (m_Model == CShtrihFR::Models::ID::PayVKP80KFA))));
+                                             (m_Model == CShtrihFR::Models::ID::PayOnline01FA) ||
+                                             (m_Model == CShtrihFR::Models::ID::PayVKP80KFA))));
 
     bool weightSensorsEnabled =
         !containsConfigParameter(CHardware::Printer::Settings::PaperWeightSensors) ||
@@ -396,7 +396,8 @@ TResult ProtoShtrihFR<T>::execCommand(const QByteArray &aCommand,
         return CommandResult::OK;
     }
 
-    toLog(LogLevel::Error, m_DeviceName + ": Error: " + m_ErrorData->value(m_LastError).description);
+    toLog(LogLevel::Error,
+          m_DeviceName + ": Error: " + m_ErrorData->value(m_LastError).description);
 
     if (!isErrorUnprocessed(aCommand, m_LastError)) {
         setErrorFlags();
@@ -506,7 +507,7 @@ template <class T> EDocumentState::Enum ProtoShtrihFR<T>::getDocumentState() {
     }
 
     return (m_Mode == CShtrihFR::InnerModes::DocumentOpened) ? EDocumentState::Opened
-                                                            : EDocumentState::Closed;
+                                                             : EDocumentState::Closed;
 }
 
 //--------------------------------------------------------------------------------
@@ -564,7 +565,7 @@ bool ProtoShtrihFR<T>::sale(const SUnitData &aUnitData, EPayOffTypes::Enum aPayO
     commandData.append(getHexReverted(aUnitData.sum, 5, 2)); // сумма
     commandData.append(section);                             // отдел
     commandData.append(getHexReverted(taxIndex, 4));         // налоги
-    commandData.append(m_Codec->from_Unicode(name));           // текст продажи
+    commandData.append(m_Codec->from_Unicode(name));         // текст продажи
 
     char command = CShtrihFR::PayOffType::Data[aPayOffType].command;
 
@@ -596,7 +597,7 @@ template <class T> void ProtoShtrihFR<T>::parseDeviceData(const QByteArray &aDat
     FRInfo.date = QDate::from_String(FRDate, CFR::DateFormat);
 
     m_OldFirmware = (m_ModelData.build && (FRInfo.build != m_ModelData.build)) ||
-                   ((m_ModelData.date < QDate::currentDate()) && (FRInfo.date < m_ModelData.date));
+                    ((m_ModelData.date < QDate::currentDate()) && (FRInfo.date < m_ModelData.date));
 
     setDeviceParameter(CDeviceData::Version, FRInfo.version, CDeviceData::Firmware, true);
     setDeviceParameter(CDeviceData::Build, FRInfo.build, CDeviceData::Firmware);
@@ -891,7 +892,8 @@ QVariantMap ProtoShtrihFR<T>::getSessionOutData(const QByteArray &aLongStatusDat
     result.insert(CFiscalPrinter::FRDateTime, getDateTime().toString(CFR::DateTimeLogFormat));
 
     QDateTime system_DateTime = QDateTime::currentDateTime();
-    result.insert(CFiscalPrinter::System_DateTime, system_DateTime.toString(CFR::DateTimeLogFormat));
+    result.insert(CFiscalPrinter::System_DateTime,
+                  system_DateTime.toString(CFR::DateTimeLogFormat));
 
     ushort lastClosedSession = 1 + revert(aLongStatusData.mid(36, 2)).toHex().toUShort(0, 16);
     result.insert(CFiscalPrinter::ZReportNumber, lastClosedSession);
@@ -926,7 +928,8 @@ template <class T> bool ProtoShtrihFR<T>::prepareZReport(bool aAuto, QVariantMap
               m_DeviceName +
                   QString(": Failed to get status therefore failed to process %1Z-report.")
                       .arg(aAuto ? "auto-" : ""));
-        m_NeedCloseSession = m_NeedCloseSession || (m_Mode == CShtrihFR::InnerModes::SessionExpired);
+        m_NeedCloseSession =
+            m_NeedCloseSession || (m_Mode == CShtrihFR::InnerModes::SessionExpired);
 
         return false;
     }

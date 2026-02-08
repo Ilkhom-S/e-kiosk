@@ -33,8 +33,8 @@ DeviceService *DeviceService::instance(IApplication *aApplication) {
 
 //------------------------------------------------------------------------------
 DeviceService::Status::Status()
-    : m_Level(SDK::Driver::EWarningLevel::Error), m_Description(tr("#status_undefined")), m_Status(0) {
-}
+    : m_Level(SDK::Driver::EWarningLevel::Error), m_Description(tr("#status_undefined")),
+      m_Status(0) {}
 
 //------------------------------------------------------------------------------
 DeviceService::Status::Status(SDK::Driver::EWarningLevel::Enum aLevel,
@@ -519,7 +519,9 @@ void DeviceService::onDeviceStatus(DSDK::EWarningLevel::Enum aLevel,
     LogLevel::Enum logLevel = (aLevel == DSDK::EWarningLevel::OK)      ? LogLevel::Normal
                               : (aLevel == DSDK::EWarningLevel::Error) ? LogLevel::Error
                                                                        : LogLevel::Warning;
-    LOG(m_Log, logLevel, QString("Received statuses: %1, status %2").arg(aDescription).arg(aStatus));
+    LOG(m_Log,
+        logLevel,
+        QString("Received statuses: %1, status %2").arg(aDescription).arg(aStatus));
 
     DSDK::IDevice *device = dynamic_cast<DSDK::IDevice *>(sender());
 
@@ -552,7 +554,7 @@ void DeviceService::statusChanged(DSDK::IDevice *aDevice, Status &aStatus) {
 
     LogLevel::Enum logLevel = (aStatus.m_Level == DSDK::EWarningLevel::OK)      ? LogLevel::Normal
                               : (aStatus.m_Level == DSDK::EWarningLevel::Error) ? LogLevel::Error
-                                                                               : LogLevel::Warning;
+                                                                                : LogLevel::Warning;
     LOG(m_Log,
         logLevel,
         QString("Send statuses: %1, status %2, device %3")
@@ -569,8 +571,8 @@ void DeviceService::statusChanged(DSDK::IDevice *aDevice, Status &aStatus) {
 
         if (deviceConfig.contains(CHardwareSDK::DeviceData)) {
             m_DatabaseUtils->setDeviceParam(configName,
-                                           PPSDK::CDatabaseConstants::Parameters::DeviceInfo,
-                                           deviceConfig[CHardwareSDK::DeviceData].toString());
+                                            PPSDK::CDatabaseConstants::Parameters::DeviceInfo,
+                                            deviceConfig[CHardwareSDK::DeviceData].toString());
         }
 
         // Пишем статус в БД.

@@ -93,10 +93,11 @@ char SparkFR::from_BCD(char aData) {
 
 //--------------------------------------------------------------------------------
 bool SparkFR::checkSystem_Flag(const QByteArray &aFlagBuffer, int aNumber) {
-    auto dataIt = std::find_if(
-        m_System_Flags.begin(),
-        m_System_Flags.end(),
-        [&](const CSparkFR::System_Flags::SData &aData) -> bool { return aData.number == aNumber; });
+    auto dataIt = std::find_if(m_System_Flags.begin(),
+                               m_System_Flags.end(),
+                               [&](const CSparkFR::System_Flags::SData &aData) -> bool {
+                                   return aData.number == aNumber;
+                               });
 
     if (dataIt == m_System_Flags.end()) {
         toLog(LogLevel::Error,
@@ -362,7 +363,7 @@ TResult SparkFR::execCommand(const QByteArray &aCommand,
         if (!result) {
             toLog(LogLevel::Error,
                   m_DeviceName + ": Failed to enter control password, unable to perform current "
-                                "action therefore");
+                                 "action therefore");
             return result;
         }
     }
@@ -537,7 +538,8 @@ bool SparkFR::getStatus(TStatusCodes &aStatusCodes) {
     if (data == CFR::Result::Fail) {
         return false;
     } else if (data != CFR::Result::Error) {
-        QDate date = QDate(from_BCD(data[19]), from_BCD(data[18]), from_BCD(data[17])).addYears(2000);
+        QDate date =
+            QDate(from_BCD(data[19]), from_BCD(data[18]), from_BCD(data[17])).addYears(2000);
         QTime time = QTime(from_BCD(data[20]), from_BCD(data[21]));
         m_SessionOpeningDT = QDateTime(date, time);
     }
@@ -656,8 +658,8 @@ bool SparkFR::setFiscalParameters(const QStringList &aReceipt) {
 
 //--------------------------------------------------------------------------------
 bool SparkFR::perform_Fiscal(const QStringList &aReceipt,
-                            const SPaymentData &aPaymentData,
-                            quint32 * /*aFDNumber*/) {
+                             const SPaymentData &aPaymentData,
+                             quint32 * /*aFDNumber*/) {
     TSum totalAmount = getTotalAmount(aPaymentData);
 
     if (!payIO(totalAmount, true)) {
@@ -700,7 +702,7 @@ bool SparkFR::perform_Fiscal(const QStringList &aReceipt,
 }
 
 #define CHECK_SPARK_TAX(aNumber)                                                                   \
-    if ((m_Taxes.size() >= aNumber) && (aUnitData.VAT == m_Taxes[aNumber - 1]))                      \
+    if ((m_Taxes.size() >= aNumber) && (aUnitData.VAT == m_Taxes[aNumber - 1]))                    \
         command = CSparkFR::Commands::Sale##aNumber;
 
 //--------------------------------------------------------------------------------

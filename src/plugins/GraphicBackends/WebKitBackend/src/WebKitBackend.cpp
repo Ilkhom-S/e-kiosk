@@ -110,8 +110,9 @@ WebKitBackend::getItem(const SDK::GUI::GraphicsItem_Info &aInfo) {
         return it.value();
     }
 
-    std::shared_ptr<WebGraphicsItem> item(new WebGraphicsItem(aInfo, m_CoreProxy, m_Engine->getLog()),
-                                          SDK::GUI::GraphicsItem_Deleter());
+    std::shared_ptr<WebGraphicsItem> item(
+        new WebGraphicsItem(aInfo, m_CoreProxy, m_Engine->getLog()),
+        SDK::GUI::GraphicsItem_Deleter());
 
     if (item->isValid()) {
         m_Items.insert(aInfo.name, item);
@@ -160,13 +161,13 @@ bool WebKitBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine) {
         conf.setLocalCertificate(cert);
         m_Engine->getLog()->write(LogLevel::Normal, "WebKitBackend: Pem certifiacate added.");
 
-        QFile key(m_Factory->getKernelDataDirectory() + QDir::separator() + CWebKitBackend::KeysDir +
-                  QDir::separator() + CWebKitBackend::KeyFile);
+        QFile key(m_Factory->getKernelDataDirectory() + QDir::separator() +
+                  CWebKitBackend::KeysDir + QDir::separator() + CWebKitBackend::KeyFile);
         if (key.open(QIODevice::ReadOnly)) {
             QSslKey k(key.readAll(), QSsl::Rsa);
             conf.setPrivateKey(k);
             m_Engine->getLog()->write(LogLevel::Normal,
-                                     "WebKitBackend: Key for certifiacate added.");
+                                      "WebKitBackend: Key for certifiacate added.");
         } else {
             m_Engine->getLog()->write(LogLevel::Error, "WebKitBackend: Can't open key file.");
         }

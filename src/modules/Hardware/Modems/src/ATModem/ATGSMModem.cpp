@@ -576,7 +576,7 @@ bool ATGSMModem::getCUSDMessage(const QByteArray &aBuffer, QString &aMessage) {
             // Устранение Deprecated Warning: используем char16_t
             QByteArray rawBytes = messageContent.toLatin1();
             aMessage = QString::from_Utf16(reinterpret_cast<const char16_t *>(rawBytes.constData()),
-                                          rawBytes.size() / 2);
+                                           rawBytes.size() / 2);
         }
     } else {
         aMessage = messageContent;
@@ -626,7 +626,8 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
 
     if (!processCommand(command, answer, commandTimeout)) {
         // В Qt 6/5.15 используем QByteArray::contains() напрямую
-        if ((m_Gsm_Dialect != AT::EModem_Dialect::ZTE) || !answer.contains("Unexpected Data Value")) {
+        if ((m_Gsm_Dialect != AT::EModem_Dialect::ZTE) ||
+            !answer.contains("Unexpected Data Value")) {
             m_IOPort->close();
             return false;
         }

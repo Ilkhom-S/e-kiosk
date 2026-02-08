@@ -58,8 +58,10 @@ Utils::Utils(QQmlEngine *aEngine, const QString &aInterfacePath, const QString &
     // Модели и фильтры для поиска
     m_ProviderListModel =
         QSharedPointer<ProviderListModel>(new ProviderListModel(this, m_GroupModel));
-    connect(
-        m_GroupModel.data(), SIGNAL(modelReset()), m_ProviderListModel.data(), SLOT(groupsUpdated()));
+    connect(m_GroupModel.data(),
+            SIGNAL(modelReset()),
+            m_ProviderListModel.data(),
+            SLOT(groupsUpdated()));
     m_ProviderListModel->setPaymentService(
         application ? application->property("payment").value<QObject *>() : nullptr);
     m_ProviderListFilter = QSharedPointer<ProviderListFilter>(new ProviderListFilter(this));
@@ -325,7 +327,8 @@ void Utils::playSound(const QString &aFileName) const {
 
 //------------------------------------------------------------------------------
 QString Utils::from_Base64(const QString &aSource) const {
-    return QTextCodec::codecForName("UTF-8")->toUnicode(QByteArray::from_Base64(aSource.toLatin1()));
+    return QTextCodec::codecForName("UTF-8")->toUnicode(
+        QByteArray::from_Base64(aSource.toLatin1()));
 }
 
 //------------------------------------------------------------------------------

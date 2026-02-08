@@ -10,7 +10,8 @@ const char GetFont[] = "\x1D\x49\x45";       /// Получение устано
 const char GetMemorySize[] = "\x1D\x49\x72"; /// Получение размера установленной памяти.
 const char GetOptions[] = "\x1D\x49\x73";    /// Получение списка дополнительных устройств.
 const char Cut[] = "\x1D\x56\x31";           /// Отрезка без возможности обратной промотки.
-const char CutBackFeed[] = "\x1D\x56\x42\x01"; /// Промотка и отрезка с возможностью обратной промотки.
+const char CutBackFeed[] =
+    "\x1D\x56\x42\x01"; /// Промотка и отрезка с возможностью обратной промотки.
 
 /// Работа с мemory-switch (MSW)
 namespace MemorySwitch {

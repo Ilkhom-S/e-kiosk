@@ -98,7 +98,7 @@ bool AtolEjectorFR<T>::printImage(const QImage &aImage, const Tags::TTypes & /*a
 
             if (index < height) {
                 lineData << QByteArray::from_RawData((const char *)aImage.scanLine(index),
-                                                    widthInBytes);
+                                                     widthInBytes);
             } else {
                 lineData << QByteArray(widthInBytes, ASCII::NUL);
             }

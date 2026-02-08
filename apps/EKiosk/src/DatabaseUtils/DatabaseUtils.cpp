@@ -102,7 +102,7 @@ bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName) {
     // Удалим комментарии ("-- some comment") и ("/* many \n comment */").
     QRegularExpression rx("(\\/\\*.*\\*\\/|\\-\\-.*\\n)");
     ////////rx.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
-    ///compatibility // Removed for
+    /// compatibility // Removed for
     /// Qt5/6 compatibility // Removed for Qt5/6 compatibility
     resSQL.replace(rx, "");
 

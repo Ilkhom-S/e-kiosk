@@ -16,7 +16,8 @@ void VirtualDispenser::setDeviceConfiguration(const QVariantMap &aConfiguration)
     TVirtualDispenser::setDeviceConfiguration(aConfiguration);
 
     m_JammedItem = aConfiguration.value(CHardware::Dispenser::JammedItem, m_JammedItem).toInt();
-    m_NearEndCount = aConfiguration.value(CHardware::Dispenser::NearEndCount, m_NearEndCount).toInt();
+    m_NearEndCount =
+        aConfiguration.value(CHardware::Dispenser::NearEndCount, m_NearEndCount).toInt();
     m_Units = aConfiguration.value(CHardware::Dispenser::Units, m_Units).toInt();
 }
 

@@ -49,7 +49,7 @@ TerminalService *TerminalService::instance(IApplication *aApplication) {
 TerminalService::TerminalService(IApplication *aApplication)
     : m_DbUtils(nullptr), m_EventService(nullptr), m_Application(aApplication),
       m_Client(createWatchServiceClient(CWatchService::Modules::PaymentProcessor,
-                                       IWatchServiceClient::MainThread)) {
+                                        IWatchServiceClient::MainThread)) {
     setLog(m_Application->getLog());
 
     m_Application = aApplication;
@@ -76,8 +76,8 @@ bool TerminalService::initialize() {
     }
 
     m_Settings = SettingsService::instance(m_Application)
-                    ->getAdapter<PPSDK::TerminalSettings>()
-                    ->getCommonSettings();
+                     ->getAdapter<PPSDK::TerminalSettings>()
+                     ->getCommonSettings();
 
     PPSDK::IDeviceService *deviceService = m_Application->getCore()->getDeviceService();
     connect(deviceService,
@@ -113,12 +113,12 @@ bool TerminalService::initialize() {
     }
 
     m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                             PPSDK::CDatabaseConstants::Parameters::Configuration,
-                             m_Application->getSettings().value("common/configuration"));
+                              PPSDK::CDatabaseConstants::Parameters::Configuration,
+                              m_Application->getSettings().value("common/configuration"));
 
     m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                             PPSDK::CDatabaseConstants::Parameters::OperationSystem,
-                             ISysUtils::getOSVersionInfo());
+                              PPSDK::CDatabaseConstants::Parameters::OperationSystem,
+                              ISysUtils::getOSVersionInfo());
 
     // Проверяем параметры командной строки.
     if (m_Client->start() || m_Application->getSettings().value("common/standalone").toBool()) {
@@ -148,8 +148,8 @@ void TerminalService::finishInitialize() {
         } while (!resolution.isEmpty());
 
         m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                                 QString(PPSDK::CDatabaseConstants::Parameters::DisplayResolution),
-                                 QString("[%1]").arg(screenList.join(",")));
+                                  QString(PPSDK::CDatabaseConstants::Parameters::DisplayResolution),
+                                  QString("[%1]").arg(screenList.join(",")));
     }
 
     // Получаем информацию о дефолтном ключе
@@ -226,8 +226,8 @@ void TerminalService::setLock(bool aIsLocked) {
 void TerminalService::resetParameters(const QSet<QString> &aParameters) {
     if (aParameters.contains(PPSDK::CServiceParameters::Terminal::RestartCount)) {
         m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                                 PPSDK::CDatabaseConstants::Parameters::LaunchCount,
-                                 0);
+                                  PPSDK::CDatabaseConstants::Parameters::LaunchCount,
+                                  0);
     }
 }
 
@@ -269,8 +269,8 @@ void TerminalService::writeLockStatus(bool aIsLocked) {
         m_Locked = aIsLocked;
 
         m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                                 PPSDK::CDatabaseConstants::Parameters::DisabledParam,
-                                 m_Locked.get());
+                                  PPSDK::CDatabaseConstants::Parameters::DisabledParam,
+                                  m_Locked.get());
     }
 }
 
@@ -281,9 +281,9 @@ bool TerminalService::isDisabled() const {
     }
 
     m_Locked = m_DbUtils
-                  ->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                                   PPSDK::CDatabaseConstants::Parameters::DisabledParam)
-                  .toBool();
+                   ->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+                                    PPSDK::CDatabaseConstants::Parameters::DisabledParam)
+                   .toBool();
 
     return m_Locked.get();
 }
@@ -453,13 +453,14 @@ void TerminalService::setTerminalError(PPSDK::ETerminalError::Enum aErrorType, b
     bool changed = false;
 
     if (aError) {
-        if (!m_DeviceErrorFlags.contains(PPSDK::CDatabaseConstants::Devices::Terminal, aErrorType)) {
+        if (!m_DeviceErrorFlags.contains(PPSDK::CDatabaseConstants::Devices::Terminal,
+                                         aErrorType)) {
             m_DeviceErrorFlags.insert(PPSDK::CDatabaseConstants::Devices::Terminal, aErrorType);
 
             changed = true;
         }
     } else if (m_DeviceErrorFlags.contains(PPSDK::CDatabaseConstants::Devices::Terminal,
-                                          aErrorType)) {
+                                           aErrorType)) {
         m_DeviceErrorFlags.remove(PPSDK::CDatabaseConstants::Devices::Terminal, aErrorType);
 
         changed = true;
@@ -593,7 +594,8 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
             sendBody += "pluslog=1&";
             QByteArray zipArray = "[{\"fields\":{";
 
-            auto fields = m_Application->getCore()->getPaymentService()->getPaymentFields(paymentId);
+            auto fields =
+                m_Application->getCore()->getPaymentService()->getPaymentFields(paymentId);
 
             foreach (auto f, fields) {
                 zipArray += QString("\"%1\":\"%2\",").arg(f.name).arg(f.value.toString()).toUtf8();
@@ -731,14 +733,14 @@ void TerminalService::setRestartCount(int aCount) {
 
     if (lastStartDate != currentDate) {
         m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                                 PPSDK::CDatabaseConstants::Parameters::LastStartDate,
-                                 currentDate);
+                                  PPSDK::CDatabaseConstants::Parameters::LastStartDate,
+                                  currentDate);
         aCount = 0;
     }
 
     m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                             PPSDK::CDatabaseConstants::Parameters::LaunchCount,
-                             aCount);
+                              PPSDK::CDatabaseConstants::Parameters::LaunchCount,
+                              aCount);
 }
 
 //---------------------------------------------------------------------------

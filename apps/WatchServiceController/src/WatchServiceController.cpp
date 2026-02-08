@@ -39,7 +39,7 @@ WatchServiceController::WatchServiceController()
         m_StartServiceActions << settingsAction;
 
         auto setupAction = m_Menu.addAction(createTemplateIcon(":/icons/menu-setupTemplate.png"),
-                                           tr("#start_first_setup"));
+                                            tr("#start_first_setup"));
         connect(setupAction, SIGNAL(triggered(bool)), this, SLOT(onStartFirstSetupClicked()));
         m_StartServiceActions << setupAction;
 

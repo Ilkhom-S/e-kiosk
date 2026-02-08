@@ -53,8 +53,9 @@ const char Param_Initial[] = "initial";                 /// Начальное �
 const char Param_Final[] = "final";                     /// Конечное состояние.
 const char Param_Timeout[] = "timeout";                 /// Таймаут состояния.
 const char Param_UserActivity[] = "ignoreUserActivity"; /// Игнорировать активность пользователя.
-const char Param_SignalName[] = "signal"; /// Имя сигнала, при которому мы пришли в данное состояние.
-const char Param_Result[] = "result";     /// Результат работы сценария.
+const char Param_SignalName[] =
+    "signal";                         /// Имя сигнала, при которому мы пришли в данное состояние.
+const char Param_Result[] = "result"; /// Результат работы сценария.
 const char Param_ResultError[] = "resultError"; /// Ошибка, возвращаемая сценарием.
 } // namespace CJSScenario
 
@@ -202,12 +203,12 @@ bool JSScenario::initialize(const QList<SScriptObject> &aScriptObjects) {
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     m_ScriptEngine->globalObject().setProperty(CJSScenario::ServiceName,
-                                              m_ScriptEngine->newQObject(this));
+                                               m_ScriptEngine->newQObject(this));
     // Qt6: QJSEngine does not support newFunction, so includeScript must be handled differently
     // Placeholder: migration logic for includeScript registration
 #else
     m_ScriptEngine->globalObject().setProperty(CJSScenario::ServiceName,
-                                              m_ScriptEngine->newQObject(this));
+                                               m_ScriptEngine->newQObject(this));
     m_ScriptEngine->globalObject().setProperty(
         CJSScenario::ScriptIncludeFunction,
         m_ScriptEngine->newFunction(&JSScenario::includeScript, this));

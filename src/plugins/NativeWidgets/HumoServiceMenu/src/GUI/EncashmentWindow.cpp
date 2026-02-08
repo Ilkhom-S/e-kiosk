@@ -182,7 +182,7 @@ void EncashmentWindow::onPrintZReport() {
 void EncashmentWindow::onReceiptPrinted(qint64 aJobIndex, bool aErrorHappened) {
     if (m_LastPrintJob && m_LastPrintJob == aJobIndex) {
         m_Backend->toLog(LogLevel::Debug,
-                        QString("JOB id=%1 ALREADY COMPLETE. SKIP SLOT.").arg(aJobIndex));
+                         QString("JOB id=%1 ALREADY COMPLETE. SKIP SLOT.").arg(aJobIndex));
         GUI::MessageBox::hide();
         return;
     }

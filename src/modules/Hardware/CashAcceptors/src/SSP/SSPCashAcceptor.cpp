@@ -356,7 +356,8 @@ bool SSPCashAcceptor::perform_BaudRateChanging(bool aUp) {
 
     if (!processCommand(CSSP::Commands::SetBaudrate, commandData)) {
         toLog(LogLevel::Error,
-              m_DeviceName + QString(": Failed to set %1 baud rate in cash acceptor").arg(baudRate));
+              m_DeviceName +
+                  QString(": Failed to set %1 baud rate in cash acceptor").arg(baudRate));
         return false;
     }
 

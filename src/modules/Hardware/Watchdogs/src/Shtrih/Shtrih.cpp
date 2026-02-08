@@ -68,7 +68,7 @@ bool Shtrih::isConnected() {
 
 #define MAKE_DEVICE_NAME_SHTRIH3(aType)                                                            \
     QString aType##LogData;                                                                        \
-    if (m_DeviceData[CShtrih::Devices::Type::aType].address == CShtrih::Constants::NoAddress)       \
+    if (m_DeviceData[CShtrih::Devices::Type::aType].address == CShtrih::Constants::NoAddress)      \
         aType##LogData = m_DeviceData[CShtrih::Devices::Type::aType].name;
 
     MAKE_DEVICE_NAME_SHTRIH3(CrossDevice);
@@ -183,7 +183,7 @@ void Shtrih::packedData(const QByteArray &aCommandPacket, QByteArray &aPacket) {
     Q_ASSERT(!aCommandPacket.isEmpty());
 
     aPacket.append(CShtrih::Constants::Prefix); // префикс
-    aPacket.append(m_MessageNumber++);           // номер сообщения
+    aPacket.append(m_MessageNumber++);          // номер сообщения
     aPacket.append(aCommandPacket);             // пакет команды = адрес + команда + данные команды
     aPacket.insert(3, uchar(aPacket.size() - 3)); // длина пакета
     aPacket.append(calcCRC(aPacket));             // CRC
@@ -332,9 +332,9 @@ bool Shtrih::parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer,
                 QDate date = QDate(answer[12], answer[11], answer[10]);
 
                 m_DeviceData[deviceType].setData(name,
-                                                answer[0],
-                                                answer.mid(13, 8).toHex().toULongLong(0, 16),
-                                                CShtrih::Devices::SSoftInfo(version, build, date));
+                                                 answer[0],
+                                                 answer.mid(13, 8).toHex().toULongLong(0, 16),
+                                                 CShtrih::Devices::SSoftInfo(version, build, date));
 
                 break;
             }
@@ -504,8 +504,9 @@ bool Shtrih::processCommand(int aCommandID) {
 void Shtrih::setDeviceDataByType(CShtrih::Devices::Type::Enum aType) {
     QString key = m_DeviceData[aType].name;
 
-    QString addressLog =
-        QString("0x%1").arg(uchar(m_DeviceData[aType].address), 2, 16, QChar(ASCII::Zero)).toUpper();
+    QString addressLog = QString("0x%1")
+                             .arg(uchar(m_DeviceData[aType].address), 2, 16, QChar(ASCII::Zero))
+                             .toUpper();
     setDeviceParameter(CDeviceData::Address, addressLog, key, true);
     setDeviceParameter(CDeviceData::SerialNumber, m_DeviceData[aType].serial, key);
 

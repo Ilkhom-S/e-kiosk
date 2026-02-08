@@ -21,7 +21,8 @@ MainHumoServiceMenuWindow::MainHumoServiceMenuWindow(HumoServiceBackend *aBacken
 
     // Setup timers
     connect(&m_IdleTimer, &QTimer::timeout, this, &MainHumoServiceMenuWindow::onIdleTimeout);
-    connect(&m_DateTimeTimer, &QTimer::timeout, this, &MainHumoServiceMenuWindow::onDateTimeRefresh);
+    connect(
+        &m_DateTimeTimer, &QTimer::timeout, this, &MainHumoServiceMenuWindow::onDateTimeRefresh);
 
     // Setup connections
     connect(btnCloseServiceMenu,

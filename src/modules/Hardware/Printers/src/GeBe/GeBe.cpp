@@ -50,7 +50,8 @@ bool GeBe::updateParameters() {
 bool GeBe::getStatus(TStatusCodes &aStatusCodes) {
     QByteArray answer;
 
-    if (!m_IOPort->write(CGeBE::Commands::GetStatus) || !m_IOPort->read(answer) || answer.isEmpty()) {
+    if (!m_IOPort->write(CGeBE::Commands::GetStatus) || !m_IOPort->read(answer) ||
+        answer.isEmpty()) {
         return false;
     }
 

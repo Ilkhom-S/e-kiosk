@@ -122,7 +122,8 @@ bool NPSTalkCoinAcceptor::loadParTable() {
                 m_EscrowParTable.data().insert(i, par);
             } else {
                 toLog(LogLevel::Error,
-                      m_DeviceName + QString(": Unknown currency code %1)").arg(countryCode.data()));
+                      m_DeviceName +
+                          QString(": Unknown currency code %1)").arg(countryCode.data()));
             }
         }
     }

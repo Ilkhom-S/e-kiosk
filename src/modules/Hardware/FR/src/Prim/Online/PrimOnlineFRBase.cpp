@@ -1,9 +1,8 @@
 /* @file Онлайн ФР семейства ПРИМ. */
 
-#include "Prim_OnlineFRBase.h"
-
 #include <QtCore/qmath.h>
 
+#include "Prim_OnlineFRBase.h"
 #include "Prim_OnlineFRConstants.h"
 
 using namespace SDK::Driver;
@@ -113,7 +112,7 @@ bool Prim_OnlineFRBase::updateParameters() {
     }
 
     CPrim_FR::TData commandData = CPrim_FR::TData()
-                                 << CPrim_FR::DontPrintFD << CPrim_OnlineFR::LastRegistration;
+                                  << CPrim_FR::DontPrintFD << CPrim_OnlineFR::LastRegistration;
 
     if (!processCommand(CPrim_OnlineFR::Commands::GetRegistrationTotal, commandData, &data)) {
         return false;
@@ -162,7 +161,8 @@ bool Prim_OnlineFRBase::checkPayTypes() {
         if (parseAnswerData(data, 12, "pay type", field)) {
             if (!m_FFData.data().contains(field)) {
                 toLog(LogLevel::Warning,
-                      m_DeviceName + ": Unknown fiscal field of pay type " + QString::number(field));
+                      m_DeviceName + ": Unknown fiscal field of pay type " +
+                          QString::number(field));
             } else if (!CPrim_OnlineFR::PayTypeData.data().contains(field)) {
                 toLog(LogLevel::Warning,
                       m_DeviceName + ": Unknown fiscal field of pay type" + QString::number(field));
@@ -183,10 +183,13 @@ bool Prim_OnlineFRBase::checkPayTypes() {
 //--------------------------------------------------------------------------------
 bool Prim_OnlineFRBase::getRegTLVData(int aField, uchar &aData) {
     CPrim_FR::TData commandData = CPrim_FR::TData()
-                                 << QByteArray::number(qToBigEndian(ushort(aField)), 16);
+                                  << QByteArray::number(qToBigEndian(ushort(aField)), 16);
 
-    return processCommand(
-        CPrim_OnlineFR::Commands::GetRegTLVData, commandData, 5, m_FFData.getTextLog(aField), aData);
+    return processCommand(CPrim_OnlineFR::Commands::GetRegTLVData,
+                          commandData,
+                          5,
+                          m_FFData.getTextLog(aField),
+                          aData);
 }
 
 //--------------------------------------------------------------------------------
@@ -291,15 +294,15 @@ void Prim_OnlineFRBase::processDeviceData() {
 
     checkDateTime();
 
-    m_OFDDataError = !processCommand(CPrim_OnlineFR::Commands::GetOFDData, &data) ||
-                    (data.size() <= 9) ||
-                    !checkOFDData(data[9], getBufferFrom_String(data[5].right(2) + data[5].left(2)));
+    m_OFDDataError =
+        !processCommand(CPrim_OnlineFR::Commands::GetOFDData, &data) || (data.size() <= 9) ||
+        !checkOFDData(data[9], getBufferFrom_String(data[5].right(2) + data[5].left(2)));
 }
 
 //--------------------------------------------------------------------------------
 bool Prim_OnlineFRBase::perform_Fiscal(const QStringList &aReceipt,
-                                     const SPaymentData &aPaymentData,
-                                     quint32 *aFDNumber) {
+                                       const SPaymentData &aPaymentData,
+                                       quint32 *aFDNumber) {
     if (!Prim_FRBase::perform_Fiscal(aReceipt, aPaymentData)) {
         return false;
     }
@@ -315,8 +318,8 @@ bool Prim_OnlineFRBase::perform_Fiscal(const QStringList &aReceipt,
 
 //--------------------------------------------------------------------------------
 bool Prim_OnlineFRBase::getFiscalFields(quint32 aFDNumber,
-                                       TFiscalPaymentData &aFPData,
-                                       TComplexFiscalPaymentData &aPSData) {
+                                        TFiscalPaymentData &aFPData,
+                                        TComplexFiscalPaymentData &aPSData) {
     CPrim_FR::TData commandData =
         CPrim_FR::TData()
         << QString("%1").arg(qToBigEndian(aFDNumber), 8, 16, QLatin1Char(ASCII::Zero)).toLatin1()
@@ -341,8 +344,8 @@ bool Prim_OnlineFRBase::getFiscalFields(quint32 aFDNumber,
         if (regExp.match(TLVData).capturedStart() == -1) {
             toLog(LogLevel::Error,
                   m_DeviceName + QString(": Failed to parse TLV data %1 (%2)")
-                                    .arg(TLVData)
-                                    .arg(answer[i].toHex().data()));
+                                     .arg(TLVData)
+                                     .arg(answer[i].toHex().data()));
             return false;
         }
 
@@ -399,17 +402,17 @@ void Prim_OnlineFRBase::setFPData(TFiscalPaymentData &aFPData, const CFR::STLV &
         } else {
             toLog(LogLevel::Warning,
                   m_DeviceName + QString(": Failed to parse money data %1 for field %2")
-                                    .arg(data)
-                                    .arg(aTLV.field));
+                                     .arg(data)
+                                     .arg(aTLV.field));
         }
     }
 }
 
 //--------------------------------------------------------------------------------
 void Prim_OnlineFRBase::setFiscalData(CPrim_FR::TData &aCommandData,
-                                     CPrim_FR::TDataList &aAdditionalAFDData,
-                                     const SPaymentData &aPaymentData,
-                                     int aReceiptSize) {
+                                      CPrim_FR::TDataList &aAdditionalAFDData,
+                                      const SPaymentData &aPaymentData,
+                                      int aReceiptSize) {
     QString serialNumber = getConfigParameter(CHardware::FR::Strings::SerialNumber).toString();
     QString documentNumber = getConfigParameter(CHardware::FR::Strings::DocumentNumber).toString();
     QString INN = getConfigParameter(CHardware::FR::Strings::INN).toString();
@@ -474,7 +477,8 @@ void Prim_OnlineFRBase::setFiscalData(CPrim_FR::TData &aCommandData,
 
         // 1038 (номер смены)
         << addArbitraryFieldToBuffer(lastX + 1, 1, session, m_AFDFont)
-        << addFiscalField(lastX + 1, 2 + session.size(), m_AFDFont, CFR::FiscalFields::SessionNumber)
+        << addFiscalField(
+               lastX + 1, 2 + session.size(), m_AFDFont, CFR::FiscalFields::SessionNumber)
 
         // 1042 (номер чека)
         << addArbitraryFieldToBuffer(
@@ -498,7 +502,7 @@ void Prim_OnlineFRBase::setFiscalData(CPrim_FR::TData &aCommandData,
             << getAmountData(unitData.sum)                        // 1079 (цена)
             << "1"                                                // 1023 (количество)
             << int2String(section) +                              // отдел
-                   int2String(m_TaxData[unitData.VAT].group) +     // налоговая группа
+                   int2String(m_TaxData[unitData.VAT].group) +    // налоговая группа
                    int2String(unitData.payOffSubjectMethodType) + // 1214 (признак способа расчета)
                    int2String(unitData.payOffSubjectType)         // 1212 (признак предмета расчета)
             << "";
@@ -618,7 +622,7 @@ bool Prim_OnlineFRBase::perform_ZReport(bool /*aPrintDeferredReports*/) {
 //--------------------------------------------------------------------------------
 TResult Prim_OnlineFRBase::doZReport(bool aAuto) {
     CPrim_FR::TData commandData = CPrim_FR::TData() << CPrim_FR::OperatorID << ""
-                                                  << ""; // + сообщение для ОФД и доп. реквизит
+                                                    << ""; // + сообщение для ОФД и доп. реквизит
     commandData << (aAuto ? CPrim_OnlineFR::ZReportInBuffer : CPrim_OnlineFR::ZReportOut);
 
     return processCommand(CPrim_FR::Commands::ZReport, commandData);
@@ -627,8 +631,8 @@ TResult Prim_OnlineFRBase::doZReport(bool aAuto) {
 //--------------------------------------------------------------------------------
 bool Prim_OnlineFRBase::openSession() {
     CPrim_FR::TData commandData = CPrim_FR::TData()
-                                 << CPrim_FR::OperatorID << "" << ""
-                                 << ""; // + сообщение оператору, доп. реквизит и реквизиты смены
+                                  << CPrim_FR::OperatorID << "" << ""
+                                  << ""; // + сообщение оператору, доп. реквизит и реквизиты смены
 
     return processCommand(CPrim_FR::Commands::OpenFRSession, commandData);
 }

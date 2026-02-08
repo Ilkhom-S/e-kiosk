@@ -78,7 +78,8 @@ bool CashAcceptorManager::initialize(IPaymentDatabaseUtils *aDatabase) {
 
     m_DeviceService = DeviceService::instance(m_Application);
 
-    auto *settings = SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
+    auto *settings =
+        SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
 
     m_DisableAmountOverflow = settings->getCommonSettings().disableAmountOverflow;
 
@@ -131,7 +132,8 @@ QStringList CashAcceptorManager::getPaymentMethods() {
     qint64 id = ps->getActivePayment();
     QString procType = ps->getPaymentField(id, PPSDK::CPayment::Parameters::Type).value.toString();
 
-    auto *settings = SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
+    auto *settings =
+        SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
     QVariantMap chargeAccess = settings->getChargeProviderAccess();
 
     QSet<QString> result;
@@ -163,7 +165,8 @@ QStringList CashAcceptorManager::getPaymentMethods() {
 //---------------------------------------------------------------------------
 void CashAcceptorManager::updateHardwareConfiguration() {
     // Получаем список всех доступных устройств.
-    auto *settings = SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
+    auto *settings =
+        SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
     QStringList deviceList = settings->getDeviceList().filter(
         QRegularExpression(QString("(%1|%2)")
                                .arg(DSDK::CComponents::BillAcceptor)
@@ -517,21 +520,22 @@ void CashAcceptorManager::incrementRejectCount() {
 //---------------------------------------------------------------------------
 void CashAcceptorManager::initWorkingParList() {
     // Получаем список поддерживаемых номиналов.
-    auto *settings = SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
+    auto *settings =
+        SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
     PPSDK::SCommonSettings commonSettings = settings->getCommonSettings();
 
     foreach (auto nominal, commonSettings.enabledParNotesList) {
         m_WorkingParList.append(DSDK::SPar(nominal,
-                                          settings->getCurrencySettings().id,
-                                          DSDK::ECashReceiver::BillAcceptor,
-                                          commonSettings.isValid));
+                                           settings->getCurrencySettings().id,
+                                           DSDK::ECashReceiver::BillAcceptor,
+                                           commonSettings.isValid));
     }
 
     foreach (auto nominal, commonSettings.enabledParCoinsList) {
         m_WorkingParList.append(DSDK::SPar(nominal,
-                                          settings->getCurrencySettings().id,
-                                          DSDK::ECashReceiver::CoinAcceptor,
-                                          commonSettings.isValid));
+                                           settings->getCurrencySettings().id,
+                                           DSDK::ECashReceiver::CoinAcceptor,
+                                           commonSettings.isValid));
     }
 }
 

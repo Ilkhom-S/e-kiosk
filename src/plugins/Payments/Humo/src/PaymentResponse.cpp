@@ -164,7 +164,7 @@ QString PaymentResponse::toLogString() const {
         result << QString("%1 = \"%2\"")
                       .arg(it.key())
                       .arg(m_CryptedFields.contains(it.key()) ? "**CRYPTED**"
-                                                             : it.value().toString());
+                                                              : it.value().toString());
     }
 
     return result.join(", ");

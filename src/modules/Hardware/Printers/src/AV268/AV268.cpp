@@ -114,7 +114,7 @@ bool AV268::getAnswer(QByteArray &aAnswer, bool aNeedDelay) {
     for (int i = 0; i < aAnswer.size(); ++i) {
         if (aAnswer.contains(ASCII::XOn) || aAnswer.contains(ASCII::XOff)) {
             m_Overflow = aAnswer.contains(ASCII::XOff) ==
-                        true; // C4800, QBool::operator const void *() const
+                         true; // C4800, QBool::operator const void *() const
             aAnswer.remove(i, 1);
             --i;
         }

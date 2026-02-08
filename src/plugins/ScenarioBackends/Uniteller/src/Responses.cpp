@@ -101,7 +101,7 @@ bool PrintLineResponse::isLast() const {
 //---------------------------------------------------------------------------
 QString PrintLineResponse::getText() const {
     return (m_Data.size() > 1) ? QTextCodec::codecForName("Windows-1251")->toUnicode(m_Data.mid(1))
-                              : "";
+                               : "";
 }
 
 //---------------------------------------------------------------------------
@@ -186,7 +186,8 @@ AuthResponse::AuthResponse(const BaseResponse &aResponse) : BaseResponse(aRespon
         index += 12;
         m_Currency = QString::from_Latin1(m_Data.mid(index, 3)).toUInt();
         index += 3;
-        m_Stamp = QDateTime::from_String(QString::from_Latin1(m_Data.mid(index, 14)), "yyyyMMddhhmmss");
+        m_Stamp =
+            QDateTime::from_String(QString::from_Latin1(m_Data.mid(index, 14)), "yyyyMMddhhmmss");
         index += 14;
         m_Merchant = QString::from_Latin1(m_Data.mid(index, 15));
         index += 15;

@@ -25,8 +25,8 @@ Translator::Translator(const QString &aInterfacePath) : m_InterfacePath(aInterfa
     }
 
     m_CurrentLanguage = (m_DefaultLanguage.isEmpty() && !m_Languages.empty())
-                           ? m_Languages.begin().key()
-                           : m_DefaultLanguage;
+                            ? m_Languages.begin().key()
+                            : m_DefaultLanguage;
 }
 
 //------------------------------------------------------------------------------

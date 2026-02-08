@@ -1575,7 +1575,7 @@ void MainWindow::openAdminDialog() {
                 "serial: %2")
             .arg(config.validatorData.partNumber, config.validatorData.serialNumber);
 
-    data["validator_info"] = vrm_ValidatorInfo;          // Info
+    data["validator_info"] = vrm_ValidatorInfo;         // Info
     data["validator_list"] = billValidatorList;         // ListValidator
     data["validator_name"] = config.validatorData.name; // Name
     data["validator_port_list"] = pList;                // List Com Portov
@@ -1589,7 +1589,7 @@ void MainWindow::openAdminDialog() {
                 "serial:   %2")
             .arg(config.coinAcceptorData.partNumber, config.coinAcceptorData.serialNumber);
 
-    data["coin_acceptor_info"] = vrm_CoinAcceptorInfo;          // Info
+    data["coin_acceptor_info"] = vrm_CoinAcceptorInfo;         // Info
     data["coin_acceptor_list"] = coinAcceptorList;             // ListValidator
     data["coin_acceptor_name"] = config.coinAcceptorData.name; // Name
     data["coin_acceptor_port_list"] = pList;                   // List Com Portov
@@ -1610,7 +1610,7 @@ void MainWindow::openAdminDialog() {
     // Вставляем список модемов
     data["modem_comment"] = config.modem_Data.comment; // Info
     data["modem_name"] = config.modem_Data.name;       // Name
-    data["modem_port_list"] = pList;                  // List Com Portov
+    data["modem_port_list"] = pList;                   // List Com Portov
     data["modem_port"] = config.modem_Data.port;       // Active Port
 
     adminDialog->setDataToAdmin(AdminCommand::aCmdModem_Inform, data);
@@ -2504,7 +2504,7 @@ void MainWindow::deviceSearchResult(
         switch (result) {
         case SearchDev::start_search: {
             sDevicesForm->setModem_SearchText(SearchDev::start_search,
-                                             interfaceText("modem_info_searching"));
+                                              interfaceText("modem_info_searching"));
             toLog(LoggerLevel::Info, senderName, interfaceText("modem_info_searching"));
         } break;
         case SearchDev::device_found: {
@@ -2516,7 +2516,7 @@ void MainWindow::deviceSearchResult(
         } break;
         case SearchDev::device_notfound: {
             sDevicesForm->setModem_SearchText(SearchDev::device_notfound,
-                                             interfaceText("modem_info_notfound"));
+                                              interfaceText("modem_info_notfound"));
             toLog(LoggerLevel::Error, senderName, interfaceText("modem_info_notfound"));
         } break;
         }
@@ -2783,7 +2783,7 @@ bool MainWindow::getDeviceFrom_DB() {
 
             if (state == "0") {
                 this->incameStatusFrom_CoinAcceptor(CCtalkStatus::Errors::NotAvailable,
-                                                   "Монетоприемник не найден");
+                                                    "Монетоприемник не найден");
             }
         } break;
         }
@@ -4421,7 +4421,8 @@ void MainWindow::settingsSave() {
     settings.setValue("status_validator_jam_in_box", config.statusValidatorJam_InBox);
     settings.setValue("status_validator_jam_in_box_value_counter",
                       config.statusValidatorJam_InBoxValueCounter);
-    settings.setValue("status_validator_jam_in_box_lockers", config.statusValidatorJam_InBoxLockers);
+    settings.setValue("status_validator_jam_in_box_lockers",
+                      config.statusValidatorJam_InBoxLockers);
 
     settings.setValue("auto_update_status", config.autoUpdateStatus);
     settings.setValue("tpl", config.tpl);
@@ -4676,12 +4677,12 @@ QStringList MainWindow::getWinPrinterNames() {
     printerInfos = (PRINTER_INFO_2W *)malloc(size);
 
     if (Enum_PrintersW(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS,
-                      NULL,
-                      2,
-                      (LPBYTE)printerInfos,
-                      size,
-                      &size,
-                      &num_Printers)) {
+                       NULL,
+                       2,
+                       (LPBYTE)printerInfos,
+                       size,
+                       &size,
+                       &num_Printers)) {
         for (uint i = 0; i < num_Printers; i++) {
             printerName = QString::from_Utf16(
                 reinterpret_cast<const char16_t *>(printerInfos[i].pPrinterName));

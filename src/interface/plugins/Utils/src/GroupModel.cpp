@@ -386,10 +386,11 @@ void GroupModel::setRootElementInternal(qint64 aRootElement) {
     }
 
     if (aRootElement && !m_ProvidersStatistic.isEmpty()) {
-        qStableSort(
-            m_Nodes.begin(), m_Nodes.end(), [](const Item_Ptr &aItem_A, const Item_Ptr &aItem_B) -> bool {
-                return aItem_A->getOrder() > aItem_B->getOrder();
-            });
+        qStableSort(m_Nodes.begin(),
+                    m_Nodes.end(),
+                    [](const Item_Ptr &aItem_A, const Item_Ptr &aItem_B) -> bool {
+                        return aItem_A->getOrder() > aItem_B->getOrder();
+                    });
     }
 
     if (m_Nodes.count() > currentCount) {

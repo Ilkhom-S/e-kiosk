@@ -128,8 +128,8 @@ bool SwecoinPrinter::getStatus(TStatusCodes &aStatusCodes) {
         aStatusCodes.insert(CSwecoinPrinter::Statuses[answer[1]]);
     }
 
-    if (!m_IOPort->write(CSwecoinPrinter::Commands::GetPaperNearEndData) || !m_IOPort->read(answer) ||
-        (answer.size() != 1)) {
+    if (!m_IOPort->write(CSwecoinPrinter::Commands::GetPaperNearEndData) ||
+        !m_IOPort->read(answer) || (answer.size() != 1)) {
         return false;
     }
 

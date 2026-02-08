@@ -57,7 +57,7 @@ bool OSMP::isConnected() {
         if (perform_Command(COSMP::WrongDeviceCheck, &answer) && !answer.isEmpty()) {
             toLog(LogLevel::Error,
                   m_DeviceName + QStringLiteral(": Unknown device trying to impersonate the device "
-                                               "based on OSMP protocol."));
+                                                "based on OSMP protocol."));
             return false;
         }
 

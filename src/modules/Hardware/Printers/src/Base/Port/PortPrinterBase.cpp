@@ -119,7 +119,8 @@ template <class T> bool PortPrinterBase<T>::printOut(const SPrintingOutData &aPr
     }
 
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging, QVariant().from_Value(ELoggingType::ReadWrite));
+    configuration.insert(CHardware::Port::IOLogging,
+                         QVariant().from_Value(ELoggingType::ReadWrite));
     this->m_IOPort->setDeviceConfiguration(configuration);
     int feeding = this->getConfigParameter(CHardware::Printer::FeedingAmount).toInt();
 

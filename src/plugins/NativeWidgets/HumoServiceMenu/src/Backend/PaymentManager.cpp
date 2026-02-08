@@ -104,7 +104,8 @@ PaymentManager::perform(const QVariantMap &aParameters) {
     if (m_PaymentService->getBalance().isEmpty()) {
         m_Encashment = m_PaymentService->getLastEncashment();
 
-        return m_Encashment.isValid() ? PPSDK::EncashmentResult::OK : PPSDK::EncashmentResult::Error;
+        return m_Encashment.isValid() ? PPSDK::EncashmentResult::OK
+                                      : PPSDK::EncashmentResult::Error;
     }
 
     return m_PaymentService->perform_Encashment(aParameters, m_Encashment);
@@ -265,10 +266,10 @@ bool PaymentManager::printUnprintedReceiptsRegistry(const QSet<qint64> &aPayment
 
             m_PaymentsRegistryPrintJob =
                 m_PrinterService->printReceipt(PPSDK::CReceiptType::Payment,
-                                              receiptParameters,
-                                              CPaymentManager::UnprintedReest,
-                                              DSDK::EPrintingModes::Continuous,
-                                              true);
+                                               receiptParameters,
+                                               CPaymentManager::UnprintedReest,
+                                               DSDK::EPrintingModes::Continuous,
+                                               true);
 
             ok = ok || (m_PaymentsRegistryPrintJob != 0);
         }
@@ -327,7 +328,8 @@ bool PaymentManager::printEncashment(int aIndex /*= -1*/) {
     PPSDK::SEncashment &encashment = m_Encashment;
 
     if (aIndex >= 0) {
-        encashment = (m_EncashmentList.size() > aIndex) ? m_EncashmentList[aIndex] : emptyEncashment;
+        encashment =
+            (m_EncashmentList.size() > aIndex) ? m_EncashmentList[aIndex] : emptyEncashment;
     }
 
     if (!encashment.isValid()) {
@@ -362,10 +364,10 @@ bool PaymentManager::printEncashment(int aIndex /*= -1*/) {
              .filter(QRegularExpression(DSDK::CComponents::Dispenser))
              .isEmpty()) {
         m_PrinterService->printReceipt(PPSDK::CReceiptType::DispenserEncashment,
-                                      fields,
-                                      PPSDK::CReceiptType::DispenserEncashment,
-                                      DSDK::EPrintingModes::None,
-                                      true);
+                                       fields,
+                                       PPSDK::CReceiptType::DispenserEncashment,
+                                       DSDK::EPrintingModes::None,
+                                       true);
     }
 
     return result;
@@ -374,10 +376,10 @@ bool PaymentManager::printEncashment(int aIndex /*= -1*/) {
 //------------------------------------------------------------------------
 bool PaymentManager::printTestPage() {
     return (m_PrinterService->printReceipt(PPSDK::CReceiptType::Test,
-                                          QVariantMap(),
-                                          PPSDK::CReceiptType::Test,
-                                          DSDK::EPrintingModes::None,
-                                          true) != 0);
+                                           QVariantMap(),
+                                           PPSDK::CReceiptType::Test,
+                                           DSDK::EPrintingModes::None,
+                                           true) != 0);
 }
 
 //------------------------------------------------------------------------
@@ -391,10 +393,10 @@ bool PaymentManager::printBalance() const {
              .filter(QRegularExpression(DSDK::CComponents::Dispenser))
              .isEmpty()) {
         m_PrinterService->printReceipt(PPSDK::CReceiptType::DispenserBalance,
-                                      fields,
-                                      PPSDK::CReceiptType::DispenserBalance,
-                                      DSDK::EPrintingModes::None,
-                                      true);
+                                       fields,
+                                       PPSDK::CReceiptType::DispenserBalance,
+                                       DSDK::EPrintingModes::None,
+                                       true);
     }
 
     return result;
@@ -404,8 +406,8 @@ bool PaymentManager::printBalance() const {
 int PaymentManager::printZReport(bool aFullZReport) {
     if (m_Encashment.balance.notPrintedPayments.isEmpty() || !m_UseFiscalPrinter) {
         return !!m_PrinterService->printReport(aFullZReport ? PPSDK::CReceiptType::ZReportFull
-                                                           : PPSDK::CReceiptType::ZReport,
-                                              QVariantMap());
+                                                            : PPSDK::CReceiptType::ZReport,
+                                               QVariantMap());
     } else {
         int result = 0;
         if (m_PaymentsRegistryPrintJob == 0) {
@@ -549,11 +551,11 @@ int PaymentManager::getEncashmentsHistoryCount() {
 
     // Удаляем первую "техническую" инкассацию
     m_EncashmentList.erase(std::remove_if(m_EncashmentList.begin(),
-                                         m_EncashmentList.end(),
-                                         [](const PPSDK::SEncashment &aEncashment) -> bool {
-                                             return aEncashment.id == 1;
-                                         }),
-                          m_EncashmentList.end());
+                                          m_EncashmentList.end(),
+                                          [](const PPSDK::SEncashment &aEncashment) -> bool {
+                                              return aEncashment.id == 1;
+                                          }),
+                           m_EncashmentList.end());
 
     return m_EncashmentList.size();
 }

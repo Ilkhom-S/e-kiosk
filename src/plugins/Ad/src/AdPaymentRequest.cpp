@@ -42,8 +42,9 @@ AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName)
     // Берём все внешние параметры для отправки на сервер и заменяем в них макросы на
     // значения параметров платежа.
     if (m_Payment->getProviderSettings().processor.requests.contains(step.toUpper())) {
-        foreach (const SProvider::SProcessingTraits::SRequest::SField &field,
-                 m_Payment->getProviderSettings().processor.requests[step.toUpper()].requestFields) {
+        foreach (
+            const SProvider::SProcessingTraits::SRequest::SField &field,
+            m_Payment->getProviderSettings().processor.requests[step.toUpper()].requestFields) {
             QString value = field.value;
 
             QRegularExpression macroPattern("\\{(.+)\\}");
@@ -132,7 +133,7 @@ QString AdPaymentRequest::toLogString() const {
         result << QString("%1 = \"%2\"")
                       .arg(it.key())
                       .arg(m_CryptedFields.contains(it.key()) ? "**CRYPTED**"
-                                                             : it.value().toString());
+                                                              : it.value().toString());
     }
 
     return result.join(", ");

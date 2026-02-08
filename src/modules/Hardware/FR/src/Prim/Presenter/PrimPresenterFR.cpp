@@ -1,9 +1,8 @@
 /* @file ФР ПРИМ c презентером. */
 
-#include "Prim_PresenterFR.h"
-
 #include "../Prim_ModelData.h"
 #include "Hardware/Printers/EpsonEUT400.h"
+#include "Prim_PresenterFR.h"
 
 //--------------------------------------------------------------------------------
 template class Prim_PresenterFR<Prim_FRBase>;

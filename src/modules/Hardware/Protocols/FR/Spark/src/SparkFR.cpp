@@ -65,8 +65,8 @@ bool SparkFRProtocol::check(const QByteArray &aAnswerData) {
 
 //--------------------------------------------------------------------------------
 TResult SparkFRProtocol::perform_Command(const QByteArray &aCommandData,
-                                        QByteArray &aAnswerData,
-                                        int aTimeout) {
+                                         QByteArray &aAnswerData,
+                                         int aTimeout) {
     int index = 1;
 
     do {

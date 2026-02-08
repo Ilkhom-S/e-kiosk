@@ -48,8 +48,9 @@ void CData::add(const QString &aSerialNumber,
 SData CData::value(const QString &aSerialNumber) const {
     QStringList::const_iterator serialNumberTemplate = getSerialNumberTemplate(aSerialNumber);
 
-    return (serialNumberTemplate == m_SerialNumberTemplates.end()) ? SData()
-                                                                  : m_Buffer[*serialNumberTemplate];
+    return (serialNumberTemplate == m_SerialNumberTemplates.end())
+               ? SData()
+               : m_Buffer[*serialNumberTemplate];
 }
 
 //--------------------------------------------------------------------------------

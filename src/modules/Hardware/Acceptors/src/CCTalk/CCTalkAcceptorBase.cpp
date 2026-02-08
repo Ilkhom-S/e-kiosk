@@ -127,8 +127,8 @@ template <class T> bool CCTalkAcceptorBase<T>::getStatus(TStatusCodes &aStatusCo
         } else {
             this->toLog(logLevel,
                         this->m_DeviceName + QString(": Self check status = %1 -> %2")
-                                                .arg(description)
-                                                .arg(statusCodeSpecification.description));
+                                                 .arg(description)
+                                                 .arg(statusCodeSpecification.description));
         }
     }
 
@@ -152,7 +152,7 @@ void CCTalkAcceptorBase<T>::parseBufferedStatuses(const QByteArray &aAnswer,
     if (!size || (size == this->m_EventIndex)) {
         if (canApplySimpleStatusCodes(aStatusCodes)) {
             aStatusCodes.insert(m_Enabled ? BillAcceptorStatusCode::Normal::Enabled
-                                         : BillAcceptorStatusCode::Normal::Disabled);
+                                          : BillAcceptorStatusCode::Normal::Disabled);
         } else {
             aStatusCodes += this->getStatusCodes(this->m_StatusCollectionHistory.lastValue());
         }
@@ -183,15 +183,15 @@ void CCTalkAcceptorBase<T>::parseBufferedStatuses(const QByteArray &aAnswer,
                     LogLevel::Enum logLevel = this->getLogLevel(codeSpecification.warningLevel);
                     this->toLog(logLevel,
                                 this->m_DeviceName + QString(": %1 -> %2")
-                                                        .arg(localDescription)
-                                                        .arg(codeSpecification.description));
+                                                         .arg(localDescription)
+                                                         .arg(codeSpecification.description));
                 }
 
                 if (this->m_ErrorData->value(error).isRejected) {
                     aStatusCodes.insert(BillAcceptorStatusCode::Reject::Unknown);
                 } else if (statusCode == DeviceStatusCode::OK::OK) {
                     aStatusCodes.insert(m_Enabled ? BillAcceptorStatusCode::Normal::Enabled
-                                                 : BillAcceptorStatusCode::Normal::Disabled);
+                                                  : BillAcceptorStatusCode::Normal::Disabled);
                 }
             }
         }
@@ -205,7 +205,7 @@ template <class T> void CCTalkAcceptorBase<T>::finalizeInitialization() {
     CCTalkDeviceBase<T>::finalizeInitialization();
 
     this->m_OldFirmware = (this->m_Currency != Currency::NoCurrency) &&
-                         (this->m_FWVersion < this->m_ModelData.minVersions[this->m_Currency]);
+                          (this->m_FWVersion < this->m_ModelData.minVersions[this->m_Currency]);
 }
 
 //--------------------------------------------------------------------------------

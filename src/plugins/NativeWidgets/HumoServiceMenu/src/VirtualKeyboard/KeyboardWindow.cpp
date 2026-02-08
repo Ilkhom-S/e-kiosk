@@ -41,7 +41,8 @@ void KeyboardWindow::initialize() {
     m_KeyMap["KEY_PERIOD"] = VirtualButton(Qt::Key_Period, ".", Qt::Key_Greater, ">");
     m_KeyMap["KEY_SLASH"] = VirtualButton(Qt::Key_Slash, "/", Qt::Key_Question, "?");
     m_KeyMap["KEY_BRACKETLEFT"] = VirtualButton(Qt::Key_BracketLeft, "[", Qt::Key_BraceLeft, "{");
-    m_KeyMap["KEY_BRACKETRIGHT"] = VirtualButton(Qt::Key_BracketRight, "]", Qt::Key_BraceRight, "}");
+    m_KeyMap["KEY_BRACKETRIGHT"] =
+        VirtualButton(Qt::Key_BracketRight, "]", Qt::Key_BraceRight, "}");
     m_KeyMap["KEY_BACKSLASH"] = VirtualButton(Qt::Key_Backslash, "\\", Qt::Key_Bar, "|");
     m_KeyMap["KEY_1"] = VirtualButton(Qt::Key_1, "1", Qt::Key_Exclam, "!");
     m_KeyMap["KEY_2"] = VirtualButton(Qt::Key_2, "2", Qt::Key_At, "@");
@@ -91,10 +92,10 @@ void KeyboardWindow::initialize() {
         Qt::Key_Apostrophe, QString::from_Utf8("э"), Qt::Key_QuoteDbl, QString::from_Utf8("Э"));
     m_AltKeyMap["KEY_MINUS"] = VirtualButton(
         Qt::Key_Minus, QString::from_Utf8("х"), Qt::Key_Underscore, QString::from_Utf8("Х"));
-    m_AltKeyMap["KEY_EQUAL"] =
-        VirtualButton(Qt::Key_Equal, QString::from_Utf8("ъ"), Qt::Key_Plus, QString::from_Utf8("Ъ"));
-    m_AltKeyMap["KEY_COMMA"] =
-        VirtualButton(Qt::Key_Comma, QString::from_Utf8("б"), Qt::Key_Less, QString::from_Utf8("Б"));
+    m_AltKeyMap["KEY_EQUAL"] = VirtualButton(
+        Qt::Key_Equal, QString::from_Utf8("ъ"), Qt::Key_Plus, QString::from_Utf8("Ъ"));
+    m_AltKeyMap["KEY_COMMA"] = VirtualButton(
+        Qt::Key_Comma, QString::from_Utf8("б"), Qt::Key_Less, QString::from_Utf8("Б"));
     m_AltKeyMap["KEY_PERIOD"] = VirtualButton(
         Qt::Key_Period, QString::from_Utf8("ю"), Qt::Key_Greater, QString::from_Utf8("Ю"));
     m_AltKeyMap["KEY_SLASH"] = VirtualButton(
@@ -107,7 +108,8 @@ void KeyboardWindow::initialize() {
         Qt::Key_Backslash, QString::from_Utf8("з"), Qt::Key_Bar, QString::from_Utf8("З"));
     m_AltKeyMap["KEY_1"] = VirtualButton(Qt::Key_1, "1", Qt::Key_Exclam, "!");
     m_AltKeyMap["KEY_2"] = VirtualButton(Qt::Key_2, "2", Qt::Key_At, "\"");
-    m_AltKeyMap["KEY_3"] = VirtualButton(Qt::Key_3, "3", Qt::Key_NumberSign, QString::from_Utf8("№"));
+    m_AltKeyMap["KEY_3"] =
+        VirtualButton(Qt::Key_3, "3", Qt::Key_NumberSign, QString::from_Utf8("№"));
     m_AltKeyMap["KEY_4"] = VirtualButton(Qt::Key_4, "4", Qt::Key_Dollar, QString::from_Utf8(";"));
     m_AltKeyMap["KEY_5"] = VirtualButton(Qt::Key_5, "5", Qt::Key_Percent, "%");
     m_AltKeyMap["KEY_6"] = VirtualButton(Qt::Key_6, "6", Qt::Key_AsciiCircum, ":");
@@ -182,8 +184,9 @@ void KeyboardWindow::onButtonClicked() {
     }
 
     QString buttonName = button->objectName();
-    VirtualButton virtualButton = m_AltMode ? m_AltKeyMap.value(buttonName, m_KeyMap.value(buttonName))
-                                           : m_KeyMap.value(buttonName);
+    VirtualButton virtualButton = m_AltMode
+                                      ? m_AltKeyMap.value(buttonName, m_KeyMap.value(buttonName))
+                                      : m_KeyMap.value(buttonName);
 
     if (virtualButton.getKey(m_Shifted) != Qt::Key_unknown) {
         QKeyEvent *keyEvent =
@@ -197,9 +200,9 @@ void KeyboardWindow::updateKeys() {
     QList<QToolButton *> padButtons = this->findChildren<QToolButton *>();
     foreach (QToolButton *button, padButtons) {
         QString buttonName = button->objectName();
-        VirtualButton virtualButton = m_AltMode
-                                          ? m_AltKeyMap.value(buttonName, m_KeyMap.value(buttonName))
-                                          : m_KeyMap.value(buttonName);
+        VirtualButton virtualButton =
+            m_AltMode ? m_AltKeyMap.value(buttonName, m_KeyMap.value(buttonName))
+                      : m_KeyMap.value(buttonName);
 
         button->setText(virtualButton.getText(m_Shifted));
     }

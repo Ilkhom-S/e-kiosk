@@ -32,7 +32,8 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
 ServiceMenuBackend::ServiceMenuBackend(SDK::Plugin::IEnvironment *aFactory, ILog *aLog)
-    : m_Factory(aFactory), m_Log(aLog), m_AutoEncashmentEnabled(false), m_AuthorizationEnabled(true) {
+    : m_Factory(aFactory), m_Log(aLog), m_AutoEncashmentEnabled(false),
+      m_AuthorizationEnabled(true) {
     m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
@@ -231,10 +232,10 @@ void ServiceMenuBackend::printDispenserDiffState() {
 
         QtConcurrent::run([=]() {
             m_Core->getPrinterService()->printReceipt(QString(""),
-                                                     parameters,
-                                                     QString("dispenser_diff"),
-                                                     DSDK::EPrintingModes::None,
-                                                     true);
+                                                      parameters,
+                                                      QString("dispenser_diff"),
+                                                      DSDK::EPrintingModes::None,
+                                                      true);
         });
     } else {
         toLog("Dispenser cash units state are not changed.");
@@ -279,11 +280,11 @@ bool ServiceMenuBackend::authorize(const QString &aPassword) {
     if (hash == serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Service]
                     .toLower()) {
         m_AccessRights << ServiceMenuBackend::Diagnostic << ServiceMenuBackend::SetupHardware
-                      << ServiceMenuBackend::SetupNetwork << ServiceMenuBackend::SetupKeys
-                      << ServiceMenuBackend::ViewPaymentSummary << ServiceMenuBackend::ViewPayments
-                      << ServiceMenuBackend::PrintReceipts << ServiceMenuBackend::Encash
-                      << ServiceMenuBackend::StopApplication << ServiceMenuBackend::RebootTerminal
-                      << ServiceMenuBackend::LockTerminal;
+                       << ServiceMenuBackend::SetupNetwork << ServiceMenuBackend::SetupKeys
+                       << ServiceMenuBackend::ViewPaymentSummary << ServiceMenuBackend::ViewPayments
+                       << ServiceMenuBackend::PrintReceipts << ServiceMenuBackend::Encash
+                       << ServiceMenuBackend::StopApplication << ServiceMenuBackend::RebootTerminal
+                       << ServiceMenuBackend::LockTerminal;
 
         m_UserRole = CServiceTags::UserRole::RoleAdministrator;
     }
@@ -292,9 +293,9 @@ bool ServiceMenuBackend::authorize(const QString &aPassword) {
              serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Technician]
                  .toLower()) {
         m_AccessRights << ServiceMenuBackend::Diagnostic << ServiceMenuBackend::SetupHardware
-                      << ServiceMenuBackend::SetupNetwork << ServiceMenuBackend::SetupKeys
-                      << ServiceMenuBackend::StopApplication << ServiceMenuBackend::RebootTerminal
-                      << ServiceMenuBackend::LockTerminal;
+                       << ServiceMenuBackend::SetupNetwork << ServiceMenuBackend::SetupKeys
+                       << ServiceMenuBackend::StopApplication << ServiceMenuBackend::RebootTerminal
+                       << ServiceMenuBackend::LockTerminal;
 
         m_UserRole = CServiceTags::UserRole::RoleTechnician;
     }

@@ -75,7 +75,7 @@ void IntegratedDrivers::initialize(DeviceManager *aDeviceManager) {
         foreach (const TPaths &localPaths,
                  QSet<TPaths>(pathsByModel.values().begin(), pathsByModel.values().end())) {
             m_Data.insert(pathPart + QString::number(index++),
-                         SData(localPaths, pathsByModel.keys(localPaths)));
+                          SData(localPaths, pathsByModel.keys(localPaths)));
         }
     }
 }

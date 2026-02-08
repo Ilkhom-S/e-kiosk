@@ -33,7 +33,8 @@ CashDispenserManager::CashDispenserManager(IApplication *aApplication)
 //---------------------------------------------------------------------------
 bool CashDispenserManager::initialize(IPaymentDatabaseUtils *aDatabase) {
     m_DeviceService = DeviceService::instance(m_Application);
-    m_Database = DatabaseService::instance(m_Application)->getDatabaseUtils<IHardwareDatabaseUtils>();
+    m_Database =
+        DatabaseService::instance(m_Application)->getDatabaseUtils<IHardwareDatabaseUtils>();
     m_PaymentDatabase = aDatabase;
 
     m_Dispensers.clear();
@@ -212,7 +213,8 @@ void CashDispenserManager::onUnitsDefined() {
     if (dispenser) {
         dispensers << dispenser;
     } else {
-        dispensers = QSet<DSDK::IDispenser *>(m_Dispensers.keys().begin(), m_Dispensers.keys().end());
+        dispensers =
+            QSet<DSDK::IDispenser *>(m_Dispensers.keys().begin(), m_Dispensers.keys().end());
     }
 
     /// Проверяем и обновляем список доступных купюр
@@ -321,8 +323,8 @@ void CashDispenserManager::saveCashCount() {
         }
 
         m_Database->setDeviceParam(configName,
-                                  PPSDK::CDatabaseConstants::Parameters::CashUnits,
-                                  parameterValueList.join(";"));
+                                   PPSDK::CDatabaseConstants::Parameters::CashUnits,
+                                   parameterValueList.join(";"));
     }
 }
 
@@ -350,8 +352,8 @@ void CashDispenserManager::loadCashList() {
 
 //---------------------------------------------------------------------------
 bool CashDispenserManager::getItem_Data(SDK::PaymentProcessor::TPaymentAmount aAmount,
-                                       TItem_DataSet &aItem_Data,
-                                       TItem_DataSetIt &aItem_DataSetIt) {
+                                        TItem_DataSet &aItem_Data,
+                                        TItem_DataSetIt &aItem_DataSetIt) {
     if (aItem_Data.isEmpty()) {
         return false;
     }

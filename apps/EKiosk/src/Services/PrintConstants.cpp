@@ -39,15 +39,15 @@ const char ReceiptNumber[] = "RECEIPT_NUMBER";
 const char NoFiscal[] = "NO_FISCAL";
 
 namespace KKM {
-const char TaxSystem[] = "TAXSYSTEM"; // система налогообложения (СНО)
+const char TaxSystem[] = "TAXSYSTEM";              // система налогообложения (СНО)
 const char DateTimeStamp[] = "KKM_DATETIME_STAMP"; // дата и время получения фискального документа
 const char SerialNumber[] = "KKM_SERIAL_NUMBER"; // серийный номер фискальника (заводской номер ККТ)
-const char RNM[] = "KKM_RNM"; // регистрационный номер ККТ (РНМ)
-const char SessionNumber[] = "KKM_SESSION_NUMBER"; // номер смены
+const char RNM[] = "KKM_RNM";                    // регистрационный номер ККТ (РНМ)
+const char SessionNumber[] = "KKM_SESSION_NUMBER";    // номер смены
 const char FDSerialNumber[] = "KKM_FD_SERIAL_NUMBER"; // порядковый номер фискального чека
-const char FSNumber[] = "KKM_FS_NUMBER"; // заводской номер фискального накопителя
-const char FDNumber[] = "KKM_FD_NUMBER"; // номер фискального чека
-const char FDSign[] = "KKM_FD_SIGN"; // фискальный признак данных
+const char FSNumber[] = "KKM_FS_NUMBER";              // заводской номер фискального накопителя
+const char FDNumber[] = "KKM_FD_NUMBER";              // номер фискального чека
+const char FDSign[] = "KKM_FD_SIGN";                  // фискальный признак данных
 
 const char TaxAmount02[] = "TAX_AMOUNT_02"; // сумма НДС чека по ставке 18(20)% (1102)
 const char TaxAmount03[] = "TAX_AMOUNT_03"; // сумма НДС чека по ставке 10% (1103)

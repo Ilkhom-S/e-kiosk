@@ -1039,8 +1039,8 @@ void MainPageLoader::getSum_ToFrom_MinusCommis(double amountFrom) {
             if (amountFrom >= commissionMap[i]["sum_from"].toDouble() &&
                 amountFrom <= commissionMap[i]["sum_to"].toDouble()) {
                 nominalAmount = getMoneyToFrom_All(commissionMap[i]["type"].toInt(),
-                                                  amountFrom,
-                                                  commissionMap[i]["value"].toDouble());
+                                                   amountFrom,
+                                                   commissionMap[i]["value"].toDouble());
                 return;
             }
         }

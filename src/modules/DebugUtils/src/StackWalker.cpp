@@ -68,8 +68,8 @@ typedef struct _IMAGEHLP_MODULE64 {
     DWORD ImageSize;           // virtual size of the loaded module
     DWORD TimeDateStamp;       // date/time stamp from pe header
     DWORD CheckSum;            // checksum from the pe header
-    DWORD Num_Syms;             // number of symbols in the symbol table
-    SYM_TYPE Sym_Type;          // type of symbols loaded
+    DWORD Num_Syms;            // number of symbols in the symbol table
+    SYM_TYPE Sym_Type;         // type of symbols loaded
     CHAR ModuleName[32];       // module name
     CHAR ImageName[256];       // image name
     CHAR LoadedImageName[256]; // symbol file name
@@ -319,8 +319,8 @@ public:
         DWORD ImageSize;           // virtual size of the loaded module
         DWORD TimeDateStamp;       // date/time stamp from pe header
         DWORD CheckSum;            // checksum from the pe header
-        DWORD Num_Syms;             // number of symbols in the symbol table
-        SYM_TYPE Sym_Type;          // type of symbols loaded
+        DWORD Num_Syms;            // number of symbols in the symbol table
+        SYM_TYPE Sym_Type;         // type of symbols loaded
         CHAR ModuleName[32];       // module name
         CHAR ImageName[256];       // image name
         CHAR LoadedImageName[256]; // symbol file name
@@ -945,14 +945,14 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread,
         // the stack is so hosed that the next deeper frame could not be found.
         // CONTEXT need not to be suplied if imageTyp is IMAGE_FILE_MACHINE_I386!
         if (!this->m_Sw->pSW(imageType,
-                            this->m_HProcess,
-                            hThread,
-                            &s,
-                            &c,
-                            myReadProcMem,
-                            this->m_Sw->pSFTA,
-                            this->m_Sw->pSGMB,
-                            NULL)) {
+                             this->m_HProcess,
+                             hThread,
+                             &s,
+                             &c,
+                             myReadProcMem,
+                             this->m_Sw->pSFTA,
+                             this->m_Sw->pSGMB,
+                             NULL)) {
             this->OnDbgHelpErr("StackWalk64", GetLastError(), s.AddrPC.Offset);
             break;
         }
@@ -975,7 +975,8 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread,
             // we seem to have a valid PC
             // show procedure info (Sym_GetSym_From_Addr64())
             if (this->m_Sw->pSGSFA(
-                    this->m_HProcess, s.AddrPC.Offset, &(csEntry.offsetFrom_Symbol), pSym) != FALSE) {
+                    this->m_HProcess, s.AddrPC.Offset, &(csEntry.offsetFrom_Symbol), pSym) !=
+                FALSE) {
                 // TODO: Mache dies sicher...!
                 strcpy_s(csEntry.name, pSym->Name);
                 // UnDecorateSymbolName()

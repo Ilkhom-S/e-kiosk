@@ -41,7 +41,8 @@ void KeyboardWindow::initialize() {
     m_KeyMap["KEY_PERIOD"] = VirtualButton(Qt::Key_Period, ".", Qt::Key_Greater, ">");
     m_KeyMap["KEY_SLASH"] = VirtualButton(Qt::Key_Slash, "/", Qt::Key_Question, "?");
     m_KeyMap["KEY_BRACKETLEFT"] = VirtualButton(Qt::Key_BracketLeft, "[", Qt::Key_BraceLeft, "{");
-    m_KeyMap["KEY_BRACKETRIGHT"] = VirtualButton(Qt::Key_BracketRight, "]", Qt::Key_BraceRight, "}");
+    m_KeyMap["KEY_BRACKETRIGHT"] =
+        VirtualButton(Qt::Key_BracketRight, "]", Qt::Key_BraceRight, "}");
     m_KeyMap["KEY_BACKSLASH"] = VirtualButton(Qt::Key_Backslash, "\\", Qt::Key_Bar, "|");
     m_KeyMap["KEY_1"] = VirtualButton(Qt::Key_1, "1", Qt::Key_Exclam, "!");
     m_KeyMap["KEY_2"] = VirtualButton(Qt::Key_2, "2", Qt::Key_At, "@");
@@ -91,8 +92,8 @@ void KeyboardWindow::initialize() {
         Qt::Key_Apostrophe, QString::from_Utf8("э"), Qt::Key_QuoteDbl, QString::from_Utf8("Э"));
     m_AltKeyMap["KEY_MINUS"] = VirtualButton(Qt::Key_Minus, "-", Qt::Key_Underscore, "_");
     m_AltKeyMap["KEY_EQUAL"] = VirtualButton(Qt::Key_Equal, "=", Qt::Key_Plus, "+");
-    m_AltKeyMap["KEY_COMMA"] =
-        VirtualButton(Qt::Key_Comma, QString::from_Utf8("б"), Qt::Key_Less, QString::from_Utf8("Б"));
+    m_AltKeyMap["KEY_COMMA"] = VirtualButton(
+        Qt::Key_Comma, QString::from_Utf8("б"), Qt::Key_Less, QString::from_Utf8("Б"));
     m_AltKeyMap["KEY_PERIOD"] = VirtualButton(
         Qt::Key_Period, QString::from_Utf8("ю"), Qt::Key_Greater, QString::from_Utf8("Ю"));
     m_AltKeyMap["KEY_SLASH"] = VirtualButton(Qt::Key_Slash, "/", Qt::Key_Question, "?");

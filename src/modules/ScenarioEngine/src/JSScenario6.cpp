@@ -41,8 +41,9 @@ const char Param_Initial[] = "initial";                 /// Начальное �
 const char Param_Final[] = "final";                     /// Конечное состояние.
 const char Param_Timeout[] = "timeout";                 /// Таймаут состояния.
 const char Param_UserActivity[] = "ignoreUserActivity"; /// Игнорировать активность пользователя.
-const char Param_SignalName[] = "signal"; /// Имя сигнала, при которому мы пришли в данное состояние.
-const char Param_Result[] = "result";     /// Результат работы сценария.
+const char Param_SignalName[] =
+    "signal";                         /// Имя сигнала, при которому мы пришли в данное состояние.
+const char Param_Result[] = "result"; /// Результат работы сценария.
 const char Param_ResultError[] = "resultError"; /// Ошибка, возвращаемая сценарием.
 } // namespace CJSScenario
 
@@ -183,13 +184,13 @@ bool JSScenario::initialize(const QList<SScriptObject> &aScriptObjects) {
                 object.name, m_ScriptEngine->newQMetaObject(object.metaObject));
         } else {
             m_ScriptEngine->globalObject().setProperty(object.name,
-                                                      m_ScriptEngine->newQObject(object.object));
+                                                       m_ScriptEngine->newQObject(object.object));
         }
     }
 
     // Register this scenario object
     m_ScriptEngine->globalObject().setProperty(CJSScenario::ServiceName,
-                                              m_ScriptEngine->newQObject(this));
+                                               m_ScriptEngine->newQObject(this));
 
     // Load base scenario if it exists
     if (!m_BasePath.isEmpty()) {

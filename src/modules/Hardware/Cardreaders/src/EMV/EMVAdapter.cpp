@@ -113,7 +113,8 @@ bool EMVAdapter::readRecord(quint8 aRecIndex, QByteArray &aResponse) {
 bool EMVAdapter::getAFL(QByteArray &aResponse) {
     QByteArray response;
 
-    if (m_Reader->communicate(EMV::Command::GetProcessingOptions, response) && !response.isEmpty()) {
+    if (m_Reader->communicate(EMV::Command::GetProcessingOptions, response) &&
+        !response.isEmpty()) {
         // EMV Book 3: 6.5.8.4 Data Field Returned in the Response Message
         if (response.at(0) == char(EMV::Tags::ResponseFormat1)) {
             EMV::TLV::SItem item = EMV::TLV::TLVs(response).getTag(EMV::Tags::ResponseFormat1);

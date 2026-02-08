@@ -823,10 +823,10 @@ API::TResponse API::send(const QByteArray &aRequest, bool aWaitOperationComplete
 
     QByteArray responseBuffer(CUcs::ReceiveBufferSize, 0);
     int result = m_EftpDo(m_PySelf,
-                         aRequest.isEmpty() ? 0 : (char *)aRequest.data(),
-                         responseBuffer.data(),
-                         NULL,
-                         NULL);
+                          aRequest.isEmpty() ? 0 : (char *)aRequest.data(),
+                          responseBuffer.data(),
+                          NULL,
+                          NULL);
 
     toLog(LogLevel::Debug,
           QString("RESPONSE: [%1, %2]")

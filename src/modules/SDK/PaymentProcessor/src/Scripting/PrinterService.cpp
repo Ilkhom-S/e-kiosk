@@ -66,10 +66,10 @@ void PrinterService::printReceiptExt(const QString &aReceiptType,
 
         // Отправляем на печать с добавлением ID платежа
         m_PrintedJobs.insert(m_PrinterService->printReceipt(aReceiptType,
-                                                          aNewParameters,
-                                                          QString(aTemplate).replace(".xml", ""),
-                                                          aPrintingMode),
-                            TJobInfo(paymentID, aReceiptType));
+                                                            aNewParameters,
+                                                            QString(aTemplate).replace(".xml", ""),
+                                                            aPrintingMode),
+                             TJobInfo(paymentID, aReceiptType));
     } else {
         // Отправляем на печать
         m_PrintedJobs.insert(
@@ -99,7 +99,7 @@ void PrinterService::saveReceipt(const QVariantMap &aParameters, const QString &
 //------------------------------------------------------------------------------
 QString PrinterService::loadReceipt(qint64 aPaymentId) {
     return m_PrinterService->loadReceipt(aPaymentId == -1 ? m_PaymentService->getActivePayment()
-                                                         : aPaymentId);
+                                                          : aPaymentId);
 }
 
 //------------------------------------------------------------------------------

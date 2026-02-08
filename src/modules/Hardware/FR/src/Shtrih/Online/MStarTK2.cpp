@@ -16,7 +16,7 @@ MStarTK2FR::MStarTK2FR() {
 
     // ошибки
     m_UnprocessedErrorData.add(CShtrihOnlineFR::Commands::FS::GetFiscalTLVData,
-                              CShtrihOnlineFR::Errors::NoRequiedDataInFS);
+                               CShtrihOnlineFR::Errors::NoRequiedDataInFS);
 }
 
 //--------------------------------------------------------------------------------

@@ -92,7 +92,7 @@ RemoteService::RemoteService(IApplication *aApplication)
     : ILogable(CRemoteService::LogName), m_Application(aApplication), m_Database(nullptr),
       m_LastCommand(0), m_GenerateKeyCommand(0),
       m_Settings(aApplication->getWorkingDirectory() + CRemoteService::ConfigFileName,
-                QSettings::IniFormat),
+                 QSettings::IniFormat),
       m_CommandMutex() {
     // Создаем 5сек таймер отложенной проверки состояния файлов отчета
     m_CheckUpdateReportsTimer.setSingleShot(true);
@@ -105,11 +105,12 @@ RemoteService::~RemoteService() {}
 
 //---------------------------------------------------------------------------
 bool RemoteService::initialize() {
-    m_Database = DatabaseService::instance(m_Application)->getDatabaseUtils<IHardwareDatabaseUtils>();
+    m_Database =
+        DatabaseService::instance(m_Application)->getDatabaseUtils<IHardwareDatabaseUtils>();
 
     QVariant lastCommand =
         m_Database->getDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
-                                  CRemoteService::LastMonitoringCommand);
+                                   CRemoteService::LastMonitoringCommand);
     if (!lastCommand.isValid()) {
         m_LastCommand = 0;
     } else {
@@ -262,8 +263,8 @@ int RemoteService::increaseLastCommandID() {
     ++m_LastCommand;
 
     m_Database->setDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
-                              CRemoteService::LastMonitoringCommand,
-                              m_LastCommand);
+                               CRemoteService::LastMonitoringCommand,
+                               m_LastCommand);
 
     return m_LastCommand;
 }
@@ -379,7 +380,8 @@ void RemoteService::onPaymentCommandComplete(int aID, EPaymentCommandResult::Enu
 
 //---------------------------------------------------------------------------
 bool RemoteService::allowUpdateCommand() {
-    return m_UpdateCommands.isEmpty() && m_GenerateKeyCommand == 0 && m_QueuedRebootCommands.isEmpty();
+    return m_UpdateCommands.isEmpty() && m_GenerateKeyCommand == 0 &&
+           m_QueuedRebootCommands.isEmpty();
 }
 
 //---------------------------------------------------------------------------
@@ -627,12 +629,12 @@ void RemoteService::commandStatusSent(int aCommandId, int aStatus) {
         m_GenerateKeyCommand = 0;
 
         if (m_Application->getCore()->getCryptService()->replaceKeys(CRemoteService::GeneratedKeyId,
-                                                                    0)) {
+                                                                     0)) {
             m_Application->getCore()->getSettingsService()->saveConfiguration();
 
             m_Database->setDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
-                                      CRemoteService::GenKeyCommandId,
-                                      "");
+                                       CRemoteService::GenKeyCommandId,
+                                       "");
 
             toLog(LogLevel::Normal, "GENKEY: Sucessful swap old and new crypto key.");
         } else {
@@ -672,8 +674,8 @@ void RemoteService::onCheckQueuedRebootCommands() {
     }
 
     m_Database->setDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
-                              CRemoteService::QueuedRebootCommands,
-                              QString());
+                               CRemoteService::QueuedRebootCommands,
+                               QString());
 }
 
 //---------------------------------------------------------------------------
@@ -708,7 +710,7 @@ QList<CommandReport> getReports(const QString &aReportsPath) {
         r.status = static_cast<SDK::PaymentProcessor::IRemoteService::EStatus>(
             report.value("status").toInt());
         r.lastUpdate = QDateTime::from_String(report.value("last_update").toString(),
-                                             CRemoteService::DateTimeFormat);
+                                              CRemoteService::DateTimeFormat);
         r.description = report.value("status_desc");
         r.progress = report.value("progress");
 
@@ -873,7 +875,7 @@ void RemoteService::saveCommandQueue() {
         m_Settings.setValue("parameters", command.parameters.join("#"));
         m_Settings.setValue("status", command.status);
         m_Settings.setValue("lastUpdate",
-                           command.lastUpdate.toString(CRemoteService::DateTimeFormat));
+                            command.lastUpdate.toString(CRemoteService::DateTimeFormat));
 
         m_Settings.endGroup();
     }
@@ -904,13 +906,13 @@ void RemoteService::restoreCommandQueue() {
         cmd.status = static_cast<EStatus>(m_Settings.value("status").toInt());
         cmd.parameters = m_Settings.value("parameters").toString().split("#");
         cmd.lastUpdate = QDateTime::from_String(m_Settings.value("lastUpdate").toString(),
-                                               CRemoteService::DateTimeFormat);
+                                                CRemoteService::DateTimeFormat);
 
         // Если метка времени до сих пор не использовалась, заполняем её текущим временем.
         if (cmd.lastUpdate.isNull() || !cmd.lastUpdate.isValid()) {
             cmd.lastUpdate = QDateTime::currentDateTime();
             m_Settings.setValue("lastUpdate",
-                               cmd.lastUpdate.toString(CRemoteService::DateTimeFormat));
+                                cmd.lastUpdate.toString(CRemoteService::DateTimeFormat));
         }
 
         if (cmd.ID) {
@@ -947,9 +949,9 @@ void RemoteService::restartUpdateWatcher(QFileSystem_Watcher *aWatcher) {
     }
 
     QStringList files;
-    foreach (
-        auto name,
-        QDir(m_Application->getWorkingDirectory() + "/update", "*.rpt").entryInfoList(QDir::Files)) {
+    foreach (auto name,
+             QDir(m_Application->getWorkingDirectory() + "/update", "*.rpt")
+                 .entryInfoList(QDir::Files)) {
         files << name.filePath();
     }
 

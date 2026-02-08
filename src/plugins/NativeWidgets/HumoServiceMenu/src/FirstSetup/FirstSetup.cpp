@@ -59,9 +59,9 @@ FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInst
         m_WizardFrame->setStatus(QObject::tr("#humo_copyright"));
 
         m_MainWidget->setWidget(m_WizardFrame);
-        m_MainWidget->setScale(
-            qMin(core->getGUIService()->getScreenSize(0).width() / qreal(m_WizardFrame->width()),
-                 core->getGUIService()->getScreenSize(0).height() / qreal(m_WizardFrame->height())));
+        m_MainWidget->setScale(qMin(
+            core->getGUIService()->getScreenSize(0).width() / qreal(m_WizardFrame->width()),
+            core->getGUIService()->getScreenSize(0).height() / qreal(m_WizardFrame->height())));
 
         qreal newWidgetWidth =
             core->getGUIService()->getScreenSize(0).width() / m_MainWidget->scale();

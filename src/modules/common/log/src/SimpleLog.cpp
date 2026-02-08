@@ -31,8 +31,8 @@
 
 //---------------------------------------------------------------------------
 SimpleLog::SimpleLog(const QString &aName, LogType::Enum aType, LogLevel::Enum aMaxLogLevel)
-    : m_InitOk(false), m_MaxLogLevel(aMaxLogLevel), m_Name(aName), m_Destination(aName), m_Type(aType),
-      m_Padding(0), m_DuplicateCounter(0) {}
+    : m_InitOk(false), m_MaxLogLevel(aMaxLogLevel), m_Name(aName), m_Destination(aName),
+      m_Type(aType), m_Padding(0), m_DuplicateCounter(0) {}
 
 //---------------------------------------------------------------------------
 SimpleLog::~SimpleLog() {

@@ -91,7 +91,8 @@ Response *PinLoader::createResponse(const SDK::PaymentProcessor::Humo::Request &
 
 //------------------------------------------------------------------------------
 void PinLoader::findPinProviders() {
-    PPSDK::ISettingsService *settingsService = m_PaymentFactoryBase->getCore()->getSettingsService();
+    PPSDK::ISettingsService *settingsService =
+        m_PaymentFactoryBase->getCore()->getSettingsService();
     if (!settingsService) {
         toLog(LogLevel::Error, "Failed to get settings service.");
         return;
@@ -133,7 +134,8 @@ void PinLoader::onLoadPinList() {
         return;
     }
 
-    PPSDK::ISettingsService *settingsService = m_PaymentFactoryBase->getCore()->getSettingsService();
+    PPSDK::ISettingsService *settingsService =
+        m_PaymentFactoryBase->getCore()->getSettingsService();
     if (!settingsService) {
         toLog(LogLevel::Error, "Failed to get settings service.");
         return;

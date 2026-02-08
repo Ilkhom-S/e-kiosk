@@ -125,7 +125,7 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
 
                 QRegularExpression macroPattern("\\{(.+)\\}");
                 ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed
-                ///for Qt5/6
+                /// for Qt5/6
                 /// compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6
                 /// compatibility
 

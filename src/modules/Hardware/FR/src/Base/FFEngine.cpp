@@ -64,9 +64,10 @@ bool FFEngine::parseTLV(const QByteArray &aData, CFR::STLV &aTLV) {
 
     if (dataSize < size) {
         toLog(LogLevel::Error,
-              m_DeviceName + QString(": Failed to parse TLV data due to data size = %1, need %2 min")
-                                .arg(dataSize)
-                                .arg(size));
+              m_DeviceName +
+                  QString(": Failed to parse TLV data due to data size = %1, need %2 min")
+                      .arg(dataSize)
+                      .arg(size));
         return false;
     }
 
@@ -97,10 +98,10 @@ bool FFEngine::checkTLVData(CFR::STLV &aTLV) {
     if (FFDataSize < FFMinSize) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Failed to parse %1 %2 due to size = %3, need %4 min")
-                                .arg(typeData.description)
-                                .arg(m_FFData.getTextLog(aTLV.field))
-                                .arg(FFDataSize)
-                                .arg(FFMinSize));
+                                 .arg(typeData.description)
+                                 .arg(m_FFData.getTextLog(aTLV.field))
+                                 .arg(FFDataSize)
+                                 .arg(FFMinSize));
         return false;
     }
 
@@ -237,9 +238,10 @@ QByteArray FFEngine::getTLVData(int aField, QString *aLog) {
 QByteArray FFEngine::getTLVData(const QString &aTextKey, const QVariant &aValue, QString *aLog) {
     if (!m_FFData.getTextKeys().contains(aTextKey)) {
         toLog(LogLevel::Error,
-              m_DeviceName + QString(": Failed to get TLV-data for field with text key %1 due to no "
-                                    "data in specification")
-                                .arg(aTextKey));
+              m_DeviceName +
+                  QString(": Failed to get TLV-data for field with text key %1 due to no "
+                          "data in specification")
+                      .arg(aTextKey));
         return "";
     }
 
@@ -293,8 +295,8 @@ QByteArray FFEngine::getTLVData(int aField, const QVariant &aValue, QString *aLo
             data = " ";
             toLog(LogLevel::Warning,
                   m_DeviceName + QString(": No data in %1, changing to \"%2\"")
-                                    .arg(m_FFData.getTextLog(aField))
-                                    .arg(data));
+                                     .arg(m_FFData.getTextLog(aField))
+                                     .arg(data));
         }
 
         result += m_Codec->from_Unicode(data);
@@ -528,7 +530,8 @@ bool FFEngine::checkOperationModes(char aData, TOperationModes &aOperationModes)
     m_OperationModes = aOperationModes;
 
     if (!errorLog.isEmpty()) {
-        toLog(LogLevel::Error, m_DeviceName + ": Unknown operation mode(s): " + errorLog.join(", "));
+        toLog(LogLevel::Error,
+              m_DeviceName + ": Unknown operation mode(s): " + errorLog.join(", "));
         return false;
     }
 
@@ -557,14 +560,14 @@ bool FFEngine::checkFiscalField(int aField, bool &aResult) {
         if (data.required == CFR::FiscalFields::ERequired::No) {
             toLog(LogLevel::Debug,
                   m_DeviceName + QString(": Don`t set %1 due to %2the field is not required")
-                                    .arg(log)
-                                    .arg(addLog));
+                                     .arg(log)
+                                     .arg(addLog));
             aResult = true;
         } else if ((data.required == CFR::FiscalFields::ERequired::PM) && !m_OperatorPresence) {
             toLog(LogLevel::Debug,
                   m_DeviceName + QString(": Don`t set %1 due to %2the operator is not present")
-                                    .arg(log)
-                                    .arg(addLog));
+                                     .arg(log)
+                                     .arg(addLog));
             aResult = true;
         } else {
             toLog(LogLevel::Error,
@@ -690,8 +693,9 @@ bool FFEngine::checkDealerAgentFlag(ERequestStatus::Enum aInitialized, bool aCan
 
     if (!CFR::AgentFlags.data().keys().contains(agentFlag)) {
         if (aCanLog) {
-            toLog(LogLevel::Warning,
-                  QString("%1: Wrong dealer agent flag = %2").arg(m_DeviceName).arg(int(agentFlag)));
+            toLog(
+                LogLevel::Warning,
+                QString("%1: Wrong dealer agent flag = %2").arg(m_DeviceName).arg(int(agentFlag)));
         }
 
         return false;
@@ -754,8 +758,8 @@ bool FFEngine::checkTaxSystem_OnPayment(SPaymentData &aPaymentData) {
             } else {
                 toLog(LogLevel::Error,
                       m_DeviceName + QString(": Failed to determine the required taxation system "
-                                            "from the several ones (%1)")
-                                        .arg(toHexLog(joinedTaxSystems)));
+                                             "from the several ones (%1)")
+                                         .arg(toHexLog(joinedTaxSystems)));
                 return false;
             }
         } else if (!m_TaxSystems.contains(paymentTaxSystem_Data)) {
@@ -807,9 +811,9 @@ bool FFEngine::checkAgentFlagOnPayment(SPaymentData &aPaymentData) {
                !m_AgentFlags.contains(paymentAgentFlagData)) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": The actual agent flag(s) %1 don`t contain flag %2 (%3)")
-                                .arg(toHexLog(CFR::joinData(m_AgentFlags)))
-                                .arg(toHexLog(paymentAgentFlagData))
-                                .arg(CFR::AgentFlags[paymentAgentFlagData]));
+                                 .arg(toHexLog(CFR::joinData(m_AgentFlags)))
+                                 .arg(toHexLog(paymentAgentFlagData))
+                                 .arg(CFR::AgentFlags[paymentAgentFlagData]));
         return false;
     }
 
@@ -832,8 +836,9 @@ void FFEngine::logRemovedFields(const QStringList &aOldTextKeys,
         m_FFData.getKeys((aOldTextKeys.toSet() - aFPData.keys().toSet()).toList());
 
     toLog(LogLevel::Normal,
-          m_DeviceName + QString(": fiscal fields %1 have been removed from the fiscal payment data")
-                            .arg(m_FFData.getLogFrom_List(removedFields)));
+          m_DeviceName +
+              QString(": fiscal fields %1 have been removed from the fiscal payment data")
+                  .arg(m_FFData.getLogFrom_List(removedFields)));
 }
 
 //--------------------------------------------------------------------------------
@@ -947,7 +952,8 @@ bool FFEngine::checkINN(const QString &aINN, int aType) const {
         int dataDigit = aINN[CFR::INN::Person::Legal - 1].digitValue();
 
         if (digit != dataDigit) {
-            toLog(LogLevel::Error, m_DeviceName + ": Control numbers are not equal for INN " + aINN);
+            toLog(LogLevel::Error,
+                  m_DeviceName + ": Control numbers are not equal for INN " + aINN);
             return false;
         }
     } else if (size == CFR::INN::Person::Natural) {
@@ -969,7 +975,8 @@ bool FFEngine::checkINN(const QString &aINN, int aType) const {
         int dataDigit2 = aINN[CFR::INN::Person::Natural - 1].digitValue();
 
         if ((digit1 != dataDigit1) || (digit2 != dataDigit2)) {
-            toLog(LogLevel::Error, m_DeviceName + ": Control numbers are not equal for INN " + aINN);
+            toLog(LogLevel::Error,
+                  m_DeviceName + ": Control numbers are not equal for INN " + aINN);
             return false;
         }
     }
@@ -1015,7 +1022,8 @@ QString FFEngine::filterPhone(const QString &aData) const {
         }
     }
 
-    index = result.indexOf(QRegularExpression(QString::from_Utf8("[a-zA-Zа-яА-Я\\.\\,\\;\\+]+")), 1);
+    index =
+        result.indexOf(QRegularExpression(QString::from_Utf8("[a-zA-Zа-яА-Я\\.\\,\\;\\+]+")), 1);
     result = result.left(index).remove(QRegularExpression("[^0-9\\+]+"), "");
 
     if (result.size() == 10) {

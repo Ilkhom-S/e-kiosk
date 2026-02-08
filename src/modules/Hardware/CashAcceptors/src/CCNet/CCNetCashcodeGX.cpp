@@ -39,8 +39,8 @@ bool CCNetCashcodeGX::checkConnectionAbility() {
 
 //---------------------------------------------------------------------------------
 TResult CCNetCashcodeGX::perform_Command(const QByteArray &aCommand,
-                                        const QByteArray &aCommandData,
-                                        QByteArray *aAnswer) {
+                                         const QByteArray &aCommandData,
+                                         QByteArray *aAnswer) {
     if (m_IOPort->getType() == SDK::Driver::EPortTypes::VirtualCOM) {
         QVariantMap configuration;
         configuration.insert(CHardware::Port::COM::WaitResult, true);
@@ -68,10 +68,10 @@ bool CCNetCashcodeGX::processUpdating(const QByteArray &aBuffer, int aSectionSiz
     int sections = int(std::ceil(double(aBuffer.size()) / aSectionSize));
     toLog(LogLevel::Normal,
           m_DeviceName + QString(": section size for updating the firmware = %1, buffer size = %2, "
-                                "amount of sections = %3")
-                            .arg(aSectionSize)
-                            .arg(aBuffer.size())
-                            .arg(sections));
+                                 "amount of sections = %3")
+                             .arg(aSectionSize)
+                             .arg(aBuffer.size())
+                             .arg(sections));
 
     int repeat = 0;
     bool result = true;

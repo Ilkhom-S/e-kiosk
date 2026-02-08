@@ -347,7 +347,7 @@ void MainServiceWindow::onToggleLock() {
     if (closeServiceMenu(
             false, isLocked ? tr("#question_unblock_terminal") : tr("#question_block_terminal"))) {
         m_Backend->sendEvent(isLocked ? SDK::PaymentProcessor::EEventType::TerminalUnlock
-                                     : SDK::PaymentProcessor::EEventType::TerminalLock);
+                                      : SDK::PaymentProcessor::EEventType::TerminalLock);
     }
 }
 

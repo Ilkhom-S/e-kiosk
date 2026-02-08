@@ -92,7 +92,8 @@ RegistrationForm::RegistrationForm(QWidget *parent)
             SLOT(checkAuthInput(QString)));
 
     connect(ui->btnSecretPassword, SIGNAL(toggled(bool)), SLOT(secretPassView(bool)));
-    connect(ui->btnSecretPasswordConfirm, SIGNAL(toggled(bool)), SLOT(secretPassConfirm_View(bool)));
+    connect(
+        ui->btnSecretPasswordConfirm, SIGNAL(toggled(bool)), SLOT(secretPassConfirm_View(bool)));
 
     connect(ui->radioTplTJK, SIGNAL(clicked()), SLOT(tplCheck()));
     connect(ui->radioTplUZB, SIGNAL(clicked()), SLOT(tplCheck()));

@@ -58,9 +58,9 @@ AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QStrin
 
         m_MainWidget->setWidget(m_AutoEncashmentWindow);
         m_MainWidget->setScale(qMin(core->getGUIService()->getScreenSize(0).width() /
-                                       qreal(m_AutoEncashmentWindow->width()),
-                                   core->getGUIService()->getScreenSize(0).height() /
-                                       qreal(m_AutoEncashmentWindow->height())));
+                                        qreal(m_AutoEncashmentWindow->width()),
+                                    core->getGUIService()->getScreenSize(0).height() /
+                                        qreal(m_AutoEncashmentWindow->height())));
 
         qreal newWidgetWidth =
             core->getGUIService()->getScreenSize(0).width() / m_MainWidget->scale();

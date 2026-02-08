@@ -45,8 +45,8 @@ Skin::Skin(const QObject *aApplication, const QString &aInterfacePath, const QSt
 
     // Приоритеты: пользовательский, дистрибутив, дефолтный
     m_Name = skinExist(userSkinName)
-                ? userSkinName
-                : (skinExist(interfaceSkinName) ? interfaceSkinName : CSkin::DefaultSkinName);
+                 ? userSkinName
+                 : (skinExist(interfaceSkinName) ? interfaceSkinName : CSkin::DefaultSkinName);
     m_PrevName = m_Name;
 
     loadSkinConfig();
@@ -70,7 +70,8 @@ Skin::Skin(const QObject *aApplication, const QString &aInterfacePath, const QSt
         return skins;
     };
 
-    m_ProviderSkinConfig = getProviderSkinName(m_InterfacePath + QDir::separator() + "interface.ini");
+    m_ProviderSkinConfig =
+        getProviderSkinName(m_InterfacePath + QDir::separator() + "interface.ini");
     QVariantMap userProviderSkinConfig =
         getProviderSkinName(aUserPath + QDir::separator() + "user.ini");
     m_ProviderSkinConfig =

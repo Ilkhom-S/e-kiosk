@@ -344,7 +344,8 @@ void ServiceController::restartApplication() {
     if (canShutdown()) {
         TerminalService::instance(m_Application)
             ->getClient()
-            ->restartService(m_UserProperties[CServiceController::RestartParameters].toStringList());
+            ->restartService(
+                m_UserProperties[CServiceController::RestartParameters].toStringList());
     } else {
         // Если не получилось, повторяем попытку через некоторое время.
         QTimer::singleShot(

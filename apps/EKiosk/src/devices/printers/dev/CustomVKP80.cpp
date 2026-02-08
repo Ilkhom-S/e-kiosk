@@ -1,9 +1,9 @@
-#include "Custom_VKP80.h"
-
 #include <QtCore/QBuffer>
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QIODevice>
+
+#include "Custom_VKP80.h"
 
 Custom_VKP80_PRINTER::Custom_VKP80_PRINTER(QObject *parent) : BasePrinterDevices(parent) {
     //    printer_name = "Custom-VKP80";
@@ -252,7 +252,7 @@ bool Custom_VKP80_PRINTER::isItYou() {
 }
 
 bool Custom_VKP80_PRINTER::getControlInfo(char aInfoType,
-                                         CMDCustom_VKP80::SControlInfo &aControlInfo) {
+                                          CMDCustom_VKP80::SControlInfo &aControlInfo) {
     if (aControlInfo.noAnswer || aControlInfo.wrongAnswer) {
         return true;
     }
@@ -685,8 +685,8 @@ bool Custom_VKP80_PRINTER::printImage() {
 }
 
 bool Custom_VKP80_PRINTER::printImageI(const QString &aPixelString,
-                                      uchar aWidth,
-                                      bool aNeedRegisterLogo) {
+                                       uchar aWidth,
+                                       bool aNeedRegisterLogo) {
     QByteArray cmd;
     QByteArray resp_data;
     bool resp_ok = false;

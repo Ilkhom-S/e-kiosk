@@ -135,11 +135,11 @@ bool PaymentService::initialize() {
     auto dealerSettings = SettingsService::instance(m_Application)
                               ->getAdapter<SDK::PaymentProcessor::DealerSettings>();
 
-    foreach (
-        const QString &processingType,
-        QSet<QString>(dealerSettings->getProviderProcessingTypes().begin(),
-                      dealerSettings->getProviderProcessingTypes().end())
-            .subtract(QSet<QString>(m_FactoryByType.keys().begin(), m_FactoryByType.keys().end()))) {
+    foreach (const QString &processingType,
+             QSet<QString>(dealerSettings->getProviderProcessingTypes().begin(),
+                           dealerSettings->getProviderProcessingTypes().end())
+                 .subtract(
+                     QSet<QString>(m_FactoryByType.keys().begin(), m_FactoryByType.keys().end()))) {
         // И удаляем их
         foreach (qint64 providerId, dealerSettings->getProviders(processingType)) {
             toLog(LogLevel::Error,
@@ -454,8 +454,8 @@ QString PaymentService::createSignature(PPSDK::IPayment *aPayment, bool aWithCRC
     } else {
         signature =
             QString::from_Utf8(QCryptographicHash::hash(signature.toUtf8(), QCryptographicHash::Md5)
-                                  .toHex()
-                                  .toUpper());
+                                   .toHex()
+                                   .toUpper());
     }
 #endif
 
@@ -713,7 +713,8 @@ bool PaymentService::updatePaymentFields(
         };
 
         m_Commands << qMakePair(
-            m_CommandIndex++, std::function<EPaymentCommandResult::Enum(PaymentService *)>(command));
+            m_CommandIndex++,
+            std::function<EPaymentCommandResult::Enum(PaymentService *)>(command));
         m_PaymentHaveUnsavedParameters.insert(aID);
     }
 
@@ -947,7 +948,7 @@ void PaymentService::onAmountUpdated(qint64 aPayment, double /*aTotalAmount*/, d
                               .arg(amountAll, 0, 'f', 2);
 
             m_Application->getCore()->getTerminalService()->sendFeedback(CServices::PaymentService,
-                                                                        msg);
+                                                                         msg);
         }
 
         // Получаем изменение сдачи.
@@ -1168,7 +1169,7 @@ int PaymentService::registerForcePaymentCommand(const QString &aInitialSession,
     };
 
     m_Commands << qMakePair(m_CommandIndex++,
-                           std::function<EPaymentCommandResult::Enum(PaymentService *)>(command));
+                            std::function<EPaymentCommandResult::Enum(PaymentService *)>(command));
 
     auto parametersToString = [aParameters]() -> QString {
         QStringList list;
@@ -1205,7 +1206,7 @@ int PaymentService::registerRemovePaymentCommand(const QString &aInitialSession)
     };
 
     m_Commands << qMakePair(m_CommandIndex++,
-                           std::function<EPaymentCommandResult::Enum(PaymentService *)>(command));
+                            std::function<EPaymentCommandResult::Enum(PaymentService *)>(command));
 
     toLog(LogLevel::Normal,
           QString("Register command 'remove payment %1'. Internal command id: %2.")
@@ -1222,7 +1223,7 @@ PPSDK::SBalance PaymentService::getBalance() {
 
 //---------------------------------------------------------------------------
 PPSDK::EncashmentResult::Enum PaymentService::perform_Encashment(const QVariantMap &aParameters,
-                                                                PPSDK::SEncashment &aEncashment) {
+                                                                 PPSDK::SEncashment &aEncashment) {
     PPSDK::SBalance balance = m_DBUtils->getBalance();
 
     {
@@ -1362,7 +1363,7 @@ void PaymentService::resetChange() {
         // Если есть платёж "сдача" с нулевой суммой, то не оставляем его в БД "как есть", а
         // помечаем как удалённый.
         m_ChangePayment->setStatus(remove ? PPSDK::EPaymentStatus::Deleted
-                                         : PPSDK::EPaymentStatus::LostChange);
+                                          : PPSDK::EPaymentStatus::LostChange);
 
         savePayment(m_ChangePayment.get());
 

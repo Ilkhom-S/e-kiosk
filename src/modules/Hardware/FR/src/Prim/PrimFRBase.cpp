@@ -1,10 +1,9 @@
 /* @file Принтеры семейства ПРИМ. */
 
-#include "Prim_FRBase.h"
-
 #include <Hardware/FR/Prim_FR.h>
 
 #include "Hardware/Printers/POSPrinterData.h"
+#include "Prim_FRBase.h"
 
 using namespace PrinterStatusCode;
 using namespace SDK::Driver;
@@ -160,9 +159,9 @@ bool Prim_FRBase::checkParameters() {
         return QString("%1").arg(aData, 4, 16, QChar(ASCII::Zero)).toUpper().toLatin1();
     };
     CPrim_FR::TData commandData = CPrim_FR::TData()
-                                 << getCommandData(
-                                        CPrim_FR::Parameter1) // т.к. старший байт - только 0-й бит
-                                 << getCommandData(parameter2) << getCommandData(parameter3);
+                                  << getCommandData(
+                                         CPrim_FR::Parameter1) // т.к. старший байт - только 0-й бит
+                                  << getCommandData(parameter2) << getCommandData(parameter3);
 
     if (!processCommand(CPrim_FR::Commands::SetFRParameters, commandData)) {
         toLog(LogLevel::Error, "Prim_Printers: Failed to set FR parameters");
@@ -181,7 +180,8 @@ ushort Prim_FRBase::getParameter3() {
 bool Prim_FRBase::checkControlSettings() {
     CPrim_FR::TData answer;
 
-    if (!processCommand(CPrim_FR::Commands::GetFRControlSettings, &answer) || (answer.size() < 11)) {
+    if (!processCommand(CPrim_FR::Commands::GetFRControlSettings, &answer) ||
+        (answer.size() < 11)) {
         toLog(LogLevel::Error, "Prim_Printers: Failed to get control settings");
         return false;
     }
@@ -367,8 +367,8 @@ TResult Prim_FRBase::processCommand(char aCommand, CPrim_FR::TData *aAnswer) {
 
 //--------------------------------------------------------------------------------
 TResult Prim_FRBase::processCommand(char aCommand,
-                                   const CPrim_FR::TData &aCommandData,
-                                   CPrim_FR::TData *aAnswer) {
+                                    const CPrim_FR::TData &aCommandData,
+                                    CPrim_FR::TData *aAnswer) {
     m_Protocol.setPort(m_IOPort);
     m_Protocol.setLog(m_Log);
 
@@ -483,10 +483,10 @@ TResult Prim_FRBase::processCommand(char aCommand, int aIndex, const QString &aL
 //--------------------------------------------------------------------------------
 template <class T>
 TResult Prim_FRBase::processCommand(char aCommand,
-                                   const CPrim_FR::TData &aCommandData,
-                                   int aIndex,
-                                   const QString &aLog,
-                                   T &aResult) {
+                                    const CPrim_FR::TData &aCommandData,
+                                    int aIndex,
+                                    const QString &aLog,
+                                    T &aResult) {
     CPrim_FR::TData data;
     TResult result = processCommand(aCommand, aCommandData, &data);
 
@@ -502,9 +502,9 @@ TResult Prim_FRBase::processCommand(char aCommand,
 //--------------------------------------------------------------------------------
 template <class T>
 bool Prim_FRBase::parseAnswerData(const CPrim_FR::TData &aData,
-                                 int aIndex,
-                                 const QString &aLog,
-                                 T &aResult) {
+                                  int aIndex,
+                                  const QString &aLog,
+                                  T &aResult) {
     if (aData.size() <= aIndex) {
         toLog(LogLevel::Error,
               m_DeviceName +
@@ -522,9 +522,9 @@ bool Prim_FRBase::parseAnswerData(const CPrim_FR::TData &aData,
     if ((data.size() != (sizeof(T) * 2)) || !OK) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Failed to parse %1 data, answer = %2 (%3)")
-                                .arg(aLog)
-                                .arg(m_Codec->toUnicode(data))
-                                .arg(data.toHex().data()));
+                                 .arg(aLog)
+                                 .arg(m_Codec->toUnicode(data))
+                                 .arg(data.toHex().data()));
         return false;
     }
 
@@ -534,9 +534,9 @@ bool Prim_FRBase::parseAnswerData(const CPrim_FR::TData &aData,
 //--------------------------------------------------------------------------------
 template <>
 bool Prim_FRBase::parseAnswerData<QDateTime>(const CPrim_FR::TData &aData,
-                                            int aIndex,
-                                            const QString & /*aLog*/,
-                                            QDateTime &aResult) {
+                                             int aIndex,
+                                             const QString & /*aLog*/,
+                                             QDateTime &aResult) {
     if (aData.size() <= ++aIndex) {
         toLog(
             LogLevel::Error,
@@ -554,8 +554,8 @@ bool Prim_FRBase::parseAnswerData<QDateTime>(const CPrim_FR::TData &aData,
     if (!aResult.isValid()) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Failed to parse date and time data, answer = %1 (%2)")
-                                .arg(m_Codec->toUnicode(data))
-                                .arg(data.toHex().data()));
+                                 .arg(m_Codec->toUnicode(data))
+                                 .arg(data.toHex().data()));
         return false;
     }
 
@@ -664,7 +664,8 @@ bool Prim_FRBase::printLine(const QByteArray &aString) {
 //--------------------------------------------------------------------------------
 bool Prim_FRBase::perform_Receipt(const QStringList &aReceipt, bool aProcessing) {
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging, QVariant().from_Value(ELoggingType::ReadWrite));
+    configuration.insert(CHardware::Port::IOLogging,
+                         QVariant().from_Value(ELoggingType::ReadWrite));
     m_IOPort->setDeviceConfiguration(configuration);
 
     bool result = TSerialFRBase::processReceipt(aReceipt, aProcessing);
@@ -831,9 +832,9 @@ void Prim_FRBase::makeAFDReceipt(QStringList &aReceipt) {
 
 //--------------------------------------------------------------------------------
 void Prim_FRBase::setFiscalData(CPrim_FR::TData &aCommandData,
-                               CPrim_FR::TDataList &aAdditionalAFDData,
-                               const SPaymentData &aPaymentData,
-                               int aReceiptSize) {
+                                CPrim_FR::TDataList &aAdditionalAFDData,
+                                const SPaymentData &aPaymentData,
+                                int aReceiptSize) {
     QString depositing = getConfigParameter(CHardware::FR::Strings::Depositing).toString();
     QString serialNumber = getConfigParameter(CHardware::FR::Strings::SerialNumber).toString();
     QString documentNumber = getConfigParameter(CHardware::FR::Strings::DocumentNumber).toString();
@@ -856,7 +857,7 @@ void Prim_FRBase::setFiscalData(CPrim_FR::TData &aCommandData,
                  << addGFieldToBuffer(aReceiptSize + 3, date.size() + 16 + time.size()) // время
                  << addGFieldToBuffer(aReceiptSize + 2, INN.size() + 2)                 // ИНН
                  << addGFieldToBuffer(aReceiptSize + 3, 7)
-                 << m_Codec->from_Unicode(operatorId)                                // ID оператора
+                 << m_Codec->from_Unicode(operatorId)                              // ID оператора
                  << addGFieldToBuffer(aReceiptSize + 4, amount.size() + 2) << sum; // сумма
 
     // произворльные G-поля
@@ -871,8 +872,8 @@ void Prim_FRBase::setFiscalData(CPrim_FR::TData &aCommandData,
 
 //--------------------------------------------------------------------------------
 bool Prim_FRBase::perform_Fiscal(const QStringList &aReceipt,
-                               const SPaymentData &aPaymentData,
-                               quint32 * /*aFDNumber*/) {
+                                 const SPaymentData &aPaymentData,
+                                 quint32 * /*aFDNumber*/) {
     QStringList receipt(aReceipt);
     makeAFDReceipt(receipt);
     int receiptSize = receipt.size();
@@ -882,15 +883,15 @@ bool Prim_FRBase::perform_Fiscal(const QStringList &aReceipt,
     QByteArray payTypeData = int2ByteArray(m_PayTypeData[aPaymentData.payType].value);
 
     CPrim_FR::TData commandData = CPrim_FR::TData()
-                                 << FDType             // тип чека
-                                 << payTypeData        // тип оплаты
-                                 << CPrim_FR::Font      // шрифт - не используется, по умолчанию
-                                 << CPrim_FR::Copies    // количество копий
-                                 << CPrim_FR::Copies    // количество копий по горизонтали
-                                 << CPrim_FR::Copies    // количество копий по вертикали
-                                 << CPrim_FR::CopуGrid  // шаг сетки копий по горизонтали
-                                 << CPrim_FR::CopуGrid  // шаг сетки копий по вертикали
-                                 << CPrim_FR::LineGrid; // шаг строк
+                                  << FDType              // тип чека
+                                  << payTypeData         // тип оплаты
+                                  << CPrim_FR::Font      // шрифт - не используется, по умолчанию
+                                  << CPrim_FR::Copies    // количество копий
+                                  << CPrim_FR::Copies    // количество копий по горизонтали
+                                  << CPrim_FR::Copies    // количество копий по вертикали
+                                  << CPrim_FR::CopуGrid  // шаг сетки копий по горизонтали
+                                  << CPrim_FR::CopуGrid  // шаг сетки копий по вертикали
+                                  << CPrim_FR::LineGrid; // шаг строк
 
     CPrim_FR::TDataList additionalAFDData;
     setFiscalData(commandData, additionalAFDData, aPaymentData, receiptSize);
@@ -954,7 +955,8 @@ bool Prim_FRBase::processPayout(double aAmount) {
 
 //--------------------------------------------------------------------------------
 bool Prim_FRBase::setStartZReportNumber(int aNumber, const CPrim_FR::TData &aExtraData) {
-    toLog(LogLevel::Normal, "Prim_Printers: Set start Z-report number: " + QString::number(aNumber));
+    toLog(LogLevel::Normal,
+          "Prim_Printers: Set start Z-report number: " + QString::number(aNumber));
 
     CPrim_FR::Taxes::SData taxData(0, CPrim_FR::LastTaxRateName, aExtraData);
     taxData.extraData[0] =
@@ -1018,9 +1020,9 @@ bool Prim_FRBase::printDeferredZReport(int aNumber) {
 
     CPrim_FR::TData commandData =
         CPrim_FR::TData() << QString("%1")
-                                .arg(qToBigEndian(ushort(aNumber)), 4, 16, QChar(ASCII::Zero))
-                                .toUpper()
-                                .toLatin1();
+                                 .arg(qToBigEndian(ushort(aNumber)), 4, 16, QChar(ASCII::Zero))
+                                 .toUpper()
+                                 .toLatin1();
 
     if (!processCommand(CPrim_FR::Commands::PrintDeferredZReports, commandData)) {
         toLog(LogLevel::Error,
@@ -1134,9 +1136,9 @@ bool Prim_FRBase::setMode(EFRMode::Enum aMode) {
     } else if (aMode == EFRMode::Fiscal) {
         QByteArray answer;
         TResult result = m_Protocol.execCommand(CPrim_FR::Commands::SetFiscalMode,
-                                               answer,
-                                               CPrim_FR::SetFiscalModeTimeout,
-                                               EPrim_FRCommandConditions::PrinterMode);
+                                                answer,
+                                                CPrim_FR::SetFiscalModeTimeout,
+                                                EPrim_FRCommandConditions::PrinterMode);
 
         CPrim_FR::TData answerData;
         result = checkAnswer(result, answer, answerData);
@@ -1173,11 +1175,11 @@ Prim_FRBase::addArbitraryFieldToBuffer(int aX, int aY, const QString &aData, int
                   .toLatin1() // позиция реквизита по X
            << QString("%1")
                   .arg(qToBigEndian(unsigned short(aY)), 4, 16, QLatin1Char(ASCII::Zero))
-                  .toLatin1()              // позиция реквизита по Y
-           << int2String(aFont).toLatin1() // шрифт, см. ESC !
-           << "01"                         // Печать произвольного реквизита
-           << "00"                         // N вывода на контрольную ленту
-           << m_Codec->from_Unicode(aData);  // данные
+                  .toLatin1()               // позиция реквизита по Y
+           << int2String(aFont).toLatin1()  // шрифт, см. ESC !
+           << "01"                          // Печать произвольного реквизита
+           << "00"                          // N вывода на контрольную ленту
+           << m_Codec->from_Unicode(aData); // данные
 }
 
 //--------------------------------------------------------------------------------
@@ -1226,7 +1228,8 @@ TStatusCodes Prim_FRBase::getRTStatus(int aCommand) {
     m_RTProtocol.setLog(m_Log);
 
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging, QVariant().from_Value(ELoggingType::ReadWrite));
+    configuration.insert(CHardware::Port::IOLogging,
+                         QVariant().from_Value(ELoggingType::ReadWrite));
     m_IOPort->setDeviceConfiguration(configuration);
 
     char answer;
@@ -1272,10 +1275,10 @@ QByteArray Prim_FRBase::int2ByteArray(int aValue) {
 //--------------------------------------------------------------------------------
 template <class T>
 void Prim_FRBase::loadDeviceData(const CPrim_FR::TData &aData,
-                                const QString &aName,
-                                const QString &aLog,
-                                int aIndex,
-                                const QString &aExtensibleName) {
+                                 const QString &aName,
+                                 const QString &aLog,
+                                 int aIndex,
+                                 const QString &aExtensibleName) {
     T answerData;
 
     if (parseAnswerData(aData, aIndex, aLog, answerData)) {

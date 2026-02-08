@@ -133,8 +133,8 @@ bool AtolVKP80BasedFR<T>::processReceipt(const QStringList &aReceipt, bool aProc
 //--------------------------------------------------------------------------------
 template <class T>
 bool AtolVKP80BasedFR<T>::perform_Fiscal(const QStringList &aReceipt,
-                                        const SPaymentData &aPaymentData,
-                                        quint32 *aFDNumber) {
+                                         const SPaymentData &aPaymentData,
+                                         quint32 *aFDNumber) {
     char ejectorMode =
         m_EjectorSettings.receipt |
         (char(m_PrintingMode == EPrintingModes::Continuous) * m_EjectorSettings.nextMask);

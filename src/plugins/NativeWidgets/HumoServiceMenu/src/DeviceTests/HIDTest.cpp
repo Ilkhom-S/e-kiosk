@@ -18,9 +18,9 @@ HIDTest::HIDTest(SDK::Driver::IDevice *aDevice, const QString &aInstancePath) {
     m_HID = dynamic_cast<SDK::Driver::IHID *>(aDevice);
 
     m_TestNames << qMakePair(CHIDTest::TestRead,
-                            aInstancePath.contains(SDK::Driver::CComponents::Camera)
-                                ? tr("#wait_photo")
-                                : tr("#read_barcode"));
+                             aInstancePath.contains(SDK::Driver::CComponents::Camera)
+                                 ? tr("#wait_photo")
+                                 : tr("#read_barcode"));
 }
 
 //------------------------------------------------------------------------------
@@ -32,7 +32,8 @@ QList<QPair<QString, QString>> HIDTest::getTestNames() const {
 bool HIDTest::run(const QString &aName) {
     if (aName == CHIDTest::TestRead) {
         if (m_HID->enable(true)) {
-            m_HID->subscribe(SDK::Driver::IHID::DataSignal, this, SLOT(onData(const QVariantMap &)));
+            m_HID->subscribe(
+                SDK::Driver::IHID::DataSignal, this, SLOT(onData(const QVariantMap &)));
             return true;
         }
     }

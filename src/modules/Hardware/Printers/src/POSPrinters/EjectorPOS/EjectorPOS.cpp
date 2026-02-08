@@ -51,8 +51,8 @@ template <class T> bool EjectorPOS<T>::updateParameters() {
     }
 
     return this->m_IOPort->write((loop == CHardwareSDK::Values::Use)
-                                    ? CPOSPrinter::Command::LoopEnable
-                                    : CPOSPrinter::Command::LoopDisable);
+                                     ? CPOSPrinter::Command::LoopEnable
+                                     : CPOSPrinter::Command::LoopDisable);
 }
 
 //--------------------------------------------------------------------------------

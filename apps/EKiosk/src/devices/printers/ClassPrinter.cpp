@@ -864,13 +864,13 @@ bool GetJobs(HANDLE hPrinter, /* Handle to the printer. */
 
     /* Get job storage space. */
     if (!Enum_Jobs(hPrinter,
-                  0,
-                  pPrinterInfo->cJobs,
-                  2,
-                  NULL,
-                  0,
-                  (LPDWORD)&cByteNeeded,
-                  (LPDWORD)&nReturned)) {
+                   0,
+                   pPrinterInfo->cJobs,
+                   2,
+                   NULL,
+                   0,
+                   (LPDWORD)&cByteNeeded,
+                   (LPDWORD)&nReturned)) {
         if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
             free(pPrinterInfo);
             pPrinterInfo = NULL;
@@ -890,13 +890,13 @@ bool GetJobs(HANDLE hPrinter, /* Handle to the printer. */
 
     /* Get the list of jobs. */
     if (!Enum_Jobs(hPrinter,
-                  0,
-                  pPrinterInfo->cJobs,
-                  2,
-                  (LPBYTE)pJobStorage,
-                  cByteNeeded,
-                  (LPDWORD)&cByteUsed,
-                  (LPDWORD)&nReturned)) {
+                   0,
+                   pPrinterInfo->cJobs,
+                   2,
+                   (LPBYTE)pJobStorage,
+                   cByteNeeded,
+                   (LPDWORD)&cByteUsed,
+                   (LPDWORD)&nReturned)) {
         free(pPrinterInfo);
         free(pJobStorage);
         pJobStorage = NULL;

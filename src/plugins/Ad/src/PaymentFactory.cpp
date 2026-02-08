@@ -93,9 +93,10 @@ PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider
 
         PPSDK::SProvider provider = aProvider;
 
-        QFile json(QString("%1/%2.json")
-                       .arg(getAdClientInstance(m_Factory)->getContent(CPaymentFactory::ContentName))
-                       .arg(CPaymentFactory::ContentName));
+        QFile json(
+            QString("%1/%2.json")
+                .arg(getAdClientInstance(m_Factory)->getContent(CPaymentFactory::ContentName))
+                .arg(CPaymentFactory::ContentName));
         if (json.open(QIODevice::ReadOnly)) {
             QStringDecoder decoder("UTF-8");
             provider.fields += PPSDK::SProvider::json2Fields(decoder(json.readAll()));

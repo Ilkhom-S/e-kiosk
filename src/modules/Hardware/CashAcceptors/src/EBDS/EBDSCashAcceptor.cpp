@@ -255,8 +255,8 @@ SPar EBDSCashAcceptor::getPar(const QByteArray &aData) {
     if (aData.size() < CEBDS::NominalSize) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Too small answer size = %1 for nominal, need %2 minimum")
-                                .arg(aData.size())
-                                .arg(CEBDS::NominalSize));
+                                 .arg(aData.size())
+                                 .arg(CEBDS::NominalSize));
         return SPar();
     }
 
@@ -281,8 +281,8 @@ bool EBDSCashAcceptor::setLastPar(const QByteArray &aAnswer) {
 //--------------------------------------------------------------------------------
 void EBDSCashAcceptor::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes) {
     m_StackerNearFull = m_StackerNearFull ||
-                       (aStatusCodes.contains(BillAcceptorStatusCode::BillOperation::Stacked) &&
-                        aStatusCodes.contains(BillAcceptorStatusCode::Warning::Cheated));
+                        (aStatusCodes.contains(BillAcceptorStatusCode::BillOperation::Stacked) &&
+                         aStatusCodes.contains(BillAcceptorStatusCode::Warning::Cheated));
 
     if (m_StackerNearFull) {
         aStatusCodes.remove(BillAcceptorStatusCode::Warning::Cheated);

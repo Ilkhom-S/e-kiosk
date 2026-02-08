@@ -75,8 +75,9 @@ bool KeyboardContext::filterEvent(const QEvent* aEvent)
 */
 //---------------------------------------------------------------------------
 GraphicsEngine::GraphicsEngine()
-    : ILogable("Interface"), m_ShowingModal(false), m_Host(nullptr), m_IsVirtualKeyboardVisible(false),
-      m_QuickView(nullptr), m_RootView(nullptr), m_QuickContainer(nullptr) {
+    : ILogable("Interface"), m_ShowingModal(false), m_Host(nullptr),
+      m_IsVirtualKeyboardVisible(false), m_QuickView(nullptr), m_RootView(nullptr),
+      m_QuickContainer(nullptr) {
     QList<QScreen *> screens = QGuiApplication::screens();
 
     for (int i = 0, index = 1; i < screens.size(); ++i) {

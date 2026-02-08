@@ -53,17 +53,17 @@ bool PluginFactory::initialize(IKernel *aKernel, const QString &aDirectory) {
     m_Directory = aDirectory;
 
     m_Kernel->getLog()->write(LogLevel::Normal,
-                             QString("Initializing plugin library \"%1\". Core: %2.")
-                                 .arg(getName())
-                                 .arg(Humo::getVersion()));
+                              QString("Initializing plugin library \"%1\". Core: %2.")
+                                  .arg(getName())
+                                  .arg(Humo::getVersion()));
 
     if (m_Kernel->getVersion() != Humo::getVersion()) {
         m_Kernel->getLog()->write(LogLevel::Warning,
-                                 QString("Plugin library \"%1\" compiled with a different "
-                                         "core versions. Compiled:[%2] Current core:[%3]")
-                                     .arg(getName())
-                                     .arg(Humo::getVersion())
-                                     .arg(m_Kernel->getVersion()));
+                                  QString("Plugin library \"%1\" compiled with a different "
+                                          "core versions. Compiled:[%2] Current core:[%3]")
+                                      .arg(getName())
+                                      .arg(Humo::getVersion())
+                                      .arg(m_Kernel->getVersion()));
     }
 
     // Отключение плагинов с пустым путём или конструктором
@@ -285,7 +285,7 @@ IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
                 plugin->setConfiguration(configuration);
             } else {
                 m_Kernel->getLog()->write(LogLevel::Error,
-                                         QString("Failed to create plugin %1.").arg(path));
+                                          QString("Failed to create plugin %1.").arg(path));
 
                 if (plugin) {
                     delete plugin;
@@ -302,7 +302,7 @@ IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
         }
     } else {
         m_Kernel->getLog()->write(LogLevel::Error,
-                                 QString("No plugin found for %1.").arg(aInstancePath));
+                                  QString("No plugin found for %1.").arg(aInstancePath));
     }
 
     return plugin;
@@ -437,7 +437,7 @@ TParameterList PluginFactory::getPluginParametersDescription(const QString &aPat
 
     if (plugin != PluginInitializer::getPluginList().end()) {
         return m_TranslatedParameters.contains(aPath) ? m_TranslatedParameters.value(aPath)
-                                                     : plugin->second;
+                                                      : plugin->second;
     }
 
     return TParameterList();

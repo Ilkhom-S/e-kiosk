@@ -70,9 +70,9 @@ WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
     }
 
     m_WebView->setGeometry(QRect(0,
-                                0,
-                                aInfo.parameters[CWebGraphicsItem::WidthKey].toInt(),
-                                aInfo.parameters[CWebGraphicsItem::HeightKey].toInt()));
+                                 0,
+                                 aInfo.parameters[CWebGraphicsItem::WidthKey].toInt(),
+                                 aInfo.parameters[CWebGraphicsItem::HeightKey].toInt()));
 
     // Анализируем и загружаем контент
     QString path = aInfo.parameters.value(CWebGraphicsItem::StartPageKey, "");
@@ -85,7 +85,9 @@ WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
         QFile content(path);
 
         if (!content.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            LOG(m_Log, LogLevel::Error, QString("Failed to load html content file '%1'.").arg(path));
+            LOG(m_Log,
+                LogLevel::Error,
+                QString("Failed to load html content file '%1'.").arg(path));
             m_Error = QString("Failed to load content file: %1").arg(path);
             return;
         }
@@ -200,13 +202,13 @@ void WebGraphicsItem::onUrlChanged(const QUrl &aUrl) {
 //---------------------------------------------------------------------------
 void WebGraphicsItem::show() {
     m_Item_Loaded ? emit onShow()
-                : m_SignalQueue.push_back(qMakePair(QString("onShow"), QList<QVariant>()));
+                  : m_SignalQueue.push_back(qMakePair(QString("onShow"), QList<QVariant>()));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::hide() {
     m_Item_Loaded ? emit onHide()
-                : m_SignalQueue.push_back(qMakePair(QString("onHide"), QList<QVariant>()));
+                  : m_SignalQueue.push_back(qMakePair(QString("onHide"), QList<QVariant>()));
 }
 
 //---------------------------------------------------------------------------
@@ -219,8 +221,8 @@ void WebGraphicsItem::reset(const QVariantMap &aParameters) {
 //---------------------------------------------------------------------------
 void WebGraphicsItem::notify(const QString &aReason, const QVariantMap &aParameters) {
     m_Item_Loaded ? emit onNotify(aReason, aParameters)
-                : m_SignalQueue.push_back(
-                      qMakePair(QString("onNotify"), QList<QVariant>() << aReason << aParameters));
+                  : m_SignalQueue.push_back(qMakePair(QString("onNotify"),
+                                                      QList<QVariant>() << aReason << aParameters));
 }
 
 //---------------------------------------------------------------------------

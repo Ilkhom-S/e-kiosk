@@ -133,7 +133,7 @@ void UnmanagedWizardPage::onTestConnection(QNetworkProxy aProxy) {
 void UnmanagedWizardPage::onTestFinished() {
     GUI::MessageBox::hide();
     GUI::MessageBox::info(m_TaskWatcher.result() ? tr("#connection_test_ok")
-                                                : tr("#connection_test_failed"));
+                                                 : tr("#connection_test_failed"));
 
     // сохраняем в m_ConnectionSettings хорошие настройки прокси
     if (m_TaskWatcher.result()) {

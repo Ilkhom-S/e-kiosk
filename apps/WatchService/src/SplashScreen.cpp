@@ -136,12 +136,12 @@ void SplashScreen::updateAreas() {
     int height = rect().height();
 
     m_Areas << qMakePair(1, QRectF(QPointF(0, 0), QPointF(0.33 * width, 0.33 * height)))
-           << qMakePair(2, QRectF(QPointF(0.66 * width, 0), QPointF(width, 0.33 * height)))
-           << qMakePair(5,
-                        QRectF(QPointF(0.33 * width, 0.33 * height),
-                               QPointF(0.66 * width, 0.66 * height)))
-           << qMakePair(3, QRectF(QPointF(0, 0.66 * height), QPointF(0.33 * width, height)))
-           << qMakePair(4, QRectF(QPointF(0.66 * width, 0.66 * height), QPointF(width, height)));
+            << qMakePair(2, QRectF(QPointF(0.66 * width, 0), QPointF(width, 0.33 * height)))
+            << qMakePair(5,
+                         QRectF(QPointF(0.33 * width, 0.33 * height),
+                                QPointF(0.66 * width, 0.66 * height)))
+            << qMakePair(3, QRectF(QPointF(0, 0.66 * height), QPointF(0.33 * width, height)))
+            << qMakePair(4, QRectF(QPointF(0.66 * width, 0.66 * height), QPointF(width, height)));
 }
 
 //----------------------------------------------------------------------------

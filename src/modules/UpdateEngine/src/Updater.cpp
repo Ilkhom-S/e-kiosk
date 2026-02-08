@@ -294,19 +294,21 @@ TFileList Updater::getWorkingDirStructure(const QString &aDir) const noexcept(fa
                 auto filePath = aDir + "/" + fileInfo.fileName();
 
 #if QT_VERSION >= 0x050000
-                list.insert(File(filePath.replace(QRegularExpression("^/+"), ""),
-                                 QString::from_Latin1(QCryptographicHash::hash(
-                                                         file.readAll(), QCryptographicHash::Sha256)
-                                                         .toHex()),
-                                 "",
-                                 fileInfo.size()));
+                list.insert(
+                    File(filePath.replace(QRegularExpression("^/+"), ""),
+                         QString::from_Latin1(
+                             QCryptographicHash::hash(file.readAll(), QCryptographicHash::Sha256)
+                                 .toHex()),
+                         "",
+                         fileInfo.size()));
 #else
-                list.insert(File(filePath.remove(QRegularExpression("^/+"), ""),
-                                 QString::from_Latin1(CCryptographicHash::hash(
-                                                         file.readAll(), CCryptographicHash::Sha256)
-                                                         .toHex()),
-                                 "",
-                                 fileInfo.size()));
+                list.insert(
+                    File(filePath.remove(QRegularExpression("^/+"), ""),
+                         QString::from_Latin1(
+                             CCryptographicHash::hash(file.readAll(), CCryptographicHash::Sha256)
+                                 .toHex()),
+                         "",
+                         fileInfo.size()));
 #endif
             } else {
                 throw Exception(
@@ -1027,7 +1029,7 @@ bool Updater::bitsDownload() {
 
     // Устанавливаем после выполнения задачи запуск себя с теми же самыми параметрами
     m_BitsManager.setNotify(qApp->applicationFilePath(),
-                           QString("--command bits --workdir %1").arg(m_WorkingDir));
+                            QString("--command bits --workdir %1").arg(m_WorkingDir));
 
     CBITS::SJob job;
     if (m_BitsManager.createJob(bitsJobName(), job, m_JobPriority)) {

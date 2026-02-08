@@ -21,12 +21,12 @@ using namespace SDK::Driver;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #define INSTANCE_USB_DEVICE(aClass)                                                                \
     template class aClass;                                                                         \
-    template <> aClass::TPDOData aClass::m_PDOData = aClass::TPDOData();                            \
+    template <> aClass::TPDOData aClass::m_PDOData = aClass::TPDOData();                           \
     template <> QRecursiveMutex aClass::m_PDODataGuard = QRecursiveMutex();
 #else
 #define INSTANCE_USB_DEVICE(aClass)                                                                \
     template class aClass;                                                                         \
-    template <> aClass::TPDOData aClass::m_PDOData = aClass::TPDOData();                            \
+    template <> aClass::TPDOData aClass::m_PDOData = aClass::TPDOData();                           \
     template <> QMutex aClass::m_PDODataGuard(QMutex::Recursive);
 #endif
 
@@ -203,9 +203,9 @@ template <class T> void USBDeviceBase<T>::initializeUSBPort() {
 //--------------------------------------------------------------------------------
 template <class T> bool USBDeviceBase<T>::checkConnectionAbility() {
     return !m_PortUsing || this->checkError(
-                              IOPortStatusCode::Error::Busy,
-                              [this]() { return this->m_IOPort->open(); },
-                              "device cannot open port");
+                               IOPortStatusCode::Error::Busy,
+                               [this]() { return this->m_IOPort->open(); },
+                               "device cannot open port");
 }
 
 //--------------------------------------------------------------------------------

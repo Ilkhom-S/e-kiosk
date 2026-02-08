@@ -23,7 +23,7 @@ using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
 #define NATIVE_BIND(aMethod, aType, ...)                                                           \
-    COPOS::getFunction<aType>(std::bind(&TNativeDriver::aMethod, m_NativeDriver, __VA_ARGS__),      \
+    COPOS::getFunction<aType>(std::bind(&TNativeDriver::aMethod, m_NativeDriver, __VA_ARGS__),     \
                               OPOS_DEBUG_LOG(aMethod))
 
 #define INT_CALL_NATIVE(aMethod, ...)                                                              \
@@ -53,9 +53,9 @@ OPOSMStarTUPK::OPOSMStarTUPK() : m_NativeDriver(nullptr) {
     m_UnnecessaryErrors[EFiscalPrinterCommand::ZReport].insert(
         DeviceStatusCode::Error::MemoryStorage);
     m_UnnecessaryErrors.insert(EFiscalPrinterCommand::Encashment,
-                              TStatusCodes() << DeviceStatusCode::Error::MemoryStorage);
+                               TStatusCodes() << DeviceStatusCode::Error::MemoryStorage);
     m_UnnecessaryErrors.insert(EFiscalPrinterCommand::XReport,
-                              TStatusCodes() << DeviceStatusCode::Error::MemoryStorage);
+                               TStatusCodes() << DeviceStatusCode::Error::MemoryStorage);
 
     // налоги
     m_TaxData.add(0, 0);
@@ -87,7 +87,8 @@ void OPOSMStarTUPK::initializeResources() {
     TPollingOPOSFR::initializeResources();
 
     if (m_COMInitialized && !m_NativeDriver &&
-        FAILED(m_Driver->queryInterface(QUuid(__uuidof(TNativeDriver)), (void **)&m_NativeDriver))) {
+        FAILED(
+            m_Driver->queryInterface(QUuid(__uuidof(TNativeDriver)), (void **)&m_NativeDriver))) {
         toOPOS_LOG(LogLevel::Error, "Failed to query interface of the printer.");
         m_NativeDriver = nullptr;
     }
@@ -199,7 +200,7 @@ bool OPOSMStarTUPK::isConnected() {
 
     QString deviceName = getConfigParameter(CHardwareSDK::ModelName).toString();
     m_Verified = deviceName.contains(COPOSMStarTUPK::DeviceNameTag, Qt::CaseInsensitive) ||
-                deviceName.contains(COPOSMStarTUPK::ModelName, Qt::CaseInsensitive);
+                 deviceName.contains(COPOSMStarTUPK::ModelName, Qt::CaseInsensitive);
 
     return true;
 }
@@ -293,7 +294,8 @@ bool OPOSMStarTUPK::processReceipt(const QStringList &aReceipt, bool aProcessing
     }
 
     bool serviceOperation = getConfigParameter(CHardwareSDK::Printer::ServiceOperation).toBool();
-    bool needCutting = aProcessing && ((m_PrintingMode == EPrintingModes::None) || serviceOperation);
+    bool needCutting =
+        aProcessing && ((m_PrintingMode == EPrintingModes::None) || serviceOperation);
     setEnable(COPOSMStarTUPK::Parameters::AutoCutter, needCutting);
 
     if (!OPOS_SUCCESS(INT_CALL_OPOS(BeginNonFiscal))) {
@@ -496,8 +498,8 @@ bool OPOSMStarTUPK::makeFiscal(const SPaymentData &aPaymentData) {
 
 //--------------------------------------------------------------------------------
 bool OPOSMStarTUPK::perform_Fiscal(const QStringList &aReceipt,
-                                  const SPaymentData &aPaymentData,
-                                  quint32 * /*aFDNumber*/) {
+                                   const SPaymentData &aPaymentData,
+                                   quint32 * /*aFDNumber*/) {
     if (!processReceipt(aReceipt, false)) {
         return false;
     }
@@ -669,8 +671,8 @@ bool OPOSMStarTUPK::perform_XReport(const QStringList &aReceipt) {
 
 //--------------------------------------------------------------------------------
 bool OPOSMStarTUPK::perform_Encashment(const QStringList &aReceipt, double aAmount) {
-    TBoolMethod printing =
-        std::bind(&OPOSMStarTUPK::processReceipt, this, std::ref(aReceipt), m_NextReceiptProcessing);
+    TBoolMethod printing = std::bind(
+        &OPOSMStarTUPK::processReceipt, this, std::ref(aReceipt), m_NextReceiptProcessing);
     TBoolMethod payout = std::bind(&OPOSMStarTUPK::processPayout, this, aAmount);
     TBoolMethod command = std::bind(&OPOSMStarTUPK::complexFiscalDocument, this, payout, "payout");
 

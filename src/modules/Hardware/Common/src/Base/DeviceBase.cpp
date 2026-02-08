@@ -53,17 +53,17 @@ template <class T> DeviceBase<T>::DeviceBase() : m_ExternalMutex(), m_ResourceMu
 
     this->m_RecoverableErrors.insert(DeviceStatusCode::Error::Initialization);
 
-    this->m_UnsafeStatusCodes = TStatusCodes()
-                               << DeviceStatusCode::OK::Busy << DeviceStatusCode::OK::Initialization
+    this->m_UnsafeStatusCodes = TStatusCodes() << DeviceStatusCode::OK::Busy
+                                               << DeviceStatusCode::OK::Initialization
 
-                               << DeviceStatusCode::Warning::ThirdPartyDriver
-                               << DeviceStatusCode::Warning::Developing
-                               << DeviceStatusCode::Warning::OperationError
-                               << DeviceStatusCode::Warning::UnknownDataExchange;
+                                               << DeviceStatusCode::Warning::ThirdPartyDriver
+                                               << DeviceStatusCode::Warning::Developing
+                                               << DeviceStatusCode::Warning::OperationError
+                                               << DeviceStatusCode::Warning::UnknownDataExchange;
 
     m_StatusCollectionHistory.setSize(CDevice::StatusCollectionHistoryCount);
     m_ReplaceableStatuses << DeviceStatusCode::Error::NotAvailable
-                         << DeviceStatusCode::Error::Unknown;
+                          << DeviceStatusCode::Error::Unknown;
 }
 
 //--------------------------------------------------------------------------------
@@ -216,8 +216,8 @@ template <class T> void DeviceBase<T>::initialize() {
             } while ((++count < this->m_InitializeRepeatCount) && !isCriticalError);
 
             this->m_Initialized = (!isCriticalError && (count < this->m_InitializeRepeatCount))
-                                     ? ERequestStatus::Success
-                                     : ERequestStatus::Fail;
+                                      ? ERequestStatus::Success
+                                      : ERequestStatus::Fail;
 
             if (this->m_Initialized == ERequestStatus::Fail) {
                 this->toLog(
@@ -392,9 +392,11 @@ template <class T> void DeviceBase<T>::recoverErrors(TStatusCodes &aStatusCodes)
         TStatusCodes otherStatusCodes = aStatusCodes - m_RecoverableErrors;
         bool effectiveErrors =
             std::find_if(otherStatusCodes.begin(), otherStatusCodes.end(), [&](int aCode) -> bool {
-                return m_StatusCodesSpecification->value(aCode).warningLevel == EWarningLevel::Error;
+                return m_StatusCodesSpecification->value(aCode).warningLevel ==
+                       EWarningLevel::Error;
             }) != otherStatusCodes.end();
-        TStatusCodes oldUnsafeStatusCodes = getStatusCodes(m_StatusCollection) & m_UnsafeStatusCodes;
+        TStatusCodes oldUnsafeStatusCodes =
+            getStatusCodes(m_StatusCollection) & m_UnsafeStatusCodes;
 
         if (((oldErrors + oldUnsafeStatusCodes).size() > oldRecoverableErrors.size()) &&
             !effectiveErrors) {
@@ -427,7 +429,8 @@ template <class T> bool DeviceBase<T>::isStatusesReplaceable(TStatusCodes &aStat
 //---------------------------------------------------------------------------
 template <class T> bool DeviceBase<T>::canApplyStatusBuffer() {
     return m_MaxBadAnswers &&
-           (m_ForceStatusBufferEnabled || (!this->m_OperatorPresence && this->m_PostPollingAction)) &&
+           (m_ForceStatusBufferEnabled ||
+            (!this->m_OperatorPresence && this->m_PostPollingAction)) &&
            !getStatusCodes(m_StatusCollection).isEmpty() &&
            !m_StatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
 }
@@ -801,9 +804,10 @@ template <class T> void DeviceBase<T>::processStatusCodes(const TStatusCodes &aS
     this->m_Connected = !aStatusCodes.contains(DeviceStatusCode::Error::NotAvailable);
 
     if (this->m_PostPollingAction && (this->m_Initialized != ERequestStatus::InProcess)) {
-        this->m_Initialized = (this->m_Connected && (this->m_Initialized == ERequestStatus::Success))
-                                 ? ERequestStatus::Success
-                                 : ERequestStatus::Fail;
+        this->m_Initialized =
+            (this->m_Connected && (this->m_Initialized == ERequestStatus::Success))
+                ? ERequestStatus::Success
+                : ERequestStatus::Fail;
     }
 }
 

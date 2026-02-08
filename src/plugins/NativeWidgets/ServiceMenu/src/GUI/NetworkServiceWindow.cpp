@@ -72,7 +72,7 @@ bool NetworkServiceWindow::initialize() {
     m_DialupWindow->fillTemplateList(m_Backend->getNetworkManager()->getConnectionTemplates());
     m_DialupWindow->fillModem_List(m_Backend->getNetworkManager()->getModems());
     m_DialupWindow->fillConnectionList(m_Backend->getNetworkManager()->getRemoteConnections(),
-                                      networkInfo[CServiceTags::Connection].toString());
+                                       networkInfo[CServiceTags::Connection].toString());
 
     connect(m_DialupWindow,
             SIGNAL(createConnection(const QString &, const QString &)),
@@ -159,8 +159,8 @@ void NetworkServiceWindow::onTestDialupConnection(const QString &aConnection) {
 
     m_Backend->getNetworkManager()->setConnection(connection);
     m_TaskWatcher.setFuture(QtConcurrent::run(boost::bind(&NetworkManager::testConnection,
-                                                         m_Backend->getNetworkManager(),
-                                                         boost::ref(m_ConnectionError))));
+                                                          m_Backend->getNetworkManager(),
+                                                          boost::ref(m_ConnectionError))));
 }
 
 //------------------------------------------------------------------------
@@ -202,8 +202,8 @@ void NetworkServiceWindow::onTestUnmanagedConnection(QNetworkProxy aProxy) {
 
     m_Backend->getNetworkManager()->setConnection(connection);
     m_TaskWatcher.setFuture(QtConcurrent::run(boost::bind(&NetworkManager::testConnection,
-                                                         m_Backend->getNetworkManager(),
-                                                         boost::ref(m_ConnectionError))));
+                                                          m_Backend->getNetworkManager(),
+                                                          boost::ref(m_ConnectionError))));
 }
 
 //---------------------------------------------------------------------------

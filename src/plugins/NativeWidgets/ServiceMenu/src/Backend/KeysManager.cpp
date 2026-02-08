@@ -14,7 +14,8 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
-KeysManager::KeysManager(SDK::PaymentProcessor::ICore *aCore) : m_Core(aCore), m_IsGenerated(false) {
+KeysManager::KeysManager(SDK::PaymentProcessor::ICore *aCore)
+    : m_Core(aCore), m_IsGenerated(false) {
     m_CryptService = m_Core->getCryptService();
     m_TerminalSettings = static_cast<PPSDK::TerminalSettings *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));

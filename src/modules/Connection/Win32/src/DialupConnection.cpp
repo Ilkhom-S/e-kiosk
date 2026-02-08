@@ -36,8 +36,9 @@ void DialupConnection::doConnect() throw(...) {
               QString("Device name:    %1 (%2)")
                   .arg(QString::from_StdWString(entry.deviceName()))
                   .arg(QString::from_StdWString(RasApi::getAttachedTo(entry.deviceName()))));
-        toLog(LogLevel::Normal,
-              QString("Phone number:   %1").arg(QString::from_StdWString(entry.localPhoneNumber())));
+        toLog(
+            LogLevel::Normal,
+            QString("Phone number:   %1").arg(QString::from_StdWString(entry.localPhoneNumber())));
         toLog(LogLevel::Normal, QString("*").repeated(40));
     }
 
@@ -53,13 +54,14 @@ void DialupConnection::doConnect() throw(...) {
             QString("RasApi: Dial failed because RPC server is busy or unavailable (%1)")
                 .arg(raserror));
     } else if (raserror != ERROR_SUCCESS) {
-        throw NetworkError(ECategory::Network,
-                           ESeverity::Major,
-                           raserror,
-                           QString("RasApi: failed to dial '%1': %2 (%3)")
-                               .arg(m_Name)
-                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
-                               .arg(raserror));
+        throw NetworkError(
+            ECategory::Network,
+            ESeverity::Major,
+            raserror,
+            QString("RasApi: failed to dial '%1': %2 (%3)")
+                .arg(m_Name)
+                .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
+                .arg(raserror));
     }
 }
 
@@ -75,13 +77,14 @@ void DialupConnection::doDisconnect() throw(...) {
             QString("RasApi: HangUp failed because RPC server is busy or unavailable (%1)")
                 .arg(raserror));
     } else if (raserror != ERROR_SUCCESS) {
-        throw NetworkError(ECategory::Network,
-                           ESeverity::Major,
-                           raserror,
-                           QString("RasApi: failed to dial '%1': %2 (%3)")
-                               .arg(m_Name)
-                               .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
-                               .arg(raserror));
+        throw NetworkError(
+            ECategory::Network,
+            ESeverity::Major,
+            raserror,
+            QString("RasApi: failed to dial '%1': %2 (%3)")
+                .arg(m_Name)
+                .arg(QString::from_StdWString(RasApi::EErrorCode::ToString(raserror)))
+                .arg(raserror));
     }
 }
 

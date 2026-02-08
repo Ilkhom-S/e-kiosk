@@ -36,7 +36,8 @@ AudioService::~AudioService() {}
 //---------------------------------------------------------------------------
 bool AudioService::initialize() {
     m_Player = QSharedPointer<QMediaPlayer>(new QMediaPlayer());
-    connect(m_Player.data(), &QMediaPlayer::playbackStateChanged, this, &AudioService::stateChanged);
+    connect(
+        m_Player.data(), &QMediaPlayer::playbackStateChanged, this, &AudioService::stateChanged);
 
     return true;
 }

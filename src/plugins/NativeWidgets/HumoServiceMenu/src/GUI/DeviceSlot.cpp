@@ -67,7 +67,7 @@ const QString &DeviceSlot::getType() const {
 //------------------------------------------------------------------------
 QString DeviceSlot::getModel() const {
     return m_ParameterValues.contains("model_name") ? m_ParameterValues["model_name"].toString()
-                                                   : QString();
+                                                    : QString();
 }
 
 //------------------------------------------------------------------------
@@ -172,9 +172,9 @@ void DeviceSlot::onDeviceRunTest() {
     }
 
     m_Backend->toLog(QString("Button clicked: %1; Device: %2:%3.")
-                        .arg(qobject_cast<QAbstractButton *>(sender())->text())
-                        .arg(m_Type)
-                        .arg(getModel()));
+                         .arg(qobject_cast<QAbstractButton *>(sender())->text())
+                         .arg(m_Type)
+                         .arg(getModel()));
 }
 
 //------------------------------------------------------------------------------
@@ -228,8 +228,8 @@ void DeviceSlot::onRepaint() {
 
     // Для устройств вида Класс.Модель выкусываем название класса
     ui.btnChange->setText(QString("%1: %2")
-                              .arg(QCoreApplication::translate("Hardware::Types",
-                                                               m_Type.section(".", 0, 0).toLatin1()))
+                              .arg(QCoreApplication::translate(
+                                  "Hardware::Types", m_Type.section(".", 0, 0).toLatin1()))
                               .arg(title));
 }
 
@@ -241,9 +241,9 @@ void DeviceSlot::onClick() {
 //------------------------------------------------------------------------
 void DeviceSlot::onRemove() {
     m_Backend->toLog(QString("Button clicked: %1; Device: %2:%3.")
-                        .arg(qobject_cast<QAbstractButton *>(sender())->text())
-                        .arg(m_Type)
-                        .arg(getModel()));
+                         .arg(qobject_cast<QAbstractButton *>(sender())->text())
+                         .arg(m_Type)
+                         .arg(getModel()));
 
     emit remove();
 }

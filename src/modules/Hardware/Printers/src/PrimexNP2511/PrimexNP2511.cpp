@@ -60,7 +60,7 @@ bool PrimexNP2511::backFeed(int aCount) {
 bool PrimexNP2511::updateParameters() {
     // TODO: вынести выбор кодовой страницы в настройки плагина
     return m_IOPort->write(QByteArray(CPrimexNP2511::Commands::Initialize) +
-                          CPrimexNP2511::Commands::SetCyrillicPage);
+                           CPrimexNP2511::Commands::SetCyrillicPage);
 }
 
 //--------------------------------------------------------------------------------

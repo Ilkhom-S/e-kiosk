@@ -13,9 +13,9 @@ EpsonEUT400::EpsonEUT400() {
 
     // параметры порта
     m_PortParameters.insert(EParameters::BaudRate,
-                           POSPrinters::TSerialDevicePortParameter()
-                               << EBaudRate::BR38400 << EBaudRate::BR19200 << EBaudRate::BR4800
-                               << EBaudRate::BR9600);
+                            POSPrinters::TSerialDevicePortParameter()
+                                << EBaudRate::BR38400 << EBaudRate::BR19200 << EBaudRate::BR4800
+                                << EBaudRate::BR9600);
 
     // статусы ошибок
     m_Parameters.errors.clear();
