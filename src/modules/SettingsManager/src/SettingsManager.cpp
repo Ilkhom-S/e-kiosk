@@ -2,8 +2,6 @@
 
 // stl
 
-#include "SettingsManager.h"
-
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QElapsedTimer>
@@ -11,9 +9,10 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
 #include <QtCore/QString>
-#include <QtCore/QXmlStream_Reader>
-#include <QtCore/QXmlStream_Writer>
+#include <QtCore/QXmlStreamReader>
+#include <QtCore/QXmlStreamWriter>
 
+#include <SettingsManager/SettingsManager.h>
 #include <boost/foreach.hpp>
 #include <fstream>
 #include <vector>
@@ -31,7 +30,7 @@ SSettingsSource::SSettingsSource(const QString &aFileName,
                                  const QString &aAdapterName,
                                  const char *aSymlinkName)
     : configFileName(aFileName), adapterName(aAdapterName),
-      symlinkName(QString::from_Latin1(aSymlinkName)), readOnly(true) {}
+      symlinkName(QString::fromLatin1(aSymlinkName)), readOnly(true) {}
 
 //---------------------------------------------------------------------------
 SettingsManager::SettingsManager(const QString &aConfigPath) : m_ConfigPath(aConfigPath) {}
@@ -99,7 +98,7 @@ bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources
 
         // Сохраняем имена полей, которые были подгружены.
         BOOST_FOREACH (TPtree::value_type &value, newBranch) {
-            workingSource.fieldNames.append(QString::from_StdString(value.first));
+            workingSource.fieldNames.append(QString::fromStdString(value.first));
 
             // Вставляем настройки в общую ветку.
             // Если ключ уже существует, новое значение будет добавлено последним и может
@@ -201,25 +200,25 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
         return false;
     }
 
-    QXmlStream_Reader xmlReader(&inputFile);
+    QXmlStreamReader xmlReader(&inputFile);
 
     std::vector<boost::reference_wrapper<TPtree>> stack;
     boost::reference_wrapper<TPtree> current = boost::ref(aTree);
 
     while (!xmlReader.atEnd()) {
-        QXmlStream_Reader::TokenType token = xmlReader.readNext();
+        QXmlStreamReader::TokenType token = xmlReader.readNext();
 
         switch (token) {
         // Начало документа
-        case QXmlStream_Reader::StartDocument:
+        case QXmlStreamReader::StartDocument:
             break;
 
         // Конец документа
-        case QXmlStream_Reader::EndDocument:
+        case QXmlStreamReader::EndDocument:
             break;
 
         // Встретили открывающий тег.
-        case QXmlStream_Reader::StartElement: {
+        case QXmlStreamReader::StartElement: {
             QString key = xmlReader.name().toString().toLower();
 
             TPtree &newOne = boost::unwrap_ref(current)
@@ -230,14 +229,14 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
 
             // Обрабатываем список атрибутов, если такие имеются.
 
-            QXmlStream_Attributes attributes = xmlReader.attributes();
+            QXmlStreamAttributes attributes = xmlReader.attributes();
 
             if (!attributes.isEmpty()) {
                 TPtree &attribTree = boost::unwrap_ref(current)
                                          .push_back(std::make_pair("<xmlattr>", TPtree()))
                                          ->second;
 
-                foreach (const QXmlStream_Attribute &attribute, attributes) {
+                foreach (const QXmlStreamAttribute &attribute, attributes) {
                     attribTree.put(attribute.name().toString().toLower().toStdString(),
                                    attribute.value().toString().toStdWString());
                 }
@@ -247,7 +246,7 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
         }
 
         // Текст внутри тегов.
-        case QXmlStream_Reader::Characters: {
+        case QXmlStreamReader::Characters: {
             if (!xmlReader.isWhitespace()) {
                 boost::unwrap_ref(current).put_value(xmlReader.text().toString());
             }
@@ -256,7 +255,7 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
         }
 
         // Встретили закрывающий тег.
-        case QXmlStream_Reader::EndElement: {
+        case QXmlStreamReader::EndElement: {
             current = stack.back();
             stack.pop_back();
 
@@ -264,23 +263,23 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
         }
 
         // Комментарий - игнорируем
-        case QXmlStream_Reader::Comment:
+        case QXmlStreamReader::Comment:
             break;
 
         // DTD - игнорируем
-        case QXmlStream_Reader::DTD:
+        case QXmlStreamReader::DTD:
             break;
 
         // Ссылка на сущность - игнорируем
-        case QXmlStream_Reader::EntityReference:
+        case QXmlStreamReader::EntityReference:
             break;
 
         // Инструкция обработки - игнорируем
-        case QXmlStream_Reader::ProcessingInstruction:
+        case QXmlStreamReader::ProcessingInstruction:
             break;
 
         // Ошибка в формате документа.
-        case QXmlStream_Reader::Invalid: {
+        case QXmlStreamReader::Invalid: {
             aTree.clear();
 
             toLog(LogLevel::Error,
@@ -311,7 +310,7 @@ bool SettingsManager::writeXML(const QString &aFileName, const TPtree &aTree) {
         return false;
     }
 
-    QXmlStream_Writer xmlWriter(&outputFile);
+    QXmlStreamWriter xmlWriter(&outputFile);
     xmlWriter.setAutoFormatting(true);
 
     xmlWriter.writeStartDocument();
@@ -322,19 +321,19 @@ bool SettingsManager::writeXML(const QString &aFileName, const TPtree &aTree) {
 }
 
 //---------------------------------------------------------------------------
-void SettingsManager::writeXMLNode(QXmlStream_Writer &aWriter, const TPtree &aNode) {
+void SettingsManager::writeXMLNode(QXmlStreamWriter &aWriter, const TPtree &aNode) {
     BOOST_FOREACH (const TPtree::value_type &value, aNode) {
         if (value.first == "<xmlattr>") {
             BOOST_FOREACH (const TPtree::value_type &value, value.second) {
-                aWriter.writeAttribute(QString::from_StdString(value.first),
+                aWriter.writeAttribute(QString::fromStdString(value.first),
                                        value.second.get_value<QString>());
             }
         } else {
             if (value.second.empty()) {
-                aWriter.writeTextElement(QString::from_StdString(value.first),
+                aWriter.writeTextElement(QString::fromStdString(value.first),
                                          value.second.get_value<QString>());
             } else {
-                aWriter.writeStartElement(QString::from_StdString(value.first));
+                aWriter.writeStartElement(QString::fromStdString(value.first));
                 writeXMLNode(aWriter, value.second);
                 aWriter.writeEndElement();
             }
@@ -383,7 +382,7 @@ bool SettingsManager::writeINI(const QString &aFileName, const TPtree &aTree) {
     static const TPtree emptyTree;
     foreach (const TPtree::value_type &value,
              aTree.get_child(QFileInfo(aFileName).completeBaseName().toStdString(), emptyTree)) {
-        iniFile.beginGroup(QString::from_StdString(value.first));
+        iniFile.beginGroup(QString::fromStdString(value.first));
 
         foreach (const TPtree::value_type &child, value.second) {
             if (!child.second.empty()) {
@@ -392,7 +391,7 @@ bool SettingsManager::writeINI(const QString &aFileName, const TPtree &aTree) {
                 return false;
             }
 
-            iniFile.setValue(QString::from_StdString(child.first),
+            iniFile.setValue(QString::fromStdString(child.first),
                              child.second.get_value<QString>());
         }
 
