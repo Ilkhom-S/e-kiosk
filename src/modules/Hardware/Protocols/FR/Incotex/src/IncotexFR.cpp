@@ -9,15 +9,15 @@ using namespace SDK::Driver::IOPort::COM;
 //--------------------------------------------------------------------------------
 IncotexFR::IncotexFR() {
     // данные порта
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200); // preferable for work
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);   // default
-    mPortParameters[EParameters::BaudRate].append(
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR115200); // preferable for work
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);   // default
+    m_PortParameters[EParameters::BaudRate].append(
         EBaudRate::BR4800); // default after resetting to zero
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
 
-    mProtocolName = ProtocolNames::FR::Incotex;
+    m_ProtocolName = ProtocolNames::FR::Incotex;
 }
 
 //--------------------------------------------------------------------------------

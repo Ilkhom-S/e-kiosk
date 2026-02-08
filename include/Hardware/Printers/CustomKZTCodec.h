@@ -10,8 +10,8 @@
 class CustomKZTCodec : public CodecBase {
 public:
     CustomKZTCodec() {
-        mName = CHardware::Codepages::CustomKZT;
-        mMIB = 3003;
+        m_Name = CHardware::Codepages::CustomKZT;
+        m_MIB = 3003;
 
         auto encoding = QStringConverter::encodingForName("IBM866");
         QStringDecoder decoder(encoding.value_or(QStringConverter::Encoding::Latin1));
@@ -20,25 +20,25 @@ public:
         if (decoder.isValid()) {
             for (uchar ch = uchar('\x80'); ch && (ch <= uchar('\xFF')); ++ch) {
                 QString value = decoder.decode(QByteArray(1, ch));
-                mData.add(ch, value);
+                m_Data.add(ch, value);
             }
 
-            mData.add('\xB0', "Ә");
-            mData.add('\xB1', "ә");
-            mData.add('\xB2', "Ғ");
-            mData.add('\xB3', "ғ");
-            mData.add('\xB4', "Қ");
-            mData.add('\xB5', "қ");
-            mData.add('\xB6', "Ң");
-            mData.add('\xB7', "ң");
-            mData.add('\xB8', "Ө");
-            mData.add('\xB9', "ө");
-            mData.add('\xBA', "Ұ");
-            mData.add('\xBB', "ұ");
-            mData.add('\xBC', "Ү");
-            mData.add('\xBD', "ү");
-            mData.add('\xBE', "Һ");
-            mData.add('\xBF', "һ");
+            m_Data.add('\xB0', "Ә");
+            m_Data.add('\xB1', "ә");
+            m_Data.add('\xB2', "Ғ");
+            m_Data.add('\xB3', "ғ");
+            m_Data.add('\xB4', "Қ");
+            m_Data.add('\xB5', "қ");
+            m_Data.add('\xB6', "Ң");
+            m_Data.add('\xB7', "ң");
+            m_Data.add('\xB8', "Ө");
+            m_Data.add('\xB9', "ө");
+            m_Data.add('\xBA', "Ұ");
+            m_Data.add('\xBB', "ұ");
+            m_Data.add('\xBC', "Ү");
+            m_Data.add('\xBD', "ү");
+            m_Data.add('\xBE', "Һ");
+            m_Data.add('\xBF', "һ");
         }
     }
 };

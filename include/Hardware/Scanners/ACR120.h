@@ -24,10 +24,10 @@ private:
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
     /// Хендл устройства.
-    qint16 mHandle;
+    qint16 m_Handle;
 
     /// Приложена ли карта.
-    bool mCardPresent;
+    bool m_CardPresent;
 };
 
 //--------------------------------------------------------------------------------

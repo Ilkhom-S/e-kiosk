@@ -12,18 +12,18 @@ using namespace SDK::Driver;
 //---------------------------------------------------------------------------
 template <class T> PortCashAcceptor<T>::PortCashAcceptor() {
     // данные устройства
-    this->mDeviceName = "Port cash acceptor";
-    this->mCheckDisable = false;
-    this->mResetOnIdentification = false;
-    this->mIOMessageLogging = ELoggingType::None;
-    this->mParInStacked = false;
-    this->mUpdatable = false;
-    this->mEscrowPosition = -1;
-    this->mMaxBadAnswers = 4;
-    this->mResetWaiting = EResetWaiting::No;
-    this->mPollingIntervalEnabled = CCashAcceptorsPollingInterval::Enabled;
-    this->mPollingIntervalDisabled = CCashAcceptorsPollingInterval::Disabled;
-    this->mForceWaitResetCompleting = false;
+    this->m_DeviceName = "Port cash acceptor";
+    this->m_CheckDisable = false;
+    this->m_ResetOnIdentification = false;
+    this->m_IOMessageLogging = ELoggingType::None;
+    this->m_ParInStacked = false;
+    this->m_Updatable = false;
+    this->m_EscrowPosition = -1;
+    this->m_MaxBadAnswers = 4;
+    this->m_ResetWaiting = EResetWaiting::No;
+    this->m_PollingIntervalEnabled = CCashAcceptorsPollingInterval::Enabled;
+    this->m_PollingIntervalDisabled = CCashAcceptorsPollingInterval::Disabled;
+    this->m_ForceWaitResetCompleting = false;
 
     // описания для кодов статусов
     this->setConfigParameter(CHardware::CashAcceptor::DisablingTimeout, 0);
@@ -38,9 +38,9 @@ template <class T> PortCashAcceptor<T>::PortCashAcceptor() {
 
 //--------------------------------------------------------------------------------
 template <class T> void PortCashAcceptor<T>::setInitialData() {
-    this->mCurrencyError = ECurrencyError::OK;
-    this->mPollingInterval = getPollingInterval(false);
-    this->mReady = false;
+    this->m_CurrencyError = ECurrencyError::OK;
+    this->m_PollingInterval = getPollingInterval(false);
+    this->m_Ready = false;
 
     // инициализация состояний
     this->setConfigParameter(CHardware::CashAcceptor::ProcessEnabling, false);
@@ -55,7 +55,7 @@ template <class T> bool PortCashAcceptor<T>::processStatus(TStatusCodes &aStatus
 
     if (this->getConfigParameter(CHardware::CashAcceptor::Enabled).toBool() &&
         !this->getConfigParameter(CHardware::CashAcceptor::ProcessDisabling).toBool()) {
-        if (this->mBadAnswerCounter &&
+        if (this->m_BadAnswerCounter &&
             this->getStatusCollection(aStatusCodes)[EWarningLevel::Error].isEmpty()) {
             this->reenableMoneyAcceptingMode();
             this->applyParTable();
@@ -83,8 +83,8 @@ template <class T> bool PortCashAcceptor<T>::checkStatuses(TStatusData &aData) {
 
 //--------------------------------------------------------------------------------
 template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCodes) {
-    TDeviceCodeBuffers lastDeviceCodeBuffers(this->mDeviceCodeBuffers);
-    this->mDeviceCodeBuffers.clear();
+    TDeviceCodeBuffers lastDeviceCodeBuffers(this->m_DeviceCodeBuffers);
+    this->m_DeviceCodeBuffers.clear();
 
     TStatusData statusData;
 
@@ -101,7 +101,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
         auto initialKeys = deviceCodeSpecifications.keys();
         QSet<QString> lastData(initialKeys.begin(), initialKeys.end());
 
-        this->mDeviceCodeSpecification->getSpecification(answerData, deviceCodeSpecifications);
+        this->m_DeviceCodeSpecification->getSpecification(answerData, deviceCodeSpecifications);
 
         auto updatedKeys = deviceCodeSpecifications.keys();
         QSet<QString> newData(updatedKeys.begin(), updatedKeys.end());
@@ -109,7 +109,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
         // 2. В Qt 6 оператор '-' для QSet удален. Используем subtract().
         newData.subtract(lastData);
 
-        this->mDeviceCodeBuffers << answerData;
+        this->m_DeviceCodeBuffers << answerData;
 
         // 3. Заменяем внутренний foreach на стандартный цикл
         for (const auto &data : newData) {
@@ -119,7 +119,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
             bool escrow = (statusCode == BillAcceptorStatusCode::BillOperation::Escrow);
             bool stacked = (statusCode == BillAcceptorStatusCode::BillOperation::Stacked);
 
-            if (escrow || (stacked && this->mParInStacked)) {
+            if (escrow || (stacked && this->m_ParInStacked)) {
                 parData = answerData;
             }
         }
@@ -132,7 +132,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
         aStatusCodes.insert(specification.statusCode);
         defaultDescriptionLog << specification.description;
         EWarningLevel::Enum warningLevel =
-            this->mStatusCodesSpecification->value(specification.statusCode).warningLevel;
+            this->m_StatusCodesSpecification->value(specification.statusCode).warningLevel;
         logLevel = qMin(logLevel, this->getLogLevel(warningLevel));
     }
 
@@ -140,10 +140,10 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
         defaultDescriptionLog << "default";
     }
 
-    if (this->mDeviceCodeBuffers != lastDeviceCodeBuffers) {
-        if (this->mDeviceCodeBuffers.isEmpty()) {
+    if (this->m_DeviceCodeBuffers != lastDeviceCodeBuffers) {
+        if (this->m_DeviceCodeBuffers.isEmpty()) {
             this->toLog(logLevel,
-                        this->mDeviceName + QString(": %1 -> %2")
+                        this->m_DeviceName + QString(": %1 -> %2")
                                                 .arg(UnknownDeviceCodeDescription)
                                                 .arg(defaultDescriptionLog.join(", ")));
         } else {
@@ -152,7 +152,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
                  ++it) {
                 if (!it->description.isEmpty()) {
                     SStatusCodeSpecification statusCodeData =
-                        this->mStatusCodesSpecification->value(it->statusCode);
+                        this->m_StatusCodesSpecification->value(it->statusCode);
                     logLevel = this->getLogLevel(statusCodeData.warningLevel);
 
                     QString codeLog;
@@ -162,7 +162,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
                     }
 
                     this->toLog(logLevel,
-                                this->mDeviceName + QString(": %1%2 -> %3")
+                                this->m_DeviceName + QString(": %1%2 -> %3")
                                                         .arg(it->description)
                                                         .arg(codeLog)
                                                         .arg(statusCodeData.description));
@@ -175,7 +175,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
     bool escrow = aStatusCodes.contains(BillAcceptorStatusCode::BillOperation::Escrow);
     bool stacked = aStatusCodes.contains(BillAcceptorStatusCode::BillOperation::Stacked);
 
-    if (!escrow && !(stacked && this->mParInStacked)) {
+    if (!escrow && !(stacked && this->m_ParInStacked)) {
         return true;
     }
 
@@ -191,26 +191,26 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
 
 //--------------------------------------------------------------------------------
 template <class T> bool PortCashAcceptor<T>::setLastPar(const QByteArray &aAnswer) {
-    QString log = this->mDeviceName + ": Failed to set last par due to ";
+    QString log = this->m_DeviceName + ": Failed to set last par due to ";
 
-    if ((this->mEscrowPosition < 0) || (this->mEscrowPosition >= aAnswer.size())) {
+    if ((this->m_EscrowPosition < 0) || (this->m_EscrowPosition >= aAnswer.size())) {
         this->toLog(LogLevel::Error,
                     log + QString("wrong escrow position = %1 (answer size = %2)")
-                              .arg(this->mEscrowPosition)
+                              .arg(this->m_EscrowPosition)
                               .arg(aAnswer.size()));
         return false;
     }
 
-    int escrowKey = uchar(aAnswer[this->mEscrowPosition]);
+    int escrowKey = uchar(aAnswer[this->m_EscrowPosition]);
 
-    if (!this->mEscrowParTable.data().contains(escrowKey)) {
+    if (!this->m_EscrowParTable.data().contains(escrowKey)) {
         this->toLog(LogLevel::Error,
                     log + "wrong escrow key = " + ProtocolUtils::toHexLog<uchar>(uchar(escrowKey)));
         return false;
     }
 
-    this->mEscrowPars = TPars() << this->mEscrowParTable[aAnswer[this->mEscrowPosition]];
-    SPar par = this->mEscrowPars[0];
+    this->m_EscrowPars = TPars() << this->m_EscrowParTable[aAnswer[this->m_EscrowPosition]];
+    SPar par = this->m_EscrowPars[0];
 
     if (!par.nominal) {
         this->toLog(LogLevel::Error, log + "nominal == 0");
@@ -241,21 +241,21 @@ template <class T> void PortCashAcceptor<T>::restoreStatuses() {
     START_IN_WORKING_THREAD(restoreStatuses)
 
     this->toLog(LogLevel::Normal,
-                this->mDeviceName + QString(", restoreStatuses: post polling action is %1enabled, "
+                this->m_DeviceName + QString(", restoreStatuses: post polling action is %1enabled, "
                                             "checking disable state is %2enabled")
-                                        .arg(this->mPostPollingAction ? "" : "not ")
-                                        .arg(this->mCheckDisable ? "" : "not "));
+                                        .arg(this->m_PostPollingAction ? "" : "not ")
+                                        .arg(this->m_CheckDisable ? "" : "not "));
 
-    auto canRestore = [&]() -> bool { return !this->mCheckDisable && this->mPostPollingAction; };
+    auto canRestore = [&]() -> bool { return !this->m_CheckDisable && this->m_PostPollingAction; };
     CCashAcceptor::TStatusHistory statusHistory;
 
-    if (this->mPollingActive &&
+    if (this->m_PollingActive &&
         this->waitCondition(canRestore, CPortCashAcceptor::RestoreStatusesWaiting) &&
-        !this->mStatusHistory.isEmpty()) {
-        EWarningLevel::Enum warningLevel = this->mStatusHistory.lastValue().warningLevel;
+        !this->m_StatusHistory.isEmpty()) {
+        EWarningLevel::Enum warningLevel = this->m_StatusHistory.lastValue().warningLevel;
 
-        for (auto it = this->mStatusHistory.begin() + this->mStatusHistory.getLevel();
-             it < this->mStatusHistory.end();
+        for (auto it = this->m_StatusHistory.begin() + this->m_StatusHistory.getLevel();
+             it < this->m_StatusHistory.end();
              ++it) {
             if (it->warningLevel <= warningLevel) {
                 // перепаковываем статусы
@@ -270,7 +270,7 @@ template <class T> void PortCashAcceptor<T>::restoreStatuses() {
 
                 foreach (int statusCode, commonStatusCodes) {
                     ECashAcceptorStatus::Enum status = static_cast<ECashAcceptorStatus::Enum>(
-                        this->mStatusCodesSpecification->value(statusCode).status);
+                        this->m_StatusCodesSpecification->value(statusCode).status);
 
                     if (CCashAcceptor::Set::MainStatuses.contains(status) &&
                         (status != ECashAcceptorStatus::Escrow) &&
@@ -278,7 +278,7 @@ template <class T> void PortCashAcceptor<T>::restoreStatuses() {
                         resultStatuses.statuses[status].insert(statusCode);
                         resultStatuses.warningLevel =
                             qMax(resultStatuses.warningLevel,
-                                 this->mStatusCodesSpecification->warningLevelByStatus(status));
+                                 this->m_StatusCodesSpecification->warningLevelByStatus(status));
                     }
                 }
 
@@ -296,7 +296,7 @@ template <class T> void PortCashAcceptor<T>::restoreStatuses() {
 
 //---------------------------------------------------------------------------
 template <class T> void PortCashAcceptor<T>::onSendDisabled() {
-    this->toLog(LogLevel::Normal, QString("Send statuses: %1 disabled").arg(this->mDeviceType));
+    this->toLog(LogLevel::Normal, QString("Send statuses: %1 disabled").arg(this->m_DeviceType));
 
     emit this->status(EWarningLevel::OK, "Disabled", ECashAcceptorStatus::Disabled);
 
@@ -305,7 +305,7 @@ template <class T> void PortCashAcceptor<T>::onSendDisabled() {
 
 //---------------------------------------------------------------------------
 template <class T> void PortCashAcceptor<T>::sendEnabled() {
-    this->toLog(LogLevel::Normal, QString("Send statuses: %1 enabled").arg(this->mDeviceType));
+    this->toLog(LogLevel::Normal, QString("Send statuses: %1 enabled").arg(this->m_DeviceType));
 
     emit this->status(EWarningLevel::OK, "Enabled", ECashAcceptorStatus::Enabled);
 
@@ -315,19 +315,19 @@ template <class T> void PortCashAcceptor<T>::sendEnabled() {
 //---------------------------------------------------------------------------
 template <class T> bool PortCashAcceptor<T>::setEnable(bool aEnabled) {
     this->toLog(LogLevel::Normal,
-                QString("%1: %2").arg(this->mDeviceName).arg(aEnabled ? "Enable" : "Disable"));
+                QString("%1: %2").arg(this->m_DeviceName).arg(aEnabled ? "Enable" : "Disable"));
 
-    if (this->mInitialized != ERequestStatus::Success) {
+    if (this->m_Initialized != ERequestStatus::Success) {
         if (aEnabled)
             this->toLog(LogLevel::Error,
-                        this->mDeviceName + ": on set enable(true) not initialized, return false");
+                        this->m_DeviceName + ": on set enable(true) not initialized, return false");
         else
             this->toLog(LogLevel::Normal,
-                        this->mDeviceName + ": on set enable(false) not initialized, return true");
+                        this->m_DeviceName + ": on set enable(false) not initialized, return true");
 
         if (!aEnabled) {
             this->toLog(LogLevel::Normal,
-                        QString("Send statuses: %1 disabled").arg(this->mDeviceName));
+                        QString("Send statuses: %1 disabled").arg(this->m_DeviceName));
 
             emit this->status(EWarningLevel::OK, "Disabled", ECashAcceptorStatus::Disabled);
         }
@@ -344,13 +344,13 @@ template <class T> bool PortCashAcceptor<T>::setEnable(bool aEnabled) {
 
     if ((aEnabled && this->isEnabled()) || (!aEnabled && this->isDisabled())) {
         this->toLog(LogLevel::Normal,
-                    this->mDeviceName +
+                    this->m_DeviceName +
                         QString(": already %1").arg(aEnabled ? "enabled" : "disabled"));
 
         this->setConfigParameter(CHardware::CashAcceptor::Enabled, aEnabled);
 
         if (!aEnabled) {
-            this->mCheckDisable = false;
+            this->m_CheckDisable = false;
         }
 
         this->setPollingInterval(this->getPollingInterval(aEnabled));
@@ -365,25 +365,25 @@ template <class T> bool PortCashAcceptor<T>::setEnable(bool aEnabled) {
     this->setConfigParameter(CHardware::CashAcceptor::ProcessEnabling, aEnabled);
     this->setConfigParameter(CHardware::CashAcceptor::ProcessDisabling, !aEnabled);
 
-    if (!aEnabled && !this->mPostPollingAction && !this->mCheckDisable) {
-        this->toLog(LogLevel::Normal, this->mDeviceName + ": The process has started already");
+    if (!aEnabled && !this->m_PostPollingAction && !this->m_CheckDisable) {
+        this->toLog(LogLevel::Normal, this->m_DeviceName + ": The process has started already");
         return true;
     }
 
-    this->mPostPollingAction = false;
+    this->m_PostPollingAction = false;
 
     this->stopPolling();
 
     auto cancelSetEnable = [&]() -> bool {
         this->toLog(LogLevel::Normal,
-                    this->mDeviceName + (aEnabled ? ": An error is occured, Enable return false"
+                    this->m_DeviceName + (aEnabled ? ": An error is occured, Enable return false"
                                                   : ": An error is occured, Disable return true"));
 
         this->setConfigParameter(CHardware::CashAcceptor::ProcessEnabling, false);
         this->setConfigParameter(CHardware::CashAcceptor::ProcessDisabling, false);
         this->setConfigParameter(CHardware::CashAcceptor::Enabled, false);
 
-        this->mPostPollingAction = true;
+        this->m_PostPollingAction = true;
 
         this->setPollingInterval(this->getPollingInterval(false));
         this->startPolling(true);
@@ -394,21 +394,21 @@ template <class T> bool PortCashAcceptor<T>::setEnable(bool aEnabled) {
         return !aEnabled;
     };
 
-    if (!this->mStatusCollection.isEmpty(EWarningLevel::Error)) {
+    if (!this->m_StatusCollection.isEmpty(EWarningLevel::Error)) {
         return cancelSetEnable();
     }
 
     if (!aEnabled) {
         bool canReturn = this->canReturning(false);
 
-        if (!this->mStatusCollection.isEmpty(EWarningLevel::Error)) {
+        if (!this->m_StatusCollection.isEmpty(EWarningLevel::Error)) {
             return cancelSetEnable();
         }
 
         if (canReturn) {
             PollingExpector expector;
             auto notAccepting = [&]() -> bool {
-                return !this->mStatusCollection.contains(
+                return !this->m_StatusCollection.contains(
                     BillAcceptorStatusCode::BillOperation::Accepting);
             };
             expector.wait<void>(std::bind(&CashAcceptorBase<T>::simplePoll, this),
@@ -418,13 +418,13 @@ template <class T> bool PortCashAcceptor<T>::setEnable(bool aEnabled) {
 
             canReturn = this->canReturning(true);
 
-            if (!this->mStatusCollection.isEmpty(EWarningLevel::Error)) {
+            if (!this->m_StatusCollection.isEmpty(EWarningLevel::Error)) {
                 return cancelSetEnable();
             }
 
             if (canReturn) {
                 auto notEscrow = [&]() -> bool {
-                    return !this->mStatusCollection.contains(
+                    return !this->m_StatusCollection.contains(
                         BillAcceptorStatusCode::BillOperation::Escrow);
                 };
                 processAndWait(std::bind(&PortCashAcceptor<T>::reject, this),
@@ -435,28 +435,28 @@ template <class T> bool PortCashAcceptor<T>::setEnable(bool aEnabled) {
         }
     }
 
-    if (!aEnabled && !this->canDisable() && !this->mCheckDisable) {
+    if (!aEnabled && !this->canDisable() && !this->m_CheckDisable) {
         // вариант с параметризованным отключением купюроприёмника
         // bool deferred = aDeferred ||
         // (containsConfigParameter(CHardware::CashAcceptor::OnlyDeferredDisable) &&
         // getConfigParameter(CHardware::CashAcceptor::OnlyDeferredDisable).toBool());
         bool deferred = true;
 
-        if (!this->mCheckDisable) {
+        if (!this->m_CheckDisable) {
             if (deferred) {
-                this->mCheckDisable = true;
+                this->m_CheckDisable = true;
                 this->toLog(LogLevel::Normal,
-                            this->mDeviceName +
+                            this->m_DeviceName +
                                 ": deferred disabling logic is activated, disable return true");
             } else {
                 this->toLog(
                     LogLevel::Normal,
-                    this->mDeviceName +
+                    this->m_DeviceName +
                         ": Failed to disable due to operation with note, disable return false");
             }
         }
 
-        this->mPostPollingAction = true;
+        this->m_PostPollingAction = true;
 
         this->startPolling(true);
         restoreStatuses();
@@ -464,7 +464,7 @@ template <class T> bool PortCashAcceptor<T>::setEnable(bool aEnabled) {
         return deferred;
     }
 
-    if (!this->mStatusCollection.isEmpty(EWarningLevel::Error)) {
+    if (!this->m_StatusCollection.isEmpty(EWarningLevel::Error)) {
         return cancelSetEnable();
     }
 
@@ -489,7 +489,7 @@ template <class T> void PortCashAcceptor<T>::processEnable(bool aEnabled) {
         bool result = aEnabled ? this->isNotDisabled() : this->isNotEnabled();
 
         if (result) {
-            this->mCheckDisable = false;
+            this->m_CheckDisable = false;
 
             this->setConfigParameter(CHardware::CashAcceptor::Enabled, aEnabled);
             this->setConfigParameter(aEnabled ? CHardware::CashAcceptor::ProcessEnabling
@@ -507,9 +507,9 @@ template <class T> void PortCashAcceptor<T>::processEnable(bool aEnabled) {
 
     bool needReset = true;
 
-    if (!this->mStatusHistory.isEmpty()) {
-        TStatusCollection lastStatusCollection = this->mStatusCollectionHistory.lastValue();
-        TStatusCollection beforeLastStatusCollection = this->mStatusCollectionHistory.lastValue(2);
+    if (!this->m_StatusHistory.isEmpty()) {
+        TStatusCollection lastStatusCollection = this->m_StatusCollectionHistory.lastValue();
+        TStatusCollection beforeLastStatusCollection = this->m_StatusCollectionHistory.lastValue(2);
         CCashAcceptor::TStatuses lastStatuses = this->getLastStatuses(1);
         CCashAcceptor::TStatuses beforeLastStatuses = this->getLastStatuses(2);
 
@@ -526,7 +526,7 @@ template <class T> void PortCashAcceptor<T>::processEnable(bool aEnabled) {
         applyParTable();
     }
 
-    this->mPostPollingAction = true;
+    this->m_PostPollingAction = true;
     auto setEnableErrorCondition = [&]() -> bool {
         if (aEnabled)
             return false;
@@ -544,7 +544,7 @@ template <class T> void PortCashAcceptor<T>::processEnable(bool aEnabled) {
         applyParTable();
     }
 
-    MutexLocker locker(&this->mResourceMutex);
+    MutexLocker locker(&this->m_ResourceMutex);
 
     // TODO: откат отложенного включения купюроприёмника
     /*if (aEnabled && isNotDisabled())
@@ -577,7 +577,7 @@ template <class T> bool PortCashAcceptor<T>::reenableMoneyAcceptingMode() {
 
 //---------------------------------------------------------------------------
 template <class T> int PortCashAcceptor<T>::getPollingInterval(bool aEnabled) {
-    return aEnabled ? this->mPollingIntervalEnabled : this->mPollingIntervalDisabled;
+    return aEnabled ? this->m_PollingIntervalEnabled : this->m_PollingIntervalDisabled;
 }
 
 //---------------------------------------------------------------------------
@@ -598,7 +598,7 @@ bool PortCashAcceptor<T>::processAndWait(const TBoolMethod &aCommand,
     do {
         if (counter) {
             this->toLog(LogLevel::Warning,
-                        this->mDeviceName +
+                        this->m_DeviceName +
                             QString(": waiting timeout for status change has expired, status is "
                                     "not required, try iteration %1")
                                 .arg(counter + 1));
@@ -617,7 +617,7 @@ bool PortCashAcceptor<T>::processAndWait(const TBoolMethod &aCommand,
         } else {
             this->simplePoll();
 
-            if (!this->mStatusCollection.isEmpty(EWarningLevel::Error)) {
+            if (!this->m_StatusCollection.isEmpty(EWarningLevel::Error)) {
                 result = aCondition();
             }
         }
@@ -626,7 +626,7 @@ bool PortCashAcceptor<T>::processAndWait(const TBoolMethod &aCommand,
     if (!result) {
         this->toLog(
             LogLevel::Warning,
-            this->mDeviceName +
+            this->m_DeviceName +
                 ((counter >= CCashAcceptor::MaxCommandAttempt)
                      ? ": max attempts to process the command were exceeded, status is not required"
                      : ": error was occured while waiting for required device state"));
@@ -636,7 +636,7 @@ bool PortCashAcceptor<T>::processAndWait(const TBoolMethod &aCommand,
         this->startPolling();
     }
 
-    if (this->mPostPollingAction) {
+    if (this->m_PostPollingAction) {
         this->restoreStatuses();
     }
 
@@ -645,9 +645,9 @@ bool PortCashAcceptor<T>::processAndWait(const TBoolMethod &aCommand,
 
 //---------------------------------------------------------------------------
 template <class T> bool PortCashAcceptor<T>::isResetCompleted(bool aWait) {
-    if (aWait || (this->mResetWaiting == EResetWaiting::Full)) {
+    if (aWait || (this->m_ResetWaiting == EResetWaiting::Full)) {
         return this->isAvailable() && !this->isInitialize();
-    } else if (this->mResetWaiting == EResetWaiting::Available) {
+    } else if (this->m_ResetWaiting == EResetWaiting::Available) {
         return this->isAvailable();
     }
 
@@ -660,7 +660,7 @@ template <class T> bool PortCashAcceptor<T>::reset(bool aWait) {
         return false;
     }
 
-    if (this->isPowerReboot() && this->mResetOnIdentification) {
+    if (this->isPowerReboot() && this->m_ResetOnIdentification) {
         return true;
     }
 
@@ -669,7 +669,7 @@ template <class T> bool PortCashAcceptor<T>::reset(bool aWait) {
 
     int timeout = this->getConfigParameter(CHardware::CashAcceptor::InitializeTimeout).toInt();
 
-    return this->processAndWait(resetFunction, condition, timeout, false, this->mPollingActive);
+    return this->processAndWait(resetFunction, condition, timeout, false, this->m_PollingActive);
 }
 
 //--------------------------------------------------------------------------------
@@ -682,17 +682,17 @@ template <class T> bool PortCashAcceptor<T>::updateParameters() {
         return false;
     }
 
-    this->mCurrencyError = this->processParTable();
-    ECurrencyError::Enum oldCurrencyError = this->mCurrencyError;
+    this->m_CurrencyError = this->processParTable();
+    ECurrencyError::Enum oldCurrencyError = this->m_CurrencyError;
 
     this->setEnable(false);
 
-    if (this->mCurrencyError == ECurrencyError::Loading) {
-        this->mCurrencyError = this->processParTable();
+    if (this->m_CurrencyError == ECurrencyError::Loading) {
+        this->m_CurrencyError = this->processParTable();
     }
 
-    if (!this->mPollingInterval) {
-        this->mPollingInterval = this->getPollingInterval(false);
+    if (!this->m_PollingInterval) {
+        this->m_PollingInterval = this->getPollingInterval(false);
     }
 
     PollingExpector expector;
@@ -703,41 +703,41 @@ template <class T> bool PortCashAcceptor<T>::updateParameters() {
         this->getPollingInterval(true),
         timeout);
 
-    if (this->mCurrencyError == ECurrencyError::Loading) {
-        this->mCurrencyError = this->processParTable();
+    if (this->m_CurrencyError == ECurrencyError::Loading) {
+        this->m_CurrencyError = this->processParTable();
     }
 
-    if (this->mCurrencyError != oldCurrencyError) {
+    if (this->m_CurrencyError != oldCurrencyError) {
         this->simplePoll();
     }
 
-    return result && (this->mCurrencyError == ECurrencyError::OK);
+    return result && (this->m_CurrencyError == ECurrencyError::OK);
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void PortCashAcceptor<T>::finalizeInitialization() {
     this->addPortData();
 
-    if (this->mPollingActive && (this->mInitialized == ERequestStatus::Success)) {
+    if (this->m_PollingActive && (this->m_Initialized == ERequestStatus::Success)) {
         this->onPoll();
     }
 
-    this->startPolling(!this->mConnected);
-    this->mStatusHistory.checkLastUnprocessed();
+    this->startPolling(!this->m_Connected);
+    this->m_StatusHistory.checkLastUnprocessed();
     this->restoreStatuses();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool PortCashAcceptor<T>::canUpdateFirmware() {
-    if (!this->mUpdatable || !this->isDeviceReady()) {
+    if (!this->m_Updatable || !this->isDeviceReady()) {
         return false;
     }
 
-    MutexLocker locker(&this->mResourceMutex);
+    MutexLocker locker(&this->m_ResourceMutex);
 
     if (this->isEnabled() && !this->setEnable(false)) {
         this->toLog(LogLevel::Error,
-                    this->mDeviceName + ": Failed to disable for updating the firmware due to "
+                    this->m_DeviceName + ": Failed to disable for updating the firmware due to "
                                         "incorrect state of cash acceptor");
         return false;
     }
@@ -757,9 +757,9 @@ template <class T> void PortCashAcceptor<T>::updateFirmware(const QByteArray &aB
     bool result = performUpdateFirmware(aBuffer);
 
     if (result) {
-        this->mForceWaitResetCompleting = true;
+        this->m_ForceWaitResetCompleting = true;
         reset(false);
-        this->mForceWaitResetCompleting = false;
+        this->m_ForceWaitResetCompleting = false;
     }
 
     emit this->updated(result);
@@ -777,7 +777,7 @@ template <class T> bool PortCashAcceptor<T>::canApplyStatusBuffer() {
     bool processDisabling =
         this->getConfigParameter(CHardware::CashAcceptor::ProcessDisabling).toBool();
 
-    if (processEnabling || (processDisabling && !this->mCheckDisable)) {
+    if (processEnabling || (processDisabling && !this->m_CheckDisable)) {
         return true;
     }
 
@@ -790,29 +790,29 @@ void PortCashAcceptor<T>::postPollingAction(const TStatusCollection &aNewStatusC
                                             const TStatusCollection &aOldStatusCollection) {
     CashAcceptorBase<T>::postPollingAction(aNewStatusCollection, aOldStatusCollection);
 
-    if (this->mCheckDisable) {
+    if (this->m_CheckDisable) {
         if (!this->canDisable()) {
             this->toLog(LogLevel::Normal,
-                        this->mDeviceName +
+                        this->m_DeviceName +
                             ": Failed to disable due to operation process conditions, waiting...");
             return;
         }
 
         if (!this->setEnable(false)) {
             this->toLog(LogLevel::Error,
-                        this->mDeviceName + QString(": Failed to disable for updating the firmware "
+                        this->m_DeviceName + QString(": Failed to disable for updating the firmware "
                                                     "due to incorrect state of cash acceptor"));
             return;
         }
     }
 
-    if (!this->mStatusCollection.isEmpty(EWarningLevel::Error)) {
-        this->mCheckDisable = false;
+    if (!this->m_StatusCollection.isEmpty(EWarningLevel::Error)) {
+        this->m_CheckDisable = false;
         return;
     }
 
     bool enabled = this->getConfigParameter(CHardware::CashAcceptor::Enabled).toBool();
-    CCashAcceptor::TStatuses statuses = this->mStatusHistory.lastValue().statuses;
+    CCashAcceptor::TStatuses statuses = this->m_StatusHistory.lastValue().statuses;
 
     auto toBool = [&](QVariant arg) -> QString { return (arg.toBool()) ? "true" : "false"; };
     auto toPred = [&](QVariant arg) -> QString { return (arg.toBool()) ? "" : "NOT "; };
@@ -824,17 +824,17 @@ void PortCashAcceptor<T>::postPollingAction(const TStatusCollection &aNewStatusC
     bool exitFromError = !aOldStatusCollection.isEmpty(EWarningLevel::Error) &&
                          aNewStatusCollection.isEmpty(EWarningLevel::Error);
     bool beforeRejected =
-        this->mStatusHistory.lastValue(2).statuses.contains(ECashAcceptorStatus::Rejected);
+        this->m_StatusHistory.lastValue(2).statuses.contains(ECashAcceptorStatus::Rejected);
 
     bool term1 = (enabled || checkEnabled) && disabling;
     bool term2 = (enabled && checkDisabled && !disabling) && !exitFromError;
     bool term3 = (!enabled || checkDisabled) && enabling &&
-                 !(beforeRejected && !this->mStatuses.isEmpty(ECashAcceptorStatus::Disabled));
+                 !(beforeRejected && !this->m_Statuses.isEmpty(ECashAcceptorStatus::Disabled));
 
     bool needSetEnable = term1 || term2 || term3;
 
     this->toLog(LogLevel::Debug,
-                this->mDeviceName +
+                this->m_DeviceName +
                     QString(": enabled = %1, enable correction is %2needed,\
 \n(1) = %3, isEnabled = %4, enabling = %5, isDisabled = %6, disabling = %7,\
 \n(2) = %8, exit from error = %9,\
@@ -850,7 +850,7 @@ void PortCashAcceptor<T>::postPollingAction(const TStatusCollection &aNewStatusC
                         .arg(toBool(exitFromError))
                         .arg(toBool(term3))
                         .arg(toBool(beforeRejected))
-                        .arg(toPred(this->mStatuses.isEmpty(ECashAcceptorStatus::Disabled))));
+                        .arg(toPred(this->m_Statuses.isEmpty(ECashAcceptorStatus::Disabled))));
 
     if (needSetEnable) {
         this->setEnable(

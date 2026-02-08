@@ -54,22 +54,22 @@ protected:
     bool isOnlyDefaultModels();
 
     /// Данные моделей.
-    POSPrinters::ModelData mModelData;
+    POSPrinters::ModelData m_ModelData;
 
     /// ID модели.
-    char mModelID;
+    char m_ModelID;
 
     /// Флаг переполнения буфера.
-    bool mOverflow;
+    bool m_Overflow;
 
     /// Русская кодовая страница.
-    char mRussianCodePage;
+    char m_RussianCodePage;
 
     /// Таймаут печати строки.
-    int mPrintingStringTimeout;
+    int m_PrintingStringTimeout;
 
     /// Параметры.
-    POSPrinters::SParameters mParameters;
+    POSPrinters::SParameters m_Parameters;
 };
 
 //--------------------------------------------------------------------------------

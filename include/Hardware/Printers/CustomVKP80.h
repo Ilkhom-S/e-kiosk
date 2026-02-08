@@ -36,7 +36,7 @@ protected:
 class LibUSBCustomVKP80 : public CustomVKP80<TLibUSBPrinterBase> {
 public:
     LibUSBCustomVKP80() {
-        this->mDetectingData->set(CUSBVendors::Custom, this->mDeviceName, 0x015d);
+        this->m_DetectingData->set(CUSBVendors::Custom, this->m_DeviceName, 0x015d);
     }
 };
 

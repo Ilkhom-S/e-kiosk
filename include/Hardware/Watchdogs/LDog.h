@@ -37,10 +37,10 @@ protected:
     void makePause(char aCommand);
 
     /// Допустимое время отправки команды.
-    QDateTime mNextRequestTime;
+    QDateTime m_NextRequestTime;
 
     /// Протокол.
-    LDogWDProtocol mProtocol;
+    LDogWDProtocol m_Protocol;
 };
 
 //--------------------------------------------------------------------------------

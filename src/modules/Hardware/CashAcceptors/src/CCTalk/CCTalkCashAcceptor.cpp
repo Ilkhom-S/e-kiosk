@@ -21,17 +21,17 @@ using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
 CCTalkCashAcceptor::CCTalkCashAcceptor() {
-    mModels = getModelList();
+    m_Models = getModelList();
 
-    mAddress = CCCTalk::Address::BillAcceptor;
-    mParInStacked = true;
-    mErrorData = PErrorData(new CCCTalk::ErrorData());
-    mAllModelData = PAllModelData(new CCCTalk::CashAcceptor::CModelData());
+    m_Address = CCCTalk::Address::BillAcceptor;
+    m_ParInStacked = true;
+    m_ErrorData = PErrorData(new CCCTalk::ErrorData());
+    m_AllModelData = PAllModelData(new CCCTalk::CashAcceptor::CModelData());
 }
 
 //---------------------------------------------------------------------------
 bool CCTalkCashAcceptor::processReset() {
-    toLog(LogLevel::Normal, mDeviceName + ": processing command reset");
+    toLog(LogLevel::Normal, m_DeviceName + ": processing command reset");
 
     if (!processCommand(CCCTalk::Command::Reset)) {
         return false;
@@ -39,7 +39,7 @@ bool CCTalkCashAcceptor::processReset() {
 
     SleepHelper::msleep(CCCTalk::ResetPause);
 
-    mEventIndex = 0;
+    m_EventIndex = 0;
 
     return true;
 }
@@ -69,7 +69,7 @@ double CCTalkCashAcceptor::parseFWVersion(const QByteArray &aAnswer) {
 
 //--------------------------------------------------------------------------------
 bool CCTalkCashAcceptor::loadParTable() {
-    mScalingFactors.clear();
+    m_ScalingFactors.clear();
 
     QByteArray answer;
 
@@ -84,28 +84,28 @@ bool CCTalkCashAcceptor::loadParTable() {
                 int value = valueData.toInt(&OK);
 
                 if (OK) {
-                    double nominal = value * mScalingFactors[countryCode];
+                    double nominal = value * m_ScalingFactors[countryCode];
                     int countryCodeId = currencyData.code;
 
                     SPar par(nominal, countryCodeId, ECashReceiver::BillAcceptor);
                     par.currency = CurrencyCodes.key(currencyData.code);
 
                     {
-                        MutexLocker locker(&mResourceMutex);
+                        MutexLocker locker(&m_ResourceMutex);
 
-                        mEscrowParTable.data().insert(i, par);
+                        m_EscrowParTable.data().insert(i, par);
                     }
                 } else {
                     toLog(LogLevel::Error,
                           QString("%1: Failed to parse nominal value %2 (0x%3)")
-                              .arg(mDeviceName)
+                              .arg(m_DeviceName)
                               .arg(valueData.data())
                               .arg(valueData.toHex().toUpper().data()));
                 }
             }
         } else {
             toLog(LogLevel::Error,
-                  mDeviceName + QString(": Failed to get bill %1 data").arg(uint(i)));
+                  m_DeviceName + QString(": Failed to get bill %1 data").arg(uint(i)));
         }
     }
 
@@ -119,18 +119,18 @@ bool CCTalkCashAcceptor::parseCurrencyData(const QByteArray &aData,
         return false;
     }
 
-    if (!mScalingFactors.contains(aData)) {
+    if (!m_ScalingFactors.contains(aData)) {
         QByteArray answer;
 
         if (!processCommand(CCCTalk::Command::GetCountryScalingFactor, aData, &answer)) {
             toLog(LogLevel::Error,
-                  mDeviceName + ": Failed to get scaling factor for " + aCurrencyData.country);
+                  m_DeviceName + ": Failed to get scaling factor for " + aCurrencyData.country);
             return false;
         }
 
         ushort base = qToBigEndian(answer.left(2).toHex().toUShort(0, 16));
         double value = base * qPow(10, -1 * uchar(answer[2]));
-        mScalingFactors.insert(aData, value);
+        m_ScalingFactors.insert(aData, value);
     }
 
     return true;
@@ -145,18 +145,18 @@ bool CCTalkCashAcceptor::getBufferedStatuses(QByteArray &aAnswer) {
 void CCTalkCashAcceptor::parseCreditData(uchar aCredit, uchar aError, TStatusCodes &aStatusCodes) {
     if (!aError) {
         aStatusCodes.insert(BillAcceptorStatusCode::BillOperation::Stacked);
-        mCodes.insert(CCCTalk::StackedDeviceCode);
+        m_Codes.insert(CCCTalk::StackedDeviceCode);
     } else {
         aStatusCodes.insert(BillAcceptorStatusCode::BillOperation::Escrow);
-        mCodes.insert(CCCTalk::EscrowDeviceCode);
+        m_Codes.insert(CCCTalk::EscrowDeviceCode);
     }
 
-    mEscrowPars = TPars() << mEscrowParTable[aCredit];
+    m_EscrowPars = TPars() << m_EscrowParTable[aCredit];
 }
 
 //---------------------------------------------------------------------------
 bool CCTalkCashAcceptor::stack() {
-    if (!checkConnectionAbility() || (mInitialized != ERequestStatus::Success) || mCheckDisable) {
+    if (!checkConnectionAbility() || (m_Initialized != ERequestStatus::Success) || m_CheckDisable) {
         return false;
     }
 
@@ -165,7 +165,7 @@ bool CCTalkCashAcceptor::stack() {
 
 //---------------------------------------------------------------------------
 bool CCTalkCashAcceptor::reject() {
-    if (!checkConnectionAbility() || (mInitialized == ERequestStatus::Fail)) {
+    if (!checkConnectionAbility() || (m_Initialized == ERequestStatus::Fail)) {
         return false;
     }
 
@@ -174,7 +174,7 @@ bool CCTalkCashAcceptor::reject() {
 
 //---------------------------------------------------------------------------
 bool CCTalkCashAcceptor::route(bool aDirection) {
-    if (!checkConnectionAbility() || (mInitialized == ERequestStatus::Fail)) {
+    if (!checkConnectionAbility() || (m_Initialized == ERequestStatus::Fail)) {
         return false;
     }
 
@@ -186,20 +186,20 @@ bool CCTalkCashAcceptor::route(bool aDirection) {
     }
 
     if (answer.isEmpty()) {
-        mVirtualRouting.direction = aDirection;
-        mVirtualRouting.active = true;
+        m_VirtualRouting.direction = aDirection;
+        m_VirtualRouting.active = true;
 
         return true;
     }
 
     char data = answer[0];
     QString log =
-        QString("%1: Failed to %2 bill").arg(mDeviceName).arg(aDirection ? "stack" : "return");
+        QString("%1: Failed to %2 bill").arg(m_DeviceName).arg(aDirection ? "stack" : "return");
 
-    if (mEscrowPars.isEmpty()) {
+    if (m_EscrowPars.isEmpty()) {
         log += ", but escrow pars are empty";
     } else {
-        SPar par = *mEscrowPars.begin();
+        SPar par = *m_EscrowPars.begin();
         log += QString(" %1 (%2)").arg(par.nominal).arg(par.currency);
     }
 
@@ -218,22 +218,22 @@ bool CCTalkCashAcceptor::route(bool aDirection) {
 
 //--------------------------------------------------------------------------------
 void CCTalkCashAcceptor::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes) {
-    if (mModelData.model != CCCTalk::CashAcceptor::Models::NV200Spectral) {
+    if (m_ModelData.model != CCCTalk::CashAcceptor::Models::NV200Spectral) {
         return;
     }
 
     using namespace BillAcceptorStatusCode;
 
     if (!aStatusCodes.contains(BillOperation::Escrow) &&
-        !(mVirtualRouting.direction && aStatusCodes.contains(BillOperation::Stacking)) &&
-        !(!mVirtualRouting.direction && aStatusCodes.contains(Busy::Returning))) {
-        mVirtualRouting.active = false;
+        !(m_VirtualRouting.direction && aStatusCodes.contains(BillOperation::Stacking)) &&
+        !(!m_VirtualRouting.direction && aStatusCodes.contains(Busy::Returning))) {
+        m_VirtualRouting.active = false;
     }
 
     TStatusCodes oldStatusCodes = aStatusCodes;
-    int routing = mVirtualRouting.direction ? BillOperation::Stacking : Busy::Returning;
+    int routing = m_VirtualRouting.direction ? BillOperation::Stacking : Busy::Returning;
 
-    if (mVirtualRouting.active) {
+    if (m_VirtualRouting.active) {
         replaceConformedStatusCodes(aStatusCodes, BillOperation::Escrow, routing);
     }
 
@@ -249,12 +249,12 @@ void CCTalkCashAcceptor::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes) {
     QStringList removed;
 
     foreach (int statusCode, aStatusCodes) {
-        SStatusCodeSpecification data = mStatusCodesSpecification->value(statusCode);
+        SStatusCodeSpecification data = m_StatusCodesSpecification->value(statusCode);
         ECashAcceptorStatus::Enum status = ECashAcceptorStatus::Enum(data.status);
         CCashAcceptor::TStatuses statuses;
         statuses[status].insert(statusCode);
 
-        if ((mEnabled && isDisabled(statuses)) || (!mEnabled && isEnabled(statuses))) {
+        if ((m_Enabled && isDisabled(statuses)) || (!m_Enabled && isEnabled(statuses))) {
             aStatusCodes -= statusCode;
             removed << data.description;
         }
@@ -264,10 +264,10 @@ void CCTalkCashAcceptor::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes) {
         log << "Removed: " + removed.join(CDevice::StatusSeparator);
     }
 
-    int enabling = mEnabled ? Normal::Enabled : Normal::Disabled;
+    int enabling = m_Enabled ? Normal::Enabled : Normal::Disabled;
 
     if (aStatusCodes.isEmpty()) {
-        log << "Restored: " + mStatusCodesSpecification->value(enabling).description;
+        log << "Restored: " + m_StatusCodesSpecification->value(enabling).description;
         aStatusCodes.insert(enabling);
     }
 
@@ -283,7 +283,7 @@ void CCTalkCashAcceptor::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes) {
     addLog(enabling);
 
     if (!log.isEmpty()) {
-        toLog(LogLevel::Normal, mDeviceName + ": " + log.join(". "));
+        toLog(LogLevel::Normal, m_DeviceName + ": " + log.join(". "));
     }
 }
 

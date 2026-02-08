@@ -85,19 +85,19 @@ protected:
     virtual bool isExist();
 
     /// Файловый дескриптор порта.
-    int mPortFd;
+    int m_PortFd;
 
     /// Буфер для чтения.
-    TReadingBuffer mReadingBuffer;
+    TReadingBuffer m_ReadingBuffer;
 
     /// Cуществует в системе.
-    bool mExist;
+    bool m_Exist;
 
     /// Максимальное количество байтов для чтения.
-    int mMaxReadingSize;
+    int m_MaxReadingSize;
 
     /// Системные имена портов.
-    QStringList mSystemNames;
+    QStringList m_SystemNames;
 };
 
 //--------------------------------------------------------------------------------

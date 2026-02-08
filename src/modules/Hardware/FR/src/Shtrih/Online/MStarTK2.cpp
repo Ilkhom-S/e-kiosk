@@ -4,18 +4,18 @@
 
 //--------------------------------------------------------------------------------
 MStarTK2FR::MStarTK2FR() {
-    mDeviceName = CShtrihFR::Models::CData()[CShtrihFR::Models::ID::MStarTK2].name;
-    mOFDFiscalFields << CFR::FiscalFields::Cashier;
-    mPrinterStatusEnabled = false;
-    mNeedReceiptProcessingOnCancel = false;
+    m_DeviceName = CShtrihFR::Models::CData()[CShtrihFR::Models::ID::MStarTK2].name;
+    m_OFDFiscalFields << CFR::FiscalFields::Cashier;
+    m_PrinterStatusEnabled = false;
+    m_NeedReceiptProcessingOnCancel = false;
 
     setConfigParameter(CHardwareSDK::FR::CanWithoutPrinting, false);
     setConfigParameter(CHardware::FR::CanZReportWithoutPrinting, true);
 
-    mSupportedModels = getModelList();
+    m_SupportedModels = getModelList();
 
     // ошибки
-    mUnprocessedErrorData.add(CShtrihOnlineFR::Commands::FS::GetFiscalTLVData,
+    m_UnprocessedErrorData.add(CShtrihOnlineFR::Commands::FS::GetFiscalTLVData,
                               CShtrihOnlineFR::Errors::NoRequiedDataInFS);
 }
 
@@ -41,7 +41,7 @@ TResult MStarTK2FR::execCommand(const QByteArray &aCommand,
                                 QByteArray *aAnswer) {
     QVariantMap configuration;
     configuration.insert(CHardware::Port::COM::WaitResult, true);
-    mIOPort->setDeviceConfiguration(configuration);
+    m_IOPort->setDeviceConfiguration(configuration);
 
     return TMStarTK2FR::execCommand(aCommand, aCommandData, aAnswer);
 }

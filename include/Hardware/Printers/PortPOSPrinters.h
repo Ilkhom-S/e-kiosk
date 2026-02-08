@@ -13,20 +13,20 @@ public:
         using namespace SDK::Driver::IOPort::COM;
 
         // параметры порта
-        this->mPortParameters.clear();
-        this->mPortParameters.insert(EParameters::BaudRate,
+        this->m_PortParameters.clear();
+        this->m_PortParameters.insert(EParameters::BaudRate,
                                      POSPrinters::TSerialDevicePortParameter()
                                          << EBaudRate::BR115200 << EBaudRate::BR19200
                                          << EBaudRate::BR57600 << EBaudRate::BR38400
                                          << EBaudRate::BR9600 << EBaudRate::BR4800);
-        this->mPortParameters.insert(EParameters::Parity,
+        this->m_PortParameters.insert(EParameters::Parity,
                                      POSPrinters::TSerialDevicePortParameter()
                                          << EParity::No << EParity::Even << EParity::Odd);
-        this->mPortParameters.insert(EParameters::ByteSize,
+        this->m_PortParameters.insert(EParameters::ByteSize,
                                      POSPrinters::TSerialDevicePortParameter() << 8);
-        this->mPortParameters.insert(
+        this->m_PortParameters.insert(
             EParameters::RTS, POSPrinters::TSerialDevicePortParameter() << ERTSControl::Toggle);
-        this->mPortParameters.insert(
+        this->m_PortParameters.insert(
             EParameters::DTR, POSPrinters::TSerialDevicePortParameter() << EDTRControl::Handshake);
     }
 };

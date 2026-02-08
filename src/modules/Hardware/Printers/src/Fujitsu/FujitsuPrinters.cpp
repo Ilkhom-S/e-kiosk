@@ -10,22 +10,22 @@ using namespace PrinterStatusCode;
 //--------------------------------------------------------------------------------
 FujitsuPrinter::FujitsuPrinter() {
     // данные устройства
-    mDeviceName = "Fujitsu FTP-609";
+    m_DeviceName = "Fujitsu FTP-609";
 
     // данные порта
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200); // default
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR115200); // default
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
 
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
     // теги
-    mTagEngine = Tags::PEngine(new CFujitsu::TagEngine());
+    m_TagEngine = Tags::PEngine(new CFujitsu::TagEngine());
 
     // кодек
-    mDecoder = CodecByName[CHardware::Codepages::Win1251];
+    m_Decoder = CodecByName[CHardware::Codepages::Win1251];
 
     // данные устройства
     setConfigParameter(CHardware::Printer::FeedingAmount, 4);
@@ -46,7 +46,7 @@ bool FujitsuPrinter::isConnected() {
 
 //----------------------------------------------------------------------------
 bool FujitsuPrinter::processCommand(const QByteArray &aCommand, QByteArray *aAnswer) {
-    if (!mIOPort->write(aCommand)) {
+    if (!m_IOPort->write(aCommand)) {
         return false;
     }
 
@@ -56,7 +56,7 @@ bool FujitsuPrinter::processCommand(const QByteArray &aCommand, QByteArray *aAns
     // TODO: переписка
     if (isNeedAnswer(aCommand)) {
         SleepHelper::msleep(5);
-        mIOPort->read(answer);
+        m_IOPort->read(answer);
 
         return !answer.isEmpty();
     }

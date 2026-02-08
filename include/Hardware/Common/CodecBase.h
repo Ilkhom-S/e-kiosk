@@ -42,7 +42,7 @@ public:
         append(aCode, SCharData(aCharacter, aMain));
     }
 
-    void add(char aCode) { append(aCode, mDefaultValue); }
+    void add(char aCode) { append(aCode, m_DefaultValue); }
 };
 
 //---------------------------------------------------------------------------
@@ -67,19 +67,19 @@ public:
 
 protected:
     /// Имя кодека.
-    QByteArray mName;
+    QByteArray m_Name;
 
     /// Id кодека >= 3000. http://www.iana.org/assignments/character-sets/character-sets.xhtml
-    int mMIB;
+    int m_MIB;
 
     /// Массив данных для перекодировки.
-    CharacterData mData;
+    CharacterData m_Data;
 
     /// Сторож данных.
-    mutable QReadWriteLock mDataGuard;
+    mutable QReadWriteLock m_DataGuard;
 
     /// Минимальное значение unicode-символа для использования кодека для перекодировки.
-    ushort mMinValueActive;
+    ushort m_MinValueActive;
 };
 
 //---------------------------------------------------------------------------

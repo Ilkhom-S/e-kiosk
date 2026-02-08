@@ -133,31 +133,31 @@ protected:
                       const CCashAcceptor::TStatusSet &aSet);
 
     /// Список номиналов.
-    SDK::Driver::TParList mParList;
+    SDK::Driver::TParList m_ParList;
 
     /// История актуальных отправленных статусов.
     typedef HistoryList<CCashAcceptor::SStatusSpecification> TStatusHistory;
-    TStatusHistory mStatusHistory;
+    TStatusHistory m_StatusHistory;
 
     /// Кэш последних статусов для бизнес-логики.
-    CCashAcceptor::TStatuses mStatuses;
+    CCashAcceptor::TStatuses m_Statuses;
 
     /// Логические ошибки работы с валютой.
-    ECurrencyError::Enum mCurrencyError;
+    ECurrencyError::Enum m_CurrencyError;
 
     /// Купюры/монеты в эскроу/стекеде.
     typedef QList<SDK::Driver::SPar> TPars;
-    TPars mEscrowPars;
+    TPars m_EscrowPars;
 
     /// Тип устройства приема денег.
-    QString mDeviceType;
+    QString m_DeviceType;
 
     /// Мьютекс для блокировки запросов к списку номиналов.
-    QMutex mParListMutex;
+    QMutex m_ParListMutex;
 
     /// Список включенных номиналов для реализаций без протоколов.
-    CBillTable mEscrowParTable;
+    CBillTable m_EscrowParTable;
 
     /// Готов ли к работе (инициализировался успешно, ошибок нет).
-    bool mReady;
+    bool m_Ready;
 };

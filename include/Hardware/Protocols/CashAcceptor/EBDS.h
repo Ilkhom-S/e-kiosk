@@ -24,7 +24,7 @@ private:
     bool check(const QByteArray &aCommandPacket, const QByteArray &aAnswerPacket);
 
     /// Отличительный признак направления посылки.
-    bool mACK;
+    bool m_ACK;
 };
 
 //--------------------------------------------------------------------------------

@@ -8,8 +8,8 @@ template class PayOnline<ShtrihOnlineFRBase<ShtrihSerialFRBase>>;
 
 //--------------------------------------------------------------------------------
 template <class T> PayOnline<T>::PayOnline() {
-    mDeviceName = CShtrihFR::Models::CData()[CShtrihFR::Models::ID::PayOnline01FA].name;
-    mSupportedModels = QStringList() << mDeviceName;
+    m_DeviceName = CShtrihFR::Models::CData()[CShtrihFR::Models::ID::PayOnline01FA].name;
+    m_SupportedModels = QStringList() << m_DeviceName;
 
     setConfigParameter(CHardware::Printer::PresenterEnable, true);
     setConfigParameter(CHardware::Printer::RetractorEnable, true);
@@ -30,7 +30,7 @@ template <class T> void PayOnline<T>::setDeviceConfiguration(const QVariantMap &
             uchar printerModelId = it.key();
 
             if ((it->name == printerModel) && (printerModelId != CPayPrinters::Virtual)) {
-                mPPTaskList.append([&]() { mNotPrintingError = !setNotPrintDocument(false); });
+                m_PPTaskList.append([&]() { m_NotPrintingError = !setNotPrintDocument(false); });
             }
         }
     }
@@ -47,14 +47,14 @@ template <class T> void PayOnline<T>::processDeviceData() {
 
         if (!CPayPrinters::Models.data().contains(printerModelId)) {
             toLog(LogLevel::Error,
-                  QString("%1: Unknown printer model Id %2").arg(mDeviceName).arg(printerModelId));
+                  QString("%1: Unknown printer model Id %2").arg(m_DeviceName).arg(printerModelId));
         } else {
             QString printerModel = CPayPrinters::Models[printerModelId].name;
             QString configModel = getConfigParameter(CHardware::FR::PrinterModel).toString();
 
             if ((configModel.isEmpty() || (configModel == CPayPrinters::Default)) &&
                 (printerModel != configModel)) {
-                mPrinterModelId = printerModelId;
+                m_PrinterModelId = printerModelId;
                 setConfigParameter(CHardware::FR::PrinterModel, printerModel);
 
                 emit configurationChanged();
@@ -76,7 +76,7 @@ template <class T> bool PayOnline<T>::setNotPrintDocument(bool aEnabled, bool /*
         [&](const CPayPrinters::SModelData &aData) -> bool { return aData.name == printerModel; });
 
     if (it == CPayPrinters::Models.data().end()) {
-        toLog(LogLevel::Error, mDeviceName + ": No printer model " + printerModel);
+        toLog(LogLevel::Error, m_DeviceName + ": No printer model " + printerModel);
     }
 
     uchar printerModelId = it.key();
@@ -90,7 +90,7 @@ template <class T> bool PayOnline<T>::setNotPrintDocument(bool aEnabled, bool /*
     }
 
     if (result) {
-        mPrinterModelId = printerModelId;
+        m_PrinterModelId = printerModelId;
     }
 
     return result;

@@ -9,17 +9,17 @@ template class Paymaster<Atol3OnlineFRBase>;
 
 //--------------------------------------------------------------------------------
 template <class T> Paymaster<T>::Paymaster() {
-    mDeviceName = CAtolFR::Models::Paymaster;
-    mSupportedModels = QStringList() << mDeviceName;
-    mFRBuildUnifiedTaxes = 4799;
+    m_DeviceName = CAtolFR::Models::Paymaster;
+    m_SupportedModels = QStringList() << m_DeviceName;
+    m_FRBuildUnifiedTaxes = 4799;
 
     setConfigParameter(CHardwareSDK::FR::CanWithoutPrinting, true);
 
     using namespace SDK::Driver::IOPort::COM;
 
     // данные порта
-    mPortParameters[EParameters::BaudRate].clear();
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200);
+    m_PortParameters[EParameters::BaudRate].clear();
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR115200);
 }
 
 //--------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ template <class T> void Paymaster<T>::setDeviceConfiguration(const QVariantMap &
 
     if (aConfiguration.contains(CHardware::FR::PrinterModel) &&
         (printerModel != CAtolOnlinePrinters::Default) && !isNotPrinting()) {
-        mPPTaskList.append([&]() { mNotPrintingError = !setNotPrintDocument(false); });
+        m_PPTaskList.append([&]() { m_NotPrintingError = !setNotPrintDocument(false); });
     }
 }
 
@@ -41,7 +41,7 @@ template <class T> char Paymaster<T>::getPrinterId() {
     char result = CAtolOnlinePrinters::Models.data().key(printerModel, 0);
 
     if (!result) {
-        toLog(LogLevel::Error, mDeviceName + ": Unknown printer model " + printerModel);
+        toLog(LogLevel::Error, m_DeviceName + ": Unknown printer model " + printerModel);
     }
 
     return result;
@@ -51,8 +51,8 @@ template <class T> char Paymaster<T>::getPrinterId() {
 template <class T> bool Paymaster<T>::updateParameters() {
     bool result = AtolVKP80BasedFR<T>::updateParameters();
 
-    if (mFRBuild) {
-        mOldFirmware = mFRBuild < CPaymaster::MinFRBuild;
+    if (m_FRBuild) {
+        m_OldFirmware = m_FRBuild < CPaymaster::MinFRBuild;
     }
 
     if (!result) {
@@ -63,11 +63,11 @@ template <class T> bool Paymaster<T>::updateParameters() {
 
 #define SET_LCONFIG_FISCAL_FIELD(aName)                                                            \
     if (getTLV(CFR::FiscalFields::aName, data)) {                                                  \
-        mFFEngine.setConfigParameter(CFiscalSDK::aName, mCodec->toUnicode(data));                  \
-        QString value = mFFEngine.getConfigParameter(CFiscalSDK::aName, data).toString();          \
+        m_FFEngine.setConfigParameter(CFiscalSDK::aName, m_Codec->toUnicode(data));                  \
+        QString value = m_FFEngine.getConfigParameter(CFiscalSDK::aName, data).toString();          \
         toLog(LogLevel::Normal,                                                                    \
-              mDeviceName + QString(": Add %1 = \"%2\" to config data")                            \
-                                .arg(mFFData.getTextLog(CFR::FiscalFields::aName))                 \
+              m_DeviceName + QString(": Add %1 = \"%2\" to config data")                            \
+                                .arg(m_FFData.getTextLog(CFR::FiscalFields::aName))                 \
                                 .arg(value));                                                      \
     }
 
@@ -84,7 +84,7 @@ template <class T> bool Paymaster<T>::updateParameters() {
                 toLog(
                     LogLevel::Warning,
                     QString("%1: The automatic number in FR = %2 is different from AP number = %3")
-                        .arg(mDeviceName)
+                        .arg(m_DeviceName)
                         .arg(data.data())
                         .arg(automaticNumber));
 
@@ -102,13 +102,13 @@ template <class T> void Paymaster<T>::processDeviceData() {
     AtolVKP80BasedFR<T>::processDeviceData();
 
     QByteArray data;
-    char mode = mMode;
+    char mode = m_Mode;
 
     if (enterInnerMode(CAtolFR::InnerModes::Programming) &&
         getFRParameter(CAtolOnlineFR::FRParameters::PrinterModel, data) && !data.isEmpty()) {
         if (!CAtolOnlinePrinters::Models.data().contains(data[0])) {
             toLog(LogLevel::Error,
-                  QString("%1: Unknown printer model Id %2").arg(mDeviceName).arg(uchar(data[0])));
+                  QString("%1: Unknown printer model Id %2").arg(m_DeviceName).arg(uchar(data[0])));
         } else {
             QString printerModel = CAtolOnlinePrinters::Models[data[0]];
             QString configModel = getConfigParameter(CHardware::FR::PrinterModel).toString();
@@ -127,7 +127,7 @@ template <class T> void Paymaster<T>::processDeviceData() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool Paymaster<T>::enterExtendedMode() {
-    char mode = mMode;
+    char mode = m_Mode;
 
     if (!enterInnerMode(CAtolFR::InnerModes::Programming)) {
         return false;
@@ -137,7 +137,7 @@ template <class T> bool Paymaster<T>::enterExtendedMode() {
                         CAtolOnlineFR::AutoZReportTimingEnable)) {
         enterInnerMode(mode);
 
-        toLog(LogLevel::Error, mDeviceName + ": Failed to enable auto Z-report timing");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to enable auto Z-report timing");
         return false;
     }
 
@@ -150,7 +150,7 @@ template <class T> bool Paymaster<T>::enterExtendedMode() {
                                 CAtolOnlineFR::ZReportInBuffer);
 
         if (!result) {
-            toLog(LogLevel::Error, mDeviceName + "Failed to enter to Z-report mode");
+            toLog(LogLevel::Error, m_DeviceName + "Failed to enter to Z-report mode");
         } else {
             result = reboot();
         }
@@ -167,11 +167,11 @@ template <class T> bool Paymaster<T>::setNotPrintDocument(bool aEnabled, bool /*
 
     if (!printingValue) {
         toLog(LogLevel::Error,
-              mDeviceName + ": Failed to set printer model due to printer model Id is invalid");
+              m_DeviceName + ": Failed to set printer model due to printer model Id is invalid");
         return false;
     }
 
-    char mode = mMode;
+    char mode = m_Mode;
 
     if (!enterInnerMode(CAtolFR::InnerModes::Programming)) {
         return false;
@@ -198,7 +198,7 @@ template <class T> bool Paymaster<T>::printDeferredZReports() {
     }
 
     if (!processCommand(CAtolOnlineFR::Commands::ClearZBuffer)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to clear Z-buffer");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to clear Z-buffer");
     }
 
     return true;
@@ -217,10 +217,10 @@ template <class T> bool Paymaster<T>::performZReport(bool /*aPrintDeferredReport
     // функционал запроса свободного места в Z-буфере checkZBufferState();
 
     if (result) {
-        mZBufferOverflow = false;
+        m_ZBufferOverflow = false;
 
         if (printDeferredZReportSuccess) {
-            mZBufferFull = false;
+            m_ZBufferFull = false;
         }
     }
 

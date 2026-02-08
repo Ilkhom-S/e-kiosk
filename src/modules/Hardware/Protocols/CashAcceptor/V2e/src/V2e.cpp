@@ -133,7 +133,7 @@ TResult V2eProtocol::handleError(const QByteArray &aRequest, QByteArray &aAnswer
 
         toLog(LogLevel::Normal, QString("V2.2E: >> {%1}").arg(request.toHex().data()));
 
-        if (!mPort->write(aRequest) || !getAnswer(aAnswer)) {
+        if (!m_Port->write(aRequest) || !getAnswer(aAnswer)) {
             return CommandResult::Port;
         }
 
@@ -166,7 +166,7 @@ bool V2eProtocol::getAnswer(QByteArray &aAnswer) {
     do {
         data.clear();
 
-        if (!mPort->read(data, 10)) {
+        if (!m_Port->read(data, 10)) {
             return false;
         }
 

@@ -39,20 +39,20 @@ enum Enum {
 
 //--------------------------------------------------------------------------------
 Shtrih::Shtrih()
-    : mPowerControlLogicEnable(false), mAdvancedPowerLogicEnable(false), mMessageNumber(0) {
+    : m_PowerControlLogicEnable(false), m_AdvancedPowerLogicEnable(false), m_MessageNumber(0) {
     // Параметры порта.
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600); // default
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR4800);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600); // default
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR115200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR4800);
 
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
     // параметры алиаса девайса
-    mDeviceName = "Shtrih";
-    mPingTimer.setInterval(50 * 1000); // Посылаем сигналы устройству каждые 50 секунд.
+    m_DeviceName = "Shtrih";
+    m_PingTimer.setInterval(50 * 1000); // Посылаем сигналы устройству каждые 50 секунд.
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -68,8 +68,8 @@ bool Shtrih::isConnected() {
 
 #define MAKE_DEVICE_NAME_SHTRIH3(aType)                                                            \
     QString aType##LogData;                                                                        \
-    if (mDeviceData[CShtrih::Devices::Type::aType].address == CShtrih::Constants::NoAddress)       \
-        aType##LogData = mDeviceData[CShtrih::Devices::Type::aType].name;
+    if (m_DeviceData[CShtrih::Devices::Type::aType].address == CShtrih::Constants::NoAddress)       \
+        aType##LogData = m_DeviceData[CShtrih::Devices::Type::aType].name;
 
     MAKE_DEVICE_NAME_SHTRIH3(CrossDevice);
     MAKE_DEVICE_NAME_SHTRIH3(PowerInterrupter);
@@ -93,10 +93,10 @@ bool Shtrih::isConnected() {
 
     setDeviceDataByType(CShtrih::Devices::Type::CrossDevice);
     setDeviceDataByType(CShtrih::Devices::Type::PowerInterrupter);
-    setDeviceParameter(CDeviceData::Watchdogs::PowerControlLogic, mPowerControlLogicEnable);
-    setDeviceParameter(CDeviceData::Watchdogs::AdvancedPowerLogic, mAdvancedPowerLogicEnable);
+    setDeviceParameter(CDeviceData::Watchdogs::PowerControlLogic, m_PowerControlLogicEnable);
+    setDeviceParameter(CDeviceData::Watchdogs::AdvancedPowerLogic, m_AdvancedPowerLogicEnable);
 
-    mVerified = false;
+    m_Verified = false;
 
     return true;
 }
@@ -134,7 +134,7 @@ bool Shtrih::getCommandPacket(int aCommand,
                               const QByteArray &aCommandData) {
     switch (aCommand) {
     case EShtrihCommands::Identification: {
-        // aCommandPacket.append(mDeviceData[CShtrih::Devices::Type::General].address);
+        // aCommandPacket.append(m_DeviceData[CShtrih::Devices::Type::General].address);
         aCommandPacket.append(aCommandData);
         aCommandPacket.append(CShtrih::Commands::General::Identification);
 
@@ -142,7 +142,7 @@ bool Shtrih::getCommandPacket(int aCommand,
     }
     //-------------------------------------------------------
     case EShtrihCommands::RebootPC: {
-        aCommandPacket.append(mDeviceData[CShtrih::Devices::Type::CrossDevice].address);
+        aCommandPacket.append(m_DeviceData[CShtrih::Devices::Type::CrossDevice].address);
         aCommandPacket.append(CShtrih::Commands::CrossDevice::PowerControl);
         aCommandPacket.append(CShtrih::Constants::SmartRebootPC);
 
@@ -150,7 +150,7 @@ bool Shtrih::getCommandPacket(int aCommand,
     }
     //-------------------------------------------------------
     case EShtrihCommands::ResetModem: {
-        aCommandPacket.append(mDeviceData[CShtrih::Devices::Type::PowerInterrupter].address);
+        aCommandPacket.append(m_DeviceData[CShtrih::Devices::Type::PowerInterrupter].address);
         aCommandPacket.append(CShtrih::Commands::PowerInterrupter::PulseRelay);
         char relayNumber = 1 << CShtrih::Constants::ModemRelay;
         aCommandPacket.append(relayNumber);
@@ -163,7 +163,7 @@ bool Shtrih::getCommandPacket(int aCommand,
     }
     //-------------------------------------------------------
     case EShtrihCommands::Poll: {
-        aCommandPacket.append(mDeviceData[CShtrih::Devices::Type::CrossDevice].address);
+        aCommandPacket.append(m_DeviceData[CShtrih::Devices::Type::CrossDevice].address);
         aCommandPacket.append(CShtrih::Commands::CrossDevice::PollExtended);
 
         break;
@@ -183,7 +183,7 @@ void Shtrih::packedData(const QByteArray &aCommandPacket, QByteArray &aPacket) {
     Q_ASSERT(!aCommandPacket.isEmpty());
 
     aPacket.append(CShtrih::Constants::Prefix); // префикс
-    aPacket.append(mMessageNumber++);           // номер сообщения
+    aPacket.append(m_MessageNumber++);           // номер сообщения
     aPacket.append(aCommandPacket);             // пакет команды = адрес + команда + данные команды
     aPacket.insert(3, uchar(aPacket.size() - 3)); // длина пакета
     aPacket.append(calcCRC(aPacket));             // CRC
@@ -331,7 +331,7 @@ bool Shtrih::parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer,
                                    .toDouble();
                 QDate date = QDate(answer[12], answer[11], answer[10]);
 
-                mDeviceData[deviceType].setData(name,
+                m_DeviceData[deviceType].setData(name,
                                                 answer[0],
                                                 answer.mid(13, 8).toHex().toULongLong(0, 16),
                                                 CShtrih::Devices::SSoftInfo(version, build, date));
@@ -343,9 +343,9 @@ bool Shtrih::parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer,
                 ushort flags = answer[4];
                 aUnpackedData->door = bool(flags & (1 << CShtrih::Position::Sensors::Door));
                 aUnpackedData->power = bool(flags & (1 << CShtrih::Position::Sensors::Power));
-                mPowerControlLogicEnable =
+                m_PowerControlLogicEnable =
                     bool(flags & (1 << CShtrih::Position::Sensors::PowerControlLogic));
-                mAdvancedPowerLogicEnable =
+                m_AdvancedPowerLogicEnable =
                     bool(flags & (1 << CShtrih::Position::Sensors::AdvancedPowerLogic));
 
                 break;
@@ -416,7 +416,7 @@ bool Shtrih::localProcessCommand(int aCommand,
 
 //--------------------------------------------------------------------------------
 bool Shtrih::performCommand(const QByteArray &aPacket, QByteArray &aAnswer) {
-    if (!mIOPort->write(aPacket)) {
+    if (!m_IOPort->write(aPacket)) {
         return false;
     }
 
@@ -428,7 +428,7 @@ bool Shtrih::performCommand(const QByteArray &aPacket, QByteArray &aAnswer) {
         localAnswer.clear();
 
         // TODO: учесть таймауты между ответами устройств
-        if (!mIOPort->read(localAnswer)) {
+        if (!m_IOPort->read(localAnswer)) {
             return false;
         }
 
@@ -446,7 +446,7 @@ bool Shtrih::performCommand(const QByteArray &aPacket, QByteArray &aAnswer) {
 bool Shtrih::isBroadcastCommand(const QByteArray &aPacket) const {
     return (aPacket.size() > CShtrih::Position::Bytes::Address) &&
            (aPacket[CShtrih::Position::Bytes::Address] ==
-            mDeviceData[CShtrih::Devices::Type::General].address);
+            m_DeviceData[CShtrih::Devices::Type::General].address);
 }
 
 //---------------------------------------------------------------------------
@@ -454,7 +454,7 @@ bool Shtrih::isDeviceAddressExist(const QByteArray &aPacket) const {
     uchar address = aPacket[CShtrih::Position::Bytes::Address];
 
     if (address != CShtrih::Constants::NoAddress) {
-        foreach (const CShtrih::Devices::SData &data, mDeviceData.devicesData.values()) {
+        foreach (const CShtrih::Devices::SData &data, m_DeviceData.devicesData.values()) {
             if (address == data.address) {
                 return true;
             }
@@ -466,7 +466,7 @@ bool Shtrih::isDeviceAddressExist(const QByteArray &aPacket) const {
 
 //---------------------------------------------------------------------------
 bool Shtrih::processCommand(int aCommandID) {
-    MutexLocker lock(&mWaitMutex);
+    MutexLocker lock(&m_WaitMutex);
 
     EShtrihCommands::Enum command = static_cast<EShtrihCommands::Enum>(aCommandID);
 
@@ -477,11 +477,11 @@ bool Shtrih::processCommand(int aCommandID) {
         bool resultCrossUSB = localProcessCommand(
             command,
             unpackedData,
-            QByteArray(1, mDeviceData[CShtrih::Devices::Type::CrossDevice].address));
+            QByteArray(1, m_DeviceData[CShtrih::Devices::Type::CrossDevice].address));
         bool resultPowerInterrupter = localProcessCommand(
             command,
             unpackedData,
-            QByteArray(1, mDeviceData[CShtrih::Devices::Type::PowerInterrupter].address));
+            QByteArray(1, m_DeviceData[CShtrih::Devices::Type::PowerInterrupter].address));
         result = resultCrossUSB && resultPowerInterrupter;
     } else {
         result = localProcessCommand(command, unpackedData);
@@ -502,14 +502,14 @@ bool Shtrih::processCommand(int aCommandID) {
 
 //---------------------------------------------------------------------------
 void Shtrih::setDeviceDataByType(CShtrih::Devices::Type::Enum aType) {
-    QString key = mDeviceData[aType].name;
+    QString key = m_DeviceData[aType].name;
 
     QString addressLog =
-        QString("0x%1").arg(uchar(mDeviceData[aType].address), 2, 16, QChar(ASCII::Zero)).toUpper();
+        QString("0x%1").arg(uchar(m_DeviceData[aType].address), 2, 16, QChar(ASCII::Zero)).toUpper();
     setDeviceParameter(CDeviceData::Address, addressLog, key, true);
-    setDeviceParameter(CDeviceData::SerialNumber, mDeviceData[aType].serial, key);
+    setDeviceParameter(CDeviceData::SerialNumber, m_DeviceData[aType].serial, key);
 
-    CShtrih::Devices::SSoftInfo &softInfo = mDeviceData[aType].softInfo;
+    CShtrih::Devices::SSoftInfo &softInfo = m_DeviceData[aType].softInfo;
 
     if (softInfo.build && softInfo.version) {
         QString version = QString("%1").arg(softInfo.version, 5, 'f', 2);

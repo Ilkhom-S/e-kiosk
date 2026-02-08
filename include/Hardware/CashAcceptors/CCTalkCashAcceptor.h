@@ -54,7 +54,7 @@ protected:
     bool route(bool aDirection);
 
     /// Коэффициенты для вычисления номиналов. Зависят от кода валюты.
-    QMap<QByteArray, double> mScalingFactors;
+    QMap<QByteArray, double> m_ScalingFactors;
 
     /// Виртуальный статус движения купюры после эскроу.
     struct SRouting {
@@ -64,7 +64,7 @@ protected:
         SRouting() : direction(false), active(false) {}
     };
 
-    SRouting mVirtualRouting;
+    SRouting m_VirtualRouting;
 };
 
 //--------------------------------------------------------------------------------

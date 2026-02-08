@@ -8,10 +8,10 @@
 class PortDispenser : public TSerialDispenser {
 public:
     PortDispenser() {
-        mIOMessageLogging = ELoggingType::None;
-        mMaxBadAnswers = 2;
-        mPollingInterval = CDispensers::IdlingPollingInterval;
-        mForceNotWaitFirst = true;
+        m_IOMessageLogging = ELoggingType::None;
+        m_MaxBadAnswers = 2;
+        m_PollingInterval = CDispensers::IdlingPollingInterval;
+        m_ForceNotWaitFirst = true;
     }
 };
 

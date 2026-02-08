@@ -16,11 +16,11 @@ using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
 ATGSMModem::ATGSMModem() {
-    mGsmDialect = AT::EModemDialect::DefaultAtGsm;
-    mStatusCodesSpecification =
+    m_GsmDialect = AT::EModemDialect::DefaultAtGsm;
+    m_StatusCodesSpecification =
         DeviceStatusCode::PSpecifications(new ModemStatusCode::CSpecifications());
 
-    mDeviceName = CATGSMModem::DefaultName;
+    m_DeviceName = CATGSMModem::DefaultName;
 }
 
 //--------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ bool ATGSMModem::getOperator(QString &aOperator) {
         result = true;
     }
 
-    mIOPort->close();
+    m_IOPort->close();
 
     return result;
 }
@@ -63,45 +63,45 @@ void ATGSMModem::setDeviceConfiguration(const QVariantMap &aConfiguration) {
 void ATGSMModem::setDeviceName(const QByteArray &aFullName) {
     ATModemBase::setDeviceName(aFullName);
 
-    if (mDeviceName.contains("Cinterion", Qt::CaseInsensitive) ||
-        mDeviceName.contains("SIEMENS", Qt::CaseInsensitive)) {
-        mGsmDialect = AT::EModemDialect::Siemens;
-    } else if (mDeviceName.contains("SIMCOM", Qt::CaseInsensitive)) {
-        mGsmDialect = AT::EModemDialect::SimCom;
+    if (m_DeviceName.contains("Cinterion", Qt::CaseInsensitive) ||
+        m_DeviceName.contains("SIEMENS", Qt::CaseInsensitive)) {
+        m_GsmDialect = AT::EModemDialect::Siemens;
+    } else if (m_DeviceName.contains("SIMCOM", Qt::CaseInsensitive)) {
+        m_GsmDialect = AT::EModemDialect::SimCom;
 
         QRegularExpression revisionRegex("(\\s*Revision.*)");
-        mDeviceName.remove(revisionRegex);
-        mModemConfigTimeout = CATGSMModem::Timeouts::SimCom::Config;
-    } else if (mDeviceName.contains("huawei", Qt::CaseInsensitive)) {
-        mGsmDialect = AT::EModemDialect::Huawei;
+        m_DeviceName.remove(revisionRegex);
+        m_ModemConfigTimeout = CATGSMModem::Timeouts::SimCom::Config;
+    } else if (m_DeviceName.contains("huawei", Qt::CaseInsensitive)) {
+        m_GsmDialect = AT::EModemDialect::Huawei;
 
         QString value;
 
         if (parseFieldInternal(aFullName, "Manufacturer", value)) {
-            mDeviceName = value;
+            m_DeviceName = value;
         }
 
         if (parseFieldInternal(aFullName, "Model", value)) {
-            mDeviceName += " " + value;
+            m_DeviceName += " " + value;
         }
-    } else if (mDeviceName.contains(
+    } else if (m_DeviceName.contains(
                    QRegularExpression("MF\\d{3}", QRegularExpression::CaseInsensitiveOption)) ||
-               mDeviceName.contains("ZTE", Qt::CaseInsensitive)) {
-        mGsmDialect = AT::EModemDialect::ZTE;
+               m_DeviceName.contains("ZTE", Qt::CaseInsensitive)) {
+        m_GsmDialect = AT::EModemDialect::ZTE;
 
         QString value;
 
         if (parseFieldInternal(aFullName, "Manufacturer", value)) {
-            mDeviceName = value;
+            m_DeviceName = value;
 
             if (parseFieldInternal(aFullName, "Model", value)) {
-                mDeviceName += " " + value;
+                m_DeviceName += " " + value;
             }
         } else {
             QRegularExpression zteRegex("MF\\d{3}", QRegularExpression::CaseInsensitiveOption);
-            QRegularExpressionMatch match = zteRegex.match(mDeviceName);
+            QRegularExpressionMatch match = zteRegex.match(m_DeviceName);
             if (match.hasMatch()) {
-                mDeviceName = "ZTE " + mDeviceName.mid(match.capturedStart(), 5);
+                m_DeviceName = "ZTE " + m_DeviceName.mid(match.capturedStart(), 5);
             }
         }
     }
@@ -129,7 +129,7 @@ bool ATGSMModem::getInfo(QString &aInfo) {
         setDeviceParameter(CDeviceData::Revision, data);
     }
 
-    switch (mGsmDialect) {
+    switch (m_GsmDialect) {
     case AT::EModemDialect::Siemens: {
         getSIMData(AT::Commands::Siemens::SIMID);
 
@@ -163,7 +163,7 @@ bool ATGSMModem::getInfo(QString &aInfo) {
         break;
     }
 
-    mIOPort->close();
+    m_IOPort->close();
 
     aInfo.clear();
 
@@ -379,7 +379,7 @@ bool ATGSMModem::getSignalQuality(int &aQuality) {
             QStringLiteral("Signal quality (rssi, ber):(%1, %2).").arg(aQuality).arg(bitErrorRate));
     }
 
-    mIOPort->close();
+    m_IOPort->close();
 
     return result;
 }
@@ -395,7 +395,7 @@ bool ATGSMModem::reset() {
     // Сбрасываем модем.
     toLog(LogLevel::Normal, "Resetting modem to factory defaults...");
 
-    switch (mGsmDialect) {
+    switch (m_GsmDialect) {
     case AT::EModemDialect::Siemens: {
         toLog(LogLevel::Normal, "Restart Siemens modem...");
         processCommand(AT::Commands::Siemens::Restart);
@@ -423,7 +423,7 @@ bool ATGSMModem::reset() {
 
     // Проверяем, откликается ли модем
     if (!checkAT(CATGSMModem::Timeouts::ResetConnection)) {
-        mIOPort->close();
+        m_IOPort->close();
         return false;
     }
 
@@ -439,7 +439,7 @@ bool ATGSMModem::reset() {
 
     onPoll();
 
-    mIOPort->close();
+    m_IOPort->close();
 
     return result;
 }
@@ -474,7 +474,7 @@ bool ATGSMModem::getStatus(TStatusCodes &aStatuses) {
     }
 
     // Закрываем порт. TODO: найти более подходящее место для этого.
-    mIOPort->close();
+    m_IOPort->close();
 
     return true;
 }
@@ -536,7 +536,7 @@ bool ATGSMModem::waitNetworkAccessability(int aTimeout) {
 bool ATGSMModem::getCUSDMessage(const QByteArray &aBuffer, QString &aMessage) {
     QString str;
 
-    if (mGsmDialect == AT::EModemDialect::SimCom) {
+    if (m_GsmDialect == AT::EModemDialect::SimCom) {
         str.reserve(aBuffer.size());
         for (char character : aBuffer) {
             if (character != '\0') {
@@ -601,7 +601,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
     command.append(AT::Commands::CUSD);
     command.append(",\"");
 
-    switch (mGsmDialect) {
+    switch (m_GsmDialect) {
     case AT::EModemDialect::Huawei: {
         // В Qt 6 toHex() возвращает QByteArray, что эффективно
         command.append(SmsPduEncoder::encode(aMessage.toLatin1()).toHex());
@@ -626,8 +626,8 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
 
     if (!processCommand(command, answer, commandTimeout)) {
         // В Qt 6/5.15 используем QByteArray::contains() напрямую
-        if ((mGsmDialect != AT::EModemDialect::ZTE) || !answer.contains("Unexpected Data Value")) {
-            mIOPort->close();
+        if ((m_GsmDialect != AT::EModemDialect::ZTE) || !answer.contains("Unexpected Data Value")) {
+            m_IOPort->close();
             return false;
         }
 
@@ -636,7 +636,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
         toLog(LogLevel::Normal, QStringLiteral("Retry send USSD for ZTE modems"));
 
         if (!processCommand(command, answer, commandTimeout)) {
-            mIOPort->close();
+            m_IOPort->close();
             return false;
         }
     }
@@ -649,7 +649,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
         QByteArray data;
 
         // Несколько попыток прочитать данные из порта
-        for (int i = 0; i < 4 && mIOPort->read(data); ++i) {
+        for (int i = 0; i < 4 && m_IOPort->read(data); ++i) {
             answer.append(data);
 
             toLog(LogLevel::Normal,
@@ -658,7 +658,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
             // Вызываем обновленный нами ранее метод на базе QRegularExpression
             if (getCUSDMessage(answer, aAnswer)) {
                 toLog(LogLevel::Normal, QStringLiteral("USSD answer: %1").arg(aAnswer));
-                mIOPort->close();
+                m_IOPort->close();
                 return true;
             }
 
@@ -666,7 +666,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
             if (answer.indexOf("ERROR") != -1) {
                 toLog(LogLevel::Warning,
                       QStringLiteral("USSD request failed: %1").arg(QString::fromLatin1(answer)));
-                mIOPort->close();
+                m_IOPort->close();
                 return false;
             }
 
@@ -674,7 +674,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
         }
     }
 
-    mIOPort->close();
+    m_IOPort->close();
     return false;
 }
 
@@ -699,15 +699,15 @@ bool ATGSMModem::sendMessage(const QString &aPhone, const QString &aMessage) {
     if (answer.indexOf(">") > -1) {
         command = aMessage.toLatin1() + AT::Commands::StrgZ;
 
-        if (mIOPort->write(command)) {
+        if (m_IOPort->write(command)) {
             // Ожидаем прихода уведомления об отправке сообщения.
             SleepHelper::msleep(CATGSMModem::Pauses::Message);
 
-            result = mIOPort->read(answer) && (answer.indexOf("OK") > -1);
+            result = m_IOPort->read(answer) && (answer.indexOf("OK") > -1);
         }
     }
 
-    mIOPort->close();
+    m_IOPort->close();
 
     return result;
 }

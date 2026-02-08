@@ -12,18 +12,18 @@
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-QRecursiveMutex LibUSBPort::mDevicesPropertyMutex;
+QRecursiveMutex LibUSBPort::m_DevicesPropertyMutex;
 
 //--------------------------------------------------------------------------------
-LibUSBPort::LibUSBPort() : mHandle(nullptr), mExist(false), mDevice(nullptr) {
-    mType = SDK::Driver::EPortTypes::USB;
-    mInitializationError = true;
+LibUSBPort::LibUSBPort() : m_Handle(nullptr), m_Exist(false), m_Device(nullptr) {
+    m_Type = SDK::Driver::EPortTypes::USB;
+    m_InitializationError = true;
 }
 
 //--------------------------------------------------------------------------------
 void LibUSBPort::setDevice(libusb_device *aDevice) {
-    mDevice = aDevice;
-    mDeviceProperties = getDevicesProperties(false)[aDevice];
+    m_Device = aDevice;
+    m_DeviceProperties = getDevicesProperties(false)[aDevice];
 
     auto getEPLogData = [&](const CLibUSB::SEndPoint &aEP) -> QString {
         return QString("max packet size = %1, data = %2, transfer type = %3")
@@ -32,20 +32,20 @@ void LibUSBPort::setDevice(libusb_device *aDevice) {
             .arg(CLibUSBUtils::TransferTypeDescriptions[uint8_t(aEP.transferType)]);
     };
 
-    if (!mDeviceProperties.valid()) {
+    if (!m_DeviceProperties.valid()) {
         toLog(LogLevel::Error,
               QString("Port properties are wrong: VID = %1, PID = %2,\ndeviceToHost = "
                       "%3,\nhostToDevice = %4")
-                  .arg(toHexLog(mDeviceProperties.VID))
-                  .arg(toHexLog(mDeviceProperties.PID))
-                  .arg(getEPLogData(mDeviceProperties.deviceToHost))
-                  .arg(getEPLogData(mDeviceProperties.hostToDevice)));
+                  .arg(toHexLog(m_DeviceProperties.VID))
+                  .arg(toHexLog(m_DeviceProperties.PID))
+                  .arg(getEPLogData(m_DeviceProperties.deviceToHost))
+                  .arg(getEPLogData(m_DeviceProperties.hostToDevice)));
     }
 }
 
 //--------------------------------------------------------------------------------
 libusb_device *LibUSBPort::getDevice() const {
-    return mDevice;
+    return m_Device;
 }
 
 //--------------------------------------------------------------------------------
@@ -67,9 +67,9 @@ void LibUSBPort::initialize() {
         setDeviceParameter(CHardwareSDK::LibraryVersion, data);
     }
 
-    mInitializationError = !LibUSBUtils::getContext(mLog);
+    m_InitializationError = !LibUSBUtils::getContext(m_Log);
 
-    if (mInitializationError) {
+    if (m_InitializationError) {
         return;
     }
 
@@ -79,7 +79,7 @@ void LibUSBPort::initialize() {
     QStringList otherData;
 
     for (auto it = libUSBProperties.begin(); it != libUSBProperties.end(); ++it) {
-        QStringList &data = (it.key() == mDevice) ? mineData : otherData;
+        QStringList &data = (it.key() == m_Device) ? mineData : otherData;
         data << LibUSBUtils::getPropertyLog(it->deviceData);
     }
 
@@ -91,7 +91,7 @@ bool LibUSBPort::release() {
     bool closingResult = close();
 
     LibUSBUtils::releaseDeviceList();
-    LibUSBUtils::releaseContext(mLog);
+    LibUSBUtils::releaseContext(m_Log);
 
     bool result = MetaDevice::release();
 
@@ -100,26 +100,26 @@ bool LibUSBPort::release() {
 
 //--------------------------------------------------------------------------------
 bool LibUSBPort::opened() {
-    return mHandle;
+    return m_Handle;
 }
 
 //--------------------------------------------------------------------------------
 bool LibUSBPort::open() {
-    if (mHandle) {
+    if (m_Handle) {
         return true;
     }
 
-    if (mInitializationError || !mDevice) {
+    if (m_InitializationError || !m_Device) {
         return false;
     }
 
     setConfigParameter(CHardware::Port::JustConnected, false);
 
-    if (!LIB_USB_CALL_LOG(mLog, libusb_open, mDevice, &mHandle)) {
+    if (!LIB_USB_CALL_LOG(m_Log, libusb_open, m_Device, &m_Handle)) {
         return false;
     }
 
-    CLibUSB::SDeviceProperties deviceProperties = getDevicesProperties(false)[mDevice];
+    CLibUSB::SDeviceProperties deviceProperties = getDevicesProperties(false)[m_Device];
     QVariantMap &deviceData = deviceProperties.deviceData;
 
     auto getData = [&deviceData](const QString &aKey) -> QString {
@@ -140,17 +140,17 @@ bool LibUSBPort::open() {
 
     int existingConfiguration = -1;
 
-    if (!LIB_USB_CALL(libusb_get_configuration, mHandle, &existingConfiguration)) {
+    if (!LIB_USB_CALL(libusb_get_configuration, m_Handle, &existingConfiguration)) {
         return false;
     }
 
-    if ((existingConfiguration != 1) && !LIB_USB_CALL(libusb_set_configuration, mHandle, 1)) {
+    if ((existingConfiguration != 1) && !LIB_USB_CALL(libusb_set_configuration, m_Handle, 1)) {
         return false;
     }
 
-    LIB_USB_CALL(libusb_set_auto_detach_kernel_driver, mHandle, 1);
+    LIB_USB_CALL(libusb_set_auto_detach_kernel_driver, m_Handle, 1);
 
-    if (!LIB_USB_CALL(libusb_claim_interface, mHandle, 0)) {
+    if (!LIB_USB_CALL(libusb_claim_interface, m_Handle, 0)) {
         return false;
     }
 
@@ -160,19 +160,19 @@ bool LibUSBPort::open() {
 //--------------------------------------------------------------------------------
 bool LibUSBPort::close() {
     bool result = true;
-    bool beenOpened = mHandle;
+    bool beenOpened = m_Handle;
 
-    if (!mInitializationError && mHandle) {
-        result = LIB_USB_CALL(libusb_release_interface, mHandle, 0);
-        libusb_close(mHandle);
+    if (!m_InitializationError && m_Handle) {
+        result = LIB_USB_CALL(libusb_release_interface, m_Handle, 0);
+        libusb_close(m_Handle);
     }
 
     if (result && beenOpened) {
         toLog(LogLevel::Normal,
-              QString("Port %1 is closed.").arg(getDevicesProperties(false)[mDevice].portData));
+              QString("Port %1 is closed.").arg(getDevicesProperties(false)[m_Device].portData));
     }
 
-    mHandle = nullptr;
+    m_Handle = nullptr;
 
     return result;
 }
@@ -183,10 +183,10 @@ bool LibUSBPort::checkExistence() {
         return true;
     }
 
-    mExist = mDevices.contains(mDevice);
+    m_Exist = m_Devices.contains(m_Device);
 
-    if (!mExist) {
-        if (mDevice) {
+    if (!m_Exist) {
+        if (m_Device) {
             toLog(LogLevel::Error, "Port does not exist.");
         }
 
@@ -202,7 +202,7 @@ bool LibUSBPort::checkReady() {
         return false;
     }
 
-    if (!mHandle && !open()) {
+    if (!m_Handle && !open()) {
         toLog(LogLevel::Error, "Port does not opened.");
         return false;
     }
@@ -223,27 +223,27 @@ bool LibUSBPort::read(QByteArray &aData, int aTimeout, int aMinSize) {
 
     while ((waitingTimer.elapsed() < aTimeout) && (aData.size() < aMinSize)) {
         int received = 0;
-        CLibUSB::SEndPoint &EP = mDeviceProperties.deviceToHost;
-        mReadingBuffer.fill(ASCII::NUL, EP.maxPacketSize);
+        CLibUSB::SEndPoint &EP = m_DeviceProperties.deviceToHost;
+        m_ReadingBuffer.fill(ASCII::NUL, EP.maxPacketSize);
 
-        TResult result = LIB_USB_CALL(mDeviceProperties.hostToDevice.processIO,
-                                      mHandle,
+        TResult result = LIB_USB_CALL(m_DeviceProperties.hostToDevice.processIO,
+                                      m_Handle,
                                       EP.data,
-                                      (unsigned char *)&mReadingBuffer[0],
+                                      (unsigned char *)&m_ReadingBuffer[0],
                                       EP.maxPacketSize,
                                       &received,
                                       aTimeout);
 
         if (LIB_USB_SUCCESS(result)) {
-            aData.append(mReadingBuffer.data(), received);
+            aData.append(m_ReadingBuffer.data(), received);
         } else if (result != LIBUSB_ERROR_TIMEOUT) {
             return false;
         }
     }
 
-    if (mDeviceIOLoging == ELoggingType::ReadWrite) {
+    if (m_DeviceIOLoging == ELoggingType::ReadWrite) {
         toLog(LogLevel::Normal,
-              QString("%1: << {%2}").arg(mConnectedDeviceName).arg(aData.toHex().constData()));
+              QString("%1: << {%2}").arg(m_ConnectedDeviceName).arg(aData.toHex().constData()));
     }
 
     return true;
@@ -252,7 +252,7 @@ bool LibUSBPort::read(QByteArray &aData, int aTimeout, int aMinSize) {
 //--------------------------------------------------------------------------------
 bool LibUSBPort::write(const QByteArray &aData) {
     if (aData.isEmpty()) {
-        toLog(LogLevel::Normal, mConnectedDeviceName + ": written data is empty.");
+        toLog(LogLevel::Normal, m_ConnectedDeviceName + ": written data is empty.");
         return false;
     }
 
@@ -260,12 +260,12 @@ bool LibUSBPort::write(const QByteArray &aData) {
         return false;
     }
 
-    if (mDeviceIOLoging != ELoggingType::None) {
+    if (m_DeviceIOLoging != ELoggingType::None) {
         toLog(LogLevel::Normal,
-              QString("%1: >> {%2}").arg(mConnectedDeviceName).arg(aData.toHex().constData()));
+              QString("%1: >> {%2}").arg(m_ConnectedDeviceName).arg(aData.toHex().constData()));
     }
 
-    int partSize = mDeviceProperties.hostToDevice.maxPacketSize;
+    int partSize = m_DeviceProperties.hostToDevice.maxPacketSize;
     int parts = qCeil(double(aData.size()) / partSize);
 
     for (int i = 0; i < parts; ++i) {
@@ -283,9 +283,9 @@ bool LibUSBPort::performWrite(const QByteArray &aData) {
     int actualSize = aData.size();
     int timeout = CLibUSBPort::writingTimeout(actualSize);
 
-    TResult result = LIB_USB_CALL(mDeviceProperties.deviceToHost.processIO,
-                                  mHandle,
-                                  mDeviceProperties.hostToDevice(),
+    TResult result = LIB_USB_CALL(m_DeviceProperties.deviceToHost.processIO,
+                                  m_Handle,
+                                  m_DeviceProperties.hostToDevice(),
                                   (unsigned char *)aData.data(),
                                   actualSize,
                                   &bytesWritten,
@@ -297,7 +297,7 @@ bool LibUSBPort::performWrite(const QByteArray &aData) {
 
     if (bytesWritten != actualSize) {
         toLog(LogLevel::Normal,
-              mConnectedDeviceName + QString(": %1 bytes instead of %2 bytes have been written.")
+              m_ConnectedDeviceName + QString(": %1 bytes instead of %2 bytes have been written.")
                                          .arg(bytesWritten)
                                          .arg(actualSize));
         return false;
@@ -308,13 +308,13 @@ bool LibUSBPort::performWrite(const QByteArray &aData) {
 
 //--------------------------------------------------------------------------------
 TResult LibUSBPort::handleResult(const QString &aFunctionName, int aResult) {
-    TResult result = LibUSBUtils::logAnswer(aFunctionName, aResult, mLog);
+    TResult result = LibUSBUtils::logAnswer(aFunctionName, aResult, m_Log);
 
     if (CLibUSBPort::DisappearingErrors.contains(aResult) &&
-        !getDevicesProperties(true).contains(mDevice)) {
+        !getDevicesProperties(true).contains(m_Device)) {
         close();
 
-        mExist = false;
+        m_Exist = false;
     }
 
     return result;
@@ -323,9 +323,9 @@ TResult LibUSBPort::handleResult(const QString &aFunctionName, int aResult) {
 //--------------------------------------------------------------------------------
 bool LibUSBPort::deviceConnected() {
     CLibUSB::TDeviceProperties devicesProperties = getDevicesProperties(true);
-    int result = (devicesProperties.size() - mDevicesProperties.size()) * mDevicesProperties.size();
+    int result = (devicesProperties.size() - m_DevicesProperties.size()) * m_DevicesProperties.size();
 
-    mDevicesProperties = devicesProperties;
+    m_DevicesProperties = devicesProperties;
 
     if (result > 0) {
         setConfigParameter(CHardware::Port::JustConnected, true);
@@ -340,12 +340,12 @@ bool LibUSBPort::deviceConnected() {
 
 //--------------------------------------------------------------------------------
 bool LibUSBPort::isExist() {
-    return mExist;
+    return m_Exist;
 }
 
 //--------------------------------------------------------------------------------
 CLibUSB::TDeviceProperties LibUSBPort::getDevicesProperties(bool aForce) {
-    QMutexLocker locker(&mDevicesPropertyMutex);
+    QMutexLocker locker(&m_DevicesPropertyMutex);
 
     static CLibUSB::TDeviceProperties properties;
 
@@ -360,7 +360,7 @@ CLibUSB::TDeviceProperties LibUSBPort::getDevicesProperties(bool aForce) {
         it = needErase ? properties.erase(it) : std::next(it);
     }
 
-    mDevices = properties.keys();
+    m_Devices = properties.keys();
 
     return properties;
 }

@@ -38,8 +38,8 @@ bool BaseMemorySwitchUtils::update(const TMemorySwitchTypes &aSTARMemorySwitchTy
 CSTAR::TMemorySwitchTypes BaseMemorySwitchUtils::getMemorySwitchTypes() {
     CSTAR::TMemorySwitchTypes result;
 
-    for (CSTAR::TMSWData::iterator it = mData.begin(); it != mData.end(); ++it) {
-        if (it->models.isEmpty() || !(it->models & mModels).isEmpty()) {
+    for (CSTAR::TMSWData::iterator it = m_Data.begin(); it != m_Data.end(); ++it) {
+        if (it->models.isEmpty() || !(it->models & m_Models).isEmpty()) {
             result << it.key();
         }
     }
@@ -49,7 +49,7 @@ CSTAR::TMemorySwitchTypes BaseMemorySwitchUtils::getMemorySwitchTypes() {
 
 //--------------------------------------------------------------------------------
 bool BaseMemorySwitchUtils::update(TMemorySwitches &aMemorySwitches) {
-    return update(getMemorySwitchTypes(), aMemorySwitches, mConfiguration) &&
+    return update(getMemorySwitchTypes(), aMemorySwitches, m_Configuration) &&
            setConfiguration(aMemorySwitches);
 }
 
@@ -57,14 +57,14 @@ bool BaseMemorySwitchUtils::update(TMemorySwitches &aMemorySwitches) {
 SMSWParameter BaseMemorySwitchUtils::getMSWParameter(ESTARMemorySwitchTypes::Enum aParameterType) {
     bool modelsCoincided = false;
 
-    for (auto it = mData.begin(); it != mData.end(); ++it) {
+    for (auto it = m_Data.begin(); it != m_Data.end(); ++it) {
         modelsCoincided =
-            modelsCoincided || ((it.key() == aParameterType) && !(it->models & mModels).isEmpty());
+            modelsCoincided || ((it.key() == aParameterType) && !(it->models & m_Models).isEmpty());
     }
 
-    for (auto it = mData.begin(); it != mData.end(); ++it) {
+    for (auto it = m_Data.begin(); it != m_Data.end(); ++it) {
         if ((it.key() == aParameterType) &&
-            ((!modelsCoincided && it->models.isEmpty()) || !(it->models & mModels).isEmpty())) {
+            ((!modelsCoincided && it->models.isEmpty()) || !(it->models & m_Models).isEmpty())) {
             return *it;
         }
     }
@@ -74,7 +74,7 @@ SMSWParameter BaseMemorySwitchUtils::getMSWParameter(ESTARMemorySwitchTypes::Enu
 
 //--------------------------------------------------------------------------------
 void BaseMemorySwitchUtils::setModels(const TModels &aModels) {
-    mModels = aModels;
+    m_Models = aModels;
 }
 
 //--------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ bool BaseMemorySwitchUtils::hasValidData(ESTARMemorySwitchTypes::Enum aParameter
         // В Qt 6 рекомендуется использовать контейнер напрямую или явную конвертацию.
         // static_cast к QStringList заменяем на более современный подход.
         QStringList modelsList;
-        for (const auto &model : mModels) {
+        for (const auto &model : m_Models) {
             modelsList << model;
         }
 
@@ -266,7 +266,7 @@ void BaseMemorySwitchUtils::setConfiguration(const QVariantMap &aConfiguration) 
         QString value = it.value().toString();
 
         if (value != CHardwareSDK::Values::Auto) {
-            mConfiguration.insert(it.key(), value);
+            m_Configuration.insert(it.key(), value);
         }
     }
 }
@@ -311,7 +311,7 @@ bool BaseMemorySwitchUtils::setConfiguration(const TMemorySwitches &aMemorySwitc
         QStringList keys = data.dataTypes;
 
         for (int i = 0; i < keys.size(); ++i) {
-            mConfiguration[keys[i]] = data.parameters[bits][i];
+            m_Configuration[keys[i]] = data.parameters[bits][i];
         }
     }
 
@@ -342,9 +342,9 @@ void BaseMemorySwitchUtils::add(ESTARMemorySwitchTypes::Enum aParameterType,
                               .arg(aIndex + bitAmount);
 
     // В Qt 6 QMap::insertMulti удален.
-    // mData должна быть объявлена как QMultiMap<ESTARMemorySwitchTypes::Enum, SMSWParameter>.
+    // m_Data должна быть объявлена как QMultiMap<ESTARMemorySwitchTypes::Enum, SMSWParameter>.
     // Используем метод insert(), который в QMultiMap работает как добавление еще одного значения.
-    mData.insert(
+    m_Data.insert(
         aParameterType,
         SMSWParameter(aNumber, aIndex, bitAmount, aDataTypes, aParameters, description, models));
 }

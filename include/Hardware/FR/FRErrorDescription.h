@@ -35,11 +35,11 @@ public:
     Data() { setDefault(SData(QString::fromUtf8("Неизвестная"), EType::Unknown)); }
 
     void add(char aKey, const char *aDescription, EType::Enum aType = EType::Unknown) {
-        mBuffer.insert(aKey, SData(QString::fromUtf8(aDescription), aType));
+        m_Buffer.insert(aKey, SData(QString::fromUtf8(aDescription), aType));
     }
 
     void add(char aKey, const char *aDescription, bool aExtraData) {
-        mBuffer.insert(aKey, SData(QString::fromUtf8(aDescription), EType::FR, aExtraData));
+        m_Buffer.insert(aKey, SData(QString::fromUtf8(aDescription), EType::FR, aExtraData));
     }
 };
 } // namespace FRError

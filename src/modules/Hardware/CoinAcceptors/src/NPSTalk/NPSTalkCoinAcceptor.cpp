@@ -13,11 +13,11 @@ using namespace SDK::Driver::IOPort::COM;
 //---------------------------------------------------------------------------
 NPSTalkCoinAcceptor::NPSTalkCoinAcceptor() {
     // параметры порта
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
     // данные устройства
-    mDeviceName = "NPSTalk Comestero coin acceptor";
-    mMaxBadAnswers = 5;
+    m_DeviceName = "NPSTalk Comestero coin acceptor";
+    m_MaxBadAnswers = 5;
 }
 
 //--------------------------------------------------------------------------------
@@ -29,11 +29,11 @@ bool NPSTalkCoinAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
 TResult NPSTalkCoinAcceptor::execCommand(const QByteArray &aCommand,
                                          const QByteArray &aCommandData,
                                          QByteArray *aAnswer) {
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
 
     QByteArray answer;
-    TResult result = mProtocol.processCommand(aCommand + aCommandData, answer);
+    TResult result = m_Protocol.processCommand(aCommand + aCommandData, answer);
 
     if (!result) {
         return result;
@@ -53,10 +53,10 @@ QStringList NPSTalkCoinAcceptor::getModelList() {
 
 //---------------------------------------------------------------------------
 bool NPSTalkCoinAcceptor::processReset() {
-    toLog(LogLevel::Normal, mDeviceName + ": processing command reset");
+    toLog(LogLevel::Normal, m_DeviceName + ": processing command reset");
 
     if (!processCommand(CNPSTalk::Command::Reset)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to reset");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to reset");
         return false;
     }
 
@@ -65,9 +65,9 @@ bool NPSTalkCoinAcceptor::processReset() {
 
 //---------------------------------------------------------------------------
 bool NPSTalkCoinAcceptor::getStatus(TStatusCodes &aStatusCodes) {
-    // TDeviceCodes lastCodes(mCodes); // ?
-    mCodes.clear();
-    mEscrowPars.clear();
+    // TDeviceCodes lastCodes(m_Codes); // ?
+    m_Codes.clear();
+    m_EscrowPars.clear();
 
     QByteArray answer;
 
@@ -79,17 +79,17 @@ bool NPSTalkCoinAcceptor::getStatus(TStatusCodes &aStatusCodes) {
                             ? BillAcceptorStatusCode::Normal::Enabled
                             : BillAcceptorStatusCode::Normal::Disabled);
 
-    for (auto it = mEscrowParTable.data().begin(); it != mEscrowParTable.data().end(); ++it) {
+    for (auto it = m_EscrowParTable.data().begin(); it != m_EscrowParTable.data().end(); ++it) {
         uchar coinPosition = uchar(it.key());
 
         if (processCommand(
                 CNPSTalk::Command::GetAcceptedCoins, QByteArray(1, coinPosition), &answer) &&
             !answer.isEmpty()) {
-            uchar coinAmountChange = uchar(answer[0]) - mCoinsByChannel[coinPosition];
-            mCoinsByChannel[coinPosition] = uchar(answer[0]);
+            uchar coinAmountChange = uchar(answer[0]) - m_CoinsByChannel[coinPosition];
+            m_CoinsByChannel[coinPosition] = uchar(answer[0]);
 
             for (uchar i = 0; i < coinAmountChange; ++i) {
-                mEscrowPars << it.value();
+                m_EscrowPars << it.value();
             }
         }
     }
@@ -116,13 +116,13 @@ bool NPSTalkCoinAcceptor::loadParTable() {
             QByteArray countryCode = nominalData.left(2);
 
             if (countryCode == "RU") {
-                MutexLocker locker(&mResourceMutex);
+                MutexLocker locker(&m_ResourceMutex);
 
                 SPar par(nominalData.mid(2, 3).toInt(), Currency::RUB, ECashReceiver::CoinAcceptor);
-                mEscrowParTable.data().insert(i, par);
+                m_EscrowParTable.data().insert(i, par);
             } else {
                 toLog(LogLevel::Error,
-                      mDeviceName + QString(": Unknown currency code %1)").arg(countryCode.data()));
+                      m_DeviceName + QString(": Unknown currency code %1)").arg(countryCode.data()));
             }
         }
     }
@@ -146,7 +146,7 @@ bool NPSTalkCoinAcceptor::setDefaultParameters() {
             return false;
         }
 
-        mCoinsByChannel[i] = uchar(answer[0]);
+        m_CoinsByChannel[i] = uchar(answer[0]);
     }
 
     return true;
@@ -161,7 +161,7 @@ bool NPSTalkCoinAcceptor::isConnected() {
     QByteArray data;
 
     if (processCommand(CNPSTalk::Command::GetModelVersion, &data)) {
-        mDeviceName = "Comestero RM5";
+        m_DeviceName = "Comestero RM5";
     }
 
     if (processCommand(CNPSTalk::Command::GetFirmwareVersion, &data)) {

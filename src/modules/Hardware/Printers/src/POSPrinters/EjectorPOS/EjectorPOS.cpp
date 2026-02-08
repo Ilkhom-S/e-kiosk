@@ -13,7 +13,7 @@ template class EjectorPOS<TSerialPrinterBase>;
 //--------------------------------------------------------------------------------
 template <class T> EjectorPOS<T>::EjectorPOS() {
     // данные устройства
-    this->mDeviceName = "POS Printer with ejector";
+    this->m_DeviceName = "POS Printer with ejector";
 
     this->setConfigParameter(CHardware::Printer::PresenterEnable, true);
     this->setConfigParameter(CHardware::Printer::RetractorEnable, true);
@@ -50,7 +50,7 @@ template <class T> bool EjectorPOS<T>::updateParameters() {
         return true;
     }
 
-    return this->mIOPort->write((loop == CHardwareSDK::Values::Use)
+    return this->m_IOPort->write((loop == CHardwareSDK::Values::Use)
                                     ? CPOSPrinter::Command::LoopEnable
                                     : CPOSPrinter::Command::LoopDisable);
 }

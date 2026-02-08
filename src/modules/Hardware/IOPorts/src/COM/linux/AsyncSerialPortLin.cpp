@@ -14,9 +14,9 @@ using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //--------------------------------------------------------------------------------
-AsyncSerialPortLin::AsyncSerialPortLin() : mPortFd(-1), mExist(false), mMaxReadingSize(0) {
-    mType = EPortTypes::COM;
-    mSystemNames = enumerateSystemNames();
+AsyncSerialPortLin::AsyncSerialPortLin() : m_PortFd(-1), m_Exist(false), m_MaxReadingSize(0) {
+    m_Type = EPortTypes::COM;
+    m_SystemNames = enumerateSystemNames();
     setOpeningTimeout(CAsyncSerialPort::OpeningTimeout);
 }
 
@@ -40,9 +40,9 @@ void AsyncSerialPortLin::initialize() {
 
 //--------------------------------------------------------------------------------
 bool AsyncSerialPortLin::release() {
-    if (mPortFd >= 0) {
-        ::close(mPortFd);
-        mPortFd = -1;
+    if (m_PortFd >= 0) {
+        ::close(m_PortFd);
+        m_PortFd = -1;
     }
     return IOPortBase::release();
 }
@@ -51,7 +51,7 @@ bool AsyncSerialPortLin::release() {
 void AsyncSerialPortLin::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     IOPortBase::setDeviceConfiguration(aConfiguration);
 
-    if (!mExist && !mSystemName.isEmpty()) {
+    if (!m_Exist && !m_SystemName.isEmpty()) {
         checkExistence();
     }
 }
@@ -75,9 +75,9 @@ bool AsyncSerialPortLin::close() {
         return true;
     }
 
-    if (mPortFd >= 0) {
-        ::close(mPortFd);
-        mPortFd = -1;
+    if (m_PortFd >= 0) {
+        ::close(m_PortFd);
+        m_PortFd = -1;
     }
 
     return true;
@@ -90,8 +90,8 @@ bool AsyncSerialPortLin::clear() {
     }
 
     // For Linux, we can use tcflush to clear buffers
-    if (mPortFd >= 0) {
-        tcflush(mPortFd, TCIOFLUSH);
+    if (m_PortFd >= 0) {
+        tcflush(m_PortFd, TCIOFLUSH);
     }
 
     return true;
@@ -104,9 +104,9 @@ bool AsyncSerialPortLin::setParameters(const TPortParameters &aParameters) {
     }
 
     // Basic parameter setting for Linux serial ports
-    if (mPortFd >= 0) {
+    if (m_PortFd >= 0) {
         struct termios options;
-        tcgetattr(mPortFd, &options);
+        tcgetattr(m_PortFd, &options);
 
         // Set baud rate (simplified - only common rates)
         speed_t baudRate = B9600; // default
@@ -188,7 +188,7 @@ bool AsyncSerialPortLin::setParameters(const TPortParameters &aParameters) {
         }
 
         // Apply settings
-        tcsetattr(mPortFd, TCSANOW, &options);
+        tcsetattr(m_PortFd, TCSANOW, &options);
     }
 
     return true;
@@ -214,11 +214,11 @@ bool AsyncSerialPortLin::read(QByteArray &aData, int aTimeout, int aMinSize) {
 
 //--------------------------------------------------------------------------------
 bool AsyncSerialPortLin::write(const QByteArray &aData) {
-    if (!checkReady() || !opened() || mPortFd < 0) {
+    if (!checkReady() || !opened() || m_PortFd < 0) {
         return false;
     }
 
-    ssize_t written = ::write(mPortFd, aData.constData(), aData.size());
+    ssize_t written = ::write(m_PortFd, aData.constData(), aData.size());
     return written == aData.size();
 }
 
@@ -229,7 +229,7 @@ bool AsyncSerialPortLin::deviceConnected() {
 
 //--------------------------------------------------------------------------------
 bool AsyncSerialPortLin::opened() {
-    return mPortFd >= 0;
+    return m_PortFd >= 0;
 }
 
 //--------------------------------------------------------------------------------
@@ -244,34 +244,34 @@ void AsyncSerialPortLin::changePerformingTimeout(const QString &aContext,
 
 //--------------------------------------------------------------------------------
 bool AsyncSerialPortLin::checkExistence() {
-    if (mSystemName.isEmpty()) {
+    if (m_SystemName.isEmpty()) {
         return false;
     }
 
-    mExist = QFile::exists(mSystemName);
-    return mExist;
+    m_Exist = QFile::exists(m_SystemName);
+    return m_Exist;
 }
 
 //--------------------------------------------------------------------------------
 bool AsyncSerialPortLin::performOpen() {
-    if (mSystemName.isEmpty()) {
+    if (m_SystemName.isEmpty()) {
         return false;
     }
 
-    mPortFd = ::open(mSystemName.toLocal8Bit().constData(), O_RDWR | O_NOCTTY | O_NDELAY);
-    if (mPortFd < 0) {
+    m_PortFd = ::open(m_SystemName.toLocal8Bit().constData(), O_RDWR | O_NOCTTY | O_NDELAY);
+    if (m_PortFd < 0) {
         return false;
     }
 
     // Configure for non-blocking
-    fcntl(mPortFd, F_SETFL, 0);
+    fcntl(m_PortFd, F_SETFL, 0);
 
     return true;
 }
 
 //--------------------------------------------------------------------------------
 bool AsyncSerialPortLin::processReading(QByteArray &aData, int aTimeout) {
-    if (mPortFd < 0) {
+    if (m_PortFd < 0) {
         return false;
     }
 
@@ -282,12 +282,12 @@ bool AsyncSerialPortLin::processReading(QByteArray &aData, int aTimeout) {
     tv.tv_usec = (aTimeout % 1000) * 1000;
 
     FD_ZERO(&readfds);
-    FD_SET(mPortFd, &readfds);
+    FD_SET(m_PortFd, &readfds);
 
-    int result = select(mPortFd + 1, &readfds, NULL, NULL, &tv);
+    int result = select(m_PortFd + 1, &readfds, NULL, NULL, &tv);
     if (result > 0) {
         char buffer[1024];
-        ssize_t bytesRead = ::read(mPortFd, buffer, sizeof(buffer));
+        ssize_t bytesRead = ::read(m_PortFd, buffer, sizeof(buffer));
         if (bytesRead > 0) {
             aData.append(buffer, bytesRead);
             return true;
@@ -299,7 +299,7 @@ bool AsyncSerialPortLin::processReading(QByteArray &aData, int aTimeout) {
 
 //--------------------------------------------------------------------------------
 bool AsyncSerialPortLin::checkReady() {
-    return mExist;
+    return m_Exist;
 }
 
 //--------------------------------------------------------------------------------

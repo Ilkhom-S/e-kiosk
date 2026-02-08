@@ -5,33 +5,33 @@
 //--------------------------------------------------------------------------------
 struct TResult {
 public:
-    TResult() : mData(0) {}
+    TResult() : m_Data(0) {}
     TResult(const int &aResult) { *this = aResult; }
 
     TResult(bool aResult) { *this = aResult; }
 
     TResult &operator=(const int &aResult) {
-        mData = aResult;
+        m_Data = aResult;
 
         return *this;
     }
 
     TResult &operator=(bool aResult) {
-        mData = aResult ? 0 : -1;
+        m_Data = aResult ? 0 : -1;
 
         return *this;
     }
 
-    bool operator==(const int &aResult) { return mData == aResult; }
+    bool operator==(const int &aResult) { return m_Data == aResult; }
 
     bool operator!=(const int &aResult) { return !operator==(aResult); }
 
-    operator int() { return mData; }
+    operator int() { return m_Data; }
 
-    operator bool() { return !mData; }
+    operator bool() { return !m_Data; }
 
 private:
-    int mData;
+    int m_Data;
 };
 
 //--------------------------------------------------------------------------------

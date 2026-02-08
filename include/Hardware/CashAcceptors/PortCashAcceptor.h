@@ -117,40 +117,40 @@ protected:
     int getPollingInterval(bool aEnabled);
 
     /// Признак контроля отключения купюроприёмника.
-    bool mCheckDisable;
+    bool m_CheckDisable;
 
     /// Устройству необходим reset на идентификации.
-    bool mResetOnIdentification;
+    bool m_ResetOnIdentification;
 
     /// Номер эскроу-байта в распакованной посылке.
-    int mEscrowPosition;
+    int m_EscrowPosition;
 
     /// Описание для КОДОВ протоколов.
     typedef QSharedPointer<IDeviceCodeSpecification> PDeviceCodeSpecification;
-    PDeviceCodeSpecification mDeviceCodeSpecification;
+    PDeviceCodeSpecification m_DeviceCodeSpecification;
 
     /// Последние девайс-коды устройства.
     typedef QSet<QByteArray> TDeviceCodeBuffers;
-    TDeviceCodeBuffers mDeviceCodeBuffers;
+    TDeviceCodeBuffers m_DeviceCodeBuffers;
 
     /// Приходит ли в событии Stacked информация о купюре.
-    bool mParInStacked;
+    bool m_ParInStacked;
 
     /// Интервал опроса (время между посылками запроса статуса), девайс выключен на прием денег.
-    int mPollingIntervalDisabled;
+    int m_PollingIntervalDisabled;
 
     /// Интервал опроса, девайс включен на прием денег.
-    int mPollingIntervalEnabled;
+    int m_PollingIntervalEnabled;
 
     /// Ждать доступности после reset.
-    EResetWaiting::Enum mResetWaiting;
+    EResetWaiting::Enum m_ResetWaiting;
 
     /// Возможна ли перепрошивка.
-    bool mUpdatable;
+    bool m_Updatable;
 
     /// Ждать окончания reset даже если не прошла команда.
     // TODO: убрать, поправив логику в месте использования
-    bool mForceWaitResetCompleting;
+    bool m_ForceWaitResetCompleting;
 };
 
 //--------------------------------------------------------------------------------

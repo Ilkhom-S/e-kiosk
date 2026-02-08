@@ -484,31 +484,31 @@ static COperationModeData OperationModeData;
 class DealerDataManager {
 public:
     DealerDataManager(DeviceConfigManager *aConfigManager, const QString &aKey)
-        : mPerformer(aConfigManager), mKey(aKey) {
-        if (mPerformer) {
-            QVariantMap configData = mPerformer->getConfigParameter(CHardware::ConfigData).toMap();
-            QString value = mPerformer->getConfigParameter(mKey).toString().simplified();
+        : m_Performer(aConfigManager), m_Key(aKey) {
+        if (m_Performer) {
+            QVariantMap configData = m_Performer->getConfigParameter(CHardware::ConfigData).toMap();
+            QString value = m_Performer->getConfigParameter(m_Key).toString().simplified();
 
             if (value.isEmpty()) {
-                mData = value;
+                m_Data = value;
             }
         }
     }
 
     ~DealerDataManager() {
-        if (mPerformer && mData.isValid()) {
-            QVariantMap configData = mPerformer->getConfigParameter(CHardware::ConfigData).toMap();
-            configData.insert(mKey, mData);
-            mPerformer->setConfigParameter(CHardware::ConfigData, configData);
+        if (m_Performer && m_Data.isValid()) {
+            QVariantMap configData = m_Performer->getConfigParameter(CHardware::ConfigData).toMap();
+            configData.insert(m_Key, m_Data);
+            m_Performer->setConfigParameter(CHardware::ConfigData, configData);
         }
     }
 
-    void setValue(const QString &aValue) { mData = aValue; }
+    void setValue(const QString &aValue) { m_Data = aValue; }
 
 private:
-    DeviceConfigManager *mPerformer;
-    QVariant mData;
-    QString mKey;
+    DeviceConfigManager *m_Performer;
+    QVariant m_Data;
+    QString m_Key;
 };
 } // namespace CFR
 

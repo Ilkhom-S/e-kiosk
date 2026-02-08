@@ -14,16 +14,16 @@
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
-CCNetProtocol::CCNetProtocol() : mAddress(0) {}
+CCNetProtocol::CCNetProtocol() : m_Address(0) {}
 
 //--------------------------------------------------------------------------------
 void CCNetProtocol::setAddress(char aAddress) {
-    mAddress = aAddress;
+    m_Address = aAddress;
 }
 
 //--------------------------------------------------------------------------------
 void CCNetProtocol::changePortParameters(TPortParameters aParameters) {
-    mPortParameters = aParameters;
+    m_PortParameters = aParameters;
 }
 
 //--------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ ushort CCNetProtocol::calcCRC16(const QByteArray &aData) {
 
 //--------------------------------------------------------------------------------
 void CCNetProtocol::pack(QByteArray &aCommandData) {
-    aCommandData.prepend(mAddress);
+    aCommandData.prepend(m_Address);
     aCommandData.prepend(CCCNet::Prefix);
 
     int length = aCommandData.size() + 3;
@@ -89,10 +89,10 @@ QString CCNetProtocol::check(const QByteArray &aAnswer) {
     // адрес
     char address = aAnswer[1];
 
-    if (address != mAddress) {
+    if (address != m_Address) {
         return QString("CCNet: Invalid address = %1, need = %2")
             .arg(ProtocolUtils::toHexLog(address))
-            .arg(ProtocolUtils::toHexLog(mAddress));
+            .arg(ProtocolUtils::toHexLog(m_Address));
     }
 
     // длина
@@ -131,16 +131,16 @@ TResult CCNetProtocol::processCommand(const QByteArray &aCommandData,
         toLog(LogLevel::Normal, QString("CCNet: >> {%1}").arg(QString(request.toHex())));
         aAnswerData.clear();
 
-        if (!mPort->write(request)) {
+        if (!m_Port->write(request)) {
             return CommandResult::Port;
         }
 
-        if (!mPortParameters.isEmpty()) {
+        if (!m_PortParameters.isEmpty()) {
             SleepHelper::msleep(CCCNet::ChangingBaudRatePause);
 
-            int baudrate = mPortParameters[IOPort::COM::EParameters::BaudRate];
-            bool result = mPort->setParameters(mPortParameters);
-            mPortParameters.clear();
+            int baudrate = m_PortParameters[IOPort::COM::EParameters::BaudRate];
+            bool result = m_Port->setParameters(m_PortParameters);
+            m_PortParameters.clear();
 
             if (!result) {
                 toLog(LogLevel::Error, "CCNet: Failed to set port parameters");
@@ -237,7 +237,7 @@ bool CCNetProtocol::readAnswers(TAnswers &aAnswers, int aTimeout) {
     do {
         QByteArray answerData;
 
-        if (!mPort->read(answerData, 20)) {
+        if (!m_Port->read(answerData, 20)) {
             return false;
         }
 
@@ -307,7 +307,7 @@ bool CCNetProtocol::sendACK() {
     pack(command);
     toLog(LogLevel::Normal, QString("CCNet: >> {%1} - ACK").arg(command.toHex().data()));
 
-    return mPort->write(command);
+    return m_Port->write(command);
 }
 
 //--------------------------------------------------------------------------------

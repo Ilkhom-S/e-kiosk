@@ -15,7 +15,7 @@ void Tags::Engine::appendByGroup(bool aBitField,
                                  const QByteArray &aOpen,
                                  const QByteArray &aClose) {
     append(aType, STagData(aBitField, aPrefix, aOpen, aClose));
-    mPrefixData.insert(aType, aPrefix);
+    m_PrefixData.insert(aType, aPrefix);
 }
 
 //--------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ QByteArray Tags::Engine::getTag(const TTypes &aTypes, const Direction::Enum aDir
     char tag = 0;
 
     foreach (Type::Enum type, aTypes) {
-        if (mBuffer.contains(type)) {
+        if (m_Buffer.contains(type)) {
             tag |= operator[](type).open[0];
         }
     }
@@ -174,14 +174,14 @@ Tags::TGroupTypes Tags::Engine::groupsTypesByPrefix(const TTypes &aTypes) const 
 
     // Используем стандартный цикл C++14
     for (Type::Enum type : aTypes) {
-        if (mBuffer.contains(type)) {
-            if (!mBuffer[type].bitField) {
+        if (m_Buffer.contains(type)) {
+            if (!m_Buffer[type].bitField) {
                 TTypes singleTypes;
                 singleTypes.insert(type);
                 result.insert(singleTypes);
             } else {
                 // 1. Получаем список ключей
-                auto keysList = mPrefixData.keys(mBuffer[type].prefix);
+                auto keysList = m_PrefixData.keys(m_Buffer[type].prefix);
 
                 // 2. Создаем QSet из списка через конструктор итераторов (замена .toSet())
                 TTypes prefixTypes(keysList.begin(), keysList.end());
@@ -216,7 +216,7 @@ bool Tags::Engine::identifyTag(QString &aTag,
 
 //--------------------------------------------------------------------------------
 bool Tags::Engine::contains(Type::Enum aTag) const {
-    return mPrefixData.contains(aTag);
+    return m_PrefixData.contains(aTag);
 }
 
 //--------------------------------------------------------------------------------

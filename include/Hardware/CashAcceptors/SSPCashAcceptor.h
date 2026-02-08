@@ -58,13 +58,13 @@ protected:
     bool performBaudRateChanging(bool aUp);
 
     /// Протокол.
-    SSPProtocol mProtocol;
+    SSPProtocol m_Protocol;
 
     /// Удачна ли была последняя транзакция связи с устройством.
-    bool mLastConnectionOK;
+    bool m_LastConnectionOK;
 
     /// Признак включенности на прием денег.
-    bool mEnabled;
+    bool m_Enabled;
 };
 
 //--------------------------------------------------------------------------------

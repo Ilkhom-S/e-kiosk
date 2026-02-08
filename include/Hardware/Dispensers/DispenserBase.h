@@ -70,25 +70,25 @@ protected:
     void emitDispensed(int aUnit, int aItems, const QString &aLog = "");
 
     /// Кол-во кассет.
-    int mUnits;
+    int m_Units;
 
     /// Данные о количестве предметов в кассетах из конфигурации.
-    SDK::Driver::TUnitData mUnitConfigData;
+    SDK::Driver::TUnitData m_UnitConfigData;
 
     /// Данные о количестве предметов в кассетах.
-    SDK::Driver::TUnitData mUnitData;
+    SDK::Driver::TUnitData m_UnitData;
 
     /// Необходимо сообщить количество кассет.
-    bool mNeedGetUnits;
+    bool m_NeedGetUnits;
 
     /// Ошибка установки содержимого кассет.
-    bool mUnitError;
+    bool m_UnitError;
 
     /// Последние девайс-коды для логгирования смены статуса.
-    QByteArray mLastDeviceStatusCodes;
+    QByteArray m_LastDeviceStatusCodes;
 
     /// Резет возможен.
-    bool mResetIsPossible;
+    bool m_ResetIsPossible;
 };
 
 //--------------------------------------------------------------------------------

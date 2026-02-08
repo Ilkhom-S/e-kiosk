@@ -14,15 +14,15 @@ template class AtolEjectorFR<Atol3OnlineFRBase>;
 //--------------------------------------------------------------------------------
 template <class T> AtolEjectorFR<T>::AtolEjectorFR() {
     // количество строк шапки - изменено, т.к. шапка печаталась сверху и снизу фискального чека
-    mDocumentCapStrings = 0;
+    m_DocumentCapStrings = 0;
 
     // теги
-    mTagEngine = Tags::PEngine(new CAtolEjectorFR::TagEngine());
+    m_TagEngine = Tags::PEngine(new CAtolEjectorFR::TagEngine());
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool AtolEjectorFR<T>::setEjectorMode(char aEjectorMode) {
-    char mode = mMode;
+    char mode = m_Mode;
 
     if (!enterInnerMode(CAtolFR::InnerModes::Programming)) {
         toLog(LogLevel::Error,

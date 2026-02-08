@@ -11,7 +11,7 @@
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-PrimFRProtocol::PrimFRProtocol() : mDifferential(ASCII::Space), mLastCommandResult(0) {}
+PrimFRProtocol::PrimFRProtocol() : m_Differential(ASCII::Space), m_LastCommandResult(0) {}
 
 //--------------------------------------------------------------------------------
 ushort PrimFRProtocol::calcCRC(const QByteArray &aData) {
@@ -49,11 +49,11 @@ PrimFRProtocol::check(const QByteArray &aRequest, const QByteArray &aAnswer, boo
         return CommandResult::Protocol;
     }
 
-    if ((aAnswer[1] != char(mDifferential)) && !aPrinterMode) {
+    if ((aAnswer[1] != char(m_Differential)) && !aPrinterMode) {
         toLog(LogLevel::Error,
               QString("PRIM: Invalid differential = %1, need = %2")
                   .arg(toHexLog(aAnswer[1]))
-                  .arg(toHexLog(mDifferential)));
+                  .arg(toHexLog(m_Differential)));
         return CommandResult::Id;
     }
 
@@ -99,9 +99,9 @@ PrimFRProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnsw
     request.append(CPrimFR::Prefix);
     request.append(CPrimFR::Password);
 
-    mDifferential = (mDifferential == uchar(ASCII::Full)) ? ASCII::Space : ++mDifferential;
+    m_Differential = (m_Differential == uchar(ASCII::Full)) ? ASCII::Space : ++m_Differential;
 
-    request.append(mDifferential);
+    request.append(m_Differential);
     request.append(aCommandData);
 
     request.append(CPrimFR::Separator);
@@ -160,24 +160,24 @@ PrimFRProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnsw
 
 //--------------------------------------------------------------------------------
 TResult PrimFRProtocol::getCommandResult(char &aAnswer, bool aOnline) {
-    if (!aOnline && mLastCommandResult) {
-        aAnswer = mLastCommandResult;
+    if (!aOnline && m_LastCommandResult) {
+        aAnswer = m_LastCommandResult;
 
         return CommandResult::OK;
     }
 
-    mRTProtocol.setPort(mPort);
-    mRTProtocol.setLog(getLog());
+    m_RTProtocol.setPort(m_Port);
+    m_RTProtocol.setLog(getLog());
 
     QVariantMap configuration;
     configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::ReadWrite));
-    mPort->setDeviceConfiguration(configuration);
+    m_Port->setDeviceConfiguration(configuration);
 
-    TResult result = mRTProtocol.processCommand(0, aAnswer);
-    mLastCommandResult = result ? aAnswer : 0;
+    TResult result = m_RTProtocol.processCommand(0, aAnswer);
+    m_LastCommandResult = result ? aAnswer : 0;
 
     configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::None));
-    mPort->setDeviceConfiguration(configuration);
+    m_Port->setDeviceConfiguration(configuration);
 
     return result;
 }
@@ -199,7 +199,7 @@ TResult PrimFRProtocol::execCommand(const QByteArray &aRequest,
         toLog(LogLevel::Normal, QString("PRIM: >> {%1}").arg(request.toHex().data()));
         aAnswer.clear();
 
-        if (!mPort->write(request) || !readData(aAnswer, aTimeout)) {
+        if (!m_Port->write(request) || !readData(aAnswer, aTimeout)) {
             return CommandResult::Port;
         }
 
@@ -227,7 +227,7 @@ bool PrimFRProtocol::readData(QByteArray &aData, int aTimeout) {
     do {
         QByteArray data;
 
-        if (!mPort->read(data)) {
+        if (!m_Port->read(data)) {
             return false;
         }
 

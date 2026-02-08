@@ -11,15 +11,15 @@ using namespace SDK::Driver;
 
 //------------------------------------------------------------------------------
 CreatorReader::CreatorReader() {
-    mDeviceName = CCreatorReader::DefaultName;
-    mPollingInterval = 300;
-    mCardPosition = CCreatorReader::CardPosition::Unknown;
-    mICCPUType = CCreatorReader::CardTypes::EICCPU::Unknown;
-    mMaxBadAnswers = 1;
+    m_DeviceName = CCreatorReader::DefaultName;
+    m_PollingInterval = 300;
+    m_CardPosition = CCreatorReader::CardPosition::Unknown;
+    m_ICCPUType = CCreatorReader::CardTypes::EICCPU::Unknown;
+    m_MaxBadAnswers = 1;
 
-    mDetectingData->set(CCreatorReader::DetectingData());
+    m_DetectingData->set(CCreatorReader::DetectingData());
 
-    mStatusCodesSpecification =
+    m_StatusCodesSpecification =
         DeviceStatusCode::PSpecifications(new CardReaderStatusCode::CSpecifications());
 }
 
@@ -58,8 +58,8 @@ TResult CreatorReader::processCommand(const QByteArray &aCommand,
                                       const QByteArray &aCommandData,
                                       QByteArray *aAnswer,
                                       bool aIOLogsDebugMode) {
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
 
     QByteArray answer;
     QByteArray command = CCreatorReader::Markers::Command + aCommand + aCommandData;
@@ -68,7 +68,7 @@ TResult CreatorReader::processCommand(const QByteArray &aCommand,
         aAnswer->clear();
     }
 
-    TResult result = mProtocol.processCommand(command, answer, aIOLogsDebugMode);
+    TResult result = m_Protocol.processCommand(command, answer, aIOLogsDebugMode);
 
     if (!result) {
         return result;
@@ -83,7 +83,7 @@ TResult CreatorReader::processCommand(const QByteArray &aCommand,
         bool OK;
         int error = errorBuffer.toInt(&OK);
         QString log =
-            QString("%1: Error: %2").arg(mDeviceName).arg(CCreatorReader::ErrorDescriptions[error]);
+            QString("%1: Error: %2").arg(m_DeviceName).arg(CCreatorReader::ErrorDescriptions[error]);
 
         if (!OK) {
             log += QString(" (0x%1)").arg(errorBuffer.toHex().data());
@@ -114,7 +114,7 @@ bool CreatorReader::checkAnswer(const QByteArray &aCommand, const QByteArray &aA
     if (command != dataCommand) {
         toLog(LogLevel::Error,
               QString("%1: command = {%2}, need = {%3}")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(command.toHex().data())
                   .arg(dataCommand.toHex().data()));
         return false;
@@ -127,7 +127,7 @@ bool CreatorReader::checkAnswer(const QByteArray &aCommand, const QByteArray &aA
         (answerMarker != CCreatorReader::Markers::OK)) {
         toLog(LogLevel::Error,
               QString("%1: wrong marker = %2, need = %3 or %4")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(ProtocolUtils::toHexLog(answerMarker))
                   .arg(ProtocolUtils::toHexLog(CCreatorReader::Markers::Error))
                   .arg(ProtocolUtils::toHexLog(CCreatorReader::Markers::OK)));
@@ -158,11 +158,11 @@ bool CreatorReader::getStatus(TStatusCodes &aStatusCodes) {
         (ST0 < CCreatorReader::CardPosition::Ejected) ||
         (ST0 > CCreatorReader::CardPosition::Inserted)) {
         aStatusCodes.insert(DeviceStatusCode::Error::Unknown);
-    } else if (mCardPosition != ST0) {
-        int oldCardPosition = mCardPosition;
-        mCardPosition = ST0;
+    } else if (m_CardPosition != ST0) {
+        int oldCardPosition = m_CardPosition;
+        m_CardPosition = ST0;
 
-        if (mCardPosition == CCreatorReader::CardPosition::Inserted) {
+        if (m_CardPosition == CCreatorReader::CardPosition::Inserted) {
             int typeRF = 0;
 
             if (processCommand(CCreatorReader::Commands::IdentifyRF, &answer) &&
@@ -173,7 +173,7 @@ bool CreatorReader::getStatus(TStatusCodes &aStatusCodes) {
                 if (typeRF) {
                     toLog(LogLevel::Normal,
                           QString("%1: Inserted %2 card type %3 = {%4}.")
-                              .arg(mDeviceName)
+                              .arg(m_DeviceName)
                               .arg(CCreatorReader::CardTypes::Description[ECardType::RF])
                               .arg(CCreatorReader::CardTypes::RFDescription[typeRF])
                               .arg(buffer.data()));
@@ -190,7 +190,7 @@ bool CreatorReader::getStatus(TStatusCodes &aStatusCodes) {
                 if (typeIC) {
                     toLog(LogLevel::Normal,
                           QString("%1: Inserted %2 card type %3 = {%4}.")
-                              .arg(mDeviceName)
+                              .arg(m_DeviceName)
                               .arg(CCreatorReader::CardTypes::Description[ECardType::MSIC])
                               .arg(CCreatorReader::CardTypes::ICDescription[typeIC])
                               .arg(buffer.data()));
@@ -203,7 +203,7 @@ bool CreatorReader::getStatus(TStatusCodes &aStatusCodes) {
             if (typeMS) {
                 toLog(LogLevel::Normal,
                       QString("%1: Inserted %2 card type.")
-                          .arg(mDeviceName)
+                          .arg(m_DeviceName)
                           .arg(CCreatorReader::CardTypes::Description[ECardType::MS]));
             }
 
@@ -231,9 +231,9 @@ bool CreatorReader::getStatus(TStatusCodes &aStatusCodes) {
                 emit inserted(ECardType::RF, cardData);
             else {
                 toLog(LogLevel::Warning,
-                      QString("%1: Unknown composite card type.").arg(mDeviceName));
+                      QString("%1: Unknown composite card type.").arg(m_DeviceName));
             }
-        } else if ((mCardPosition == CCreatorReader::CardPosition::Ejected) &&
+        } else if ((m_CardPosition == CCreatorReader::CardPosition::Ejected) &&
                    (oldCardPosition != CCreatorReader::CardPosition::Unknown)) {
             emit ejected();
         }
@@ -258,19 +258,19 @@ bool CreatorReader::readMSData(QVariantMap &aData) {
     if (listingData.size() != 3) {
         toLog(LogLevel::Error,
               QString("%1: Wrong number of blocks = %2, need = 3")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(listingData.size()));
         return false;
     }
 
     auto parseData = [&](int i, const QString &aResultDataKey) -> bool {
         if (listingData[i - 1].isEmpty()) {
-            toLog(LogLevel::Error, QString("%1: Data block %2 is empty").arg(mDeviceName).arg(i));
+            toLog(LogLevel::Error, QString("%1: Data block %2 is empty").arg(m_DeviceName).arg(i));
             return false;
         }
 
         if (listingData[i - 1][0] == CCreatorReader::Markers::Error) {
-            QString log = QString("%1: Failed to read data of block = %2").arg(mDeviceName).arg(i);
+            QString log = QString("%1: Failed to read data of block = %2").arg(m_DeviceName).arg(i);
 
             if (listingData[i - 1].size() > 2) {
                 bool OK;
@@ -314,9 +314,9 @@ void CreatorReader::eject() {
 bool CreatorReader::communicate(const QByteArray &aSendMessage, QByteArray &aReceiveMessage) {
     QByteArray command;
 
-    if (mICCPUType == CCreatorReader::CardTypes::EICCPU::T0) {
+    if (m_ICCPUType == CCreatorReader::CardTypes::EICCPU::T0) {
         command = CCreatorReader::Commands::ADPUT0;
-    } else if (mICCPUType == CCreatorReader::CardTypes::EICCPU::T1) {
+    } else if (m_ICCPUType == CCreatorReader::CardTypes::EICCPU::T1) {
         command = CCreatorReader::Commands::ADPUT1;
     } else {
         return false;
@@ -337,14 +337,14 @@ bool CreatorReader::reset(QByteArray &aAnswer) {
 
     if (processCommand(CCreatorReader::Commands::PowerReset, &aAnswer) && (aAnswer.size() > 2)) {
         bool OK;
-        mICCPUType = CCreatorReader::CardTypes::EICCPU::Enum(aAnswer.mid(2, 1).toInt(&OK));
+        m_ICCPUType = CCreatorReader::CardTypes::EICCPU::Enum(aAnswer.mid(2, 1).toInt(&OK));
 
         if (OK) {
             aAnswer = aAnswer.mid(3);
             toLog(LogLevel::Normal,
                   QString("%1: IC card, type %2 {%3} has been successfully reset.")
-                      .arg(mDeviceName)
-                      .arg(CCreatorReader::CardTypes::ICCPUDescription[mICCPUType])
+                      .arg(m_DeviceName)
+                      .arg(CCreatorReader::CardTypes::ICCPUDescription[m_ICCPUType])
                       .arg(aAnswer.toHex().data()));
 
             return true;

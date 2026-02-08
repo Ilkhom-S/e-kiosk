@@ -5,11 +5,11 @@
 //--------------------------------------------------------------------------------
 OSMP2::OSMP2() {
     // Данные устройства.
-    mDeviceName = "OSMP2 Watchdog";
-    mData[EOSMPCommandId::IdentificationData] = "2.00";
+    m_DeviceName = "OSMP2 Watchdog";
+    m_Data[EOSMPCommandId::IdentificationData] = "2.00";
 
     // Команды.
-    mData[EOSMPCommandId::GetSensorStatus] = "OSP\x07";
+    m_Data[EOSMPCommandId::GetSensorStatus] = "OSP\x07";
 }
 
 //---------------------------------------------------------------------------
@@ -18,7 +18,7 @@ bool OSMP2::getStatus(TStatusCodes &aStatusCodes) {
     /*
     QByteArray answer;
 
-    if (!execCommand(mData[EOSMPCommandId::GetSensorStatus], &answer))
+    if (!execCommand(m_Data[EOSMPCommandId::GetSensorStatus], &answer))
     {
             return false;
     }

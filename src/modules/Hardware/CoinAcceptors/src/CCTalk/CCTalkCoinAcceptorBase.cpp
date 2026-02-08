@@ -12,16 +12,16 @@ using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
 CCTalkCoinAcceptorBase::CCTalkCoinAcceptorBase() {
-    mModels = getModelList();
+    m_Models = getModelList();
 
-    mAddress = CCCTalk::Address::CoinAcceptor;
-    mErrorData = PErrorData(new CCCTalk::ErrorData());
-    mAllModelData = PAllModelData(new CCCTalk::CoinAcceptor::CModelData());
+    m_Address = CCCTalk::Address::CoinAcceptor;
+    m_ErrorData = PErrorData(new CCCTalk::ErrorData());
+    m_AllModelData = PAllModelData(new CCCTalk::CoinAcceptor::CModelData());
 }
 
 //---------------------------------------------------------------------------
 bool CCTalkCoinAcceptorBase::processReset() {
-    toLog(LogLevel::Normal, mDeviceName + ": processing command reset");
+    toLog(LogLevel::Normal, m_DeviceName + ": processing command reset");
 
     if (!processCommand(CCCTalk::Command::Reset)) {
         return false;
@@ -36,7 +36,7 @@ bool CCTalkCoinAcceptorBase::processReset() {
         return false;
     }
 
-    mEventIndex = 0;
+    m_EventIndex = 0;
 
     SleepHelper::msleep(CCCTalk::Timeouts::TestCoils);
 
@@ -59,7 +59,7 @@ bool CCTalkCoinAcceptorBase::loadParTable() {
             CCCTalk::SCurrencyData currencyData;
 
             if ((countryCodeData == CCCTalk::TeachMode) && (nominalData == "000")) {
-                toLog(LogLevel::Normal, mDeviceName + ": Teachmode coin channel");
+                toLog(LogLevel::Normal, m_DeviceName + ": Teachmode coin channel");
             } else if (parseCurrencyData(countryCodeData, currencyData)) {
                 QByteArray parsed(nominalData);
                 int pow = 0;
@@ -90,12 +90,12 @@ bool CCTalkCoinAcceptorBase::loadParTable() {
 
                 SPar par(nominal, countryCode, ECashReceiver::CoinAcceptor);
                 par.currency = CurrencyCodes.key(currencyData.code);
-                mCurrency = countryCode;
+                m_Currency = countryCode;
 
                 {
-                    MutexLocker locker(&mResourceMutex);
+                    MutexLocker locker(&m_ResourceMutex);
 
-                    mEscrowParTable.data().insert(i, par);
+                    m_EscrowParTable.data().insert(i, par);
                 }
 
                 if (par.currency == CurrencyCodes.key(Currency::KZT)) {
@@ -104,20 +104,20 @@ bool CCTalkCoinAcceptorBase::loadParTable() {
             }
         } else {
             toLog(LogLevel::Error,
-                  mDeviceName + QString(": Failed to get coin %1 data").arg(uint(i)));
+                  m_DeviceName + QString(": Failed to get coin %1 data").arg(uint(i)));
         }
     }
 
     if ((std::find_if(CCCTalk::WrongFirmwareVendors.begin(),
                       CCCTalk::WrongFirmwareVendors.end(),
                       [&](const QString &aVendor) -> bool {
-                          return mDeviceName.contains(aVendor);
+                          return m_DeviceName.contains(aVendor);
                       }) != CCCTalk::WrongFirmwareVendors.end()) &&
         (max < 10)) {
-        MutexLocker locker(&mResourceMutex);
+        MutexLocker locker(&m_ResourceMutex);
 
-        for (TParTable::iterator it = mEscrowParTable.data().begin();
-             it != mEscrowParTable.data().end();
+        for (TParTable::iterator it = m_EscrowParTable.data().begin();
+             it != m_EscrowParTable.data().end();
              ++it) {
             if (it->currency == CurrencyCodes.key(Currency::KZT)) {
                 it->nominal *= 100;
@@ -138,7 +138,7 @@ bool CCTalkCoinAcceptorBase::canApplySimpleStatusCodes(const TStatusCodes &aStat
 
     foreach (int statusCode, aStatusCodes) {
         statuses << static_cast<ECashAcceptorStatus::Enum>(
-            mStatusCodesSpecification->value(statusCode).status);
+            m_StatusCodesSpecification->value(statusCode).status);
     }
 
     statuses -= CCashAcceptor::Set::NormalStatuses;
@@ -151,14 +151,14 @@ void CCTalkCoinAcceptorBase::parseCreditData(uchar aCredit,
                                              uchar /*aError*/,
                                              TStatusCodes &aStatusCodes) {
     aStatusCodes.insert(BillAcceptorStatusCode::BillOperation::Stacked);
-    mCodes.insert(CCCTalk::StackedDeviceCode);
+    m_Codes.insert(CCCTalk::StackedDeviceCode);
 
-    mEscrowPars << mEscrowParTable[aCredit];
+    m_EscrowPars << m_EscrowParTable[aCredit];
 }
 
 //---------------------------------------------------------------------------
 bool CCTalkCoinAcceptorBase::getBufferedStatuses(QByteArray &aAnswer) {
-    mEscrowPars.clear();
+    m_EscrowPars.clear();
 
     return processCommand(CCCTalk::Command::GetBufferedCoinStatuses, &aAnswer);
 }

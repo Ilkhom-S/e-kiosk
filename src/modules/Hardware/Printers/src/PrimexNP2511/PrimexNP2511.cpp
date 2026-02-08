@@ -8,26 +8,26 @@ using namespace PrinterStatusCode;
 //--------------------------------------------------------------------------------
 PrimexNP2511::PrimexNP2511() {
     // данные устройства
-    mDeviceName = "Primex NP-2511";
+    m_DeviceName = "Primex NP-2511";
 
     // данные порта
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200); // default
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR115200); // default
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
 
-    mPortParameters[EParameters::Parity].append(EParity::No); // default
-    mPortParameters[EParameters::Parity].append(EParity::Even);
-    mPortParameters[EParameters::Parity].append(EParity::Odd);
+    m_PortParameters[EParameters::Parity].append(EParity::No); // default
+    m_PortParameters[EParameters::Parity].append(EParity::Even);
+    m_PortParameters[EParameters::Parity].append(EParity::Odd);
 
     // теги
-    mTagEngine = Tags::PEngine(new CPrimexNP2511::TagEngine());
+    m_TagEngine = Tags::PEngine(new CPrimexNP2511::TagEngine());
 
     // кодек
-    mDecoder = CodecByName[CHardware::Codepages::Win1251];
+    m_Decoder = CodecByName[CHardware::Codepages::Win1251];
 
     // данные устройства
-    mDeviceName = "Primex NP-2511";
+    m_DeviceName = "Primex NP-2511";
     setConfigParameter(CHardware::Printer::FeedingAmount, 2);
     setConfigParameter(CHardware::Printer::Commands::Cutting, "\x1B\x69");
 }
@@ -53,13 +53,13 @@ bool PrimexNP2511::isConnected() {
 
 //--------------------------------------------------------------------------------
 bool PrimexNP2511::backFeed(int aCount) {
-    return !aCount || mIOPort->write(QByteArray(CPrimexNP2511::Commands::BackFeed) + char(aCount));
+    return !aCount || m_IOPort->write(QByteArray(CPrimexNP2511::Commands::BackFeed) + char(aCount));
 }
 
 //--------------------------------------------------------------------------------
 bool PrimexNP2511::updateParameters() {
     // TODO: вынести выбор кодовой страницы в настройки плагина
-    return mIOPort->write(QByteArray(CPrimexNP2511::Commands::Initialize) +
+    return m_IOPort->write(QByteArray(CPrimexNP2511::Commands::Initialize) +
                           CPrimexNP2511::Commands::SetCyrillicPage);
 }
 
@@ -67,21 +67,21 @@ bool PrimexNP2511::updateParameters() {
 bool PrimexNP2511::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
     // TODO: проверить возможности эжектора и вынести все соответствующие параметры в настройки
     // плагина
-    return mIOPort->write(CPrimexNP2511::Commands::ClearDispenser) &&
+    return m_IOPort->write(CPrimexNP2511::Commands::ClearDispenser) &&
            backFeed(CPrimexNP2511::BackFeedCount) &&
-           mIOPort->write(CPrimexNP2511::Commands::AutoRetract) &&
+           m_IOPort->write(CPrimexNP2511::Commands::AutoRetract) &&
            SerialPrinterBase::printReceipt(aLexemeReceipt);
 }
 
 //--------------------------------------------------------------------------------
 bool PrimexNP2511::printBarcode(const QString &aBarcode) {
     // 1. В Qt 6 для кодирования текста в байты (fromUnicode) используется QStringEncoder.
-    // mDecoder в 2026 году — это std::shared_ptr<QStringDecoder>.
+    // m_Decoder в 2026 году — это std::shared_ptr<QStringDecoder>.
     QByteArray barcodeData;
 
-    if (mDecoder) {
+    if (m_Decoder) {
         // Создаем энкодер с кодировкой текущего декодера
-        QStringEncoder encoder(mDecoder->name());
+        QStringEncoder encoder(m_Decoder->name());
         barcodeData = encoder(aBarcode);
     } else {
         // Запасной вариант (Latin1), если декодер не задан
@@ -97,14 +97,14 @@ bool PrimexNP2511::printBarcode(const QString &aBarcode) {
         CPrimexNP2511::Commands::BarCode::Print + barcodeData + ASCII::NUL;
 
     // 3. Записываем данные в порт.
-    return mIOPort->write(request);
+    return m_IOPort->write(request);
 }
 
 //--------------------------------------------------------------------------------
 bool PrimexNP2511::getStatus(TStatusCodes &aStatusCodes) {
     QByteArray answer;
 
-    if (!mIOPort->write(CPrimexNP2511::Commands::GetStatus) || !mIOPort->read(answer) ||
+    if (!m_IOPort->write(CPrimexNP2511::Commands::GetStatus) || !m_IOPort->read(answer) ||
         (answer.size() != 1)) {
         return false;
     }
@@ -123,8 +123,8 @@ bool PrimexNP2511::processDeviceData(const CPrimexNP2511::TDeviceParametersIt &a
                                      QString &aData) {
     QByteArray answer;
 
-    if (!mIOPort->write(CPrimexNP2511::Commands::PrinterInfo + aIt.key()) ||
-        !mIOPort->read(answer)) {
+    if (!m_IOPort->write(CPrimexNP2511::Commands::PrinterInfo + aIt.key()) ||
+        !m_IOPort->read(answer)) {
         return false;
     }
 

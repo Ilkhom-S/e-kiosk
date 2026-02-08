@@ -75,13 +75,13 @@ protected:
     virtual void setPingEnable(bool aEnabled);
 
     /// Таймер для сброса внутреннего таймера датчика.
-    QTimer mPingTimer;
+    QTimer m_PingTimer;
 
     /// Показания датчиков в неподключенном состоянии.
-    bool mSensorDisabledValue;
+    bool m_SensorDisabledValue;
 
     /// Время включения PC.
-    QTime mPCWakingUpTime;
+    QTime m_PCWakingUpTime;
 };
 
 //----------------------------------------------------------------------------

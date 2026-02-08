@@ -24,59 +24,59 @@ template void PrimFRBase::loadDeviceData<uint>(
     const CPrimFR::TData &, const QString &, const QString &, int, const QString &);
 
 //--------------------------------------------------------------------------------
-PrimFRBase::PrimFRBase() : mMode(EFRMode::Fiscal) {
+PrimFRBase::PrimFRBase() : m_Mode(EFRMode::Fiscal) {
     // теги
-    mTagEngine = Tags::PEngine(new CPrimFR::TagEngine());
+    m_TagEngine = Tags::PEngine(new CPrimFR::TagEngine());
 
     // данные моделей
-    mDeviceName = CPrimFR::DefaultModelName;
-    mModels = CPrimFR::CommonModels();
-    mModel = CPrimFR::Models::Unknown;
-    mOffline = true;
+    m_DeviceName = CPrimFR::DefaultModelName;
+    m_Models = CPrimFR::CommonModels();
+    m_Model = CPrimFR::Models::Unknown;
+    m_Offline = true;
 
     setConfigParameter(CHardware::Printer::Commands::Cutting, CPOSPrinter::Command::Cut);
 
     // типы оплаты
-    mPayTypeData.add(EPayTypes::Cash, 0);
-    mPayTypeData.add(EPayTypes::EMoney, 1);
-    mPayTypeData.add(EPayTypes::PrePayment, 2);
+    m_PayTypeData.add(EPayTypes::Cash, 0);
+    m_PayTypeData.add(EPayTypes::EMoney, 1);
+    m_PayTypeData.add(EPayTypes::PrePayment, 2);
 
     // команды
-    mCommandTimouts.append(CPrimFR::Commands::SetFRParameters, 3 * 1000);
-    mCommandTimouts.append(CPrimFR::Commands::SetEjectorAction, 3 * 1000);
-    mCommandTimouts.append(CPrimFR::Commands::ZReport, 10 * 1000);
-    mCommandTimouts.append(CPrimFR::Commands::AFD, 10 * 1000);
+    m_CommandTimouts.append(CPrimFR::Commands::SetFRParameters, 3 * 1000);
+    m_CommandTimouts.append(CPrimFR::Commands::SetEjectorAction, 3 * 1000);
+    m_CommandTimouts.append(CPrimFR::Commands::ZReport, 10 * 1000);
+    m_CommandTimouts.append(CPrimFR::Commands::AFD, 10 * 1000);
 
     // ошибки
-    mErrorData = PErrorData(new CPrimFR::Errors::Data());
-    mExtraErrorData = PExtraErrorData(new CPrimFR::Errors::ExtraData());
+    m_ErrorData = PErrorData(new CPrimFR::Errors::Data());
+    m_ExtraErrorData = PExtraErrorData(new CPrimFR::Errors::ExtraData());
 
     // налоги
-    mTaxData.add(0, 0);
-    mTaxData.add(10, 4);
-    mTaxData.add(18, 5);
+    m_TaxData.add(0, 0);
+    m_TaxData.add(10, 4);
+    m_TaxData.add(18, 5);
 
     // данные порта
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200); // preferable for work
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);   // default
-    mPortParameters[EParameters::BaudRate].append(
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR115200); // preferable for work
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);   // default
+    m_PortParameters[EParameters::BaudRate].append(
         EBaudRate::BR4800); // default after resetting to zero
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
 
-    mPortParameters[EParameters::RTS].clear();
-    mPortParameters[EParameters::RTS].append(ERTSControl::Disable);
+    m_PortParameters[EParameters::RTS].clear();
+    m_PortParameters[EParameters::RTS].append(ERTSControl::Disable);
 
-    mPortParameters[EParameters::DTR].clear();
-    mPortParameters[EParameters::DTR].append(EDTRControl::Handshake);
+    m_PortParameters[EParameters::DTR].clear();
+    m_PortParameters[EParameters::DTR].append(EDTRControl::Handshake);
 
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 }
 
 //--------------------------------------------------------------------------------
 bool PrimFRBase::updateParameters() {
-    if ((!mOperatorPresence && !checkParameters()) || !checkControlSettings()) {
+    if ((!m_OperatorPresence && !checkParameters()) || !checkControlSettings()) {
         return false;
     }
 
@@ -90,7 +90,7 @@ bool PrimFRBase::updateParameters() {
 
     CPrimFR::TData commandData;
     QString payment = getConfigParameter(CHardware::FR::Strings::Payment).toString();
-    commandData << mCodec->fromUnicode(payment) << " " << " ";
+    commandData << m_Codec->fromUnicode(payment) << " " << " ";
 
     // устанавливаем названия строк фискального чека
     if (!processCommand(CPrimFR::Commands::SetFDTypeNames, commandData)) {
@@ -122,7 +122,7 @@ bool PrimFRBase::checkParameters() {
 
     using namespace CHardware::Printer;
 
-    if (mIsOnline) {
+    if (m_IsOnline) {
         parameter1 &= CPrimFR::Parameter1Mask;
         parameter1 |= ~CPrimFR::Parameter1Mask & FRParameter1;
     }
@@ -138,7 +138,7 @@ bool PrimFRBase::checkParameters() {
         parameter2 &= ~CPrimFR::NullingSumInCashMask;
     }
 
-    if (mOperatorPresence) {
+    if (m_OperatorPresence) {
         parameter2 |= CPrimFR::LongReportMask2;
     }
 
@@ -222,26 +222,26 @@ bool PrimFRBase::getTaxData(int aGroup, CPrimFR::Taxes::SData &aData) {
             CPrimFR::Commands::GetTaxRate, CPrimFR::TData() << int2ByteArray(aGroup), &answer) ||
         (answer.size() < 8)) {
         toLog(LogLevel::Error,
-              mDeviceName + QString(": Failed to get data for %1 tax group").arg(aGroup));
+              m_DeviceName + QString(": Failed to get data for %1 tax group").arg(aGroup));
         return false;
     }
 
     bool groupOK;
     bool valueOK;
     int group = answer[5].toInt(&groupOK);
-    aData.description = mCodec->toUnicode(answer[6]);
+    aData.description = m_Codec->toUnicode(answer[6]);
     aData.value = TVAT(answer[7].toDouble(&valueOK));
     aData.extraData = answer.mid(8);
 
     if (!groupOK || !valueOK) {
         toLog(LogLevel::Error,
-              mDeviceName + QString(": Failed to parse data for %1 tax group").arg(aGroup));
+              m_DeviceName + QString(": Failed to parse data for %1 tax group").arg(aGroup));
         return false;
     }
 
     if (aData.extraData.isEmpty()) {
         toLog(LogLevel::Error,
-              mDeviceName +
+              m_DeviceName +
                   QString(": Failed to parse data for %1 tax group due to extra data is empty")
                       .arg(aGroup));
         return false;
@@ -249,7 +249,7 @@ bool PrimFRBase::getTaxData(int aGroup, CPrimFR::Taxes::SData &aData) {
 
     if (group != aGroup) {
         toLog(LogLevel::Error,
-              mDeviceName + QString("tax group = %1, need %2").arg(group).arg(aGroup));
+              m_DeviceName + QString("tax group = %1, need %2").arg(group).arg(aGroup));
         return false;
     }
 
@@ -260,13 +260,13 @@ bool PrimFRBase::getTaxData(int aGroup, CPrimFR::Taxes::SData &aData) {
 bool PrimFRBase::setTaxData(int aGroup, const CPrimFR::Taxes::SData &aData) {
     CPrimFR::TData commandData =
         CPrimFR::TData()
-        << int2ByteArray(aGroup) << mCodec->fromUnicode(aData.description)
+        << int2ByteArray(aGroup) << m_Codec->fromUnicode(aData.description)
         << QString("%1").arg(aData.value, 5, 'f', 2, QLatin1Char(ASCII::Zero)).toLatin1()
         << aData.extraData;
 
     if (!processCommand(CPrimFR::Commands::SetTaxRate, commandData)) {
         toLog(LogLevel::Error,
-              mDeviceName + QString(": Failed to set data for %1 tax group").arg(aGroup));
+              m_DeviceName + QString(": Failed to set data for %1 tax group").arg(aGroup));
         return false;
     }
 
@@ -304,10 +304,10 @@ bool PrimFRBase::checkTax(TVAT aVAT, CFR::Taxes::SData &aData) {
     aData.deviceVAT = taxData.value;
 
     toLog(logLevel,
-          mDeviceName +
+          m_DeviceName +
               QString(": Wrong %1 for %2 tax group").arg(log.join("; ")).arg(aData.group));
 
-    if (mIsOnline && (taxData.value != aVAT)) {
+    if (m_IsOnline && (taxData.value != aVAT)) {
         return false;
     }
 
@@ -323,7 +323,7 @@ bool PrimFRBase::checkTax(TVAT aVAT, CFR::Taxes::SData &aData) {
 bool PrimFRBase::isConnected() {
     QByteArray answer;
 
-    while (mIOPort->read(answer, 5) && !answer.isEmpty()) {
+    while (m_IOPort->read(answer, 5) && !answer.isEmpty()) {
     }
 
     TStatusCodes statusCodes;
@@ -334,19 +334,19 @@ bool PrimFRBase::isConnected() {
     }
 
     QByteArray softVersion = answerData[6];
-    mModel = CPrimFR::ModelNames[answerData[5].simplified()];
+    m_Model = CPrimFR::ModelNames[answerData[5].simplified()];
 
     if (softVersion.indexOf(CPrimFR::FirmarePRIM21_03) != -1) {
-        mModel = CPrimFR::Models::PRIM_21K_03;
+        m_Model = CPrimFR::Models::PRIM_21K_03;
     }
 
     setDeviceParameter(CDeviceData::Firmware, softVersion);
 
-    CPrimFR::SModelParameters modelData = CPrimFR::ModelData[mModel];
-    mVerified = modelData.verified;
-    mModelCompatibility = mModels.contains(mModel);
-    mCanProcessZBuffer = !mIsOnline && modelData.hasBuffer;
-    mDeviceName = modelData.name;
+    CPrimFR::SModelParameters modelData = CPrimFR::ModelData[m_Model];
+    m_Verified = modelData.verified;
+    m_ModelCompatibility = m_Models.contains(m_Model);
+    m_CanProcessZBuffer = !m_IsOnline && modelData.hasBuffer;
+    m_DeviceName = modelData.name;
 
     setConfigParameter(CHardware::Printer::FeedingAmount, modelData.feed);
 
@@ -369,12 +369,12 @@ TResult PrimFRBase::processCommand(char aCommand, CPrimFR::TData *aAnswer) {
 TResult PrimFRBase::processCommand(char aCommand,
                                    const CPrimFR::TData &aCommandData,
                                    CPrimFR::TData *aAnswer) {
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
 
     QVariantMap configuration;
     configuration.insert(CHardware::Port::DeviceModelName, "PRIM");
-    mIOPort->setDeviceConfiguration(configuration);
+    m_IOPort->setDeviceConfiguration(configuration);
 
     QByteArray commandData = QByteArray(1, aCommand).toHex().toUpper();
     CPrimFR::TData data;
@@ -394,22 +394,22 @@ TResult PrimFRBase::processCommand(char aCommand,
         commandData += CPrimFR::Separator + dataItem;
     }
 
-    mLastError = 0;
+    m_LastError = 0;
     QByteArray answer;
-    TResult result = mProtocol.processCommand(commandData, answer, mCommandTimouts[aCommand]);
+    TResult result = m_Protocol.processCommand(commandData, answer, m_CommandTimouts[aCommand]);
 
     if (CORRECT(result) || (result == CommandResult::Id)) {
-        mMode = EFRMode::Fiscal;
+        m_Mode = EFRMode::Fiscal;
     }
 
-    if (mConnected && (result == CommandResult::NoAnswer) && (answer.size() == 1) &&
+    if (m_Connected && (result == CommandResult::NoAnswer) && (answer.size() == 1) &&
         (~answer[0] & CPrimFR::CommandResultMask::PrinterMode)) {
-        mMode = EFRMode::Printer;
-        mIOPort->write(QByteArray(2, ASCII::LF));
+        m_Mode = EFRMode::Printer;
+        m_IOPort->write(QByteArray(2, ASCII::LF));
         performReceipt(QStringList() << CPrimFR::EndPrinterModeText, true);
 
         if (setMode(EFRMode::Fiscal)) {
-            result = mProtocol.processCommand(commandData, answer, mCommandTimouts[aCommand]);
+            result = m_Protocol.processCommand(commandData, answer, m_CommandTimouts[aCommand]);
         }
     }
 
@@ -429,24 +429,24 @@ TResult PrimFRBase::processCommand(char aCommand,
     }
 
     char error = char(qToBigEndian(QString(answerData[3]).toUShort(0, 16)));
-    mLastError = error;
-    mLastCommand = QByteArray(1, aCommand);
+    m_LastError = error;
+    m_LastCommand = QByteArray(1, aCommand);
 
     if (!error) {
         if (aCommand == CPrimFR::Commands::ZReport) {
-            mNeedCloseSession = false;
+            m_NeedCloseSession = false;
         }
 
         return CommandResult::OK;
     }
 
-    if (!mProcessingErrors.isEmpty() && (mProcessingErrors.last() == error)) {
+    if (!m_ProcessingErrors.isEmpty() && (m_ProcessingErrors.last() == error)) {
         return CommandResult::Device;
     }
 
     QString canAutoCloseSession = getConfigParameter(CHardware::FR::CanAutoCloseSession).toString();
 
-    if ((error == CPrimFR::Errors::NeedZReport) && (mInitialized == ERequestStatus::InProcess)) {
+    if ((error == CPrimFR::Errors::NeedZReport) && (m_Initialized == ERequestStatus::InProcess)) {
         if (canAutoCloseSession == CHardwareSDK::Values::Auto) {
             setConfigParameter(CHardware::FR::CanAutoCloseSession, CHardwareSDK::Values::NotUse);
 
@@ -457,8 +457,8 @@ TResult PrimFRBase::processCommand(char aCommand,
     }
 
     if (isErrorUnprocessed(aCommand, error) || !processAnswer(error)) {
-        mLastError = error;
-        mLastCommand = QByteArray(1, aCommand);
+        m_LastError = error;
+        m_LastCommand = QByteArray(1, aCommand);
 
         return CommandResult::Device;
     }
@@ -466,7 +466,7 @@ TResult PrimFRBase::processCommand(char aCommand,
     result = processCommand(aCommand, aCommandData, aAnswer);
 
     if (result) {
-        mProcessingErrors.pop_back();
+        m_ProcessingErrors.pop_back();
     }
 
     return result;
@@ -491,7 +491,7 @@ TResult PrimFRBase::processCommand(char aCommand,
     TResult result = processCommand(aCommand, aCommandData, &data);
 
     if (!result) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to process command to get " + aLog);
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to process command to get " + aLog);
         return result;
     }
 
@@ -507,7 +507,7 @@ bool PrimFRBase::parseAnswerData(const CPrimFR::TData &aData,
                                  T &aResult) {
     if (aData.size() <= aIndex) {
         toLog(LogLevel::Error,
-              mDeviceName +
+              m_DeviceName +
                   QString(": Failed to parse %1 data due to answer size = %2, need %3 minimum")
                       .arg(aLog)
                       .arg(aData.size())
@@ -521,9 +521,9 @@ bool PrimFRBase::parseAnswerData(const CPrimFR::TData &aData,
 
     if ((data.size() != (sizeof(T) * 2)) || !OK) {
         toLog(LogLevel::Error,
-              mDeviceName + QString(": Failed to parse %1 data, answer = %2 (%3)")
+              m_DeviceName + QString(": Failed to parse %1 data, answer = %2 (%3)")
                                 .arg(aLog)
-                                .arg(mCodec->toUnicode(data))
+                                .arg(m_Codec->toUnicode(data))
                                 .arg(data.toHex().data()));
         return false;
     }
@@ -540,7 +540,7 @@ bool PrimFRBase::parseAnswerData<QDateTime>(const CPrimFR::TData &aData,
     if (aData.size() <= ++aIndex) {
         toLog(
             LogLevel::Error,
-            mDeviceName +
+            m_DeviceName +
                 QString(
                     ": Failed to parse date and time data due to answer size = %1, need %2 minimum")
                     .arg(aData.size())
@@ -553,8 +553,8 @@ bool PrimFRBase::parseAnswerData<QDateTime>(const CPrimFR::TData &aData,
 
     if (!aResult.isValid()) {
         toLog(LogLevel::Error,
-              mDeviceName + QString(": Failed to parse date and time data, answer = %1 (%2)")
-                                .arg(mCodec->toUnicode(data))
+              m_DeviceName + QString(": Failed to parse date and time data, answer = %1 (%2)")
+                                .arg(m_Codec->toUnicode(data))
                                 .arg(data.toHex().data()));
         return false;
     }
@@ -594,7 +594,7 @@ TResult
 PrimFRBase::checkAnswer(TResult aResult, const QByteArray &aAnswer, CPrimFR::TData &aAnswerData) {
     if (aResult == CommandResult::NoAnswer) {
         char commandResultAnswer;
-        TResult result = mProtocol.getCommandResult(commandResultAnswer);
+        TResult result = m_Protocol.getCommandResult(commandResultAnswer);
 
         if (result == CommandResult::Port) {
             return CommandResult::Port;
@@ -603,7 +603,7 @@ PrimFRBase::checkAnswer(TResult aResult, const QByteArray &aAnswer, CPrimFR::TDa
 
             if (statusCodes.contains(PrinterStatusCode::Error::PrinterFR)) {
                 toLog(LogLevel::Error, "FR printer is in error, going to offline mode and exiting");
-                mOffline = true;
+                m_Offline = true;
             }
 
             if (statusCodes.contains(DeviceStatusCode::Warning::OperationError)) {
@@ -633,11 +633,11 @@ PrimFRBase::checkAnswer(TResult aResult, const QByteArray &aAnswer, CPrimFR::TDa
     char errorReason = char(error >> 8);
 
     if (errorCode) {
-        FRError::SData errorData = mErrorData->value(errorCode);
-        QString log = mDeviceName + ": Error: " + errorData.description;
+        FRError::SData errorData = m_ErrorData->value(errorCode);
+        QString log = m_DeviceName + ": Error: " + errorData.description;
 
         if (errorData.extraData) {
-            log += mExtraErrorData->value(errorCode, errorReason);
+            log += m_ExtraErrorData->value(errorCode, errorReason);
         }
 
         toLog(LogLevel::Error, log);
@@ -654,7 +654,7 @@ bool PrimFRBase::printLine(const QByteArray &aString) {
         return false;
     }
 
-    if (mModel == CPrimFR::Models::PRIM_07K) {
+    if (m_Model == CPrimFR::Models::PRIM_07K) {
         SleepHelper::msleep(CPrimFR::Pause::LinePrinting);
     }
 
@@ -665,12 +665,12 @@ bool PrimFRBase::printLine(const QByteArray &aString) {
 bool PrimFRBase::performReceipt(const QStringList &aReceipt, bool aProcessing) {
     QVariantMap configuration;
     configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::ReadWrite));
-    mIOPort->setDeviceConfiguration(configuration);
+    m_IOPort->setDeviceConfiguration(configuration);
 
     bool result = TSerialFRBase::processReceipt(aReceipt, aProcessing);
 
-    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(mIOMessageLogging));
-    mIOPort->setDeviceConfiguration(configuration);
+    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(m_IOMessageLogging));
+    m_IOPort->setDeviceConfiguration(configuration);
 
     return result;
 }
@@ -686,7 +686,7 @@ bool PrimFRBase::processReceipt(const QStringList &aReceipt, bool aProcessing) {
     }
 
     // TODO: лишняя команда для наследников, которые печатают через драйвер принтера
-    mIOPort->write(CPOSPrinter::Command::AlignLeft);
+    m_IOPort->write(CPOSPrinter::Command::AlignLeft);
     bool result = performReceipt(aReceipt, aProcessing);
 
     setMode(EFRMode::Fiscal);
@@ -698,7 +698,7 @@ bool PrimFRBase::processReceipt(const QStringList &aReceipt, bool aProcessing) {
 void PrimFRBase::getRTStatuses(TStatusCodes &aStatusCodes) {
     aStatusCodes.clear();
 
-    foreach (auto command, CPrimFR::ModelData[mModel].statusData.keys()) {
+    foreach (auto command, CPrimFR::ModelData[m_Model].statusData.keys()) {
         if (aStatusCodes.contains(DeviceStatusCode::Error::NotAvailable)) {
             break;
         }
@@ -707,28 +707,28 @@ void PrimFRBase::getRTStatuses(TStatusCodes &aStatusCodes) {
     }
 
     bool notAvailabled = aStatusCodes.contains(DeviceStatusCode::Error::NotAvailable);
-    bool oldNotAvailabled = mStatusCollection.isEmpty() ||
-                            mStatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
+    bool oldNotAvailabled = m_StatusCollection.isEmpty() ||
+                            m_StatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
     bool error =
         std::find_if(aStatusCodes.begin(), aStatusCodes.end(), [&](int aCode) -> bool {
-            return mStatusCodesSpecification->value(aCode).warningLevel == EWarningLevel::Error;
+            return m_StatusCodesSpecification->value(aCode).warningLevel == EWarningLevel::Error;
         }) != aStatusCodes.end();
 
-    mOffline = notAvailabled || (!oldNotAvailabled && error);
+    m_Offline = notAvailabled || (!oldNotAvailabled && error);
 }
 
 //--------------------------------------------------------------------------------
 bool PrimFRBase::getStatusInfo(TStatusCodes &aStatusCodes, CPrimFR::TData &aAnswer) {
-    bool printerMode = mMode == EFRMode::Printer;
+    bool printerMode = m_Mode == EFRMode::Printer;
 
-    if (mOffline || printerMode) {
+    if (m_Offline || printerMode) {
         getRTStatuses(aStatusCodes);
     }
 
     TResult result = processCommand(CPrimFR::Commands::GetKKMInfo, &aAnswer);
-    printerMode = mMode == EFRMode::Printer;
+    printerMode = m_Mode == EFRMode::Printer;
 
-    if (!mOffline && !printerMode) {
+    if (!m_Offline && !printerMode) {
         if (!CORRECT(result)) {
             if (!aAnswer.isEmpty() && !aAnswer[0].isEmpty()) {
                 getRTStatuses(aStatusCodes);
@@ -736,7 +736,7 @@ bool PrimFRBase::getStatusInfo(TStatusCodes &aStatusCodes, CPrimFR::TData &aAnsw
 
             return false;
         } else if (result == CommandResult::Device) {
-            int statusCode = getErrorStatusCode(mErrorData->value(mLastError).type);
+            int statusCode = getErrorStatusCode(m_ErrorData->value(m_LastError).type);
             aStatusCodes.insert(statusCode);
         } else if (result == CommandResult::Answer) {
             aStatusCodes.insert(DeviceStatusCode::Warning::OperationError);
@@ -751,11 +751,11 @@ bool PrimFRBase::getStatusInfo(TStatusCodes &aStatusCodes, CPrimFR::TData &aAnsw
 
 //--------------------------------------------------------------------------------
 bool PrimFRBase::getStatus(TStatusCodes &aStatusCodes) {
-    if (mNeedCloseSession) {
+    if (m_NeedCloseSession) {
         aStatusCodes.insert(FRStatusCode::Error::NeedCloseSession);
     }
 
-    if (mMode == EFRMode::Printer) {
+    if (m_Mode == EFRMode::Printer) {
         return true;
     }
 
@@ -844,7 +844,7 @@ void PrimFRBase::setFiscalData(CPrimFR::TData &aCommandData,
 
     QByteArray sum =
         QString::number(qRound64(getTotalAmount(aPaymentData) * 100.0) / 100.0, '0', 2).toLatin1();
-    QString cashier = mFFEngine.getConfigParameter(CFiscalSDK::Cashier).toString();
+    QString cashier = m_FFEngine.getConfigParameter(CFiscalSDK::Cashier).toString();
     QString operatorId = cashier.isEmpty() ? CPrimFR::OperatorID : cashier;
 
     // обязательные G-поля
@@ -856,7 +856,7 @@ void PrimFRBase::setFiscalData(CPrimFR::TData &aCommandData,
                  << addGFieldToBuffer(aReceiptSize + 3, date.size() + 16 + time.size()) // время
                  << addGFieldToBuffer(aReceiptSize + 2, INN.size() + 2)                 // ИНН
                  << addGFieldToBuffer(aReceiptSize + 3, 7)
-                 << mCodec->fromUnicode(operatorId)                                // ID оператора
+                 << m_Codec->fromUnicode(operatorId)                                // ID оператора
                  << addGFieldToBuffer(aReceiptSize + 4, amount.size() + 2) << sum; // сумма
 
     // произворльные G-поля
@@ -879,7 +879,7 @@ bool PrimFRBase::performFiscal(const QStringList &aReceipt,
 
     int verificationCode = getVerificationCode();
     QByteArray FDType = CPrimFR::PayOffTypeData[aPaymentData.payOffType];
-    QByteArray payTypeData = int2ByteArray(mPayTypeData[aPaymentData.payType].value);
+    QByteArray payTypeData = int2ByteArray(m_PayTypeData[aPaymentData.payType].value);
 
     CPrimFR::TData commandData = CPrimFR::TData()
                                  << FDType             // тип чека
@@ -901,7 +901,7 @@ bool PrimFRBase::performFiscal(const QStringList &aReceipt,
 
     // терминальный чек
     for (int i = 0; i < receiptSize; ++i) {
-        char font = mIsOnline ? CPrimFR::FiscalFont::Narrow : CPrimFR::FiscalFont::Default;
+        char font = m_IsOnline ? CPrimFR::FiscalFont::Narrow : CPrimFR::FiscalFont::Default;
         commandData << addArbitraryFieldToBuffer(i + 1, 1, receipt[i], font);
     }
 
@@ -910,7 +910,7 @@ bool PrimFRBase::performFiscal(const QStringList &aReceipt,
 
     bool result = processCommand(CPrimFR::Commands::AFD, commandData);
 
-    mPaperInPresenter = QDateTime::currentDateTime();
+    m_PaperInPresenter = QDateTime::currentDateTime();
 
     int newVerificationCode = getVerificationCode();
 
@@ -931,7 +931,7 @@ double PrimFRBase::getAmountInCash() {
     CPrimFR::TData answer;
     // индексы для парсинга, меняться не будут. Зависят от мажорной версии прошивки, которая
     // привязана к версии ФФД
-    int index = (mFFDFR < EFFD::F105) ? 23 : 31;
+    int index = (m_FFDFR < EFFD::F105) ? 23 : 31;
 
     if (!processCommand(CPrimFR::Commands::EReport, &answer) || (answer.size() <= index)) {
         toLog(LogLevel::Error, "PrimPrinters: Failed to process E-Report");
@@ -1045,7 +1045,7 @@ TResult PrimFRBase::doZReport(bool aAuto) {
 //--------------------------------------------------------------------------------
 bool PrimFRBase::execZReport(bool aAuto) {
     toLog(LogLevel::Normal,
-          mDeviceName + QString(": Begin processing %1Z-report").arg(aAuto ? "auto-" : ""));
+          m_DeviceName + QString(": Begin processing %1Z-report").arg(aAuto ? "auto-" : ""));
     ESessionState::Enum sessionState = getSessionState();
 
     if (sessionState == ESessionState::Error)
@@ -1054,13 +1054,13 @@ bool PrimFRBase::execZReport(bool aAuto) {
         return true;
 
     bool cannotAutoZReport =
-        !mCanProcessZBuffer ||
-        (mOperatorPresence && !getConfigParameter(CHardware::FR::ForcePerformZReport).toBool());
+        !m_CanProcessZBuffer ||
+        (m_OperatorPresence && !getConfigParameter(CHardware::FR::ForcePerformZReport).toBool());
 
-    if (aAuto && cannotAutoZReport && !mIsOnline) {
+    if (aAuto && cannotAutoZReport && !m_IsOnline) {
         toLog(LogLevel::Error,
-              mDeviceName +
-                  (mOperatorPresence
+              m_DeviceName +
+                  (m_OperatorPresence
                        ? ": Failed to process auto-Z-report due to presence of the operator."
                        : ": has no Z-buffer, so it is impossible to perform auto-Z-report."));
         return false;
@@ -1071,8 +1071,8 @@ bool PrimFRBase::execZReport(bool aAuto) {
         return false;
     }
 
-    mNeedCloseSession = false;
-    mProcessingErrors.removeAll(CPrimFR::Errors::NeedZReport);
+    m_NeedCloseSession = false;
+    m_ProcessingErrors.removeAll(CPrimFR::Errors::NeedZReport);
 
     return true;
 }
@@ -1081,7 +1081,7 @@ bool PrimFRBase::execZReport(bool aAuto) {
 bool PrimFRBase::performZReport(bool aPrintDeferredReports) {
     bool ZReportOK = execZReport(false);
 
-    int needPrintDeferred = aPrintDeferredReports && mCanProcessZBuffer;
+    int needPrintDeferred = aPrintDeferredReports && m_CanProcessZBuffer;
     int endZReport = needPrintDeferred ? getEndZReportNumber() : 0;
 
     if (!needPrintDeferred || (endZReport <= 0)) {
@@ -1122,7 +1122,7 @@ bool PrimFRBase::performZReport(bool aPrintDeferredReports) {
 
 //--------------------------------------------------------------------------------
 bool PrimFRBase::setMode(EFRMode::Enum aMode) {
-    if (mMode == aMode) {
+    if (m_Mode == aMode) {
         return true;
     }
 
@@ -1133,7 +1133,7 @@ bool PrimFRBase::setMode(EFRMode::Enum aMode) {
         }
     } else if (aMode == EFRMode::Fiscal) {
         QByteArray answer;
-        TResult result = mProtocol.execCommand(CPrimFR::Commands::SetFiscalMode,
+        TResult result = m_Protocol.execCommand(CPrimFR::Commands::SetFiscalMode,
                                                answer,
                                                CPrimFR::SetFiscalModeTimeout,
                                                EPrimFRCommandConditions::PrinterMode);
@@ -1147,7 +1147,7 @@ bool PrimFRBase::setMode(EFRMode::Enum aMode) {
         }
     }
 
-    mMode = aMode;
+    m_Mode = aMode;
 
     return true;
 }
@@ -1177,34 +1177,34 @@ PrimFRBase::addArbitraryFieldToBuffer(int aX, int aY, const QString &aData, int 
            << int2String(aFont).toLatin1() // шрифт, см. ESC !
            << "01"                         // Печать произвольного реквизита
            << "00"                         // N вывода на контрольную ленту
-           << mCodec->fromUnicode(aData);  // данные
+           << m_Codec->fromUnicode(aData);  // данные
 }
 
 //--------------------------------------------------------------------------------
 bool PrimFRBase::processAnswer(char aError) {
     switch (aError) {
     case CPrimFR::Errors::InvalidStateForCommand: {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
         return processCommand(CPrimFR::Commands::CancelDocument);
     }
     //--------------------------------------------------------------------------------
     case CPrimFR::Errors::NeedBeginSession: {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
         return processCommand(CPrimFR::Commands::OpenSession);
     }
     //--------------------------------------------------------------------------------
     case CPrimFR::Errors::NeedBeginFRSession: {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
         return openFRSession();
     }
     //--------------------------------------------------------------------------------
     case CPrimFR::Errors::NeedZReport: {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
-        mNeedCloseSession = true;
+        m_NeedCloseSession = true;
 
         return execZReport(true);
     }
@@ -1222,25 +1222,25 @@ bool PrimFRBase::openSession() {
 
 //--------------------------------------------------------------------------------
 TStatusCodes PrimFRBase::getRTStatus(int aCommand) {
-    mRTProtocol.setPort(mIOPort);
-    mRTProtocol.setLog(mLog);
+    m_RTProtocol.setPort(m_IOPort);
+    m_RTProtocol.setLog(m_Log);
 
     QVariantMap configuration;
     configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::ReadWrite));
-    mIOPort->setDeviceConfiguration(configuration);
+    m_IOPort->setDeviceConfiguration(configuration);
 
     char answer;
     TStatusCodes result;
 
-    if (mRTProtocol.processCommand(aCommand, answer)) {
+    if (m_RTProtocol.processCommand(aCommand, answer)) {
         result = parseRTStatus(aCommand, answer);
     } else {
         result.insert(DeviceStatusCode::Error::NotAvailable);
-        mOffline = true;
+        m_Offline = true;
     }
 
     configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::None));
-    mIOPort->setDeviceConfiguration(configuration);
+    m_IOPort->setDeviceConfiguration(configuration);
 
     return result;
 }
@@ -1248,7 +1248,7 @@ TStatusCodes PrimFRBase::getRTStatus(int aCommand) {
 //--------------------------------------------------------------------------------
 TStatusCodes PrimFRBase::parseRTStatus(int aCommand, char aAnswer) {
     TStatusCodes result;
-    CPrimFR::TStatusBitShifts shifts = CPrimFR::ModelData[mModel].statusData[aCommand];
+    CPrimFR::TStatusBitShifts shifts = CPrimFR::ModelData[m_Model].statusData[aCommand];
 
     foreach (auto bit, shifts.keys()) {
         if (bool(aAnswer & (1 << bit)) == bool(aCommand)) {

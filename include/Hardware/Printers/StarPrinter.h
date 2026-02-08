@@ -78,22 +78,22 @@ protected:
         const QByteArray aAnswer, int aByteNumber, int aSource, int aShift, int aDigits) const;
 
     /// Мем-свичи.
-    CSTAR::TMemorySwitches mMemorySwitches;
+    CSTAR::TMemorySwitches m_MemorySwitches;
 
     /// Экземпляр утилитного класса для работы с мем-свичами.
-    CSTAR::MemorySwitches::Utils mMemorySwitchUtils;
+    CSTAR::MemorySwitches::Utils m_MemorySwitchUtils;
 
     /// Модели данной реализации.
-    QStringList mModels;
+    QStringList m_Models;
 
     /// Время работы буфера статусов после печати.
-    QDateTime mStartPrinting;
+    QDateTime m_StartPrinting;
 
     /// Необходимо забрать чек из презентера.
-    bool mNeedPaperTakeOut;
+    bool m_NeedPaperTakeOut;
 
     /// Флаг полного поллинга.
-    bool mFullPolling;
+    bool m_FullPolling;
 };
 
 //--------------------------------------------------------------------------------

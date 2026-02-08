@@ -6,22 +6,22 @@
 //--------------------------------------------------------------------------------
 template <class T> struct SPData {
 public:
-    SPData<T>() : mData(0) {}
+    SPData<T>() : m_Data(0) {}
 
-    operator T() { return mData; }
+    operator T() { return m_Data; }
 
     SPData<T> &operator=(T aResult) {
-        mData = aResult;
+        m_Data = aResult;
 
         return *this;
     }
 
-    T *operator&() { return &mData; }
+    T *operator&() { return &m_Data; }
 
-    operator bool() { return mData; }
+    operator bool() { return m_Data; }
 
 private:
-    T mData;
+    T m_Data;
 };
 
 //--------------------------------------------------------------------------------

@@ -53,7 +53,7 @@ namespace BillAcceptorStatusCode {
                        QCoreApplication::translate("ValidatorStatuses", "#rejected"))
 
 #define MODIFY_BASE_CA_STATUS(aStatusCode, aWarningLevel, aStatus)                                 \
-    mBuffer[DeviceStatusCode::aWarningLevel::aStatusCode].status =                                 \
+    m_Buffer[DeviceStatusCode::aWarningLevel::aStatusCode].status =                                 \
         SDK::Driver::ECashAcceptorStatus::aStatus;
 #define SIMPLE_MODIFY_BASE_CA_STATUS(aStatusCode, aStatus)                                         \
     MODIFY_BASE_CA_STATUS(aStatusCode, aStatus, aStatus)

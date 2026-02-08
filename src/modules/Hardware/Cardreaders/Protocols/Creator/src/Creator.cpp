@@ -10,7 +10,7 @@
 #include "CreatorConstants.h"
 #include "Hardware/Common/HardwareConstants.h"
 
-Creator::Creator() : mIOLogsDebugMode(false) {}
+Creator::Creator() : m_IOLogsDebugMode(false) {}
 
 //-------------------------------------------------------------------------------
 bool Creator::sendPacket(const QByteArray &aData) {
@@ -28,7 +28,7 @@ bool Creator::sendPacket(const QByteArray &aData) {
 
         toLog(LogLevel::Debug, "USB >> " + loggedRequest);
 
-        if (!mPort->write(packet)) {
+        if (!m_Port->write(packet)) {
             return false;
         }
     }
@@ -113,7 +113,7 @@ bool Creator::receivePacket(QByteArray &aData) {
     QStringList logBuffer;
 
     do {
-        if (!mPort->read(answer, 1)) {
+        if (!m_Port->read(answer, 1)) {
             return false;
         }
 
@@ -233,7 +233,7 @@ TResult Creator::checkAnswer(const QByteArray &aAnswer) {
 TResult Creator::processCommand(const QByteArray &aCommandData,
                                 QByteArray &aUnpackedAnswer,
                                 bool aIOLogsDebugMode) {
-    mIOLogsDebugMode = aIOLogsDebugMode;
+    m_IOLogsDebugMode = aIOLogsDebugMode;
 
     QByteArray packet;
     packData(aCommandData, packet);
@@ -348,10 +348,10 @@ bool Creator::readAnswer(QByteArray &aAnswer) {
              ((aAnswer.size() < length) || !length));
 
     if (!aAnswer.isEmpty()) {
-        LogLevel::Enum logLevel = mIOLogsDebugMode ? LogLevel::Debug : LogLevel::Normal;
+        LogLevel::Enum logLevel = m_IOLogsDebugMode ? LogLevel::Debug : LogLevel::Normal;
         toLog(logLevel, QString("Creator: << {%1}").arg(aAnswer.toHex().data()));
 
-        if (mIOLogsDebugMode) {
+        if (m_IOLogsDebugMode) {
             toLog(LogLevel::Normal, "Creator: << SMTH");
         }
     } else {
@@ -385,12 +385,12 @@ bool Creator::sendNAK() {
 void Creator::setPort(SDK::Driver::IIOPort *aPort) {
     ProtocolBase::setPort(aPort);
 
-    if (mPort) {
-        mPort->setLog(getLog());
+    if (m_Port) {
+        m_Port->setLog(getLog());
 
         QVariantMap configuration;
         configuration.insert(CHardware::Port::MaxReadingSize, CCreator::USBAnswerSize);
-        mPort->setDeviceConfiguration(configuration);
+        m_Port->setDeviceConfiguration(configuration);
     }
 }
 

@@ -24,28 +24,28 @@ const char BRtag[] = "<br>";
 //--------------------------------------------------------------------------------
 SystemPrinter::SystemPrinter() {
     // данные устройства
-    mDeviceName = "System printer";
+    m_DeviceName = "System printer";
     setConfigParameter(CHardware::Printer::NeedSeparating, false);
-    mLineFeed = false;
-    mSideMargin = 1.0;
+    m_LineFeed = false;
+    m_SideMargin = 1.0;
 
     // теги
-    mTagEngine = Tags::PEngine(new CSystemPrinter::TagEngine());
+    m_TagEngine = Tags::PEngine(new CSystemPrinter::TagEngine());
 }
 
 //--------------------------------------------------------------------------------
 bool SystemPrinter::isConnected() {
-    return mPrinter.isValid();
+    return m_Printer.isValid();
 }
 
 //--------------------------------------------------------------------------------
 bool SystemPrinter::updateParameters() {
-    if (mPrinter.printerName().isEmpty()) {
+    if (m_Printer.printerName().isEmpty()) {
         return true;
     }
 
-    mDeviceName = QStringLiteral("System printer (%1)").arg(mPrinter.printerName());
-    QVariantMap deviceData = ISysUtils::getPrinterData(mPrinter.printerName());
+    m_DeviceName = QStringLiteral("System printer (%1)").arg(m_Printer.printerName());
+    QVariantMap deviceData = ISysUtils::getPrinterData(m_Printer.printerName());
 
     for (auto it = deviceData.begin(); it != deviceData.end(); ++it) {
         setDeviceParameter(it.key(), it.value());
@@ -66,7 +66,7 @@ bool SystemPrinter::updateParameters() {
     }
 
     QString errorMessage;
-    if (!ISysUtils::setPrintingQueuedMode(mPrinter.printerName(), errorMessage)) {
+    if (!ISysUtils::setPrintingQueuedMode(m_Printer.printerName(), errorMessage)) {
         toLog(LogLevel::Warning,
               QStringLiteral("Failed to change printing queued mode, ") + errorMessage);
     }
@@ -123,11 +123,11 @@ bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
     qreal bottomMargin = getConfigParameter(PrinterSettings::PrintPageNumber).toBool()
                              ? 12.7
                              : CSystemPrinter::DefaultMargin;
-    qreal leftMargin = getConfigParameter(PrinterSettings::LeftMargin, mSideMargin).toDouble();
-    qreal rightMargin = getConfigParameter(PrinterSettings::RightMargin, mSideMargin).toDouble();
+    qreal leftMargin = getConfigParameter(PrinterSettings::LeftMargin, m_SideMargin).toDouble();
+    qreal rightMargin = getConfigParameter(PrinterSettings::RightMargin, m_SideMargin).toDouble();
 
     // Qt 6: Использование QPageLayout и QMarginsF для установки полей
-    mPrinter.setPageMargins(
+    m_Printer.setPageMargins(
         QMarginsF(leftMargin, CSystemPrinter::DefaultMargin, rightMargin, bottomMargin),
         QPageLayout::Millimeter);
 
@@ -152,7 +152,7 @@ bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
                   .arg(textParameters.join(QStringLiteral("; ")))
                   .arg(toPrint);
     document.setHtml(toPrint);
-    document.print(&mPrinter);
+    document.print(&m_Printer);
 
     return true;
 }
@@ -165,19 +165,19 @@ bool SystemPrinter::getStatus(TStatusCodes &aStatusCodes) {
         return false;
     }
 
-    if (mPrinter.printerState() == QPrinter::Error) {
+    if (m_Printer.printerState() == QPrinter::Error) {
         aStatusCodes.insert(DeviceStatusCode::Error::Unknown);
     }
 
     TStatusGroupNames groupNames;
-    ISysUtils::getPrinterStatus(mPrinter.printerName(), aStatusCodes, groupNames);
+    ISysUtils::getPrinterStatus(m_Printer.printerName(), aStatusCodes, groupNames);
 
-    if (mLastStatusesNames != groupNames) {
-        mLastStatusesNames = groupNames;
+    if (m_LastStatusesNames != groupNames) {
+        m_LastStatusesNames = groupNames;
         TStatusCollection statuses;
 
         for (int statusCode : aStatusCodes) {
-            statuses[mStatusCodesSpecification->value(statusCode).warningLevel].insert(statusCode);
+            statuses[m_StatusCodesSpecification->value(statusCode).warningLevel].insert(statusCode);
         }
 
         EWarningLevel::Enum warningLevel = getWarningLevel(statuses);
@@ -188,7 +188,7 @@ bool SystemPrinter::getStatus(TStatusCodes &aStatusCodes) {
 
         QString log = QStringLiteral("Device codes has changed:");
 
-        for (auto it = mLastStatusesNames.begin(); it != mLastStatusesNames.end(); ++it) {
+        for (auto it = m_LastStatusesNames.begin(); it != m_LastStatusesNames.end(); ++it) {
             // Явно упаковываем значение в QVariant через статический метод
             QVariant val = QVariant::fromValue(it.value());
             QStringList statusNames;

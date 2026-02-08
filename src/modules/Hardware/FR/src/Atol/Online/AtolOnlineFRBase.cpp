@@ -11,37 +11,37 @@ template class AtolOnlineFRBase<Atol3FRBase>;
 //--------------------------------------------------------------------------------
 template <class T> AtolOnlineFRBase<T>::AtolOnlineFRBase() {
     // параметры семейства ФР
-    mSupportedModels = getModelList();
-    mDeviceName = "ATOL online FR";
-    mNextReceiptProcessing = false;
-    mIsOnline = true;
-    mFRBuildUnifiedTaxes = 3689;
+    m_SupportedModels = getModelList();
+    m_DeviceName = "ATOL online FR";
+    m_NextReceiptProcessing = false;
+    m_IsOnline = true;
+    m_FRBuildUnifiedTaxes = 3689;
     setConfigParameter(CHardwareSDK::CanOnline, true);
 
-    mOFDFiscalFieldsOnSale << CFR::FiscalFields::PayOffSubjectMethodType;
+    m_OFDFiscalFieldsOnSale << CFR::FiscalFields::PayOffSubjectMethodType;
 
     // регистры
-    mRegisterData.add(CAtolFR::Registers::SerialNumber, '\x16', 7);
-    mRegisterData.add(CAtolFR::Registers::NonNullableAmount, '\x28', 7);
-    mRegisterData.add(CAtolOnlineFR::Registers::OFDNotSentCount, '\x2C', 3);
-    mRegisterData.add(CAtolOnlineFR::Registers::FFD, '\x36', 6);
-    mRegisterData.add(CAtolOnlineFR::Registers::SessionData, '\x35', 6);
-    mRegisterData.add(CAtolOnlineFR::Registers::ExtendedErrorData, '\x37', 8);
+    m_RegisterData.add(CAtolFR::Registers::SerialNumber, '\x16', 7);
+    m_RegisterData.add(CAtolFR::Registers::NonNullableAmount, '\x28', 7);
+    m_RegisterData.add(CAtolOnlineFR::Registers::OFDNotSentCount, '\x2C', 3);
+    m_RegisterData.add(CAtolOnlineFR::Registers::FFD, '\x36', 6);
+    m_RegisterData.add(CAtolOnlineFR::Registers::SessionData, '\x35', 6);
+    m_RegisterData.add(CAtolOnlineFR::Registers::ExtendedErrorData, '\x37', 8);
 
     // типы оплаты
-    mPayTypeData.add(EPayTypes::Cash, 1);
-    mPayTypeData.add(EPayTypes::EMoney, 2);
-    mPayTypeData.add(EPayTypes::PrePayment, 3);
-    mPayTypeData.add(EPayTypes::PostPayment, 4);
-    mPayTypeData.add(EPayTypes::CounterOffer, 5);
+    m_PayTypeData.add(EPayTypes::Cash, 1);
+    m_PayTypeData.add(EPayTypes::EMoney, 2);
+    m_PayTypeData.add(EPayTypes::PrePayment, 3);
+    m_PayTypeData.add(EPayTypes::PostPayment, 4);
+    m_PayTypeData.add(EPayTypes::CounterOffer, 5);
 
     // команды
     setConfigParameter(CHardware::FR::Commands::PrintingDeferredZReports,
                        CAtolOnlineFR::Commands::PrintDeferredZReports);
 
     // ошибки
-    mErrorData = PErrorData(new CAtolOnlineFR::Errors::Data());
-    mUnprocessedErrorData.add(CAtolOnlineFR::Commands::FS::GetFiscalTLVData,
+    m_ErrorData = PErrorData(new CAtolOnlineFR::Errors::Data());
+    m_UnprocessedErrorData.add(CAtolOnlineFR::Commands::FS::GetFiscalTLVData,
                               TErrors() << CAtolOnlineFR::Errors::NoRequiedDataInFS
                                         << CAtolOnlineFR::Errors::NeedExtendedErrorCode);
 }
@@ -61,8 +61,8 @@ template <class T> bool AtolOnlineFRBase<T>::updateParameters() {
     QByteArray data;
 
     if (processCommand(CAtolOnlineFR::Commands::GetInternalFirmware, &data) && (data.size() >= 2)) {
-        mFRBuild = data.right(2).toHex().toInt();
-        setDeviceParameter(CDeviceData::InternalFirmware, mFRBuild);
+        m_FRBuild = data.right(2).toHex().toInt();
+        setDeviceParameter(CDeviceData::InternalFirmware, m_FRBuild);
     }
 
     if (!T::updateParameters()) {
@@ -71,21 +71,21 @@ template <class T> bool AtolOnlineFRBase<T>::updateParameters() {
 
 #define SET_LCONFIG_FISCAL_FIELD(aName)                                                            \
     if (getTLV(CFR::FiscalFields::aName, data)) {                                                  \
-        mFFEngine.setConfigParameter(CFiscalSDK::aName, mCodec->toUnicode(data));                  \
-        QString value = mFFEngine.getConfigParameter(CFiscalSDK::aName, data).toString();          \
+        m_FFEngine.setConfigParameter(CFiscalSDK::aName, m_Codec->toUnicode(data));                  \
+        QString value = m_FFEngine.getConfigParameter(CFiscalSDK::aName, data).toString();          \
         toLog(LogLevel::Normal,                                                                    \
-              mDeviceName + QString(": Add %1 = \"%2\" to config data")                            \
-                                .arg(mFFData.getTextLog(CFR::FiscalFields::aName))                 \
+              m_DeviceName + QString(": Add %1 = \"%2\" to config data")                            \
+                                .arg(m_FFData.getTextLog(CFR::FiscalFields::aName))                 \
                                 .arg(value));                                                      \
     }
 
 #define SET_BCONFIG_FISCAL_FIELD(aName)                                                            \
     if (getTLV(CFR::FiscalFields::aName, data)) {                                                  \
         char value = data[0];                                                                      \
-        mFFEngine.setConfigParameter(CFiscalSDK::aName, value);                                    \
+        m_FFEngine.setConfigParameter(CFiscalSDK::aName, value);                                    \
         toLog(LogLevel::Normal,                                                                    \
-              mDeviceName + QString(": Add %1 = %2 to config data")                                \
-                                .arg(mFFData.getTextLog(CFR::FiscalFields::aName))                 \
+              m_DeviceName + QString(": Add %1 = %2 to config data")                                \
+                                .arg(m_FFData.getTextLog(CFR::FiscalFields::aName))                 \
                                 .arg(uchar(value)));                                               \
     }
 
@@ -110,7 +110,7 @@ template <class T> bool AtolOnlineFRBase<T>::updateParameters() {
                         QByteArray(1, char(reregistrationNumber)),
                         &data) ||
         (data.size() <= 40)) {
-        toLog(LogLevel::Normal, mDeviceName + ": Failed to get fiscalization total");
+        toLog(LogLevel::Normal, m_DeviceName + ": Failed to get fiscalization total");
         return false;
     }
 
@@ -138,7 +138,7 @@ template <class T> bool AtolOnlineFRBase<T>::getPrintingSettings() {
         return false;
     }
 
-    mLineSize = data.left(1).toHex().toInt();
+    m_LineSize = data.left(1).toHex().toInt();
 
     return true;
 }
@@ -148,11 +148,11 @@ template <class T> void AtolOnlineFRBase<T>::processDeviceData() {
     T::processDeviceData();
 
     QByteArray data;
-    mNonNullableAmount = 0;
+    m_NonNullableAmount = 0;
 
     if (getRegister(
             CAtolFR::Registers::NonNullableAmount, data, CAtolOnlineFR::SalingFiscalDocument)) {
-        mNonNullableAmount = qlonglong(data.toHex().toULongLong()) / 100.0;
+        m_NonNullableAmount = qlonglong(data.toHex().toULongLong()) / 100.0;
     }
 
     if (processCommand(CAtolOnlineFR::Commands::FS::GetVersion, &data) && (data.size() > 18)) {
@@ -163,8 +163,8 @@ template <class T> void AtolOnlineFRBase<T>::processDeviceData() {
     }
 
     if (processCommand(CAtolOnlineFR::Commands::FS::GetFiscalizationTotal, &data)) {
-        mINN = CFR::INNToString(data.mid(7, 12));
-        mRNM = CFR::RNMToString(data.mid(19, 20));
+        m_INN = CFR::INNToString(data.mid(7, 12));
+        m_RNM = CFR::RNMToString(data.mid(19, 20));
     }
 
     auto getData = [&data](int aIndex) -> QString {
@@ -185,7 +185,7 @@ template <class T> void AtolOnlineFRBase<T>::processDeviceData() {
     }
 
     if (processCommand(CAtolOnlineFR::Commands::FS::GetStatus, &data) && (data.size() >= 32)) {
-        mFSSerialNumber = CFR::FSSerialToString(data.mid(12, 16));
+        m_FSSerialNumber = CFR::FSSerialToString(data.mid(12, 16));
         int FDCount = revert(data.mid(28, 4)).toHex().toUInt(0, 16);
 
         setDeviceParameter(CDeviceData::FR::FiscalDocuments, FDCount);
@@ -194,18 +194,18 @@ template <class T> void AtolOnlineFRBase<T>::processDeviceData() {
     checkDateTime();
 
     if (getRegister(CAtolOnlineFR::Registers::FFD, data) && (data.size() > 1)) {
-        mFFDFR = EFFD::Enum(int(data[0]));
-        mFFDFS = EFFD::Enum(int(data[1]));
+        m_FFDFR = EFFD::Enum(int(data[0]));
+        m_FFDFS = EFFD::Enum(int(data[1]));
     }
 
-    char mode = mMode;
+    char mode = m_Mode;
 
     if (enterInnerMode(CAtolFR::InnerModes::Programming)) {
         QByteArray addressData;
         QByteArray portData;
-        mOFDDataError = !getFRParameter(CAtolOnlineFR::FRParameters::OFDAddress, addressData) ||
+        m_OFDDataError = !getFRParameter(CAtolOnlineFR::FRParameters::OFDAddress, addressData) ||
                         !getFRParameter(CAtolOnlineFR::FRParameters::OFDPort, portData);
-        mOFDDataError = mOFDDataError || !checkOFDData(addressData, portData);
+        m_OFDDataError = m_OFDDataError || !checkOFDData(addressData, portData);
     }
 
     enterInnerMode(mode);
@@ -244,7 +244,7 @@ template <class T> bool AtolOnlineFRBase<T>::setFRParameters() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool AtolOnlineFRBase<T>::reboot() {
-    char mode = mMode;
+    char mode = m_Mode;
 
     if (!enterInnerMode(CAtolFR::InnerModes::Cancel)) {
         return false;
@@ -253,7 +253,7 @@ template <class T> bool AtolOnlineFRBase<T>::reboot() {
     bool result = processCommand(CAtolOnlineFR::Commands::Reboot);
 
     if (!result) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to reboot FR properly");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to reboot FR properly");
     }
 
     SleepHelper::msleep(CAtolOnlineFR::RebootPause);
@@ -286,7 +286,7 @@ template <class T> bool AtolOnlineFRBase<T>::getStatus(TStatusCodes &aStatusCode
     } else if (result == CommandResult::Answer) {
         aStatusCodes.insert(DeviceStatusCode::Warning::OperationError);
     } else if (result == CommandResult::Device) {
-        int statusCode = getErrorStatusCode(mErrorData->value(mLastError).type);
+        int statusCode = getErrorStatusCode(m_ErrorData->value(m_LastError).type);
         aStatusCodes.insert(statusCode);
     } else {
         checkOFDNotSentCount(data.toHex().toInt(), aStatusCodes);
@@ -297,7 +297,7 @@ template <class T> bool AtolOnlineFRBase<T>::getStatus(TStatusCodes &aStatusCode
 
 //--------------------------------------------------------------------------------
 template <class T> bool AtolOnlineFRBase<T>::isTradeWithoutPrinting() {
-    return getModelList().contains(mDeviceName) && !canNotPrinting() && isNotPrinting();
+    return getModelList().contains(m_DeviceName) && !canNotPrinting() && isNotPrinting();
 }
 
 //--------------------------------------------------------------------------------
@@ -307,11 +307,11 @@ template <class T> bool AtolOnlineFRBase<T>::isPrintingNeed(const QStringList &a
     }
 
     bool OK = false;
-    mFFEngine.checkFiscalField(CFR::FiscalFields::UserContact, OK);
+    m_FFEngine.checkFiscalField(CFR::FiscalFields::UserContact, OK);
 
     if (isTradeWithoutPrinting() && OK) {
         toLog(LogLevel::Normal,
-              mDeviceName + ": Receipt has not been printed by trade ATOL:\n" +
+              m_DeviceName + ": Receipt has not been printed by trade ATOL:\n" +
                   aReceipt.join("\n"));
         return false;
     }
@@ -324,7 +324,7 @@ template <class T>
 bool AtolOnlineFRBase<T>::performFiscal(const QStringList &aReceipt,
                                         const SPaymentData &aPaymentData,
                                         quint32 *aFDNumber) {
-    mFDExecutionMode = isTradeWithoutPrinting() ? CAtolOnlineFR::FiscalFlags::NotPrinting
+    m_FDExecutionMode = isTradeWithoutPrinting() ? CAtolOnlineFR::FiscalFlags::NotPrinting
                                                 : CAtolFR::FiscalFlags::ExecutionMode;
 
     if (!T::performFiscal(aReceipt, aPaymentData)) {
@@ -407,9 +407,9 @@ template <class T>
 bool AtolOnlineFRBase<T>::processAnswer(const QByteArray &aCommand, char aError) {
     switch (aError) {
     case CAtolOnlineFR::Errors::FSOfflineEnd: {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
-        mFSOfflineEnd = true;
+        m_FSOfflineEnd = true;
 
         break;
     }
@@ -419,7 +419,7 @@ bool AtolOnlineFRBase<T>::processAnswer(const QByteArray &aCommand, char aError)
         break;
     }
     case CAtolFR::Errors::WrongFieldNumber: {
-        mOldFirmware = mOldFirmware || (aCommand[0] == CAtolOnlineFR::Commands::SetOFDParameter);
+        m_OldFirmware = m_OldFirmware || (aCommand[0] == CAtolOnlineFR::Commands::SetOFDParameter);
 
         break;
     }
@@ -432,7 +432,7 @@ bool AtolOnlineFRBase<T>::processAnswer(const QByteArray &aCommand, char aError)
 template <class T> bool AtolOnlineFRBase<T>::getExtendedErrorCode(const QByteArray &aCommand) {
     QByteArray data;
     QString registerName = CAtolOnlineFR::Registers::ExtendedErrorData;
-    char registerNumber = mRegisterData[registerName].number;
+    char registerNumber = m_RegisterData[registerName].number;
 
     if (!getRegister(registerName, data)) {
         return false;
@@ -442,7 +442,7 @@ template <class T> bool AtolOnlineFRBase<T>::getExtendedErrorCode(const QByteArr
 
     if (command != aCommand[0]) {
         toLog(LogLevel::Error,
-              mDeviceName + QString(": Wrong command = %1 in register %2 (%3), need %4")
+              m_DeviceName + QString(": Wrong command = %1 in register %2 (%3), need %4")
                                 .arg(toHexLog(command))
                                 .arg(toHexLog(registerNumber))
                                 .arg(registerName)
@@ -452,17 +452,17 @@ template <class T> bool AtolOnlineFRBase<T>::getExtendedErrorCode(const QByteArr
 
     ushort error = data.mid(2, 2).toHex().toUShort(0, 16);
     toLog(LogLevel::Error,
-          mDeviceName + ": Extended error: " + CAtolOnlineFR::Errors::ExtraData[error]);
+          m_DeviceName + ": Extended error: " + CAtolOnlineFR::Errors::ExtraData[error]);
 
     return true;
 }
 
 //---------------------------------------------------------------------------
 template <class T> bool AtolOnlineFRBase<T>::checkTaxes() {
-    if (mFRBuild >= mFRBuildUnifiedTaxes) {
-        mTaxData.add(18, 1);
-        mTaxData.add(10, 2);
-        mTaxData.add(0, 6);
+    if (m_FRBuild >= m_FRBuildUnifiedTaxes) {
+        m_TaxData.add(18, 1);
+        m_TaxData.add(10, 2);
+        m_TaxData.add(0, 6);
     }
 
     return T::checkTaxes();
@@ -476,7 +476,7 @@ template <class T> bool AtolOnlineFRBase<T>::checkTax(TVAT aVAT, CFR::Taxes::SDa
 //--------------------------------------------------------------------------------
 template <class T> bool AtolOnlineFRBase<T>::sale(const SUnitData &aUnitData) {
     if (isTradeWithoutPrinting() && !setTLV(CFR::FiscalFields::UserContact)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to make fiscal document without printing");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to make fiscal document without printing");
     }
 
     if (!processCommand(CAtolOnlineFR::Commands::StartSale,
@@ -488,7 +488,7 @@ template <class T> bool AtolOnlineFRBase<T>::sale(const SUnitData &aUnitData) {
         return false;
     }
 
-    int taxGroup = mTaxData[aUnitData.VAT].group;
+    int taxGroup = m_TaxData[aUnitData.VAT].group;
     char section = (aUnitData.section == -1) ? ASCII::NUL : char(aUnitData.section);
     QByteArray sum = getBCD(aUnitData.sum / 10.0, 7, 2, 3);
     QByteArray payOffSubjectType = getBCD(aUnitData.payOffSubjectType, 1);
@@ -507,7 +507,7 @@ template <class T> bool AtolOnlineFRBase<T>::sale(const SUnitData &aUnitData) {
     commandData.append(CAtolOnlineFR::DiscountSign);         // знак скидки
     commandData.append(getBCD(0, 7, 2, 3));                  // информация о скидке
     commandData.append(QByteArray(2, ASCII::NUL));           // зарезервировано
-    commandData.append(mCodec->fromUnicode(aUnitData.name)); // товар
+    commandData.append(m_Codec->fromUnicode(aUnitData.name)); // товар
 
     return processCommand(CAtolOnlineFR::Commands::EndSale, commandData);
 }
@@ -516,18 +516,18 @@ template <class T> bool AtolOnlineFRBase<T>::sale(const SUnitData &aUnitData) {
 template <class T> bool AtolOnlineFRBase<T>::setTLV(int aField, bool /*aForSale*/) {
     bool result;
 
-    if (!mFFEngine.checkFiscalField(aField, result)) {
+    if (!m_FFEngine.checkFiscalField(aField, result)) {
         return result;
     }
 
     QString fieldLog;
-    QByteArray commandData = mFFEngine.getTLVData(aField, &fieldLog);
+    QByteArray commandData = m_FFEngine.getTLVData(aField, &fieldLog);
     commandData.prepend('\x00');                           // номер блока
     commandData.prepend('\x01');                           // количество блоков
     commandData.prepend(CAtolOnlineFR::PrintOFDParameter); /// печатать ОФД-реквизит.
 
     if (!processCommand(CAtolOnlineFR::Commands::SetOFDParameter, commandData)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to set " + fieldLog);
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to set " + fieldLog);
         return false;
     }
 
@@ -546,7 +546,7 @@ bool AtolOnlineFRBase<T>::getTLV(int aField, QByteArray &aData, uchar aBlockNumb
 
     QByteArray data;
     CFR::STLV TLV;
-    QString errorLog = mDeviceName + ": Failed to get " + mFFData.getTextLog(aField);
+    QString errorLog = m_DeviceName + ": Failed to get " + m_FFData.getTextLog(aField);
 
     if (aBlockNumber) {
         errorLog += ", block " + QString::number(int(aBlockNumber));
@@ -581,7 +581,7 @@ bool AtolOnlineFRBase<T>::getTLV(int aField, QByteArray &aData, uchar aBlockNumb
         data += aData;
     }
 
-    if (!mFFEngine.parseTLV(data.mid(3), TLV)) {
+    if (!m_FFEngine.parseTLV(data.mid(3), TLV)) {
         toLog(LogLevel::Error, errorLog + " due to parse error");
         return false;
     }
@@ -596,8 +596,8 @@ template <class T>
 void AtolOnlineFRBase<T>::setErrorFlags(const QByteArray &aCommand, char aError) {
     T::setErrorFlags(aCommand, aError);
 
-    if (mErrorData->value(aError).type == FRError::EType::FS) {
-        mFSError = true;
+    if (m_ErrorData->value(aError).type == FRError::EType::FS) {
+        m_FSError = true;
     }
 }
 

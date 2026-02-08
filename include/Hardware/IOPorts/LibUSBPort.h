@@ -95,29 +95,29 @@ protected:
     TResult handleResult(const QString &aFunctionName, int aResult);
 
     /// Список данных соединений.
-    QList<libusb_device *> mDevices;
+    QList<libusb_device *> m_Devices;
 
     /// Устройство.
-    libusb_device *mDevice;
+    libusb_device *m_Device;
 
     /// Буфер для чтения.
     typedef QVector<char> TReadingBuffer;
-    TReadingBuffer mReadingBuffer;
+    TReadingBuffer m_ReadingBuffer;
 
     /// Handle устройства.
-    libusb_device_handle *mHandle;
+    libusb_device_handle *m_Handle;
 
     /// Данные устройств.
-    CLibUSB::TDeviceProperties mDevicesProperties;
+    CLibUSB::TDeviceProperties m_DevicesProperties;
 
     /// Параметры устройства.
-    CLibUSB::SDeviceProperties mDeviceProperties;
+    CLibUSB::SDeviceProperties m_DeviceProperties;
 
     /// Существует в системе.
-    bool mExist;
+    bool m_Exist;
 
     /// Мьютекс для защиты статических пропертей портов.
-    static QRecursiveMutex mDevicesPropertyMutex;
+    static QRecursiveMutex m_DevicesPropertyMutex;
 };
 
 //--------------------------------------------------------------------------------

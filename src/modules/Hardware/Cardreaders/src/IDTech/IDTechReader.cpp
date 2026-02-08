@@ -18,31 +18,31 @@ namespace CIDTechReader {
 const char DLLSDKName[] = "libIDTechSDK.dll.1.0.16";
 } // namespace CIDTechReader
 
-IDTechReader *IDTechReader::mInstance = nullptr;
-int IDTechReader::mInstanceCounter = 0;
+IDTechReader *IDTechReader::m_Instance = nullptr;
+int IDTechReader::m_InstanceCounter = 0;
 
 //------------------------------------------------------------------------------
 IDTechReader::IDTechReader() {
-    if (!mInstance) {
-        mInstance = this;
+    if (!m_Instance) {
+        m_Instance = this;
     }
 
-    mInstanceCounter++;
+    m_InstanceCounter++;
 
-    mDeviceName = CIDTech::Models::Default;
-    mPollingInterval = 300;
-    mLibrariesInitialized = false;
+    m_DeviceName = CIDTech::Models::Default;
+    m_PollingInterval = 300;
+    m_LibrariesInitialized = false;
 
-    mStatusCodesSpecification =
+    m_StatusCodesSpecification =
         DeviceStatusCode::PSpecifications(new CardReaderStatusCode::CSpecifications());
 }
 
 //--------------------------------------------------------------------------------
 IDTechReader::~IDTechReader() {
-    mInstanceCounter--;
+    m_InstanceCounter--;
 
-    if (!mInstanceCounter) {
-        mInstance = nullptr;
+    if (!m_InstanceCounter) {
+        m_Instance = nullptr;
     }
 }
 
@@ -215,9 +215,9 @@ bool IDTechReader::initializeLibraries() {
 
 //--------------------------------------------------------------------------------
 bool IDTechReader::isConnected() {
-    mLibrariesInitialized = initializeLibraries();
+    m_LibrariesInitialized = initializeLibraries();
 
-    if (!mLibrariesInitialized) {
+    if (!m_LibrariesInitialized) {
         return false;
     }
 
@@ -230,10 +230,10 @@ bool IDTechReader::isConnected() {
 
     for (int i = 0; i < IDT_DEVICE_MAX_DEVICES; ++i) {
         if (device_isAttached(i)) {
-            mId = i;
+            m_Id = i;
 
             if (i == IDT_DEVICE_KIOSK_III) {
-                mDeviceName = CIDTech::Models::Kiosk_III_IV;
+                m_DeviceName = CIDTech::Models::Kiosk_III_IV;
             }
 
             return true;
@@ -247,7 +247,7 @@ bool IDTechReader::isConnected() {
 
 //--------------------------------------------------------------------------------
 bool IDTechReader::getStatus(TStatusCodes &aStatusCodes) {
-    if (!mLibrariesInitialized) {
+    if (!m_LibrariesInitialized) {
         aStatusCodes.insert(DeviceStatusCode::Error::ThirdPartyDriver);
 
         return true;
@@ -258,12 +258,12 @@ bool IDTechReader::getStatus(TStatusCodes &aStatusCodes) {
 
 //------------------------------------------------------------------------------
 bool IDTechReader::isDeviceReady() {
-    return mLibrariesInitialized;
+    return m_LibrariesInitialized;
 }
 
 //------------------------------------------------------------------------------
 bool IDTechReader::enable(bool aEnabled) {
-    int Id = int(aEnabled) * mId;
+    int Id = int(aEnabled) * m_Id;
 
     if ((device_getCurrentDeviceType() != Id) && !device_setCurrentDevice(Id)) {
         return false;
@@ -281,34 +281,34 @@ bool IDTechReader::enable(bool aEnabled) {
 
 //------------------------------------------------------------------------------
 void IDTechReader::getMSRCardData(int aType, IDTMSRData *aCardData1) {
-    if (mInstance != this) {
-        return mInstance->getMSRCardData(aType, aCardData1);
+    if (m_Instance != this) {
+        return m_Instance->getMSRCardData(aType, aCardData1);
     }
 
     switch (aType) {
     case MSR_callBack_type_ERR: {
-        toLog(LogLevel::Normal, mDeviceName + ": Card Swipe Cancelled");
+        toLog(LogLevel::Normal, m_DeviceName + ": Card Swipe Cancelled");
         break;
     }
     case MSR_callBack_type_TERMINATED: {
-        toLog(LogLevel::Warning, mDeviceName + ": Terminated");
+        toLog(LogLevel::Warning, m_DeviceName + ": Terminated");
         break;
     }
     case MSR_callBack_type_CARD_READ_ERR: {
-        toLog(LogLevel::Error, mDeviceName + ": Card Read Error");
+        toLog(LogLevel::Error, m_DeviceName + ": Card Read Error");
         break;
     }
     case MSR_callBack_type_TIMEOUT: {
-        toLog(LogLevel::Normal, mDeviceName + ": Timeout");
+        toLog(LogLevel::Normal, m_DeviceName + ": Timeout");
         break;
     }
     case MSR_callBack_type_FALLBACK_TO_CONTACT: {
-        toLog(LogLevel::Normal, mDeviceName + ": Fallback to contact");
+        toLog(LogLevel::Normal, m_DeviceName + ": Fallback to contact");
         break;
     }
     case MSR_callBack_type_ERR_CODE: {
         toLog(LogLevel::Error,
-              mDeviceName + ": Error: " + ProtocolUtils::toHexLog(aCardData1->errorCode));
+              m_DeviceName + ": Error: " + ProtocolUtils::toHexLog(aCardData1->errorCode));
         break;
     }
     }

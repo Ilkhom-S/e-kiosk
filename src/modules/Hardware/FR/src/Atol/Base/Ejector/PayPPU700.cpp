@@ -4,9 +4,9 @@
 
 //--------------------------------------------------------------------------------
 PayPPU700::PayPPU700() {
-    mDeviceName = CAtolFR::Models::PayPPU700K;
-    mMaxBadAnswers = 4;
-    mSupportedModels = QStringList() << mDeviceName;
+    m_DeviceName = CAtolFR::Models::PayPPU700K;
+    m_MaxBadAnswers = 4;
+    m_SupportedModels = QStringList() << m_DeviceName;
 }
 
 //--------------------------------------------------------------------------------

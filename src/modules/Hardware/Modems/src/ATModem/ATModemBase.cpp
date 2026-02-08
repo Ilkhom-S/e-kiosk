@@ -11,25 +11,25 @@ using namespace SDK::Driver::IOPort::COM;
 //---------------------------------------------------------------------------------
 ATModemBase::ATModemBase() {
     // данные порта
-    mPortParameters[EParameters::BaudRate].append(
+    m_PortParameters[EParameters::BaudRate].append(
         EBaudRate::BR115200); // preferable for work, but not works in autobauding mode
-    mPortParameters[EParameters::BaudRate].append(
+    m_PortParameters[EParameters::BaudRate].append(
         EBaudRate::BR57600); // default after Mobile Equipment (ME) restart
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
 
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
     // Отключено - записи в лог дублируются.
-    // mIOMessageLogging = true;
+    // m_IOMessageLogging = true;
 
-    mModemConfigTimeout = CATGSMModem::Timeouts::Config;
+    m_ModemConfigTimeout = CATGSMModem::Timeouts::Config;
 }
 
 //--------------------------------------------------------------------------------
 bool ATModemBase::checkAT(int aTimeout) {
-    mIOPort->clear();
+    m_IOPort->clear();
 
     int index = 0;
     bool result = false;
@@ -44,7 +44,7 @@ bool ATModemBase::checkAT(int aTimeout) {
 //--------------------------------------------------------------------------------
 bool ATModemBase::isConnected() {
     if (!checkAT(CATGSMModem::Timeouts::Default)) {
-        mIOPort->close();
+        m_IOPort->close();
         return false;
     }
 
@@ -53,14 +53,14 @@ bool ATModemBase::isConnected() {
     QByteArray answer;
 
     if (!processCommand(AT::Commands::ATI, answer)) {
-        mIOPort->close();
+        m_IOPort->close();
         return false;
     }
 
     setDeviceName(answer);
 
     // Выводим конфигурацию модема в лог.
-    if (processCommand(AT::Commands::ATandV, answer, mModemConfigTimeout)) {
+    if (processCommand(AT::Commands::ATandV, answer, m_ModemConfigTimeout)) {
         toLog(LogLevel::Normal,
               QString("Modem configuration: %1").arg(QString::fromLatin1(answer)));
     }
@@ -68,7 +68,7 @@ bool ATModemBase::isConnected() {
     QString modemInfo;
     getInfo(modemInfo);
 
-    mIOPort->close();
+    m_IOPort->close();
 
     return true;
 }
@@ -82,7 +82,7 @@ void ATModemBase::setDeviceName(const QByteArray &aFullName) {
     QString deviceName = aFullName.simplified();
 
     if (!deviceName.isEmpty()) {
-        mDeviceName = deviceName;
+        m_DeviceName = deviceName;
     }
 }
 
@@ -100,7 +100,7 @@ bool ATModemBase::reset() {
 
     onPoll();
 
-    mIOPort->close();
+    m_IOPort->close();
 
     return result;
 }
@@ -120,7 +120,7 @@ bool ATModemBase::setInitString(const QString &aInitString) {
 
     bool result = processCommand(initString.toLatin1());
 
-    mIOPort->close();
+    m_IOPort->close();
 
     return result;
 }
@@ -148,7 +148,7 @@ bool ATModemBase::processCommand(const QByteArray &aCommand, int aTimeout) {
 bool ATModemBase::processCommand(const QByteArray &aCommand, QByteArray &aAnswer, int aTimeout) {
     aAnswer.clear();
 
-    if (!mIOPort->write(makeCommand(aCommand))) {
+    if (!m_IOPort->write(makeCommand(aCommand))) {
         return false;
     }
 
@@ -160,7 +160,7 @@ bool ATModemBase::processCommand(const QByteArray &aCommand, QByteArray &aAnswer
     do {
         QByteArray data;
 
-        if (mIOPort->read(data)) {
+        if (m_IOPort->read(data)) {
             aAnswer.append(data);
 
             // Ищем сообщения о положительном результате.

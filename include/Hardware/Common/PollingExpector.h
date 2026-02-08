@@ -32,12 +32,12 @@ signals:
 private:
     virtual void run(); /// QThread: Рабочая процедура Qt'шной нити.
 
-    QThread *mOwner;             /// Указатель на вызвавший поток.
-    QTimer mPolling;             /// Таймер для поллинга.
-    TBoolMethod mOnPoll;         /// Функтор поллинга.
-    TBoolMethod mCondition;      /// Функтор условия ожидания.
-    TBoolMethod mErrorCondition; /// Функтор условия ошибки.
-    bool mPollingSensible;       /// В условие ожидания включен контроль результата поллинга.
+    QThread *m_Owner;             /// Указатель на вызвавший поток.
+    QTimer m_Polling;             /// Таймер для поллинга.
+    TBoolMethod m_OnPoll;         /// Функтор поллинга.
+    TBoolMethod m_Condition;      /// Функтор условия ожидания.
+    TBoolMethod m_ErrorCondition; /// Функтор условия ошибки.
+    bool m_PollingSensible;       /// В условие ожидания включен контроль результата поллинга.
 };
 
 //--------------------------------------------------------------------------------
@@ -81,10 +81,10 @@ public slots:
     void onFinished(bool aSuccess); /// Завершено.
 
 private:
-    bool mResult;                         /// Результат ожидания.
-    QMutex mGuard;                        /// Сторож для wait condition.
-    QWaitCondition mWaitCondition;        /// Wait condition для таймаута ожидания.
-    ExpectorWorkingThread mWorkingThread; /// Рабочий поток.
+    bool m_Result;                         /// Результат ожидания.
+    QMutex m_Guard;                        /// Сторож для wait condition.
+    QWaitCondition m_WaitCondition;        /// Wait condition для таймаута ожидания.
+    ExpectorWorkingThread m_WorkingThread; /// Рабочий поток.
 };
 
 //--------------------------------------------------------------------------------

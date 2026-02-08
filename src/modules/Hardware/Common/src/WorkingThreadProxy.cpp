@@ -12,9 +12,9 @@ template bool WorkingThreadProxy::invokeMethod<bool>(std::function<bool()> aMeth
 template QString WorkingThreadProxy::invokeMethod<QString>(std::function<QString()> aMethod);
 
 //-------------------------------------------------------------------------------
-WorkingThreadProxy::WorkingThreadProxy(QThread *aWorkingThread) : mWorkingThread(aWorkingThread) {
-    if (mWorkingThread) {
-        moveToThread(mWorkingThread);
+WorkingThreadProxy::WorkingThreadProxy(QThread *aWorkingThread) : m_WorkingThread(aWorkingThread) {
+    if (m_WorkingThread) {
+        moveToThread(m_WorkingThread);
     }
 
     connect(this,
@@ -84,26 +84,26 @@ void WorkingThreadProxy::onInvoke(TStringMethod aMethod, QString *aResult) {
 
 //--------------------------------------------------------------------------------
 bool WorkingThreadProxy::isWorkingThread() {
-    return !mWorkingThread || (mWorkingThread == QThread::currentThread());
+    return !m_WorkingThread || (m_WorkingThread == QThread::currentThread());
 }
 
 //--------------------------------------------------------------------------------
 void WorkingThreadProxy::checkThreadStarted() {
-    if (mWorkingThread) {
-        if (!mWorkingThread->isRunning()) {
-            connect(mWorkingThread,
+    if (m_WorkingThread) {
+        if (!m_WorkingThread->isRunning()) {
+            connect(m_WorkingThread,
                     SIGNAL(started()),
                     this,
                     SLOT(checkThreadStarted()),
                     Qt::UniqueConnection);
-            mWorkingThread->start();
+            m_WorkingThread->start();
 
-            QMutexLocker locker(&mStartMutex);
+            QMutexLocker locker(&m_StartMutex);
 
-            mStartCondition.wait(&mStartMutex);
+            m_StartCondition.wait(&m_StartMutex);
         }
 
-        mStartCondition.wakeAll();
+        m_StartCondition.wakeAll();
     }
 }
 

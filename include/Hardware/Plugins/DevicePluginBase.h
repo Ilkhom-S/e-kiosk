@@ -23,16 +23,16 @@ public:
     DevicePluginBase(const QString &aPluginName,
                      SDK::Plugin::IEnvironment *aEnvironment,
                      const QString &aInstancePath)
-        : mInstanceName(aInstancePath), mEnvironment(aEnvironment) {
-        mPluginName = aPluginName + " plugin";
+        : m_InstanceName(aInstancePath), m_Environment(aEnvironment) {
+        m_PluginName = aPluginName + " plugin";
         this->setLog(aEnvironment->getLog(""));
 
-        if (mEnvironment) {
-            SDK::Plugin::IPluginLoader *pluginLoader = mEnvironment->getPluginLoader();
+        if (m_Environment) {
+            SDK::Plugin::IPluginLoader *pluginLoader = m_Environment->getPluginLoader();
 
             if (pluginLoader) {
                 QString path =
-                    mInstanceName.section(SDK::Plugin::CPlugin::InstancePathSeparator, 0, 0);
+                    m_InstanceName.section(SDK::Plugin::CPlugin::InstancePathSeparator, 0, 0);
                 SDK::Plugin::TParameterList parameterList =
                     pluginLoader->getPluginParametersDescription(path);
                 QStringList pluginParameterNames;
@@ -68,7 +68,7 @@ public:
     virtual ~DevicePluginBase() {}
 
     /// Возвращает название плагина.
-    virtual QString getPluginName() const { return mPluginName; }
+    virtual QString getPluginName() const { return m_PluginName; }
 
     /// Возвращает параметры плагина.
     virtual QVariantMap getConfiguration() const { return T::getDeviceConfiguration(); }
@@ -81,19 +81,19 @@ public:
     /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
     /// программы).
     virtual bool saveConfiguration() {
-        return mEnvironment->saveConfiguration(mInstanceName, T::getDeviceConfiguration());
+        return m_Environment->saveConfiguration(m_InstanceName, T::getDeviceConfiguration());
     }
 
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
-    virtual QString getConfigurationName() const { return mInstanceName; }
+    virtual QString getConfigurationName() const { return m_InstanceName; }
 
     /// Проверяет успешно ли инициализировался плагин при создании.
     virtual bool isReady() const { return true; }
 
 private:
-    QString mPluginName;
-    QString mInstanceName;
-    SDK::Plugin::IEnvironment *mEnvironment;
+    QString m_PluginName;
+    QString m_InstanceName;
+    SDK::Plugin::IEnvironment *m_Environment;
 };
 
 //--------------------------------------------------------------------------------

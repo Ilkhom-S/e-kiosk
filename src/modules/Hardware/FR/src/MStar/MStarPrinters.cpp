@@ -5,14 +5,14 @@
 using namespace PrinterStatusCode;
 
 //--------------------------------------------------------------------------------
-MStarPrinters::MStarPrinters() : mMode(EFRMode::Fiscal) {
+MStarPrinters::MStarPrinters() : m_Mode(EFRMode::Fiscal) {
     // данные устройства
-    mDeviceName = "Incotex protocol based FR";
+    m_DeviceName = "Incotex protocol based FR";
 
     // протоколы
-    mProtocols.append(PDeviceProtocol(new IncotexFR));
+    m_Protocols.append(PDeviceProtocol(new IncotexFR));
 
-    mNextReceiptProcessing = false;
+    m_NextReceiptProcessing = false;
     setConfigParameter(CHardware::Printer::FeedingAmount, 4);
 }
 
@@ -28,17 +28,17 @@ bool MStarPrinters::updateParameters() {
 
 //--------------------------------------------------------------------------------
 bool MStarPrinters::isConnected() {
-    IncotexFR *IncotexFRProtocol = mProtocol.dynamicCast<IncotexFR>().data();
+    IncotexFR *IncotexFRProtocol = m_Protocol.dynamicCast<IncotexFR>().data();
     CIncotexFR::SUnpackedData unpackedData;
 
     if (!IncotexFRProtocol->processCommand(
-            mIOPort, FRProtocolCommands::Identification, QVariantMap(), &unpackedData)) {
+            m_IOPort, FRProtocolCommands::Identification, QVariantMap(), &unpackedData)) {
         return false;
     }
 
     identify(unpackedData);
 
-    mVerified = getModelList().contains(mDeviceName);
+    m_Verified = getModelList().contains(m_DeviceName);
 
     return true;
 }
@@ -50,7 +50,7 @@ bool MStarPrinters::cut() {
 
 //--------------------------------------------------------------------------------
 bool MStarPrinters::receiptProcessing() {
-    EFRMode::Enum mode = mMode;
+    EFRMode::Enum mode = m_Mode;
 
     if (!setMode(EFRMode::Printer)) {
         return false;
@@ -67,7 +67,7 @@ bool MStarPrinters::printLine(const QByteArray &aString) {
     QVariantMap commandData;
     commandData.insert(CHardware::Printer::ByteString, aString);
 
-    if (!mProtocol->processCommand(mIOPort, FRProtocolCommands::PrintString, commandData)) {
+    if (!m_Protocol->processCommand(m_IOPort, FRProtocolCommands::PrintString, commandData)) {
         toLog(LogLevel::Error, "MStarPrinters: Failed to process line printing");
         return false;
     }
@@ -89,12 +89,12 @@ bool MStarPrinters::processReceipt(const QStringList &aReceipt, bool aProcessing
 
 //--------------------------------------------------------------------------------
 bool MStarPrinters::getStatus(TStatusCodes &aStatusCodes) {
-    IncotexFR *IncotexFRProtocol = mProtocol.dynamicCast<IncotexFR>().data();
+    IncotexFR *IncotexFRProtocol = m_Protocol.dynamicCast<IncotexFR>().data();
     CIncotexFR::SUnpackedData unpackedData;
     QByteArray commandData;
     QByteArray answerData;
 
-    if (!IncotexFRProtocol->getStatus(mIOPort, unpackedData)) {
+    if (!IncotexFRProtocol->getStatus(m_IOPort, unpackedData)) {
         toLog(LogLevel::Error, "MStarPrinters: Failed to process command 'GetCodeStatus'");
         return false;
     }
@@ -111,7 +111,7 @@ void MStarPrinters::identify(const CIncotexFR::SUnpackedData &aUnpackedData) {
 
     if ((aUnpackedData.vendorName == CIncotexFR::Answer::Identification::MSoftVendor) &&
         (aUnpackedData.modelName == CIncotexFR::Answer::Identification::MStarTKModel)) {
-        mDeviceName = "Multisoft MStar-TK";
+        m_DeviceName = "Multisoft MStar-TK";
         deviceData += QString("\nfirmware : %1").arg(aUnpackedData.softVersion.data());
 
         setConfigParameter(CHardware::DeviceData, deviceData);
@@ -135,7 +135,7 @@ bool MStarPrinters::performFiscal(const QStringList &aReceipt, double aAmount) {
 
     toLog(LogLevel::Normal, "MStarPrinters: Begin processing command 'sale'");
 
-    if (!mProtocol->processCommand(mIOPort, FRProtocolCommands::Sale, commandData)) {
+    if (!m_Protocol->processCommand(m_IOPort, FRProtocolCommands::Sale, commandData)) {
         toLog(LogLevel::Error,
               "MStarPrinters: Failed to process command 'sale', processing receipt and exit!");
         receiptProcessing();
@@ -155,8 +155,8 @@ bool MStarPrinters::performEncashment(const QStringList &aReceipt) {
     QVariantMap commandData;
     commandData.insert(CHardware::Register, CIncotexFR::Registers::SumInCash);
 
-    if (!mProtocol->processCommand(
-            mIOPort, FRProtocolCommands::GetFRRegisters, commandData, &unpackedData)) {
+    if (!m_Protocol->processCommand(
+            m_IOPort, FRProtocolCommands::GetFRRegisters, commandData, &unpackedData)) {
         toLog(LogLevel::Error, "MStarPrinters: Failed to get the register 'sum in cash'");
         return false;
     }
@@ -167,12 +167,12 @@ bool MStarPrinters::performEncashment(const QStringList &aReceipt) {
     commandData.insert(CHardware::Printer::Receipt, QVariant().fromValue(&receiptBuffer));
     commandData.insert(CHardware::FiscalPrinter::Amount, unpackedData.Register);
 
-    return mProtocol->processCommand(mIOPort, FRProtocolCommands::Encashment, commandData);
+    return m_Protocol->processCommand(m_IOPort, FRProtocolCommands::Encashment, commandData);
 }
 
 //--------------------------------------------------------------------------------
 bool MStarPrinters::processXReport() {
-    return mProtocol->processCommand(mIOPort, FRProtocolCommands::XReport, QVariantMap());
+    return m_Protocol->processCommand(m_IOPort, FRProtocolCommands::XReport, QVariantMap());
 }
 //--------------------------------------------------------------------------------
 bool MStarPrinters::processPayout() {
@@ -183,7 +183,7 @@ bool MStarPrinters::processPayout() {
 bool MStarPrinters::performZReport(bool /*aPrintDeferredReports*/) {
     toLog(LogLevel::Normal, "MStarPrinters: Begin processing command 'print Z report'");
 
-    if (!mProtocol->processCommand(mIOPort, FRProtocolCommands::ZReport, QVariantMap())) {
+    if (!m_Protocol->processCommand(m_IOPort, FRProtocolCommands::ZReport, QVariantMap())) {
         toLog(LogLevel::Error, "MStarPrinters: Failed to process command 'print Z report'");
         return false;
     }
@@ -230,18 +230,18 @@ void MStarPrinters::standartCodeError(CIncotexFR::SUnpackedData &aUnpacketAnswer
 
 //--------------------------------------------------------------------------------
 bool MStarPrinters::setMode(EFRMode::Enum aMode) {
-    if (mMode == aMode) {
+    if (m_Mode == aMode) {
         return true;
     }
 
-    mMode = aMode;
+    m_Mode = aMode;
 
     bool isPrinterMode = aMode == EFRMode::Printer;
     toLog(LogLevel::Normal,
           QString("MStarPrinters: Begin processing command 'set to %1 mode'")
               .arg(isPrinterMode ? "printer" : "fiscal"));
 
-    if (!mProtocol->processCommand(mIOPort,
+    if (!m_Protocol->processCommand(m_IOPort,
                                    isPrinterMode ? FRProtocolCommands::SetPrinterMode
                                                  : FRProtocolCommands::SetFiscalMode,
                                    QVariantMap())) {
@@ -256,7 +256,7 @@ bool MStarPrinters::setMode(EFRMode::Enum aMode) {
 
 //--------------------------------------------------------------------------------
 bool MStarPrinters::isSessionOpened() {
-    return mProtocol.dynamicCast<IFRProtocol>()->isSessionOpened();
+    return m_Protocol.dynamicCast<IFRProtocol>()->isSessionOpened();
 }
 
 //--------------------------------------------------------------------------------

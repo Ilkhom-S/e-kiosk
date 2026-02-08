@@ -143,7 +143,7 @@ protected:
             break;
         }
 
-        mBuffer.insert(aCommand, SData(aType, aDescription, aSize));
+        m_Buffer.insert(aCommand, SData(aType, aDescription, aSize));
     }
 };
 
@@ -312,24 +312,24 @@ public:
         uchar error = uchar(aError[0]);
         uchar extraData = uchar(aError[1]);
 
-        if (aError.isEmpty() || !mBuffer.contains(error) || (aError.size() > 2)) {
+        if (aError.isEmpty() || !m_Buffer.contains(error) || (aError.size() > 2)) {
             return "Unknown code";
         }
 
-        if ((aError.size() == 2) && !QString(mBuffer[error].extraData).isEmpty()) {
+        if ((aError.size() == 2) && !QString(m_Buffer[error].extraData).isEmpty()) {
             if (error == 35) {
                 return QString("%1, reason = %2")
-                    .arg(mBuffer[error].description)
+                    .arg(m_Buffer[error].description)
                     .arg((extraData == 1) ? "coin" : ((extraData == 2) ? "token" : "unknown"));
             }
 
             return QString("%1, %2 = %3")
-                .arg(mBuffer[error].description)
-                .arg(mBuffer[error].extraData)
+                .arg(m_Buffer[error].description)
+                .arg(m_Buffer[error].extraData)
                 .arg(extraData);
         }
 
-        return QString(mBuffer[error].description);
+        return QString(m_Buffer[error].description);
     }
 
 protected:
@@ -337,7 +337,7 @@ protected:
                 int aStatusCode,
                 const char *aDescription = "",
                 const char *aExtraData = "") {
-        mBuffer.insert(aErrorCode, SFault(aStatusCode, aDescription, aExtraData));
+        m_Buffer.insert(aErrorCode, SFault(aStatusCode, aDescription, aExtraData));
     }
 };
 

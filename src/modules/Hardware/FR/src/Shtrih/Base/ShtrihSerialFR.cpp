@@ -7,17 +7,17 @@
 //--------------------------------------------------------------------------------
 ShtrihSerialFR::ShtrihSerialFR() {
     // данные семейства ФР
-    mSupportedModels = getModelList();
-    mDeviceName = CShtrihFR::Models::Default;
+    m_SupportedModels = getModelList();
+    m_DeviceName = CShtrihFR::Models::Default;
 
     // данные команд
-    mCommandData.add(CShtrihFRBase::Commands::GetFMTotalSum, 30 * 1000);
+    m_CommandData.add(CShtrihFRBase::Commands::GetFMTotalSum, 30 * 1000);
 
     // ошибки
-    mErrorData = PErrorData(new CShtrihFRBase::Errors::Data);
+    m_ErrorData = PErrorData(new CShtrihFRBase::Errors::Data);
 
     // данные налогов
-    mTaxData.add(0, 3);
+    m_TaxData.add(0, 3);
 }
 
 //--------------------------------------------------------------------------------
@@ -31,13 +31,13 @@ bool ShtrihSerialFR::updateParameters() {
         return false;
     }
 
-    mNonNullableAmount = 0;
+    m_NonNullableAmount = 0;
     QByteArray commandData(1, CShtrihFRBase::TotalFMSumType);
     QByteArray answer;
 
-    if (mFiscalized &&
+    if (m_Fiscalized &&
         processCommand(CShtrihFRBase::Commands::GetFMTotalSum, commandData, &answer)) {
-        mNonNullableAmount =
+        m_NonNullableAmount =
             ProtocolUtils::revert(answer.mid(3, 8)).toHex().toULongLong(0, 16) / 100.0;
     }
 
@@ -50,8 +50,8 @@ bool ShtrihSerialFR::isNotError(char aCommand) {
         return true;
     }
 
-    if ((mLastError == CShtrihFRBase::Errors::FMInDataEntryMode) && getLongStatus() &&
-        (mMode != CShtrihFR::InnerModes::DataEjecting)) {
+    if ((m_LastError == CShtrihFRBase::Errors::FMInDataEntryMode) && getLongStatus() &&
+        (m_Mode != CShtrihFR::InnerModes::DataEjecting)) {
         toLog(LogLevel::Normal, "ShtrihFR: mode is not data ejecting, it isn`t error");
         return true;
     }
@@ -62,19 +62,19 @@ bool ShtrihSerialFR::isNotError(char aCommand) {
 //--------------------------------------------------------------------------------
 bool ShtrihSerialFR::processAnswer(const QByteArray &aCommand, char aError) {
     if (aError == CShtrihFRBase::Errors::FMInDataEntryMode) {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
         return processCommand(CShtrihFR::Commands::BreakDataEjecting);
     } else if (aError == CShtrihFRBase::Errors::CannotSetModeTable) {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
         if (!getLongStatus()) {
             toLog(LogLevel::Error, "ShtrihFR: Failed to get status, exit from answer handler");
             return false;
         }
 
-        if ((mMode != CShtrihFR::InnerModes::SessionOpened) &&
-            (mMode != CShtrihFR::InnerModes::SessionExpired)) {
+        if ((m_Mode != CShtrihFR::InnerModes::SessionOpened) &&
+            (m_Mode != CShtrihFR::InnerModes::SessionExpired)) {
             toLog(LogLevel::Error,
                   "ShtrihFR: mode is not session opened or need close session, so the error cannot "
                   "be processed");
@@ -92,10 +92,10 @@ void ShtrihSerialFR::parseDeviceData(const QByteArray &aData) {
     TShtrihSerialFRBase::parseDeviceData(aData);
 
     // заводской номер
-    mSerial = CFR::serialToString(ProtocolUtils::revert(aData.mid(32, 4)).toHex(), 16);
+    m_Serial = CFR::serialToString(ProtocolUtils::revert(aData.mid(32, 4)).toHex(), 16);
 
     // ИНН
-    mINN = CFR::INNToString(ProtocolUtils::revert(aData.mid(42, 6)).toHex(), 16);
+    m_INN = CFR::INNToString(ProtocolUtils::revert(aData.mid(42, 6)).toHex(), 16);
 
     // данные прошивки ФП
     CShtrihFR::SSoftInfo FMInfo;
@@ -114,15 +114,15 @@ void ShtrihSerialFR::parseDeviceData(const QByteArray &aData) {
     setDeviceParameter(CDeviceData::FM::FreeSessions, freeFMSessions);
 
     // признак фискализированности ККМ
-    mFiscalized = aData[40];
+    m_Fiscalized = aData[40];
 
     // наличие ЭКЛЗ
     ushort flags = ProtocolUtils::revert(aData.mid(13, 2)).toHex().toUShort(0, 16);
-    mEKLZ = flags & CShtrihFRBase::Statuses::EKLZExists;
-    setDeviceParameter(CDeviceData::FR::EKLZ, mEKLZ);
+    m_EKLZ = flags & CShtrihFRBase::Statuses::EKLZExists;
+    setDeviceParameter(CDeviceData::FR::EKLZ, m_EKLZ);
 
     // данные ЭКЛЗ
-    if (mEKLZ && mFiscalized && processCommand(CShtrihFRBase::Commands::EKLZActivizationTotal)) {
+    if (m_EKLZ && m_Fiscalized && processCommand(CShtrihFRBase::Commands::EKLZActivizationTotal)) {
         QTextCodec *codec = CodecByName[CHardware::Codepages::Win1251];
         QStringList totalData;
         QByteArray data;
@@ -158,7 +158,7 @@ void ShtrihSerialFR::parseDeviceData(const QByteArray &aData) {
             return (it == totalEKLZData.end()) ? "" : it->second;
         };
 
-        mRNM = CFR::RNMToString(getData(QString::fromWCharArray(L"рег")).toLatin1());
+        m_RNM = CFR::RNMToString(getData(QString::fromWCharArray(L"рег")).toLatin1());
 
         QString EKLZActivationData = getData(QString::fromWCharArray(L"актив"))
                                          .split(" ")[0]
@@ -173,12 +173,12 @@ void ShtrihSerialFR::parseDeviceData(const QByteArray &aData) {
 
 //--------------------------------------------------------------------------------
 void ShtrihSerialFR::setErrorFlags() {
-    if (isEKLZErrorCritical(mLastError)) {
-        mEKLZError = true;
+    if (isEKLZErrorCritical(m_LastError)) {
+        m_EKLZError = true;
     }
 
-    if (isFMErrorCritical(mLastError)) {
-        mFMError = true;
+    if (isFMErrorCritical(m_LastError)) {
+        m_FMError = true;
     }
 }
 
@@ -229,7 +229,7 @@ void ShtrihSerialFR::appendStatusCodes(ushort aFlags, TStatusCodes &aStatusCodes
         aStatusCodes.insert(FRStatusCode::Warning::EKLZNearEnd);
     }
 
-    mEKLZ = aFlags & CShtrihFRBase::Statuses::EKLZExists;
+    m_EKLZ = aFlags & CShtrihFRBase::Statuses::EKLZExists;
 
     // TODO: надо существенно расширить перечень ошибок, учесть наличие презентера и ретрактора в
     // принтере, ошибки ЭКЛЗ и ФП;
@@ -238,7 +238,7 @@ void ShtrihSerialFR::appendStatusCodes(ushort aFlags, TStatusCodes &aStatusCodes
 
 //--------------------------------------------------------------------------------
 bool ShtrihSerialFR::isHeadSensorsExist() const {
-    return (mType == CShtrihFR::Types::KKM) && (mModel == CShtrihFR::Models::ID::ATOLElvesMiniFRF);
+    return (m_Type == CShtrihFR::Types::KKM) && (m_Model == CShtrihFR::Models::ID::ATOLElvesMiniFRF);
 }
 
 //--------------------------------------------------------------------------------
@@ -252,32 +252,32 @@ bool ShtrihSerialFR::isHeadSensorsExist() const {
 внимание на эти датчики, в соотв. Функциях модели Штрих-ФР-К не будет.
 */
 bool ShtrihSerialFR::isControlWeightSensor() const {
-    return (mType == CShtrihFR::Types::KKM) &&
-           ((mModel == CShtrihFR::Models::ID::ShtrihFRF) ||
-            (mModel == CShtrihFR::Models::ID::ATOLFelixRF) ||
-            //(mModel == CShtrihFR::Models::ID::ShtrihFRK)      ||
-            (mModel == CShtrihFR::Models::ID::Shtrih950K) ||
-            (mModel == CShtrihFR::Models::ID::ShtrihFRFKazah) ||
-            (mModel == CShtrihFR::Models::ID::ShtrihFRFBelorus));
+    return (m_Type == CShtrihFR::Types::KKM) &&
+           ((m_Model == CShtrihFR::Models::ID::ShtrihFRF) ||
+            (m_Model == CShtrihFR::Models::ID::ATOLFelixRF) ||
+            //(m_Model == CShtrihFR::Models::ID::ShtrihFRK)      ||
+            (m_Model == CShtrihFR::Models::ID::Shtrih950K) ||
+            (m_Model == CShtrihFR::Models::ID::ShtrihFRFKazah) ||
+            (m_Model == CShtrihFR::Models::ID::ShtrihFRFBelorus));
 }
 
 //--------------------------------------------------------------------------------
 bool ShtrihSerialFR::isControlOpticalSensor() const {
-    return (mType == CShtrihFR::Types::KKM) &&
-           ((mModel == CShtrihFR::Models::ID::ShtrihFRF) ||
-            //(mModel == CShtrihFR::Models::ID::ShtrihFRK)      ||
-            (mModel == CShtrihFR::Models::ID::Shtrih950K) ||
-            (mModel == CShtrihFR::Models::ID::ShtrihFRFKazah) ||
-            (mModel == CShtrihFR::Models::ID::ShtrihFRFBelorus));
+    return (m_Type == CShtrihFR::Types::KKM) &&
+           ((m_Model == CShtrihFR::Models::ID::ShtrihFRF) ||
+            //(m_Model == CShtrihFR::Models::ID::ShtrihFRK)      ||
+            (m_Model == CShtrihFR::Models::ID::Shtrih950K) ||
+            (m_Model == CShtrihFR::Models::ID::ShtrihFRFKazah) ||
+            (m_Model == CShtrihFR::Models::ID::ShtrihFRFBelorus));
 }
 
 //--------------------------------------------------------------------------------
 bool ShtrihSerialFR::isControlLeverExist() const {
-    return (mType == CShtrihFR::Types::KKM) &&
-           ((mModel == CShtrihFR::Models::ID::ShtrihFRF) ||
-            //(mModel == CShtrihFR::Models::ID::ShtrihFRK)      ||
-            (mModel == CShtrihFR::Models::ID::ShtrihFRFKazah) ||
-            (mModel == CShtrihFR::Models::ID::ShtrihFRFBelorus));
+    return (m_Type == CShtrihFR::Types::KKM) &&
+           ((m_Model == CShtrihFR::Models::ID::ShtrihFRF) ||
+            //(m_Model == CShtrihFR::Models::ID::ShtrihFRK)      ||
+            (m_Model == CShtrihFR::Models::ID::ShtrihFRFKazah) ||
+            (m_Model == CShtrihFR::Models::ID::ShtrihFRFBelorus));
 }
 
 //--------------------------------------------------------------------------------
@@ -295,7 +295,7 @@ bool ShtrihSerialFR::getStatus(TStatusCodes &aStatusCodes) {
         aStatusCodes.insert(statusCode);
 
         if (statusCode == FRStatusCode::Error::EKLZ) {
-            mEKLZError = true;
+            m_EKLZError = true;
         }
 
         if (isFMErrorCritical(data[10])) {
@@ -308,12 +308,12 @@ bool ShtrihSerialFR::getStatus(TStatusCodes &aStatusCodes) {
 
 //--------------------------------------------------------------------------------
 bool ShtrihSerialFR::isEKLZErrorCritical(char aError) const {
-    return mErrorData->value(aError).type == FRError::EType::EKLZ;
+    return m_ErrorData->value(aError).type == FRError::EType::EKLZ;
 }
 
 //--------------------------------------------------------------------------------
 bool ShtrihSerialFR::isFMErrorCritical(char aError) const {
-    return mErrorData->value(aError).type == FRError::EType::FM;
+    return m_ErrorData->value(aError).type == FRError::EType::FM;
 }
 
 //--------------------------------------------------------------------------------

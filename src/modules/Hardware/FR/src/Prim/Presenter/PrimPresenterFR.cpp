@@ -21,9 +21,9 @@ inline TModels PresenterModels() {
 template <class T> PrimPresenterFR<T>::PrimPresenterFR() {
     // данные устройства
     setConfigParameter(CHardware::Printer::PresenterEnable, true);
-    mPrinter = PPrinter(new EpsonEUT400());
-    mDeviceName = CPrimFR::ModelData[CPrimFR::Models::PRIM_21K_02].name;
-    mModels = CPrimFR::PresenterModels();
+    m_Printer = PPrinter(new EpsonEUT400());
+    m_DeviceName = CPrimFR::ModelData[CPrimFR::Models::PRIM_21K_02].name;
+    m_Models = CPrimFR::PresenterModels();
 }
 
 //--------------------------------------------------------------------------------
@@ -46,9 +46,9 @@ bool PrimPresenterFR<T>::performReceipt(const QStringList &aReceipt, bool aProce
         config.insert(Settings::PresentationLength, ++presentationLength);
     }
 
-    SPrintingOutData printingOutData(mLog, aProcessing, mIOMessageLogging, config, aReceipt);
+    SPrintingOutData printingOutData(m_Log, aProcessing, m_IOMessageLogging, config, aReceipt);
 
-    return mPrinter->printOut(printingOutData);
+    return m_Printer->printOut(printingOutData);
 }
 
 //--------------------------------------------------------------------------------

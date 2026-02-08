@@ -16,14 +16,14 @@
 //--------------------------------------------------------------------------------
 class ProtocolBase : public ILogable {
 public:
-    ProtocolBase() : mPort(nullptr) {}
+    ProtocolBase() : m_Port(nullptr) {}
 
     /// Установить порт.
-    void setPort(SDK::Driver::IIOPort *aPort) { mPort = aPort; }
+    void setPort(SDK::Driver::IIOPort *aPort) { m_Port = aPort; }
 
 protected:
     /// Порт.
-    SDK::Driver::IIOPort *mPort;
+    SDK::Driver::IIOPort *m_Port;
 };
 
 //--------------------------------------------------------------------------------

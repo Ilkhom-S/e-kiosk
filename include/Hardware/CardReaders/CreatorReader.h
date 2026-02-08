@@ -57,11 +57,11 @@ protected:
     bool readMSData(QVariantMap &aData);
 
     /// Протокол.
-    Creator mProtocol;
+    Creator m_Protocol;
 
     /// Положение карты по отношению к кардридеру.
-    int mCardPosition;
+    int m_CardPosition;
 
     /// Тип IC карты.
-    CCreatorReader::CardTypes::EICCPU::Enum mICCPUType;
+    CCreatorReader::CardTypes::EICCPU::Enum m_ICCPUType;
 };

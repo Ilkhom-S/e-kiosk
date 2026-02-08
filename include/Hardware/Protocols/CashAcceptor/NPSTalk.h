@@ -31,7 +31,7 @@ protected:
     bool getAnswer(QByteArray &aAnswer);
 
     /// Адрес устройства.
-    uchar mDeviceAddress;
+    uchar m_DeviceAddress;
 };
 
 //--------------------------------------------------------------------------------

@@ -42,10 +42,10 @@ protected:
     bool sendACK();
 
     /// Адрес устройства.
-    char mAddress;
+    char m_Address;
 
     /// Измененные для командной установки параметры порта.
-    SDK::Driver::TPortParameters mPortParameters;
+    SDK::Driver::TPortParameters m_PortParameters;
 };
 
 //--------------------------------------------------------------------------------

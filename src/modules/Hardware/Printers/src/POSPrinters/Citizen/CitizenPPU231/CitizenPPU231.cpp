@@ -12,22 +12,22 @@ using namespace SDK::Driver::IOPort::COM;
 //--------------------------------------------------------------------------------
 CitizenPPU231::CitizenPPU231() {
     // данные порта
-    mModelData.data().clear();
+    m_ModelData.data().clear();
 
-    mPortParameters[EParameters::BaudRate].clear();
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR4800);
+    m_PortParameters[EParameters::BaudRate].clear();
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR4800);
 
     // теги
-    mTagEngine = Tags::PEngine(new CCitizenPPU231::TagEngine());
+    m_TagEngine = Tags::PEngine(new CCitizenPPU231::TagEngine());
 
     // данные устройства
-    mDeviceName = "Citizen PPU-231";
-    mLineSize = CCitizenPPU231::LineSize;
-    mAutoDetectable = false;
-    mPrintingStringTimeout = 100;
-    mRussianCodePage = '\x07';
+    m_DeviceName = "Citizen PPU-231";
+    m_LineSize = CCitizenPPU231::LineSize;
+    m_AutoDetectable = false;
+    m_PrintingStringTimeout = 100;
+    m_RussianCodePage = '\x07';
 }
 
 //--------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ bool CitizenPPU231::updateParameters() {
     lineSpacing = feedingFactor * qCeil(360 / (lineSpacing * 4.0));
     setConfigParameter(CHardware::Printer::FeedingAmount, lineSpacing);
 
-    mVerified = true;
+    m_Verified = true;
 
     return true;
 }
@@ -63,7 +63,7 @@ bool CitizenPPU231::getStatus(TStatusCodes &aStatusCodes) {
     QByteArray answer;
     PollingExpector expector;
     auto poll = [&]() -> bool {
-        return mIOPort->write(CPOSPrinter::Command::GetPaperStatus) && getAnswer(answer, 50);
+        return m_IOPort->write(CPOSPrinter::Command::GetPaperStatus) && getAnswer(answer, 50);
     };
 
     if (!expector.wait<bool>(
@@ -85,13 +85,13 @@ bool CitizenPPU231::getStatus(TStatusCodes &aStatusCodes) {
 //--------------------------------------------------------------------------------
 bool CitizenPPU231::printBarcode(const QString &aBarcode) {
     // 1. В Qt 6 для кодирования текста (fromUnicode) используется QStringEncoder.
-    // Так как mDecoder в 2026 году — это std::shared_ptr<QStringDecoder>,
+    // Так как m_Decoder в 2026 году — это std::shared_ptr<QStringDecoder>,
     // создаем энкодер с той же кодировкой.
     QByteArray encodedBarcode;
 
-    if (mDecoder) {
+    if (m_Decoder) {
         // Создаем энкодер на основе имени кодировки декодера (напр. "IBM 866")
-        QStringEncoder encoder(mDecoder->name());
+        QStringEncoder encoder(m_Decoder->name());
         // Используем оператор вызова (функтор) для кодирования
         encodedBarcode = encoder(aBarcode);
     } else {
@@ -106,7 +106,7 @@ bool CitizenPPU231::printBarcode(const QString &aBarcode) {
 
     // 3. Записываем в порт.
     // Предполагается, что prepareBarcodePrinting() возвращает QByteArray с префиксами.
-    return mIOPort->write(prepareBarcodePrinting() + barcodePrinting);
+    return m_IOPort->write(prepareBarcodePrinting() + barcodePrinting);
 }
 
 //--------------------------------------------------------------------------------

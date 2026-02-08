@@ -148,7 +148,7 @@ private:
     bool identifyTag(QString &aTag, Type::Enum &aType, Direction::Enum &aDirection) const;
 
     /// Группы тегов (ранжированных по префиксам).
-    TPrefixData mPrefixData;
+    TPrefixData m_PrefixData;
 };
 
 typedef QSharedPointer<Engine> PEngine;

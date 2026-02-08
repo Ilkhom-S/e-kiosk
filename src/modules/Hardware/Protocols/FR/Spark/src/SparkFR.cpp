@@ -79,7 +79,7 @@ TResult SparkFRProtocol::performCommand(const QByteArray &aCommandData,
 
         toLog(LogLevel::Normal, log);
 
-        if (!mPort->write(aCommandData)) {
+        if (!m_Port->write(aCommandData)) {
             return CommandResult::Port;
         }
 
@@ -133,7 +133,7 @@ bool SparkFRProtocol::readData(QByteArray &aAnswerData, int aTimeout) {
     do {
         QByteArray data;
 
-        if (!mPort->read(data, 50)) {
+        if (!m_Port->read(data, 50)) {
             return false;
         }
 

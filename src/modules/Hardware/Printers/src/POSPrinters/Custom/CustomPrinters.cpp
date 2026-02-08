@@ -40,43 +40,43 @@ template class CustomPrinter<TSerialPrinterBase>;
 
 //--------------------------------------------------------------------------------
 template <class T> CustomPrinter<T>::CustomPrinter() {
-    this->mParameters = POSPrinters::CommonParameters;
+    this->m_Parameters = POSPrinters::CommonParameters;
 
     // статусы ошибок
-    this->mParameters.errors.clear();
+    this->m_Parameters.errors.clear();
 
-    this->mParameters.errors[20][3].insert('\x01', PrinterStatusCode::Error::PaperEnd);
-    this->mParameters.errors[20][3].insert('\x04', PrinterStatusCode::Warning::PaperNearEnd);
-    this->mParameters.errors[20][3].insert('\x20', PrinterStatusCode::OK::PaperInPresenter);
-    // this->mParameters.errors[20][3].insert('\x40', PrinterStatusCode::Warning::PaperEndVirtual);
+    this->m_Parameters.errors[20][3].insert('\x01', PrinterStatusCode::Error::PaperEnd);
+    this->m_Parameters.errors[20][3].insert('\x04', PrinterStatusCode::Warning::PaperNearEnd);
+    this->m_Parameters.errors[20][3].insert('\x20', PrinterStatusCode::OK::PaperInPresenter);
+    // this->m_Parameters.errors[20][3].insert('\x40', PrinterStatusCode::Warning::PaperEndVirtual);
 
-    this->mParameters.errors[20][4].insert('\x01', PrinterStatusCode::Error::PrintingHead);
-    this->mParameters.errors[20][4].insert('\x02', DeviceStatusCode::Error::CoverIsOpened);
+    this->m_Parameters.errors[20][4].insert('\x01', PrinterStatusCode::Error::PrintingHead);
+    this->m_Parameters.errors[20][4].insert('\x02', DeviceStatusCode::Error::CoverIsOpened);
 
-    this->mParameters.errors[20][5].insert('\x01', PrinterStatusCode::Error::Temperature);
-    this->mParameters.errors[20][5].insert('\x04', PrinterStatusCode::Error::Port);
-    this->mParameters.errors[20][5].insert('\x08', DeviceStatusCode::Error::PowerSupply);
-    this->mParameters.errors[20][5].insert('\x40', PrinterStatusCode::Error::PaperJam);
+    this->m_Parameters.errors[20][5].insert('\x01', PrinterStatusCode::Error::Temperature);
+    this->m_Parameters.errors[20][5].insert('\x04', PrinterStatusCode::Error::Port);
+    this->m_Parameters.errors[20][5].insert('\x08', DeviceStatusCode::Error::PowerSupply);
+    this->m_Parameters.errors[20][5].insert('\x40', PrinterStatusCode::Error::PaperJam);
 
-    this->mParameters.errors[20][6].insert('\x01', PrinterStatusCode::Error::Cutter);
-    this->mParameters.errors[20][6].insert('\x4C', DeviceStatusCode::Error::MemoryStorage);
+    this->m_Parameters.errors[20][6].insert('\x01', PrinterStatusCode::Error::Cutter);
+    this->m_Parameters.errors[20][6].insert('\x4C', DeviceStatusCode::Error::MemoryStorage);
 
     // теги
-    this->mParameters.tagEngine.appendSingle(Tags::Type::Italic, "\x1B\x34", "\x01");
-    this->mParameters.tagEngine.appendCommon(Tags::Type::DoubleWidth, "\x1B\x21", "\x20");
-    this->mParameters.tagEngine.appendCommon(Tags::Type::DoubleHeight, "\x1B\x21", "\x10");
+    this->m_Parameters.tagEngine.appendSingle(Tags::Type::Italic, "\x1B\x34", "\x01");
+    this->m_Parameters.tagEngine.appendCommon(Tags::Type::DoubleWidth, "\x1B\x21", "\x20");
+    this->m_Parameters.tagEngine.appendCommon(Tags::Type::DoubleHeight, "\x1B\x21", "\x10");
 
     // параметры моделей
-    this->mDeviceName = "Custom Printer";
-    this->mModelID = '\x93';
-    this->mPrintingStringTimeout = 50;
+    this->m_DeviceName = "Custom Printer";
+    this->m_ModelID = '\x93';
+    this->m_PrintingStringTimeout = 50;
 
     // модели
-    this->mModelData.data().clear();
-    this->mModelData.add('\x93', false, CCustomPrinter::Models::TG2480);
-    this->mModelData.add('\xA7', false, CCustomPrinter::Models::TG2460H);
-    this->mModelData.add('\xAC', false, CCustomPrinter::Models::TL80);
-    this->mModelData.add('\xAD', false, CCustomPrinter::Models::TL60);
+    this->m_ModelData.data().clear();
+    this->m_ModelData.add('\x93', false, CCustomPrinter::Models::TG2480);
+    this->m_ModelData.add('\xA7', false, CCustomPrinter::Models::TG2460H);
+    this->m_ModelData.add('\xAC', false, CCustomPrinter::Models::TL80);
+    this->m_ModelData.add('\xAD', false, CCustomPrinter::Models::TL60);
 
     this->setConfigParameter(CHardware::Printer::FeedingAmount, 1);
 }
@@ -108,15 +108,15 @@ bool CustomPrinter<T>::printImageDefault(const QImage &aImage, const Tags::TType
 
     if (width > CCustomPrinter::MaxImageWidth) {
         this->toLog(LogLevel::Warning,
-                    this->mDeviceName +
+                    this->m_DeviceName +
                         QString(": Image width > %1, so it cannot be printing properly")
                             .arg(CCustomPrinter::MaxImageWidth));
         return false;
     }
 
-    if (!this->mIOPort->write(CPOSPrinter::Command::SetLineSpacing(0))) {
+    if (!this->m_IOPort->write(CPOSPrinter::Command::SetLineSpacing(0))) {
         this->toLog(LogLevel::Error,
-                    this->mDeviceName + ": Failed to set null line spacing for printing the image");
+                    this->m_DeviceName + ": Failed to set null line spacing for printing the image");
         return false;
     }
 
@@ -154,7 +154,7 @@ bool CustomPrinter<T>::printImageDefault(const QImage &aImage, const Tags::TType
             request.append(data);
         }
 
-        if (!this->mIOPort->write(request + ASCII::LF)) {
+        if (!this->m_IOPort->write(request + ASCII::LF)) {
             result = false;
 
             break;
@@ -163,9 +163,9 @@ bool CustomPrinter<T>::printImageDefault(const QImage &aImage, const Tags::TType
 
     int lineSpacing = this->getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
 
-    if (!this->mIOPort->write(CPOSPrinter::Command::SetLineSpacing(lineSpacing))) {
+    if (!this->m_IOPort->write(CPOSPrinter::Command::SetLineSpacing(lineSpacing))) {
         this->toLog(LogLevel::Error,
-                    this->mDeviceName + ": Failed to set line spacing after printing the image");
+                    this->m_DeviceName + ": Failed to set line spacing after printing the image");
     }
 
     return result;
@@ -179,7 +179,7 @@ bool CustomPrinter<T>::printImage(const QImage &aImage, const Tags::TTypes &aTag
 
     if (width > CCustomPrinter::GAM::MaxImageWidth) {
         this->toLog(LogLevel::Warning,
-                    this->mDeviceName +
+                    this->m_DeviceName +
                         QStringLiteral(": Image width > %1, so it cannot be printing properly")
                             .arg(CCustomPrinter::GAM::MaxImageWidth));
         return false;
@@ -204,9 +204,9 @@ bool CustomPrinter<T>::printImage(const QImage &aImage, const Tags::TTypes &aTag
     QElapsedTimer timer;
     timer.start();
 
-    if (!this->mIOPort->write(initializeGAM)) {
+    if (!this->m_IOPort->write(initializeGAM)) {
         this->toLog(LogLevel::Error,
-                    this->mDeviceName + QStringLiteral(": Failed to initialize GAM"));
+                    this->m_DeviceName + QStringLiteral(": Failed to initialize GAM"));
         return false;
     }
 
@@ -222,27 +222,27 @@ bool CustomPrinter<T>::printImage(const QImage &aImage, const Tags::TTypes &aTag
         // Вставляем длину данных в команду (индекс 3 согласно протоколу GAM)
         command.insert(3, QByteArray::number(data.size()));
 
-        if (!this->mIOPort->write(command)) {
+        if (!this->m_IOPort->write(command)) {
             this->toLog(LogLevel::Error,
-                        this->mDeviceName + QStringLiteral(": Failed to send image data"));
+                        this->m_DeviceName + QStringLiteral(": Failed to send image data"));
             return false;
         }
     }
 
-    if (!this->mIOPort->write(CCustomPrinter::GAM::Commands::PrintImage)) {
+    if (!this->m_IOPort->write(CCustomPrinter::GAM::Commands::PrintImage)) {
         this->toLog(LogLevel::Error,
-                    this->mDeviceName + QStringLiteral(": Failed to set resolution 204 dpi"));
+                    this->m_DeviceName + QStringLiteral(": Failed to set resolution 204 dpi"));
         return false;
     }
 
     SDK::Driver::TPortParameters portParameters;
-    this->mIOPort->getParameters(portParameters);
+    this->m_IOPort->getParameters(portParameters);
     qint64 pause = CCustomPrinter::GAM::getImagePause(aImage, portParameters);
 
     // Расчет оставшейся паузы
     qint64 elapsed = timer.elapsed();
     this->toLog(LogLevel::Normal,
-                this->mDeviceName +
+                this->m_DeviceName +
                     QStringLiteral(": Pause after printing image = %1 - %2 = %3 (ms)")
                         .arg(pause)
                         .arg(elapsed)

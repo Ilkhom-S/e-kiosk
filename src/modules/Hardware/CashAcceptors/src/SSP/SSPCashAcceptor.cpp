@@ -16,23 +16,23 @@ using namespace ProtocolUtils;
 //---------------------------------------------------------------------------
 SSPCashAcceptor::SSPCashAcceptor() {
     // параметры порта
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
-    mPortParameters[EParameters::RTS].clear();
-    mPortParameters[EParameters::RTS].append(ERTSControl::Disable);
+    m_PortParameters[EParameters::RTS].clear();
+    m_PortParameters[EParameters::RTS].append(ERTSControl::Disable);
 
     // данные устройства
-    mDeviceName = CSSP::Models::Default;
-    mEscrowPosition = 1;
-    mResetWaiting = EResetWaiting::Available;
-    mLastConnectionOK = false;
-    mEnabled = false;
-    mParInStacked = true;
+    m_DeviceName = CSSP::Models::Default;
+    m_EscrowPosition = 1;
+    m_ResetWaiting = EResetWaiting::Available;
+    m_LastConnectionOK = false;
+    m_Enabled = false;
+    m_ParInStacked = true;
 
     // параметры протокола
-    mProtocol.setAddress(CSSP::Addresses::Validator);
-    mDeviceCodeSpecification = PDeviceCodeSpecification(new CSSP::DeviceCodeSpecification);
+    m_Protocol.setAddress(CSSP::Addresses::Validator);
+    m_DeviceCodeSpecification = PDeviceCodeSpecification(new CSSP::DeviceCodeSpecification);
 }
 
 //--------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ bool SSPCashAcceptor::checkStatuses(TStatusData &aData) {
     }
 
     if (answer.isEmpty()) {
-        QByteArray statusCode = mEnabled ? CSSP::EnabledStatus : CSSP::DisabledStatus;
+        QByteArray statusCode = m_Enabled ? CSSP::EnabledStatus : CSSP::DisabledStatus;
         aData << statusCode;
     } else {
         for (int i = 0; i < answer.size(); ++i) {
@@ -77,20 +77,20 @@ bool SSPCashAcceptor::checkStatuses(TStatusData &aData) {
 TResult SSPCashAcceptor::execCommand(const QByteArray &aCommand,
                                      const QByteArray &aCommandData,
                                      QByteArray *aAnswer) {
-    if (!mLastConnectionOK && (aCommand != QByteArray(1, CSSP::Commands::Sync)) &&
+    if (!m_LastConnectionOK && (aCommand != QByteArray(1, CSSP::Commands::Sync)) &&
         !processCommand(CSSP::Commands::Sync)) {
         return false;
     }
 
-    MutexLocker locker(&mExternalMutex);
+    MutexLocker locker(&m_ExternalMutex);
 
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
 
     QByteArray answer;
     QByteArray request = aCommand + aCommandData;
-    TResult result = mProtocol.processCommand(request, answer, CSSP::Commands::Data[aCommand[0]]);
-    mLastConnectionOK = CommandResult::PresenceErrors.contains(result);
+    TResult result = m_Protocol.processCommand(request, answer, CSSP::Commands::Data[aCommand[0]]);
+    m_LastConnectionOK = CommandResult::PresenceErrors.contains(result);
 
     if (!result) {
         return result;
@@ -99,7 +99,7 @@ TResult SSPCashAcceptor::execCommand(const QByteArray &aCommand,
     CSSP::Result::SData resultData = CSSP::Result::Data[answer[0]];
 
     if (resultData.code != CommandResult::OK) {
-        toLog(LogLevel::Error, QString("%1: %2").arg(mDeviceName).arg(resultData.description));
+        toLog(LogLevel::Error, QString("%1: %2").arg(m_DeviceName).arg(resultData.description));
         return resultData.code;
     }
 
@@ -132,7 +132,7 @@ bool SSPCashAcceptor::processReset() {
             },
             CSSP::ReadyWaiting)) {
         toLog(LogLevel::Error,
-              mDeviceName + ": Failed to wait not initialization status after reset command");
+              m_DeviceName + ": Failed to wait not initialization status after reset command");
         return false;
     }
 
@@ -156,7 +156,7 @@ bool SSPCashAcceptor::isConnected() {
     QByteArray answer;
 
     if (!processCommand(CSSP::Commands::GetFirmware, &answer)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to get firmware version");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to get firmware version");
         return false;
     }
 
@@ -171,11 +171,11 @@ bool SSPCashAcceptor::isConnected() {
         it++;
     }
 
-    mDeviceName = modelData.name;
-    mUpdatable = modelData.updatable;
-    mVerified = modelData.verified;
+    m_DeviceName = modelData.name;
+    m_Updatable = modelData.updatable;
+    m_Verified = modelData.verified;
 
-    if (mUpdatable) {
+    if (m_Updatable) {
         setDeviceParameter(CDeviceData::FirmwareUpdatable, true);
     }
 
@@ -222,7 +222,7 @@ bool SSPCashAcceptor::setDefaultParameters() {
 
 //---------------------------------------------------------------------------
 bool SSPCashAcceptor::stack() {
-    if (!checkConnectionAbility() || (mInitialized != ERequestStatus::Success) || mCheckDisable) {
+    if (!checkConnectionAbility() || (m_Initialized != ERequestStatus::Success) || m_CheckDisable) {
         return false;
     }
 
@@ -234,7 +234,7 @@ bool SSPCashAcceptor::stack() {
 
 //---------------------------------------------------------------------------
 bool SSPCashAcceptor::reject() {
-    if (!checkConnectionAbility() || (mInitialized == ERequestStatus::Fail)) {
+    if (!checkConnectionAbility() || (m_Initialized == ERequestStatus::Fail)) {
         return false;
     }
 
@@ -249,24 +249,24 @@ bool SSPCashAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
         return false;
     }
 
-    mEnabled = aEnabled;
+    m_Enabled = aEnabled;
 
     return true;
 }
 
 //---------------------------------------------------------------------------
 bool SSPCashAcceptor::applyParTable() {
-    QList<int> indexes = mEscrowParTable.data().keys();
+    QList<int> indexes = m_EscrowParTable.data().keys();
     std::sort(indexes.begin(), indexes.end());
     int channels = qCeil(indexes.last() / 8.0);
 
-    if ((mDeviceName == CSSP::Models::NV200) || (mDeviceName == CSSP::Models::NV200Spectral)) {
+    if ((m_DeviceName == CSSP::Models::NV200) || (m_DeviceName == CSSP::Models::NV200Spectral)) {
         channels = qMax(channels, CSSP::NV200MinInhibitedChannels);
     }
 
     QByteArray commandData(channels, ASCII::NUL);
 
-    for (auto it = mEscrowParTable.data().begin(); it != mEscrowParTable.data().end(); ++it) {
+    for (auto it = m_EscrowParTable.data().begin(); it != m_EscrowParTable.data().end(); ++it) {
         if (it->enabled && !it->inhibit) {
             int id = it.key() - indexes.first();
             int index = id / 8;
@@ -275,7 +275,7 @@ bool SSPCashAcceptor::applyParTable() {
     }
 
     if (!processCommand(CSSP::Commands::SetInhibit, commandData)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to set nominals availability.");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to set nominals availability.");
         return false;
     }
 
@@ -287,7 +287,7 @@ bool SSPCashAcceptor::loadParTable() {
     QByteArray answer;
 
     if (!processCommand(CSSP::Commands::GetSetupData, &answer) || (answer.size() < 12)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to get setup data");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to get setup data");
         return false;
     }
 
@@ -299,7 +299,7 @@ bool SSPCashAcceptor::loadParTable() {
             LogLevel::Error,
             QString(
                 "%1: Failed to get setup data due to not enough data in the answer = %2, need %3.")
-                .arg(mDeviceName)
+                .arg(m_DeviceName)
                 .arg(answer.size())
                 .arg(size));
         return false;
@@ -314,9 +314,9 @@ bool SSPCashAcceptor::loadParTable() {
         double nominal =
             multiplier * revert(answer.mid(16 + 5 * channels + 4 * i, 4)).toHex().toInt(0, 16);
 
-        MutexLocker locker(&mResourceMutex);
+        MutexLocker locker(&m_ResourceMutex);
 
-        mEscrowParTable.data().insert(index, SPar(nominal, currency));
+        m_EscrowParTable.data().insert(index, SPar(nominal, currency));
     }
 
     return true;
@@ -337,14 +337,14 @@ bool SSPCashAcceptor::performUpdateFirmware(const QByteArray &aBuffer) {
 
 //---------------------------------------------------------------------------
 bool SSPCashAcceptor::performBaudRateChanging(bool aUp) {
-    CSSP::EBaudRate::Enum upBaudRate = (mDeviceName == CSSP::Models::NV200Spectral)
+    CSSP::EBaudRate::Enum upBaudRate = (m_DeviceName == CSSP::Models::NV200Spectral)
                                            ? CSSP::EBaudRate::BR115200
                                            : CSSP::EBaudRate::BR38400;
     CSSP::EBaudRate::Enum commandBaudrate = aUp ? upBaudRate : CSSP::EBaudRate::BR9600;
     IOPort::COM::EBaudRate::Enum baudRate = CSSP::BaudRateData[commandBaudrate];
 
     TPortParameters portParameters;
-    mIOPort->getParameters(portParameters);
+    m_IOPort->getParameters(portParameters);
 
     if (portParameters[EParameters::BaudRate] == baudRate) {
         return true;
@@ -356,7 +356,7 @@ bool SSPCashAcceptor::performBaudRateChanging(bool aUp) {
 
     if (!processCommand(CSSP::Commands::SetBaudrate, commandData)) {
         toLog(LogLevel::Error,
-              mDeviceName + QString(": Failed to set %1 baud rate in cash acceptor").arg(baudRate));
+              m_DeviceName + QString(": Failed to set %1 baud rate in cash acceptor").arg(baudRate));
         return false;
     }
 
@@ -364,13 +364,13 @@ bool SSPCashAcceptor::performBaudRateChanging(bool aUp) {
 
     portParameters[EParameters::BaudRate] = baudRate;
 
-    if (!mIOPort->setParameters(portParameters)) {
+    if (!m_IOPort->setParameters(portParameters)) {
         toLog(LogLevel::Error,
-              mDeviceName + QString(": Failed to set %1 baud rate in port").arg(baudRate));
+              m_DeviceName + QString(": Failed to set %1 baud rate in port").arg(baudRate));
         return false;
     }
 
-    toLog(LogLevel::Normal, mDeviceName + QString(": Baud rate has changed to %2.").arg(baudRate));
+    toLog(LogLevel::Normal, m_DeviceName + QString(": Baud rate has changed to %2.").arg(baudRate));
 
     return true;
 }

@@ -24,7 +24,7 @@ public:
         QByteArray command = ASCII::DLE + QByteArray::number(aCommand);
         QByteArray answer;
 
-        if (!mPort->write(command) || !mPort->read(answer, 50))
+        if (!m_Port->write(command) || !m_Port->read(answer, 50))
             return CommandResult::Port;
         if (answer.isEmpty())
             return CommandResult::NoAnswer;
@@ -35,14 +35,14 @@ public:
             timer.start();
 
             do {
-                if (!mPort->read(data, 50)) {
+                if (!m_Port->read(data, 50)) {
                     return CommandResult::Port;
                 }
             } while (!data.isEmpty() && (timer.elapsed() < 1000));
 
             if (!data.isEmpty())
                 return CommandResult::Answer;
-            if (!mPort->write(command) || !mPort->read(answer, 50))
+            if (!m_Port->write(command) || !m_Port->read(answer, 50))
                 return CommandResult::Port;
             if (answer.isEmpty())
                 return CommandResult::NoAnswer;

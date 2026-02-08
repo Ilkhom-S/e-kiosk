@@ -72,13 +72,13 @@ protected:
     SDK::Driver::SPar getPar(const QByteArray &aData);
 
     /// Протокол.
-    EBDSProtocol mProtocol;
+    EBDSProtocol m_Protocol;
 
     /// Признак почти-заполненности стекера.
-    bool mStackerNearFull;
+    bool m_StackerNearFull;
 
     /// Признак включенности на прием купюр.
-    bool mEnabled;
+    bool m_Enabled;
 };
 
 //--------------------------------------------------------------------------------

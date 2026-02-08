@@ -10,7 +10,7 @@ typedef CCTalkComplexEnableAcceptor<CCTalkCoinAcceptorBase> TCCTalkComplexEnable
 
 class CCTalkComplexEnableCoinAcceptor : public TCCTalkComplexEnableAcceptor {
 public:
-    CCTalkComplexEnableCoinAcceptor() { mModels = getModelList(); }
+    CCTalkComplexEnableCoinAcceptor() { m_Models = getModelList(); }
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList() {

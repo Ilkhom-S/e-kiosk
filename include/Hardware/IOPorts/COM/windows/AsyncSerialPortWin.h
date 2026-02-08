@@ -32,7 +32,7 @@ typedef QMap<QString, QString> TIOPortDeviceData;
     [&]() -> bool {                                                                                \
         if (!checkReady())                                                                         \
             return false;                                                                          \
-        return process(std::bind(&::aFunctionName, mPortHandle, __VA_ARGS__), #aFunctionName);     \
+        return process(std::bind(&::aFunctionName, m_PortHandle, __VA_ARGS__), #aFunctionName);     \
     }()
 
 //--------------------------------------------------------------------------------
@@ -137,44 +137,44 @@ protected:
     virtual bool isExist();
 
     /// Служебная структура настроек.
-    DCB mDCB;
+    DCB m_DCB;
 
     /// Хендл порта.
-    HANDLE mPortHandle;
+    HANDLE m_PortHandle;
 
     /// Структуры и мьютексы для отслеживания асинхронных чтения/записи.
-    QMutex mReadMutex;
-    QMutex mWriteMutex;
-    OVERLAPPED mReadOverlapped;
-    OVERLAPPED mWriteOverlapped;
-    DWORD mReadEventMask;
+    QMutex m_ReadMutex;
+    QMutex m_WriteMutex;
+    OVERLAPPED m_ReadOverlapped;
+    OVERLAPPED m_WriteOverlapped;
+    DWORD m_ReadEventMask;
 
     /// Буфер для чтения.
-    TReadingBuffer mReadingBuffer;
+    TReadingBuffer m_ReadingBuffer;
 
     /// Cуществует в системе.
-    bool mExist;
+    bool m_Exist;
 
     /// Последняя системная ошибка.
-    DWORD mLastError;
+    DWORD m_LastError;
 
     /// Последняя ошибка проверки порта.
-    DWORD mLastErrorChecking;
+    DWORD m_LastErrorChecking;
 
     /// Максимальное количество байтов для чтения.
-    int mMaxReadingSize;
+    int m_MaxReadingSize;
 
     /// Системные имена портов.
-    QStringList mSystemNames;
+    QStringList m_SystemNames;
 
     /// Нефильтрованные системные данные портов.
-    TWinDeviceProperties mWinProperties;
+    TWinDeviceProperties m_WinProperties;
 
     /// Системное свойство для формирования пути для открытия порта.
-    DWORD mPathProperty;
+    DWORD m_PathProperty;
 
     /// GUID-ы для авто поиска.
-    TUuids mUuids;
+    TUuids m_Uuids;
 
     /// Получение системных данных о портах (порт -> виртуальность).
     typedef QMap<QString, SDK::Driver::EPortTypes::Enum> TData;
@@ -187,10 +187,10 @@ protected:
                                                     TIOPortDeviceData *aData = nullptr);
 
     /// Ждать окончания асинхронного чтения из порта, если результат - WAIT_TIMEOUT.
-    bool mWaitResult;
+    bool m_WaitResult;
 
     /// Количество прочитанных байтов.
-    DWORD mReadBytes;
+    DWORD m_ReadBytes;
 };
 
 //--------------------------------------------------------------------------------

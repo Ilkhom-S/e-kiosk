@@ -7,13 +7,13 @@
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-Atol3FRBase::Atol3FRBase() : mTId(0) {}
+Atol3FRBase::Atol3FRBase() : m_TId(0) {}
 
 //--------------------------------------------------------------------------------
 bool Atol3FRBase::isConnected() {
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
-    mProtocol.cancel();
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
+    m_Protocol.cancel();
 
     return AtolFRBase::isConnected();
 }
@@ -21,41 +21,41 @@ bool Atol3FRBase::isConnected() {
 //--------------------------------------------------------------------------------
 TResult
 Atol3FRBase::performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
 
     QTime clockTimer;
     clockTimer.start();
 
-    mTId = (mTId == uchar(CAtol3FR::LastTId)) ? ASCII::NUL : ++mTId;
-    TResult result = mProtocol.processCommand(mTId, aCommandData, aAnswer);
+    m_TId = (m_TId == uchar(CAtol3FR::LastTId)) ? ASCII::NUL : ++m_TId;
+    TResult result = m_Protocol.processCommand(m_TId, aCommandData, aAnswer);
 
     using namespace CAtol3FR;
 
     if (aAnswer[0] == States::InProgress) {
         do {
-            result = mProtocol.waitForAnswer(aAnswer, CAtol3FR::Timeouts::WaitForAnswer);
+            result = m_Protocol.waitForAnswer(aAnswer, CAtol3FR::Timeouts::WaitForAnswer);
         } while ((clockTimer.elapsed() < aTimeout) &&
                  ((result == CommandResult::NoAnswer) || (aAnswer[0] == States::InProgress)));
     }
 
     if (!result) {
-        mProtocol.cancel();
+        m_Protocol.cancel();
 
         return result;
     }
 
     auto answerResult = [&](const QString aLog) -> TResult {
         if (!aLog.isEmpty())
-            toLog(LogLevel::Error, mDeviceName + QString(": %1, aborting").arg(aLog));
-        mProtocol.cancel();
+            toLog(LogLevel::Error, m_DeviceName + QString(": %1, aborting").arg(aLog));
+        m_Protocol.cancel();
         return CommandResult::Answer;
     };
 
     if (aAnswer.isEmpty()) {
-        toLog(LogLevel::Error, mDeviceName + ": No task state, trying to get the result");
+        toLog(LogLevel::Error, m_DeviceName + ": No task state, trying to get the result");
 
-        if (!mProtocol.getResult(mTId, aAnswer) || aAnswer.isEmpty()) {
+        if (!m_Protocol.getResult(m_TId, aAnswer) || aAnswer.isEmpty()) {
             return answerResult("No task state again");
         }
     }
@@ -67,33 +67,33 @@ Atol3FRBase::performCommand(const QByteArray &aCommandData, QByteArray &aAnswer,
         if (!aAnswer.isEmpty()) {
             uchar TId = uchar(aAnswer[0]);
 
-            if (mTId != TId) {
+            if (m_TId != TId) {
                 return answerResult(QString("Invalid task Id = %1, need %2")
                                         .arg(toHexLog(TId))
-                                        .arg(toHexLog(mTId)));
+                                        .arg(toHexLog(m_TId)));
             }
 
             aAnswer = aAnswer.mid(1);
         } else {
-            toLog(LogLevel::Error, mDeviceName + ": No task Id, trying to get the result");
+            toLog(LogLevel::Error, m_DeviceName + ": No task Id, trying to get the result");
 
-            if (!mProtocol.getResult(mTId, aAnswer) || aAnswer.isEmpty()) {
+            if (!m_Protocol.getResult(m_TId, aAnswer) || aAnswer.isEmpty()) {
                 return answerResult("No task Id again");
             }
         }
     }
 
     if ((state == States::Result) || (state == States::AsyncResult)) {
-        mProtocol.sendACK(mTId);
+        m_Protocol.sendACK(m_TId);
 
         return CommandResult::OK;
     } else if ((state == States::Error) || (state == States::AsyncError)) {
-        mProtocol.cancel();
+        m_Protocol.cancel();
 
         return CommandResult::OK;
     }
 
-    return answerResult(QString("Task %1 state = %2").arg(toHexLog(mTId)).arg(toHexLog(state)));
+    return answerResult(QString("Task %1 state = %2").arg(toHexLog(m_TId)).arg(toHexLog(state)));
 }
 
 //--------------------------------------------------------------------------------

@@ -172,8 +172,8 @@ bool Atol2FRProtocol::execCommand(QByteArray &aPacket) {
     for (int i = 0; i < CAtol2FR::MaxRepeatPacket; ++i) {
         QByteArray answerData;
 
-        if (!mPort->write(aPacket) ||
-            !mPort->read(answerData, CAtol2FR::Timeouts::OpeningSession)) {
+        if (!m_Port->write(aPacket) ||
+            !m_Port->read(answerData, CAtol2FR::Timeouts::OpeningSession)) {
             return false;
         }
 
@@ -213,7 +213,7 @@ bool Atol2FRProtocol::read(QByteArray &aData) {
     do {
         QByteArray answerData;
 
-        if (!mPort->read(answerData)) {
+        if (!m_Port->read(answerData)) {
             return false;
         }
 
@@ -235,7 +235,7 @@ bool Atol2FRProtocol::read(QByteArray &aData) {
 
 //--------------------------------------------------------------------------------
 bool Atol2FRProtocol::closeWriteSession() {
-    if (!mPort->write(QByteArray(1, ASCII::EOT))) {
+    if (!m_Port->write(QByteArray(1, ASCII::EOT))) {
         toLog(LogLevel::Error, "ATOL: Failed to close write session");
         return false;
     }
@@ -247,7 +247,7 @@ bool Atol2FRProtocol::closeWriteSession() {
 bool Atol2FRProtocol::closeReadSession() {
     QByteArray answerData;
 
-    if (!mPort->read(answerData, CAtol2FR::Timeouts::Default) ||
+    if (!m_Port->read(answerData, CAtol2FR::Timeouts::Default) ||
         !answerData.startsWith(ASCII::EOT)) {
         toLog(LogLevel::Error, "ATOL: Failed to close read session");
         return false;
@@ -258,7 +258,7 @@ bool Atol2FRProtocol::closeReadSession() {
 
 //--------------------------------------------------------------------------------
 bool Atol2FRProtocol::sendACK() {
-    if (!mPort->write(QByteArray(1, ASCII::ACK))) {
+    if (!m_Port->write(QByteArray(1, ASCII::ACK))) {
         toLog(LogLevel::Error, "ATOL: Failed to send ACK");
         return false;
     }
@@ -271,8 +271,8 @@ bool Atol2FRProtocol::openWriteSession() {
     for (int i = 0; i < CAtol2FR::MaxServiceRequests; ++i) {
         QByteArray answerData;
 
-        if (!mPort->write(QByteArray(1, ASCII::ENQ)) ||
-            !mPort->read(answerData, CAtol2FR::Timeouts::OpeningSession)) {
+        if (!m_Port->write(QByteArray(1, ASCII::ENQ)) ||
+            !m_Port->read(answerData, CAtol2FR::Timeouts::OpeningSession)) {
             break;
         }
 
@@ -296,7 +296,7 @@ bool Atol2FRProtocol::openWriteSession() {
 bool Atol2FRProtocol::openReadSession(int aTimeout) {
     QByteArray answerData;
 
-    if (!mPort->read(answerData, aTimeout) || !answerData.startsWith(ASCII::ENQ) || !sendACK()) {
+    if (!m_Port->read(answerData, aTimeout) || !answerData.startsWith(ASCII::ENQ) || !sendACK()) {
         toLog(LogLevel::Error, "ATOL: Failed to open read session");
         return false;
     }

@@ -36,12 +36,12 @@ public:
 
 protected:
     /// Параметры.
-    QVariantMap mConfiguration;
+    QVariantMap m_Configuration;
 
     /// Сторож параметров.
-    mutable QReadWriteLock mConfigurationGuard;
+    mutable QReadWriteLock m_ConfigurationGuard;
 
-    std::shared_ptr<QStringDecoder> mDecoder; // Replaces QTextCodec*
+    std::shared_ptr<QStringDecoder> m_Decoder; // Replaces QTextCodec*
 };
 
 //--------------------------------------------------------------------------------

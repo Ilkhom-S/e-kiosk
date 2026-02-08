@@ -11,11 +11,11 @@ using namespace SDK::Driver::IOPort::COM;
 
 //----------------------------------------------------------------------------
 Alarm::Alarm() {
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
-    mDeviceName = "Alarm";
-    mSensorDisabledValue = true;
+    m_DeviceName = "Alarm";
+    m_SensorDisabledValue = true;
 }
 
 //----------------------------------------------------------------------------
@@ -25,7 +25,7 @@ bool Alarm::isConnected() {
     for (auto it = CommandIntervals.data().begin(); it != CommandIntervals.data().end(); ++it) {
         TAnswer answer;
 
-        if (!mIOPort->write(QByteArray(1, it.key())) || !getAnswer(answer) || answer.isEmpty()) {
+        if (!m_IOPort->write(QByteArray(1, it.key())) || !getAnswer(answer) || answer.isEmpty()) {
             return false;
         }
 
@@ -47,9 +47,9 @@ bool Alarm::reset(const QString & /*aLine*/) {
         return false;
     }
 
-    toLog(LogLevel::Normal, mDeviceName + ": resetting modem");
+    toLog(LogLevel::Normal, m_DeviceName + ": resetting modem");
 
-    return mIOPort->write(QByteArray(1, CAlarm::Commands::ResetModem));
+    return m_IOPort->write(QByteArray(1, CAlarm::Commands::ResetModem));
 }
 
 //---------------------------------------------------------------------------
@@ -79,7 +79,7 @@ bool Alarm::getStatus(TStatusCodes &aStatusCodes) {
 
 //--------------------------------------------------------------------------------
 bool Alarm::getAnswer(TAnswer &aAnswer) {
-    MutexLocker locker(&mExternalMutex);
+    MutexLocker locker(&m_ExternalMutex);
 
     aAnswer.clear();
     QByteArray answer;
@@ -88,7 +88,7 @@ bool Alarm::getAnswer(TAnswer &aAnswer) {
     clockTimer.restart();
 
     do {
-        if (!mIOPort->read(answer, 100)) {
+        if (!m_IOPort->read(answer, 100)) {
             return false;
         }
     } while ((clockTimer.elapsed() < CAlarm::DefaultTimeout) && answer.isEmpty());

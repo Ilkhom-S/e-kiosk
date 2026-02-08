@@ -55,20 +55,20 @@ protected:
 
 private:
     /// Данные устройств на шине RS-485.
-    CShtrih::SDevicesData mDeviceData;
+    CShtrih::SDevicesData m_DeviceData;
 
     // TODO: найти, где его инкрементить
     /// Номер посылки.
-    uchar mMessageNumber;
+    uchar m_MessageNumber;
 
     /// Логика поддержки питания.
-    bool mPowerControlLogicEnable;
+    bool m_PowerControlLogicEnable;
 
     /// Расширенная логика анализа датчиков питания.
-    bool mAdvancedPowerLogicEnable;
+    bool m_AdvancedPowerLogicEnable;
 
     /// Местный мьютекс.
-    QMutex mWaitMutex;
+    QMutex m_WaitMutex;
 };
 
 //--------------------------------------------------------------------------------

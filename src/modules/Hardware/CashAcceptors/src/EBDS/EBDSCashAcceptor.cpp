@@ -13,20 +13,20 @@ using namespace SDK::Driver::IOPort::COM;
 //---------------------------------------------------------------------------
 EBDSCashAcceptor::EBDSCashAcceptor() {
     // параметры порта
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
-    mPortParameters[EParameters::Parity].append(EParity::Even);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::Parity].append(EParity::Even);
 
-    mPortParameters[EParameters::ByteSize].clear();
-    mPortParameters[EParameters::ByteSize].append(7);
+    m_PortParameters[EParameters::ByteSize].clear();
+    m_PortParameters[EParameters::ByteSize].append(7);
 
     // данные устройства
-    mDeviceName = "EBDS cash acceptor";
-    mStackerNearFull = false;
-    mResetWaiting = EResetWaiting::Available;
-    mEnabled = false;
+    m_DeviceName = "EBDS cash acceptor";
+    m_StackerNearFull = false;
+    m_ResetWaiting = EResetWaiting::Available;
+    m_Enabled = false;
 
     // параметры протокола
-    mDeviceCodeSpecification = PDeviceCodeSpecification(new CEBDS::DeviceCodeSpecification);
+    m_DeviceCodeSpecification = PDeviceCodeSpecification(new CEBDS::DeviceCodeSpecification);
 }
 
 //--------------------------------------------------------------------------------
@@ -49,13 +49,13 @@ bool EBDSCashAcceptor::checkStatus(QByteArray &aAnswer) {
 TResult EBDSCashAcceptor::execCommand(const QByteArray &aCommand,
                                       const QByteArray &aCommandData,
                                       QByteArray *aAnswer) {
-    MutexLocker locker(&mExternalMutex);
+    MutexLocker locker(&m_ExternalMutex);
 
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
 
     QByteArray answer;
-    TResult result = mProtocol.processCommand(
+    TResult result = m_Protocol.processCommand(
         aCommand + aCommandData, answer, aCommand != CEBDS::Commands::Reset);
 
     if (!result) {
@@ -75,7 +75,7 @@ TResult EBDSCashAcceptor::execCommand(const QByteArray &aCommand,
 
     if (!isValidStandardMessage && !isValidSpecialMessage && !isValidNonStandardMessage &&
         !isValidControlMessage) {
-        toLog(LogLevel::Error, mDeviceName + ": Invalid command type of the message.");
+        toLog(LogLevel::Error, m_DeviceName + ": Invalid command type of the message.");
         return CommandResult::Protocol;
     }
 
@@ -90,7 +90,7 @@ TResult EBDSCashAcceptor::execCommand(const QByteArray &aCommand,
 //---------------------------------------------------------------------------------
 TResult EBDSCashAcceptor::poll(char aAction, QByteArray *aAnswer) {
     QByteArray commandData;
-    commandData.append(mEnabled ? ASCII::Full : ASCII::NUL);
+    commandData.append(m_Enabled ? ASCII::Full : ASCII::NUL);
     commandData.append(CEBDS::Byte1 | aAction);
     commandData.append(CEBDS::Byte2);
 
@@ -122,8 +122,8 @@ bool EBDSCashAcceptor::isConnected() {
     }
 
     SBaseModelData data = modelData[CEBDS::TModelData(modelKey, advanced)];
-    mDeviceName = data.name;
-    mVerified = data.verified;
+    m_DeviceName = data.name;
+    m_Verified = data.verified;
 
     setDeviceParameter(CDeviceData::ModelKey, ProtocolUtils::toHexLog(modelKey));
     setDeviceParameter(CDeviceData::Revision, revision);
@@ -167,7 +167,7 @@ void EBDSCashAcceptor::processDeviceData() {
 
 //---------------------------------------------------------------------------
 bool EBDSCashAcceptor::stack() {
-    if (!checkConnectionAbility() || (mInitialized != ERequestStatus::Success) || mCheckDisable) {
+    if (!checkConnectionAbility() || (m_Initialized != ERequestStatus::Success) || m_CheckDisable) {
         return false;
     }
 
@@ -179,7 +179,7 @@ bool EBDSCashAcceptor::stack() {
 
 //---------------------------------------------------------------------------
 bool EBDSCashAcceptor::reject() {
-    if (!checkConnectionAbility() || (mInitialized == ERequestStatus::Fail)) {
+    if (!checkConnectionAbility() || (m_Initialized == ERequestStatus::Fail)) {
         return false;
     }
 
@@ -192,13 +192,13 @@ bool EBDSCashAcceptor::reject() {
 //---------------------------------------------------------------------------
 bool EBDSCashAcceptor::applyParTable() {
     QByteArray commandData;
-    commandData.append(mEnabled ? ASCII::Full : ASCII::NUL);
+    commandData.append(m_Enabled ? ASCII::Full : ASCII::NUL);
     commandData.append(CEBDS::Byte1);
     commandData.append(CEBDS::Byte2);
 
     commandData += QByteArray(8, ASCII::NUL);
 
-    for (auto it = mEscrowParTable.data().begin(); it != mEscrowParTable.data().end(); ++it) {
+    for (auto it = m_EscrowParTable.data().begin(); it != m_EscrowParTable.data().end(); ++it) {
         if (it->enabled && !it->inhibit) {
             int id = it.key() - 1;
             int index = 3 + id / 7;
@@ -208,7 +208,7 @@ bool EBDSCashAcceptor::applyParTable() {
 
     if (!processCommand(CEBDS::Commands::SetInhibits, commandData)) {
         toLog(LogLevel::Error,
-              mDeviceName + ": Failed to set nominal inhibits for receiving money");
+              m_DeviceName + ": Failed to set nominal inhibits for receiving money");
         return false;
     }
 
@@ -217,7 +217,7 @@ bool EBDSCashAcceptor::applyParTable() {
 
 //---------------------------------------------------------------------------
 bool EBDSCashAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
-    mEnabled = aEnabled;
+    m_Enabled = aEnabled;
     setConfigParameter(CHardware::CashAcceptor::Enabled, aEnabled);
 
     return true;
@@ -238,12 +238,12 @@ bool EBDSCashAcceptor::loadParTable() {
 
         if (!processCommand(CEBDS::Commands::GetPar, commandData, &answer)) {
             toLog(LogLevel::Error,
-                  mDeviceName + QString(": Failed to get data for nominal %1").arg(i + 1));
+                  m_DeviceName + QString(": Failed to get data for nominal %1").arg(i + 1));
             result = false;
         } else {
-            MutexLocker locker(&mResourceMutex);
+            MutexLocker locker(&m_ResourceMutex);
 
-            mEscrowParTable.data().insert(i + 1, getPar(answer));
+            m_EscrowParTable.data().insert(i + 1, getPar(answer));
         }
     }
 
@@ -254,7 +254,7 @@ bool EBDSCashAcceptor::loadParTable() {
 SPar EBDSCashAcceptor::getPar(const QByteArray &aData) {
     if (aData.size() < CEBDS::NominalSize) {
         toLog(LogLevel::Error,
-              mDeviceName + QString(": Too small answer size = %1 for nominal, need %2 minimum")
+              m_DeviceName + QString(": Too small answer size = %1 for nominal, need %2 minimum")
                                 .arg(aData.size())
                                 .arg(CEBDS::NominalSize));
         return SPar();
@@ -272,19 +272,19 @@ SPar EBDSCashAcceptor::getPar(const QByteArray &aData) {
 //--------------------------------------------------------------------------------
 bool EBDSCashAcceptor::setLastPar(const QByteArray &aAnswer) {
     SDK::Driver::SPar par = getPar(aAnswer);
-    mEscrowPars = TPars() << par;
+    m_EscrowPars = TPars() << par;
 
-    return mEscrowParTable.data().values().contains(par) && (par.nominal) &&
+    return m_EscrowParTable.data().values().contains(par) && (par.nominal) &&
            (par.currencyId != Currency::NoCurrency);
 }
 
 //--------------------------------------------------------------------------------
 void EBDSCashAcceptor::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes) {
-    mStackerNearFull = mStackerNearFull ||
+    m_StackerNearFull = m_StackerNearFull ||
                        (aStatusCodes.contains(BillAcceptorStatusCode::BillOperation::Stacked) &&
                         aStatusCodes.contains(BillAcceptorStatusCode::Warning::Cheated));
 
-    if (mStackerNearFull) {
+    if (m_StackerNearFull) {
         aStatusCodes.remove(BillAcceptorStatusCode::Warning::Cheated);
         aStatusCodes.insert(BillAcceptorStatusCode::Warning::StackerNearFull);
     }

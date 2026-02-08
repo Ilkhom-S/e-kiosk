@@ -115,7 +115,7 @@ TResult Puloon::processCommand(const QByteArray &aCommandData,
         }
 
         if (check(answerList.last(), request)) {
-            if (!mPort->write(QByteArray(1, ASCII::ACK))) {
+            if (!m_Port->write(QByteArray(1, ASCII::ACK))) {
                 toLog(LogLevel::Error, "Puloon: Failed to send ACK packet");
                 return CommandResult::Transport;
             }
@@ -148,7 +148,7 @@ bool Puloon::execCommand(const QByteArray &aCommandPacket,
     int countRequest = 0;
 
     do {
-        if (!mPort->write(aCommandPacket)) {
+        if (!m_Port->write(aCommandPacket)) {
             return false;
         }
 
@@ -173,7 +173,7 @@ bool Puloon::execCommand(const QByteArray &aCommandPacket,
 
 //--------------------------------------------------------------------------------
 bool Puloon::regetAnswer(TAnswerList &aAnswerList) const {
-    if (!mPort->write(QByteArray(1, ASCII::NAK))) {
+    if (!m_Port->write(QByteArray(1, ASCII::NAK))) {
         toLog(LogLevel::Error, "Puloon: Failed to send NAK");
         return false;
     }
@@ -198,7 +198,7 @@ bool Puloon::getAnswer(TAnswerList &aAnswerList, int aTimeout) const {
     while (clockTimer.elapsed() < aTimeout) {
         answerData.clear();
 
-        if (!mPort->read(answerData)) {
+        if (!m_Port->read(answerData)) {
             return false;
         }
 

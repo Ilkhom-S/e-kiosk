@@ -5,7 +5,7 @@
 #include "ShtrihFRConstants.h"
 
 //--------------------------------------------------------------------------------
-ShtrihFRProtocol::ShtrihFRProtocol() : mTransportTimeout(CShtrihFR::Timeouts::Transport) {}
+ShtrihFRProtocol::ShtrihFRProtocol() : m_TransportTimeout(CShtrihFR::Timeouts::Transport) {}
 
 //--------------------------------------------------------------------------------
 uchar ShtrihFRProtocol::calcCRC(const QByteArray &aData) {
@@ -71,11 +71,11 @@ bool ShtrihFRProtocol::check(const QByteArray &aCommand) {
 bool ShtrihFRProtocol::readData(QByteArray &aData, int aTimeout) {
     QByteArray data;
 
-    if (!mPort->read(data, aTimeout)) {
+    if (!m_Port->read(data, aTimeout)) {
         return false;
     }
 
-    int index = ((mPort->getType() == SDK::Driver::EPortTypes::TCP) && aData.isEmpty() &&
+    int index = ((m_Port->getType() == SDK::Driver::EPortTypes::TCP) && aData.isEmpty() &&
                  data.startsWith(CShtrihFR::Trash))
                     ? 1
                     : 0;
@@ -99,7 +99,7 @@ bool ShtrihFRProtocol::openSession() {
 
         QByteArray answerData;
 
-        if (!readData(answerData, mTransportTimeout)) {
+        if (!readData(answerData, m_TransportTimeout)) {
             return false;
         }
 
@@ -196,11 +196,11 @@ bool ShtrihFRProtocol::execCommand(const QByteArray &aCommand, QByteArray &aAnsw
     int countRequest = 0;
 
     do {
-        if (!mPort->write(aCommand)) {
+        if (!m_Port->write(aCommand)) {
             return false;
         }
 
-        if (!getAnswer(aAnswer, aTimeout + mTransportTimeout)) {
+        if (!getAnswer(aAnswer, aTimeout + m_TransportTimeout)) {
             return false;
         }
 
@@ -266,7 +266,7 @@ bool ShtrihFRProtocol::getAnswer(QByteArray &aData, int aTimeout) {
 
 //--------------------------------------------------------------------------------
 bool ShtrihFRProtocol::sendACK() {
-    if (!mPort->write(QByteArray(1, ASCII::ACK))) {
+    if (!m_Port->write(QByteArray(1, ASCII::ACK))) {
         toLog(LogLevel::Error, "Shtrih: Failed to send ACK packet");
         return false;
     }
@@ -276,7 +276,7 @@ bool ShtrihFRProtocol::sendACK() {
 
 //--------------------------------------------------------------------------------
 bool ShtrihFRProtocol::sendNAK() {
-    if (!mPort->write(QByteArray(1, ASCII::NAK))) {
+    if (!m_Port->write(QByteArray(1, ASCII::NAK))) {
         toLog(LogLevel::Error, "Shtrih: Failed to send NAK");
         return false;
     }
@@ -286,7 +286,7 @@ bool ShtrihFRProtocol::sendNAK() {
 
 //--------------------------------------------------------------------------------
 bool ShtrihFRProtocol::sendENQ() {
-    if (!mPort->write(QByteArray(1, ASCII::ENQ))) {
+    if (!m_Port->write(QByteArray(1, ASCII::ENQ))) {
         toLog(LogLevel::Error, "Shtrih: Failed to send ENQ");
         return false;
     }
@@ -296,7 +296,7 @@ bool ShtrihFRProtocol::sendENQ() {
 
 //--------------------------------------------------------------------------------
 void ShtrihFRProtocol::setTransportTimeout(int aTimeout) {
-    mTransportTimeout = aTimeout;
+    m_TransportTimeout = aTimeout;
 }
 
 //--------------------------------------------------------------------------------

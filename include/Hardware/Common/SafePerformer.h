@@ -51,7 +51,7 @@ public slots:
 
 private:
     /// Лог.
-    ILog *mLog;
+    ILog *m_Log;
 };
 
 //--------------------------------------------------------------------------------
@@ -74,12 +74,12 @@ public slots:
     void onFinished(bool aSuccess);
 
 private:
-    bool mResult;                  /// Результат выполнения.
-    QMutex mGuard;                 /// Сторож для wait condition.
-    QWaitCondition mWaitCondition; /// Wait condition для таймаута ожидания.
+    bool m_Result;                  /// Результат выполнения.
+    QMutex m_Guard;                 /// Сторож для wait condition.
+    QWaitCondition m_WaitCondition; /// Wait condition для таймаута ожидания.
 
     /// Лог.
-    ILog *mLog;
+    ILog *m_Log;
 };
 
 //--------------------------------------------------------------------------------

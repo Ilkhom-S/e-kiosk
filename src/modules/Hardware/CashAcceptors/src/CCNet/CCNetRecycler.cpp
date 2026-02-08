@@ -7,15 +7,15 @@
 //---------------------------------------------------------------------------
 CCNetRecycler::CCNetRecycler() {
     // данные устройства
-    mDeviceName = CCCNet::Models::CashcodeG200;
-    mSupportedModels = QStringList() << mDeviceName;
-    mResetWaiting = EResetWaiting::Full;
+    m_DeviceName = CCCNet::Models::CashcodeG200;
+    m_SupportedModels = QStringList() << m_DeviceName;
+    m_ResetWaiting = EResetWaiting::Full;
 
     setConfigParameter(CHardware::CashAcceptor::InitializeTimeout,
                        CCCNetRecycler::ExitInitializeTimeout);
 
     // параметры протокола
-    mProtocol.setAddress(CCCNet::Addresses::BillToBill);
+    m_Protocol.setAddress(CCCNet::Addresses::BillToBill);
 }
 
 //--------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ bool CCNetRecycler::processReset() {
         waitNotBusyPowerUp();
     }
 
-    return result || !mForceWaitResetCompleting;
+    return result || !m_ForceWaitResetCompleting;
 }
 
 //--------------------------------------------------------------------------------

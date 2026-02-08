@@ -4,29 +4,29 @@
 
 CitizenCTS310II::CitizenCTS310II() {
     // статусы ошибок
-    mParameters.errors.clear();
+    m_Parameters.errors.clear();
 
-    mParameters.errors[1][1].insert('\x08', DeviceStatusCode::Error::Unknown);
+    m_Parameters.errors[1][1].insert('\x08', DeviceStatusCode::Error::Unknown);
 
-    mParameters.errors[2][1].insert('\x04', DeviceStatusCode::Error::CoverIsOpened);
-    mParameters.errors[2][1].insert('\x20', PrinterStatusCode::Error::PaperEnd);
-    mParameters.errors[2][1].insert('\x40', DeviceStatusCode::Error::Unknown);
+    m_Parameters.errors[2][1].insert('\x04', DeviceStatusCode::Error::CoverIsOpened);
+    m_Parameters.errors[2][1].insert('\x20', PrinterStatusCode::Error::PaperEnd);
+    m_Parameters.errors[2][1].insert('\x40', DeviceStatusCode::Error::Unknown);
 
-    mParameters.errors[3][1].insert('\x04', DeviceStatusCode::Error::MechanismPosition);
-    mParameters.errors[3][1].insert('\x08', PrinterStatusCode::Error::Cutter);
-    mParameters.errors[3][1].insert('\x60', DeviceStatusCode::Error::Unknown);
+    m_Parameters.errors[3][1].insert('\x04', DeviceStatusCode::Error::MechanismPosition);
+    m_Parameters.errors[3][1].insert('\x08', PrinterStatusCode::Error::Cutter);
+    m_Parameters.errors[3][1].insert('\x60', DeviceStatusCode::Error::Unknown);
 
-    mParameters.errors[4][1].insert('\x0C', PrinterStatusCode::Warning::PaperNearEnd);
-    mParameters.errors[4][1].insert('\x60', PrinterStatusCode::Error::PaperEnd);
+    m_Parameters.errors[4][1].insert('\x0C', PrinterStatusCode::Warning::PaperNearEnd);
+    m_Parameters.errors[4][1].insert('\x60', PrinterStatusCode::Error::PaperEnd);
 
     // параметры моделей
     setConfigParameter(CHardware::Printer::FeedingAmount, 3);
-    mDeviceName = "Citizen CT-S310II";
-    mModelID = '\x3D';
+    m_DeviceName = "Citizen CT-S310II";
+    m_ModelID = '\x3D';
 
     // модели
-    mModelData.data().clear();
-    mModelData.add(mModelID, true, mDeviceName);
+    m_ModelData.data().clear();
+    m_ModelData.add(m_ModelID, true, m_DeviceName);
 }
 
 //--------------------------------------------------------------------------------

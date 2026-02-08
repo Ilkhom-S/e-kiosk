@@ -40,7 +40,7 @@ protected:
                                 QByteArray *aAnswer = nullptr);
 
     /// Потокол
-    OSMPWDProtocol mProtocol;
+    OSMPWDProtocol m_Protocol;
 };
 
 //--------------------------------------------------------------------------------

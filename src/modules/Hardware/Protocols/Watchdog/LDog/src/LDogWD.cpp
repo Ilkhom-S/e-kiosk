@@ -107,7 +107,7 @@ TResult LDogWDProtocol::processCommand(const QByteArray &aCommandData, QByteArra
 
     request.append(CLDogWD::Postfix);
 
-    if (!mPort->write(request)) {
+    if (!m_Port->write(request)) {
         return CommandResult::Port;
     }
 
@@ -145,7 +145,7 @@ bool LDogWDProtocol::read(QByteArray &aAnswer) {
     do {
         QByteArray answerData;
 
-        if (!mPort->read(answerData)) {
+        if (!m_Port->read(answerData)) {
             return false;
         }
 

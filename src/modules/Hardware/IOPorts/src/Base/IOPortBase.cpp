@@ -8,11 +8,11 @@ using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
 IOPortBase::IOPortBase()
-    : mType(EPortTypes::Unknown), mDeviceIOLoging(ELoggingType::None), mOpeningTimeout(0) {}
+    : m_Type(EPortTypes::Unknown), m_DeviceIOLoging(ELoggingType::None), m_OpeningTimeout(0) {}
 
 //--------------------------------------------------------------------------------
 void IOPortBase::setOpeningTimeout(int aTimeout) {
-    mOpeningTimeout = aTimeout;
+    m_OpeningTimeout = aTimeout;
     setConfigParameter(CHardware::Port::OpeningTimeout, aTimeout);
 }
 
@@ -28,7 +28,7 @@ bool IOPortBase::clear() {
 
 //--------------------------------------------------------------------------------
 QString IOPortBase::getName() const {
-    return mSystemName;
+    return m_SystemName;
 }
 
 //--------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ bool IOPortBase::release() {
 
 //--------------------------------------------------------------------------------
 EPortTypes::Enum IOPortBase::getType() {
-    return mType;
+    return m_Type;
 }
 
 //--------------------------------------------------------------------------------
@@ -49,19 +49,19 @@ void IOPortBase::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     MetaDevice::setDeviceConfiguration(aConfiguration);
 
     if (aConfiguration.contains(CHardwareSDK::SystemName)) {
-        mSystemName = aConfiguration[CHardwareSDK::SystemName].toString();
+        m_SystemName = aConfiguration[CHardwareSDK::SystemName].toString();
     }
 
     if (aConfiguration.contains(CHardware::Port::DeviceModelName)) {
-        mConnectedDeviceName = aConfiguration[CHardware::Port::DeviceModelName].toString();
+        m_ConnectedDeviceName = aConfiguration[CHardware::Port::DeviceModelName].toString();
     }
 
     if (aConfiguration.contains(CHardware::Port::IOLogging)) {
-        mDeviceIOLoging = aConfiguration[CHardware::Port::IOLogging].value<ELoggingType::Enum>();
+        m_DeviceIOLoging = aConfiguration[CHardware::Port::IOLogging].value<ELoggingType::Enum>();
     }
 
     if (aConfiguration.contains(CHardware::Port::OpeningTimeout)) {
-        mOpeningTimeout = aConfiguration[CHardware::Port::OpeningTimeout].toInt();
+        m_OpeningTimeout = aConfiguration[CHardware::Port::OpeningTimeout].toInt();
     }
 }
 

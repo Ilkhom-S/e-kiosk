@@ -50,17 +50,17 @@ protected:
 
 #pragma region Searching data
     /// Набор параметров порта, с которыми может работать устройство.
-    TTCPDevicePortParameters mPortParameters;
+    TTCPDevicePortParameters m_PortParameters;
 
     /// Список параметров порта для поиска.
     typedef QList<STCPPortParameters> TSearchingPortParameters;
-    TSearchingPortParameters mSearchingPortParameters;
+    TSearchingPortParameters m_SearchingPortParameters;
 
     /// Параметры порта для поиска.
-    STCPPortParameters mCurrentParameter;
+    STCPPortParameters m_CurrentParameter;
 
     /// Итератор на следующие параметры порта для поиска.
-    TSearchingPortParameters::iterator mNextParameterIterator;
+    TSearchingPortParameters::iterator m_NextParameterIterator;
 #pragma endregion
 };
 

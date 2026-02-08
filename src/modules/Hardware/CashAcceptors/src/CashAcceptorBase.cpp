@@ -16,30 +16,30 @@ using namespace SDK::Driver;
 //---------------------------------------------------------------------------
 template <class T> CashAcceptorBase<T>::CashAcceptorBase() {
     // данные устройства
-    this->mDeviceType = "Base cash acceptor";
-    this->mCurrencyError = ECurrencyError::OK;
-    this->mReady = false;
+    this->m_DeviceType = "Base cash acceptor";
+    this->m_CurrencyError = ECurrencyError::OK;
+    this->m_Ready = false;
 
     // описания для кодов статусов
-    this->mStatusCodesSpecification =
+    this->m_StatusCodesSpecification =
         DeviceStatusCode::PSpecifications(new BillAcceptorStatusCode::CSpecifications());
-    this->mDeviceType = CHardware::Types::CashAcceptor;
+    this->m_DeviceType = CHardware::Types::CashAcceptor;
 
     // параметры истории статусов
-    this->mStatusHistory.setSize(5);
+    this->m_StatusHistory.setSize(5);
 
     // восстановимые ошибки
-    this->mRecoverableErrors.insert(BillAcceptorStatusCode::Error::ParTableLoading);
+    this->m_RecoverableErrors.insert(BillAcceptorStatusCode::Error::ParTableLoading);
 
     // Неустойчивые пограничные состояния
-    for (auto it = this->mStatusCodesSpecification->data().begin();
-         it != this->mStatusCodesSpecification->data().end();
+    for (auto it = this->m_StatusCodesSpecification->data().begin();
+         it != this->m_StatusCodesSpecification->data().end();
          ++it) {
         if ((it->status == ECashAcceptorStatus::Cheated) ||
             (it->status == ECashAcceptorStatus::Busy) ||
             (it->status == ECashAcceptorStatus::BillOperation) ||
             (it->status == ECashAcceptorStatus::Rejected)) {
-            this->mUnsafeStatusCodes.insert(it.key());
+            this->m_UnsafeStatusCodes.insert(it.key());
         }
     }
 }
@@ -48,31 +48,31 @@ template <class T> CashAcceptorBase<T>::CashAcceptorBase() {
 template <class T> bool CashAcceptorBase<T>::release() {
     bool result = T::release();
 
-    MutexLocker locker(&this->mResourceMutex);
+    MutexLocker locker(&this->m_ResourceMutex);
 
-    this->mStatusHistory.clear();
-    this->mStatusHistory.append(CCashAcceptor::SStatusSpecification());
-    this->mStatusHistory.updateLevel();
+    this->m_StatusHistory.clear();
+    this->m_StatusHistory.append(CCashAcceptor::SStatusSpecification());
+    this->m_StatusHistory.updateLevel();
 
-    this->mStatuses.clear();
-    this->mCurrencyError = ECurrencyError::OK;
+    this->m_Statuses.clear();
+    this->m_CurrencyError = ECurrencyError::OK;
 
     return result;
 }
 
 //---------------------------------------------------------------------------
 template <class T> bool CashAcceptorBase<T>::isDeviceReady() {
-    return this->mReady;
+    return this->m_Ready;
 }
 
 //---------------------------------------------------------------------------
 template <class T> CCashAcceptor::TStatuses CashAcceptorBase<T>::getLastStatuses(int aLevel) const {
-    if (this->mStatusCollectionHistory.isEmpty()) {
+    if (this->m_StatusCollectionHistory.isEmpty()) {
         return CCashAcceptor::TStatuses();
     }
 
     HistoryList<TStatusCollection>::const_iterator lastStatusCollectionIt =
-        this->mStatusCollectionHistory.end() - qMin(this->mStatusCollectionHistory.size(), aLevel);
+        this->m_StatusCollectionHistory.end() - qMin(this->m_StatusCollectionHistory.size(), aLevel);
     TStatusCodes lastStatusCodes;
 
     foreach (const TStatusCodes &statusCodes, *lastStatusCollectionIt) {
@@ -83,7 +83,7 @@ template <class T> CCashAcceptor::TStatuses CashAcceptorBase<T>::getLastStatuses
 
     foreach (int statusCode, lastStatusCodes) {
         ECashAcceptorStatus::Enum status = static_cast<ECashAcceptorStatus::Enum>(
-            this->mStatusCodesSpecification->value(statusCode).status);
+            this->m_StatusCodesSpecification->value(statusCode).status);
         statuses[status].insert(statusCode);
     }
 
@@ -94,8 +94,8 @@ template <class T> CCashAcceptor::TStatuses CashAcceptorBase<T>::getLastStatuses
 template <class T> TStatusCodes CashAcceptorBase<T>::getLongStatusCodes() const {
     TStatusCodes result;
 
-    for (auto it = this->mStatusCodesSpecification->data().begin();
-         it != this->mStatusCodesSpecification->data().end();
+    for (auto it = this->m_StatusCodesSpecification->data().begin();
+         it != this->m_StatusCodesSpecification->data().end();
          ++it) {
         ECashAcceptorStatus::Enum status = ECashAcceptorStatus::Enum(it->status);
 
@@ -210,22 +210,22 @@ template <class T> bool CashAcceptorBase<T>::isInitialize() const {
 
 //---------------------------------------------------------------------------
 template <class T> bool CashAcceptorBase<T>::isAvailable() {
-    if (this->mStatusCollection.isEmpty()) {
+    if (this->m_StatusCollection.isEmpty()) {
         this->simplePoll();
     }
 
-    return !this->mStatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
+    return !this->m_StatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
 }
 
 //---------------------------------------------------------------------------
 template <class T> bool CashAcceptorBase<T>::canReturning(bool aOnline) {
-    if (this->mDeviceType != CHardware::Types::BillAcceptor) {
+    if (this->m_DeviceType != CHardware::Types::BillAcceptor) {
         return false;
     }
 
     this->simplePoll();
 
-    TStatusCodes lastStatusCodes = this->mStatusCollection.value(EWarningLevel::OK);
+    TStatusCodes lastStatusCodes = this->m_StatusCollection.value(EWarningLevel::OK);
     bool result =
         lastStatusCodes.contains(BillAcceptorStatusCode::BillOperation::Escrow) ||
         (lastStatusCodes.contains(BillAcceptorStatusCode::BillOperation::Accepting) && !aOnline);
@@ -235,12 +235,12 @@ template <class T> bool CashAcceptorBase<T>::canReturning(bool aOnline) {
 
 //---------------------------------------------------------------------------
 template <class T> void CashAcceptorBase<T>::logEnabledPars() {
-    MutexLocker locker(&this->mResourceMutex);
+    MutexLocker locker(&this->m_ResourceMutex);
 
     bool onlyBillAcceptor = true;
     bool enable = false;
 
-    for (auto it = this->mEscrowParTable.data().begin(); it != this->mEscrowParTable.data().end();
+    for (auto it = this->m_EscrowParTable.data().begin(); it != this->m_EscrowParTable.data().end();
          ++it) {
         SPar &par = it.value();
 
@@ -252,10 +252,10 @@ template <class T> void CashAcceptorBase<T>::logEnabledPars() {
     }
 
     if (enable) {
-        QString log = this->mDeviceName + ": successfully enable nominals - ";
+        QString log = this->m_DeviceName + ": successfully enable nominals - ";
 
-        for (auto it = this->mEscrowParTable.data().begin();
-             it != this->mEscrowParTable.data().end();
+        for (auto it = this->m_EscrowParTable.data().begin();
+             it != this->m_EscrowParTable.data().end();
              ++it) {
             if (!it.value().inhibit && it.value().enabled && it.value().nominal) {
                 log +=
@@ -272,27 +272,27 @@ template <class T> void CashAcceptorBase<T>::logEnabledPars() {
 
         this->toLog(LogLevel::Normal, log);
     } else {
-        this->toLog(LogLevel::Warning, this->mDeviceName + ": no nominals for enabling!");
+        this->toLog(LogLevel::Warning, this->m_DeviceName + ": no nominals for enabling!");
     }
 }
 
 //---------------------------------------------------------------------------
 template <class T> void CashAcceptorBase<T>::setParList(const TParList &aParList) {
-    MutexLocker locker(&this->mParListMutex);
+    MutexLocker locker(&this->m_ParListMutex);
 
-    this->mParList = aParList;
+    this->m_ParList = aParList;
 
     START_IN_WORKING_THREAD(employParList)
 }
 
 //---------------------------------------------------------------------------
 template <class T> TParList CashAcceptorBase<T>::getParList() {
-    MutexLocker parListLocker(&this->mParListMutex);
-    MutexLocker resourceLocker(&this->mResourceMutex);
+    MutexLocker parListLocker(&this->m_ParListMutex);
+    MutexLocker resourceLocker(&this->m_ResourceMutex);
 
-    TParList parList = this->mEscrowParTable.data().values();
+    TParList parList = this->m_EscrowParTable.data().values();
 
-    foreach (const SPar &par, this->mParList) {
+    foreach (const SPar &par, this->m_ParList) {
         if (!parList.contains(par)) {
             parList << par;
         }
@@ -303,80 +303,80 @@ template <class T> TParList CashAcceptorBase<T>::getParList() {
 
 //---------------------------------------------------------------------------
 template <class T> void CashAcceptorBase<T>::employParList() {
-    bool noValidParTable = (this->mCurrencyError == ECurrencyError::Loading) ||
-                           (this->mCurrencyError == ECurrencyError::Config) ||
-                           (this->mCurrencyError == ECurrencyError::Billset) ||
-                           (this->mCurrencyError == ECurrencyError::Compatibility);
+    bool noValidParTable = (this->m_CurrencyError == ECurrencyError::Loading) ||
+                           (this->m_CurrencyError == ECurrencyError::Config) ||
+                           (this->m_CurrencyError == ECurrencyError::Billset) ||
+                           (this->m_CurrencyError == ECurrencyError::Compatibility);
 
-    if (!this->mConnected || (this->mInitialized == ERequestStatus::Fail) || noValidParTable) {
+    if (!this->m_Connected || (this->m_Initialized == ERequestStatus::Fail) || noValidParTable) {
         return;
     }
 
-    MutexLocker resourceLocker(&this->mResourceMutex);
+    MutexLocker resourceLocker(&this->m_ResourceMutex);
 
-    CCashAcceptor::TStatuses lastStatuses = this->mStatusHistory.lastValue().statuses;
-    TStatusCollection lastStatusCollection = this->mStatusCollectionHistory.lastValue();
+    CCashAcceptor::TStatuses lastStatuses = this->m_StatusHistory.lastValue().statuses;
+    TStatusCollection lastStatusCollection = this->m_StatusCollectionHistory.lastValue();
 
     if (!lastStatuses.isEmpty(ECashAcceptorStatus::Rejected) ||
         !lastStatusCollection.isEmpty(EWarningLevel::Error)) {
         return;
     }
 
-    TParTable oldTable = this->mEscrowParTable.data();
+    TParTable oldTable = this->m_EscrowParTable.data();
 
     {
-        MutexLocker parListLocker(&this->mParListMutex);
+        MutexLocker parListLocker(&this->m_ParListMutex);
 
-        if (this->mParList.isEmpty()) {
+        if (this->m_ParList.isEmpty()) {
             return;
         }
 
-        for (auto it = this->mEscrowParTable.data().begin();
-             it != this->mEscrowParTable.data().end();
+        for (auto it = this->m_EscrowParTable.data().begin();
+             it != this->m_EscrowParTable.data().end();
              ++it) {
-            int index = this->mParList.indexOf(*it);
-            it.value().enabled = (index != -1) && this->mParList[index].enabled;
+            int index = this->m_ParList.indexOf(*it);
+            it.value().enabled = (index != -1) && this->m_ParList[index].enabled;
         }
 
-        if (std::find_if(this->mEscrowParTable.data().begin(),
-                         this->mEscrowParTable.data().end(),
+        if (std::find_if(this->m_EscrowParTable.data().begin(),
+                         this->m_EscrowParTable.data().end(),
                          [&](const SPar &aPar) -> bool { return aPar.enabled; }) ==
-            this->mEscrowParTable.data().end()) {
-            this->mCurrencyError = ECurrencyError::NoAvailable;
+            this->m_EscrowParTable.data().end()) {
+            this->m_CurrencyError = ECurrencyError::NoAvailable;
 
             return;
         }
     }
 
-    QList<int> positions = this->mEscrowParTable.data().keys();
+    QList<int> positions = this->m_EscrowParTable.data().keys();
 
     if (std::find_if(positions.begin(), positions.end(), [&](int aPosition) -> bool {
-            return this->mEscrowParTable[aPosition].isEqual(oldTable[aPosition]);
+            return this->m_EscrowParTable[aPosition].isEqual(oldTable[aPosition]);
         }) != positions.end()) {
         ECashReceiver::Enum cashReceiver;
-        bool complexDevice = (std::find_if(this->mEscrowParTable.data().begin(),
-                                           this->mEscrowParTable.data().end(),
+        bool complexDevice = (std::find_if(this->m_EscrowParTable.data().begin(),
+                                           this->m_EscrowParTable.data().end(),
                                            [&](const SPar &aPar) -> bool {
                                                bool result = bool(aPar.nominal);
                                                cashReceiver = aPar.cashReceiver;
                                                return result;
-                                           }) != this->mEscrowParTable.data().end()) &&
-                             (std::find_if(this->mEscrowParTable.data().begin(),
-                                           this->mEscrowParTable.data().end(),
+                                           }) != this->m_EscrowParTable.data().end()) &&
+                             (std::find_if(this->m_EscrowParTable.data().begin(),
+                                           this->m_EscrowParTable.data().end(),
                                            [&](const SPar &aPar) -> bool {
                                                return cashReceiver != aPar.cashReceiver;
-                                           }) != this->mEscrowParTable.data().end());
+                                           }) != this->m_EscrowParTable.data().end());
 
-        if (std::find_if(this->mEscrowParTable.data().begin(),
-                         this->mEscrowParTable.data().end(),
+        if (std::find_if(this->m_EscrowParTable.data().begin(),
+                         this->m_EscrowParTable.data().end(),
                          [&](const SPar &aPar) -> bool {
                              bool result = aPar.nominal && !aPar.enabled;
                              return result;
-                         }) != this->mEscrowParTable.data().end()) {
-            QString log = this->mDeviceName + ": Nominal(s) disabled:";
+                         }) != this->m_EscrowParTable.data().end()) {
+            QString log = this->m_DeviceName + ": Nominal(s) disabled:";
 
-            for (auto it = this->mEscrowParTable.data().begin();
-                 it != this->mEscrowParTable.data().end();
+            for (auto it = this->m_EscrowParTable.data().begin();
+                 it != this->m_EscrowParTable.data().end();
                  ++it) {
                 if (it->nominal && !it->enabled) {
                     log +=
@@ -395,13 +395,13 @@ template <class T> void CashAcceptorBase<T>::employParList() {
         }
     }
 
-    this->mCurrencyError = ECurrencyError::OK;
+    this->m_CurrencyError = ECurrencyError::OK;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
     if (!this->containsConfigParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId)) {
-        this->toLog(LogLevel::Error, this->mDeviceName + ": No system currency id in parameters!");
+        this->toLog(LogLevel::Error, this->m_DeviceName + ": No system currency id in parameters!");
         return ECurrencyError::Config;
     }
 
@@ -410,42 +410,42 @@ template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
 
     if (!CurrencyCodes.data().values().contains(systemCurrencyId)) {
         this->toLog(LogLevel::Error,
-                    this->mDeviceName +
+                    this->m_DeviceName +
                         ": Unknown system currency id = " + QString::number(systemCurrencyId));
         return ECurrencyError::Config;
     }
 
-    QString log = this->mDeviceName + ": successfully loaded nominal table -";
+    QString log = this->m_DeviceName + ": successfully loaded nominal table -";
 
-    MutexLocker locker(&this->mResourceMutex);
+    MutexLocker locker(&this->m_ResourceMutex);
 
-    this->mEscrowParTable.data().clear();
+    this->m_EscrowParTable.data().clear();
 
     if (!loadParTable()) {
         return ECurrencyError::Loading;
     }
 
-    if (this->mEscrowParTable.data().isEmpty()) {
-        this->toLog(LogLevel::Error, this->mDeviceName + ": par table is empty!");
+    if (this->m_EscrowParTable.data().isEmpty()) {
+        this->toLog(LogLevel::Error, this->m_DeviceName + ": par table is empty!");
         return ECurrencyError::Loading;
     }
 
     bool billset = false;
     bool compatibility = false;
 
-    for (auto it = this->mEscrowParTable.data().begin(); it != this->mEscrowParTable.data().end();
+    for (auto it = this->m_EscrowParTable.data().begin(); it != this->m_EscrowParTable.data().end();
          ++it) {
         ECashReceiver::Enum cashReceiver = it.value().cashReceiver;
 
-        if (this->mDeviceType == CHardware::Types::CashAcceptor) {
-            this->mDeviceType = (cashReceiver == ECashReceiver::BillAcceptor)
+        if (this->m_DeviceType == CHardware::Types::CashAcceptor) {
+            this->m_DeviceType = (cashReceiver == ECashReceiver::BillAcceptor)
                                     ? CHardware::Types::BillAcceptor
                                     : CHardware::Types::CoinAcceptor;
-        } else if (((this->mDeviceType == CHardware::Types::BillAcceptor) &&
+        } else if (((this->m_DeviceType == CHardware::Types::BillAcceptor) &&
                     (cashReceiver == ECashReceiver::CoinAcceptor)) ||
-                   ((this->mDeviceType == CHardware::Types::CoinAcceptor) &&
+                   ((this->m_DeviceType == CHardware::Types::CoinAcceptor) &&
                     (cashReceiver == ECashReceiver::BillAcceptor))) {
-            this->mDeviceType = CHardware::Types::DualCashAcceptor;
+            this->m_DeviceType = CHardware::Types::DualCashAcceptor;
         }
 
         it.value().inhibit = true;
@@ -469,7 +469,7 @@ template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
                 this->toLog(LogLevel::Error,
                             QString("%1: nominal %2 - currency \"%3\" is not accorded with system "
                                     "currency id %4")
-                                .arg(this->mDeviceName)
+                                .arg(this->m_DeviceName)
                                 .arg(it.value().nominal, 5)
                                 .arg(it.value().currency)
                                 .arg(systemCurrencyId));
@@ -477,32 +477,32 @@ template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
         } else if (it.value().nominal) {
             this->toLog(LogLevel::Error,
                         QString("%1: nominal %2 - unknown currency \"%3\"")
-                            .arg(this->mDeviceName)
+                            .arg(this->m_DeviceName)
                             .arg(it.value().nominal, 5)
                             .arg(it.value().currency));
         }
     }
 
     if (!billset) {
-        this->toLog(LogLevel::Error, this->mDeviceName + ": Unknown billset");
+        this->toLog(LogLevel::Error, this->m_DeviceName + ": Unknown billset");
         return ECurrencyError::Billset;
     }
 
     if (!compatibility) {
         this->toLog(LogLevel::Error,
-                    this->mDeviceName +
+                    this->m_DeviceName +
                         ": Wrong compatibility billset currency and config currency");
         return ECurrencyError::Config;
     }
 
-    for (auto it = this->mEscrowParTable.data().begin(); it != this->mEscrowParTable.data().end();
+    for (auto it = this->m_EscrowParTable.data().begin(); it != this->m_EscrowParTable.data().end();
          ++it) {
         if (!it.value().inhibit) {
             log += QString("\nnominal %1: currency %2(\"%3\")%4%5")
                        .arg(it->nominal, 5)
                        .arg(it->currencyId)
                        .arg(it->currency)
-                       .arg((this->mDeviceType != CHardware::Types::DualCashAcceptor)
+                       .arg((this->m_DeviceType != CHardware::Types::DualCashAcceptor)
                                 ? ""
                                 : ((it->cashReceiver == ECashReceiver::BillAcceptor)
                                        ? " in bill acceptor"
@@ -517,7 +517,7 @@ template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
         CHardware::CallingTypes::Internal) {
         this->employParList();
 
-        return this->mCurrencyError;
+        return this->m_CurrencyError;
     }
 
     return ECurrencyError::OK;
@@ -526,13 +526,13 @@ template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
 //--------------------------------------------------------------------------------
 template <class T>
 bool CashAcceptorBase<T>::isStatusCollectionConformed(const TStatusCodesHistory &aHistory) {
-    if (this->mStatusCollectionHistory.size() < aHistory.size()) {
+    if (this->m_StatusCollectionHistory.size() < aHistory.size()) {
         return false;
     }
 
     for (int i = 0; i < aHistory.size(); ++i) {
         TStatusCodes historyStatusCodes =
-            this->getStatusCodes(this->mStatusCollectionHistory.lastValue(aHistory.size() - i));
+            this->getStatusCodes(this->m_StatusCollectionHistory.lastValue(aHistory.size() - i));
         TStatusCodes testStatusCodes = TStatusCodes() << aHistory[i];
 
         if (!historyStatusCodes.contains(testStatusCodes)) {
@@ -560,8 +560,8 @@ void CashAcceptorBase<T>::replaceConformedStatusCodes(TStatusCodes &aStatusCodes
 
 //--------------------------------------------------------------------------------
 template <class T> void CashAcceptorBase<T>::cleanStatusCodes(TStatusCodes &aStatusCodes) {
-    if (mCurrencyError != ECurrencyError::OK) {
-        aStatusCodes.insert(ECurrencyError::Specification[mCurrencyError]);
+    if (m_CurrencyError != ECurrencyError::OK) {
+        aStatusCodes.insert(ECurrencyError::Specification[m_CurrencyError]);
     }
 
     T::cleanStatusCodes(aStatusCodes);
@@ -625,7 +625,7 @@ template <class T> void CashAcceptorBase<T>::cleanStatusCodes(TStatusCodes &aSta
 
     foreach (int statusCode, aStatusCodes) {
         ECashAcceptorStatus::Enum status = static_cast<ECashAcceptorStatus::Enum>(
-            this->mStatusCodesSpecification->value(statusCode).status);
+            this->m_StatusCodesSpecification->value(statusCode).status);
         statuses[status].insert(statusCode);
     }
 
@@ -654,7 +654,7 @@ template <class T> void CashAcceptorBase<T>::cleanStatusCodes(TStatusCodes &aSta
         aStatusCodes.contains(BillAcceptorStatusCode::Busy::Returned)) {
         foreach (int statusCode, aStatusCodes) {
             ECashAcceptorStatus::Enum status = static_cast<ECashAcceptorStatus::Enum>(
-                this->mStatusCodesSpecification->value(statusCode).status);
+                this->m_StatusCodesSpecification->value(statusCode).status);
 
             if (status == ECashAcceptorStatus::Rejected) {
                 aStatusCodes.remove(statusCode);
@@ -672,7 +672,7 @@ template <class T>
 void CashAcceptorBase<T>::saveStatuses(const CCashAcceptor::TStatuses &aStatuses,
                                        ECashAcceptorStatus::Enum aTargetStatus,
                                        const CCashAcceptor::TStatusSet aSourceStatuses) {
-    CCashAcceptor::SStatusSpecification &lastStatusHistory = this->mStatusHistory.last();
+    CCashAcceptor::SStatusSpecification &lastStatusHistory = this->m_StatusHistory.last();
 
     CCashAcceptor::TStatusSet sourceStatuses =
         aSourceStatuses + (CCashAcceptor::TStatusSet() << aTargetStatus);
@@ -685,15 +685,15 @@ void CashAcceptorBase<T>::saveStatuses(const CCashAcceptor::TStatuses &aStatuses
 
     lastStatusHistory.warningLevel =
         qMax(lastStatusHistory.warningLevel,
-             this->mStatusCodesSpecification->warningLevelByStatus(aTargetStatus));
+             this->m_StatusCodesSpecification->warningLevelByStatus(aTargetStatus));
 }
 
 //--------------------------------------------------------------------------------
 template <class T>
 void CashAcceptorBase<T>::emitStatuses(CCashAcceptor::SStatusSpecification &aSpecification,
                                        const CCashAcceptor::TStatusSet &aSet) {
-    if (!this->mPostPollingAction) {
-        this->mStatusHistory.saveLevel();
+    if (!this->m_PostPollingAction) {
+        this->m_StatusHistory.saveLevel();
         return;
     }
 
@@ -707,7 +707,7 @@ void CashAcceptorBase<T>::emitStatuses(CCashAcceptor::SStatusSpecification &aSpe
         }
     }
 
-    this->mStatusHistory.updateLevel();
+    this->m_StatusHistory.updateLevel();
 }
 
 //--------------------------------------------------------------------------------
@@ -718,17 +718,17 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
     // Конвертируем warning-уровни в статус-уровни.
     CCashAcceptor::TStatuses statuses = this->getLastStatuses();
 
-    this->mStatusHistory.append(CCashAcceptor::SStatusSpecification());
-    CCashAcceptor::SStatusSpecification &lastStatusHistory = this->mStatusHistory.last();
+    this->m_StatusHistory.append(CCashAcceptor::SStatusSpecification());
+    CCashAcceptor::SStatusSpecification &lastStatusHistory = this->m_StatusHistory.last();
     CCashAcceptor::TStatuses &lastStatuses = lastStatusHistory.statuses;
 
     // 1. Сначала Stacked, т.к. по нему начисляется сумма.
     if (!statuses.isEmpty(ECashAcceptorStatus::Stacked) &&
-        (this->mStatuses.isEmpty(ECashAcceptorStatus::Stacked) ||
+        (this->m_Statuses.isEmpty(ECashAcceptorStatus::Stacked) ||
          this->getConfigParameter(CHardware::CashAcceptor::StackedFilter).toBool())) {
         this->saveStatuses(statuses, ECashAcceptorStatus::Stacked);
 
-        foreach (auto par, this->mEscrowPars) {
+        foreach (auto par, this->m_EscrowPars) {
             this->toLog(LogLevel::Normal,
                         QString("Send statuses: Stacked, note = %1, currency = %2")
                             .arg(par.nominal)
@@ -737,16 +737,16 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
             Q_EMIT this->stacked(TParList() << par);
         }
 
-        this->mEscrowPars.clear();
+        this->m_EscrowPars.clear();
     }
 
     // 2. Потом - Escrow.
     if (statuses.size(ECashAcceptorStatus::Escrow) >
-        this->mStatuses.size(ECashAcceptorStatus::Escrow)) {
+        this->m_Statuses.size(ECashAcceptorStatus::Escrow)) {
         this->saveStatuses(statuses, ECashAcceptorStatus::Escrow);
 
-        if (this->mPostPollingAction) {
-            SPar par = this->mEscrowPars[0];
+        if (this->m_PostPollingAction) {
+            SPar par = this->m_EscrowPars[0];
             this->toLog(LogLevel::Normal,
                         QString("Send statuses: Escrow, note = %1, currency = %2")
                             .arg(par.nominal)
@@ -768,7 +768,7 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
                     qMax(specialStatus, CCashAcceptor::SpecialStatus::Specification[status]);
             }
 
-            if (statuses.value(status) != this->mStatuses.value(status)) {
+            if (statuses.value(status) != this->m_Statuses.value(status)) {
                 this->saveStatuses(statuses, status);
                 this->emitStatuses(lastStatusHistory, CCashAcceptor::TStatusSet() << status);
             }
@@ -820,7 +820,7 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
     }
 
     // 4.2. Принимаем решение об эмите
-    CCashAcceptor::SStatusSpecification beforeLastStatusSpec = this->mStatusHistory.lastValue(2);
+    CCashAcceptor::SStatusSpecification beforeLastStatusSpec = this->m_StatusHistory.lastValue(2);
     CCashAcceptor::TStatuses &beforeLastStatuses = beforeLastStatusSpec.statuses;
 
     TStatusCodes beforeStatusCodes;
@@ -848,7 +848,7 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
 
         if (!statusCodes.isEmpty()) {
             this->toLog(LogLevel::Warning,
-                        this->mDeviceName + " is busy, waiting for change status...");
+                        this->m_DeviceName + " is busy, waiting for change status...");
             lastStatusHistory.warningLevel = EWarningLevel::Error;
 
             emitSignal = false;
@@ -867,12 +867,12 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
         this->toLog(LogLevel::Normal,
                     QString("Signal emitting is %1allowed, post polling action is %2enabled")
                         .arg(emitSignal ? "" : "not ")
-                        .arg(this->mPostPollingAction ? "" : "not "));
+                        .arg(this->m_PostPollingAction ? "" : "not "));
 
         QString debugLog = "Status history :";
 
-        for (int i = 0; i < this->mStatusHistory.size(); ++i) {
-            CCashAcceptor::SStatusSpecification statusSpecification = this->mStatusHistory[i];
+        for (int i = 0; i < this->m_StatusHistory.size(); ++i) {
+            CCashAcceptor::SStatusSpecification statusSpecification = this->m_StatusHistory[i];
             QString warningLevel =
                 (statusSpecification.warningLevel == EWarningLevel::Error)
                     ? "Error"
@@ -926,28 +926,28 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
                                                lastStatusHistory.statuses.keys().end())
                    .intersect(CCashAcceptor::Set::MainStatuses)
                    .isEmpty()) {
-        this->mStatusHistory.removeLast();
+        this->m_StatusHistory.removeLast();
     }
 
-    this->mStatusHistory.updateLevel(true);
+    this->m_StatusHistory.updateLevel(true);
 
     if (statusChanged) {
         this->toLog(LogLevel::Normal,
                     QString("Status history: level = %1, size = %2")
-                        .arg(this->mStatusHistory.getLevel())
-                        .arg(this->mStatusHistory.size()));
+                        .arg(this->m_StatusHistory.getLevel())
+                        .arg(this->m_StatusHistory.size()));
     }
 
-    this->mStatuses = statuses;
+    this->m_Statuses = statuses;
 
-    if (this->mStatusHistory.isEmpty()) {
-        this->mReady = false;
+    if (this->m_StatusHistory.isEmpty()) {
+        this->m_Ready = false;
     } else {
-        CCashAcceptor::TStatuses statusBuffer = this->mStatusHistory.lastValue().statuses;
+        CCashAcceptor::TStatuses statusBuffer = this->m_StatusHistory.lastValue().statuses;
         CCashAcceptor::TStatusSet statusSet =
             QSet<ECashAcceptorStatus::Enum>(statusBuffer.keys().begin(), statusBuffer.keys().end());
 
-        this->mReady = (this->mInitialized == ERequestStatus::Success) && !statusSet.isEmpty() &&
+        this->m_Ready = (this->m_Initialized == ERequestStatus::Success) && !statusSet.isEmpty() &&
                        statusSet.intersect(CCashAcceptor::Set::ErrorStatuses).isEmpty() &&
                        !statusBuffer.contains(BillAcceptorStatusCode::Busy::Pause);
     }

@@ -53,7 +53,7 @@ protected:
     bool waitForBusy(bool aBusy);
 
     /// Протокол.
-    V2eProtocol mProtocol;
+    V2eProtocol m_Protocol;
 };
 
 //--------------------------------------------------------------------------------

@@ -43,39 +43,39 @@ protected:
 
     /// Данные всех моделей.
     typedef QSharedPointer<CCCTalk::CModelDataBase> PAllModelData;
-    PAllModelData mAllModelData;
+    PAllModelData m_AllModelData;
 
     /// Базовый год (для парсинга дат).
-    int mBaseYear;
+    int m_BaseYear;
 
     /// Протокол.
-    CCTalkCAProtocol mProtocol;
+    CCTalkCAProtocol m_Protocol;
 
     /// Индекс события.
-    int mEventIndex;
+    int m_EventIndex;
 
     // TODO: в базу.
     /// Последние девайс-коды устройства.
-    TDeviceCodes mCodes;
+    TDeviceCodes m_Codes;
 
     /// Номер прошивки.
-    double mFWVersion;
+    double m_FWVersion;
 
     /// Модели данной реализации.
-    QStringList mModels;
+    QStringList m_Models;
 
     /// Данные модели.
-    CCCTalk::SModelData mModelData;
+    CCCTalk::SModelData m_ModelData;
 
     /// Адрес устройства.
-    uchar mAddress;
+    uchar m_Address;
 
     /// Поддерживаемые тпы протоколов.
-    QStringList mProtocolTypes;
+    QStringList m_ProtocolTypes;
 
     /// Данные ошибок.
     typedef QSharedPointer<CCCTalk::ErrorDataBase> PErrorData;
-    PErrorData mErrorData;
+    PErrorData m_ErrorData;
 };
 
 //--------------------------------------------------------------------------------

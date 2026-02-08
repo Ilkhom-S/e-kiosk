@@ -23,7 +23,7 @@ protected:
     char calcCRC(const QByteArray &aData);
 
     /// Id пакета.
-    uchar mId;
+    uchar m_Id;
 };
 
 //--------------------------------------------------------------------------------

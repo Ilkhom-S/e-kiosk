@@ -27,8 +27,8 @@ public:
     virtual void getSpecification(const QByteArray &aBuffer,
                                   TDeviceCodeSpecifications &aSpecifications) {
         SDeviceCodeSpecification specification =
-            ((aBuffer.size() > 1) && mExtraCodeSpecification.data().contains(aBuffer[0]))
-                ? mExtraCodeSpecification[aBuffer[0]][aBuffer[1]]
+            ((aBuffer.size() > 1) && m_ExtraCodeSpecification.data().contains(aBuffer[0]))
+                ? m_ExtraCodeSpecification[aBuffer[0]][aBuffer[1]]
                 : value(aBuffer[0]);
         aSpecifications.insert(aBuffer.toHex().data(), specification);
     }
@@ -43,10 +43,10 @@ public:
 
     /// Добавить спецификацию девайс-кода.
     void addStatus(char aCode, int aStatusCode, const QString &aDescription = "") {
-        if (mExtraCodeSpecification.data().isEmpty()) {
+        if (m_ExtraCodeSpecification.data().isEmpty()) {
             appendStatus(aCode, aStatusCode, aDescription);
         } else {
-            mExtraCodeSpecification.data()[mExtraCode].appendStatus(
+            m_ExtraCodeSpecification.data()[m_ExtraCode].appendStatus(
                 aCode, aStatusCode, aDescription);
         }
     }
@@ -60,17 +60,17 @@ protected:
     /// умолчанию. Вызывать, когда все спецификации обычных девайс-кодов определены.
     void setExtraCodeDefault(char aCode, int aStatusCode, const QString &aDescription = "") {
         appendStatus(aCode, aStatusCode, aDescription);
-        mExtraCodeSpecification.data()[aCode].setDefault(
+        m_ExtraCodeSpecification.data()[aCode].setDefault(
             SDeviceCodeSpecification(aStatusCode, aDescription));
-        mExtraCode = aCode;
+        m_ExtraCode = aCode;
     }
 
 private:
     /// Спецификация дополнительных девайс-кодов.
-    CSpecification<char, DeviceCodeSpecificationBase<char>> mExtraCodeSpecification;
+    CSpecification<char, DeviceCodeSpecificationBase<char>> m_ExtraCodeSpecification;
 
     /// Текущий дополнительный девайс-код.
-    char mExtraCode;
+    char m_ExtraCode;
 };
 
 /// Структура для описаний состояний купюроприёмника.
@@ -81,16 +81,16 @@ public:
     /// байтов перед статусными байтами.
     virtual void getSpecification(const QByteArray &aBuffer,
                                   TDeviceCodeSpecifications &aSpecifications) {
-        foreach (int shift, mBuffer.keys()) {
+        foreach (int shift, m_Buffer.keys()) {
             int byteNumber = shift / 8;
 
             if (byteNumber < aBuffer.size()) {
                 int bitNumber = shift - byteNumber * 8;
                 bool bit = (aBuffer[byteNumber] >> bitNumber) & 1;
-                SDeviceCodeSpecification specification = mBuffer[shift];
+                SDeviceCodeSpecification specification = m_Buffer[shift];
                 int totalBit = byteNumber * 8 + bitNumber;
 
-                if (mInverts.contains(totalBit) != bit) {
+                if (m_Inverts.contains(totalBit) != bit) {
                     aSpecifications.insert(QString::number(shift), specification);
                 }
             } else {
@@ -125,7 +125,7 @@ protected:
         appendStatus(aBit, aStatusCode, aDescription);
 
         if (aInvert) {
-            mInverts.insert(aBit);
+            m_Inverts.insert(aBit);
         }
     }
 
@@ -140,7 +140,7 @@ protected:
 
 private:
     /// Сет инвертированных битов.
-    QSet<int> mInverts;
+    QSet<int> m_Inverts;
 };
 
 //--------------------------------------------------------------------------------

@@ -69,27 +69,27 @@ protected:
 
     /// PDO-имена USB устройств.
     typedef QMap<QString, bool> TPDOData;
-    static TPDOData mPDOData;
+    static TPDOData m_PDOData;
 
     // Кроссплатформенное объявление рекурсивного мьютекса для 2026 года
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    static QRecursiveMutex mPDODataGuard;
+    static QRecursiveMutex m_PDODataGuard;
 #else
-    static QMutex mPDODataGuard;
+    static QMutex m_PDODataGuard;
 #endif
 
     /// Порт.
-    USBPort mUSBPort;
+    USBPort m_USBPort;
 
     /// Данные устройств для авто поиска.
-    CUSBDevice::PDetectingData mDetectingData;
+    CUSBDevice::PDetectingData m_DetectingData;
 
     /// Учитывать при авто поиске PDO-имена.
-    bool mPDODetecting;
+    bool m_PDODetecting;
 
     /// Порт используется.
-    bool mPortUsing;
+    bool m_PortUsing;
 
     /// Текущая позиция при авто поиске.
-    int mDetectingPosition = -1;
+    int m_DetectingPosition = -1;
 };

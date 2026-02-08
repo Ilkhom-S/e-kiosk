@@ -14,12 +14,12 @@ template class PortScanner<SerialDeviceBase<PortPollingDeviceBase<ProtoHID>>>;
 
 //--------------------------------------------------------------------------------
 template <class T> PortScanner<T>::PortScanner() {
-    mPollingInterval = CScanner::PollingInterval;
+    m_PollingInterval = CScanner::PollingInterval;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool PortScanner<T>::release() {
-    this->mIOPort->release();
+    this->m_IOPort->release();
 
     return HIDBase<T>::release();
 }
@@ -32,7 +32,7 @@ template <class T> bool PortScanner<T>::getData(QByteArray &aAnswer) {
     clockTimer.start();
 
     do {
-        if (!this->mIOPort->read(data, CScanner::CheckingTimeout)) {
+        if (!this->m_IOPort->read(data, CScanner::CheckingTimeout)) {
             return false;
         }
 
@@ -41,14 +41,14 @@ template <class T> bool PortScanner<T>::getData(QByteArray &aAnswer) {
         if (!data.isEmpty()) {
             clockTimer.restart();
         }
-    } while (clockTimer.elapsed() < this->mPollingInterval);
+    } while (clockTimer.elapsed() < this->m_PollingInterval);
 
     return true;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool PortScanner<T>::getStatus(TStatusCodes & /*aStatusCodes*/) {
-    if (!this->mEnabled) {
+    if (!this->m_Enabled) {
         return true;
     }
 
@@ -63,10 +63,10 @@ template <class T> bool PortScanner<T>::getStatus(TStatusCodes & /*aStatusCodes*
     answer.replace(ASCII::LF, "");
 
     if (!answer.isEmpty()) {
-        this->mIOPort->clear();
+        this->m_IOPort->clear();
 
         QByteArray logData = ProtocolUtils::clean(answer);
-        QString log = QString("%1: data received: %2").arg(this->mDeviceName).arg(logData.data());
+        QString log = QString("%1: data received: %2").arg(this->m_DeviceName).arg(logData.data());
 
         if (logData != answer) {
             log += QString(" -> {%1}").arg(answer.toHex().data());

@@ -13,25 +13,25 @@ namespace FiscalFields {
 //---------------------------------------------------------------------------
 Data::Data() {
     TAllData allData = process(0);
-    mBuffer = allData.first;
-    mDescriptionData = allData.second;
+    m_Buffer = allData.first;
+    m_DescriptionData = allData.second;
 
-    for (auto it = mBuffer.begin(); it != mBuffer.end(); ++it) {
+    for (auto it = m_Buffer.begin(); it != m_Buffer.end(); ++it) {
         it->translationPF =
             QCoreApplication::translate("FiscalFields", it->translationPF.toLatin1());
     }
 
-    foreach (int field, mBuffer.keys()) {
+    foreach (int field, m_Buffer.keys()) {
         checkRFVAT20(field);
     }
 }
 
 //---------------------------------------------------------------------------
 void Data::add(const TData &aData) {
-    mBuffer.unite(aData);
+    m_Buffer.unite(aData);
 
     for (auto it = aData.begin(); it != aData.end(); ++it) {
-        mDescriptionData.insert(it.key(), it->textKey);
+        m_DescriptionData.insert(it.key(), it->textKey);
     }
 }
 
@@ -52,7 +52,7 @@ TAllData Data::process(int aField, const SData &aData) {
 
 //---------------------------------------------------------------------------
 int Data::getKey(const QString &aTextKey) const {
-    return mDescriptionData.values().contains(aTextKey) ? mDescriptionData.key(aTextKey) : 0;
+    return m_DescriptionData.values().contains(aTextKey) ? m_DescriptionData.key(aTextKey) : 0;
 }
 
 //---------------------------------------------------------------------------
@@ -68,7 +68,7 @@ TFields Data::getKeys(const QStringList &aTextKeys) const {
 
 //---------------------------------------------------------------------------
 QStringList Data::getTextKeys() const {
-    return mDescriptionData.values();
+    return m_DescriptionData.values();
 }
 
 //---------------------------------------------------------------------------
@@ -76,8 +76,8 @@ QStringList Data::getTextKeys(const TFields &aFields) const {
     QStringList result;
 
     foreach (int field, aFields) {
-        if (mDescriptionData.contains(field)) {
-            result << mDescriptionData[field];
+        if (m_DescriptionData.contains(field)) {
+            result << m_DescriptionData[field];
         }
     }
 
@@ -103,8 +103,8 @@ QString Data::getLogFromList(const TFields &aFields) const {
 //---------------------------------------------------------------------------
 void Data::checkRFVAT20(int aField) {
     if (isRFVAT20() && TaxAmountFields().contains(aField)) {
-        mBuffer[aField].translationPF.replace("18", "20");
-        mDescriptionData[aField].replace("18", "20");
+        m_Buffer[aField].translationPF.replace("18", "20");
+        m_DescriptionData[aField].replace("18", "20");
     }
 }
 

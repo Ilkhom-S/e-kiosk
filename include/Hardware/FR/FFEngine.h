@@ -115,22 +115,22 @@ public:
 
 protected:
     /// Данные фискальных реквизитов.
-    CFR::FiscalFields::Data mFFData;
+    CFR::FiscalFields::Data m_FFData;
 
     /// Название устройства.
-    QString mDeviceName;
+    QString m_DeviceName;
 
     /// Драйвера запускаются из под модуля платежей.
-    bool mOperatorPresence;
+    bool m_OperatorPresence;
 
     /// Системы налогообложения (СНО).
-    TTaxSystems mTaxSystems;
+    TTaxSystems m_TaxSystems;
 
     /// Флаги агента.
-    TAgentFlags mAgentFlags;
+    TAgentFlags m_AgentFlags;
 
     /// Режимы работы.
-    TOperationModes mOperationModes;
+    TOperationModes m_OperationModes;
 };
 
 //--------------------------------------------------------------------------------

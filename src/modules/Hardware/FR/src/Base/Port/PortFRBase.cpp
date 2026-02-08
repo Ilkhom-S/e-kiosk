@@ -25,21 +25,21 @@ using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
 template <class T>
-PortFRBase<T>::PortFRBase() : mLastError('\x00'), mLastCommandResult(CommandResult::OK) {
+PortFRBase<T>::PortFRBase() : m_LastError('\x00'), m_LastCommandResult(CommandResult::OK) {
     setInitialData();
 
     // ошибки
-    mErrorData = PErrorData(new FRError::Data());
+    m_ErrorData = PErrorData(new FRError::Data());
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void PortFRBase<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
-    bool opened = mIOPort && mIOPort->opened();
+    bool opened = m_IOPort && m_IOPort->opened();
 
     FRBase<T>::setDeviceConfiguration(aConfiguration);
 
-    if (mOperatorPresence && mIOPort && !opened && mIOPort->opened()) {
-        mIOPort->close();
+    if (m_OperatorPresence && m_IOPort && !opened && m_IOPort->opened()) {
+        m_IOPort->close();
     }
 }
 
@@ -47,13 +47,13 @@ template <class T> void PortFRBase<T>::setDeviceConfiguration(const QVariantMap 
 template <class T> void PortFRBase<T>::setInitialData() {
     FRBase<T>::setInitialData();
 
-    mProcessingErrors.clear();
-    mIOMessageLogging = ELoggingType::None;
+    m_ProcessingErrors.clear();
+    m_IOMessageLogging = ELoggingType::None;
 }
 
 //---------------------------------------------------------------------------
 template <class T> bool PortFRBase<T>::checkExistence() {
-    mProcessingErrors.clear();
+    m_ProcessingErrors.clear();
 
     return FRBase<T>::checkExistence();
 }
@@ -62,7 +62,7 @@ template <class T> bool PortFRBase<T>::checkExistence() {
 template <class T> bool PortFRBase<T>::loadSectionNames(const TLoadSectionName &aLoadSectionName) {
     if (!aLoadSectionName) {
         toLog(LogLevel::Error,
-              mDeviceName + ": Failed to get section names due to no functional logic");
+              m_DeviceName + ": Failed to get section names due to no functional logic");
     }
 
     TSectionNames sectionNames;
@@ -70,24 +70,24 @@ template <class T> bool PortFRBase<T>::loadSectionNames(const TLoadSectionName &
     int group = 0;
 
     while (aLoadSectionName(++group, data)) {
-        sectionNames.insert(group, mCodec->toUnicode(data.replace(ASCII::NUL, "").simplified()));
+        sectionNames.insert(group, m_Codec->toUnicode(data.replace(ASCII::NUL, "").simplified()));
     }
 
     LogLevel::Enum logLevel = sectionNames.isEmpty() ? LogLevel::Error : LogLevel::Warning;
-    toLog(logLevel, mDeviceName + QString(": Failed to get name for %1 section").arg(group));
+    toLog(logLevel, m_DeviceName + QString(": Failed to get name for %1 section").arg(group));
 
-    if (!mLastCommandResult || !mLastError || !isErrorUnprocessed(mLastCommand, mLastError)) {
+    if (!m_LastCommandResult || !m_LastError || !isErrorUnprocessed(m_LastCommand, m_LastError)) {
         return false;
     }
 
     if (sectionNames.isEmpty()) {
         toLog(LogLevel::Error,
-              mDeviceName + ": Failed to get section names due to they are not exist");
+              m_DeviceName + ": Failed to get section names due to they are not exist");
         return false;
     }
 
-    mProcessingErrors.pop_back();
-    mLastError = 0;
+    m_ProcessingErrors.pop_back();
+    m_LastError = 0;
 
     setConfigParameter(CHardwareSDK::FR::SectionNames,
                        QVariant::fromValue<TSectionNames>(sectionNames));
@@ -103,7 +103,7 @@ QByteArray PortFRBase<T>::performStatus(TStatusCodes &aStatusCodes, T2 aCommand,
     TResult result = processCommand(aCommand, &data);
 
     if (result == CommandResult::Device) {
-        int statusCode = getErrorStatusCode(mErrorData->value(mLastError).type);
+        int statusCode = getErrorStatusCode(m_ErrorData->value(m_LastError).type);
         aStatusCodes.insert(statusCode);
     } else if ((result == CommandResult::Answer) || (data.size() <= aIndex)) {
         aStatusCodes.insert(DeviceStatusCode::Warning::OperationError);
@@ -148,7 +148,7 @@ void PortFRBase<T>::makeReceipt(const QStringList &aReceipt, TReceiptBuffer &aBu
     makeReceipt(aReceipt, buffer);
 
     foreach (const QString &line, buffer) {
-        aBuffer << mCodec->fromUnicode(line);
+        aBuffer << m_Codec->fromUnicode(line);
     }
 }
 
@@ -159,8 +159,8 @@ bool PortFRBase<T>::printFiscal(const QStringList &aReceipt,
                                 quint32 *aFDNumber) {
     bool result = FRBase<T>::printFiscal(aReceipt, aPaymentData, aFDNumber);
 
-    if (mOperatorPresence) {
-        mIOPort->close();
+    if (m_OperatorPresence) {
+        m_IOPort->close();
     }
 
     return result;
@@ -173,8 +173,8 @@ bool PortFRBase<T>::checkFiscalFields(quint32 aFDNumber,
                                       TComplexFiscalPaymentData &aPSData) {
     bool result = FRBase<T>::checkFiscalFields(aFDNumber, aFPData, aPSData);
 
-    if (mOperatorPresence) {
-        mIOPort->close();
+    if (m_OperatorPresence) {
+        m_IOPort->close();
     }
 
     return result;
@@ -187,9 +187,9 @@ bool PortFRBase<T>::processFiscalTLVData(const TGetFiscalTLVData &aGetFiscalTLVD
                                          TComplexFiscalPaymentData *aPSData) {
     TProcessTLVAction fiscalTLVAction = [&](const CFR::STLV aTLV) -> bool {
         if (aPSData)
-            mFFEngine.parseSTLVData(aTLV, *aPSData);
+            m_FFEngine.parseSTLVData(aTLV, *aPSData);
         if (aFPData)
-            mFFEngine.parseTLVData(aTLV, *aFPData);
+            m_FFEngine.parseTLVData(aTLV, *aFPData);
 
         return true;
     };
@@ -210,23 +210,23 @@ bool PortFRBase<T>::processTLVData(const TGetFiscalTLVData &aGetFiscalTLVData,
         commandResult = aGetFiscalTLVData(data);
 
         if ((commandResult == CommandResult::Device) &&
-            isErrorUnprocessed(mLastCommand, mLastError)) {
-            mProcessingErrors.pop_back();
-            mLastError = 0;
+            isErrorUnprocessed(m_LastCommand, m_LastError)) {
+            m_ProcessingErrors.pop_back();
+            m_LastError = 0;
 
             return result;
         } else if (!commandResult) {
             return false;
         } else if (data.isEmpty()) {
-            toLog(LogLevel::Warning, mDeviceName + ": Failed to add fiscal field due to no data");
+            toLog(LogLevel::Warning, m_DeviceName + ": Failed to add fiscal field due to no data");
 
             continue;
-        } else if (!mFFEngine.parseTLV(data, TLV)) {
+        } else if (!m_FFEngine.parseTLV(data, TLV)) {
             result = false;
-        } else if (!mFFData.data().contains(TLV.field)) {
+        } else if (!m_FFData.data().contains(TLV.field)) {
             toLog(
                 LogLevel::Warning,
-                mDeviceName +
+                m_DeviceName +
                     QString(": Failed to add fiscal field %1 due to it is unknown").arg(TLV.field));
         } else if (aAction && !aAction(TLV)) {
             result = false;
@@ -240,8 +240,8 @@ bool PortFRBase<T>::processTLVData(const TGetFiscalTLVData &aGetFiscalTLVData,
 template <class T> bool PortFRBase<T>::printZReport(bool aPrintDeferredReports) {
     bool result = FRBase<T>::printZReport(aPrintDeferredReports);
 
-    if (mOperatorPresence) {
-        mIOPort->close();
+    if (m_OperatorPresence) {
+        m_IOPort->close();
     }
 
     return result;
@@ -251,8 +251,8 @@ template <class T> bool PortFRBase<T>::printZReport(bool aPrintDeferredReports) 
 template <class T> bool PortFRBase<T>::printXReport(const QStringList &aReceipt) {
     bool result = FRBase<T>::printXReport(aReceipt);
 
-    if (mOperatorPresence) {
-        mIOPort->close();
+    if (m_OperatorPresence) {
+        m_IOPort->close();
     }
 
     return result;
@@ -262,23 +262,23 @@ template <class T> bool PortFRBase<T>::printXReport(const QStringList &aReceipt)
 template <class T>
 void PortFRBase<T>::postPollingAction(const TStatusCollection &aNewStatusCollection,
                                       const TStatusCollection &aOldStatusCollection) {
-    bool opened = mIOPort->opened();
+    bool opened = m_IOPort->opened();
 
     FRBase<T>::postPollingAction(aNewStatusCollection, aOldStatusCollection);
 
-    if (mOperatorPresence && !opened && mIOPort->opened()) {
-        mIOPort->close();
+    if (m_OperatorPresence && !opened && m_IOPort->opened()) {
+        m_IOPort->close();
     }
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool PortFRBase<T>::isErrorUnprocessed(char aCommand, char aError) {
-    return mUnprocessedErrorData.data().value(QByteArray(1, aCommand)).contains(aError);
+    return m_UnprocessedErrorData.data().value(QByteArray(1, aCommand)).contains(aError);
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool PortFRBase<T>::isErrorUnprocessed(const QByteArray &aCommand, char aError) {
-    return mUnprocessedErrorData.data().value(aCommand).contains(aError);
+    return m_UnprocessedErrorData.data().value(aCommand).contains(aError);
 }
 
 //--------------------------------------------------------------------------------

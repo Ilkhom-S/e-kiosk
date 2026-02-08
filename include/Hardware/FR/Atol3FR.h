@@ -46,5 +46,5 @@ private:
     int getSize(const QByteArray &aAnswer, int start);
 
     /// Транспортный Id.
-    uchar mId;
+    uchar m_Id;
 };

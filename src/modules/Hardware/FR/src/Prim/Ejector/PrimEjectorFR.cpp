@@ -16,10 +16,10 @@ template <class T> PrimEjectorFR<T>::PrimEjectorFR() {
     // данные устройства
     setConfigParameter(CHardware::Printer::RetractorEnable, true);
 
-    mOldBuildNumber = false;
-    mPrinter = PPrinter(new SerialCustomVKP80());
-    mDeviceName = CPrimFR::ModelData[CPrimFR::Models::PRIM_21K_03].name;
-    mLPC22RetractorErrorCount = 0;
+    m_OldBuildNumber = false;
+    m_Printer = PPrinter(new SerialCustomVKP80());
+    m_DeviceName = CPrimFR::ModelData[CPrimFR::Models::PRIM_21K_03].name;
+    m_LPC22RetractorErrorCount = 0;
 }
 
 //--------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ template <class T> bool PrimEjectorFR<T>::checkPresentationLength() {
 
 //---------------------------------------------------------------------------
 template <class T> void PrimEjectorFR<T>::cleanStatusCodes(TStatusCodes &aStatusCodes) {
-    if (mOldBuildNumber) {
+    if (m_OldBuildNumber) {
         aStatusCodes.insert(DeviceStatusCode::Warning::Firmware);
     }
 
@@ -84,21 +84,21 @@ template <class T> void PrimEjectorFR<T>::cleanStatusCodes(TStatusCodes &aStatus
 template <class T> bool PrimEjectorFR<T>::processAnswer(char aError) {
     if (((aError == CPrimFR::Errors::IncorrigibleError) ||
          (aError == CPrimFR::Errors::NotReadyForPrint)) &&
-        (mLPC22RetractorErrorCount < CPrimFR::MaxRepeat::RetractorError)) {
-        mProcessingErrors.push_back(aError);
+        (m_LPC22RetractorErrorCount < CPrimFR::MaxRepeat::RetractorError)) {
+        m_ProcessingErrors.push_back(aError);
 
-        mLPC22RetractorErrorCount++;
+        m_LPC22RetractorErrorCount++;
 
         toLog(LogLevel::Normal, "Abnormal error, try to reset printer");
 
         return processEjectorAction(CPrimEjectorFRActions::Reset);
     }
 
-    if (aError && (mLPC22RetractorErrorCount >= CPrimFR::MaxRepeat::RetractorError) &&
+    if (aError && (m_LPC22RetractorErrorCount >= CPrimFR::MaxRepeat::RetractorError) &&
         (aError != CPrimFR::Errors::IncorrigibleError) &&
         (aError != CPrimFR::Errors::NotReadyForPrint)) {
         toLog(LogLevel::Normal, "Reset Abnormal error count");
-        mLPC22RetractorErrorCount = 0;
+        m_LPC22RetractorErrorCount = 0;
     }
 
     return PrimPresenterFR<T>::processAnswer(aError);
@@ -106,7 +106,7 @@ template <class T> bool PrimEjectorFR<T>::processAnswer(char aError) {
 
 //--------------------------------------------------------------------------------
 template <class T> bool PrimEjectorFR<T>::push() {
-    if (mMode == EFRMode::Printer) {
+    if (m_Mode == EFRMode::Printer) {
         return TSerialFRBase::push();
     }
 
@@ -115,7 +115,7 @@ template <class T> bool PrimEjectorFR<T>::push() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool PrimEjectorFR<T>::retract() {
-    if (mMode == EFRMode::Printer) {
+    if (m_Mode == EFRMode::Printer) {
         return TSerialFRBase::retract();
     }
 
@@ -132,8 +132,8 @@ template <class T> bool PrimEjectorFR<T>::setPresentationMode() {
 
     bool loopEnable = loop == CHardwareSDK::Values::Use;
 
-    if (mMode == EFRMode::Printer) {
-        return mIOPort->write(loopEnable ? CPOSPrinter::Command::LoopEnable
+    if (m_Mode == EFRMode::Printer) {
+        return m_IOPort->write(loopEnable ? CPOSPrinter::Command::LoopEnable
                                          : CPOSPrinter::Command::LoopDisable);
     }
 
@@ -143,7 +143,7 @@ template <class T> bool PrimEjectorFR<T>::setPresentationMode() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool PrimEjectorFR<T>::present() {
-    return (mMode == EFRMode::Printer) && TSerialFRBase::present();
+    return (m_Mode == EFRMode::Printer) && TSerialFRBase::present();
 }
 
 //--------------------------------------------------------------------------------

@@ -13,9 +13,9 @@ using namespace SDK::Driver::IOPort::COM;
 //---------------------------------------------------------------------------
 CCNetCreator::CCNetCreator() {
     // данные устройства
-    mDeviceName = CCCNet::Models::CreatorC100;
-    mSupportedModels = QStringList() << mDeviceName;
-    mNeedChangeBaudrate = true;
+    m_DeviceName = CCCNet::Models::CreatorC100;
+    m_SupportedModels = QStringList() << m_DeviceName;
+    m_NeedChangeBaudrate = true;
     setConfigParameter(CHardware::UpdatingFilenameExtension, "dat");
 
     setConfigParameter(CHardware::CashAcceptor::InitializeTimeout,
@@ -23,12 +23,12 @@ CCNetCreator::CCNetCreator() {
 
     using namespace CCCNetCreator::Commands;
 
-    mCommandData.add(GetInternalVersion, false);
-    mCommandData.add(UpdatingFirmware::SetBaudRate, false, 500);
-    mCommandData.add(UpdatingFirmware::WriteHead, false);
-    mCommandData.add(UpdatingFirmware::WriteBlock, false);
-    mCommandData.add("", false);
-    mCommandData.add(UpdatingFirmware::Exit, false, 500);
+    m_CommandData.add(GetInternalVersion, false);
+    m_CommandData.add(UpdatingFirmware::SetBaudRate, false, 500);
+    m_CommandData.add(UpdatingFirmware::WriteHead, false);
+    m_CommandData.add(UpdatingFirmware::WriteBlock, false);
+    m_CommandData.add("", false);
+    m_CommandData.add(UpdatingFirmware::Exit, false, 500);
 }
 
 //--------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ void CCNetCreator::processDeviceData(QByteArray &aAnswer) {
     setDeviceParameter(CDeviceData::SerialNumber, aAnswer.mid(15, 12));
 
     if (!processCommand(CCCNetCreator::Commands::GetInternalVersion, &aAnswer)) {
-        mOldFirmware = true;
+        m_OldFirmware = true;
 
         return;
     }
@@ -109,13 +109,13 @@ bool CCNetCreator::performUpdateFirmware(const QByteArray &aBuffer) {
         }
     }
 
-    if (mIOPort->getType() == EPortTypes::COM) {
+    if (m_IOPort->getType() == EPortTypes::COM) {
         TPortParameters portParameters;
-        mIOPort->getParameters(portParameters);
+        m_IOPort->getParameters(portParameters);
         portParameters[EParameters::BaudRate] = EBaudRate::BR9600;
 
-        if (!mIOPort->setParameters(portParameters)) {
-            toLog(LogLevel::Error, mDeviceName + ": Failed to set port parameters");
+        if (!m_IOPort->setParameters(portParameters)) {
+            toLog(LogLevel::Error, m_DeviceName + ": Failed to set port parameters");
             return false;
         }
     }
@@ -125,7 +125,7 @@ bool CCNetCreator::performUpdateFirmware(const QByteArray &aBuffer) {
 
 //--------------------------------------------------------------------------------
 bool CCNetCreator::performBaudRateChanging(const TPortParameters &aPortParameters) {
-    mProtocol.changePortParameters(aPortParameters);
+    m_Protocol.changePortParameters(aPortParameters);
     QByteArray answer;
 
     if (!processCommand(CCCNetCreator::Commands::UpdatingFirmware::SetBaudRate, &answer)) {
@@ -135,7 +135,7 @@ bool CCNetCreator::performBaudRateChanging(const TPortParameters &aPortParameter
     if (answer != CCCNetCreator::Commands::UpdatingFirmware::WriteHead) {
         toLog(LogLevel::Error,
               QString("%1: Wrong answer for set baud rate command = 0x%2, need 0x%3")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(answer.toHex().data())
                   .arg(QByteArray(CCCNetCreator::Commands::UpdatingFirmware::WriteHead)
                            .toHex()
@@ -160,13 +160,13 @@ bool CCNetCreator::writeHead(const QByteArray &aBuffer) {
 
     if (!processCommand(
             CCCNetCreator::Commands::UpdatingFirmware::WriteHead, commandData, &answer)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to write firmware head");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to write firmware head");
         return false;
     }
 
     if (answer != CCCNetCreator::Commands::UpdatingFirmware::WriteBlock) {
         toLog(LogLevel::Error,
-              mDeviceName + ": Failed to write firmware head due to error in answer");
+              m_DeviceName + ": Failed to write firmware head due to error in answer");
         return false;
     }
 
@@ -185,7 +185,7 @@ bool CCNetCreator::writeBlock(const QByteArray &aBuffer, int aIndex, bool aLast)
     QByteArray answer;
 
     if (!processCommand("", commandData, &answer)) {
-        toLog(LogLevel::Error, mDeviceName + QString(": Failed to write block %1").arg(aIndex));
+        toLog(LogLevel::Error, m_DeviceName + QString(": Failed to write block %1").arg(aIndex));
         return false;
     }
 
@@ -198,7 +198,7 @@ bool CCNetCreator::writeBlock(const QByteArray &aBuffer, int aIndex, bool aLast)
     if (answer.size() < 2) {
         toLog(
             LogLevel::Error,
-            mDeviceName +
+            m_DeviceName +
                 QString(
                     ": Failed to write block %1 due to too small answer size = %2, need minimum 2")
                     .arg(aIndex)
@@ -208,7 +208,7 @@ bool CCNetCreator::writeBlock(const QByteArray &aBuffer, int aIndex, bool aLast)
 
     if (answer[0] == CCCNetCreator::UpdatingFirmware::Answers::WritingBlockError) {
         toLog(LogLevel::Error,
-              mDeviceName +
+              m_DeviceName +
                   QString(": Failed to write block %1 due to error in answer").arg(aIndex));
         return false;
     }
@@ -218,7 +218,7 @@ bool CCNetCreator::writeBlock(const QByteArray &aBuffer, int aIndex, bool aLast)
 
     if (answerIndex != index) {
         toLog(LogLevel::Error,
-              mDeviceName +
+              m_DeviceName +
                   QString(
                       ": Failed to write block %1 due to wrong block index in answer = %2, need %3")
                       .arg(aIndex)
@@ -227,9 +227,9 @@ bool CCNetCreator::writeBlock(const QByteArray &aBuffer, int aIndex, bool aLast)
         return false;
     }
 
-    if (aLast && (!mProtocol.getAnswer(answer, mCommandData[exitData]) || (answer != exitData))) {
+    if (aLast && (!m_Protocol.getAnswer(answer, m_CommandData[exitData]) || (answer != exitData))) {
         toLog(LogLevel::Error,
-              mDeviceName +
+              m_DeviceName +
                   QString(": Failed to read final packet after writing all updating blocks, need")
                       .arg(exitData.toHex().data()));
         return false;

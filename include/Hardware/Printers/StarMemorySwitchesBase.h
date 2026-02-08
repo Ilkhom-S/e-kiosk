@@ -145,13 +145,13 @@ protected:
     SMSWParameter getMSWParameter(ESTARMemorySwitchTypes::Enum aParameterType);
 
     /// Данные мем-свичей.
-    TMSWData mData;
+    TMSWData m_Data;
 
     /// Настройки для обновления параметров мем-свичей.
-    QVariantMap mConfiguration;
+    QVariantMap m_Configuration;
 
     /// Модель/группа моделей, для которой применяются операции с мем-свичами.
-    TModels mModels;
+    TModels m_Models;
 };
 
 struct SModelMSWData {
@@ -175,11 +175,11 @@ protected:
         QVariantMap configuration;
         configuration.insert(aName, value);
 
-        if (!mBuffer.contains(aType) || mBuffer[aType].models != aModels) {
+        if (!m_Buffer.contains(aType) || m_Buffer[aType].models != aModels) {
             SModelMSWData data = {configuration, aModels};
-            mBuffer.insert(aType, data);
+            m_Buffer.insert(aType, data);
         } else {
-            mBuffer[aType].configuration.insert(aName, value);
+            m_Buffer[aType].configuration.insert(aName, value);
         }
     }
 };

@@ -79,7 +79,7 @@ TResult OSMPWDProtocol::processCommand(const QByteArray &aCommandData, QByteArra
     toLog(LogLevel::Normal, QString("OSMPWD: >> {%1}").arg(packet.toHex().data()));
     QByteArray answerData;
 
-    if (!mPort->write(packet) || !read(answerData)) {
+    if (!m_Port->write(packet) || !read(answerData)) {
         return CommandResult::Port;
     }
 
@@ -111,7 +111,7 @@ bool OSMPWDProtocol::read(QByteArray &aData) {
     do {
         QByteArray answerData;
 
-        if (!mPort->read(answerData)) {
+        if (!m_Port->read(answerData)) {
             return false;
         }
 

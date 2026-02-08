@@ -8,7 +8,7 @@
 
 #define ADD_FR_STATUS(aStatusCode, aTranslation, aWarningLevel)                                    \
     ADD_BASE_STATUS(aStatusCode, aTranslation, aWarningLevel);                                     \
-    mFiscal.insert(aWarningLevel::aStatusCode)
+    m_Fiscal.insert(aWarningLevel::aStatusCode)
 #define ADD_FR_WARNING(aStatusCode, aTranslation) ADD_FR_STATUS(aStatusCode, aTranslation, Warning)
 #define ADD_FR_ERROR(aStatusCode, aTranslation) ADD_FR_STATUS(aStatusCode, aTranslation, Error)
 
@@ -16,7 +16,7 @@
 namespace FRStatusCode {
 class CSpecifications : public PrinterStatusCode::CSpecifications {
 public:
-    CSpecifications() : mIsFiscal(true) {
+    CSpecifications() : m_IsFiscal(true) {
         /// Предупреждения.
         ADD_FR_WARNING(EKLZNearEnd, QCoreApplication::translate("FRStatuses", "#EKLZ_near_end"));
         ADD_FR_WARNING(FiscalMemoryNearEnd,
@@ -72,14 +72,14 @@ public:
         ADD_FR_ERROR(Taxes, QCoreApplication::translate("FRStatuses", "#taxes"));
     }
 
-    TStatusCodes getFiscalStatusCodes() { return mFiscal; }
+    TStatusCodes getFiscalStatusCodes() { return m_Fiscal; }
 
-    void setFiscal(bool aIsFiscal) { mIsFiscal = aIsFiscal; }
+    void setFiscal(bool aIsFiscal) { m_IsFiscal = aIsFiscal; }
 
     virtual SStatusCodeSpecification value(const int &aKey) const {
-        SStatusCodeSpecification result = mBuffer.value(aKey, mDefaultValue);
+        SStatusCodeSpecification result = m_Buffer.value(aKey, m_DefaultValue);
 
-        if (!mIsFiscal && mFiscal.contains(aKey)) {
+        if (!m_IsFiscal && m_Fiscal.contains(aKey)) {
             result.warningLevel = SDK::Driver::EWarningLevel::OK;
         }
 
@@ -87,9 +87,9 @@ public:
     }
 
 private:
-    TStatusCodes mFiscal;
+    TStatusCodes m_Fiscal;
 
-    bool mIsFiscal;
+    bool m_IsFiscal;
 };
 } // namespace FRStatusCode
 

@@ -88,7 +88,7 @@ TResult ID003Protocol::processCommand(const QByteArray &aCommandData, QByteArray
 
     toLog(LogLevel::Normal, QString("ID003: >> {%1}").arg(request.toHex().data()));
 
-    if (!mPort->write(request) || !getAnswer(aAnswerData)) {
+    if (!m_Port->write(request) || !getAnswer(aAnswerData)) {
         return CommandResult::Port;
     }
 
@@ -117,7 +117,7 @@ bool ID003Protocol::getAnswer(QByteArray &aAnswerData) {
     do {
         answer.clear();
 
-        if (!mPort->read(answer, 20)) {
+        if (!m_Port->read(answer, 20)) {
             return false;
         }
 
@@ -141,7 +141,7 @@ bool ID003Protocol::sendACK() {
 
     toLog(LogLevel::Normal, QString("ID003: >> {%1} - ACK").arg(commandData.toHex().data()));
 
-    return mPort->write(commandData);
+    return m_Port->write(commandData);
 }
 
 //--------------------------------------------------------------------------------

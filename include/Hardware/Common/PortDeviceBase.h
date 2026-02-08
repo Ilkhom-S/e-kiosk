@@ -83,19 +83,19 @@ protected:
     bool checkError(int aError, TBoolMethod aChecking, const QString &aErrorLog);
 
     /// Порт ввода-вывода.
-    SDK::Driver::IIOPort *mIOPort;
+    SDK::Driver::IIOPort *m_IOPort;
 
     /// Ошибки порта.
-    TStatusCodes mIOPortStatusCodes;
+    TStatusCodes m_IOPortStatusCodes;
 
     /// Логгирование посылок в классе порта.
-    ELoggingType::Enum mIOMessageLogging;
+    ELoggingType::Enum m_IOMessageLogging;
 
     /// Экземпляр класса-описателя статусов портов.
-    IOPortStatusCode::CSpecifications mIOPortStatusCodesSpecification;
+    IOPortStatusCode::CSpecifications m_IOPortStatusCodesSpecification;
 
     /// Контролировать включение/выключение.
-    bool mControlRemoving;
+    bool m_ControlRemoving;
 };
 
 //---------------------------------------------------------------------------

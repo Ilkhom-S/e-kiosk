@@ -10,12 +10,12 @@ class STOD : public OSMP {
 
 public:
     STOD() {
-        mDeviceName = "STOD";
+        m_DeviceName = "STOD";
 
-        mData[EOSMPCommandId::IdentificationData] = "STODSIM";
+        m_Data[EOSMPCommandId::IdentificationData] = "STODSIM";
 
-        mData[EOSMPCommandId::Identification] = "OSP\x09";
-        mData[EOSMPCommandId::RebootPC] = "OSTR";
+        m_Data[EOSMPCommandId::Identification] = "OSP\x09";
+        m_Data[EOSMPCommandId::RebootPC] = "OSTR";
     }
 };
 

@@ -6,10 +6,10 @@ using namespace SDK::Driver::IOPort::COM;
 
 //--------------------------------------------------------------------------------
 Platix::Platix() {
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200);
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR115200);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
-    mDeviceName = "Platix";
+    m_DeviceName = "Platix";
 }
 
 //----------------------------------------------------------------------------
@@ -90,7 +90,7 @@ bool Platix::processCommand(char aCommand) {
     QString CRC = QString("%1").arg(calcCRC(request), 4, 16, QChar(ASCII::Zero));
     request.append(ProtocolUtils::getBufferFromString(CRC));
 
-    if (!mIOPort->write(request)) {
+    if (!m_IOPort->write(request)) {
         return false;
     }
 
@@ -101,7 +101,7 @@ bool Platix::processCommand(char aCommand) {
     QByteArray answer;
 
     // TODO: чтение данных с контролем длины
-    if (!mIOPort->read(answer) || !check(answer)) {
+    if (!m_IOPort->read(answer) || !check(answer)) {
         return false;
     }
 

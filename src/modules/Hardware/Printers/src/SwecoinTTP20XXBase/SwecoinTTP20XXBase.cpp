@@ -15,25 +15,25 @@ using namespace PrinterStatusCode;
 //--------------------------------------------------------------------------------
 SwecoinPrinter::SwecoinPrinter() {
     // данные устройства
-    mDeviceName = "Swecoin TTP Series printer";
+    m_DeviceName = "Swecoin TTP Series printer";
 
     // данные порта
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200); // default
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR4800);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR115200); // default
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR4800);
 
-    mPortParameters[EParameters::Parity].append(EParity::No); // default
-    mPortParameters[EParameters::Parity].append(EParity::Even);
-    mPortParameters[EParameters::Parity].append(EParity::Odd);
+    m_PortParameters[EParameters::Parity].append(EParity::No); // default
+    m_PortParameters[EParameters::Parity].append(EParity::Even);
+    m_PortParameters[EParameters::Parity].append(EParity::Odd);
 
     // теги
-    mTagEngine = Tags::PEngine(new CSwecoinPrinter::TagEngine());
+    m_TagEngine = Tags::PEngine(new CSwecoinPrinter::TagEngine());
 
     // данные устройства
-    mDeviceName = "Swecoin Printer Series";
+    m_DeviceName = "Swecoin Printer Series";
     setConfigParameter(CHardware::Printer::Commands::Cutting, "\x1B\x1E");
     setConfigParameter(CHardware::Printer::Commands::Presentation, "\x1B\x0C");
     setConfigParameter(CHardware::Printer::Settings::PresentationLength, 50);
@@ -41,7 +41,7 @@ SwecoinPrinter::SwecoinPrinter() {
 
 //--------------------------------------------------------------------------------
 bool SwecoinPrinter::isConnected() {
-    if (!mIOPort->write(CSwecoinPrinter::Commands::GetModelId)) {
+    if (!m_IOPort->write(CSwecoinPrinter::Commands::GetModelId)) {
         return false;
     }
 
@@ -53,7 +53,7 @@ bool SwecoinPrinter::isConnected() {
     do {
         QByteArray data;
 
-        if (!mIOPort->read(data)) {
+        if (!m_IOPort->read(data)) {
             return false;
         }
 
@@ -85,7 +85,7 @@ bool SwecoinPrinter::isConnected() {
     // 3. Проверяем наличие совпадения через hasMatch()
     if (match.hasMatch()) {
         // 4. Извлекаем захваченную группу (индекс 1) и упрощаем строку
-        mDeviceName = match.captured(1).simplified();
+        m_DeviceName = match.captured(1).simplified();
     }
 
     return true;
@@ -99,14 +99,14 @@ bool SwecoinPrinter::updateParameters() {
     for (auto it = deviceParameters.begin(); it != deviceParameters.end(); ++it) {
         QByteArray data;
 
-        if (mIOPort->write(QByteArray(CSwecoinPrinter::Commands::GetData) + it.key()) &&
-            mIOPort->read(data)) {
+        if (m_IOPort->write(QByteArray(CSwecoinPrinter::Commands::GetData) + it.key()) &&
+            m_IOPort->read(data)) {
             setDeviceParameter(it->description, it->handler(data));
         }
     }
 
     // TODO: установка шрифта, параметров эжектора, межстрочного интервала, ...
-    bool result = mIOPort->write(CSwecoinPrinter::Commands::Initialize);
+    bool result = m_IOPort->write(CSwecoinPrinter::Commands::Initialize);
 
     SleepHelper::msleep(CSwecoinPrinter::Pause);
 
@@ -117,7 +117,7 @@ bool SwecoinPrinter::updateParameters() {
 bool SwecoinPrinter::getStatus(TStatusCodes &aStatusCodes) {
     QByteArray answer;
 
-    if (!mIOPort->write(CSwecoinPrinter::Commands::GetStatus) || !mIOPort->read(answer) ||
+    if (!m_IOPort->write(CSwecoinPrinter::Commands::GetStatus) || !m_IOPort->read(answer) ||
         (answer.size() > 2) || answer.isEmpty() ||
         ((answer.size() != 1) && answer.startsWith(ASCII::ACK)) ||
         ((answer.size() != 2) && answer.startsWith(ASCII::NAK))) {
@@ -128,7 +128,7 @@ bool SwecoinPrinter::getStatus(TStatusCodes &aStatusCodes) {
         aStatusCodes.insert(CSwecoinPrinter::Statuses[answer[1]]);
     }
 
-    if (!mIOPort->write(CSwecoinPrinter::Commands::GetPaperNearEndData) || !mIOPort->read(answer) ||
+    if (!m_IOPort->write(CSwecoinPrinter::Commands::GetPaperNearEndData) || !m_IOPort->read(answer) ||
         (answer.size() != 1)) {
         return false;
     }
@@ -137,7 +137,7 @@ bool SwecoinPrinter::getStatus(TStatusCodes &aStatusCodes) {
         aStatusCodes.insert(PrinterStatusCode::Warning::PaperNearEnd);
     }
 
-    if (!mIOPort->write(CSwecoinPrinter::Commands::GetSensorData) || !mIOPort->read(answer) ||
+    if (!m_IOPort->write(CSwecoinPrinter::Commands::GetSensorData) || !m_IOPort->read(answer) ||
         (answer.size() != 2)) {
         return false;
     }

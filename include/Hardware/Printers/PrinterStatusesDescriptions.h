@@ -7,7 +7,7 @@
 
 #define ADD_PRINTER_STATUS(aStatusCode, aTranslation, aWarningLevel)                               \
     ADD_BASE_STATUS(aStatusCode, aTranslation, aWarningLevel);                                     \
-    mStatusCodes.insert(aWarningLevel::aStatusCode)
+    m_StatusCodes.insert(aWarningLevel::aStatusCode)
 #define ADD_PRINTER_WARNING(aStatusCode, aTranslation)                                             \
     ADD_PRINTER_STATUS(aStatusCode, aTranslation, Warning)
 #define ADD_PRINTER_ERROR(aStatusCode, aTranslation)                                               \
@@ -78,7 +78,7 @@ public:
     TStatusCodes getAvailableErrors() {
         using namespace DeviceStatusCode;
 
-        return mStatusCodes - (TStatusCodes() << OK::PaperInPresenter << OK::MotorMotion
+        return m_StatusCodes - (TStatusCodes() << OK::PaperInPresenter << OK::MotorMotion
                                               << Error::PrinterFRNotAvailable
                                               << DeviceStatusCode::Error::MechanismPosition
                                               << DeviceStatusCode::Error::Temperature
@@ -87,7 +87,7 @@ public:
     }
 
 private:
-    TStatusCodes mStatusCodes;
+    TStatusCodes m_StatusCodes;
 };
 } // namespace PrinterStatusCode
 

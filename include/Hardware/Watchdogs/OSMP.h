@@ -40,7 +40,7 @@ protected:
     bool performCommand(const QByteArray &aCommand, QByteArray *aAnswer = nullptr);
 
     /// Данные протокола сторожевого таймера.
-    TData mData;
+    TData m_Data;
 };
 
 //--------------------------------------------------------------------------------

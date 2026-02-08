@@ -7,9 +7,9 @@ using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
 USBScanner::USBScanner() {
-    mDeviceName = CHHP::DefaultName;
+    m_DeviceName = CHHP::DefaultName;
 
-    mDetectingData->set(CUSBVendors::HHP, CHHP::DetectingData().data());
+    m_DetectingData->set(CUSBVendors::HHP, CHHP::DetectingData().data());
 }
 
 //--------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ QStringList USBScanner::getModelList() {
 bool USBScanner::getData(QByteArray &aAnswer) {
     QVariantMap configuration;
     configuration.insert(CHardware::Port::MaxReadingSize, CUSBScanner::USBAnswerSize);
-    mIOPort->setDeviceConfiguration(configuration);
+    m_IOPort->setDeviceConfiguration(configuration);
 
     return TUSBScanner::getData(aAnswer);
 }

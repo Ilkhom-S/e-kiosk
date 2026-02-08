@@ -7,24 +7,24 @@
 //--------------------------------------------------------------------------------
 class DeviceLogManager {
 public:
-    DeviceLogManager() : mLog(nullptr) {}
-    DeviceLogManager(ILog *aLog) : mLog(aLog) {}
+    DeviceLogManager() : m_Log(nullptr) {}
+    DeviceLogManager(ILog *aLog) : m_Log(aLog) {}
 
     /// Логировать.
     void toLog(LogLevel::Enum aLevel, const QString &aMessage) const {
-        if (mLog) {
-            mLog->write(aLevel, aMessage);
+        if (m_Log) {
+            m_Log->write(aLevel, aMessage);
         } else {
             qCritical("Log pointer is empty. Message:%s.", aMessage.toLocal8Bit().data());
         }
     }
 
     /// Установить лог.
-    void setLog(ILog *aLog) { mLog = aLog; }
+    void setLog(ILog *aLog) { m_Log = aLog; }
 
 protected:
     /// Лог.
-    ILog *mLog;
+    ILog *m_Log;
 };
 
 //--------------------------------------------------------------------------------

@@ -16,10 +16,10 @@ public:
     // Возвращает список названий моделей для указанного производителя
     QStringList getModelList(const QString &aVendor) {
         QStringList result;
-        result.reserve(this->mBuffer.size());
+        result.reserve(this->m_Buffer.size());
 
         // Используем range-based for (C++11/14) вместо устаревшего foreach
-        for (const auto &data : this->mBuffer) {
+        for (const auto &data : this->m_Buffer) {
             // QStringLiteral оптимизирует память на Windows 7
             result << aVendor + QStringLiteral(" ") + data.model;
         }
@@ -28,8 +28,8 @@ public:
 
     // Устанавливает модель по умолчанию
     void setDefaultModel(const QString &aModel) {
-        // this-> обязателен в шаблонах для обращения к mBuffer базового класса
-        for (auto it = this->mBuffer.begin(); it != this->mBuffer.end(); ++it) {
+        // this-> обязателен в шаблонах для обращения к m_Buffer базового класса
+        for (auto it = this->m_Buffer.begin(); it != this->m_Buffer.end(); ++it) {
             if (it.value().model == aModel) {
                 this->setDefault(it.value());
                 break;
@@ -37,10 +37,10 @@ public:
         }
     }
 
-    TProductData getProductData() const { return mProductData; }
+    TProductData getProductData() const { return m_ProductData; }
 
 protected:
-    TProductData mProductData;
+    TProductData m_ProductData;
 };
 
 //--------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ public:
 
 protected:
     // static члены определяются в .cpp
-    static CUSBVendors::Data mVendorData;
+    static CUSBVendors::Data m_VendorData;
 };
 
 typedef QSharedPointer<DetectingData> PDetectingData;

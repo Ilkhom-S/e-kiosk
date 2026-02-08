@@ -9,14 +9,14 @@ using namespace SDK::Driver::IOPort::COM;
 //--------------------------------------------------------------------------------
 LDog::LDog() {
     // Данные порта.
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
     // Данные устройства.
-    mDeviceName = "LDog";
-    mPingTimer.setInterval(1000 * CLDog::Timeouts::PCReset / 2);
-    mNextRequestTime = QDateTime::currentDateTime();
-    mIOMessageLogging = ELoggingType::Write;
+    m_DeviceName = "LDog";
+    m_PingTimer.setInterval(1000 * CLDog::Timeouts::PCReset / 2);
+    m_NextRequestTime = QDateTime::currentDateTime();
+    m_IOMessageLogging = ELoggingType::Write;
 }
 
 //----------------------------------------------------------------------------
@@ -65,14 +65,14 @@ TResult LDog::processCommand(char aCommand, QByteArray *aAnswer) {
 
 //--------------------------------------------------------------------------------
 TResult LDog::processCommand(char aCommand, const QByteArray &aCommandData, QByteArray *aAnswer) {
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
 
     makePause(aCommand);
 
     QByteArray answerData;
     QByteArray &answer = aAnswer ? *aAnswer : answerData;
-    TResult result = mProtocol.processCommand(aCommand + aCommandData, answer);
+    TResult result = m_Protocol.processCommand(aCommand + aCommandData, answer);
 
     if (!result) {
         return result;
@@ -80,9 +80,9 @@ TResult LDog::processCommand(char aCommand, const QByteArray &aCommandData, QByt
 
     if (!CLDog::Commands::Data[aCommand] && (aAnswer != QByteArray(1, CLDog::ACK))) {
         if (aAnswer == QByteArray(1, CLDog::NAK)) {
-            toLog(LogLevel::Error, mDeviceName + ": Answer contains NAK");
+            toLog(LogLevel::Error, m_DeviceName + ": Answer contains NAK");
         } else {
-            toLog(LogLevel::Error, mDeviceName + ": Wrong answer, need ACK");
+            toLog(LogLevel::Error, m_DeviceName + ": Wrong answer, need ACK");
         }
 
         return CommandResult::Transport;
@@ -98,7 +98,7 @@ void LDog::onPing() {
 
 //--------------------------------------------------------------------------------
 void LDog::makePause(char aCommand) {
-    qint64 pause = QDateTime::currentDateTime().msecsTo(mNextRequestTime);
+    qint64 pause = QDateTime::currentDateTime().msecsTo(m_NextRequestTime);
 
     if (pause > 0) {
         SleepHelper::msleep(ulong(pause));
@@ -113,7 +113,7 @@ void LDog::makePause(char aCommand) {
         interval = CLDog::Intervals::PowerOff;
     }
 
-    mNextRequestTime = QDateTime::currentDateTime().addMSecs(interval);
+    m_NextRequestTime = QDateTime::currentDateTime().addMSecs(interval);
 }
 
 //--------------------------------------------------------------------------------

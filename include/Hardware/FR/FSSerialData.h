@@ -40,7 +40,7 @@ protected:
     QStringList::const_iterator getSerialNumberTemplate(const QString &aSerialNumber) const;
 
     /// Шаблоны серийных номеров.
-    QStringList mSerialNumberTemplates;
+    QStringList m_SerialNumberTemplates;
 };
 
 static CData Data;

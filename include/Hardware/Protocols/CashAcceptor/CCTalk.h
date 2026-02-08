@@ -37,10 +37,10 @@ protected:
     ushort calcCRC16(const QByteArray &aData);
 
     /// Адрес устройства.
-    uchar mAddress;
+    uchar m_Address;
 
     /// тип CRC.
-    QString mType;
+    QString m_Type;
 };
 
 //--------------------------------------------------------------------------------

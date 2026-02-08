@@ -282,131 +282,131 @@ protected:
     bool isFS36() const;
 
     /// Наличие ЭКЛЗ.
-    bool mEKLZ;
+    bool m_EKLZ;
 
     /// Постоянная ошибка ЭКЛЗ.
-    bool mEKLZError;
+    bool m_EKLZError;
 
     /// Постоянная ошибка ФП.
-    bool mFMError;
+    bool m_FMError;
 
     /// Постоянная ошибка ФН.
-    bool mFSError;
+    bool m_FSError;
 
     /// Исчерпан ресурс хранения отчетов в ФН.
-    bool mFSOfflineEnd;
+    bool m_FSOfflineEnd;
 
     /// Буфер Z-отчетов заполнен.
-    bool mZBufferFull;
+    bool m_ZBufferFull;
 
     /// Буфер Z-отчетов переполнен.
-    bool mZBufferOverflow;
+    bool m_ZBufferOverflow;
 
     /// Нужна ли обработка текущего чека, если следом пойдет фискальный документ.
-    bool mNextReceiptProcessing;
+    bool m_NextReceiptProcessing;
 
     /// Глобальная ошибка принтерной части части ФР, печать невозможна.
-    bool mPrinterCollapse;
+    bool m_PrinterCollapse;
 
     /// Признак фискализированности ККМ.
-    bool mFiscalized;
+    bool m_Fiscalized;
 
     /// Ошибка буфера Z-отчетов.
-    int mZBufferError;
+    int m_ZBufferError;
 
     /// Глобальная ошибка фискальной части ФР, печать невозможна.
-    bool mFiscalCollapse;
+    bool m_FiscalCollapse;
 
     /// Свободное место в буфере Z-отчетов.
-    int mWhiteSpaceZBuffer;
+    int m_WhiteSpaceZBuffer;
 
     /// Необходимо выполнить Z-отчет (для ФР без буфера).
-    bool mNeedCloseSession;
+    bool m_NeedCloseSession;
 
     /// Время последнего открытия смены.
-    QDateTime mLastOpenSession;
+    QDateTime m_LastOpenSession;
 
     /// Является ли онлайновым.
-    bool mIsOnline;
+    bool m_IsOnline;
 
     /// Ошибка данных ОФД в ФР: 1. данные ФР некорректны по формату; 2. это точно тестовый
     /// сервер; 3. URL или IP точно не соответствует порту
-    bool mOFDDataError;
+    bool m_OFDDataError;
 
     /// Регион.
-    ERegion::Enum mRegion;
+    ERegion::Enum m_Region;
 
     /// Фискальные теги для установки в момент печати фискального чека.
-    QSet<int> mOFDFiscalFields;
+    QSet<int> m_OFDFiscalFields;
 
     /// Фискальные теги для установки в момент печати фискального чека на продаже.
-    QSet<int> mOFDFiscalFieldsOnSale;
+    QSet<int> m_OFDFiscalFieldsOnSale;
 
     /// Количество неотправленных документов в ОФД.
-    int mOFDNotSentCount;
+    int m_OFDNotSentCount;
 
     /// Метка даты-времени связи с ОФД.
-    QDateTime mOFDDTMark;
+    QDateTime m_OFDDTMark;
 
     /// Данные налогов.
-    CFR::Taxes::Data mTaxData;
+    CFR::Taxes::Data m_TaxData;
 
     /// Данные типов оплаты.
-    CFR::PayTypeData mPayTypeData;
+    CFR::PayTypeData m_PayTypeData;
 
     /// Системы налогообложения (СНО).
-    TTaxSystems mTaxSystems;
+    TTaxSystems m_TaxSystems;
 
     /// Признаки агента.
-    TAgentFlags mAgentFlags;
+    TAgentFlags m_AgentFlags;
 
     /// Режимы работы.
-    TOperationModes mOperationModes;
+    TOperationModes m_OperationModes;
 
     /// Серийный номер ФР.
-    QString mSerial;
+    QString m_Serial;
 
     /// Серийный номер ФН.
-    QString mFSSerialNumber;
+    QString m_FSSerialNumber;
 
     /// РНМ.
-    QString mRNM;
+    QString m_RNM;
 
     /// ИНН.
-    QString mINN;
+    QString m_INN;
 
     /// ФФД ФР.
-    EFFD::Enum mFFDFR;
+    EFFD::Enum m_FFDFR;
 
     /// ФФД ФН.
-    EFFD::Enum mFFDFS;
+    EFFD::Enum m_FFDFS;
 
     /// Данные фискальных реквизитов.
-    CFR::FiscalFields::Data mFFData;
+    CFR::FiscalFields::Data m_FFData;
 
     /// Может работать с буфером Z-отчетов.
-    bool mCanProcessZBuffer;
+    bool m_CanProcessZBuffer;
 
     /// Параметры фискализации некорректны?
-    bool mWrongFiscalizationSettings;
+    bool m_WrongFiscalizationSettings;
 
     /// Экземляр движка фискальных тегов.
-    FFEngine mFFEngine;
+    FFEngine m_FFEngine;
 
     /// Ошибка установки непечати.
-    bool mNotPrintingError;
+    bool m_NotPrintingError;
 
     /// Ошибка ИНН кассира.
-    bool mCashierINNError;
+    bool m_CashierINNError;
 
     /// Ошибка налоговых ставок.
-    bool mTaxError;
+    bool m_TaxError;
 
     /// Необходима синхронизация с системным временем.
-    bool mNeedTimeSynchronization;
+    bool m_NeedTimeSynchronization;
 
     /// Неверная налоговая ставка на платеже.
-    bool mWrongTaxOnPayment;
+    bool m_WrongTaxOnPayment;
 };
 
 //--------------------------------------------------------------------------------

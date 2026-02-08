@@ -9,7 +9,7 @@
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-Atol3FRProtocol::Atol3FRProtocol() : mId(ASCII::NUL) {}
+Atol3FRProtocol::Atol3FRProtocol() : m_Id(ASCII::NUL) {}
 
 //--------------------------------------------------------------------------------
 char Atol3FRProtocol::calcCRC(const QByteArray &aData) {
@@ -51,11 +51,11 @@ bool Atol3FRProtocol::check(const QByteArray &aAnswer) {
     }
 
     // Id
-    if ((aAnswer[3] != char(mId)) && (aAnswer[3] != CAtol3FR::AsyncId)) {
+    if ((aAnswer[3] != char(m_Id)) && (aAnswer[3] != CAtol3FR::AsyncId)) {
         toLog(LogLevel::Error,
               QString("ATOL3: Invalid Id = %1, need = %2")
                   .arg(toHexLog(aAnswer[3]))
-                  .arg(toHexLog(mId)));
+                  .arg(toHexLog(m_Id)));
         return false;
     }
 
@@ -89,8 +89,8 @@ TResult Atol3FRProtocol::execCommand(char aCommand,
                                      const QByteArray &aCommandData,
                                      QByteArray &aAnswer,
                                      int aTimeout) {
-    mId = (mId == uchar(CAtol3FR::LastId)) ? ASCII::NUL : ++mId;
-    QByteArray request = QByteArray(1, char(mId)) + aCommand + aCommandData;
+    m_Id = (m_Id == uchar(CAtol3FR::LastId)) ? ASCII::NUL : ++m_Id;
+    QByteArray request = QByteArray(1, char(m_Id)) + aCommand + aCommandData;
 
     ushort size = ushort(request.size() - 1);
     request.prepend(char(size >> 7));
@@ -105,7 +105,7 @@ TResult Atol3FRProtocol::execCommand(char aCommand,
 
     toLog(LogLevel::Normal, QString("ATOL3: >> {%1}").arg(request.toHex().data()));
 
-    if (!mPort->write(request)) {
+    if (!m_Port->write(request)) {
         return CommandResult::Transport;
     }
 
@@ -178,7 +178,7 @@ bool Atol3FRProtocol::read(QByteArray &aAnswer, int aTimeout) {
     do {
         QByteArray data;
 
-        if (!mPort->read(data, 30)) {
+        if (!m_Port->read(data, 30)) {
             return false;
         }
 

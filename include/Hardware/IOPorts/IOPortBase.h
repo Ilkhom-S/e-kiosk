@@ -46,19 +46,19 @@ protected:
     void adjustData(const QStringList &aMine, const QStringList &aOther);
 
     /// Имя системного порта.
-    QString mSystemName;
+    QString m_SystemName;
 
     /// Тип порта.
-    SDK::Driver::EPortTypes::Enum mType;
+    SDK::Driver::EPortTypes::Enum m_Type;
 
     /// Логгирование посылок.
-    ELoggingType::Enum mDeviceIOLoging;
+    ELoggingType::Enum m_DeviceIOLoging;
 
     /// Название устройства, подключенного к порту.
-    QString mConnectedDeviceName;
+    QString m_ConnectedDeviceName;
 
     /// Таймаут открытия порта
-    int mOpeningTimeout;
+    int m_OpeningTimeout;
 };
 
 //--------------------------------------------------------------------------------

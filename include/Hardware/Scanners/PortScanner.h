@@ -25,7 +25,7 @@ public:
 
 protected:
     /// Интервал опроса порта.
-    int mPollingInterval;
+    int m_PollingInterval;
 
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);

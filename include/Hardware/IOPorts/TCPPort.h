@@ -112,25 +112,25 @@ protected:
 
     /// TCP-сокет.
     typedef QSharedPointer<QTcpSocket> PSocket;
-    PSocket mSocket;
+    PSocket m_Socket;
 
     /// Состояние TCP-сокета.
-    QAbstractSocket::SocketState mState;
+    QAbstractSocket::SocketState m_State;
 
     /// Ошибка TCP-сокета.
-    QAbstractSocket::SocketError mError;
+    QAbstractSocket::SocketError m_Error;
 
     /// Для охраны операций с TCP-сокетом в рабочем потоке.
-    QMutex mSocketGuard;
+    QMutex m_SocketGuard;
 
     /// Буфер прочитанных данных.
-    QByteArray mDataFrom;
+    QByteArray m_DataFrom;
 
     /// Для охраны буфера прочитанных данных.
-    QMutex mDataFromGuard;
+    QMutex m_DataFromGuard;
 
     /// Последний лог с ошибкой открытия порта.
-    QString mLastErrorLog;
+    QString m_LastErrorLog;
 };
 
 //--------------------------------------------------------------------------------

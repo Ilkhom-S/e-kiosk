@@ -19,13 +19,13 @@ template class CustomVKP80III<TSerialPrinterBase>;
 //--------------------------------------------------------------------------------
 template <class T> CustomVKP80III<T>::CustomVKP80III() {
     // параметры моделей
-    this->mDeviceName = "Custom VKP-80 III";
-    this->mModelID = '\xFF';
+    this->m_DeviceName = "Custom VKP-80 III";
+    this->m_ModelID = '\xFF';
 
     // модели
-    this->mParameters = POSPrinters::CommonParameters;
-    this->mModelData.data().clear();
-    this->mModelData.add(this->mModelID, true, this->mDeviceName);
+    this->m_Parameters = POSPrinters::CommonParameters;
+    this->m_ModelData.data().clear();
+    this->m_ModelData.add(this->m_ModelID, true, this->m_DeviceName);
 
     this->setConfigParameter(CHardware::Printer::PresenterEnable, false);
     this->setConfigParameter(CHardware::Printer::RetractorEnable, false);
@@ -33,7 +33,7 @@ template <class T> CustomVKP80III<T>::CustomVKP80III() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool CustomVKP80III<T>::getModelId(QByteArray &aAnswer) const {
-    return this->mIOPort->write(CCustomVKP80III::Command::GetModelId) &&
+    return this->m_IOPort->write(CCustomVKP80III::Command::GetModelId) &&
            this->getAnswer(aAnswer, CPOSPrinter::Timeouts::Info) &&
            (aAnswer.isEmpty() || (aAnswer.size() == 2));
 }
@@ -50,13 +50,13 @@ template <class T> char CustomVKP80III<T>::parseModelId(QByteArray &aAnswer) {
     if (aAnswer != CCustomVKP80III::ModelId) {
         this->toLog(LogLevel::Error,
                     QString("%1: Wrong answer {%2}, need {%3}")
-                        .arg(this->mDeviceName)
+                        .arg(this->m_DeviceName)
                         .arg(aAnswer.toHex().data())
                         .arg(QByteArray(CCustomVKP80III::ModelId).toHex().data()));
         return 0;
     }
 
-    return this->mModelID;
+    return this->m_ModelID;
 }
 
 //--------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ template <class T> bool CustomVKP80III<T>::receiptProcessing() {
     command.append(ejectorAction);
     command.append(char(leftReceiptTimeout));
 
-    return this->mIOPort->write(command);
+    return this->m_IOPort->write(command);
 }
 
 //--------------------------------------------------------------------------------

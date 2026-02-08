@@ -364,7 +364,7 @@ TLibUSBDataList getConfigData(libusb_device *aDevice,
             configData.insert(ConfigData::Index, config->iConfiguration);
             configData.insert(ConfigData::Value, toHexLog(config->bConfigurationValue));
             configData.insert(ConfigData::Attributes, toHexLog(config->bmAttributes));
-            configData.insert(ConfigData::MaxPower, config->MaxPower /* + " mA"*/);
+            configData.insert(ConfigData::MaxPower, config->MaxPower /* + " m_A"*/);
 
             // TODO: добавить параметры
             // TODO: уточнить MaxPower по поводу единиц измерения. Сила тока тут обозначается как
@@ -378,8 +378,8 @@ TLibUSBDataList getConfigData(libusb_device *aDevice,
 
             // Maximum power consumption of the USB device from this bus in this configuration when
             the device is fully operation. Expressed
-            // in units of 2 mA when the device is operating in high-speed mode and
-            // in units of 8 mA when the device is operating in super-speed mode.
+            // in units of 2 m_A when the device is operating in high-speed mode and
+            // in units of 8 m_A when the device is operating in super-speed mode.
             */
 
             TLibUSBDataList interfaceData = getInterfaceData(config);
@@ -494,7 +494,7 @@ TLibUSBDataList getEndpointData(const libusb_interface_descriptor &aInterface) {
         // Bits 4:5 are also only used for isochronous endpoints and correspond to \ref
         libusb_iso_usage_type.
         // Bits 6:7 are reserved.
-        uint8_t  this->mAttributes;
+        uint8_t  this->m_Attributes;
 
         // Extra descriptors. If libusb encounters unknown endpoint descriptors, it will store them
         here, should you wish to parse them. const unsigned char *extra;
@@ -542,7 +542,7 @@ TLibUSBDataList getEPCompanionData(const libusb_endpoint_descriptor &aEndpoint) 
                 // In bulk EP: bits 4:0 represents the maximum number of streams the EP supports.
                 // In isochronous EP: bits 1:0 represents the Mult - a zero based value that
                 determines the maximum number of packets within a service interval uint8_t
-                this->mAttributes;
+                this->m_Attributes;
                 */
             }
 

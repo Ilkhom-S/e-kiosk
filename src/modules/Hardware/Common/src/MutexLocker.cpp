@@ -2,67 +2,67 @@
 
 #include "MutexLocker.h"
 
-MutexLocker::TMatchedThreads MutexLocker::mMatchedThreads;
-QRecursiveMutex MutexLocker::mResourceMutex;
-MutexLocker::TThreadsLocked MutexLocker::mThreadsLocked;
+MutexLocker::TMatchedThreads MutexLocker::m_MatchedThreads;
+QRecursiveMutex MutexLocker::m_ResourceMutex;
+MutexLocker::TThreadsLocked MutexLocker::m_ThreadsLocked;
 
 //--------------------------------------------------------------------------------
-MutexLocker::MutexLocker(QMutex *aMutex) : mIsRecursive(false) {
-    mMutexUnion.mutex = aMutex;
+MutexLocker::MutexLocker(QMutex *aMutex) : m_IsRecursive(false) {
+    m_MutexUnion.mutex = aMutex;
     if (aMutex) {
         QThread *matchedThread = nullptr;
 
         {
-            QMutexLocker locker(&mResourceMutex);
+            QMutexLocker locker(&m_ResourceMutex);
 
-            if (!mThreadsLocked.contains(aMutex)) {
-                mThreadsLocked.insert(aMutex, TLocksCounter(nullptr, 0));
-            } else if (mMatchedThreads.contains(mThreadsLocked[aMutex].first)) {
-                matchedThread = mMatchedThreads[mThreadsLocked[aMutex].first];
+            if (!m_ThreadsLocked.contains(aMutex)) {
+                m_ThreadsLocked.insert(aMutex, TLocksCounter(nullptr, 0));
+            } else if (m_MatchedThreads.contains(m_ThreadsLocked[aMutex].first)) {
+                matchedThread = m_MatchedThreads[m_ThreadsLocked[aMutex].first];
             }
         }
 
         QThread *currentThread = QThread::currentThread();
 
         if (matchedThread != currentThread) {
-            mMutexUnion.mutex->lock();
+            m_MutexUnion.mutex->lock();
 
             {
-                QMutexLocker locker(&mResourceMutex);
+                QMutexLocker locker(&m_ResourceMutex);
 
-                mThreadsLocked[aMutex].first = currentThread;
-                mThreadsLocked[aMutex].second++;
+                m_ThreadsLocked[aMutex].first = currentThread;
+                m_ThreadsLocked[aMutex].second++;
             }
         }
     }
 }
 
 //--------------------------------------------------------------------------------
-MutexLocker::MutexLocker(QRecursiveMutex *aMutex) : mIsRecursive(true) {
-    mMutexUnion.recursiveMutex = aMutex;
+MutexLocker::MutexLocker(QRecursiveMutex *aMutex) : m_IsRecursive(true) {
+    m_MutexUnion.recursiveMutex = aMutex;
     if (aMutex) {
         QThread *matchedThread = nullptr;
 
         {
-            QMutexLocker locker(&mResourceMutex);
+            QMutexLocker locker(&m_ResourceMutex);
 
-            if (!mThreadsLocked.contains(aMutex)) {
-                mThreadsLocked.insert(aMutex, TLocksCounter(nullptr, 0));
-            } else if (mMatchedThreads.contains(mThreadsLocked[aMutex].first)) {
-                matchedThread = mMatchedThreads[mThreadsLocked[aMutex].first];
+            if (!m_ThreadsLocked.contains(aMutex)) {
+                m_ThreadsLocked.insert(aMutex, TLocksCounter(nullptr, 0));
+            } else if (m_MatchedThreads.contains(m_ThreadsLocked[aMutex].first)) {
+                matchedThread = m_MatchedThreads[m_ThreadsLocked[aMutex].first];
             }
         }
 
         QThread *currentThread = QThread::currentThread();
 
         if (matchedThread != currentThread) {
-            mMutexUnion.recursiveMutex->lock();
+            m_MutexUnion.recursiveMutex->lock();
 
             {
-                QMutexLocker locker(&mResourceMutex);
+                QMutexLocker locker(&m_ResourceMutex);
 
-                mThreadsLocked[aMutex].first = currentThread;
-                mThreadsLocked[aMutex].second++;
+                m_ThreadsLocked[aMutex].first = currentThread;
+                m_ThreadsLocked[aMutex].second++;
             }
         }
     }
@@ -70,35 +70,35 @@ MutexLocker::MutexLocker(QRecursiveMutex *aMutex) : mIsRecursive(true) {
 
 //--------------------------------------------------------------------------------
 MutexLocker::~MutexLocker() {
-    if (mIsRecursive) {
-        if (mMutexUnion.recursiveMutex) {
-            QMutexLocker locker(&mResourceMutex);
+    if (m_IsRecursive) {
+        if (m_MutexUnion.recursiveMutex) {
+            QMutexLocker locker(&m_ResourceMutex);
 
             QThread *currentThread = QThread::currentThread();
 
-            if (mThreadsLocked.contains(mMutexUnion.recursiveMutex) &&
-                (mThreadsLocked[mMutexUnion.recursiveMutex].first == currentThread)) {
-                mMutexUnion.recursiveMutex->unlock();
-                mThreadsLocked[mMutexUnion.recursiveMutex].second--;
+            if (m_ThreadsLocked.contains(m_MutexUnion.recursiveMutex) &&
+                (m_ThreadsLocked[m_MutexUnion.recursiveMutex].first == currentThread)) {
+                m_MutexUnion.recursiveMutex->unlock();
+                m_ThreadsLocked[m_MutexUnion.recursiveMutex].second--;
 
-                if (mThreadsLocked[mMutexUnion.recursiveMutex].second <= 0) {
-                    mThreadsLocked[mMutexUnion.recursiveMutex].first = nullptr;
+                if (m_ThreadsLocked[m_MutexUnion.recursiveMutex].second <= 0) {
+                    m_ThreadsLocked[m_MutexUnion.recursiveMutex].first = nullptr;
                 }
             }
         }
     } else {
-        if (mMutexUnion.mutex) {
-            QMutexLocker locker(&mResourceMutex);
+        if (m_MutexUnion.mutex) {
+            QMutexLocker locker(&m_ResourceMutex);
 
             QThread *currentThread = QThread::currentThread();
 
-            if (mThreadsLocked.contains(mMutexUnion.mutex) &&
-                (mThreadsLocked[mMutexUnion.mutex].first == currentThread)) {
-                mMutexUnion.mutex->unlock();
-                mThreadsLocked[mMutexUnion.mutex].second--;
+            if (m_ThreadsLocked.contains(m_MutexUnion.mutex) &&
+                (m_ThreadsLocked[m_MutexUnion.mutex].first == currentThread)) {
+                m_MutexUnion.mutex->unlock();
+                m_ThreadsLocked[m_MutexUnion.mutex].second--;
 
-                if (mThreadsLocked[mMutexUnion.mutex].second <= 0) {
-                    mThreadsLocked[mMutexUnion.mutex].first = nullptr;
+                if (m_ThreadsLocked[m_MutexUnion.mutex].second <= 0) {
+                    m_ThreadsLocked[m_MutexUnion.mutex].first = nullptr;
                 }
             }
         }
@@ -107,16 +107,16 @@ MutexLocker::~MutexLocker() {
 
 //--------------------------------------------------------------------------------
 void MutexLocker::setMatchedThread(QThread *aOwner, QThread *aMatched) {
-    QMutexLocker locker(&mResourceMutex);
+    QMutexLocker locker(&m_ResourceMutex);
 
-    mMatchedThreads.insert(aOwner, aMatched);
+    m_MatchedThreads.insert(aOwner, aMatched);
 }
 
 //--------------------------------------------------------------------------------
 void MutexLocker::clearMatchedThread(QThread *aOwner) {
-    QMutexLocker locker(&mResourceMutex);
+    QMutexLocker locker(&m_ResourceMutex);
 
-    mMatchedThreads.remove(aOwner);
+    m_MatchedThreads.remove(aOwner);
 }
 
 //--------------------------------------------------------------------------------

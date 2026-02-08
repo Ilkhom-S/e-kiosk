@@ -15,8 +15,8 @@ template class AtolVKP80BasedFR<Atol3OnlineFRBase>;
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
-template <class T> AtolVKP80BasedFR<T>::AtolVKP80BasedFR() : mEjectorMode(0) {
-    mEjectorSettings = CEjectorAtolFR::SData(CEjectorAtolFR::InitReceipt, '\x20', '\xE0', '\x30');
+template <class T> AtolVKP80BasedFR<T>::AtolVKP80BasedFR() : m_EjectorMode(0) {
+    m_EjectorSettings = CEjectorAtolFR::SData(CEjectorAtolFR::InitReceipt, '\x20', '\xE0', '\x30');
 }
 
 //--------------------------------------------------------------------------------
@@ -24,9 +24,9 @@ template <class T>
 void AtolVKP80BasedFR<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     AtolEjectorFR::setDeviceConfiguration(aConfiguration);
 
-    mEjectorSettings.receipt = CEjectorAtolFR::InitReceipt;
-    mEjectorSettings.ZReport &= CEjectorAtolFR::SpecialSettingMask;
-    mEjectorSettings.autoZReport &= CEjectorAtolFR::SpecialSettingMask;
+    m_EjectorSettings.receipt = CEjectorAtolFR::InitReceipt;
+    m_EjectorSettings.ZReport &= CEjectorAtolFR::SpecialSettingMask;
+    m_EjectorSettings.autoZReport &= CEjectorAtolFR::SpecialSettingMask;
 
     using namespace CHardware::Printer::Settings;
 
@@ -46,17 +46,17 @@ void AtolVKP80BasedFR<T>::setDeviceConfiguration(const QVariantMap &aConfigurati
         char(getConfigParameter(PreviousReceipt).toString() == CHardware::Printer::Values::Push);
     char presentation = char(presentationLength) % ~CEjectorAtolFR::SpecialSettingMask;
 
-    mEjectorSettings.receipt |= (0x40 * previousPush) | (loopEnable ? presentation : 0x80);
+    m_EjectorSettings.receipt |= (0x40 * previousPush) | (loopEnable ? presentation : 0x80);
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool AtolVKP80BasedFR<T>::setEjectorMode(char aEjectorMode) {
-    if (aEjectorMode == mEjectorMode) {
+    if (aEjectorMode == m_EjectorMode) {
         return true;
     }
 
     if (AtolEjectorFR::setEjectorMode(aEjectorMode)) {
-        mEjectorMode = aEjectorMode;
+        m_EjectorMode = aEjectorMode;
 
         return true;
     }
@@ -88,8 +88,8 @@ template <class T> bool AtolVKP80BasedFR<T>::getCommonStatus(TStatusCodes &aStat
         // 2. Не превышен максимум попыток переинициализации (ошибка еще не пролезла наверх)
         // 3. В ответе на запрос статуса - перегрев и при этом нет сопутствующих мех. ошибок - нет
         // бумаги, мех. ошибка и ошибка отрезчика
-        if (!mPrinterCollapse && !mProcessingErrors.contains(CAtolFR::Errors::NoPaper) &&
-            !mStatusCollection.contains(PrinterStatusCode::Error::Temperature) &&
+        if (!m_PrinterCollapse && !m_ProcessingErrors.contains(CAtolFR::Errors::NoPaper) &&
+            !m_StatusCollection.contains(PrinterStatusCode::Error::Temperature) &&
             aStatusCodes.contains(PrinterStatusCode::Error::Temperature)) {
             toLog(LogLevel::Normal, "Trying to reinitializing printer #" + QString::number(count));
             reInitPrinter();
@@ -123,8 +123,8 @@ template <class T>
 bool AtolVKP80BasedFR<T>::processReceipt(const QStringList &aReceipt, bool aProcessing) {
     // TODO: проверить необходимость реализации печати картинки
     char ejectorMode =
-        mEjectorSettings.receipt |
-        (char(mPrintingMode == EPrintingModes::Continuous) * mEjectorSettings.nextMask);
+        m_EjectorSettings.receipt |
+        (char(m_PrintingMode == EPrintingModes::Continuous) * m_EjectorSettings.nextMask);
     setEjectorMode(ejectorMode);
 
     return AtolEjectorFR<T>::processReceipt(aReceipt, aProcessing);
@@ -136,8 +136,8 @@ bool AtolVKP80BasedFR<T>::performFiscal(const QStringList &aReceipt,
                                         const SPaymentData &aPaymentData,
                                         quint32 *aFDNumber) {
     char ejectorMode =
-        mEjectorSettings.receipt |
-        (char(mPrintingMode == EPrintingModes::Continuous) * mEjectorSettings.nextMask);
+        m_EjectorSettings.receipt |
+        (char(m_PrintingMode == EPrintingModes::Continuous) * m_EjectorSettings.nextMask);
     setEjectorMode(ejectorMode);
 
     return AtolEjectorFR<T>::performFiscal(aReceipt, aPaymentData, aFDNumber);
@@ -145,21 +145,21 @@ bool AtolVKP80BasedFR<T>::performFiscal(const QStringList &aReceipt,
 
 //--------------------------------------------------------------------------------
 template <class T> bool AtolVKP80BasedFR<T>::processPayout(double aAmount) {
-    setEjectorMode(mEjectorSettings.receipt);
+    setEjectorMode(m_EjectorSettings.receipt);
 
     return AtolEjectorFR<T>::processPayout(aAmount);
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool AtolVKP80BasedFR<T>::processXReport() {
-    setEjectorMode(mEjectorSettings.receipt);
+    setEjectorMode(m_EjectorSettings.receipt);
 
     return AtolEjectorFR<T>::processXReport();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool AtolVKP80BasedFR<T>::performZReport(bool aPrintDeferredReports) {
-    setEjectorMode(mEjectorSettings.ZReport);
+    setEjectorMode(m_EjectorSettings.ZReport);
 
     return AtolEjectorFR<T>::performZReport(aPrintDeferredReports);
 }
@@ -167,9 +167,9 @@ template <class T> bool AtolVKP80BasedFR<T>::performZReport(bool aPrintDeferredR
 //--------------------------------------------------------------------------------
 template <class T> bool AtolVKP80BasedFR<T>::openDocument(EPayOffTypes::Enum aPayOffType) {
     bool result = AtolEjectorFR<T>::openDocument(aPayOffType);
-    char ejectorMode = mEjectorSettings.receipt | CEjectorAtolFR::PushLastDocument;
+    char ejectorMode = m_EjectorSettings.receipt | CEjectorAtolFR::PushLastDocument;
 
-    if (mLocked && !setEjectorMode(ejectorMode)) {
+    if (m_Locked && !setEjectorMode(ejectorMode)) {
         toLog(LogLevel::Error,
               "AtolEjectorFR: Failed to set receipt processing parameters for printing fiscal "
               "document on locked FR");
@@ -180,7 +180,7 @@ template <class T> bool AtolVKP80BasedFR<T>::openDocument(EPayOffTypes::Enum aPa
 
 //--------------------------------------------------------------------------------
 template <class T> void AtolVKP80BasedFR<T>::cancelDocument(bool aDocumentIsOpened) {
-    setEjectorMode(mEjectorSettings.receipt);
+    setEjectorMode(m_EjectorSettings.receipt);
 
     AtolEjectorFR<T>::cancelDocument(aDocumentIsOpened);
 }

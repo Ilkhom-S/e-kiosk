@@ -16,20 +16,20 @@ using namespace SDK::Driver::IOPort::COM;
 //---------------------------------------------------------------------------
 ID003CashAcceptor::ID003CashAcceptor() {
     // параметры порта
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
 
-    mPortParameters[EParameters::Parity].append(EParity::Even);
+    m_PortParameters[EParameters::Parity].append(EParity::Even);
 
-    mPortParameters[EParameters::RTS].clear();
-    mPortParameters[EParameters::RTS].append(ERTSControl::Disable);
+    m_PortParameters[EParameters::RTS].clear();
+    m_PortParameters[EParameters::RTS].append(ERTSControl::Disable);
 
     // данные устройства
-    mDeviceName = "ID003 cash acceptor";
-    mEscrowPosition = 1;
+    m_DeviceName = "ID003 cash acceptor";
+    m_EscrowPosition = 1;
 
     // параметры протокола
-    mDeviceCodeSpecification = PDeviceCodeSpecification(new CID003::DeviceCodeSpecification);
+    m_DeviceCodeSpecification = PDeviceCodeSpecification(new CID003::DeviceCodeSpecification);
 }
 
 //--------------------------------------------------------------------------------
@@ -59,10 +59,10 @@ bool ID003CashAcceptor::checkStatus(QByteArray &aAnswer) {
     }
 
     CID003::DeviceCodeSpecification *specification =
-        mDeviceCodeSpecification.dynamicCast<CID003::DeviceCodeSpecification>().data();
+        m_DeviceCodeSpecification.dynamicCast<CID003::DeviceCodeSpecification>().data();
 
-    if (specification->isNeedACK(aAnswer) && !mProtocol.sendACK()) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to send ACK message");
+    if (specification->isNeedACK(aAnswer) && !m_Protocol.sendACK()) {
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to send ACK message");
     }
 
     return true;
@@ -72,14 +72,14 @@ bool ID003CashAcceptor::checkStatus(QByteArray &aAnswer) {
 TResult ID003CashAcceptor::execCommand(const QByteArray &aCommand,
                                        const QByteArray &aCommandData,
                                        QByteArray *aAnswer) {
-    MutexLocker locker(&mExternalMutex);
+    MutexLocker locker(&m_ExternalMutex);
 
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
 
     QByteArray answer;
     QByteArray request = aCommand + aCommandData;
-    TResult result = mProtocol.processCommand(request, answer);
+    TResult result = m_Protocol.processCommand(request, answer);
 
     if (!result) {
         return result;
@@ -91,13 +91,13 @@ TResult ID003CashAcceptor::execCommand(const QByteArray &aCommand,
 
     if (answerType == EAnswerType::ACK) {
         if (answer[0] != CID003::ACK) {
-            toLog(LogLevel::Error, mDeviceName + ": Answer doesn't contain ACK  message");
+            toLog(LogLevel::Error, m_DeviceName + ": Answer doesn't contain ACK  message");
             return CommandResult::Answer;
         }
     } else if (answerType == EAnswerType::Echo) {
         if (!answer.endsWith(request)) {
             toLog(LogLevel::Error,
-                  mDeviceName + ": Echo answer data doesn't match with command request");
+                  m_DeviceName + ": Echo answer data doesn't match with command request");
             return CommandResult::Answer;
         }
     } else if (answerType == EAnswerType::Answer) {
@@ -128,27 +128,27 @@ bool ID003CashAcceptor::isConnected() {
 
     if (!waitReady(CID003::AvailableWaiting)) {
         toLog(LogLevel::Error,
-              mDeviceName + ": Failed to wait any available status from the cash acceptor.");
+              m_DeviceName + ": Failed to wait any available status from the cash acceptor.");
         return false;
     }
 
     QByteArray answerData;
 
     if (!processCommand(CID003::Commands::VersionRequest, &answerData)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to reset the cash acceptor.");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to reset the cash acceptor.");
         return false;
     }
 
     if (answerData.isEmpty() && isAutoDetecting()) {
-        toLog(LogLevel::Error, mDeviceName + ": Unknown device trying to impersonate this device");
+        toLog(LogLevel::Error, m_DeviceName + ": Unknown device trying to impersonate this device");
         return false;
     }
 
     QString answer = QString(answerData).trimmed() + ASCII::Space;
-    mVerified = false;
+    m_Verified = false;
 
     if (answer.contains(CID003::ProtocolData::GPTAurora)) {
-        mDeviceName = CID003::Models::GPTAurora;
+        m_DeviceName = CID003::Models::GPTAurora;
 
         return true;
     }
@@ -216,8 +216,8 @@ bool ID003CashAcceptor::isConnected() {
                 }
             }
 
-            mDeviceName = modelData.name;
-            mVerified = modelData.verified;
+            m_DeviceName = modelData.name;
+            m_Verified = modelData.verified;
         }
     }
 
@@ -228,21 +228,21 @@ bool ID003CashAcceptor::isConnected() {
 bool ID003CashAcceptor::setDefaultParameters() {
     // устанавливаем режим связи с устройством
     if (!processCommand(CID003::Commands::SetCommMode, QByteArray(1, CID003::CommunicationMode))) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to set communication mode");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to set communication mode");
         return false;
     }
 
     // разрешаем принимать номиналы во всех направлениях
     if (!processCommand(CID003::Commands::SetDirections,
                         QByteArray(1, CID003::AllNoteDirections))) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to set nominals directions");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to set nominals directions");
         return false;
     }
     /*
     // разрешаем принимать все номиналы с высоким уровнем контроля подлинности
     if (!processCommand(CID003::Commands::SetSecurities, CID003::HighSecurityLevel))
     {
-            toLog(LogLevel::Error, mDeviceName + ": Failed to set high nominals security");
+            toLog(LogLevel::Error, m_DeviceName + ": Failed to set high nominals security");
             return false;
     }
     */
@@ -252,7 +252,7 @@ bool ID003CashAcceptor::setDefaultParameters() {
 
 //---------------------------------------------------------------------------
 bool ID003CashAcceptor::stack() {
-    if (!checkConnectionAbility() || (mInitialized != ERequestStatus::Success) || mCheckDisable) {
+    if (!checkConnectionAbility() || (m_Initialized != ERequestStatus::Success) || m_CheckDisable) {
         return false;
     }
 
@@ -261,7 +261,7 @@ bool ID003CashAcceptor::stack() {
 
 //---------------------------------------------------------------------------
 bool ID003CashAcceptor::reject() {
-    if (!checkConnectionAbility() || (mInitialized == ERequestStatus::Fail)) {
+    if (!checkConnectionAbility() || (m_Initialized == ERequestStatus::Fail)) {
         return false;
     }
 
@@ -275,10 +275,10 @@ bool ID003CashAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
 
 //---------------------------------------------------------------------------
 bool ID003CashAcceptor::applyParTable() {
-    int initEscrowPosition = mEscrowParTable.data().begin().key();
+    int initEscrowPosition = m_EscrowParTable.data().begin().key();
     QByteArray commandData(2, ASCII::NUL);
 
-    for (auto it = mEscrowParTable.data().begin(); it != mEscrowParTable.data().end(); ++it) {
+    for (auto it = m_EscrowParTable.data().begin(); it != m_EscrowParTable.data().end(); ++it) {
         if (!it->enabled || it->inhibit) {
             int id = (it.key() - initEscrowPosition);
             int index = id / 8;
@@ -287,7 +287,7 @@ bool ID003CashAcceptor::applyParTable() {
     }
 
     if (!processCommand(CID003::Commands::SetEnables, commandData)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to set nominals availability.");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to set nominals availability.");
         return false;
     }
 
@@ -299,7 +299,7 @@ bool ID003CashAcceptor::loadParTable() {
     QByteArray answer;
 
     if (!processCommand(CID003::Commands::GetBillTable, &answer)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to get par table");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to get par table");
         return false;
     }
 
@@ -310,9 +310,9 @@ bool ID003CashAcceptor::loadParTable() {
         int nominal = int(uchar(parData[2]) * qPow(10, uchar(parData[3])));
         int currencyCode = CID003::CurrencyCodes[parData[1]];
 
-        MutexLocker locker(&mResourceMutex);
+        MutexLocker locker(&m_ResourceMutex);
 
-        mEscrowParTable.data().insert(uchar(parData[0]), SPar(nominal, currencyCode));
+        m_EscrowParTable.data().insert(uchar(parData[0]), SPar(nominal, currencyCode));
     }
 
     return true;

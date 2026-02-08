@@ -22,16 +22,16 @@ CData::CData() {
     add("92514403", 15, EFFD::F11, "ООО \"Дримкас\"", "6-15-2");
     add("92524403", 36, EFFD::F11, "АО \"Концерн \"Автоматика\"", "Ав36-2");
 
-    mSerialNumberTemplates = mBuffer.keys();
+    m_SerialNumberTemplates = m_Buffer.keys();
     auto pred = [](const QString &aData1, const QString &aData2) -> bool {
         return aData1.size() > aData2.size();
     };
-    qSort(mSerialNumberTemplates.begin(), mSerialNumberTemplates.end(), pred);
+    qSort(m_SerialNumberTemplates.begin(), m_SerialNumberTemplates.end(), pred);
 }
 
 //--------------------------------------------------------------------------------
 bool CData::contains(const QString &aSerialNumber) const {
-    return getSerialNumberTemplate(aSerialNumber) != mSerialNumberTemplates.end();
+    return getSerialNumberTemplate(aSerialNumber) != m_SerialNumberTemplates.end();
 }
 
 //--------------------------------------------------------------------------------
@@ -48,16 +48,16 @@ void CData::add(const QString &aSerialNumber,
 SData CData::value(const QString &aSerialNumber) const {
     QStringList::const_iterator serialNumberTemplate = getSerialNumberTemplate(aSerialNumber);
 
-    return (serialNumberTemplate == mSerialNumberTemplates.end()) ? SData()
-                                                                  : mBuffer[*serialNumberTemplate];
+    return (serialNumberTemplate == m_SerialNumberTemplates.end()) ? SData()
+                                                                  : m_Buffer[*serialNumberTemplate];
 }
 
 //--------------------------------------------------------------------------------
 QStringList::const_iterator CData::getSerialNumberTemplate(const QString &aSerialNumber) const {
     QString serialNumber = aSerialNumber.simplified();
 
-    return std::find_if(mSerialNumberTemplates.begin(),
-                        mSerialNumberTemplates.end(),
+    return std::find_if(m_SerialNumberTemplates.begin(),
+                        m_SerialNumberTemplates.end(),
                         [&serialNumber](const QString &aSerialNumberTemplate) -> bool {
                             return serialNumber.startsWith(aSerialNumberTemplate);
                         });

@@ -44,13 +44,13 @@ protected:
     bool isWorkingThread();
 
     /// Поток, который будет считаться рабочим.
-    QThread *mWorkingThread;
+    QThread *m_WorkingThread;
 
     /// Мьютекс для операций при старте потока.
-    QMutex mStartMutex;
+    QMutex m_StartMutex;
 
     /// Wait-condition для операций при старте потока.
-    QWaitCondition mStartCondition;
+    QWaitCondition m_StartCondition;
 };
 
 //---------------------------------------------------------------------------

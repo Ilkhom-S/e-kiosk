@@ -13,18 +13,18 @@ using namespace SDK::Driver::IOPort::COM;
 //---------------------------------------------------------------------------
 SuzoHopper::SuzoHopper() {
     // Параметры порта.
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
     // данные устройства
-    mModels = getModelList();
-    mDeviceName = CCCTalk::Dispenser::Models::Default;
-    mAddress = CCCTalk::Address::Hopper2;
-    mProtocolTypes = getProtocolTypes();
-    mAllModelData = PAllModelData(new CCCTalk::Dispenser::CModelData());
-    mUnits = 1;
-    mSingleMode = false;
-    mResetIsPossible = false;
+    m_Models = getModelList();
+    m_DeviceName = CCCTalk::Dispenser::Models::Default;
+    m_Address = CCCTalk::Address::Hopper2;
+    m_ProtocolTypes = getProtocolTypes();
+    m_AllModelData = PAllModelData(new CCCTalk::Dispenser::CModelData());
+    m_Units = 1;
+    m_SingleMode = false;
+    m_ResetIsPossible = false;
 
     setConfigParameter(CHardware::ProtocolType, CHardware::CashDevice::CCTalkTypes::CRC8);
 }
@@ -79,7 +79,7 @@ bool SuzoHopper::setSingleMode(bool aEnable) {
         return false;
     }
 
-    mSingleMode = aEnable;
+    m_SingleMode = aEnable;
 
     return true;
 }
@@ -105,19 +105,19 @@ bool SuzoHopper::getStatus(TStatusCodes &aStatusCodes) {
     foreach (const SDeviceCodeSpecification &specification, testDeviceCodeSpecification) {
         aStatusCodes.insert(specification.statusCode);
 
-        if ((answer != mLastDeviceStatusCodes) && !specification.description.isEmpty()) {
+        if ((answer != m_LastDeviceStatusCodes) && !specification.description.isEmpty()) {
             SStatusCodeSpecification statusCodeData =
-                mStatusCodesSpecification->value(specification.statusCode);
+                m_StatusCodesSpecification->value(specification.statusCode);
             LogLevel::Enum logLevel = getLogLevel(statusCodeData.warningLevel);
 
             toLog(logLevel,
-                  mDeviceName + QString(": %1 -> %2")
+                  m_DeviceName + QString(": %1 -> %2")
                                     .arg(specification.description)
                                     .arg(statusCodeData.description));
         }
     }
 
-    mLastDeviceStatusCodes = answer;
+    m_LastDeviceStatusCodes = answer;
 
     return true;
 }
@@ -195,7 +195,7 @@ void SuzoHopper::performDispense(int aUnit, int aItems) {
 
     if (status.unpaid) {
         toLog(LogLevel::Error,
-              mDeviceName + QString(": Cannot pay out %1 coins").arg(status.unpaid));
+              m_DeviceName + QString(": Cannot pay out %1 coins").arg(status.unpaid));
 
         onPoll();
     }

@@ -33,8 +33,8 @@ public:
 
 protected:
     virtual QString value(const uint16_t &aKey) const {
-        if (mBuffer.contains(aKey)) {
-            return mBuffer.value(aKey);
+        if (m_Buffer.contains(aKey)) {
+            return m_Buffer.value(aKey);
         } else {
             return QString("%1 (unknown)").arg(aKey); // Fallback for unknown keys
         }

@@ -23,11 +23,11 @@
 
 //--------------------------------------------------------------------------------
 OPOSMetrologicScanner::OPOSMetrologicScanner() {
-    mDeviceName = "Honeywell Metrologic based on OPOS driver";
-    mClaimTimeout = 2000;
-    mProfileNames = getProfileNames();
-    mPollingInterval = 500;
-    mExEnabled = false;
+    m_DeviceName = "Honeywell Metrologic based on OPOS driver";
+    m_ClaimTimeout = 2000;
+    m_ProfileNames = getProfileNames();
+    m_PollingInterval = 500;
+    m_ExEnabled = false;
 }
 
 //--------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ bool OPOSMetrologicScanner::isConnected() {
     deviceName = deviceName.replace("/", " ").replace(QRegExp(" +"), " ");
 
     if (!deviceName.isEmpty()) {
-        mDeviceName = deviceName;
+        m_DeviceName = deviceName;
     }
 
     return true;
@@ -55,7 +55,7 @@ bool OPOSMetrologicScanner::checkConnectionAbility() {
     typedef OposScanner_1_8_Lib::IOPOSScanner TNativeDriver;
     TNativeDriver *nativeDriver;
 
-    if (FAILED(mDriver->queryInterface(QUuid(__uuidof(TNativeDriver)), (void **)&nativeDriver))) {
+    if (FAILED(m_Driver->queryInterface(QUuid(__uuidof(TNativeDriver)), (void **)&nativeDriver))) {
         toLog(LogLevel::Error, "Failed to query interface of the scanner.");
         return false;
     }
@@ -72,8 +72,8 @@ bool OPOSMetrologicScanner::updateParameters() {
 void OPOSMetrologicScanner::initializeResources() {
     TPollingOPOSScanner::initializeResources();
 
-    if (mCOMInitialized && !mDriver.isNull()) {
-        connect(mDriver.data(),
+    if (m_COMInitialized && !m_Driver.isNull()) {
+        connect(m_Driver.data(),
                 SIGNAL(signal(const QString &, int, void *)),
                 SLOT(onGotData(const QString &, int, void *)),
                 Qt::UniqueConnection);
@@ -85,8 +85,8 @@ bool OPOSMetrologicScanner::processStatus(TStatusCodes &aStatusCodes) {
     bool result = TPollingOPOSScanner::processStatus(aStatusCodes);
     bool error = !getStatusCollection(aStatusCodes)[SDK::Driver::EWarningLevel::Error].isEmpty();
 
-    if (result && (mInitialized == ERequestStatus::Success) && !error) {
-        enable(mExEnabled);
+    if (result && (m_Initialized == ERequestStatus::Success) && !error) {
+        enable(m_ExEnabled);
     }
 
     return result;
@@ -95,19 +95,19 @@ bool OPOSMetrologicScanner::processStatus(TStatusCodes &aStatusCodes) {
 //--------------------------------------------------------------------------------
 bool OPOSMetrologicScanner::enable(bool aReady) {
     if (!isWorkingThread()) {
-        mExEnabled = aReady;
+        m_ExEnabled = aReady;
     }
 
-    if (!mStatusCollectionHistory.isEmpty() &&
-        (!checkConnectionAbility() && (mInitialized == ERequestStatus::Fail))) {
+    if (!m_StatusCollectionHistory.isEmpty() &&
+        (!checkConnectionAbility() && (m_Initialized == ERequestStatus::Fail))) {
         toLog(LogLevel::Error,
               QString("%1: Cannot set possibility of data receiving to %2")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(aReady ? "true" : "false"));
         return !aReady;
     }
 
-    if (!isWorkingThread() || (mInitialized == ERequestStatus::InProcess)) {
+    if (!isWorkingThread() || (m_Initialized == ERequestStatus::InProcess)) {
         QMetaObject::invokeMethod(
             this, "enable", Qt::BlockingQueuedConnection, Q_ARG(bool, aReady));
     } else {
@@ -117,7 +117,7 @@ bool OPOSMetrologicScanner::enable(bool aReady) {
         if (!claimed || !enabled) {
             toLog(aReady ? LogLevel::Error : LogLevel::Normal,
                   QString("%1: device is not %2, setEnable returns %3")
-                      .arg(mDeviceName)
+                      .arg(m_DeviceName)
                       .arg(enabled ? "claimed" : "enabled")
                       .arg(aReady ? "false" : "true"));
             return !aReady;
@@ -126,7 +126,7 @@ bool OPOSMetrologicScanner::enable(bool aReady) {
         if (BOOL_CALL_OPOS(DataEventEnabled) != aReady) {
             toLog(LogLevel::Normal,
                   QString("%1: set possibility of data receiving to %2")
-                      .arg(mDeviceName)
+                      .arg(m_DeviceName)
                       .arg(aReady ? "true" : "false"));
             VOID_CALL_OPOS(SetDataEventEnabled, aReady);
         }
@@ -134,7 +134,7 @@ bool OPOSMetrologicScanner::enable(bool aReady) {
         if (BOOL_CALL_OPOS(DecodeData) != aReady) {
             toLog(LogLevel::Normal,
                   QString("%1: set data decoding to %2")
-                      .arg(mDeviceName)
+                      .arg(m_DeviceName)
                       .arg(aReady ? "true" : "false"));
             VOID_CALL_OPOS(SetDecodeData, aReady);
         }
@@ -146,25 +146,25 @@ bool OPOSMetrologicScanner::enable(bool aReady) {
 //--------------------------------------------------------------------------------
 bool OPOSMetrologicScanner::setAvailable(bool aEnable) {
     QString log = aEnable ? "enabled" : "disabled";
-    toLog(LogLevel::Normal, QString("%1: set scanner %2").arg(mDeviceName).arg(log));
+    toLog(LogLevel::Normal, QString("%1: set scanner %2").arg(m_DeviceName).arg(log));
 
     if (!BOOL_CALL_OPOS(Claimed)) {
         toLog(aEnable ? LogLevel::Error : LogLevel::Normal,
               QString("%1: device is not claimed, setAvailable returns %2")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(aEnable ? "false" : "true"));
         return !aEnable;
     }
 
     if (aEnable == BOOL_CALL_OPOS(DeviceEnabled)) {
-        toLog(LogLevel::Normal, QString("%1: already %2").arg(mDeviceName).arg(log));
+        toLog(LogLevel::Normal, QString("%1: already %2").arg(m_DeviceName).arg(log));
         return true;
     }
 
     VOID_CALL_OPOS(SetDeviceEnabled, aEnable);
 
     if (aEnable != BOOL_CALL_OPOS(DeviceEnabled)) {
-        toLog(LogLevel::Error, QString("%1: Failed to set device %2").arg(mDeviceName).arg(log));
+        toLog(LogLevel::Error, QString("%1: Failed to set device %2").arg(m_DeviceName).arg(log));
         return false;
     }
 
@@ -175,7 +175,7 @@ bool OPOSMetrologicScanner::setAvailable(bool aEnable) {
 void OPOSMetrologicScanner::onGotData(const QString & /*aName*/,
                                       int /*aArgumentsCount*/,
                                       void * /*aArgumentsValues*/) {
-    QMutexLocker lock(&mDataMutex);
+    QMutexLocker lock(&m_DataMutex);
 
     QString capturedData = (((OPOS::OPOSScanner *)sender())->ScanData()).trimmed();
 

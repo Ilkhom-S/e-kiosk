@@ -12,41 +12,41 @@ using namespace SDK::Driver;
 //--------------------------------------------------------------------------------
 SparkFR::SparkFR() {
     // теги
-    mTagEngine = Tags::PEngine(new CSparkFR::TagEngine());
+    m_TagEngine = Tags::PEngine(new CSparkFR::TagEngine());
 
     // кодек
-    mCodec = CodecByName[CHardware::Codepages::SPARK];
+    m_Codec = CodecByName[CHardware::Codepages::SPARK];
 
     // данные устройства
-    mDeviceName = CSparkFR::Models::Default;
-    mDocumentState = CSparkFR::DocumentStates::Closed;
-    mLineFeed = false;
-    mSupportedModels = getModelList();
-    mSessionOpeningDT = CSparkFR::ClosedSession;
-    mZReports = 0;
-    mCheckStatus = true;
-    mCanProcessZBuffer = true;
+    m_DeviceName = CSparkFR::Models::Default;
+    m_DocumentState = CSparkFR::DocumentStates::Closed;
+    m_LineFeed = false;
+    m_SupportedModels = getModelList();
+    m_SessionOpeningDT = CSparkFR::ClosedSession;
+    m_ZReports = 0;
+    m_CheckStatus = true;
+    m_CanProcessZBuffer = true;
     // setConfigParameter(CHardware::CanOnline, true);    //TODO: раскомментить после поддержки
     // онлайновой реализации
 
     setConfigParameter(CHardware::Printer::RetractorEnable, true);
 
     // ошибки
-    mErrorData = PErrorData(new CSparkFR::Errors::Data);
+    m_ErrorData = PErrorData(new CSparkFR::Errors::Data);
 
     using namespace SDK::Driver::IOPort::COM;
 
     // данные порта
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600); // default
-    mPortParameters[EParameters::BaudRate].append(
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR115200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600); // default
+    m_PortParameters[EParameters::BaudRate].append(
         EBaudRate::BR4800); // default after resetting to zero
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR57600);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
 
-    mPortParameters[EParameters::Parity].append(EParity::No);
-    mPortParameters[EParameters::Parity].append(EParity::Even);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::Parity].append(EParity::Even);
 }
 
 //--------------------------------------------------------------------------------
@@ -94,14 +94,14 @@ char SparkFR::fromBCD(char aData) {
 //--------------------------------------------------------------------------------
 bool SparkFR::checkSystemFlag(const QByteArray &aFlagBuffer, int aNumber) {
     auto dataIt = std::find_if(
-        mSystemFlags.begin(),
-        mSystemFlags.end(),
+        m_SystemFlags.begin(),
+        m_SystemFlags.end(),
         [&](const CSparkFR::SystemFlags::SData &aData) -> bool { return aData.number == aNumber; });
 
-    if (dataIt == mSystemFlags.end()) {
+    if (dataIt == m_SystemFlags.end()) {
         toLog(LogLevel::Error,
               QString("%1: Failed to find system flag %2 in device one")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(aNumber));
         return false;
     }
@@ -112,7 +112,7 @@ bool SparkFR::checkSystemFlag(const QByteArray &aFlagBuffer, int aNumber) {
     if (dataSize < size) {
         toLog(LogLevel::Error,
               QString("%1: Failed to check system flag %2 (%3) due to size = %4, need %5")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(aNumber)
                   .arg(dataIt->name)
                   .arg(dataSize)
@@ -127,7 +127,7 @@ bool SparkFR::checkSystemFlag(const QByteArray &aFlagBuffer, int aNumber) {
     if (!OK) {
         toLog(LogLevel::Error,
               QString("%1: Failed to check system flag %2 (%3) due to wrong flag data = %4 = 0x%5")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(aNumber)
                   .arg(dataIt->name)
                   .arg(flagData.data())
@@ -146,7 +146,7 @@ bool SparkFR::checkSystemFlag(const QByteArray &aFlagBuffer, int aNumber) {
         if (!processCommand(CSparkFR::Commands::SetFlag, commandData, &answer)) {
             toLog(LogLevel::Error,
                   QString("%1: Failed to set system flag %2 (%3)")
-                      .arg(mDeviceName)
+                      .arg(m_DeviceName)
                       .arg(aNumber)
                       .arg(dataIt->name));
             return false;
@@ -169,7 +169,7 @@ bool SparkFR::getSystemFlags(QByteArray &aData, TTaxData *aTaxData) {
     if (data.size() < 5) {
         toLog(LogLevel::Error,
               QString("%1: Failed to check system flags due to size of data list = %2, need %3")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(data.size())
                   .arg(5));
         return false;
@@ -226,27 +226,27 @@ bool SparkFR::updateParameters() {
 
 //--------------------------------------------------------------------------------
 bool SparkFR::checkSystemFlags(QByteArray &aFlagData) {
-    auto dataIt = std::find_if(mSystemFlags.begin(),
-                               mSystemFlags.end(),
+    auto dataIt = std::find_if(m_SystemFlags.begin(),
+                               m_SystemFlags.end(),
                                [&](const CSparkFR::SystemFlags::SData &aData) -> bool {
                                    return aData.number == CSparkFR::SystemFlags::ZReportsAndFiscal;
                                });
 
-    if (dataIt == mSystemFlags.end()) {
+    if (dataIt == m_SystemFlags.end()) {
         toLog(LogLevel::Error,
               QString("%1: Failed to find system flag %2 in device one")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(CSparkFR::SystemFlags::ZReportsAndFiscal));
         return false;
     }
 
     for (int i = 0; i < 8; ++i) {
         if (CSparkFR::LongReportMask & (1 << i)) {
-            dataIt->mask[7 - i] = mOperatorPresence ? '1' : '0';
+            dataIt->mask[7 - i] = m_OperatorPresence ? '1' : '0';
         }
     }
 
-    foreach (auto data, mSystemFlags) {
+    foreach (auto data, m_SystemFlags) {
         if (!checkSystemFlag(aFlagData, data.number)) {
             return false;
         }
@@ -265,8 +265,8 @@ bool SparkFR::checkTaxFlags(const TTaxData &aTaxData) {
         taxes.append(OK ? VAT : -1);
     }
 
-    mTaxes = getActualVATs().toList();
-    qSort(mTaxes);
+    m_Taxes = getActualVATs().toList();
+    qSort(m_Taxes);
 
     TVATs absentVATs = getActualVATs() - taxes.toSet();
 
@@ -274,14 +274,14 @@ bool SparkFR::checkTaxFlags(const TTaxData &aTaxData) {
         QByteArray commandData;
 
         for (int i = 0; i < CSparkFR::TaxRateCount; ++i) {
-            commandData += (i < mTaxes.size())
-                               ? QString("%1").arg(mTaxes[i], 2, 10, QChar(ASCII::Zero)).toLatin1()
+            commandData += (i < m_Taxes.size())
+                               ? QString("%1").arg(m_Taxes[i], 2, 10, QChar(ASCII::Zero)).toLatin1()
                                : CSparkFR::NoTaxes;
         }
 
         if (!processCommand(CSparkFR::Commands::SetTaxes, commandData) ||
             !processCommand(CSparkFR::Commands::AcceptTaxes)) {
-            toLog(LogLevel::Error, mDeviceName + ": Failed to set taxes");
+            toLog(LogLevel::Error, m_DeviceName + ": Failed to set taxes");
             return false;
         }
     }
@@ -308,7 +308,7 @@ bool SparkFR::isConnected() {
         return false;
     }
 
-    QString answerData = mCodec->toUnicode(answer);
+    QString answerData = m_Codec->toUnicode(answer);
     QRegularExpression regExp(CSparkFR::Models::RegExpData);
     CSparkFR::Models::SData data;
 
@@ -317,10 +317,10 @@ bool SparkFR::isConnected() {
         data = CSparkFR::Models::Data[capturedData[1].toInt()];
     }
 
-    mDeviceName = data.name;
-    mVerified = data.verified;
-    mLineSize = data.lineSize;
-    mSystemFlags = data.systemFlags;
+    m_DeviceName = data.name;
+    m_Verified = data.verified;
+    m_LineSize = data.lineSize;
+    m_SystemFlags = data.systemFlags;
 
     return true;
 }
@@ -340,16 +340,16 @@ QStringList SparkFR::getModelList() {
 TResult SparkFR::execCommand(const QByteArray &aCommand,
                              const QByteArray &aCommandData,
                              QByteArray *aAnswer) {
-    MutexLocker locker(&mExternalMutex);
+    MutexLocker locker(&m_ExternalMutex);
 
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
 
     QByteArray answerData;
     QByteArray &answer = aAnswer ? *aAnswer : answerData;
 
     if (aCommand == CSparkFR::Commands::ENQT) {
-        return mProtocol.processCommand(aCommand, answer, CSparkFR::Timeouts::Control);
+        return m_Protocol.processCommand(aCommand, answer, CSparkFR::Timeouts::Control);
     }
 
     CSparkFR::Commands::SData data = CSparkFR::Commands::Data[aCommand];
@@ -361,7 +361,7 @@ TResult SparkFR::execCommand(const QByteArray &aCommand,
 
         if (!result) {
             toLog(LogLevel::Error,
-                  mDeviceName + ": Failed to enter control password, unable to perform current "
+                  m_DeviceName + ": Failed to enter control password, unable to perform current "
                                 "action therefore");
             return result;
         }
@@ -370,31 +370,31 @@ TResult SparkFR::execCommand(const QByteArray &aCommand,
     int timeout = CSparkFR::Timeouts::Default;
 
     if (aCommand == CSparkFR::Commands::PrintZBuffer) {
-        timeout = qMax(1, mZReports) * CSparkFR::Timeouts::Report;
+        timeout = qMax(1, m_ZReports) * CSparkFR::Timeouts::Report;
     } else if (aCommand == CSparkFR::Commands::Reports) {
         timeout = aCommandData.endsWith(CSparkFR::ZReport) ? CSparkFR::Timeouts::ZReport
                                                            : CSparkFR::Timeouts::Report;
     }
 
-    TResult result = mProtocol.processCommand(aCommand + aCommandData, answer, timeout);
+    TResult result = m_Protocol.processCommand(aCommand + aCommandData, answer, timeout);
 
     if (answer == QByteArray(1, ASCII::ENQ)) {
-        if (mCheckStatus) {
+        if (m_CheckStatus) {
             simplePoll();
         }
 
         toLog(LogLevel::Error,
-              mDeviceName + ": Error: " + mErrorData->value(mLastError).description);
+              m_DeviceName + ": Error: " + m_ErrorData->value(m_LastError).description);
 
-        if (!mProcessingErrors.isEmpty() && (mProcessingErrors.last() == mLastError)) {
+        if (!m_ProcessingErrors.isEmpty() && (m_ProcessingErrors.last() == m_LastError)) {
             return CommandResult::Device;
         }
 
-        char error = mLastError;
+        char error = m_LastError;
 
         if (isErrorUnprocessed(aCommand, error) || !processAnswer(error)) {
-            mLastError = error;
-            mLastCommand = aCommand;
+            m_LastError = error;
+            m_LastCommand = aCommand;
 
             return CommandResult::Device;
         }
@@ -402,12 +402,12 @@ TResult SparkFR::execCommand(const QByteArray &aCommand,
         result = processCommand(aCommand, aCommandData, aAnswer);
 
         if (result) {
-            mProcessingErrors.pop_back();
+            m_ProcessingErrors.pop_back();
         }
 
         return result;
     } else if (result == CommandResult::NoAnswer) {
-        if (mCheckStatus) {
+        if (m_CheckStatus) {
             TResult ENQTResult = processCommand(CSparkFR::Commands::ENQT);
 
             if (!ENQTResult) {
@@ -422,11 +422,11 @@ TResult SparkFR::execCommand(const QByteArray &aCommand,
         return result;
     } else if (!data.sending) {
         if (answer == QByteArray(1, ASCII::ACK)) {
-            toLog(LogLevel::Error, mDeviceName + ": ACK received for receiving command");
+            toLog(LogLevel::Error, m_DeviceName + ": ACK received for receiving command");
             return CommandResult::Answer;
         } else if (!data.answer.isEmpty()) {
             if (!answer.startsWith(data.answer)) {
-                toLog(LogLevel::Error, mDeviceName + ": Wrong command code in answer");
+                toLog(LogLevel::Error, m_DeviceName + ": Wrong command code in answer");
                 return CommandResult::Answer;
             }
 
@@ -442,15 +442,15 @@ bool SparkFR::processAnswer(char aError) {
     switch (aError) {
     case CSparkFR::Errors::NeedZReport:
     case CSparkFR::Errors::TimeOff: {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
-        if (!mStatusCollection.contains(FRStatusCode::Error::ZBufferOverflow)) {
-            if (mOperatorPresence) {
+        if (!m_StatusCollection.contains(FRStatusCode::Error::ZBufferOverflow)) {
+            if (m_OperatorPresence) {
                 toLog(LogLevel::Error,
-                      mDeviceName +
+                      m_DeviceName +
                           ": Failed to process auto-Z-report due to presence of the operator.");
-                mNeedCloseSession =
-                    mNeedCloseSession || (getSessionState() == ESessionState::Expired);
+                m_NeedCloseSession =
+                    m_NeedCloseSession || (getSessionState() == ESessionState::Expired);
 
                 return false;
             }
@@ -461,13 +461,13 @@ bool SparkFR::processAnswer(char aError) {
     //--------------------------------------------------------------------------------
     case CSparkFR::Errors::NeedPayIOOnly:
     case CSparkFR::Errors::NeedSaleOnly: {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
         return cancelDocument(true);
     }
     //--------------------------------------------------------------------------------
     case CSparkFR::Errors::KKMClosed: {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
         QByteArray commandData =
             QByteArray::number(CSparkFR::CashierNumber).rightJustified(2, ASCII::Zero, true) +
@@ -477,13 +477,13 @@ bool SparkFR::processAnswer(char aError) {
     }
     //--------------------------------------------------------------------------------
     case CSparkFR::Errors::KKMOpened: {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
         return processCommand(CSparkFR::Commands::CloseKKM);
     }
     //--------------------------------------------------------------------------------
     case CSparkFR::Errors::CashierNotSet: {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
         QByteArray commandData =
             QByteArray::number(CSparkFR::CashierPassword).rightJustified(5, ASCII::Zero, true);
@@ -492,7 +492,7 @@ bool SparkFR::processAnswer(char aError) {
     }
     //--------------------------------------------------------------------------------
     case CSparkFR::Errors::WrongTextModeCommand: {
-        mProcessingErrors.push_back(aError);
+        m_ProcessingErrors.push_back(aError);
 
         return cut();
     }
@@ -504,9 +504,9 @@ bool SparkFR::processAnswer(char aError) {
 //--------------------------------------------------------------------------------
 bool SparkFR::printLine(const QByteArray &aString) {
     char tagModifier = ASCII::NUL;
-    if (mLineTags.contains(Tags::Type::UnderLine))
+    if (m_LineTags.contains(Tags::Type::UnderLine))
         tagModifier += CSparkFR::Tag::UnderLine;
-    if (mLineTags.contains(Tags::Type::DoubleHeight))
+    if (m_LineTags.contains(Tags::Type::DoubleHeight))
         tagModifier += CSparkFR::Tag::DoubleHeight;
 
     QByteArray commandData = char(tagModifier + ASCII::Zero) + aString;
@@ -516,14 +516,14 @@ bool SparkFR::printLine(const QByteArray &aString) {
 
 //--------------------------------------------------------------------------------
 void SparkFR::execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine) {
-    QByteArray data = mCodec->fromUnicode(aTagLexeme.data);
+    QByteArray data = m_Codec->fromUnicode(aTagLexeme.data);
 
     if (aTagLexeme.tags.contains(Tags::Type::DoubleWidth)) {
         Tags::TTypes types;
         types.insert(Tags::Type::DoubleWidth);
 
         for (int i = 0; i < data.size(); i = i + 2) {
-            data.insert(i, mTagEngine->getTag(types, Tags::Direction::Open));
+            data.insert(i, m_TagEngine->getTag(types, Tags::Direction::Open));
         }
     }
 
@@ -539,14 +539,14 @@ bool SparkFR::getStatus(TStatusCodes &aStatusCodes) {
     } else if (data != CFR::Result::Error) {
         QDate date = QDate(fromBCD(data[19]), fromBCD(data[18]), fromBCD(data[17])).addYears(2000);
         QTime time = QTime(fromBCD(data[20]), fromBCD(data[21]));
-        mSessionOpeningDT = QDateTime(date, time);
+        m_SessionOpeningDT = QDateTime(date, time);
     }
 
     if (data.size() > 7) {
-        mDocumentState = data[7];
+        m_DocumentState = data[7];
     } else if (data.size() > 6) {
-        mLastError = fromBCD<char>(data.mid(5, 2));
-    } // TODO: mLastCommand
+        m_LastError = fromBCD<char>(data.mid(5, 2));
+    } // TODO: m_LastCommand
     else if (data.size() > 2)
         CSparkFR::Status3.getSpecification(data[2], aStatusCodes);
     else if (data.size() > 1)
@@ -554,9 +554,9 @@ bool SparkFR::getStatus(TStatusCodes &aStatusCodes) {
     else if (data.size() > 0)
         CSparkFR::Status1.getSpecification(data[0], aStatusCodes);
 
-    mCheckStatus = false;
+    m_CheckStatus = false;
 
-    if (mStatusCollection.contains(FRStatusCode::Error::ZBuffer)) {
+    if (m_StatusCollection.contains(FRStatusCode::Error::ZBuffer)) {
         getZBufferState();
     }
 
@@ -569,7 +569,7 @@ bool SparkFR::getStatus(TStatusCodes &aStatusCodes) {
         aStatusCodes.insert(PrinterStatusCode::OK::PaperInPresenter);
     }
 
-    mCheckStatus = true;
+    m_CheckStatus = true;
 
     return true;
 }
@@ -584,15 +584,15 @@ void SparkFR::getZBufferState() {
         (ZBufferSpaceData.size() < 9) ||
         !processCommand(CSparkFR::Commands::ZBufferCount, &ZBufferCountData) ||
         (ZBufferCountData.size() < 2)) {
-        mZBufferError = true;
+        m_ZBufferError = true;
     } else {
-        mZBufferOverflow = mZBufferOverflow || bool(fromBCD(ZBufferSpaceData[8]));
-        mZReports = fromBCD<uchar>(ZBufferCountData.left(2));
+        m_ZBufferOverflow = m_ZBufferOverflow || bool(fromBCD(ZBufferSpaceData[8]));
+        m_ZReports = fromBCD<uchar>(ZBufferCountData.left(2));
         /*
         TODO: для мониторинга
         int usedSpace  = fromBCD<ushort>(ZBufferSpaceData.left(4));
         int totalSpace = fromBCD<ushort>(ZBufferSpaceData.mid(4, 4));
-        int totalCount = totalSpace * mZReports / usedSpace;
+        int totalCount = totalSpace * m_ZReports / usedSpace;
         */
     }
 }
@@ -607,14 +607,14 @@ bool SparkFR::payIO(double aAmount, bool aIn) {
                         commandData)) {
         toLog(LogLevel::Error,
               QString("%1: Failed to %2 %3")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(commandLog)
                   .arg(aAmount, 0, 'f', 2));
         return false;
     }
 
     if (!processCommand(CSparkFR::Commands::ClosePayIO)) {
-        toLog(LogLevel::Error, QString("%1: Failed to close %2").arg(mDeviceName).arg(commandLog));
+        toLog(LogLevel::Error, QString("%1: Failed to close %2").arg(m_DeviceName).arg(commandLog));
         return false;
     }
 
@@ -627,7 +627,7 @@ bool SparkFR::setFiscalParameters(const QStringList &aReceipt) {
     commandData += QString("%1").arg(0, 2, 10, QChar(ASCII::Zero)).right(2);
 
     if (!processCommand(CSparkFR::Commands::SetTextProperty, commandData)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to clear fiscal parameters");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to clear fiscal parameters");
         return false;
     }
 
@@ -638,12 +638,12 @@ bool SparkFR::setFiscalParameters(const QStringList &aReceipt) {
                                .arg(CSparkFR::TextProperties::Numbers[i], 2, 10, QChar(ASCII::Zero))
                                .right(2)
                                .toLatin1() +
-                           mCodec->fromUnicode(aReceipt[i]);
+                           m_Codec->fromUnicode(aReceipt[i]);
 
             if (!processCommand(CSparkFR::Commands::SetTextProperty, commandData)) {
                 toLog(LogLevel::Error,
                       QString("%1: Failed to set fiscal parameter %2 =\n%3")
-                          .arg(mDeviceName)
+                          .arg(m_DeviceName)
                           .arg(CSparkFR::TextProperties::Numbers[i])
                           .arg(aReceipt[i]));
                 return false;
@@ -700,14 +700,14 @@ bool SparkFR::performFiscal(const QStringList &aReceipt,
 }
 
 #define CHECK_SPARK_TAX(aNumber)                                                                   \
-    if ((mTaxes.size() >= aNumber) && (aUnitData.VAT == mTaxes[aNumber - 1]))                      \
+    if ((m_Taxes.size() >= aNumber) && (aUnitData.VAT == m_Taxes[aNumber - 1]))                      \
         command = CSparkFR::Commands::Sale##aNumber;
 
 //--------------------------------------------------------------------------------
 bool SparkFR::sale(const SUnitData &aUnitData) {
     QByteArray command = CSparkFR::Commands::Sale0;
 
-    int index = mTaxes.indexOf(aUnitData.VAT);
+    int index = m_Taxes.indexOf(aUnitData.VAT);
 
     if (index == 0)
         command = CSparkFR::Commands::Sale1;
@@ -722,12 +722,12 @@ bool SparkFR::sale(const SUnitData &aUnitData) {
         QByteArray::number(qRound64(aUnitData.sum * 100.0)).rightJustified(8, ASCII::Zero) +
         QByteArray::number(1 * 1000).rightJustified(8, ASCII::Zero) +
         QByteArray::number(1).rightJustified(2, ASCII::Zero) +
-        mCodec->fromUnicode(aUnitData.name.leftJustified(CSparkFR::LineSize, ASCII::Space, true));
+        m_Codec->fromUnicode(aUnitData.name.leftJustified(CSparkFR::LineSize, ASCII::Space, true));
 
     if (!processCommand(command, commandData)) {
         toLog(LogLevel::Error,
               QString("%1: Failed to sale for %2 (%3, VAT = %4)")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(aUnitData.sum, 0, 'f', 2)
                   .arg(aUnitData.name)
                   .arg(aUnitData.VAT));
@@ -775,16 +775,16 @@ bool SparkFR::cut() {
 
 //--------------------------------------------------------------------------------
 bool SparkFR::retract() {
-    auto dataIt = std::find_if(mSystemFlags.begin(),
-                               mSystemFlags.end(),
+    auto dataIt = std::find_if(m_SystemFlags.begin(),
+                               m_SystemFlags.end(),
                                [&](const CSparkFR::SystemFlags::SData &aData) -> bool {
                                    return aData.number == CSparkFR::SystemFlags::SystemOptions2;
                                });
 
-    if (dataIt == mSystemFlags.end()) {
+    if (dataIt == m_SystemFlags.end()) {
         toLog(LogLevel::Error,
               QString("%1: Failed to find system flag %2 in device one")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(CSparkFR::SystemFlags::SystemOptions2));
         return false;
     }
@@ -817,8 +817,8 @@ bool SparkFR::retract() {
 bool SparkFR::performZReport(bool aPrintDeferredReports) {
     bool printZBufferOK = !aPrintDeferredReports;
 
-    if (aPrintDeferredReports && mZReports) {
-        toLog(LogLevel::Normal, mDeviceName + ": Printing deferred Z-reports");
+    if (aPrintDeferredReports && m_ZReports) {
+        toLog(LogLevel::Normal, m_DeviceName + ": Printing deferred Z-reports");
 
         printZBufferOK = processCommand(CSparkFR::Commands::PrintZBuffer, CSparkFR::PushZReport);
         getZBufferState();
@@ -837,7 +837,7 @@ bool SparkFR::cancelDocument(bool aDocumentIsOpened) {
     }
 
     if (!processCommand(CSparkFR::Commands::CancelFiscal)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to cancel fiscal document");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to cancel fiscal document");
         return false;
     }
 
@@ -857,7 +857,7 @@ void SparkFR::processDeviceData() {
     QByteArray answer;
 
     if (processCommand(CSparkFR::Commands::GetFWVersion, &answer)) {
-        QString answerData = mCodec->toUnicode(answer);
+        QString answerData = m_Codec->toUnicode(answer);
         QRegularExpression regExp(CSparkFR::Models::RegExpData);
 
         if (regExp.match(answerData).capturedStart() != -1) {
@@ -876,8 +876,8 @@ void SparkFR::processDeviceData() {
         setDeviceParameter(CDeviceData::FR::NonFiscalDocuments, data[4].toInt());
         setDeviceParameter(CDeviceData::FR::OwnerId, data[6].toInt());
 
-        mRNM = CFR::RNMToString(data[7]);
-        mSerial = CFR::serialToString(data[8]);
+        m_RNM = CFR::RNMToString(data[7]);
+        m_Serial = CFR::serialToString(data[8]);
     }
 
     if (processCommand(CSparkFR::Commands::EKLZInfo, &answer) && (answer.size() >= 42)) {
@@ -889,10 +889,10 @@ void SparkFR::processDeviceData() {
 
     if (processCommand(CSparkFR::Commands::GetEKLZError, &answer) && !answer.isEmpty()) {
         char reregistrationData = answer[0];
-        mFiscalized = reregistrationData != CSparkFR::NoReregistrationNumber;
-        setDeviceParameter(CDeviceData::FR::Activated, mFiscalized, CDeviceData::FR::EKLZ);
+        m_Fiscalized = reregistrationData != CSparkFR::NoReregistrationNumber;
+        setDeviceParameter(CDeviceData::FR::Activated, m_Fiscalized, CDeviceData::FR::EKLZ);
 
-        if (mFiscalized) {
+        if (m_Fiscalized) {
             int reregistrationNumber = fromBCD(reregistrationData);
 
             if (reregistrationNumber != -1) {
@@ -931,7 +931,7 @@ bool SparkFR::getKKMData(TKKMInfoData &aData) {
     QByteArray answer;
 
     if (!processCommand(CSparkFR::Commands::KKMInfo, &answer)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to get KKM info");
+        toLog(LogLevel::Error, m_DeviceName + ": Failed to get KKM info");
         return false;
     }
 
@@ -940,7 +940,7 @@ bool SparkFR::getKKMData(TKKMInfoData &aData) {
     if (aData.size() < 11) {
         toLog(LogLevel::Error,
               QString("%1: Too small sections in KKM info answer = %2, need 11 min")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(aData.size()));
         return false;
     }
@@ -973,13 +973,13 @@ ESessionState::Enum SparkFR::getSessionState() {
             TKKMInfoData data;
 
             return (getSessionState() == ESessionState::Opened) && getKKMData(data) &&
-    mSessionOpeningDT.daysTo(parseDateTime(data));
+    m_SessionOpeningDT.daysTo(parseDateTime(data));
     }
     */
 
     // Т.е. если дата и время начала смены валидны, то она открыта. Возможно - особенность
     // нефискализированного аппарата.
-    bool result = mSessionOpeningDT != CSparkFR::ClosedSession;
+    bool result = m_SessionOpeningDT != CSparkFR::ClosedSession;
 
     return result ? ESessionState::Opened : ESessionState::Closed;
 }
@@ -998,7 +998,7 @@ EDocumentState::Enum SparkFR::getDocumentState() {
 //--------------------------------------------------------------------------------
 bool SparkFR::execZReport(bool /*aAuto*/) {
     toLog(LogLevel::Normal,
-          mDeviceName + QString(": Begin processing %1-report").arg(CSparkFR::ZReport));
+          m_DeviceName + QString(": Begin processing %1-report").arg(CSparkFR::ZReport));
     ESessionState::Enum sessionState = getSessionState();
 
     if (sessionState == ESessionState::Error)
@@ -1006,12 +1006,12 @@ bool SparkFR::execZReport(bool /*aAuto*/) {
     else if (sessionState == ESessionState::Closed)
         return true;
 
-    mNeedCloseSession = false;
+    m_NeedCloseSession = false;
     QByteArray commandData = QByteArray(1, CSparkFR::SessionReport) + CSparkFR::ZReport;
     bool result = processCommand(CSparkFR::Commands::Reports, commandData);
 
-    mNeedCloseSession = getSessionState() == ESessionState::Expired;
-    mZReports += int(result);
+    m_NeedCloseSession = getSessionState() == ESessionState::Expired;
+    m_ZReports += int(result);
 
     return result;
 }

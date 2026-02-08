@@ -24,7 +24,7 @@ EjectorStarPrinter::EjectorStarPrinter() {
     setConfigParameter(Settings::PreviousReceipt, Values::Retract);
     setConfigParameter(Settings::NotTakenReceipt, Values::Retract);
 
-    mModels = CSTAR::getEjectorModels();
+    m_Models = CSTAR::getEjectorModels();
 }
 
 //--------------------------------------------------------------------------------

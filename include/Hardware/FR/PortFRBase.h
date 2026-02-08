@@ -79,20 +79,20 @@ protected:
         }
     };
 
-    ErrorBuffer mProcessingErrors;
+    ErrorBuffer m_ProcessingErrors;
 
     /// Команда последнего запроса.
-    QByteArray mLastCommand;
+    QByteArray m_LastCommand;
 
     /// Ошибка на последний запрос.
-    char mLastError;
+    char m_LastError;
 
     /// Результат последней выполненной протокольной команды.
-    TResult mLastCommandResult;
+    TResult m_LastCommandResult;
 
     /// Данные ошибок.
     typedef QSharedPointer<FRError::Data> PErrorData;
-    PErrorData mErrorData;
+    PErrorData m_ErrorData;
 
     /// Данные необрабатываемых ошибок.
     typedef QSet<char> TErrors;
@@ -107,7 +107,7 @@ protected:
         void add(const QByteArray &aCommand, const TErrors &aErrors) { append(aCommand, aErrors); }
     };
 
-    UnprocessedErrorData mUnprocessedErrorData;
+    UnprocessedErrorData m_UnprocessedErrorData;
 };
 
 typedef PortFRBase<SerialPrinterBase<PrinterBase<SerialDeviceBase<PortPollingDeviceBase<ProtoFR>>>>>

@@ -6,7 +6,7 @@
 
 #include "ShtrihPayFRConstants.h"
 
-ShtrihPayFRProtocol::ShtrihPayFRProtocol() : mPacketId(0) {}
+ShtrihPayFRProtocol::ShtrihPayFRProtocol() : m_PacketId(0) {}
 
 //--------------------------------------------------------------------------------
 ushort ShtrihPayFRProtocol::calcCRC(const QByteArray &aData) {
@@ -77,7 +77,7 @@ bool ShtrihPayFRProtocol::openSession() {
 
         QByteArray answerData;
 
-        if (!mPort->read(answerData, CShtrihPayFR::Timeouts::ENQAnswer)) {
+        if (!m_Port->read(answerData, CShtrihPayFR::Timeouts::ENQAnswer)) {
             return false;
         }
 
@@ -96,7 +96,7 @@ bool ShtrihPayFRProtocol::openSession() {
                    (timer.elapsed() < CShtrihPayFR::Timeouts::DefaultAnswer)) {
                 QByteArray data;
 
-                if (!mPort->read(data)) {
+                if (!m_Port->read(data)) {
                     return false;
                 }
 
@@ -133,9 +133,9 @@ TResult ShtrihPayFRProtocol::processCommand(const QByteArray &aCommandData,
     commandData.append(char(length));
     commandData.append(char(length >> 8));
 
-    mPacketId += mPacketId ? 1 : 2;
-    commandData.append(char(mPacketId));
-    commandData.append(char(mPacketId >> 8));
+    m_PacketId += m_PacketId ? 1 : 2;
+    commandData.append(char(m_PacketId));
+    commandData.append(char(m_PacketId >> 8));
 
     commandData.append(aCommandData);
 
@@ -195,7 +195,7 @@ bool ShtrihPayFRProtocol::execCommand(const QByteArray &aCommandPacket,
     int countRequest = 0;
 
     do {
-        if (!mPort->write(aCommandPacket)) {
+        if (!m_Port->write(aCommandPacket)) {
             return false;
         }
 
@@ -243,7 +243,7 @@ bool ShtrihPayFRProtocol::getAnswer(QByteArray &aData, int aTimeout) {
     while (clockTimer.elapsed() < aTimeout) {
         answerData.clear();
 
-        if (!mPort->read(answerData)) {
+        if (!m_Port->read(answerData)) {
             return false;
         }
 
@@ -275,7 +275,7 @@ bool ShtrihPayFRProtocol::getAnswer(QByteArray &aData, int aTimeout) {
 
 //--------------------------------------------------------------------------------
 bool ShtrihPayFRProtocol::sendACK() {
-    if (!mPort->write(QByteArray(1, ASCII::ACK))) {
+    if (!m_Port->write(QByteArray(1, ASCII::ACK))) {
         toLog(LogLevel::Error, "ShtrihPay: Failed to send ACK packet");
         return false;
     }
@@ -285,7 +285,7 @@ bool ShtrihPayFRProtocol::sendACK() {
 
 //--------------------------------------------------------------------------------
 bool ShtrihPayFRProtocol::sendNAK() {
-    if (!mPort->write(QByteArray(1, ASCII::NAK))) {
+    if (!m_Port->write(QByteArray(1, ASCII::NAK))) {
         toLog(LogLevel::Error, "ShtrihPay: Failed to send NAK");
         return false;
     }
@@ -295,7 +295,7 @@ bool ShtrihPayFRProtocol::sendNAK() {
 
 //--------------------------------------------------------------------------------
 bool ShtrihPayFRProtocol::sendENQ() {
-    if (!mPort->write(QByteArray(1, ASCII::ENQ))) {
+    if (!m_Port->write(QByteArray(1, ASCII::ENQ))) {
         toLog(LogLevel::Error, "ShtrihPay: Failed to send ENQ");
         return false;
     }

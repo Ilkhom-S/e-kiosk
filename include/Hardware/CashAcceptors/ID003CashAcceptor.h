@@ -49,7 +49,7 @@ protected:
                                 QByteArray *aAnswer = nullptr);
 
     /// Протокол.
-    ID003Protocol mProtocol;
+    ID003Protocol m_Protocol;
 };
 
 //--------------------------------------------------------------------------------

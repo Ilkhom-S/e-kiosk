@@ -153,47 +153,47 @@ protected:
     bool isWorkingThread();
 
     /// Рабочий поток.
-    QThread mThread;
+    QThread m_Thread;
 
     /// Название устройства.
-    QString mDeviceName;
+    QString m_DeviceName;
 
     /// Данные устройства.
-    TDeviceData mDeviceData;
+    TDeviceData m_DeviceData;
 
     /// Время последнего логирования.
-    QDate mLogDate;
+    QDate m_LogDate;
 
     /// Итерация авто поиска.
-    int mDetectingPosition;
+    int m_DetectingPosition;
 
     /// Устройство инициализировано.
-    ERequestStatus::Enum mInitialized;
+    ERequestStatus::Enum m_Initialized;
 
     /// Драйвера запускаются из под модуля платежей.
-    bool mOperatorPresence;
+    bool m_OperatorPresence;
 
     /// Драйвера запускаются из под фискального сервера.
-    bool mFiscalServerPresence;
+    bool m_FiscalServerPresence;
 
     /// Таймаут ожидания потока при его завершении.
-    unsigned long mExitTimeout;
+    unsigned long m_ExitTimeout;
 
     /// Ошибка инициализации.
-    bool mInitializationError;
+    bool m_InitializationError;
 };
 
 //---------------------------------------------------------------------------
 // Template implementations
 
 template <class T> bool MetaDevice<T>::moveNext() {
-    return (mDetectingPosition++ == 0);
+    return (m_DetectingPosition++ == 0);
 }
 
 template <class T> void MetaDevice<T>::setLog(ILog *aLog) {
-    mLog = aLog;
+    m_Log = aLog;
 }
 
 template <class T> bool MetaDevice<T>::isWorkingThread() {
-    return &mThread == QThread::currentThread();
+    return &m_Thread == QThread::currentThread();
 }

@@ -70,7 +70,7 @@ public:
 
 private:
     void checkRFVAT20(int aField);
-    QMap<int, QString> mDescriptionData;
+    QMap<int, QString> m_DescriptionData;
 };
 
 #define ADD_FISCAL_FIELD(aField, aName, aType, ...)                                                \

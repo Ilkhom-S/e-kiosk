@@ -11,11 +11,11 @@ using namespace SDK::Driver;
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-SSPProtocol::SSPProtocol() : mAddress(0), mSequenceFlag(false) {}
+SSPProtocol::SSPProtocol() : m_Address(0), m_SequenceFlag(false) {}
 
 //--------------------------------------------------------------------------------
 void SSPProtocol::setAddress(char aAddress) {
-    mAddress = aAddress;
+    m_Address = aAddress;
 }
 
 //--------------------------------------------------------------------------------
@@ -62,22 +62,22 @@ TResult SSPProtocol::check(const QByteArray &aAnswer) {
     // адрес
     char address = aAnswer[1] & ~CSSP::SequenceFlag;
 
-    if (address != mAddress) {
+    if (address != m_Address) {
         toLog(LogLevel::Error,
               QString("SSP: Invalid address = %1, need = %2")
                   .arg(toHexLog(address))
-                  .arg(toHexLog(mAddress)));
+                  .arg(toHexLog(m_Address)));
         return CommandResult::Id;
     }
 
     // флаг последовательности
     bool sequenceFlag = aAnswer[1] & CSSP::SequenceFlag;
 
-    if (sequenceFlag != mSequenceFlag) {
+    if (sequenceFlag != m_SequenceFlag) {
         toLog(LogLevel::Error,
               QString("SSP: Invalid sequence flag = %1, need = %2")
                   .arg(int(sequenceFlag))
-                  .arg(int(mSequenceFlag)));
+                  .arg(int(m_SequenceFlag)));
         return CommandResult::Id;
     }
 
@@ -110,10 +110,10 @@ TResult SSPProtocol::processCommand(const QByteArray &aCommandData,
                                     QByteArray &aAnswerData,
                                     const CSSP::Commands::SData &aData) {
     // Формируем пакет запроса
-    char sequenceFlag = char(mSequenceFlag) * CSSP::SequenceFlag;
+    char sequenceFlag = char(m_SequenceFlag) * CSSP::SequenceFlag;
 
     QByteArray request;
-    request.append(mAddress | sequenceFlag);
+    request.append(m_Address | sequenceFlag);
     request.append(uchar(aCommandData.size()));
     request.append(aCommandData);
 
@@ -137,7 +137,7 @@ TResult SSPProtocol::processCommand(const QByteArray &aCommandData,
         toLog(LogLevel::Normal, log);
         QByteArray answer;
 
-        if (!mPort->write(request) || !getAnswer(answer, aData.timeout)) {
+        if (!m_Port->write(request) || !getAnswer(answer, aData.timeout)) {
             return CommandResult::Port;
         }
 
@@ -145,7 +145,7 @@ TResult SSPProtocol::processCommand(const QByteArray &aCommandData,
         TResult result = check(answer);
 
         if (result) {
-            mSequenceFlag = !aData.setSync && !mSequenceFlag;
+            m_SequenceFlag = !aData.setSync && !m_SequenceFlag;
             aAnswerData = answer.mid(3, answer.size() - 5);
 
             return CommandResult::OK;
@@ -154,7 +154,7 @@ TResult SSPProtocol::processCommand(const QByteArray &aCommandData,
         }
     } while (checkingCounter++ <= CSSP::MaxRepeatPacket);
 
-    mSequenceFlag = !aData.setSync && !mSequenceFlag;
+    m_SequenceFlag = !aData.setSync && !m_SequenceFlag;
 
     return CommandResult::Protocol;
 }
@@ -169,7 +169,7 @@ bool SSPProtocol::getAnswer(QByteArray &aAnswer, int aTimeout) {
     do {
         QByteArray answer;
 
-        if (!mPort->read(answer, 20)) {
+        if (!m_Port->read(answer, 20)) {
             return false;
         }
 

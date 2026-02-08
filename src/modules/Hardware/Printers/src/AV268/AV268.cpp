@@ -12,31 +12,31 @@ using namespace PrinterStatusCode;
 //--------------------------------------------------------------------------------
 AV268::AV268() {
     // данные устройства
-    mDeviceName = "SysFuture AV-268";
+    m_DeviceName = "SysFuture AV-268";
 
     // данные порта
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200);
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR115200);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
     // теги
-    mTagEngine = Tags::PEngine(new CAV268::TagEngine());
+    m_TagEngine = Tags::PEngine(new CAV268::TagEngine());
 
     // данные устройства
     setConfigParameter(CHardware::Printer::Commands::Cutting, "\x1B\x69");
-    mLineSize = CAV268::LineSize;
-    mOverflow = false;
-    mModelType = Unknown;
-    mInitialize = false;
+    m_LineSize = CAV268::LineSize;
+    m_Overflow = false;
+    m_ModelType = Unknown;
+    m_Initialize = false;
 }
 
 //--------------------------------------------------------------------------------
 bool AV268::isConnected() {
     TStatusCodes statusCodes;
     bool statusOK = getStatus(statusCodes);
-    bool modelTypeOK = (mModelType != Unknown) && (mInitialize || (mModelType != Simple));
+    bool modelTypeOK = (m_ModelType != Unknown) && (m_Initialize || (m_ModelType != Simple));
 
-    if (mModelType == Plus) {
-        mDeviceName = "SysFuture AV-268 Plus";
+    if (m_ModelType == Plus) {
+        m_DeviceName = "SysFuture AV-268 Plus";
     }
 
     return statusOK && modelTypeOK;
@@ -50,14 +50,14 @@ QStringList AV268::getModelList() {
 
 //--------------------------------------------------------------------------------
 void AV268::initialize() {
-    mInitialize = true;
+    m_Initialize = true;
 
     SerialPrinterBase::initialize();
 }
 
 //--------------------------------------------------------------------------------
 bool AV268::processCommand(const QByteArray &aCommand, QByteArray *aAnswer) {
-    return mIOPort->write(aCommand) && !(aAnswer && !getAnswer(*aAnswer));
+    return m_IOPort->write(aCommand) && !(aAnswer && !getAnswer(*aAnswer));
 }
 
 //--------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ bool AV268::printLine(const QByteArray &aString) {
     QByteArray answer;
     getAnswer(answer);
 
-    return !mOverflow || waitBufferClearing();
+    return !m_Overflow || waitBufferClearing();
 }
 
 //--------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ bool AV268::waitBufferClearing() {
         SleepHelper::msleep(CAV268::Timeouts::Wait);
         getAnswer(answer);
 
-        if (!mOverflow) {
+        if (!m_Overflow) {
             return true;
         }
     } while (clockTimer.elapsed() < CAV268::Timeouts::Full);
@@ -113,7 +113,7 @@ bool AV268::getAnswer(QByteArray &aAnswer, bool aNeedDelay) {
 
     for (int i = 0; i < aAnswer.size(); ++i) {
         if (aAnswer.contains(ASCII::XOn) || aAnswer.contains(ASCII::XOff)) {
-            mOverflow = aAnswer.contains(ASCII::XOff) ==
+            m_Overflow = aAnswer.contains(ASCII::XOff) ==
                         true; // C4800, QBool::operator const void *() const
             aAnswer.remove(i, 1);
             --i;
@@ -154,16 +154,16 @@ bool AV268::getStatus(TStatusCodes &aStatusCodes) {
         aStatusCodes.insert(DeviceStatusCode::Error::Unknown);
     }
 
-    if (mModelType != Simple) {
+    if (m_ModelType != Simple) {
         bool result = processCommand(CAV268::Commands::GetSettings, &answer) &&
                       answer.startsWith(CAV268::Answers::GetSettings) && (answer.size() == 3);
 
-        if (mModelType == Unknown) {
-            mModelType = result ? Extended : Simple;
+        if (m_ModelType == Unknown) {
+            m_ModelType = result ? Extended : Simple;
         }
 
         if (!result) {
-            if (mModelType != Simple) {
+            if (m_ModelType != Simple) {
                 toLog(LogLevel::Error, "AV268: Wrong answer for settings request");
                 return false;
             }
@@ -176,12 +176,12 @@ bool AV268::getStatus(TStatusCodes &aStatusCodes) {
         if (((DIPSettings & CAV268::DIPSwitches::HalfHeight) &&
              (~DIPSettings & CAV268::DIPSwitches::DoubleHeight)) ||
             (~DIPSettings & CAV268::DIPSwitches::Cutter) ||
-            (bool(DIPSettings & CAV268::DIPSwitches::Presenter) != (mModelType == Plus))) {
+            (bool(DIPSettings & CAV268::DIPSwitches::Presenter) != (m_ModelType == Plus))) {
             aStatusCodes.insert(DeviceStatusCode::Warning::WrongSwitchesConfig);
         }
 
         int factor = (DIPSettings & CAV268::DIPSwitches::DoubleWidth) ? 2 : 1;
-        mLineSize = CAV268::LineSize / factor;
+        m_LineSize = CAV268::LineSize / factor;
 
         if (processCommand(CAV268::Commands::GetPresenterStatus, &answer) &&
             (answer.size() <= 10) && (answer.size() >= 2) &&
@@ -192,11 +192,11 @@ bool AV268::getStatus(TStatusCodes &aStatusCodes) {
                              (answer[1] == CAV268::Answers::Presenter::Disable));
 
             if (isAVPlus) {
-                mDeviceName = "SysFuture AV-268 Plus";
-                mModelType = Plus;
+                m_DeviceName = "SysFuture AV-268 Plus";
+                m_ModelType = Plus;
             } else {
-                mDeviceName = "SysFuture AV-268";
-                mModelType = Extended;
+                m_DeviceName = "SysFuture AV-268";
+                m_ModelType = Extended;
             }
 
             if ((answer[1] == CAV268::Answers::Presenter::Enable) ||
@@ -218,7 +218,7 @@ bool AV268::getStatus(TStatusCodes &aStatusCodes) {
             } else {
                 toLog(LogLevel::Error, "AV268: Wrong answer for presenter request");
 
-                if (mModelType == Plus) {
+                if (m_ModelType == Plus) {
                     aStatusCodes.insert(Error::Presenter);
                 }
             }
@@ -231,7 +231,7 @@ bool AV268::getStatus(TStatusCodes &aStatusCodes) {
 //--------------------------------------------------------------------------------
 bool AV268::receiptProcessing() {
     bool result = SerialPrinterBase::receiptProcessing();
-    SleepHelper::msleep(CPortPrinter::PrintingStringTimeout * mActualStringCount);
+    SleepHelper::msleep(CPortPrinter::PrintingStringTimeout * m_ActualStringCount);
     waitAvailable();
 
     return result;

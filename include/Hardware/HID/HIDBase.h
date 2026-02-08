@@ -7,24 +7,24 @@
 //--------------------------------------------------------------------------------
 template <class T> class HIDBase : public T {
 public:
-    HIDBase() : mEnabled(false) {}
+    HIDBase() : m_Enabled(false) {}
 
     /// Включает/выключает устройство на чтение штрих-кодов. Пикать все равно будет.
     virtual bool enable(bool aEnabled) {
-        mEnabled = aEnabled;
+        m_Enabled = aEnabled;
 
         return true;
     }
 
     /// Готов ли к работе (инициализировался успешно, ошибок нет).
-    virtual bool isDeviceReady() { return mInitialized == ERequestStatus::Success; }
+    virtual bool isDeviceReady() { return m_Initialized == ERequestStatus::Success; }
 
 protected:
     /// Признак включенности устройства.
-    bool mEnabled;
+    bool m_Enabled;
 
     /// Статус инициализации устройства.
-    ERequestStatus::Enum mInitialized;
+    ERequestStatus::Enum m_Initialized;
 };
 
 //--------------------------------------------------------------------------------

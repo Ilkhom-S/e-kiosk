@@ -91,25 +91,25 @@ protected:
     bool isCoinAcceptorSupported() const;
 
     /// Протокол.
-    CCNetProtocol mProtocol;
+    CCNetProtocol m_Protocol;
 
     /// Номер прошивки.
-    int mFirmware;
+    int m_Firmware;
 
     /// Список поддерживаемых плагином моделей.
-    QStringList mSupportedModels;
+    QStringList m_SupportedModels;
 
     /// Валюта.
-    int mCurrencyCode;
+    int m_CurrencyCode;
 
     /// Последний ответ.
-    QByteArray mLastAnswer;
+    QByteArray m_LastAnswer;
 
     /// Данные команд и ответов.
-    CCCNet::Commands::Data mCommandData;
+    CCCNet::Commands::Data m_CommandData;
 
     /// Нужно менять скорость при перепрошивке?
-    bool mNeedChangeBaudrate;
+    bool m_NeedChangeBaudrate;
 };
 
 //--------------------------------------------------------------------------------

@@ -68,21 +68,21 @@ protected:
     virtual bool environmentChanged();
 
     /// Статус порты был изменен.
-    bool mPortStatusChanged;
+    bool m_PortStatusChanged;
 
 #pragma region Searching data
     /// Набор параметров порта, с которыми может работать устройство.
-    TSerialDevicePortParameters mPortParameters;
+    TSerialDevicePortParameters m_PortParameters;
 
     /// Список параметров порта для поиска.
     typedef QList<SSerialPortParameters> TSearchingPortParameters;
-    TSearchingPortParameters mSearchingPortParameters;
+    TSearchingPortParameters m_SearchingPortParameters;
 
     /// Параметры порта для поиска.
-    SSerialPortParameters mCurrentParameter;
+    SSerialPortParameters m_CurrentParameter;
 
     /// Итератор на следующие параметры порта для поиска.
-    TSearchingPortParameters::iterator mNextParameterIterator;
+    TSearchingPortParameters::iterator m_NextParameterIterator;
 #pragma endregion
 };
 

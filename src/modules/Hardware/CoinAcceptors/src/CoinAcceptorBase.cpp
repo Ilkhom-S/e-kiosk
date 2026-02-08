@@ -4,7 +4,7 @@
 
 //--------------------------------------------------------------------------------
 CoinAcceptorBase::CoinAcceptorBase() {
-    mDeviceType = CHardware::Types::CoinAcceptor;
+    m_DeviceType = CHardware::Types::CoinAcceptor;
     setConfigParameter(CHardware::CashAcceptor::DisablingTimeout, CCoinAcceptor::DisablingTimeout);
     setConfigParameter(CHardware::CashAcceptor::StackedFilter, true);
 }

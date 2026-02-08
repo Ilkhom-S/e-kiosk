@@ -6,7 +6,7 @@
 #include <algorithm>
 
 void NPSTalkProtocol::setAddress(uchar aAddress) {
-    mDeviceAddress = aAddress;
+    m_DeviceAddress = aAddress;
 }
 
 //--------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ TResult NPSTalkProtocol::processCommand(const QByteArray &aCommanddata, QByteArr
     do {
         toLog(LogLevel::Normal, QString("NPSTalk: >> {%1}").arg(request.toHex().data()));
 
-        if (!mPort->write(request) || !getAnswer(aAnswerData)) {
+        if (!m_Port->write(request) || !getAnswer(aAnswerData)) {
             return CommandResult::Port;
         }
 
@@ -110,7 +110,7 @@ bool NPSTalkProtocol::getAnswer(QByteArray &aAnswer) {
     do {
         QByteArray answer;
 
-        if (!mPort->read(answer)) {
+        if (!m_Port->read(answer)) {
             return false;
         }
 

@@ -94,7 +94,7 @@ TResult KasbiFRProtocol::processCommand(const QByteArray &aCommandData,
     toLog(LogLevel::Normal, QString("Kasbi: >> {%1}").arg(request.toHex().data()));
     QByteArray answer;
 
-    if (!mPort->write(request) || !read(answer, aTimeout)) {
+    if (!m_Port->write(request) || !read(answer, aTimeout)) {
         return CommandResult::Transport;
     }
 
@@ -124,7 +124,7 @@ bool KasbiFRProtocol::read(QByteArray &aAnswer, int aTimeout) {
     do {
         QByteArray answerData;
 
-        if (!mPort->read(answerData)) {
+        if (!m_Port->read(answerData)) {
             return false;
         }
 

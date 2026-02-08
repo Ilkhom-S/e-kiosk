@@ -12,24 +12,24 @@ AtolSerialFR::AtolSerialFR() {
     using namespace CAtolFRBase::Commands;
 
     // регистры
-    mRegisterData.add(CAtolFR::Registers::NonNullableAmount, '\x0D', 7);
-    mRegisterData.add(CAtolFR::Registers::SerialNumber, '\x16', 4);
-    mRegisterData.add(CAtolFRBase::Registers::FreeReregistrations, '\x0F', 1);
-    mRegisterData.add(CAtolFRBase::Registers::FreeFMSessions, '\x10', 2);
-    mRegisterData.add(CAtolFRBase::Registers::EKLZActivizationResources, '\x1A', 2);
-    mRegisterData.add(CAtolFRBase::Registers::EKLZRegistrationData, '\x1B', 16);
-    mRegisterData.add(CAtolFRBase::Registers::EKLZActivizationData, '\x1C', 10);
+    m_RegisterData.add(CAtolFR::Registers::NonNullableAmount, '\x0D', 7);
+    m_RegisterData.add(CAtolFR::Registers::SerialNumber, '\x16', 4);
+    m_RegisterData.add(CAtolFRBase::Registers::FreeReregistrations, '\x0F', 1);
+    m_RegisterData.add(CAtolFRBase::Registers::FreeFMSessions, '\x10', 2);
+    m_RegisterData.add(CAtolFRBase::Registers::EKLZActivizationResources, '\x1A', 2);
+    m_RegisterData.add(CAtolFRBase::Registers::EKLZRegistrationData, '\x1B', 16);
+    m_RegisterData.add(CAtolFRBase::Registers::EKLZActivizationData, '\x1C', 10);
 
     // команды
-    mCommandData.add(EKLZRequest, 6 * 1000, true);
-    mCommandData.add(GetSoftEKLZStatus, 6 * 1000, true);
-    mCommandData.add(PrintDeferredZReports, 120 * 1000);
-    mCommandData.add(EnterDeferredZReportMode, true, true);
+    m_CommandData.add(EKLZRequest, 6 * 1000, true);
+    m_CommandData.add(GetSoftEKLZStatus, 6 * 1000, true);
+    m_CommandData.add(PrintDeferredZReports, 120 * 1000);
+    m_CommandData.add(EnterDeferredZReportMode, true, true);
 
     setConfigParameter(CHardware::FR::Commands::PrintingDeferredZReports, PrintDeferredZReports);
 
     // ошибки
-    mErrorData = PErrorData(new CAtolFRBase::Errors::Data());
+    m_ErrorData = PErrorData(new CAtolFRBase::Errors::Data());
 }
 
 //--------------------------------------------------------------------------------
@@ -38,9 +38,9 @@ bool AtolSerialFR::checkTax(TVAT aVAT, CFR::Taxes::SData &aData) {
         return false;
     }
 
-    if ((mDeviceName == CAtolFR::Models::FPrint11PTK) ||
-        (mDeviceName == CAtolFR::Models::FPrint22K) ||
-        (mDeviceName == CAtolFR::Models::FPrint55K)) {
+    if ((m_DeviceName == CAtolFR::Models::FPrint11PTK) ||
+        (m_DeviceName == CAtolFR::Models::FPrint22K) ||
+        (m_DeviceName == CAtolFR::Models::FPrint55K)) {
         CAtolFR::FRParameters::SData taxFRParameterData =
             CAtolFR::FRParameters::TaxDescription(aData.group);
         QByteArray rawDescription;
@@ -48,21 +48,21 @@ bool AtolSerialFR::checkTax(TVAT aVAT, CFR::Taxes::SData &aData) {
         if (getFRParameter(taxFRParameterData, rawDescription)) {
             QString description = aData.description;
             QString FRDescription =
-                mCodec->toUnicode(rawDescription.replace(ASCII::NUL, "").simplified());
+                m_Codec->toUnicode(rawDescription.replace(ASCII::NUL, "").simplified());
 
             if ((description != FRDescription) &&
                 !setFRParameter(
                     taxFRParameterData,
-                    description.leftJustified(mModelData.maxStringSize, QChar(ASCII::Space)))) {
+                    description.leftJustified(m_ModelData.maxStringSize, QChar(ASCII::Space)))) {
                 toLog(LogLevel::Error,
-                      mDeviceName +
+                      m_DeviceName +
                           QString(": Failed to set description for tax value %1% (%2 tax group)")
                               .arg(aVAT, 5, 'f', 2, ASCII::Zero)
                               .arg(aData.group));
             }
         } else {
             toLog(LogLevel::Error,
-                  mDeviceName +
+                  m_DeviceName +
                       QString(": Failed to get tax value for %1 tax group").arg(aData.group));
         }
     }
@@ -87,13 +87,13 @@ bool AtolSerialFR::getShortStatus(TStatusCodes &aStatusCodes) {
         return false;
     }
 
-    mEKLZError = mEKLZError || ((mMode == CAtolFR::InnerModes::ExtraCommand) &&
-                                (mSubmode == CAtolFR::InnerSubmodes::EKLZError));
-    mFMError = mFMError || ((mMode == CAtolFR::InnerModes::ExtraCommand) &&
-                            ((mSubmode == CAtolFR::InnerSubmodes::EnterDate) ||
-                             (mSubmode == CAtolFR::InnerSubmodes::EnterTime) ||
-                             (mSubmode == CAtolFR::InnerSubmodes::FMDataTimeError) ||
-                             (mSubmode == CAtolFR::InnerSubmodes::FMDataTimeConfirm)));
+    m_EKLZError = m_EKLZError || ((m_Mode == CAtolFR::InnerModes::ExtraCommand) &&
+                                (m_Submode == CAtolFR::InnerSubmodes::EKLZError));
+    m_FMError = m_FMError || ((m_Mode == CAtolFR::InnerModes::ExtraCommand) &&
+                            ((m_Submode == CAtolFR::InnerSubmodes::EnterDate) ||
+                             (m_Submode == CAtolFR::InnerSubmodes::EnterTime) ||
+                             (m_Submode == CAtolFR::InnerSubmodes::FMDataTimeError) ||
+                             (m_Submode == CAtolFR::InnerSubmodes::FMDataTimeConfirm)));
 
     return true;
 }
@@ -112,24 +112,24 @@ void AtolSerialFR::processDeviceData() {
 
     QByteArray data;
 
-    mNonNullableAmount = 0;
+    m_NonNullableAmount = 0;
 
     if (getRegister(CAtolFR::Registers::NonNullableAmount, data)) {
-        mNonNullableAmount = qlonglong(data.toHex().toULongLong()) / 100.0;
+        m_NonNullableAmount = qlonglong(data.toHex().toULongLong()) / 100.0;
     }
 
     if (getRegister(CAtolFRBase::Registers::EKLZRegistrationData, data)) {
-        mINN = CFR::INNToString(data.mid(0, 6).toHex());
-        mRNM = CFR::RNMToString(data.mid(6, 5).toHex());
-        mFiscalized = mINN.toULongLong() && mRNM.toULongLong();
+        m_INN = CFR::INNToString(data.mid(0, 6).toHex());
+        m_RNM = CFR::RNMToString(data.mid(6, 5).toHex());
+        m_Fiscalized = m_INN.toULongLong() && m_RNM.toULongLong();
     }
 
-    bool EKLZExists = mModelData.FRType == EFRType::EKLZ;
+    bool EKLZExists = m_ModelData.FRType == EFRType::EKLZ;
     setDeviceParameter(CDeviceData::FR::EKLZ, EKLZExists);
 
     if (EKLZExists) {
         // Вытаскиваем инфо из системых регистров
-        setDeviceParameter(CDeviceData::FR::Activated, mFiscalized, CDeviceData::FR::EKLZ);
+        setDeviceParameter(CDeviceData::FR::Activated, m_Fiscalized, CDeviceData::FR::EKLZ);
 
         if (getRegister(CAtolFRBase::Registers::FreeReregistrations, data)) {
             setDeviceParameter(CDeviceData::FR::FreeReregistrations, uchar(data[0]));
@@ -139,7 +139,7 @@ void AtolSerialFR::processDeviceData() {
             setDeviceParameter(CDeviceData::EKLZ::FreeActivizations, uchar(data[1]));
         }
 
-        if ((mModelData.FRType == EFRType::EKLZ) && mFiscalized &&
+        if ((m_ModelData.FRType == EFRType::EKLZ) && m_Fiscalized &&
             getRegister(CAtolFRBase::Registers::EKLZActivizationData, data)) {
             qlonglong EKLZNumber = data.left(5).toHex().toULongLong();
             QDate EKLZActivizationDate =
@@ -167,11 +167,11 @@ void AtolSerialFR::processDeviceData() {
 
 //--------------------------------------------------------------------------------
 bool AtolSerialFR::enterExtendedMode() {
-    if (!mCanProcessZBuffer) {
+    if (!m_CanProcessZBuffer) {
         return true;
     }
 
-    char mode = mMode;
+    char mode = m_Mode;
 
     if (!enterInnerMode(CAtolFR::InnerModes::Cancel)) {
         toLog(
@@ -184,11 +184,11 @@ bool AtolSerialFR::enterExtendedMode() {
     bool result = processCommand(CAtolFRBase::Commands::EnterDeferredZReportMode, &answer);
 
     if (result) {
-        mWhiteSpaceZBuffer = uchar(answer[2]);
+        m_WhiteSpaceZBuffer = uchar(answer[2]);
         checkZBufferState();
 
         toLog(LogLevel::Normal,
-              QString("AtolFR: %1 Z-reports left in buffer").arg(mWhiteSpaceZBuffer));
+              QString("AtolFR: %1 Z-reports left in buffer").arg(m_WhiteSpaceZBuffer));
     } else {
         toLog(LogLevel::Error, "AtolFR: Failed to enter to extended Z-report mode");
     }
@@ -219,9 +219,9 @@ TResult
 AtolSerialFR::performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
     TResult result = AtolFRBase::performCommand(aCommandData, aAnswer, aTimeout);
 
-    if (result == CommandResult::Transport) // mPollingActive??
+    if (result == CommandResult::Transport) // m_PollingActive??
     {
-        mEKLZError = false;
+        m_EKLZError = false;
     }
 
     return result;
@@ -235,7 +235,7 @@ bool AtolSerialFR::processAnswer(const QByteArray &aCommand, char aError) {
     }
 
     if ((aCommand[0] == CAtolFRBase::Commands::PrintDeferredZReports) &&
-        (aError == CAtolFR::Errors::BadModeForCommand) && (mMode != CAtolFR::InnerModes::Cancel)) {
+        (aError == CAtolFR::Errors::BadModeForCommand) && (m_Mode != CAtolFR::InnerModes::Cancel)) {
         return enterInnerMode(CAtolFR::InnerModes::Cancel);
     }
 
@@ -270,19 +270,19 @@ void AtolSerialFR::setErrorFlags(const QByteArray &aCommand, char aError) {
     AtolFRBase::setErrorFlags(aCommand, aError);
 
     if (isEKLZErrorCritical(aError)) {
-        mEKLZError = true;
+        m_EKLZError = true;
     }
 }
 
 //--------------------------------------------------------------------------------
 bool AtolSerialFR::canPerformEKLZRequest() {
-    if (mStatusCollection.isEmpty() ||
-        mStatusCollection.contains(DeviceStatusCode::Error::NotAvailable) || mBadAnswerCounter) {
+    if (m_StatusCollection.isEmpty() ||
+        m_StatusCollection.contains(DeviceStatusCode::Error::NotAvailable) || m_BadAnswerCounter) {
         processCommand(CAtolFRBase::Commands::GetSoftEKLZStatus);
     }
 
-    return (mModelData.FRType == EFRType::EKLZ) && (mMode == CAtolFR::InnerModes::Choice) &&
-           !mEKLZError;
+    return (m_ModelData.FRType == EFRType::EKLZ) && (m_Mode == CAtolFR::InnerModes::Choice) &&
+           !m_EKLZError;
 }
 
 //--------------------------------------------------------------------------------

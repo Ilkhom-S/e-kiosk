@@ -13,14 +13,14 @@ using namespace SDK::Driver::IOPort::COM;
 //---------------------------------------------------------------------------
 PuloonLCDM::PuloonLCDM() {
     // Параметры порта.
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600); // default
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600); // default
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
 
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
     // данные устройства
-    mDeviceName = CPuloonLCDM::Models::Data.getDefault().name;
+    m_DeviceName = CPuloonLCDM::Models::Data.getDefault().name;
 }
 
 //---------------------------------------------------------------------------
@@ -47,15 +47,15 @@ TResult PuloonLCDM::processCommand(char aCommand,
                                    const QByteArray &aCommandData,
                                    QByteArray *aAnswer,
                                    int aTimeout) {
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
 
     QByteArray commandData = QByteArray(1, CPuloonLCDM::CommunicationId) + aCommand + aCommandData;
     CPuloonLCDM::Commands::SData commandInfo = CPuloonLCDM::Commands::Data[aCommand];
     int timeout = aTimeout ? aTimeout : commandInfo.timeout;
 
     TAnswerList answerList;
-    TResult result = mProtocol.processCommand(commandData, answerList, timeout);
+    TResult result = m_Protocol.processCommand(commandData, answerList, timeout);
 
     if (!result) {
         return result;
@@ -69,7 +69,7 @@ TResult PuloonLCDM::processCommand(char aCommand,
         if ((data.size() == CPuloon::ItemDataSize) && (data[1] == CPuloonLCDM::RejectingID)) {
             toLog(LogLevel::Warning,
                   QString("%1: rejecting, reason = %2")
-                      .arg(mDeviceName)
+                      .arg(m_DeviceName)
                       .arg(CPuloonLCDM::RejectingSpecification[data[2]]));
         }
     }
@@ -83,7 +83,7 @@ TResult PuloonLCDM::processCommand(char aCommand,
     if (answerData.size() < CPuloonLCDM::MinAnswerDataSize) {
         toLog(LogLevel::Error,
               QString("%1: Answer data size = %2, need min %3")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(answerData.size())
                   .arg(CPuloonLCDM::MinAnswerDataSize));
         return CommandResult::Answer;
@@ -93,7 +93,7 @@ TResult PuloonLCDM::processCommand(char aCommand,
         if (answerData.size() < (commandInfo.error + 1)) {
             toLog(LogLevel::Error,
                   QString("%1: Answer data size = %2, need min %3 for error handling")
-                      .arg(mDeviceName)
+                      .arg(m_DeviceName)
                       .arg(answerData.size())
                       .arg(commandInfo.error));
             return CommandResult::Answer;
@@ -103,16 +103,16 @@ TResult PuloonLCDM::processCommand(char aCommand,
         SDeviceCodeSpecification deviceCodeData =
             CPuloonLCDM::DeviceCodeSpecification[lastDeviceCode];
         EWarningLevel::Enum warningLevel =
-            mStatusCodesSpecification->value(deviceCodeData.statusCode).warningLevel;
+            m_StatusCodesSpecification->value(deviceCodeData.statusCode).warningLevel;
 
         if (aCommand != CPuloonLCDM::Commands::GetStatus) {
             if (warningLevel == EWarningLevel::Error) {
                 toLog(LogLevel::Error,
-                      QString("%1: %2").arg(mDeviceName).arg(deviceCodeData.description));
+                      QString("%1: %2").arg(m_DeviceName).arg(deviceCodeData.description));
                 return CommandResult::Answer;
             } else if (warningLevel == EWarningLevel::Warning) {
                 toLog(LogLevel::Warning,
-                      QString("%1: %2").arg(mDeviceName).arg(deviceCodeData.description));
+                      QString("%1: %2").arg(m_DeviceName).arg(deviceCodeData.description));
             }
         }
     }
@@ -141,11 +141,11 @@ bool PuloonLCDM::getStatus(TStatusCodes &aStatusCodes) {
         aStatusCodes.insert(specification.statusCode);
     }
 
-    if (deviceStatusCodes != mLastDeviceStatusCodes) {
+    if (deviceStatusCodes != m_LastDeviceStatusCodes) {
         logStatusChanging(statusSpecification, sensorSpecifications);
     }
 
-    mLastDeviceStatusCodes = deviceStatusCodes;
+    m_LastDeviceStatusCodes = deviceStatusCodes;
 
     return true;
 }
@@ -162,7 +162,7 @@ void PuloonLCDM::logStatusChanging(const SDeviceCodeSpecification &aStatusSpecif
         }
 
         warningLevel = qMax(
-            warningLevel, mStatusCodesSpecification->value(specification.statusCode).warningLevel);
+            warningLevel, m_StatusCodesSpecification->value(specification.statusCode).warningLevel);
     }
 
     bool status = !aStatusSpecification.description.isEmpty();
@@ -175,7 +175,7 @@ void PuloonLCDM::logStatusChanging(const SDeviceCodeSpecification &aStatusSpecif
                 : ((warningLevel == EWarningLevel::Warning) ? LogLevel::Warning : LogLevel::Normal);
         toLog(logLevel,
               QString("%1: %2%3%4")
-                  .arg(mDeviceName)
+                  .arg(m_DeviceName)
                   .arg(status ? "status: " + aStatusSpecification.description : "")
                   .arg((status && sensors) ? ", " : "")
                   .arg(sensors ? "sensors: " + sensorLog : ""));
@@ -206,8 +206,8 @@ bool PuloonLCDM::isConnected() {
 
     if (checkSumOK) {
         modelData = CPuloonLCDM::Models::Data[checkSum];
-        mDeviceName = modelData.name;
-        mUnits = modelData.units;
+        m_DeviceName = modelData.name;
+        m_Units = modelData.units;
     }
 
     QString textROMVersion = answer.mid(1, 2);
@@ -219,7 +219,7 @@ bool PuloonLCDM::isConnected() {
         resultROMVersion = modelData.fullROMVersion;
     }
 
-    mVerified = modelData.verified;
+    m_Verified = modelData.verified;
 
     setDeviceParameter(CDeviceData::Firmware, resultROMVersion);
 
@@ -262,7 +262,7 @@ void PuloonLCDM::performDispense(int aUnit, int aItems) {
 
             if (rejectedItems) {
                 toLog(LogLevel::Warning,
-                      mDeviceName + QString(": emit rejected %1 notes from %2 unit")
+                      m_DeviceName + QString(": emit rejected %1 notes from %2 unit")
                                         .arg(rejectedItems)
                                         .arg(aUnit));
 

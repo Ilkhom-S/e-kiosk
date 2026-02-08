@@ -10,7 +10,7 @@
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
-AFPFRProtocol::AFPFRProtocol() : mId(ASCII::Space) {}
+AFPFRProtocol::AFPFRProtocol() : m_Id(ASCII::Space) {}
 
 //--------------------------------------------------------------------------------
 char AFPFRProtocol::calcCRC(const QByteArray &aData) {
@@ -43,11 +43,11 @@ TResult AFPFRProtocol::check(const QByteArray &aRequest, const QByteArray &aAnsw
         return CommandResult::Protocol;
     }
 
-    if (aAnswer[1] != char(mId)) {
+    if (aAnswer[1] != char(m_Id)) {
         toLog(LogLevel::Error,
               QString("AFP: Invalid Id = %1, need = %2")
                   .arg(ProtocolUtils::toHexLog(aAnswer[1]))
-                  .arg(ProtocolUtils::toHexLog(mId)));
+                  .arg(ProtocolUtils::toHexLog(m_Id)));
         return CommandResult::Id;
     }
 
@@ -102,9 +102,9 @@ AFPFRProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswe
     request.append(CAFPFR::Prefix);
     request.append(CAFPFR::Password);
 
-    mId = (mId == CAFPFR::MaxId) ? ASCII::Space : ++mId;
+    m_Id = (m_Id == CAFPFR::MaxId) ? ASCII::Space : ++m_Id;
 
-    request.append(mId);
+    request.append(m_Id);
     request.append(aCommandData);
     request.append(CAFPFR::Separator);
     request.append(CAFPFR::Postfix);
@@ -117,7 +117,7 @@ AFPFRProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswe
     toLog(LogLevel::Normal, QString("AFP: >> {%1}").arg(request.toHex().data()));
     aAnswer.clear();
 
-    if (!mPort->write(request) || !getAnswer(aAnswer, aTimeout)) {
+    if (!m_Port->write(request) || !getAnswer(aAnswer, aTimeout)) {
         return CommandResult::Port;
     }
 
@@ -158,7 +158,7 @@ bool AFPFRProtocol::getAnswer(QByteArray &aAnswer, int aTimeout) {
     do {
         QByteArray data;
 
-        if (!mPort->read(data, 20)) {
+        if (!m_Port->read(data, 20)) {
             return false;
         }
 

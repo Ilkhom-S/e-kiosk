@@ -6,8 +6,8 @@
 
 //--------------------------------------------------------------------------------
 ShtrihRetractorFR::ShtrihRetractorFR() {
-    mDeviceName = CShtrihFR::Models::RetractorDefault;
-    mSupportedModels = getModelList();
+    m_DeviceName = CShtrihFR::Models::RetractorDefault;
+    m_SupportedModels = getModelList();
     setConfigParameter(CHardware::Printer::RetractorEnable, true);
 }
 

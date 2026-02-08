@@ -13,42 +13,42 @@ template <class T> bool ShtrihRetractorFRLite<T>::updateParameters() {
         return false;
     }
 
-    if (!CShtrihFR::FRParameters::Fields.data().contains(mModel)) {
+    if (!CShtrihFR::FRParameters::Fields.data().contains(m_Model)) {
         toLog(LogLevel::Normal,
               QString("ShtrihFR: Cannot set any fields for the device with model Id %1 as no data "
                       "of system tables")
-                  .arg(mModel));
+                  .arg(m_Model));
         return true;
     }
 
     using namespace CHardware::Printer;
 
     // 17. Авторетракция чеков - нет
-    bool out = mModel == CShtrihFR::Models::ID::MStarTK2;
+    bool out = m_Model == CShtrihFR::Models::ID::MStarTK2;
     QByteArray data;
 
-    if ((!getFRParameter(mParameters.autoRetractingCheques, data) || data.isEmpty() ||
+    if ((!getFRParameter(m_Parameters.autoRetractingCheques, data) || data.isEmpty() ||
          (bool(data[0]) != out)) &&
-        setFRParameter(mParameters.autoRetractingCheques, out)) {
-        mNeedReboot = true;
+        setFRParameter(m_Parameters.autoRetractingCheques, out)) {
+        m_NeedReboot = true;
     }
 
     // 18. Авторетракция отчетов - нет
-    setFRParameter(mParameters.autoRetractingReports, out);
+    setFRParameter(m_Parameters.autoRetractingReports, out);
 
     // 19. Длина презентации
     if (containsConfigParameter(Settings::PresentationLength)) {
         int presentationLength = getConfigParameter(Settings::PresentationLength).toInt();
-        setFRParameter(mParameters.presentationLength, char(presentationLength));
+        setFRParameter(m_Parameters.presentationLength, char(presentationLength));
     }
 
     // 20. Таймаут забытого чека
     if (containsConfigParameter(Settings::LeftReceiptTimeout)) {
         uchar timeout = getLeftReceiptTimeout();
 
-        if (!getFRParameter(mParameters.leftReceiptTimeout, data) || data.isEmpty() ||
+        if (!getFRParameter(m_Parameters.leftReceiptTimeout, data) || data.isEmpty() ||
             (uchar(data[0]) != timeout)) {
-            setFRParameter(mParameters.leftReceiptTimeout, timeout);
+            setFRParameter(m_Parameters.leftReceiptTimeout, timeout);
             postSettingAction();
         }
     }
@@ -58,9 +58,9 @@ template <class T> bool ShtrihRetractorFRLite<T>::updateParameters() {
         char loop =
             char(getConfigParameter(Settings::Loop).toString() == CHardwareSDK::Values::Use);
 
-        if ((!getFRParameter(mParameters.loop, data) || data.isEmpty() || (data[0] != loop)) &&
-            setFRParameter(mParameters.loop, loop)) {
-            mNeedReboot = true;
+        if ((!getFRParameter(m_Parameters.loop, data) || data.isEmpty() || (data[0] != loop)) &&
+            setFRParameter(m_Parameters.loop, loop)) {
+            m_NeedReboot = true;
         }
     }
 
@@ -82,7 +82,7 @@ template <class T> void ShtrihRetractorFRLite<T>::postSettingAction() {
     if (getConfigParameter(CHardware::CanSoftReboot).toBool()) {
         reboot();
     } else {
-        mNeedReboot = true;
+        m_NeedReboot = true;
     }
 }
 

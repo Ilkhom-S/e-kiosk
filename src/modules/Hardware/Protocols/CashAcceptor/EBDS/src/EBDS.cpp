@@ -6,7 +6,7 @@
 
 #include "EBDSConstants.h"
 
-EBDSProtocol::EBDSProtocol() : mACK(false) {}
+EBDSProtocol::EBDSProtocol() : m_ACK(false) {}
 
 //--------------------------------------------------------------------------------
 const uchar EBDSProtocol::calcCRC(const QByteArray &aData) {
@@ -67,15 +67,15 @@ TResult EBDSProtocol::processCommand(const QByteArray &aCommandData,
 
     request.append(CEBDS::Prefix);
     request.append(char(4 + aCommandData.size()));
-    request.append(aCommandData[0] | char(mACK));
+    request.append(aCommandData[0] | char(m_ACK));
     request.append(aCommandData.mid(1));
     request.append(CEBDS::Postfix);
     request.append(calcCRC(request));
 
     toLog(LogLevel::Normal, QString("EBDS: >> {%1}").arg(request.toHex().data()));
-    mACK = !mACK;
+    m_ACK = !m_ACK;
 
-    if (!mPort->write(request)) {
+    if (!m_Port->write(request)) {
         return CommandResult::Port;
     }
 
@@ -107,7 +107,7 @@ const bool EBDSProtocol::getAnswer(QByteArray &aAnswer) {
     do {
         data.clear();
 
-        if (!mPort->read(data, 20)) {
+        if (!m_Port->read(data, 20)) {
             return false;
         }
 

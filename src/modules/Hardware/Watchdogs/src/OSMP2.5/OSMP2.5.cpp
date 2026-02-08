@@ -10,15 +10,15 @@ using namespace SDK::Driver::IOPort::COM;
 //--------------------------------------------------------------------------------
 OSMP25::OSMP25() {
     // Данные порта.
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
-    mPortParameters[EParameters::Parity].append(EParity::No);
+    m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    m_PortParameters[EParameters::Parity].append(EParity::No);
 
     // Данные устройства.
-    mDeviceName = "OSMP 2.5";
-    mIOMessageLogging = ELoggingType::None;
+    m_DeviceName = "OSMP 2.5";
+    m_IOMessageLogging = ELoggingType::None;
     setConfigParameter(CHardware::Watchdog::CanRegisterKey, true);
     setConfigParameter(CHardware::Watchdog::CanWakeUpPC, true);
-    mPingTimer.setInterval(COSMP25::PingInterval);
+    m_PingTimer.setInterval(COSMP25::PingInterval);
 }
 
 //----------------------------------------------------------------------------
@@ -30,11 +30,11 @@ bool OSMP25::isConnected() {
     }
 
     if (ProtocolUtils::clean(answer).isEmpty() && isAutoDetecting()) {
-        toLog(LogLevel::Error, mDeviceName + ": Unknown device trying to impersonate this device");
+        toLog(LogLevel::Error, m_DeviceName + ": Unknown device trying to impersonate this device");
         return false;
     }
 
-    mVerified = answer.contains(COSMP25::ModelTag);
+    m_Verified = answer.contains(COSMP25::ModelTag);
     setDeviceParameter(CDeviceData::Version, answer);
 
     return true;
@@ -80,12 +80,12 @@ bool OSMP25::reset(const QString &aLine) {
         return false;
     }
 
-    if (!mStatusCollectionHistory.isEmpty() && (mInitialized == ERequestStatus::Fail)) {
-        toLog(LogLevel::Error, QString("%1: Cannot reset line %2").arg(mDeviceName).arg(aLine));
+    if (!m_StatusCollectionHistory.isEmpty() && (m_Initialized == ERequestStatus::Fail)) {
+        toLog(LogLevel::Error, QString("%1: Cannot reset line %2").arg(m_DeviceName).arg(aLine));
         return false;
     }
 
-    if (!isWorkingThread() || (mInitialized == ERequestStatus::InProcess)) {
+    if (!isWorkingThread() || (m_Initialized == ERequestStatus::InProcess)) {
         QMetaObject::invokeMethod(
             this, "reset", Qt::BlockingQueuedConnection, Q_ARG(QString, aLine));
     } else if (aLine == SDK::Driver::LineTypes::Modem) {
@@ -101,7 +101,7 @@ bool OSMP25::reset(const QString &aLine) {
 bool OSMP25::getStatus(TStatusCodes &aStatusCodes) {
     QTime PCWakingUpTime = getConfigParameter(CHardware::Watchdog::PCWakingUpTime).toTime();
 
-    if (!PCWakingUpTime.isNull() && (PCWakingUpTime != mPCWakingUpTime)) {
+    if (!PCWakingUpTime.isNull() && (PCWakingUpTime != m_PCWakingUpTime)) {
         int secsTo = PCWakingUpTime.secsTo(QTime::currentTime());
 
         if (secsTo < 0) {
@@ -114,13 +114,13 @@ bool OSMP25::getStatus(TStatusCodes &aStatusCodes) {
             (std::abs(COSMP25::PCWakingUpInterval * intervals - secsTo) < COSMP25::PCWakingUpLag)) {
             QByteArray answer;
             bool resetPCWakingUpTimeResult = true;
-            bool needResetPCWakeUpTime = !mPCWakingUpTime.isNull();
+            bool needResetPCWakeUpTime = !m_PCWakingUpTime.isNull();
 
             if (!needResetPCWakeUpTime) {
                 if (!processCommand(COSMP25::Commands::PCWakeUpTime, &answer) &&
                     !answer.isEmpty()) {
                     resetPCWakingUpTimeResult = false;
-                    toLog(LogLevel::Error, mDeviceName + ": Cannot get wake up timeout");
+                    toLog(LogLevel::Error, m_DeviceName + ": Cannot get wake up timeout");
                 } else {
                     needResetPCWakeUpTime = answer[0];
                 }
@@ -129,19 +129,19 @@ bool OSMP25::getStatus(TStatusCodes &aStatusCodes) {
             if (needResetPCWakeUpTime && resetPCWakingUpTimeResult &&
                 !processCommand(COSMP25::Commands::ResetPCWakeUpTime)) {
                 resetPCWakingUpTimeResult = false;
-                toLog(LogLevel::Error, mDeviceName + ": Cannot reset wake up timeout");
+                toLog(LogLevel::Error, m_DeviceName + ": Cannot reset wake up timeout");
             }
 
             if (resetPCWakingUpTimeResult) {
                 toLog(LogLevel::Normal,
                       QString("%1: Set wake up timeout to %2 hours -> %3")
-                          .arg(mDeviceName)
+                          .arg(m_DeviceName)
                           .arg(intervals / 2.0)
                           .arg(PCWakingUpTime.toString(COSMP25::TimeLogFormat)));
 
                 if (processCommand(COSMP25::Commands::PCWakeUpTime,
                                    QByteArray(1, uchar(intervals)))) {
-                    mPCWakingUpTime = PCWakingUpTime;
+                    m_PCWakingUpTime = PCWakingUpTime;
                 }
             }
         }
@@ -154,12 +154,12 @@ bool OSMP25::getStatus(TStatusCodes &aStatusCodes) {
 TResult OSMP25::execCommand(const QByteArray &aCommand,
                             const QByteArray &aCommandData,
                             QByteArray *aAnswer) {
-    MutexLocker lock(&mExternalMutex);
+    MutexLocker lock(&m_ExternalMutex);
 
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    m_Protocol.setPort(m_IOPort);
+    m_Protocol.setLog(m_Log);
 
-    return mProtocol.processCommand(aCommand + aCommandData, aAnswer);
+    return m_Protocol.processCommand(aCommand + aCommandData, aAnswer);
 }
 
 //----------------------------------------------------------------------------

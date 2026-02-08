@@ -7,8 +7,8 @@ template class PayFRBase<ShtrihOnlineFRBase<ShtrihTCPFRBase>>;
 template class PayFRBase<ShtrihOnlineFRBase<ShtrihSerialFRBase>>;
 
 //--------------------------------------------------------------------------------
-template <class T> PayFRBase<T>::PayFRBase() : mPrinterModelId(0) {
-    mOFDFiscalFields << CFR::FiscalFields::Cashier;
+template <class T> PayFRBase<T>::PayFRBase() : m_PrinterModelId(0) {
+    m_OFDFiscalFields << CFR::FiscalFields::Cashier;
 }
 
 //--------------------------------------------------------------------------------
@@ -18,8 +18,8 @@ template <class T> void PayFRBase<T>::processDeviceData() {
     QString SDCardData = getDeviceParameter(CDeviceData::SDCard).toString();
     bool SDCardError = SDCardData.isEmpty() || SDCardData.startsWith(CDeviceData::Error) ||
                        SDCardData.startsWith(CDeviceData::NotConnected);
-    mCanProcessZBuffer = mCanProcessZBuffer && !SDCardError &&
-                         (mModelData.date >= CShtrihOnlineFR::MinFWDate::ZBuffer);
+    m_CanProcessZBuffer = m_CanProcessZBuffer && !SDCardError &&
+                         (m_ModelData.date >= CShtrihOnlineFR::MinFWDate::ZBuffer);
 }
 
 //--------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ template <class T> void PayFRBase<T>::appendStatusCodes(ushort aFlags, TStatusCo
     bool useRemotePaperSensor =
         getConfigParameter(CHardware::Printer::Settings::RemotePaperSensor).toString() ==
         CHardwareSDK::Values::Use;
-    bool hasPNESensor = CPayPrinters::Models[mPrinterModelId].hasPNESensor;
+    bool hasPNESensor = CPayPrinters::Models[m_PrinterModelId].hasPNESensor;
 
     if (paperWeightSensor && useRemotePaperSensor && hasPNESensor) {
         aStatusCodes.insert(PrinterStatusCode::Warning::PaperNearEnd);
@@ -40,7 +40,7 @@ template <class T> void PayFRBase<T>::appendStatusCodes(ushort aFlags, TStatusCo
 
 //--------------------------------------------------------------------------------
 template <class T> bool PayFRBase<T>::execZReport(bool aAuto) {
-    if (mCanProcessZBuffer && ShtrihFRBase::execZReport(aAuto)) {
+    if (m_CanProcessZBuffer && ShtrihFRBase::execZReport(aAuto)) {
         return true;
     }
 

@@ -38,7 +38,7 @@ EMV::TLV::SItem EMV::TLV::TLVs::parseItem(QByteArray &aBuffer) {
     it.body = aBuffer.left(len);
     aBuffer.remove(0, len);
 
-    mItems << it;
+    m_Items << it;
 
     if (it.isComplex()) {
         QByteArray copy = it.body;
@@ -57,7 +57,7 @@ EMV::TLV::SItem EMV::TLV::TLVs::parseItem(QByteArray &aBuffer) {
 
 //------------------------------------------------------------------------------
 EMV::TLV::SItem EMV::TLV::TLVs::getTag(quint16 aTag) {
-    foreach (auto i, mItems) {
+    foreach (auto i, m_Items) {
         if (i.tag == aTag) {
             return i;
         }

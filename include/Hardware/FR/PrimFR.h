@@ -44,13 +44,13 @@ protected:
     bool readData(QByteArray &aData, int aTimeout);
 
     /// Отличительный байт.
-    uchar mDifferential;
+    uchar m_Differential;
 
     /// Протокол реал-тайм запросов.
-    PrimFRRealTimeProtocol mRTProtocol;
+    PrimFRRealTimeProtocol m_RTProtocol;
 
     /// Ответ на запрос выполнения последней команды.
-    char mLastCommandResult;
+    char m_LastCommandResult;
 };
 
 //--------------------------------------------------------------------------------

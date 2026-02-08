@@ -17,7 +17,7 @@ namespace ETextPosition = CSparkFR::TextProperties::EPosition;
 
 //--------------------------------------------------------------------------------
 AdaptiveFiscalLogic::AdaptiveFiscalLogic(const QVariantMap &aConfiguration)
-    : mConfiguration(aConfiguration) {}
+    : m_Configuration(aConfiguration) {}
 
 //--------------------------------------------------------------------------------
 void AdaptiveFiscalLogic::removeDelimeter(QStringList &aBuffer, ETextPosition::Enum aPosition) {
@@ -80,7 +80,7 @@ bool AdaptiveFiscalLogic::adjustBuffer(QStringList &aBuffer, ETextPosition::Enum
 //--------------------------------------------------------------------------------
 TMoneyPosition AdaptiveFiscalLogic::getMoneyPosition() {
     std::list<QString> reciptTemplate =
-        mConfiguration[CHardwareSDK::Printer::ReceiptTemplate].toStringList().toStdList();
+        m_Configuration[CHardwareSDK::Printer::ReceiptTemplate].toStringList().toStdList();
 
     TMoneyPosition result(-1, -1);
     QString currencyTemplate = "%" + QString(CPrintConstants::Currency) + "%";
@@ -196,14 +196,14 @@ bool AdaptiveFiscalLogic::adjustReceipt(const QStringList &aReceipt,
         }
     }
 
-    mTextProperties = result;
+    m_TextProperties = result;
 
     return true;
 }
 
 //--------------------------------------------------------------------------------
 QStringList &AdaptiveFiscalLogic::getTextProperties() {
-    return mTextProperties;
+    return m_TextProperties;
 }
 
 //--------------------------------------------------------------------------------

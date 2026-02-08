@@ -29,10 +29,10 @@ protected:
     TResult check(const QByteArray &aAnswer);
 
     /// ID адреса устройства.
-    char mAddress;
+    char m_Address;
 
     /// Флаг последовательности.
-    bool mSequenceFlag;
+    bool m_SequenceFlag;
 };
 
 //--------------------------------------------------------------------------------

@@ -69,8 +69,8 @@ public:
 private:
     Q_DISABLE_COPY(ModelData)
 
-    static TModelIds mModelIds;
-    QRecursiveMutex mMutex;
+    static TModelIds m_ModelIds;
+    QRecursiveMutex m_Mutex;
 };
 } // namespace POSPrinters
 

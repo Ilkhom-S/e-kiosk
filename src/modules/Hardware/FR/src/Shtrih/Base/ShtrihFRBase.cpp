@@ -16,18 +16,18 @@ template class ShtrihFRBase<ShtrihTCPFRBase>;
 //--------------------------------------------------------------------------------
 template <class T> ShtrihFRBase<T>::ShtrihFRBase() {
     // параметры семейства ФР
-    mLineFeed = false;
+    m_LineFeed = false;
     setConfigParameter(CHardware::Printer::FeedingAmount, 6);
 
     // данные команд
     using namespace CShtrihFR::Commands;
 
-    mCommandData.add(GetLongStatus, 6 * 1000);
-    mCommandData.add(ExtentionPrinting, 6 * 1000);
-    mCommandData.add(CancelDocument, 6 * 1000);
-    mCommandData.add(ZReport, 30 * 1000);
-    mCommandData.add(ZReportInBuffer, 30 * 1000);
-    mCommandData.add(PrintDeferredZReports, 6 * 1000);
+    m_CommandData.add(GetLongStatus, 6 * 1000);
+    m_CommandData.add(ExtentionPrinting, 6 * 1000);
+    m_CommandData.add(CancelDocument, 6 * 1000);
+    m_CommandData.add(ZReport, 30 * 1000);
+    m_CommandData.add(ZReportInBuffer, 30 * 1000);
+    m_CommandData.add(PrintDeferredZReports, 6 * 1000);
 }
 
 //--------------------------------------------------------------------------------
@@ -43,10 +43,10 @@ template <class T> bool ShtrihFRBase<T>::updateParameters() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool ShtrihFRBase<T>::isConnected() {
-    EPortTypes::Enum portType = mIOPort->getType();
+    EPortTypes::Enum portType = m_IOPort->getType();
 
     if (portType == EPortTypes::COMEmulator) {
-        toLog(LogLevel::Error, mDeviceName + ": Port type is COM-emulator");
+        toLog(LogLevel::Error, m_DeviceName + ": Port type is COM-emulator");
         return false;
     }
 
@@ -57,8 +57,8 @@ template <class T> bool ShtrihFRBase<T>::isConnected() {
         return false;
     }
 
-    mType = CShtrihFR::Types::NoType;
-    mModel = CShtrihFR::Models::ID::NoModel;
+    m_Type = CShtrihFR::Types::NoType;
+    m_Model = CShtrihFR::Models::ID::NoModel;
     CShtrihFR::Models::CData modeData;
 
     bool isLoading = !isAutoDetecting();
@@ -69,17 +69,17 @@ template <class T> bool ShtrihFRBase<T>::isConnected() {
         [&modelName](const CShtrihFR::SModelData &data) -> bool { return data.name == modelName; });
 
     if (result && (answer.size() > 6)) {
-        mType = uchar(answer[2]);
-        mModel = uchar(answer[6]);
+        m_Type = uchar(answer[2]);
+        m_Model = uchar(answer[6]);
     } else if (!result && isLoading && !modelName.isEmpty() &&
                (modelDataIt != modeData.data().end())) {
-        mType = CShtrihFR::Types::KKM;
-        mModel = modelDataIt.key();
+        m_Type = CShtrihFR::Types::KKM;
+        m_Model = modelDataIt.key();
     }
 
     answer = answer.mid(7).replace(ASCII::NUL, "");
 
-    QString modelId = mCodec->toUnicode(answer);
+    QString modelId = m_Codec->toUnicode(answer);
     modelDataIt = std::find_if(modeData.data().begin(),
                                modeData.data().end(),
                                [&modelName, &modelId](const CShtrihFR::SModelData &data) -> bool {
@@ -88,34 +88,34 @@ template <class T> bool ShtrihFRBase<T>::isConnected() {
                                });
 
     if (modelDataIt != modeData.data().end()) {
-        mType = CShtrihFR::Types::KKM;
-        mModel = modelDataIt.key();
+        m_Type = CShtrihFR::Types::KKM;
+        m_Model = modelDataIt.key();
     }
 
-    mVerified = false;
-    mDeviceName = CShtrihFR::Models::Default;
-    mModelData = modeData[mModel];
-    mCanProcessZBuffer = mModelData.ZBufferSize;
+    m_Verified = false;
+    m_DeviceName = CShtrihFR::Models::Default;
+    m_ModelData = modeData[m_Model];
+    m_CanProcessZBuffer = m_ModelData.ZBufferSize;
 
-    if (mType == CShtrihFR::Types::KKM) {
-        mVerified = mModelData.verified;
-        mDeviceName = mModelData.name;
-        setConfigParameter(CHardware::Printer::FeedingAmount, mModelData.feed);
-    } else if ((mType == CShtrihFR::Types::Printer) &&
-               (mModel == CShtrihFR::Models::ID::Shtrih500)) {
-        mDeviceName = "Shtrih-M Shtrih-500";
-        mFontNumber = CShtrihFR::Fonts::Shtrih500;
+    if (m_Type == CShtrihFR::Types::KKM) {
+        m_Verified = m_ModelData.verified;
+        m_DeviceName = m_ModelData.name;
+        setConfigParameter(CHardware::Printer::FeedingAmount, m_ModelData.feed);
+    } else if ((m_Type == CShtrihFR::Types::Printer) &&
+               (m_Model == CShtrihFR::Models::ID::Shtrih500)) {
+        m_DeviceName = "Shtrih-M Shtrih-500";
+        m_FontNumber = CShtrihFR::Fonts::Shtrih500;
     }
 
-    if (mDeviceName == CShtrihFR::Models::Default) {
+    if (m_DeviceName == CShtrihFR::Models::Default) {
         toLog(LogLevel::Error,
-              QString("ShtrihFR: Unknown model number = %1 or type = %2").arg(mModel).arg(mType));
+              QString("ShtrihFR: Unknown model number = %1 or type = %2").arg(m_Model).arg(m_Type));
     }
 
-    mModelCompatibility = mSupportedModels.contains(mDeviceName);
+    m_ModelCompatibility = m_SupportedModels.contains(m_DeviceName);
 
-    if (CShtrihFR::FRParameters::Fields.data().contains(mModel)) {
-        mParameters = CShtrihFR::FRParameters::Fields[mModel];
+    if (CShtrihFR::FRParameters::Fields.data().contains(m_Model)) {
+        m_Parameters = CShtrihFR::FRParameters::Fields[m_Model];
     }
 
     return true;
@@ -127,7 +127,7 @@ template <class T> bool ShtrihFRBase<T>::getStatus(TStatusCodes &aStatusCodes) {
         return false;
     }
 
-    if (canGetZReportQuantity() && !mWhiteSpaceZBuffer) {
+    if (canGetZReportQuantity() && !m_WhiteSpaceZBuffer) {
         aStatusCodes.insert(FRStatusCode::Warning::ZBufferFull);
     }
 
@@ -139,19 +139,19 @@ template <class T> bool ShtrihFRBase<T>::performZReport(bool aPrintDeferredRepor
     toLog(LogLevel::Normal, "ShtrihFR: Begin processing Z-report");
     bool printDeferredZReportsOK = true;
 
-    bool ZBufferOverflow = mZBufferOverflow;
+    bool ZBufferOverflow = m_ZBufferOverflow;
     bool printZReportOK = execZReport(false);
 
     if (printZReportOK && ZBufferOverflow) {
-        mZBufferFull = true;
+        m_ZBufferFull = true;
     }
 
-    if (aPrintDeferredReports && mCanProcessZBuffer) {
+    if (aPrintDeferredReports && m_CanProcessZBuffer) {
         printDeferredZReportsOK = printDeferredZReports();
         getZReportQuantity();
 
-        if (printDeferredZReportsOK || (mWhiteSpaceZBuffer > 0)) {
-            mZBufferFull = false;
+        if (printDeferredZReportsOK || (m_WhiteSpaceZBuffer > 0)) {
+            m_ZBufferFull = false;
         }
     }
 
@@ -178,22 +178,22 @@ template <class T> bool ShtrihFRBase<T>::printDeferredZReports() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool ShtrihFRBase<T>::prepareZReport(bool aAuto, QVariantMap &aData) {
-    bool needCloseSession = mMode == CShtrihFR::InnerModes::SessionExpired;
+    bool needCloseSession = m_Mode == CShtrihFR::InnerModes::SessionExpired;
 
     if (aAuto) {
-        if (mOperatorPresence) {
+        if (m_OperatorPresence) {
             toLog(LogLevel::Error,
-                  mDeviceName +
+                  m_DeviceName +
                       ": Failed to process auto-Z-report due to presence of the operator.");
-            mNeedCloseSession = mNeedCloseSession || needCloseSession;
+            m_NeedCloseSession = m_NeedCloseSession || needCloseSession;
 
             return false;
         }
 
-        if (!mIsOnline && !mCanProcessZBuffer) {
+        if (!m_IsOnline && !m_CanProcessZBuffer) {
             toLog(LogLevel::Normal,
-                  mDeviceName + ": FR has no buffer, auto-Z-report is not available");
-            mNeedCloseSession = mNeedCloseSession || needCloseSession;
+                  m_DeviceName + ": FR has no buffer, auto-Z-report is not available");
+            m_NeedCloseSession = m_NeedCloseSession || needCloseSession;
 
             return false;
         }
@@ -211,17 +211,17 @@ template <class T> bool ShtrihFRBase<T>::execZReport(bool aAuto) {
     }
 
     char command = aAuto ? CShtrihFR::Commands::ZReportInBuffer : CShtrihFR::Commands::ZReport;
-    mNeedCloseSession = false;
+    m_NeedCloseSession = false;
     bool success = processCommand(command);
 
     if (success) {
-        mZBufferOverflow = false;
+        m_ZBufferOverflow = false;
         SleepHelper::msleep(CShtrihFR::Pause::ZReportPrintingEnd);
         success = waitForChangeZReportMode();
     }
 
     if (getLongStatus()) {
-        mNeedCloseSession = mMode == CShtrihFR::InnerModes::SessionExpired;
+        m_NeedCloseSession = m_Mode == CShtrihFR::InnerModes::SessionExpired;
     }
 
     if (success) {
@@ -241,7 +241,7 @@ template <class T> bool ShtrihFRBase<T>::execZReport(bool aAuto) {
 
 //--------------------------------------------------------------------------------
 template <class T> bool ShtrihFRBase<T>::canGetZReportQuantity() {
-    return mFiscalized && (mModel == CShtrihFR::Models::ID::ShtrihComboFRK) &&
+    return m_Fiscalized && (m_Model == CShtrihFR::Models::ID::ShtrihComboFRK) &&
            isFiscalReady(false, EFiscalPrinterCommand::ZReport);
 }
 
@@ -261,10 +261,10 @@ template <class T> bool ShtrihFRBase<T>::getZReportQuantity() {
     int count = ZReportQuantity.toInt();
     toLog(LogLevel::Error, "ShtrihFR: Z-report count = " + QString::number(count));
 
-    mWhiteSpaceZBuffer = mModelData.ZBufferSize - count;
+    m_WhiteSpaceZBuffer = m_ModelData.ZBufferSize - count;
 
-    if (mWhiteSpaceZBuffer < 0) {
-        mWhiteSpaceZBuffer = 0;
+    if (m_WhiteSpaceZBuffer < 0) {
+        m_WhiteSpaceZBuffer = 0;
     }
 
     return true;
@@ -290,28 +290,28 @@ template <class T> bool ShtrihFRBase<T>::waitForChangeZReportMode() {
                 return false;
             }
 
-            if ((mSubmode == CShtrihFR::InnerSubmodes::PaperEndPassive) ||
-                (mSubmode == CShtrihFR::InnerSubmodes::PaperEndActive)) {
+            if ((m_Submode == CShtrihFR::InnerSubmodes::PaperEndPassive) ||
+                (m_Submode == CShtrihFR::InnerSubmodes::PaperEndActive)) {
                 // 3.3. подрежим - закончилась бумага
                 return false;
             }
             // если режим или подрежим - печать или печать отчета или Z-отчета, то
-            else if ((mMode == CShtrihFR::InnerModes::DataEjecting) ||
-                     (mMode == CShtrihFR::InnerModes::PrintFullZReport) ||
-                     (mMode == CShtrihFR::InnerModes::PrintEKLZReport) ||
-                     (mSubmode == CShtrihFR::InnerSubmodes::PrintingFullReports) ||
-                     (mSubmode == CShtrihFR::InnerSubmodes::Printing)) {
+            else if ((m_Mode == CShtrihFR::InnerModes::DataEjecting) ||
+                     (m_Mode == CShtrihFR::InnerModes::PrintFullZReport) ||
+                     (m_Mode == CShtrihFR::InnerModes::PrintEKLZReport) ||
+                     (m_Submode == CShtrihFR::InnerSubmodes::PrintingFullReports) ||
+                     (m_Submode == CShtrihFR::InnerSubmodes::Printing)) {
                 toLog(LogLevel::Normal, "ShtrihFR: service Z-report process, wait...");
-            } else if ((mMode == CShtrihFR::InnerModes::SessionClosed) ||
-                       (mSubmode == CShtrihFR::InnerSubmodes::PaperOn)) {
+            } else if ((m_Mode == CShtrihFR::InnerModes::SessionClosed) ||
+                       (m_Submode == CShtrihFR::InnerSubmodes::PaperOn)) {
                 // 3.3. режим - тот, который ожидаем, если Z-отчет допечатался, все хорошо
                 return true;
             } else {
                 // 3.4. режим не тот, который ожидаем в соответствии с протоколом, выходим с ошибкой
                 toLog(LogLevel::Error,
                       QString("ShtrihFR: Z-report, unknown mode.submode = %1.%2")
-                          .arg(int(mMode))
-                          .arg(int(mSubmode)));
+                          .arg(int(m_Mode))
+                          .arg(int(m_Submode)));
                 return false;
             }
 
@@ -338,7 +338,7 @@ template <class T> bool ShtrihFRBase<T>::processAnswer(const QByteArray &aComman
     }
 
     if (aError == CShtrihFR::Errors::ChequeBufferOverflow) {
-        mZBufferOverflow = mCanProcessZBuffer;
+        m_ZBufferOverflow = m_CanProcessZBuffer;
     }
 
     return false;

@@ -64,10 +64,10 @@ protected:
     bool setAvailable(bool aEnable);
 
     /// Мьютекс для операций со считанными данными.
-    QMutex mDataMutex;
+    QMutex m_DataMutex;
 
     /// Был включен извне.
-    bool mExEnabled;
+    bool m_ExEnabled;
 };
 
 //--------------------------------------------------------------------------------

@@ -77,7 +77,7 @@ public:
 
     /// Оператор [].
     const QString operator[](uint8_t aData) const {
-        return this->mBuffer.value(T(aData & ('\x03' << aIndex)), "unknown");
+        return this->m_Buffer.value(T(aData & ('\x03' << aIndex)), "unknown");
     }
 };
 } // namespace CLibUSB
