@@ -104,35 +104,35 @@ private:
     bool updateExpired() const;
 
 private:
-    QThread mThread;
+    QThread m_Thread;
     SDK::PaymentProcessor::ICore *mCore;
-    QSharedPointer<RequestSender> mHttp;
-    QUrl mServerUrl;
-    QString mContentPath;
-    QSharedPointer<DatabaseUtils> mDatabaseUtils;
-    QSharedPointer<QSettings> mSettings;
+    QSharedPointer<RequestSender> m_Http;
+    QUrl m_ServerUrl;
+    QString m_ContentPath;
+    QSharedPointer<DatabaseUtils> m_DatabaseUtils;
+    QSharedPointer<QSettings> m_Settings;
 
-    int mExpirationTimer;
-    QDateTime mExpirationTime;
+    int m_ExpirationTimer;
+    QDateTime m_ExpirationTime;
 
 private:
     /// Время запуска обновления
-    QDateTime mUpdateStamp;
+    QDateTime m_UpdateStamp;
 
     /// Список актуальных каналов
-    QStringList mTypeList;
+    QStringList m_TypeList;
 
     /// Список новых каналов, полученных от сервера
     QMap<QString, Ad::Campaign> mCampaigns;
 
     /// Список каналов, подлежащих обновлению
-    QStringList mTypeDownloadList;
+    QStringList m_TypeDownloadList;
 
     /// Кол-во сохранённых в настройки каналов
-    int mSavedTypes;
+    int m_SavedTypes;
 
     /// Текущая команда загрузки архива
-    int mCurrentDownloadCommand;
+    int m_CurrentDownloadCommand;
 };
 
 //------------------------------------------------------------------------

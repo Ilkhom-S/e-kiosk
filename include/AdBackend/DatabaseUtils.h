@@ -38,7 +38,7 @@ public:
     virtual bool deleteStatisticRecords(const QList<SStatisticRecord> &aRecords) override;
 
 private:
-    QSqlDatabase mDatabase;
+    QSqlDatabase m_Database;
 };
 
 //------------------------------------------------------------------------
