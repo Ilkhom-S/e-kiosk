@@ -34,28 +34,32 @@ WatchServiceController::WatchServiceController()
     // Create menu actions with direct connections instead of signal mapper
     {
         auto *settingsAction = m_Menu.addAction(
-            WatchServiceController::createTemplateIcon(":/icons/menu-settingsTemplate.png"), tr("#start_service_menu"));
+            WatchServiceController::createTemplateIcon(":/icons/menu-settingsTemplate.png"),
+            tr("#start_service_menu"));
         connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(onStartServiceMenuClicked()));
         m_StartServiceActions << settingsAction;
 
-        auto *setupAction = m_Menu.addAction(WatchServiceController::createTemplateIcon(":/icons/menu-setupTemplate.png"),
-                                             tr("#start_first_setup"));
+        auto *setupAction = m_Menu.addAction(
+            WatchServiceController::createTemplateIcon(":/icons/menu-setupTemplate.png"),
+            tr("#start_first_setup"));
         connect(setupAction, SIGNAL(triggered(bool)), this, SLOT(onStartFirstSetupClicked()));
         m_StartServiceActions << setupAction;
 
         m_Menu.addSeparator();
     }
 
-    auto *playAction =
-        m_Menu.addAction(WatchServiceController::createTemplateIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
+    auto *playAction = m_Menu.addAction(
+        WatchServiceController::createTemplateIcon(":/icons/menu-playTemplate.png"),
+        tr("#start_service"));
     connect(playAction, SIGNAL(triggered(bool)), this, SLOT(onStartServiceClickedDirect()));
     m_StartServiceActions << playAction;
 
-    m_StopServiceAction =
-        m_Menu.addAction(WatchServiceController::createTemplateIcon(":/icons/menu-stopTemplate.png"), tr("#stop_service"));
+    m_StopServiceAction = m_Menu.addAction(
+        WatchServiceController::createTemplateIcon(":/icons/menu-stopTemplate.png"),
+        tr("#stop_service"));
     m_Menu.addSeparator();
-    m_CloseTrayIconAction =
-        m_Menu.addAction(WatchServiceController::createTemplateIcon(":/icons/menu-closeTemplate.png"), tr("#close"));
+    m_CloseTrayIconAction = m_Menu.addAction(
+        WatchServiceController::createTemplateIcon(":/icons/menu-closeTemplate.png"), tr("#close"));
 
     connect(m_StopServiceAction, SIGNAL(triggered(bool)), SLOT(onStopServiceClicked()));
     connect(m_CloseTrayIconAction, SIGNAL(triggered(bool)), SLOT(onCloseIconClicked()));
@@ -257,10 +261,12 @@ void WatchServiceController::onCheck() {
 void WatchServiceController::updateTrayIcon() {
     if (m_Client->isConnected()) {
         // Connected state: show normal template icon
-        m_Icon.setIcon(WatchServiceController::createTemplateIcon(":/icons/controller-monogram_Template.png"));
+        m_Icon.setIcon(
+            WatchServiceController::createTemplateIcon(":/icons/controller-monogram_Template.png"));
     } else {
         // Disconnected state: show slashed H icon to indicate stopped state
-        m_Icon.setIcon(WatchServiceController::createTemplateIcon(":/icons/controller-monogram-stoppedTemplate.png"));
+        m_Icon.setIcon(WatchServiceController::createTemplateIcon(
+            ":/icons/controller-monogram-stoppedTemplate.png"));
     }
 }
 
@@ -272,17 +278,23 @@ void WatchServiceController::onDisconnected() {
 //----------------------------------------------------------------------------
 void WatchServiceController::onCloseCommandReceived() {
     if (m_LastCommand != Stop) {
-        LOG(WatchServiceController::getLog(), LogLevel::Normal, "Close tray by command from watch service.");
+        LOG(WatchServiceController::getLog(),
+            LogLevel::Normal,
+            "Close tray by command from watch service.");
 
         QCoreApplication::instance()->quit();
     } else {
-        LOG(WatchServiceController::getLog(), LogLevel::Normal, "Ignore close command, because I initiate it.");
+        LOG(WatchServiceController::getLog(),
+            LogLevel::Normal,
+            "Ignore close command, because I initiate it.");
     }
 }
 
 //----------------------------------------------------------------------------
 void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
-    LOG(WatchServiceController::getLog(), LogLevel::Normal, QString("User say: start service. %1").arg(aArguments));
+    LOG(WatchServiceController::getLog(),
+        LogLevel::Normal,
+        QString("User say: start service. %1").arg(aArguments));
 
     m_LastCommand = Start;
 

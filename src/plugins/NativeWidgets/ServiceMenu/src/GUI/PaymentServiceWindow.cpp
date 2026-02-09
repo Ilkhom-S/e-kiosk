@@ -486,9 +486,9 @@ PaymentTableModel::headerData(int aSection, Qt::Orientation aOrientation, int aR
         if (aSection >= 0 && aSection < columnHeaders.size()) {
             Column column = static_cast<Column>(aSection);
             return columnHeaders.value(column);
-        } else {
-            return QString();
         }
+
+        return QString();
     } else {
         return QVariant();
     }

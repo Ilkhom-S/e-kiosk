@@ -47,9 +47,9 @@ bool CryptEngine::initialize() {
             m_Initialized = true;
 
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     return true;
@@ -362,11 +362,11 @@ bool CryptEngine::createKeyPair(int aKeyPair,
         }
 
         return false;
-    } else {
-        if (oldPair.has_value()) {
-            Crypt_CloseKey(&oldPair->first);
-            Crypt_CloseKey(&oldPair->second);
-        }
+    }
+
+    if (oldPair.has_value()) {
+        Crypt_CloseKey(&oldPair->first);
+        Crypt_CloseKey(&oldPair->second);
     }
 
     m_KeyPairs[aKeyPair] = pair;
@@ -404,9 +404,9 @@ bool CryptEngine::loadKeyPair(int aKeyPair,
     switch (aEngine) {
     case CCrypt::ETypeEngine::File:
         res = ::Crypt_OpenSecretKeyFromFile(aEngine,
-                                             aSecretKeyPath.toLocal8Bit().data(),
-                                             aPassword.toLatin1().data(),
-                                             &keyPair.first);
+                                            aSecretKeyPath.toLocal8Bit().data(),
+                                            aPassword.toLatin1().data(),
+                                            &keyPair.first);
         break;
 
     case CCrypt::ETypeEngine::RuToken:
@@ -425,10 +425,10 @@ bool CryptEngine::loadKeyPair(int aKeyPair,
     }
 
     res = ::Crypt_OpenPublicKeyFromFile(CCrypt::ETypeEngine::File,
-                                         aPublicKeyPath.toLocal8Bit(),
-                                         aBankSerialNumber,
-                                         &keyPair.second,
-                                         0);
+                                        aPublicKeyPath.toLocal8Bit(),
+                                        aBankSerialNumber,
+                                        &keyPair.second,
+                                        0);
 
     if (res != 0) {
         aErrorDescription = errorToString(res);
@@ -473,9 +473,9 @@ bool CryptEngine::releaseKeyPair(int aKeyPair) {
         m_KeyPairs.erase(it);
 
         return true;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 //---------------------------------------------------------------------------
@@ -514,11 +514,11 @@ bool CryptEngine::sign(int aKeyPair,
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
-        aSignature.resize(res);
-
-        return true;
     }
+
+    aSignature.resize(res);
+
+    return true;
 }
 
 //---------------------------------------------------------------------------
@@ -548,11 +548,11 @@ bool CryptEngine::signDetach(int aKeyPair,
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
-        aSignature.resize(res);
-
-        return true;
     }
+
+    aSignature.resize(res);
+
+    return true;
 }
 
 //---------------------------------------------------------------------------
@@ -582,11 +582,11 @@ bool CryptEngine::verify(int aKeyPair,
         aOriginalResponse = QByteArray(originalResponseData, originalResponseDataSize);
 
         return true;
-    } else {
-        aErrorDescription = errorToString(res);
-
-        return false;
     }
+
+    aErrorDescription = errorToString(res);
+
+    return false;
 }
 
 //---------------------------------------------------------------------------
@@ -611,11 +611,11 @@ bool CryptEngine::verifyDetach(int aKeyPair,
 
     if (res == 0) {
         return true;
-    } else {
-        aErrorDescription = errorToString(res);
-
-        return false;
     }
+
+    aErrorDescription = errorToString(res);
+
+    return false;
 }
 
 //---------------------------------------------------------------------------
@@ -644,11 +644,11 @@ bool CryptEngine::encrypt(int aKeyPair,
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
-        aResult.resize(res);
-
-        return true;
     }
+
+    aResult.resize(res);
+
+    return true;
 }
 
 //---------------------------------------------------------------------------
@@ -685,11 +685,11 @@ bool CryptEngine::encryptLong(int aKeyPair,
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
-        aResult.resize(res);
-
-        return true;
     }
+
+    aResult.resize(res);
+
+    return true;
 }
 
 //---------------------------------------------------------------------------
@@ -726,11 +726,11 @@ bool CryptEngine::decrypt(int aKeyPair,
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
-        aResult.resize(res);
-
-        return true;
     }
+
+    aResult.resize(res);
+
+    return true;
 }
 
 //---------------------------------------------------------------------------
@@ -767,11 +767,11 @@ bool CryptEngine::decryptLong(int aKeyPair,
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
-        aResult.resize(res);
-
-        return true;
     }
+
+    aResult.resize(res);
+
+    return true;
 }
 
 //---------------------------------------------------------------------------

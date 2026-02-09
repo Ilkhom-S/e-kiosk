@@ -38,9 +38,9 @@ bool MultistagePayment::perform_Step(int aStep) {
         }
 
         return getNextStep();
-    } else {
-        return Payment::perform_Step(aStep);
     }
+
+    return Payment::perform_Step(aStep);
 }
 
 //---------------------------------------------------------------------------

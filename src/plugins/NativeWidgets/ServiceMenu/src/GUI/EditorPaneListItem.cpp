@@ -20,9 +20,9 @@ QVariant EditorPaneListItem::data(int aRole) const {
     }
     if (aRole == Qt::DisplayRole) {
         return m_Name + ":\n" + m_Value;
-    } else {
-        return QListWidgetItem::data(aRole);
     }
+
+    return QListWidgetItem::data(aRole);
 }
 
 //------------------------------------------------------------------------

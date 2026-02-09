@@ -50,7 +50,7 @@ File::Result File::verify(const QString &aTempFilePath) {
         }
 
         return hashOK ? OK : Error;
-    } else {
-        return Error;
     }
+
+    return Error;
 }
