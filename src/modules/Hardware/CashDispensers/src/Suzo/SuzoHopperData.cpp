@@ -2,5 +2,7 @@
 
 #include "SuzoHopperData.h"
 
+namespace CSuzo {
 /// Максимальное количество монет, которое можно установить.
 const char MaxPayoutCapacity[] = "\xFF\xFF";
+} // namespace CSuzo
