@@ -12,6 +12,7 @@ ek_add_library(PluginsSDK
     FOLDER "modules/SDK"
     SOURCES ${PLUGINSSDK_SOURCES}
     QT_MODULES Core
+    DEPENDS DriversSDK
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 

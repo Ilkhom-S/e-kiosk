@@ -15,7 +15,7 @@ ek_add_plugin(native_backend
     FOLDER "plugins/GraphicBackends"
     SOURCES ${NATIVEBACKEND_SOURCES}
     QT_MODULES Core Widgets
-    DEPENDS PluginsSDK ek_common ek_boost
+    DEPENDS PluginsSDK PPSDK ek_common ek_boost
     INSTALL_DIR "plugins/backends"
 )
 
