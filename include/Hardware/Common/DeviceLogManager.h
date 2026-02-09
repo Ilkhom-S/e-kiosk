@@ -10,7 +10,7 @@ public:
     DeviceLogManager() : m_Log(nullptr) {}
     DeviceLogManager(ILog *aLog) : m_Log(aLog) {}
 
-    /// Логировать.
+    /// Логгировать.
     void toLog(LogLevel::Enum aLevel, const QString &aMessage) const {
         if (m_Log) {
             m_Log->write(aLevel, aMessage);

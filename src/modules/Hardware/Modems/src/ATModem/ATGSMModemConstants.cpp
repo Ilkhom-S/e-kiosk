@@ -1,6 +1,6 @@
 /* @file Константы GSM модема. */
 
-#include "ATGSMModem_Constants.h"
+#include "ATGSMModemConstants.h"
 
 //--------------------------------------------------------------------------------
-const char DefaultName[] = "GSM AT compatible modem";
+const char CATGSMModem::DefaultName[] = "GSM AT compatible modem";

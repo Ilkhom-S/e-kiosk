@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <QtCore/QString>
+
 //--------------------------------------------------------------------------------
 namespace CCCNetCreator {
 /// Формат представления даты в ответе на запросы идентификации.
@@ -10,7 +12,7 @@ const QString DateFormat = "yyyyMM";
 /// Формат представления даты для формирования данных устройства.
 const QString DateLogFormat = "MM.yyyy";
 
-/// Выход из initilaize-а.
+/// Выход из initialize-а.
 const int ExitInitializeTimeout = 5 * 1000;
 
 /// Команды

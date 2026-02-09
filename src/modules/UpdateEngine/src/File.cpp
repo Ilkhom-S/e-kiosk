@@ -7,14 +7,13 @@
 #include <QtCore/QFile>
 
 #include <NetworkTaskManager/HashVerifier.h>
+#include <utility>
 
-File::File() {
-    m_Size = 0;
-}
+File::File() : m_Size(0) {}
 
 //---------------------------------------------------------------------------
-File::File(const QString &aName, const QString &aHash, const QString &aUrl, qint64 aSize /*= 0*/)
-    : m_Name(aName), m_Hash(aHash), m_Url(aUrl), m_Size(aSize) {}
+File::File(QString aName, QString aHash, QString aUrl, qint64 aSize /*= 0*/)
+    : m_Name(std::move(aName)), m_Hash(std::move(aHash)), m_Url(std::move(aUrl)), m_Size(aSize) {}
 
 //---------------------------------------------------------------------------
 bool File::operator==(const File &aFile) const {
@@ -23,7 +22,7 @@ bool File::operator==(const File &aFile) const {
 }
 
 //---------------------------------------------------------------------------
-File::Result File::verify(const QString &aTempFilePath) {
+File::Result File::verify(const QString &aTempFilePath) const {
     QFileInfo fInfo(aTempFilePath);
 
     if (!fInfo.exists()) {
@@ -33,7 +32,8 @@ File::Result File::verify(const QString &aTempFilePath) {
     if (size() > 0) {
         if (fInfo.size() < size()) {
             return NotFullyDownloaded;
-        } else if (fInfo.size() > size()) {
+        }
+        if (fInfo.size() > size()) {
             // файл на диске больше файла на сервере - нужно удалить и качать заново
             return Error;
         }

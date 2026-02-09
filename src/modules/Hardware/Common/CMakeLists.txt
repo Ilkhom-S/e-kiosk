@@ -9,8 +9,8 @@ file(GLOB_RECURSE HARDWARECOMMON_SOURCES
 )
 
 file(GLOB PROTOCOLUTILS_SOURCES
-    ../Protocols/Common/ProtocolUtils.cpp
-    ../Protocols/Common/ProtocolUtils.h
+    ../Protocols/Common/src/ProtocolUtils.cpp
+    ../Protocols/Common/src/ProtocolUtils.h
 )
 
 file(GLOB HARDWARECOMMON_SDK_HEADERS

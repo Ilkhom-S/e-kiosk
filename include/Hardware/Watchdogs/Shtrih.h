@@ -37,9 +37,9 @@ protected:
 
     void packedData(const QByteArray &aCommandPacket, QByteArray &aPacket);
 
-    static bool unpackData(const QByteArray &aPacket,
-                           const QByteArray &aAnswer,
-                           CShtrih::TAnswersBuffer &aUnpackedBuffer);
+    bool unpackData(const QByteArray &aPacket,
+                    const QByteArray &aAnswer,
+                    CShtrih::TAnswersBuffer &aUnpackedBuffer);
 
     /// Подсчет контрольной суммы пакета данных.
     static uchar calcCRC(const QByteArray &aData);

@@ -1,9 +1,9 @@
 /* @file Кросс-устройство управления питанием Штрих 3.0. */
 
-#include "Shtrih.h"
-
 #include <QtCore/QLocale>
 #include <QtCore/QtEndian>
+
+#include <Hardware/Watchdogs/Shtrih.h>
 
 using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;

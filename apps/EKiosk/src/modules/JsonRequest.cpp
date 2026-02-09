@@ -15,19 +15,19 @@ void JsonRequest::setBaseUrl(QString url) {
     baseUrl = url.replace("aso/api/", "").replace("aso/v3/", "") /*.replace("https", "http")*/;
 }
 
-void JsonRequest::sendRequest(QJsonObject json,
+void JsonRequest::sendRequest(const QJsonObject &json,
                               QString url,
                               QString requestName,
                               int method,
                               const int timeout,
                               QVariantMap header) {
-    QUrl url = QUrl(baseUrl + url);
-    qDebug() << url;
+    QUrl requestUrl = QUrl(baseUrl + url);
+    qDebug() << requestUrl;
 
     QJsonDocument jsonDoc(json);
     QByteArray jsonData = jsonDoc.toJson();
 
-    QNetworkRequest request(url);
+    QNetworkRequest request(requestUrl);
 
     if (!token.isEmpty()) {
         request.setRawHeader("Authorization", token.toUtf8());

@@ -1,9 +1,9 @@
 /* @file Набор функционала для работы с системными ресурсами с использованием SetupDi. */
 
+#include "SystemDeviceUtils.h"
+
 #include <QtCore/QRegularExpression>
 #include <QtCore/QSettings>
-
-#include "System_DeviceUtils.h"
 
 // Registry constants definitions
 namespace CRegistrySerialPort {
@@ -212,7 +212,7 @@ QString System_DeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty) {
     QString value;
 
     if (RegQueryValueEx(key, aProperty, NULL, NULL, buffer, &size) == ERROR_SUCCESS) {
-        value = QString::from_Utf16(reinterpret_cast<const char16_t *>(buffer));
+        value = QString::fromUtf16(reinterpret_cast<const char16_t *>(buffer));
     }
 
     delete[] buffer;

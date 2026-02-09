@@ -53,7 +53,7 @@ bool DeviceManager::initialize() {
         m_RequiredResources.insert(pluginPath, required);
 
         // Получаем список системных имен, если он содержится в драйвере.
-        SPluginParameter nameParameter = findParameter(CHardwareSDK::System_Name, parameters);
+        SPluginParameter nameParameter = findParameter(CHardwareSDK::SystemName, parameters);
 
         if (!nameParameter.name.isEmpty()) {
             QStringList system_Names = nameParameter.possibleValues.keys();
@@ -111,7 +111,7 @@ IDevice *DeviceManager::acquireDevice(const QString &aInstancePath,
     // Устройство может быть привязано к системному имени (например COM-порты).
     if (m_RDSystem_Names.contains(driverPath)) {
         // Удаляем системное имя из списка доступных.
-        QString system_Name = config[CHardwareSDK::System_Name].toString();
+        QString system_Name = config[CHardwareSDK::SystemName].toString();
 
         if (!m_FreeSystem_Names.contains(system_Name)) {
             // Указанное системное имя недоступно.
@@ -122,7 +122,7 @@ IDevice *DeviceManager::acquireDevice(const QString &aInstancePath,
             auto it = std::find_if(parameters.begin(),
                                    parameters.end(),
                                    [&](const SPluginParameter &aParameter) -> bool {
-                                       return aParameter.name == CHardwareSDK::System_Name;
+                                       return aParameter.name == CHardwareSDK::SystemName;
                                    });
 
             if (it != parameters.end()) {
@@ -203,7 +203,7 @@ void DeviceManager::releaseDevice(IDevice *aDevice) {
     m_PluginLoader->destroyPlugin(plugin);
 
     if (m_RDSystem_Names.contains(driverPath)) {
-        QString system_Name = config[CHardwareSDK::System_Name].toString();
+        QString system_Name = config[CHardwareSDK::SystemName].toString();
         m_FreeSystem_Names.insert(system_Name);
     }
 
@@ -242,7 +242,7 @@ TNamedDevice DeviceManager::createDevice(const QString &aDriverPath,
     // Устройство может быть привязано к системному имени (например COM-порты).
     if (m_RDSystem_Names.contains(aDriverPath)) {
         // Удаляем системное имя из списка доступных.
-        QString system_Name = config[CHardwareSDK::System_Name].toString();
+        QString system_Name = config[CHardwareSDK::SystemName].toString();
 
         if (!system_Name.isEmpty() && !m_FreeSystem_Names.contains(system_Name)) {
             // Указанное системное имя недоступно.
@@ -585,7 +585,7 @@ QStringList DeviceManager::detect(const QString & /*aDeviceType*/) {
         // Для каждого системного имени создаем устройство.
         foreach (const QString &system_Name, m_RDSystem_Names.values(requiredDevice)) {
             QVariantMap config;
-            config[CHardwareSDK::System_Name] = system_Name;
+            config[CHardwareSDK::SystemName] = system_Name;
 
             TNamedDevice required = createDevice(requiredDevice, config, true);
 
@@ -941,8 +941,8 @@ void DeviceManager::setDeviceConfiguration(IDevice *aDevice, const QVariantMap &
     foreach (IDevice *system_Device, m_DeviceDependencyMap.values(aDevice)) {
         // При изменении имени системного устройства меняем его доступность
         oldSystem_Name =
-            system_Device->getDeviceConfiguration()[CHardwareSDK::System_Name].toString();
-        newSystem_Name = aConfig[CHardwareSDK::System_Name].toString();
+            system_Device->getDeviceConfiguration()[CHardwareSDK::SystemName].toString();
+        newSystem_Name = aConfig[CHardwareSDK::SystemName].toString();
 
         if (oldSystem_Name != newSystem_Name) {
             IPlugin *plugin = dynamic_cast<IPlugin *>(system_Device);
@@ -1158,7 +1158,7 @@ QString DeviceManager::getDeviceLogName(IDevice *aDevice, bool aDetecting) {
     if (aDetecting) {
         if (m_RDSystem_Names.contains(configPath)) {
             QString system_Name =
-                aDevice->getDeviceConfiguration()[CHardwareSDK::System_Name].toString();
+                aDevice->getDeviceConfiguration()[CHardwareSDK::SystemName].toString();
             result = "Port " + system_Name;
         } else if (sections > 4) {
             result = configPath.section('.', 4, 4);
@@ -1171,7 +1171,7 @@ QString DeviceManager::getDeviceLogName(IDevice *aDevice, bool aDetecting) {
         m_DeviceDependencyMap.contains(aDevice) ? m_DeviceDependencyMap.value(aDevice) : 0;
 
     if (required) {
-        QString logData = required->getDeviceConfiguration()[CHardwareSDK::System_Name].toString();
+        QString logData = required->getDeviceConfiguration()[CHardwareSDK::SystemName].toString();
 
         if (aDevice->getDeviceConfiguration()[CHardwareSDK::InteractionType].toString() ==
             CInteractionTypes::TCP) {

@@ -4,6 +4,7 @@
 
 #include "Hardware/CashAcceptors/CashAcceptorStatusCodes.h"
 #include "Hardware/Common/DeviceCodeSpecification.h"
+#include "Hardware/Common/WaitingData.h"
 
 //--------------------------------------------------------------------------------
 namespace CICTBase {
@@ -35,7 +36,7 @@ extern const char Identification[];
 namespace States {
 const char Idling = '\x3E';        /// Включен на прием купюр.
 const char Disabled = '\x5E';      /// Отключен для приема купюр.
-extern const char PowerUp[];  /// Включили питание.
+extern const char PowerUp[];       /// Включили питание.
 const char Escrow = '\x81';        /// Временное депонирование.
 const char ErrorExlusion = '\x2F'; /// Предыдущая ошибка перестала быть.
 } // namespace States

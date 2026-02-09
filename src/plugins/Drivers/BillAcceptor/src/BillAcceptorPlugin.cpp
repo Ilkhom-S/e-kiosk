@@ -21,7 +21,7 @@ TParameterList defaultParameters(const QString &aProtocol, const T2 &aModelList)
            << setProtocol(aProtocol)
 
            // ID валюты. TODO: необходимо получать поддержку валют статически от каждого протокола.
-           << SPluginParameter(CHardwareSDK::CashAcceptor::System_CurrencyId,
+           << SPluginParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId,
                                false,
                                QT_TRANSLATE_NOOP("BillAcceptorParameters",
                                                  "BillAcceptorParameters#system_currency_id"),

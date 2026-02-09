@@ -615,7 +615,7 @@ bool AsyncSerialPortWin::setParameters(const TPortParameters &aParameters) {
         }
     }
 
-    setConfigParameter(CHardwareSDK::System_Name, m_System_Name);
+    setConfigParameter(CHardwareSDK::SystemName, m_System_Name);
 
     setConfigParameter(CHardware::Port::COM::BaudRate, int(m_DCB.BaudRate));
     setConfigParameter(CHardware::Port::COM::Parity, int(m_DCB.Parity));

@@ -58,7 +58,7 @@ public slots:
     QString toPlain(const QString &aSource) const;
 
     /// Перекодировать из base64 в utf8
-    QString from_Base64(const QString &aSource) const;
+    QString fromBase64(const QString &aSource) const;
 
     /// Перекодировать из urlenc(win-1251) в utf8
     QString from_UrlEncoding(const QString &aSource) const;

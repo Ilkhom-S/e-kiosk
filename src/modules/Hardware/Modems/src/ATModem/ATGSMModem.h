@@ -5,7 +5,7 @@
 #include <QtCore/QCoreApplication>
 
 #include "ATData.h"
-#include "ATModem_Base.h"
+#include "ATModemBase.h"
 
 //--------------------------------------------------------------------------------
 namespace ENetworkAccessability {
@@ -57,10 +57,10 @@ protected:
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
     /// Получить состояние регистрации в сети
-    static bool getNetworkAccessability(ENetworkAccessability::Enum &aNetworkAccessability);
+    bool getNetworkAccessability(ENetworkAccessability::Enum &aNetworkAccessability);
 
     /// Функция ожидания доступности GSM сети
-    static bool waitNetworkAccessability(int aTimeout);
+    bool waitNetworkAccessability(int aTimeout);
 
     /// Декодирование ответа +CUSD команды
     bool getCUSDMessage(const QByteArray &aBuffer, QString &aMessage);
@@ -69,12 +69,11 @@ protected:
     virtual void setDeviceName(const QByteArray &aFullName);
 
     /// Получить инфо о SIM-карте
-    static void getSIMData(const QByteArray &aCommand);
+    void getSIMData(const QByteArray &aCommand);
 
-    static bool
-    parseFieldInternal(const QByteArray &aBuffer, const QString &aFieldName, QString &aValue);
-    static bool getSiemensCellList(QString &aValue);
-    static bool getSim_COMCellList(QString &aValue);
+    bool parseFieldInternal(const QByteArray &aBuffer, const QString &aFieldName, QString &aValue);
+    bool getSiemensCellList(QString &aValue);
+    bool getSimCOMCellList(QString &aValue);
 
     /// Определение диалекта модема
     AT::EModem_Dialect::Enum m_Gsm_Dialect;

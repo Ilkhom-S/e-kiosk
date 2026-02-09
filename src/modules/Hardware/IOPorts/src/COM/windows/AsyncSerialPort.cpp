@@ -13,8 +13,8 @@ using namespace SDK::Driver::IOPort::COM;
 
 //--------------------------------------------------------------------------------
 AsyncSerialPort::AsyncSerialPort()
-    : m_PortHandle(0), m_Exist(false), m_ReadMutex(QMutex::Recursive),
-      m_WriteMutex(QMutex::Recursive), m_ReadEventMask(0), m_LastError(0), m_LastErrorChecking(0),
+    : m_PortHandle(0), m_Exist(false), m_ReadMutex(QRecursiveMutex()),
+      m_WriteMutex(QRecursiveMutex()), m_ReadEventMask(0), m_LastError(0), m_LastErrorChecking(0),
       m_MaxReadingSize(0), m_WaitResult(false), m_ReadBytes(0) {
     setBaudRate(EBaudRate::BR9600);
     setParity(EParity::No);
@@ -615,7 +615,7 @@ bool AsyncSerialPort::setParameters(const TPortParameters &aParameters) {
         }
     }
 
-    setConfigParameter(CHardwareSDK::System_Name, m_System_Name);
+    setConfigParameter(CHardwareSDK::SystemName, m_System_Name);
 
     setConfigParameter(CHardware::Port::COM::BaudRate, int(m_DCB.BaudRate));
     setConfigParameter(CHardware::Port::COM::Parity, int(m_DCB.Parity));

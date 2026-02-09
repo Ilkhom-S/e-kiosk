@@ -194,7 +194,7 @@ void ClassPrinter::setLeftMargin(int leftMargin) {
 }
 
 void ClassPrinter::setPortName(const QString portName) {
-    portName = portName;
+    this->portName = portName;
 }
 
 void ClassPrinter::CMD_Print(QString text) {

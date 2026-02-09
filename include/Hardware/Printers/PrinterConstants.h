@@ -55,7 +55,7 @@ public:
 private:
     /// Добавить.
     void add(const char *aKey, const char *aValue) {
-        m_Buffer.insert(QString::from_Utf8(aKey)[0], QString::from_Utf8(aValue)[0]);
+        m_Buffer.insert(QString::fromUtf8(aKey)[0], QString::fromUtf8(aValue)[0]);
     }
 };
 

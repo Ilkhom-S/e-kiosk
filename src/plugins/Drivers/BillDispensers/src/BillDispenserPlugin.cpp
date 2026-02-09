@@ -7,13 +7,13 @@
 using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
-template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
     return new DevicePluginBase<T>("Puloon dispenser", aEnvironment, aInstancePath);
 }
 
 //------------------------------------------------------------------------------
 template <>
-IPlugin *CreatePlugin<SuzoHopper>(IEnvironment *aEnvironment, const QString &aInstancePath) {
+IPlugin *createPlugin<SuzoHopper>(IEnvironment *aEnvironment, const QString &aInstancePath) {
     return new DevicePluginBase<SuzoHopper>("Suzo hopper", aEnvironment, aInstancePath);
 }
 

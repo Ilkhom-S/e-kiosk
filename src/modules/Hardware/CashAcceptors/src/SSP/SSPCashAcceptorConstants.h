@@ -2,9 +2,12 @@
 
 #pragma once
 
+#include <SDK/Drivers/IOPort/COMParameters.h>
+
 #include <Hardware/Protocols/CashAcceptor/SSPDataTypes.h>
 
 #include "Hardware/CashAcceptors/CashAcceptorStatusCodes.h"
+#include "Hardware/Common/CommandResults.h"
 #include "Hardware/Common/DeviceCodeSpecification.h"
 #include "Hardware/Common/WaitingData.h"
 
@@ -15,8 +18,8 @@ namespace Addresses {
 const char Validator = 0x00; /// Купюроприемник, диспенсер (пристегивается к купюрнику).
 const char Hopper = 0x10;    /// Хоппер.
 const char Printer1 = 0x40;  /// Принтер Smart Ticket (печать по шаблонам или "на лету" (?).
-const char Printer2 = 0x41; /// Принтер Coupon Printer (печатает на фальцованной бумаге) и Flatbed
-                            /// Printer (обычный термопринтер).
+const char Printer2 = 0x41;  /// Принтер Coupon Printer (печатает на фальцованной бумаге) и Flatbed
+                             /// Printer (обычный термопринтер).
 } // namespace Addresses
 
 namespace Result {

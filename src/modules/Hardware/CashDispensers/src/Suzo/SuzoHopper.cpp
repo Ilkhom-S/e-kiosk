@@ -22,9 +22,9 @@ SuzoHopper::SuzoHopper() {
     m_Address = CCCTalk::Address::Hopper2;
     m_ProtocolTypes = getProtocolTypes();
     m_AllModelData = PAllModelData(new CCCTalk::Dispenser::CModelData());
-    m_Units = 1;
+    m_units = 1;
     m_SingleMode = false;
-    m_ResetIsPossible = false;
+    m_resetIsPossible = false;
 
     setConfigParameter(CHardware::ProtocolType, CHardware::CashDevice::CCTalkTypes::CRC8);
 }
@@ -105,7 +105,7 @@ bool SuzoHopper::getStatus(TStatusCodes &aStatusCodes) {
     foreach (const SDeviceCodeSpecification &specification, testDeviceCodeSpecification) {
         aStatusCodes.insert(specification.statusCode);
 
-        if ((answer != m_LastDeviceStatusCodes) && !specification.description.isEmpty()) {
+        if ((answer != m_lastDeviceStatusCodes) && !specification.description.isEmpty()) {
             SStatusCodeSpecification statusCodeData =
                 m_StatusCodesSpecification->value(specification.statusCode);
             LogLevel::Enum logLevel = getLogLevel(statusCodeData.warningLevel);
@@ -117,7 +117,7 @@ bool SuzoHopper::getStatus(TStatusCodes &aStatusCodes) {
         }
     }
 
-    m_LastDeviceStatusCodes = answer;
+    m_lastDeviceStatusCodes = answer;
 
     return true;
 }
@@ -148,10 +148,10 @@ bool SuzoHopper::getDispensingStatus(CSuzo::SStatus &aStatus) {
 }
 
 //--------------------------------------------------------------------------------
-void SuzoHopper::perform_Dispense(int aUnit, int aItems) {
+void SuzoHopper::performDispense(int aUnit, int aItems) {
     if (!isWorkingThread()) {
         QMetaObject::invokeMethod(
-            this, "perform_Dispense", Qt::QueuedConnection, Q_ARG(int, aUnit), Q_ARG(int, aItems));
+            this, "performDispense", Qt::QueuedConnection, Q_ARG(int, aUnit), Q_ARG(int, aItems));
 
         return;
     }

@@ -15,7 +15,7 @@ OSMP25::OSMP25() {
 
     // Данные устройства.
     m_DeviceName = "OSMP 2.5";
-    m_IOMessageLogging = ELoggingType::None;
+    m_ioMessageLogging = ELoggingType::None;
     setConfigParameter(CHardware::Watchdog::CanRegisterKey, true);
     setConfigParameter(CHardware::Watchdog::CanWakeUpPC, true);
     m_PingTimer.setInterval(COSMP25::PingInterval);

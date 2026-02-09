@@ -1,6 +1,6 @@
 /* @file TCP-порт. */
 
-#include <QtCore/QMetaType>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/QRegularExpression>
 
 #include <Hardware/IOPorts/TCPPort.h>
@@ -12,7 +12,7 @@ const char AntiNaglePing[] = "\xFF";
 
 TCPPort::TCPPort()
     : m_State(QAbstractSocket::UnconnectedState), m_Error(QAbstractSocket::UnknownSocketError),
-      m_SocketGuard(QReadWriteLock::Recursive) {
+      m_SocketGuard() {
     m_Type = SDK::Driver::EPortTypes::TCP;
     setOpeningTimeout(CTCPPort::OpeningTimeout);
 
@@ -215,7 +215,7 @@ bool TCPPort::perform_Read(QByteArray &aData, int aTimeout, int aMinSize) {
         return false;
     }
 
-    QTime waitingTimer;
+    QElapsedTimer waitingTimer;
     waitingTimer.start();
 
     while ((waitingTimer.elapsed() < aTimeout) && (aData.size() < aMinSize)) {

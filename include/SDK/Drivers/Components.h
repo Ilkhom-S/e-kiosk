@@ -9,26 +9,26 @@ namespace Driver {
 
 //---------------------------------------------------------------------------
 /// Драйверы являются общим расширением.
-extern const char Application[];
+constexpr const char Application[] = "Common";
 
 //---------------------------------------------------------------------------
 /// Список возможных компонентов.
 namespace CComponents {
-extern const char Driver[];
-extern const char IOPort[];
-extern const char BillAcceptor[];
-extern const char CoinAcceptor[];
-extern const char Dispenser[];
-extern const char Printer[];
-extern const char FiscalRegistrator[];
-extern const char DocumentPrinter[];
-extern const char Watchdog[];
-extern const char Modem[];
-extern const char Scanner[];
-extern const char CardReader[];
-extern const char Health[];
-extern const char Camera[];
-extern const char Token[];
+constexpr const char Driver[] = "Driver";
+constexpr const char IOPort[] = "IOPort";
+constexpr const char BillAcceptor[] = "BillAcceptor";
+constexpr const char CoinAcceptor[] = "CoinAcceptor";
+constexpr const char Dispenser[] = "Dispenser";
+constexpr const char Printer[] = "Printer";
+constexpr const char FiscalRegistrator[] = "FiscalRegistrator";
+constexpr const char DocumentPrinter[] = "DocumentPrinter";
+constexpr const char Watchdog[] = "Watchdog";
+constexpr const char Modem[] = "Modem";
+constexpr const char Scanner[] = "Scanner";
+constexpr const char CardReader[] = "CardReader";
+constexpr const char Health[] = "Health";
+constexpr const char Camera[] = "Camera";
+constexpr const char Token[] = "Token";
 
 /// Проверяет, является ли тип устройства принтером.
 inline bool isPrinter(const QString &aDeviceType) {

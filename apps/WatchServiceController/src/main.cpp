@@ -34,8 +34,8 @@ int main(int aArgc, char *aArgv[]) {
 #endif
 
     // Перенаправляем логи.
-    ILog::getInstance(CIMessageQueueClient::DefaultLog)
-        ->setDestination(application.getLog()->getName());
+    QString appLogName = application.getLog()->getName();
+    ILog::getInstance(CIMessageQueueClient::DefaultLog)->setDestination(appLogName);
 
     application.getQtApplication().setQuitOnLastWindowClosed(false);
 #ifndef Q_OS_MACOS

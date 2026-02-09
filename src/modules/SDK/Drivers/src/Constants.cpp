@@ -2,12 +2,17 @@
 
 #include <QtCore/QEvent>
 
+#include <Common/PluginConstants.h>
+
 #include <SDK/Drivers/ICardReader.h>
 #include <SDK/Drivers/ICashAcceptor.h>
 #include <SDK/Drivers/IDispenser.h>
 #include <SDK/Drivers/IFiscalPrinter.h>
 #include <SDK/Drivers/IHID.h>
 #include <SDK/Drivers/IWatchdog.h>
+
+// PPVersion definition
+const char CPluginParameters::PPVersion[] = "e_kiosk_version";
 
 namespace SDK {
 namespace Driver {
@@ -249,26 +254,26 @@ extern const char NoData[] = "none";
 } // namespace CAllHardware
 
 // Application component
-const char Application[] = "Common";
+// const char Application[] = "Common";  // Now defined in header
 
 // Components definitions
-namespace CComponents {
-extern const char Driver[] = "Driver";
-extern const char IOPort[] = "IOPort";
-extern const char BillAcceptor[] = "BillAcceptor";
-extern const char CoinAcceptor[] = "CoinAcceptor";
-extern const char Dispenser[] = "Dispenser";
-extern const char Printer[] = "Printer";
-extern const char FiscalRegistrator[] = "FiscalRegistrator";
-extern const char DocumentPrinter[] = "DocumentPrinter";
-extern const char Watchdog[] = "Watchdog";
-extern const char Modem[] = "Modem";
-extern const char Scanner[] = "Scanner";
-extern const char CardReader[] = "CardReader";
-extern const char Health[] = "Health";
-extern const char Camera[] = "Camera";
-extern const char Token[] = "Token";
-} // namespace CComponents
+// namespace CComponents {
+// const char Driver[] = "Driver";
+// const char IOPort[] = "IOPort";
+// const char BillAcceptor[] = "BillAcceptor";
+// const char CoinAcceptor[] = "CoinAcceptor";
+// const char Dispenser[] = "Dispenser";
+// const char Printer[] = "Printer";
+// const char FiscalRegistrator[] = "FiscalRegistrator";
+// const char DocumentPrinter[] = "DocumentPrinter";
+// const char Watchdog[] = "Watchdog";
+// const char Modem[] = "Modem";
+// const char Scanner[] = "Scanner";
+// const char CardReader[] = "CardReader";
+// const char Health[] = "Health";
+// const char Camera[] = "Camera";
+// const char Token[] = "Token";
+// } // namespace CComponents
 
 //---------------------------------------------------------------------------
 // Definitions for CInteractionTypes constants
@@ -285,23 +290,11 @@ extern const char External[] = "External";
 // Dummy function to ensure constants are not optimized away
 void dummyReference() {
     volatile const char *dummy = nullptr;
-    dummy = Application;
+    // Application and CComponents are now constexpr in header
+    // dummy = Application;
     // CComponents
-    dummy = CComponents::Driver;
-    dummy = CComponents::IOPort;
-    dummy = CComponents::BillAcceptor;
-    dummy = CComponents::CoinAcceptor;
-    dummy = CComponents::Dispenser;
-    dummy = CComponents::Printer;
-    dummy = CComponents::FiscalRegistrator;
-    dummy = CComponents::DocumentPrinter;
-    dummy = CComponents::Watchdog;
-    dummy = CComponents::Modem;
-    dummy = CComponents::Scanner;
-    dummy = CComponents::CardReader;
-    dummy = CComponents::Health;
-    dummy = CComponents::Camera;
-    dummy = CComponents::Token;
+    // dummy = CComponents::Driver;
+    // ... etc
     // CInteractionTypes
     dummy = CInteractionTypes::COM;
     dummy = CInteractionTypes::USB;
@@ -467,6 +460,9 @@ void dummyReference() {
     dummy = CAllHardware::FiscalFields::Values::NoData;
     (void)dummy; // Suppress unused variable warning
 }
+
+// Call dummy function to ensure constants are linked
+static int dummy_call = (dummyReference(), 0);
 
 } // namespace Driver
 } // namespace SDK

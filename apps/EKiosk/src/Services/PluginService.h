@@ -72,7 +72,7 @@ public:
     /// Возвращает версию ядра.
     virtual QString getVersion() const;
 
-    /// Возвращает рабочу папку ядра.
+    /// Возвращает рабочую папку ядра.
     virtual QString getDirectory() const;
 
     /// Возвращает каталог для хранения данных/конфигов приложения.
@@ -99,7 +99,7 @@ public:
     /// Сохраняет конфигурацию для данной пары плагин-объект.
     /// Используется для хранения конфигураций плагинов в прикладной программе.
     virtual bool savePluginConfiguration(const QString &aInstancePath,
-                                         const QVariantMap &aParamenters);
+                                         const QVariantMap &aParameters);
 
     virtual SDK::Plugin::IExternalInterface *getInterface(const QString &aInterface);
 

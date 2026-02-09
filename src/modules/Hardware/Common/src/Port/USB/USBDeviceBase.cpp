@@ -79,10 +79,10 @@ template <class T> void USBDeviceBase<T>::resetPDOName() {
     QMutexLocker lock(&m_PDODataGuard);
     // Извлекаем системное имя из конфигурации порта
     QString pdoName =
-        this->m_IOPort->getDeviceConfiguration().value(CHardwareSDK::System_Name).toString();
+        this->m_IOPort->getDeviceConfiguration().value(CHardwareSDK::SystemName).toString();
 
     if (m_PDOData.contains(pdoName)) {
-        m_PDOData[PDOName] = true;
+        m_PDOData[pdoName] = true;
     }
 }
 
@@ -109,16 +109,16 @@ template <class T> bool USBDeviceBase<T>::setPDOName(const QString &aPDOName) {
     QString logPID = ProtocolUtils::toHexLog(pid);
 
     // 3. Проверка VID в данных авто поиска (CSpecification)
-    if (!m_DetectingData->data().contains(VID)) {
+    if (!m_DetectingData->data().contains(vid)) {
         this->toLog(LogLevel::Normal,
                     QStringLiteral("%1: No such VID %2").arg(this->m_DeviceName, logVID));
         return false;
     }
 
-    const auto &pidData = m_DetectingData->value(VID).constData();
+    const auto &pidData = m_DetectingData->value(vid).constData();
 
     // 4. Проверка PID
-    if (!PIDData.contains(pid)) {
+    if (!pidData.contains(pid)) {
         this->toLog(
             LogLevel::Normal,
             QStringLiteral("%1: No PID %2 for VID %3").arg(this->m_DeviceName, logPID, logVID));
@@ -126,7 +126,7 @@ template <class T> bool USBDeviceBase<T>::setPDOName(const QString &aPDOName) {
     }
 
     // 5. Установка данных устройства из мета-данных
-    const auto &data = PIDData[pid];
+    const auto &data = pidData[pid];
     this->m_DeviceName = data.model;
     this->m_Verified = data.verified;
 
@@ -135,7 +135,7 @@ template <class T> bool USBDeviceBase<T>::setPDOName(const QString &aPDOName) {
 
     // 6. Сохранение конфигурации
     QVariantMap configuration;
-    configuration.insert(CHardwareSDK::System_Name, aPDOName);
+    configuration.insert(CHardwareSDK::SystemName, aPDOName);
 
     this->toLog(LogLevel::Normal,
                 QStringLiteral("%1: Set USB Device %2 (VID %3 PID %4)")
@@ -157,14 +157,14 @@ template <class T> void USBDeviceBase<T>::initializeUSBPort() {
     // Подготавливаем набор имен текущих физических портов для синхронизации
     QSet<QString> systemPortNames;
     for (const QSerialPortInfo &info : availablePorts) {
-        system_PortNames.insert(info.portName());
+        systemPortNames.insert(info.portName());
     }
 
     QMutexLocker lock(&m_PDODataGuard);
 
     // 2. Очистка m_PDOData от портов, которые больше не существуют в системе.
     QSet<QString> cachedPortNames(m_PDOData.keyBegin(), m_PDOData.keyEnd());
-    QSet<QString> deletedPorts = cachedPortNames - system_PortNames;
+    QSet<QString> deletedPorts = cachedPortNames - systemPortNames;
 
     for (const QString &portName : deletedPorts) {
         m_PDOData.remove(portName);

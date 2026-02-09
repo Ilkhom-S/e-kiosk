@@ -51,7 +51,7 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
 
                 case SProvider::SProcessingTraits::SRequest::SResponseField::Base64:
                     return QString(
-                        decoder.decode(QByteArray::from_Base64(aValue.toString().toLatin1())));
+                        decoder.decode(QByteArray::fromBase64(aValue.toString().toLatin1())));
 
                 default:
                     return aValue;

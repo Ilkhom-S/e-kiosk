@@ -184,13 +184,12 @@ void SendRequest::slotReadyRead() {
                 toDebug("\n===============RESPONSE===============\n");
                 toDebug(str);
 
-                QDomDocument ddomDoc
+                QDomDocument ddomDoc;
 
-                    if (domDoc.setContent(str.toUtf8())) {
-                    QDomElement ddomElement = ddomDocdocumentElement();
-                    emit emit_Dom_Element(domElement);
-                }
-                else {
+                if (ddomDoc.setContent(str.toUtf8())) {
+                    QDomElement ddomElement = ddomDoc.documentElement();
+                    emit emit_Dom_Element(ddomElement);
+                } else {
                     emit emit_Loging(
                         2, senderName, "Пришел ответ от сервера Не верный формат XML.");
                     statusError = 400;

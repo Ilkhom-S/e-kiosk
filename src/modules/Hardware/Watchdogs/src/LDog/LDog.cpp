@@ -16,7 +16,7 @@ LDog::LDog() {
     m_DeviceName = "LDog";
     m_PingTimer.setInterval(1000 * CLDog::Timeouts::PCReset / 2);
     m_NextRequestTime = QDateTime::currentDateTime();
-    m_IOMessageLogging = ELoggingType::Write;
+    m_ioMessageLogging = ELoggingType::Write;
 }
 
 //----------------------------------------------------------------------------

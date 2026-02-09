@@ -144,7 +144,7 @@ QVariantMap NetworkService::getParameters() const {
     }
 
     if (m_Balance.is_initialized()) {
-        parameters[PP::CServiceParameters::Networking::Sim_Balance] = m_Balance.get();
+        parameters[PP::CServiceParameters::Networking::SimBalance] = m_Balance.get();
     }
 
     if (m_Operator.is_initialized()) {

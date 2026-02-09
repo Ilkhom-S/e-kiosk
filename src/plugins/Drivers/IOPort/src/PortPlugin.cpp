@@ -78,7 +78,7 @@ TParameterList tcpParameters() {
 //------------------------------------------------------------------------------
 TParameterList comParameters() {
     // TODO: сделать отображаемые в сервисном меню параметры понятными пользователю
-    return TParameterList() << SPluginParameter(CHardwareSDK::System_Name,
+    return TParameterList() << SPluginParameter(CHardwareSDK::SystemName,
                                                 false,
                                                 PortPT::Name,
                                                 QString(),

@@ -16,8 +16,8 @@ using namespace SDK::Driver;
 //---------------------------------------------------------------------------
 template <class T>
 CashAcceptorBase<T>::CashAcceptorBase()
-    : m_DeviceType("Base cash acceptor"), m_CurrencyError(ECurrencyError::OK), m_Ready(false),
-      m_DeviceType(CHardware::Types::CashAcceptor) {
+    : m_DeviceType(CHardware::Types::CashAcceptor), m_CurrencyError(ECurrencyError::OK),
+      m_Ready(false) {
     // данные устройства
 
     // описания для кодов статусов
@@ -398,13 +398,13 @@ template <class T> void CashAcceptorBase<T>::employParList() {
 
 //--------------------------------------------------------------------------------
 template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
-    if (!this->containsConfigParameter(CHardwareSDK::CashAcceptor::System_CurrencyId)) {
+    if (!this->containsConfigParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId)) {
         this->toLog(LogLevel::Error, this->m_DeviceName + ": No system currency id in parameters!");
         return ECurrencyError::Config;
     }
 
     int systemCurrencyId =
-        this->getConfigParameter(CHardwareSDK::CashAcceptor::System_CurrencyId).toInt();
+        this->getConfigParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId).toInt();
 
     if (!CurrencyCodes.data().values().contains(systemCurrencyId)) {
         this->toLog(LogLevel::Error,

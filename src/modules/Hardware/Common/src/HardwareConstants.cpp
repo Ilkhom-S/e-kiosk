@@ -95,7 +95,7 @@ namespace CashAcceptor {
 const char SecurityLevel[] = "set_security";
 const char ParTable[] = "par_table";
 const char Enabled[] = "enabled";
-const char OnlyDefferedDisable[] = "only_deffered_disable";
+const char OnlyDeferredDisable[] = "only_deferred_disable";
 const char DisablingTimeout[] = "disabling_timeout";
 const char InitializeTimeout[] = "initialize_timeout";
 const char ProcessEnabling[] = "process_enabling";

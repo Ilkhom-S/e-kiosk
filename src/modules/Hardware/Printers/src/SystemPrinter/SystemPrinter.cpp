@@ -83,7 +83,7 @@ bool System_Printer::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
 
             for (auto lexeme : lexemes) {
                 if (lexeme.tags.contains(Tags::Type::Image)) {
-                    QByteArray data = QByteArray::from_Base64(lexeme.data.toLatin1());
+                    QByteArray data = QByteArray::fromBase64(lexeme.data.toLatin1());
                     QImage image = QImage::from_Data(data, "png");
 
                     if (!image.isNull()) {

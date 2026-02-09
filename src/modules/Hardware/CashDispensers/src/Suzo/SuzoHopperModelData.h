@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Hardware/CashDevices/CCTalkDeviceConstants.h"
 #include "Hardware/CashDevices/CCTalkModelData.h"
 
 //--------------------------------------------------------------------------------

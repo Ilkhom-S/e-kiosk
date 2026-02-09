@@ -27,7 +27,7 @@ protected:
     virtual bool reset();
 
     /// Выдать.
-    virtual void perform_Dispense(int aUnit, int aItems);
+    virtual void performDispense(int aUnit, int aItems);
 
     /// Выполнить команду.
     TResult processCommand(char aCommand, QByteArray *aAnswer = nullptr);

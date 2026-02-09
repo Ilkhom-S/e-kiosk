@@ -10,7 +10,7 @@ WatchdogBase::WatchdogBase() {
 
     m_PollingInterval = 5000;
 
-    m_IOMessageLogging = ELoggingType::ReadWrite;
+    m_ioMessageLogging = ELoggingType::ReadWrite;
     m_SensorDisabledValue = false;
     setConfigParameter(CHardware::Watchdog::CanRegisterKey, false);
     setConfigParameter(CHardware::Watchdog::CanWakeUpPC, false);

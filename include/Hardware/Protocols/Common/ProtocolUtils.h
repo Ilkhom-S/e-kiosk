@@ -11,7 +11,7 @@
 
 namespace CProtocolUtils {
 /// Регэксп для парсинга дампов в логах;
-extern const char LogRexExp[];
+const char LogRexExp[] = "\\{([0-9a-fA-F]+)\\}";
 } // namespace CProtocolUtils
 
 //--------------------------------------------------------------------------------

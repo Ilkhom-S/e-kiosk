@@ -21,7 +21,7 @@ template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QStri
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList enumParameters;) {
+template <class T> TParameterList enumParameters() {
     return createNamedList<T>(T::getModelList(), CComponents::CardReader);
 }
 

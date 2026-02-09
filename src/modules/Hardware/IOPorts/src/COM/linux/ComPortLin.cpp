@@ -1,4 +1,5 @@
-#include "Com_PortLin.h"
+#include "ComPortLin.h"
+
 #include "SerialDevice.h"
 
 //-----------------------------------------------------------------------------

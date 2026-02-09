@@ -43,7 +43,7 @@ void PurecallHandler(void) {
 
 //---------------------------------------------------------------------------
 // Инициализация фильтра необработанных исключений
-void catchUnhandledExceptions() {
+void CatchUnhandledExceptions() {
 #ifdef Q_OS_WIN32
     SetUnhandledExceptionsHandler(MyUnhandledExceptionFilter);
 #endif

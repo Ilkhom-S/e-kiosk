@@ -30,7 +30,7 @@ public:
     virtual QList<NetworkTask *> download(const QString &aBaseURL, const TFileList &aExceptions);
 
     /// Проверить что папка для будущего файла существует
-    void ensureTargetDirectory(const QString &targetDir, const QString &targetFileName);
+    static void ensureTargetDirectory(const QString &targetDir, const QString &targetFileName);
 };
 
 //---------------------------------------------------------------------------

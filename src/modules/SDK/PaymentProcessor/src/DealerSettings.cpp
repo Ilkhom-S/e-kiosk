@@ -20,7 +20,7 @@
 namespace SDK {
 namespace PaymentProcessor {
 
-typedef boost::property_tree::basic_ptree<std::string, std::string> TPtreeOperators;
+using TPtreeOperators = boost::property_tree::basic_ptree<std::string, std::string>;
 
 //---------------------------------------------------------------------------
 DealerSettings::DealerSettings(TPtree &aProperties)
@@ -28,7 +28,7 @@ DealerSettings::DealerSettings(TPtree &aProperties)
       m_ProvidersLock(QReadWriteLock::Recursive), m_IsValid(false) {}
 
 //---------------------------------------------------------------------------
-DealerSettings::~DealerSettings() {}
+DealerSettings::~DealerSettings() = default;
 
 //---------------------------------------------------------------------------
 QString DealerSettings::getAdapterName() {
@@ -93,7 +93,7 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
             bool isOP = (tags.top() == "operator");
 
             if (isOP) {
-                op = "<?xml version=\"1.0\" encoding=\"utf-8\"?><operator version=\"" +
+                op = R"(<?xml version="1.0" encoding="utf-8"?><operator version=")" +
                      QString::number(operatorsVersion, 'f').toStdString() + "\"";
 
                 opID = 0;
@@ -339,7 +339,7 @@ bool DealerSettings::loadProvidersFrom_Buffer(const std::string &aBuffer, SProvi
             aProvider.processor.type = processorBranchAttr.get<QString>("type");
             aProvider.processor.keyPair = processorBranchAttr.get<int>("keys", 0);
             aProvider.processor.clientCard = processorBranchAttr.get<int>("client_card", 0);
-            if (!aProvider.processor.clientCard) {
+            if (aProvider.processor.clientCard == 0) {
                 // читаем атрибут по старому пути, если не нашли его в разделе processor
                 aProvider.processor.clientCard = value.second.get<int>("client_card", 0);
             }
@@ -662,7 +662,7 @@ SProvider DealerSettings::getProvider(qint64 aId) {
         return provider;
     }
 
-    return SProvider();
+    return {};
 }
 
 //----------------------------------------------------------------------------
@@ -673,7 +673,7 @@ SProvider DealerSettings::getMNPProvider(qint64 aId, qint64 aCidIn, qint64 aCidO
         return provider;
     }
 
-    if (aCidOut && (provider.cid == aCidOut || provider.ttList.contains(aCidOut))) {
+    if ((aCidOut != 0) && (provider.cid == aCidOut || provider.ttList.contains(aCidOut))) {
         return provider;
     }
 
@@ -698,14 +698,13 @@ QList<SProvider> DealerSettings::getProvidersByCID(qint64 aCid) {
 }
 
 //---------------------------------------------------------------------------
-const QList<qint64> DealerSettings::getProviders(const QString &aProcessingType) {
+QList<qint64> DealerSettings::getProviders(const QString &aProcessingType) {
     return m_ProvidersProcessingIndex.values(aProcessingType);
 }
 
 //---------------------------------------------------------------------------
 QStringList DealerSettings::getProviderProcessingTypes() {
-    return QStringList(m_ProvidersProcessingIndex.keys().begin(),
-                       m_ProvidersProcessingIndex.keys().end());
+    return {m_ProvidersProcessingIndex.keys().begin(), m_ProvidersProcessingIndex.keys().end()};
 }
 
 //---------------------------------------------------------------------------

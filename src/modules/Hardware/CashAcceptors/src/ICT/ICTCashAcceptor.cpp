@@ -14,7 +14,7 @@ ICTCashAcceptor::ICTCashAcceptor() {
     m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
     m_PortParameters[EParameters::Parity].append(EParity::Even);
 
-    m_IOMessageLogging = ELoggingType::ReadWrite;
+    m_ioMessageLogging = ELoggingType::ReadWrite;
 
     // данные устройства
     m_DeviceName = "ICT cash acceptor";

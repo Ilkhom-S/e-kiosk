@@ -29,8 +29,9 @@ QList<NetworkTask *> Folder::download(const QString &aBaseURL, const TFileList &
 
     // Формируем список загружаемых файлов.
     foreach (auto fileInfo, getFiles()) {
-        if (aExceptions.contains(fileInfo))
+        if (aExceptions.contains(fileInfo)) {
             continue;
+        }
 
         QString fileURL = getURL(fileInfo, aBaseURL);
         QString dstFilePath = getTemporaryFolder() + "/" + fileInfo.name();
@@ -60,7 +61,7 @@ QList<NetworkTask *> Folder::download(const QString &aBaseURL, const TFileList &
             // break тут не нужен!
 
         default:
-            auto task = new FileDownloadTask(fileURL, dstFilePath);
+            auto *task = new FileDownloadTask(fileURL, dstFilePath);
             task->setVerifier(new Sha256Verifier(fileInfo.hash()));
             task->setProperty(CComponent::OptionalTask(), optional());
             tasks.append(task);
@@ -70,7 +71,7 @@ QList<NetworkTask *> Folder::download(const QString &aBaseURL, const TFileList &
     // Добавляем в список исполняемые файлы для post-actionов.
     foreach (auto actionFile, getPostActions()) {
         QString fileURL = getURL(actionFile, aBaseURL);
-        auto task = new FileDownloadTask(fileURL, getTemporaryFolder() + "/" + actionFile);
+        auto *task = new FileDownloadTask(fileURL, getTemporaryFolder() + "/" + actionFile);
         tasks.append(task);
     }
 

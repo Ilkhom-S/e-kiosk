@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ATGSMModem_Constants.h"
+#include "ATGSMModemConstants.h"
 #include "Hardware/Common/ProtoDevices.h"
 #include "Hardware/Common/SerialDeviceBase.h"
 //--------------------------------------------------------------------------------

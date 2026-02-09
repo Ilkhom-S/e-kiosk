@@ -123,7 +123,7 @@ void DiagnosticsServiceWindow::updateInfoPanel() {
     }
 
     lbSim_Balance->setText(
-        result[SDK::PaymentProcessor::CServiceParameters::Networking::Sim_Balance].toString());
+        result[SDK::PaymentProcessor::CServiceParameters::Networking::SimBalance].toString());
     lbRejectedBills->setText(QString::number(
         result[SDK::PaymentProcessor::CServiceParameters::Funds::RejectCount].toInt()));
     lbUnprocessedPayments->setText(QString::number(

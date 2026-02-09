@@ -11,8 +11,8 @@ using namespace SDK::Driver::IOPort::COM;
 //--------------------------------------------------------------------------------
 template <class T>
 PortDeviceBase<T>::PortDeviceBase()
-    : m_IOPort(nullptr), m_IOMessageLogging(ELoggingType::None), m_ControlRemoving(false) {
-    this->mInitializeRepeatCount = 2;
+    : m_IOPort(nullptr), m_ioMessageLogging(ELoggingType::None), m_controlRemoving(false) {
+    this->m_InitializeRepeatCount = 2;
 }
 
 //--------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ template <class T> void PortDeviceBase<T>::addPortData() {
 template <class T> void PortDeviceBase<T>::finalizeInitialization() {
     addPortData();
 
-    m_ControlRemoving =
+    m_controlRemoving =
         m_IOPort->getDeviceConfiguration()[CHardware::Port::COM::ControlRemoving].toBool();
 
     T::finalizeInitialization();
@@ -56,7 +56,7 @@ template <class T> bool PortDeviceBase<T>::release() {
     }
 
     if (m_IOPort && !m_IOPort->close()) {
-        this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to close device port");
+        this->toLog(LogLevel::Error, this->m_DeviceName + ": Failed to close device port");
         return false;
     }
 
@@ -84,7 +84,7 @@ void PortDeviceBase<T>::setDeviceConfiguration(const QVariantMap &aConfiguration
                                  aConfiguration[CHardwareSDK::SearchingType]);
         }
 
-        mIOPort->setDeviceConfiguration(configuration);
+        m_IOPort->setDeviceConfiguration(configuration);
     }
 }
 
@@ -114,14 +114,14 @@ TResult PortDeviceBase<T>::processCommand(const QByteArray &aCommand,
                                           QByteArray *aAnswer) {
     TResult result = execCommand(aCommand, aCommandData, aAnswer);
 
-    if (!mControlRemoving ||
+    if (!m_controlRemoving ||
         ((result != CommandResult::NoAnswer) && (result != CommandResult::Transport))) {
         return result;
     }
 
-    mIOPort->close();
+    m_IOPort->close();
 
-    if (!mIOPort->open()) {
+    if (!m_IOPort->open()) {
         return CommandResult::Port;
     }
 
@@ -131,17 +131,17 @@ TResult PortDeviceBase<T>::processCommand(const QByteArray &aCommand,
 //--------------------------------------------------------------------------------
 template <class T>
 bool PortDeviceBase<T>::checkError(int aError, TBoolMethod aChecking, const QString &aErrorLog) {
-    bool contains = mIOPortStatusCodes.contains(aError);
-    mIOPortStatusCodes.remove(aError);
+    bool contains = m_ioPortStatusCodes.contains(aError);
+    m_ioPortStatusCodes.remove(aError);
 
     if (aChecking()) {
         return true;
     }
 
-    mIOPortStatusCodes.insert(aError);
+    m_ioPortStatusCodes.insert(aError);
 
     if (!contains) {
-        this->toLog(LogLevel::Error, this->mDeviceName + ": " + aErrorLog);
+        this->toLog(LogLevel::Error, this->m_DeviceName + ": " + aErrorLog);
     }
 
     return false;
@@ -149,7 +149,7 @@ bool PortDeviceBase<T>::checkError(int aError, TBoolMethod aChecking, const QStr
 
 //--------------------------------------------------------------------------------
 template <class T> bool PortDeviceBase<T>::checkExistence() {
-    MutexLocker locker(&this->mExternalMutex);
+    MutexLocker locker(&this->m_ExternalMutex);
 
     if (!this->checkConnectionAbility()) {
         return false;
@@ -157,17 +157,17 @@ template <class T> bool PortDeviceBase<T>::checkExistence() {
 
     // TODO: сделать настройку плагинов - расширенное логирование
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(mIOMessageLogging));
-    configuration.insert(CHardware::Port::DeviceModelName, this->mDeviceName);
+    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(m_ioMessageLogging));
+    configuration.insert(CHardware::Port::DeviceModelName, this->m_DeviceName);
 
-    mIOPort->setDeviceConfiguration(configuration);
+    m_IOPort->setDeviceConfiguration(configuration);
 
     if (!T::checkExistence()) {
         return false;
     }
 
-    configuration.insert(CHardware::Port::DeviceModelName, this->mDeviceName);
-    mIOPort->setDeviceConfiguration(configuration);
+    configuration.insert(CHardware::Port::DeviceModelName, this->m_DeviceName);
+    m_IOPort->setDeviceConfiguration(configuration);
 
     return true;
 }
@@ -175,10 +175,10 @@ template <class T> bool PortDeviceBase<T>::checkExistence() {
 //--------------------------------------------------------------------------------
 template <class T> bool PortDeviceBase<T>::processStatus(TStatusCodes &aStatusCodes) {
     if (!this->checkPort()) {
-        if (mIOPortStatusCodes.isEmpty()) {
+        if (m_ioPortStatusCodes.isEmpty()) {
             checkError(
                 IOPortStatusCode::Error::Busy,
-                [&]() -> bool { return mIOPort->open(); },
+                [&]() -> bool { return m_IOPort->open(); },
                 "device cannot open port before getting status");
         }
 
@@ -191,10 +191,10 @@ template <class T> bool PortDeviceBase<T>::processStatus(TStatusCodes &aStatusCo
     }
 
     if (!this->checkPort()) {
-        if (mIOPortStatusCodes.isEmpty()) {
+        if (m_ioPortStatusCodes.isEmpty()) {
             checkError(
                 IOPortStatusCode::Error::Busy,
-                [&]() -> bool { return mIOPort->open(); },
+                [&]() -> bool { return m_IOPort->open(); },
                 "device cannot open port after getting status");
         }
 
@@ -209,8 +209,8 @@ template <class T> bool PortDeviceBase<T>::processStatus(TStatusCodes &aStatusCo
 //--------------------------------------------------------------------------------
 template <class T>
 SStatusCodeSpecification PortDeviceBase<T>::getStatusCodeSpecification(int aStatusCode) const {
-    return mIOPortStatusCodes.contains(aStatusCode) ? mIOPortStatusCodesSpecification[aStatusCode]
-                                                    : T::getStatusCodeSpecification(aStatusCode);
+    return m_ioPortStatusCodes.contains(aStatusCode) ? m_ioPortStatusCodesSpecification[aStatusCode]
+                                                     : T::getStatusCodeSpecification(aStatusCode);
 }
 
 //--------------------------------------------------------------------------------
@@ -219,8 +219,8 @@ QString PortDeviceBase<T>::getTrOfNewProcessed(const TStatusCollection &aStatusC
                                                EWarningLevel::Enum aWarningLevel) {
     TStatusCodes statusCodes = aStatusCollection[aWarningLevel];
 
-    foreach (int statusCode, mIOPortStatusCodes) {
-        if (mIOPortStatusCodesSpecification[statusCode].warningLevel == aWarningLevel) {
+    foreach (int statusCode, m_ioPortStatusCodes) {
+        if (m_ioPortStatusCodesSpecification[statusCode].warningLevel == aWarningLevel) {
             statusCodes.insert(statusCode);
         }
     }
@@ -231,13 +231,13 @@ QString PortDeviceBase<T>::getTrOfNewProcessed(const TStatusCollection &aStatusC
 //--------------------------------------------------------------------------------
 template <class T>
 void PortDeviceBase<T>::emitStatusCodes(TStatusCollection &aStatusCollection, int aExtendedStatus) {
-    if (!mIOPortStatusCodes.isEmpty() && aStatusCollection.contains(EWarningLevel::OK)) {
+    if (!m_ioPortStatusCodes.isEmpty() && aStatusCollection.contains(EWarningLevel::OK)) {
         aStatusCollection[EWarningLevel::OK].remove(DeviceStatusCode::OK::OK);
     }
 
-    foreach (int portStatusCode, mIOPortStatusCodes) {
+    foreach (int portStatusCode, m_ioPortStatusCodes) {
         EWarningLevel::Enum warningLevel =
-            mIOPortStatusCodesSpecification[portStatusCode].warningLevel;
+            m_ioPortStatusCodesSpecification[portStatusCode].warningLevel;
         aStatusCollection[warningLevel].insert(portStatusCode);
     }
 
@@ -248,10 +248,10 @@ void PortDeviceBase<T>::emitStatusCodes(TStatusCollection &aStatusCollection, in
 template <class T> bool PortDeviceBase<T>::canApplyStatusBuffer() {
     bool portError =
         std::find_if(
-            mIOPortStatusCodes.begin(), mIOPortStatusCodes.end(), [&](int aStatusCode) -> bool {
-                return mIOPortStatusCodesSpecification[aStatusCode].warningLevel ==
+            m_ioPortStatusCodes.begin(), m_ioPortStatusCodes.end(), [&](int aStatusCode) -> bool {
+                return m_ioPortStatusCodesSpecification[aStatusCode].warningLevel ==
                        EWarningLevel::Error;
-            }) != mIOPortStatusCodes.end();
+            }) != m_ioPortStatusCodes.end();
 
     return !portError && T::canApplyStatusBuffer();
 }
@@ -259,10 +259,10 @@ template <class T> bool PortDeviceBase<T>::canApplyStatusBuffer() {
 //--------------------------------------------------------------------------------
 template <class T> void PortDeviceBase<T>::doPoll(TStatusCodes &aStatusCodes) {
     {
-        MutexLocker locker(&this->mExternalMutex);
+        MutexLocker locker(&this->m_ExternalMutex);
 
-        if (this->mLogDate.day() != QDate::currentDate().day()) {
-            mIOPort->initialize();
+        if (this->m_LogDate.day() != QDate::currentDate().day()) {
+            m_IOPort->initialize();
         }
     }
 
@@ -273,7 +273,7 @@ template <class T> void PortDeviceBase<T>::doPoll(TStatusCodes &aStatusCodes) {
 template <class T>
 EWarningLevel::Enum PortDeviceBase<T>::getWarningLevel(const TStatusCollection &aStatusCollection) {
     TStatusCollection portStatusCollection =
-        this->getStatusCollection(mIOPortStatusCodes, &mIOPortStatusCodesSpecification);
+        this->getStatusCollection(m_ioPortStatusCodes, &m_ioPortStatusCodesSpecification);
     EWarningLevel::Enum portWarningLevel = this->getWarningLevel(portStatusCollection);
     EWarningLevel::Enum deviceWarningLevel = this->getWarningLevel(aStatusCollection);
 
@@ -284,7 +284,7 @@ EWarningLevel::Enum PortDeviceBase<T>::getWarningLevel(const TStatusCollection &
 template <class T> void PortDeviceBase<T>::setLog(ILog *aLog) {
     T::setLog(aLog);
 
-    if (mIOPort) {
-        mIOPort->setLog(aLog);
+    if (m_IOPort) {
+        m_IOPort->setLog(aLog);
     }
 }

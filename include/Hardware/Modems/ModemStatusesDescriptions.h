@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Hardware/Common/BaseStatusDescriptions.h"
-#include "Hardware/Modems/Modem_StatusCodes.h"
+#include "Hardware/Modems/ModemStatusCodes.h"
 
 //--------------------------------------------------------------------------------
 namespace Modem_StatusCode {

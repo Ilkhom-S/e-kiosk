@@ -35,12 +35,12 @@ void VirtualDispenser::applyUnitList() {
 }
 
 //--------------------------------------------------------------------------------
-void VirtualDispenser::perform_Dispense(int aUnit, int aItems) {
+void VirtualDispenser::performDispense(int aUnit, int aItems) {
     moveToThread(&m_Thread);
 
     if (!isWorkingThread()) {
         QMetaObject::invokeMethod(
-            this, "perform_Dispense", Qt::QueuedConnection, Q_ARG(int, aUnit), Q_ARG(int, aItems));
+            this, "performDispense", Qt::QueuedConnection, Q_ARG(int, aUnit), Q_ARG(int, aItems));
 
         return;
     }

@@ -8,7 +8,8 @@
 #include <algorithm>
 #include <cmath>
 
-#include "Hardware/Modems/Modem_StatusesDescriptions.h"
+#include "ATGSMModemConstants.h"
+#include "Hardware/Modems/ModemStatusesDescriptions.h"
 #include "smspdudecoder.h"
 #include "smspduencoder.h"
 
@@ -153,7 +154,7 @@ bool ATGSMModem::getInfo(QString &aInfo) {
     }
     //--------------------------------------------------------------------------------
     case AT::EModem_Dialect::Sim_Com: {
-        if (getSim_COMCellList(value)) {
+        if (getSimCOMCellList(value)) {
             setDeviceParameter(CDeviceData::Modems::GSMCells, value);
         }
 
@@ -203,7 +204,7 @@ void ATGSMModem::getSIMData(const QByteArray &aCommand) {
             }
         }
 
-        setDeviceParameter(SIMRequestInfo.name, result);
+        setDeviceParameter(simRequestInfo.name, result);
     }
 }
 
@@ -232,7 +233,7 @@ bool ATGSMModem::parseFieldInternal(const QByteArray &aBuffer,
 }
 
 //--------------------------------------------------------------------------------
-bool ATGSMModem::getSim_COMCellList(QString &aValue) {
+bool ATGSMModem::getSimCOMCellList(QString &aValue) {
     QByteArray answer;
     // 1. Используем QRegularExpression.
     // В Qt 6 регулярные выражения компилируются один раз, что эффективнее.
@@ -445,7 +446,7 @@ bool ATGSMModem::reset() {
 }
 
 //---------------------------------------------------------------------------------
-static bool ATGSMModem::getStatus(TStatusCodes &aStatuses) {
+bool ATGSMModem::getStatus(TStatusCodes &aStatuses) {
     if (!checkConnectionAbility()) {
         return false;
     }
@@ -575,8 +576,8 @@ bool ATGSMModem::getCUSDMessage(const QByteArray &aBuffer, QString &aMessage) {
         } else {
             // Устранение Deprecated Warning: используем char16_t
             QByteArray rawBytes = messageContent.toLatin1();
-            aMessage = QString::from_Utf16(reinterpret_cast<const char16_t *>(rawBytes.constData()),
-                                           rawBytes.size() / 2);
+            aMessage = QString::fromUtf16(reinterpret_cast<const char16_t *>(rawBytes.constData()),
+                                          rawBytes.size() / 2);
         }
     } else {
         aMessage = messageContent;
@@ -594,7 +595,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
     enableLocalEcho(false);
 
     QByteArray command;
-    int commandTimeout = CATGSMModem::Timeouts::Default = 0 = 0;
+    int commandTimeout = CATGSMModem::Timeouts::Default;
 
     toLog(LogLevel::Normal, QStringLiteral("ATGSMModem: sending USSD '%1'.").arg(aMessage));
 
@@ -714,7 +715,7 @@ bool ATGSMModem::sendMessage(const QString &aPhone, const QString &aMessage) {
 }
 
 //--------------------------------------------------------------------------------
-static bool ATGSMModem::takeMessages(TMessages &aMessages) {
+bool ATGSMModem::takeMessages(TMessages &aMessages) {
     if (!checkConnectionAbility()) {
         return false;
     }

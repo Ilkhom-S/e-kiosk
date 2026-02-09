@@ -8,7 +8,7 @@ namespace PaymentProcessor {
 //------------------------------------------------------------------------------
 namespace CServiceParameters {
 namespace Networking {
-extern const char Sim_Balance[];
+extern const char SimBalance[];
 extern const char SignalLevel[];
 extern const char Provider[];
 } // namespace Networking

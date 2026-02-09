@@ -12,7 +12,7 @@
 
 #include <SDK/Drivers/IOPort/COMParameters.h>
 
-#include <Hardware/IOPorts/COM/windows/System_DeviceUtils.h>
+#include <Hardware/IOPorts/COM/windows/SystemDeviceUtils.h>
 #include <Hardware/IOPorts/IOPortBase.h>
 #include <Hardware/IOPorts/IOPortGUIDs.h>
 #include <windows.h>
@@ -32,7 +32,7 @@ typedef QMap<QString, QString> TIOPortDeviceData;
     [&]() -> bool {                                                                                \
         if (!checkReady())                                                                         \
             return false;                                                                          \
-        return process(std::bind(&::aFunctionName, m_PortHandle, __VA_ARGS__), #aFunctionName);     \
+        return process(std::bind(&::aFunctionName, m_PortHandle, __VA_ARGS__), #aFunctionName);    \
     }()
 
 //--------------------------------------------------------------------------------

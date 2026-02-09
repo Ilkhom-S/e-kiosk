@@ -7,7 +7,7 @@ using namespace SDK::Plugin;
 using namespace SDK::Driver;
 
 //------------------------------------------------------------------------------
-template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
     return new DevicePluginBase<T>("Watchdogs", aEnvironment, aInstancePath);
 }
 
@@ -69,7 +69,7 @@ QVector<SPluginParameter> Alarm_Parameters(const QString &aModel) {
 //------------------------------------------------------------------------------
 #define WD_PLUGIN_WITH_PARAMETERS(aClassName, aName, aParameters)                                  \
     COMMON_DRIVER_WITH_PARAMETERS(                                                                 \
-        aClassName, &CreatePlugin<aClassName>, std::bind(&aParameters, #aName))
+        aClassName, &createPlugin<aClassName>, std::bind(&aParameters, #aName))
 #define WD_PLUGIN(aName) COMMON_DRIVER(aName, std::bind(&defaultParameters<aName>, #aName))
 
 BEGIN_REGISTER_PLUGIN

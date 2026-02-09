@@ -40,5 +40,5 @@ const char Creator[] = "Creator";
 
 //--------------------------------------------------------------------------------
 namespace CProtocolUtils {
-const char LogRexExp[] = "\\{([0-9a-fA-F]+)\\}";
+// LogRexExp is now defined in ProtocolUtils.h
 } // namespace CProtocolUtils

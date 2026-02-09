@@ -48,8 +48,8 @@ EPortTypes::Enum IOPortBase::getType() {
 void IOPortBase::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     MetaDevice::setDeviceConfiguration(aConfiguration);
 
-    if (aConfiguration.contains(CHardwareSDK::System_Name)) {
-        m_System_Name = aConfiguration[CHardwareSDK::System_Name].toString();
+    if (aConfiguration.contains(CHardwareSDK::SystemName)) {
+        m_System_Name = aConfiguration[CHardwareSDK::SystemName].toString();
     }
 
     if (aConfiguration.contains(CHardware::Port::DeviceModelName)) {

@@ -98,7 +98,7 @@ namespace CashAcceptor {
 extern const char SecurityLevel[];
 extern const char ParTable[];
 extern const char Enabled[];
-extern const char OnlyDefferedDisable[];
+extern const char OnlyDeferredDisable[];
 extern const char DisablingTimeout[];
 extern const char InitializeTimeout[];
 extern const char ProcessEnabling[];
@@ -195,13 +195,13 @@ extern const char CanWakeUpPC[];
 extern const char PCWakingUpTime[];
 
 namespace Sensor {
-extern const char Safe[];            /// Сейф.
+extern const char Safe[];      /// Сейф.
 extern const char UpperUnit[]; /// Верхний модуль.
 extern const char LowerUnit[]; /// Верхний модуль.
 
 /// Настройки срабатывания датчиков.
 namespace Action {
-extern const char Safe[];            /// Сейф.
+extern const char Safe[];      /// Сейф.
 extern const char UpperUnit[]; /// Верхний модуль.
 extern const char LowerUnit[]; /// Верхний модуль.
 } // namespace Action
@@ -209,7 +209,7 @@ extern const char LowerUnit[]; /// Верхний модуль.
 /// Действия при срабатывании датчика.
 namespace ActionValue {
 extern const char EnterServiceMenu[]; /// Войти в сервисное меню.
-extern const char LockTerminal[];          /// Заблокировать терминал.
+extern const char LockTerminal[];     /// Заблокировать терминал.
 } // namespace ActionValue
 } // namespace Sensor
 } // namespace Watchdog

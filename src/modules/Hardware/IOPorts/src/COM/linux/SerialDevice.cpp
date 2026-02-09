@@ -10,7 +10,7 @@ SerialDeviceSettings::SerialDeviceSettings()
 
 //-----------------------------------------------------------------------------
 SerialDevice::SerialDevice(const QString &aFilePath, QObject *aParent)
-    : QIODevice(aParent), m_file(aFilePath), m_settings(), m_mutex(QMutex::Recursive) {
+    : QIODevice(aParent), m_file(aFilePath), m_settings(), m_mutex() {
     setOpenMode(QIODevice::NotOpen);
 }
 

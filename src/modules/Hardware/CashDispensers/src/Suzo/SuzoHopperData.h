@@ -2,8 +2,10 @@
 
 #pragma once
 
+#include "Hardware/CashAcceptors/CashAcceptorStatusCodes.h"
 #include "Hardware/CashDevices/CCTalkModelData.h"
 #include "Hardware/Common/DeviceCodeSpecification.h"
+#include "Hardware/Dispensers/DispenserStatusCodes.h"
 
 //--------------------------------------------------------------------------------
 namespace CSuzo {

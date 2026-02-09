@@ -17,7 +17,7 @@ template <class T> TParameterList Enum_Parameters() {
            << setProtocol(ProtocolNames::CashDevice::CCTalk)
 
            // ID валюты. TODO: необходимо получать поддержку валют статически от каждого протокола.
-           << SPluginParameter(CHardwareSDK::CashAcceptor::System_CurrencyId,
+           << SPluginParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId,
                                false,
                                QT_TRANSLATE_NOOP("BillAcceptorParameters",
                                                  "BillAcceptorParameters#system_currency_id"),

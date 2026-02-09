@@ -141,11 +141,11 @@ bool PuloonLCDM::getStatus(TStatusCodes &aStatusCodes) {
         aStatusCodes.insert(specification.statusCode);
     }
 
-    if (deviceStatusCodes != m_LastDeviceStatusCodes) {
+    if (deviceStatusCodes != m_lastDeviceStatusCodes) {
         logStatusChanging(statusSpecification, sensorSpecifications);
     }
 
-    m_LastDeviceStatusCodes = deviceStatusCodes;
+    m_lastDeviceStatusCodes = deviceStatusCodes;
 
     return true;
 }
@@ -207,7 +207,7 @@ bool PuloonLCDM::isConnected() {
     if (checkSum_OK) {
         modelData = CPuloonLCDM::Models::Data[checkSum];
         m_DeviceName = modelData.name;
-        m_Units = modelData.units;
+        m_units = modelData.units;
     }
 
     QString textROMVersion = answer.mid(1, 2);
@@ -227,10 +227,10 @@ bool PuloonLCDM::isConnected() {
 }
 
 //--------------------------------------------------------------------------------
-void PuloonLCDM::perform_Dispense(int aUnit, int aItems) {
+void PuloonLCDM::performDispense(int aUnit, int aItems) {
     if (!isWorkingThread()) {
         QMetaObject::invokeMethod(
-            this, "perform_Dispense", Qt::QueuedConnection, Q_ARG(int, aUnit), Q_ARG(int, aItems));
+            this, "performDispense", Qt::QueuedConnection, Q_ARG(int, aUnit), Q_ARG(int, aItems));
 
         return;
     }

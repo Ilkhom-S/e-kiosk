@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Hardware/Common/Specifications.h"
+#include "Hardware/Printers/Tags.h"
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний принтеров AV-268.

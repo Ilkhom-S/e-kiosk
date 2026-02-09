@@ -850,7 +850,7 @@ QString ATProtocol::encodeUcs2(QString msg) {
     //    QString str;
     //    for (int i = 0; i < hex.size(); i += 2) {
     //        ushort u = (hex[i] << 8) | hex[i + 1];
-    //        str.append(QString::from_Utf16(&u, 1));
+    //        str.append(QString::fromUtf16(&u, 1));
     //    }
 
     //    return str;

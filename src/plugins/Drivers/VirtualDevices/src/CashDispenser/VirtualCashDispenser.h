@@ -35,7 +35,7 @@ protected:
     virtual void checkUnitStatus(TStatusCodes &aStatusCodes, int aUnit);
 
     /// Выдать.
-    virtual void perform_Dispense(int aUnit, int aItems);
+    virtual void performDispense(int aUnit, int aItems);
 
     /// Предмет, на котором сработает имитация замятия
     int m_JammedItem;

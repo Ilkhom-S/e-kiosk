@@ -54,6 +54,7 @@
     },
     "svg.preview.background": "dark-transparent",
     "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
-        "cppcoreguidelines-pro-bounds-array-to-pointer-decay"
+        "cppcoreguidelines-pro-bounds-array-to-pointer-decay",
+        "readability-convert-member-functions-to-static"
     ]
 }

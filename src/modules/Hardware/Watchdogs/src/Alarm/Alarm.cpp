@@ -5,7 +5,7 @@
 #include <QtCore/QBuffer>
 #include <QtCore/QElapsedTimer>
 
-#include "Alarm_Data.h"
+#include "AlarmData.h"
 
 using namespace SDK::Driver::IOPort::COM;
 

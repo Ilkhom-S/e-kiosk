@@ -33,7 +33,7 @@ using namespace SDK::Driver;
 template <class T>
 DeviceBase<T>::DeviceBase()
     : m_BadAnswerCounter(0), m_MaxBadAnswers(0), m_ModelCompatibility(true),
-      m_ForceStatusBufferEnabled(false), {
+      m_ForceStatusBufferEnabled(false) {
     this->moveToThread(&this->m_Thread);
 
     this->m_DeviceName = CDevice::DefaultName;

@@ -61,7 +61,7 @@ const int FS15ValidityDays = 470;
 /// Результаты запроса статуса.
 namespace Result {
 extern const char Error[]; /// Ошибка устройства, либо ответ неверно скомпонован.
-extern const char Fail[];   /// Транспортная/протокольная ошибка.
+extern const char Fail[];  /// Транспортная/протокольная ошибка.
 } // namespace Result
 
 /// ИНН.
@@ -243,11 +243,11 @@ public:
     CPayTypeDescription() {
         using namespace SDK::Driver::EPayTypes;
 
-        append(Cash, QString::from_Utf8("НАЛИЧНЫМИ"));
-        append(EMoney, QString::from_Utf8("КАРТОЙ"));
-        append(PrePayment, QString::from_Utf8("АВАНС"));
-        append(PostPayment, QString::from_Utf8("КРЕДИТ"));
-        append(CounterOffer, QString::from_Utf8("ВСТРЕЧНОЕ ПРЕДОСТАВЛЕНИЕ"));
+        append(Cash, QString::fromUtf8("НАЛИЧНЫМИ"));
+        append(EMoney, QString::fromUtf8("КАРТОЙ"));
+        append(PrePayment, QString::fromUtf8("АВАНС"));
+        append(PostPayment, QString::fromUtf8("КРЕДИТ"));
+        append(CounterOffer, QString::fromUtf8("ВСТРЕЧНОЕ ПРЕДОСТАВЛЕНИЕ"));
     }
 };
 
@@ -378,7 +378,7 @@ public:
         append('\x04', FRStatusCode::Error::NeedOFDConnection); // память ФН переполнена (это не
                                                                 // таймаут 30 суток)
         //	append('\x08', FRStatusCode::Warning::OFDNoConnection);    // не работает либо имеет
-        //другое значение
+        // другое значение
         append('\x80', FRStatusCode::Error::FS);
     }
 };

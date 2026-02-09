@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <QtCore/QString>
+
 //--------------------------------------------------------------------------------
 namespace CCCNet {
 const QString Cashcode = "Cashcode";

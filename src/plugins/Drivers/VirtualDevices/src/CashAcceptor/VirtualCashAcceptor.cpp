@@ -36,7 +36,7 @@ void VirtualCashAcceptor::testStack(double aAmount) {
     SDK::Driver::TParList pars;
 
     pars << SDK::Driver::SPar(
-        aAmount, getConfigParameter(CHardwareSDK::CashAcceptor::System_CurrencyId).toInt());
+        aAmount, getConfigParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId).toInt());
 
     emit stacked(pars);
 
@@ -47,7 +47,7 @@ void VirtualCashAcceptor::testStack(double aAmount) {
 
 //--------------------------------------------------------------------------------
 bool VirtualCashAcceptor::loadParTable() {
-    int currencyId = getConfigParameter(CHardwareSDK::CashAcceptor::System_CurrencyId).toInt();
+    int currencyId = getConfigParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId).toInt();
 
     m_EscrowParTable.add(Qt::Key_F1, SPar(10, currencyId));
     m_EscrowParTable.add(Qt::Key_F2, SPar(50, currencyId));

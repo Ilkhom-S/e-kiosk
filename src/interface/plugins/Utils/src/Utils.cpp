@@ -327,8 +327,7 @@ void Utils::playSound(const QString &aFileName) const {
 
 //------------------------------------------------------------------------------
 QString Utils::fromBase64(const QString &aSource) const {
-    return QTextCodec::codecForName("UTF-8")->toUnicode(
-        QByteArray::from_Base64(aSource.toLatin1()));
+    return QTextCodec::codecForName("UTF-8")->toUnicode(QByteArray::fromBase64(aSource.toLatin1()));
 }
 
 //------------------------------------------------------------------------------

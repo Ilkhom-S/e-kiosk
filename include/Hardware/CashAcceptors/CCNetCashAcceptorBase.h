@@ -50,7 +50,7 @@ protected:
     virtual bool processReset();
 
     /// Состояние - не Busy или PowerUp, но может быть Initialization.
-    static bool isNotBusyPowerUp();
+    bool isNotBusyPowerUp();
 
     /// Выполнить команду.
     virtual TResult execCommand(const QByteArray &aCommand,
@@ -64,8 +64,7 @@ protected:
     virtual bool perform_UpdateFirmware(const QByteArray &aBuffer);
 
     /// Отправить блок данных обновления прошивки.
-    static bool
-    processBlockUpdating(uint aAddress, const QByteArray &aBuffer, int &aRepeat, int &aIndex);
+    bool processBlockUpdating(uint aAddress, const QByteArray &aBuffer, int &aRepeat, int &aIndex);
 
     /// Изменить скорость работы.
     bool changeBaudRate(bool aHigh);
@@ -77,13 +76,13 @@ protected:
     virtual bool processUpdating(const QByteArray &aBuffer, int aSectionSize);
 
     /// Получить статус процесса обновления прошивки.
-    static char getUpdatingStatus();
+    char getUpdatingStatus();
 
     /// Ждать выхода из Busy-подобных состояний.
     bool waitNotBusyPowerUp();
 
     /// Получить имя модели по ответу на запрос идентификации.
-    static SBaseModelData getModelData(const QByteArray &aAnswer);
+    SBaseModelData getModelData(const QByteArray &aAnswer);
 
     /// Запросить и сохранить параметры устройства.
     virtual void processDeviceData(QByteArray &aAnswer);

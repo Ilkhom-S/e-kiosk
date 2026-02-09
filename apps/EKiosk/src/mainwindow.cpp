@@ -4696,7 +4696,7 @@ QStringList MainWindow::getWinPrinterNames() {
                        &size,
                        &num_Printers)) {
         for (uint i = 0; i < num_Printers; i++) {
-            printerName = QString::from_Utf16(
+            printerName = QString::fromUtf16(
                 reinterpret_cast<const char16_t *>(printerInfos[i].pPrinterName));
             printerNames.append(printerName);
         }

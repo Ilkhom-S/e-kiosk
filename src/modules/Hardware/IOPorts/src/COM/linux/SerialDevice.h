@@ -2,7 +2,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QIODevice>
-#include <QtCore/QMutex>
+#include <QtCore/QRecursiveMutex>
 
 #include <sys/ioctl.h>
 #include <sys/select.h>
@@ -83,7 +83,7 @@ public:
 
     virtual bool init();
 
-    virtual bool open(OpenMode aMode = 0);
+    virtual bool open(OpenMode aMode = QIODevice::NotOpen);
     virtual bool isSequential() const;
     virtual void close();
     virtual void flush();
@@ -128,7 +128,7 @@ private:
 private:
     QFile m_file;
     SerialDeviceSettings m_settings;
-    mutable QMutex m_mutex;
+    mutable QRecursiveMutex m_mutex;
 };
 
 //-----------------------------------------------------------------------------

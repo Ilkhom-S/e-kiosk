@@ -109,8 +109,8 @@ bool CCNetCashAcceptorBase::isNotBusyPowerUp() {
         return false;
     }
 
-    CCCNet::DeviceCodeSpecification *specification =
-        m_DeviceCodeSpecification.dynamicCast<CCCNet::DeviceCodeSpecification>().data() = nullptr;
+    auto specPtr = m_DeviceCodeSpecification.dynamicCast<CCCNet::DeviceCodeSpecification>();
+    CCCNet::DeviceCodeSpecification *specification = specPtr ? specPtr.data() : nullptr;
 
     foreach (auto deviceCodeBuffer, m_DeviceCodeBuffers) {
         if (!deviceCodeBuffer.isEmpty()) {
@@ -195,7 +195,7 @@ bool CCNetCashAcceptorBase::checkConnection(QByteArray &aAnswer) {
     expector.wait<bool>(statusPoll, isNotEnabled, CCCNet::NotEnabled);
 
     CCCNet::DeviceCodeSpecification *specification =
-        m_DeviceCodeSpecification.dynamicCast<CCCNet::DeviceCodeSpecification>().data() = nullptr;
+        m_DeviceCodeSpecification.dynamicCast<CCCNet::DeviceCodeSpecification>().data();
 
     auto isNotBusy = [&]() -> bool {
         return !m_DeviceCodeBuffers.isEmpty() &&
@@ -288,13 +288,13 @@ bool CCNetCashAcceptorBase::isConnected() {
             int base = m_Firmware / 100;
             int index = m_Firmware % 100;
 
-            using TFimwareSpecification = QMap<QString, CCCNet::TFimwareVersions>;
-            auto checkVersion = [&](const TFimwareSpecification &aSpecification,
+            using TFirmwareSpecification = QMap<QString, CCCNet::TFirmwareVersions>;
+            auto checkVersion = [&](const TFirmwareSpecification &aSpecification,
                                     std::function<bool(int)> aCheck) {
                 if (aSpecification.contains(m_DeviceName) &&
                     aSpecification[m_DeviceName].contains(m_CurrencyCode) &&
                     aSpecification[m_DeviceName][m_CurrencyCode].contains(m_Updatable)) {
-                    CCCNet::TFimwareVersionSet versions =
+                    CCCNet::TFirmwareVersionSet versions =
                         aSpecification[m_DeviceName][m_CurrencyCode][m_Updatable];
 
                     if (std::find_if(versions.begin(), versions.end(), aCheck) != versions.end()) {
@@ -303,9 +303,9 @@ bool CCNetCashAcceptorBase::isConnected() {
                 }
             };
 
-            checkVersion(CCCNet::OutdatedFimwareSeries.data(),
+            checkVersion(CCCNet::OutdatedFirmwareSeries.data(),
                          [&](int aVersion) -> bool { return aVersion / 100 == base; });
-            checkVersion(CCCNet::FimwareVersions.data(), [&](int aVersion) -> bool {
+            checkVersion(CCCNet::FirmwareVersions.data(), [&](int aVersion) -> bool {
                 return (aVersion / 100 == base) && (aVersion % 100 > index);
             });
         }
@@ -403,7 +403,7 @@ bool CCNetCashAcceptorBase::enableMoneyAcceptingMode(bool aEnabled) {
     QByteArray commandData(3, ASCII::NUL);
 
     bool isCoinsEnabled =
-        std::find_if(m_EscrowParTable.data().begin() = false,
+        std::find_if(m_EscrowParTable.data().begin(),
                      m_EscrowParTable.data().end(),
                      [&](const SPar &par) -> bool {
                          return (par.cashReceiver == ECashReceiver::CoinAcceptor) && par.enabled &&
