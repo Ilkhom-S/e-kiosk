@@ -34,11 +34,11 @@ WatchServiceController::WatchServiceController()
     // Create menu actions with direct connections instead of signal mapper
     {
         auto *settingsAction = m_Menu.addAction(
-            createTemplateIcon(":/icons/menu-settingsTemplate.png"), tr("#start_service_menu"));
+            WatchServiceController::createTemplateIcon(":/icons/menu-settingsTemplate.png"), tr("#start_service_menu"));
         connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(onStartServiceMenuClicked()));
         m_StartServiceActions << settingsAction;
 
-        auto *setupAction = m_Menu.addAction(createTemplateIcon(":/icons/menu-setupTemplate.png"),
+        auto *setupAction = m_Menu.addAction(WatchServiceController::createTemplateIcon(":/icons/menu-setupTemplate.png"),
                                              tr("#start_first_setup"));
         connect(setupAction, SIGNAL(triggered(bool)), this, SLOT(onStartFirstSetupClicked()));
         m_StartServiceActions << setupAction;
@@ -47,15 +47,15 @@ WatchServiceController::WatchServiceController()
     }
 
     auto *playAction =
-        m_Menu.addAction(createTemplateIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
+        m_Menu.addAction(WatchServiceController::createTemplateIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
     connect(playAction, SIGNAL(triggered(bool)), this, SLOT(onStartServiceClickedDirect()));
     m_StartServiceActions << playAction;
 
     m_StopServiceAction =
-        m_Menu.addAction(createTemplateIcon(":/icons/menu-stopTemplate.png"), tr("#stop_service"));
+        m_Menu.addAction(WatchServiceController::createTemplateIcon(":/icons/menu-stopTemplate.png"), tr("#stop_service"));
     m_Menu.addSeparator();
     m_CloseTrayIconAction =
-        m_Menu.addAction(createTemplateIcon(":/icons/menu-closeTemplate.png"), tr("#close"));
+        m_Menu.addAction(WatchServiceController::createTemplateIcon(":/icons/menu-closeTemplate.png"), tr("#close"));
 
     connect(m_StopServiceAction, SIGNAL(triggered(bool)), SLOT(onStopServiceClicked()));
     connect(m_CloseTrayIconAction, SIGNAL(triggered(bool)), SLOT(onCloseIconClicked()));
@@ -72,7 +72,7 @@ WatchServiceController::WatchServiceController()
 
     m_Icon.show();
 
-    LOG(getLog(), LogLevel::Normal, "WatchServiceController started.");
+    LOG(WatchServiceController::getLog(), LogLevel::Normal, "WatchServiceController started.");
 }
 
 //----------------------------------------------------------------------------
@@ -209,7 +209,7 @@ WatchServiceController::~WatchServiceController() {
     // Hide tray icon
     m_Icon.hide();
 
-    LOG(getLog(), LogLevel::Normal, "WatchServiceController stopped.");
+    LOG(WatchServiceController::getLog(), LogLevel::Normal, "WatchServiceController stopped.");
 }
 
 //----------------------------------------------------------------------------
@@ -242,7 +242,7 @@ void WatchServiceController::onCheck() {
     // Only update tray icon when connection state actually changes to avoid layout recursion
     if (isConnected != m_PreviousConnectionState) {
         m_PreviousConnectionState = isConnected;
-        LOG(getLog(),
+        LOG(WatchServiceController::getLog(),
             LogLevel::Normal,
             QString("Connection state changed: %1 -> %2").arg(wasConnected).arg(isConnected));
 
@@ -257,10 +257,10 @@ void WatchServiceController::onCheck() {
 void WatchServiceController::updateTrayIcon() {
     if (m_Client->isConnected()) {
         // Connected state: show normal template icon
-        m_Icon.setIcon(createTemplateIcon(":/icons/controller-monogram_Template.png"));
+        m_Icon.setIcon(WatchServiceController::createTemplateIcon(":/icons/controller-monogram_Template.png"));
     } else {
         // Disconnected state: show slashed H icon to indicate stopped state
-        m_Icon.setIcon(createTemplateIcon(":/icons/controller-monogram-stoppedTemplate.png"));
+        m_Icon.setIcon(WatchServiceController::createTemplateIcon(":/icons/controller-monogram-stoppedTemplate.png"));
     }
 }
 
@@ -272,24 +272,24 @@ void WatchServiceController::onDisconnected() {
 //----------------------------------------------------------------------------
 void WatchServiceController::onCloseCommandReceived() {
     if (m_LastCommand != Stop) {
-        LOG(getLog(), LogLevel::Normal, "Close tray by command from watch service.");
+        LOG(WatchServiceController::getLog(), LogLevel::Normal, "Close tray by command from watch service.");
 
         QCoreApplication::instance()->quit();
     } else {
-        LOG(getLog(), LogLevel::Normal, "Ignore close command, because I initiate it.");
+        LOG(WatchServiceController::getLog(), LogLevel::Normal, "Ignore close command, because I initiate it.");
     }
 }
 
 //----------------------------------------------------------------------------
 void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
-    LOG(getLog(), LogLevel::Normal, QString("User say: start service. %1").arg(aArguments));
+    LOG(WatchServiceController::getLog(), LogLevel::Normal, QString("User say: start service. %1").arg(aArguments));
 
     m_LastCommand = Start;
 
     if (!m_Client->isConnected()) {
         // Validate application instance
         if (!BasicApplication::getInstance()) {
-            LOG(getLog(),
+            LOG(WatchServiceController::getLog(),
                 LogLevel::Error,
                 "Cannot start service: BasicApplication instance is null");
             return;
@@ -299,7 +299,7 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
 
         // Validate working directory
         if (!QDir(workingDir).exists()) {
-            LOG(getLog(),
+            LOG(WatchServiceController::getLog(),
                 LogLevel::Error,
                 QString("Cannot start service: working directory does not exist: %1")
                     .arg(workingDir));
@@ -307,11 +307,11 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
         }
 
         // Get platform-specific executable path
-        QString path = getExecutablePath("watchdog");
+        QString path = WatchServiceController::getExecutablePath("watchdog");
 
         // Validate executable exists
         if (!QFile::exists(path)) {
-            LOG(getLog(),
+            LOG(WatchServiceController::getLog(),
                 LogLevel::Error,
                 QString("Cannot start service: executable does not exist: %1").arg(path));
             return;
@@ -327,11 +327,11 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
         bool started = QProcess::startDetached(path, parameters, workingDir);
 
         if (started) {
-            LOG(getLog(),
+            LOG(WatchServiceController::getLog(),
                 LogLevel::Normal,
                 QString("Successfully started service process: %1").arg(path));
         } else {
-            LOG(getLog(),
+            LOG(WatchServiceController::getLog(),
                 LogLevel::Error,
                 QString("Failed to start service process: %1").arg(path));
         }
@@ -342,7 +342,7 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
 
 //----------------------------------------------------------------------------
 void WatchServiceController::onStopServiceClicked() {
-    LOG(getLog(), LogLevel::Normal, "User say: stop service.");
+    LOG(WatchServiceController::getLog(), LogLevel::Normal, "User say: stop service.");
 
     m_LastCommand = Stop;
 
@@ -363,14 +363,14 @@ void WatchServiceController::onCloseIconClicked() {
 #ifdef Q_OS_MAC
     // On macOS, add the icon to the dialog since window icons don't show in title bar
     // Use multi-size loading for crisp rendering
-    QIcon appIcon = createAppIcon(":/icons/controller-app-icon.png");
+    QIcon appIcon = WatchServiceController::createAppIcon(":/icons/controller-app-icon.png");
     QPixmap iconPixmap = appIcon.pixmap(64, 64, QIcon::Normal, QIcon::On);
     if (!iconPixmap.isNull()) {
         msgBox.setIconPixmap(iconPixmap);
     }
 #endif
 
-    msgBox.setWindowIcon(createAppIcon(":/icons/controller-app-icon.png"));
+    msgBox.setWindowIcon(WatchServiceController::createAppIcon(":/icons/controller-app-icon.png"));
 
     int result = msgBox.exec();
     if (result == QMessageBox::Yes) {
