@@ -16,6 +16,10 @@ template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QStri
     return new DevicePluginBase<T>(CComponents::Printer, aEnvironment, aInstancePath);
 }
 
+template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+    return CreatePlugin<T>(aEnvironment, aInstancePath);
+}
+
 //------------------------------------------------------------------------------
 template <class T> TParameterList singleParameters(const QString &aModel) {
     return modifyPriority(createNamedList<T>(aModel), EDetectingPriority::Low);

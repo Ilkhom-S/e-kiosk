@@ -1,9 +1,8 @@
 /* @file Движок мем-свичей принтеров STAR. */
 
-#include "StarMemorySwitchesBase.h"
-
 #include <QtCore/QSet>
 
+#include <Hardware/Printers/StarMemorySwitches.h>
 #include <cmath>
 
 #include "Hardware/Common/ASCII.h"

@@ -1,8 +1,8 @@
 /* @file Принтеры семейства Epson EU-T400. */
 
-#include "EpsonEUT400.h"
-
 #include <QtCore/QElapsedTimer>
+
+#include <Hardware/Printers/EpsonEUT400.h>
 
 #include "EpsonConstants.h"
 

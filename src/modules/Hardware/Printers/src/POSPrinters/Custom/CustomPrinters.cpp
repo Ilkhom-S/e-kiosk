@@ -5,6 +5,8 @@
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QtMath>
 
+#include "CustomTG2480H.h"
+
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний принтеров Custom.
 namespace CCustom_Printer {
@@ -37,6 +39,8 @@ const char PrintImage[] = "\x1B\x2A\x72\x42";                   /// Печать
 } // namespace CCustom_Printer
 
 template class Custom_Printer<TSerialPrinterBase>;
+template class Custom_Printer<TLibUSBPrinterBase>;
+template class Custom_TG2480H<TLibUSBPrinterBase>;
 
 //--------------------------------------------------------------------------------
 template <class T> Custom_Printer<T>::Custom_Printer() {

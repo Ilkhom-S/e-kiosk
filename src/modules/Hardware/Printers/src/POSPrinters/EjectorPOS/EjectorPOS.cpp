@@ -1,8 +1,8 @@
 /* @file POS-принтеры  с эжектором. */
 
-#include "EjectorPOS.h"
-
 #include <QtCore/QtGlobal>
+
+#include <Hardware/Printers/EjectorPOS.h>
 
 using namespace SDK::Driver::IOPort::COM;
 using namespace PrinterStatusCode;

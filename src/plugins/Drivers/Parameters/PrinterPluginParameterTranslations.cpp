@@ -2,6 +2,8 @@
 
 #include "PrinterPluginParameterTranslations.h"
 
+#include <QtCore/QCoreApplication>
+
 //------------------------------------------------------------------------
 namespace PluginParameterTranslations {
 const char PrintPageNumber[] =

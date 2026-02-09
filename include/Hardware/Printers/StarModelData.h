@@ -112,7 +112,7 @@ private:
     }
 };
 
-static CData Data;
+extern CData Data;
 
 typedef QMap<QString, SModelData> TData;
 } // namespace Models

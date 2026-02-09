@@ -14,6 +14,7 @@ set(PRINTER_PARAMS
     ${CMAKE_SOURCE_DIR}/src/plugins/Drivers/Parameters/PrinterPluginParameters.h
     ${CMAKE_SOURCE_DIR}/src/plugins/Drivers/Parameters/PrinterPluginParameterTranslations.h
     ${CMAKE_SOURCE_DIR}/src/plugins/Drivers/Parameters/PrinterPluginParameters.cpp
+    ${CMAKE_SOURCE_DIR}/src/plugins/Drivers/Parameters/PrinterPluginParameterTranslations.cpp
 )
 
 set(PRINTER_HEADERS

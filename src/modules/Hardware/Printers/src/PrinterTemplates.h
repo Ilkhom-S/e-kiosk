@@ -17,8 +17,3 @@ template class PortPrinterBase<PrinterBase<LibUSBDeviceBase<PortPollingDeviceBas
 
 template class POSPrinter<TLibUSBPrinterBase>;
 template class EjectorPOS<TLibUSBPrinterBase>;
-template class Custom_VKP80<TLibUSBPrinterBase>;
-template class Custom_Printer<TLibUSBPrinterBase>;
-template class Custom_VKP80III<TLibUSBPrinterBase>;
-template class CitizenPPU700<TLibUSBPrinterBase>;
-template class CitizenPPU700II<TLibUSBPrinterBase>;

@@ -13,3 +13,8 @@
 #include "POSPrinters/Custom/CustomVKP/CustomVKP80.cpp"
 #include "POSPrinters/Custom/CustomVKP/CustomVKP80III.cpp"
 #include "POSPrinters/EjectorPOS/EjectorPOS.cpp"
+
+// Explicit template instantiations
+template class Custom_VKP80<TLibUSBPrinterBase>;
+template class CitizenPPU700<TLibUSBPrinterBase>;
+template class CitizenPPU700II<TLibUSBPrinterBase>;

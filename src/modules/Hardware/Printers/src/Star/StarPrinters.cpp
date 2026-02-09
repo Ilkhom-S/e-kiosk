@@ -1,14 +1,12 @@
 /* @file Принтеры семейства Star. */
 
-#include "StarPrinters.h"
-
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QtEndian>
 #include <QtCore/qmath.h>
 
+#include <Hardware/Printers/StarPrinter.h>
 #include <cmath>
-#include <math.h>
 
 #include "ModelData.h"
 #include "StarPrinterData.h"

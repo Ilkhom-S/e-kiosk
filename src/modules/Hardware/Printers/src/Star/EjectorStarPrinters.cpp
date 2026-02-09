@@ -2,7 +2,8 @@
 
 #include "EjectorStarPrinters.h"
 
-#include "ModelData.h"
+#include <Hardware/Printers/StarModelData.h>
+
 #include "StarPrinterData.h"
 
 using namespace SDK::Driver::IOPort::COM;

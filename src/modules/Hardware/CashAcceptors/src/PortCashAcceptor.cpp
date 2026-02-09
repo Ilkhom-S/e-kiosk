@@ -20,7 +20,7 @@ PortCashAcceptor<T>::PortCashAcceptor()
     // данные устройства
     this->m_DeviceName = "Port cash acceptor";
 
-    this->m_IOMessageLogging = ELoggingType::None;
+    this->m_ioMessageLogging = ELoggingType::None;
 
     this->m_MaxBadAnswers = 4;
 

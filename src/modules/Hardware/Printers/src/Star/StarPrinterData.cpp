@@ -1,6 +1,7 @@
 /* @file Константы принтеров Star. */
 
 #include "StarPrinterData.h"
+#include <Hardware/Printers/StarModelData.h>
 
 /// Команды.
 namespace CStarPrinter {
@@ -39,3 +40,6 @@ const char Unknown[] = "Unknown STAR printer";
 const char UnknownEjector[] = "Unknown STAR printer with ejector";
 } // namespace Models
 } // namespace CSTAR
+
+//--------------------------------------------------------------------------------
+CSTAR::Models::CData CSTAR::Models::Data;

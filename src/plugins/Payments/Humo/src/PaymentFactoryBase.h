@@ -46,19 +46,19 @@ public:
     /// Заполнение экземпляра актуальными данными.
     virtual bool
     restorePayment(SDK::PaymentProcessor::IPayment *aPayment,
-                   const QList<SDK::PaymentProcessor::IPayment::SParameter> &aParameters);
+                   const QList<SDK::PaymentProcessor::IPayment::SParameter> &aParameters) override;
 
     /// Установка метода-сериализатора для сохранения платежей.
-    virtual void setSerializer(TSerializer aSerializer);
+    virtual void setSerializer(TSerializer aSerializer) override;
 
     /// Конвертация переданного платежа к типу aTargetType, поддерживаемую этой фабрикой. В случае
     /// ошибка возвращает false.
     virtual bool convertPayment(const QString &aTargetType,
-                                SDK::PaymentProcessor::IPayment *aPayment);
+                                SDK::PaymentProcessor::IPayment *aPayment) override;
 
     /// Метод сериализации: вызывается только экземплярами платежей, созданных этой фабрикой, и
     /// делегирует вызов функции-сериализатору из ядра терминального клиента.
-    virtual bool savePayment(SDK::PaymentProcessor::IPayment *aPayment);
+    virtual bool savePayment(SDK::PaymentProcessor::IPayment *aPayment) override;
 
 #pragma endregion
 
