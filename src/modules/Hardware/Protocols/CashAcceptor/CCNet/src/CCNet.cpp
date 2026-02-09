@@ -48,7 +48,7 @@ ushort CCNetProtocol::calcCRC16(const QByteArray &aData) {
 }
 
 //--------------------------------------------------------------------------------
-void CCNetProtocol::pack(QByteArray &aCommandData) const const {
+void CCNetProtocol::pack(QByteArray &aCommandData) const {
     aCommandData.prepend(m_Address);
     aCommandData.prepend(CCCNet::Prefix);
 
@@ -70,7 +70,7 @@ void CCNetProtocol::pack(QByteArray &aCommandData) const const {
 }
 
 //--------------------------------------------------------------------------------
-QString CCNetProtocol::check(const QByteArray &aAnswer) const const {
+QString CCNetProtocol::check(const QByteArray &aAnswer) const {
     // минимальный размер ответа
     if (aAnswer.size() < CCCNet::MinAnswerSize) {
         return QString("CCNet: Invalid answer length = %1, need %2 minimum")

@@ -27,4 +27,5 @@ const char BackFeedMask[] = "xxxxx1xx";
 /// MSW8: маска отсутствия обратной промотки
 const char NoBackFeedMask[] = "xxxxx0xx";
 } // namespace MemorySwitch
+} // namespace Command
 } // namespace CEpsonEUT400

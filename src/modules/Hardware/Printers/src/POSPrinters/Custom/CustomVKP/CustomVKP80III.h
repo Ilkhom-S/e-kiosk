@@ -2,21 +2,21 @@
 
 #pragma once
 
-#include "Custom_VKP80.h"
+#include <Hardware/Printers/CustomVKP80.h>
 
 //--------------------------------------------------------------------------------
 /// Константы и команды Custom VKP-80 III.
 namespace CCustom_VKP80III {
 /// Команды.
 namespace Command {
-extern const char GetModelId[];    /// Получение идентификатора модели.
+extern const char GetModelId[];        /// Получение идентификатора модели.
 extern const char EjectorActivation[]; /// Неизменяемая часть команды активации эжектора.
 } // namespace Command
 
-extern const char ModelId[]; /// Идентификатор модели.
-const char Blinking = '\x01';      /// Мигать светодиодами при презентации.
-const char Pushing = 'E';          /// Выталкивание чека.
-const char Retraction = 'R';       /// Ретракция чека.
+extern const char ModelId[];  /// Идентификатор модели.
+const char Blinking = '\x01'; /// Мигать светодиодами при презентации.
+const char Pushing = 'E';     /// Выталкивание чека.
+const char Retraction = 'R';  /// Ретракция чека.
 } // namespace CCustom_VKP80III
 
 //--------------------------------------------------------------------------------

@@ -6,7 +6,7 @@ template class PortPrinterBase<PrinterBase<SerialDeviceBase<PortPollingDeviceBas
 
 //---------------------------------------------------------------------------
 template <class T> PortPrinterBase<T>::PortPrinterBase() {
-    this->m_IOMessageLogging = ELoggingType::ReadWrite;
+    this->m_ioMessageLogging = ELoggingType::ReadWrite;
 
     // кодек - удалено для Qt 6 совместимости
     // this->m_Codec = CodecByName[CHardware::Codepages::CP866].get();
@@ -119,8 +119,7 @@ template <class T> bool PortPrinterBase<T>::printOut(const SPrintingOutData &aPr
     }
 
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging,
-                         QVariant().fromValue(ELoggingType::ReadWrite));
+    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::ReadWrite));
     this->m_IOPort->setDeviceConfiguration(configuration);
     int feeding = this->getConfigParameter(CHardware::Printer::FeedingAmount).toInt();
 

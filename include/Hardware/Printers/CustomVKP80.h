@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <Hardware/Common/USBDeviceVendors.h>
 #include <Hardware/Printers/EjectorPOS.h>
 
 //--------------------------------------------------------------------------------

@@ -25,6 +25,10 @@ template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QStri
     return new DevicePluginBase<T>("Virtual device", aEnvironment, aInstanceName);
 }
 
+template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QString &aInstanceName) {
+    return CreatePlugin<T>(aEnvironment, aInstanceName);
+}
+
 //--------------------------------------------------------------------------------------
 TParameterList CAParameters() {
     return modifyPriority(createNamedList<VirtualCashAcceptor>("Virtual cash acceptor"),

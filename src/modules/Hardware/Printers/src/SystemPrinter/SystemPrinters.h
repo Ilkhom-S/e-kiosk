@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "System_Printer.h"
+#include "SystemPrinter.h"
 
 //--------------------------------------------------------------------------------
 class SunphorPOS58IV : public System_Printer {

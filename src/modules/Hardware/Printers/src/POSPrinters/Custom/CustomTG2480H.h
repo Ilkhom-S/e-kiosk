@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Custom_Printers.h"
+#include "CustomPrinters.h"
 
 //--------------------------------------------------------------------------------
 template <class T> class Custom_TG2480H : public Custom_Printer<T> {

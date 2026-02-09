@@ -9,6 +9,7 @@ namespace CUSBVendors {
 class Data : public CStaticSpecification<QString, quint16> {};
 
 #define ADD_USB_VENDOR(aName, aVID)                                                                \
+    const char aName[] = #aName;                                                                   \
     namespace VID {                                                                                \
     const quint16 aName = CUSBVendors::Data::process(#aName, aVID).value(#aName);                  \
     }

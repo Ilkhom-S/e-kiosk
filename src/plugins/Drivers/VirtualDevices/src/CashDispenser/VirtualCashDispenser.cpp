@@ -18,7 +18,7 @@ void VirtualDispenser::setDeviceConfiguration(const QVariantMap &aConfiguration)
     m_JammedItem = aConfiguration.value(CHardware::Dispenser::JammedItem, m_JammedItem).toInt();
     m_NearEndCount =
         aConfiguration.value(CHardware::Dispenser::NearEndCount, m_NearEndCount).toInt();
-    m_Units = aConfiguration.value(CHardware::Dispenser::Units, m_Units).toInt();
+    m_units = aConfiguration.value(CHardware::Dispenser::Units, m_units).toInt();
 }
 
 //---------------------------------------------------------------------------
@@ -27,7 +27,7 @@ void VirtualDispenser::applyUnitList() {
 
     START_IN_WORKING_THREAD(applyUnitList)
 
-    if (!m_UnitConfigData.isEmpty()) {
+    if (!m_unitConfigData.isEmpty()) {
         adjustUnitList(true);
     }
 
@@ -50,27 +50,27 @@ void VirtualDispenser::performDispense(int aUnit, int aItems) {
     int dispensedItems = 0;
 
     if (!m_StatusCodes.contains(DispenserStatusCode::Error::Jammed)) {
-        dispensedItems = qMin(aItems, m_UnitData[aUnit]);
+        dispensedItems = qMin(aItems, m_unitData[aUnit]);
 
         if (m_JammedItem && (dispensedItems >= m_JammedItem)) {
             m_StatusCodes.insert(DispenserStatusCode::Error::Jammed);
             dispensedItems = m_JammedItem - 1;
         }
 
-        m_UnitData[aUnit] -= dispensedItems;
+        m_unitData[aUnit] -= dispensedItems;
     }
 
     SleepHelper::msleep(CVirtualDispenser::Item_DispenseDelay * dispensedItems);
 
-    if (m_UnitData[aUnit]) {
-        m_UnitData[aUnit]--;
+    if (m_unitData[aUnit]) {
+        m_unitData[aUnit]--;
         toLog(LogLevel::Warning,
               QString("%1: Send rejected 1 item from %2 unit").arg(m_DeviceName).arg(aUnit));
 
         emit rejected(aUnit, 1);
     }
 
-    if (!m_UnitData[aUnit]) {
+    if (!m_unitData[aUnit]) {
         toLog(LogLevel::Warning, QString("%1: Send emptied unit %2").arg(m_DeviceName).arg(aUnit));
 
         emit unitEmpty(aUnit);
@@ -89,7 +89,7 @@ void VirtualDispenser::performDispense(int aUnit, int aItems) {
 
 //--------------------------------------------------------------------------------
 void VirtualDispenser::checkUnitStatus(TStatusCodes &aStatusCodes, int aUnit) {
-    if ((m_UnitData.size() > aUnit) && (m_UnitData[aUnit] <= m_NearEndCount)) {
+    if ((m_unitData.size() > aUnit) && (m_unitData[aUnit] <= m_NearEndCount)) {
         aStatusCodes.insert(CDispenser::StatusCodes::Data[aUnit].nearEmpty);
     }
 

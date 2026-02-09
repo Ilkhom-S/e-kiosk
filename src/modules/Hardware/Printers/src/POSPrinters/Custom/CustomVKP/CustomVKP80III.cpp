@@ -1,6 +1,6 @@
 /* @file Принтер Custom VKP-80 III. */
 
-#include "Custom_VKP80III.h"
+#include "CustomVKP80III.h"
 
 //--------------------------------------------------------------------------------
 /// Константы и команды Custom VKP-80 III.

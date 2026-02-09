@@ -1,5 +1,7 @@
 /* @file Системный принтер. */
 
+#include "SystemPrinter.h"
+
 #include <QtCore/QBuffer>
 #include <QtCore/QRegularExpression>
 #include <QtGui/QFontDatabase>
@@ -10,7 +12,6 @@
 #include <algorithm>
 
 #include "SysUtils/ISysUtils.h"
-#include "System_Printer.h"
 
 namespace PrinterSettings = CHardware::Printer::Settings;
 
@@ -84,7 +85,7 @@ bool System_Printer::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
             for (auto lexeme : lexemes) {
                 if (lexeme.tags.contains(Tags::Type::Image)) {
                     QByteArray data = QByteArray::fromBase64(lexeme.data.toLatin1());
-                    QImage image = QImage::from_Data(data, "png");
+                    QImage image = QImage::fromData(data, "png");
 
                     if (!image.isNull()) {
                         // Рефакторинг QMatrix -> QTransform (Qt 6 совместимо)

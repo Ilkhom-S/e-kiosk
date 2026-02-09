@@ -89,7 +89,7 @@ protected:
     TStatusCodes m_IOPortStatusCodes;
 
     /// Логгирование посылок в классе порта.
-    ELoggingType::Enum m_IOMessageLogging;
+    ELoggingType::Enum m_ioMessageLogging;
 
     /// Экземпляр класса-описателя статусов портов.
     IOPortStatusCode::CSpecifications m_IOPortStatusCodesSpecification;

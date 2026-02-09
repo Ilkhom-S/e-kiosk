@@ -1,6 +1,6 @@
 /* @file Принтер Custom VKP-80. */
 
-#include "Custom_VKP80.h"
+#include <Hardware/Printers/CustomVKP80.h>
 
 template class Custom_VKP80<TSerialPrinterBase>;
 

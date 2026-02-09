@@ -1,10 +1,9 @@
 /* @file POS-принтер. */
 
-#include "POSPrinter.h"
-
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QSet>
 
+#include <Hardware/Printers/POSPrinter.h>
 #include <algorithm>
 
 using namespace SDK::Driver::IOPort::COM;

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <Hardware/Common/USBDeviceVendors.h>
+
 #include "../../EjectorPOS/EjectorPOS.h"
 #include "../CitizenBase.h"
 
@@ -61,9 +63,9 @@ public:
         using namespace SDK::Driver::IOPort::COM;
 
         this->m_PortParameters.insert(EParameters::BaudRate,
-                                     POSPrinters::TSerialDevicePortParameter()
-                                         << EBaudRate::BR38400 << EBaudRate::BR19200
-                                         << EBaudRate::BR4800 << EBaudRate::BR9600);
+                                      POSPrinters::TSerialDevicePortParameter()
+                                          << EBaudRate::BR38400 << EBaudRate::BR19200
+                                          << EBaudRate::BR4800 << EBaudRate::BR9600);
     }
 };
 

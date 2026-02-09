@@ -16,7 +16,7 @@ public:
     virtual void setLog(ILog *aLog);
 
     /// Возвращает список поддерживаемых устройств.
-    static QStringList getModelList();
+    QStringList getModelList();
 
 protected:
     /// Анализирует коды статусов устройства и фильтрует лишние.
@@ -38,16 +38,16 @@ protected:
     virtual bool printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt);
 
     /// После подачи команды, связанной с печатью ждем окончания печати.
-    static bool waitForPrintingEnd();
+    bool waitForPrintingEnd();
 
     /// Сброс.
-    static bool reset();
+    bool reset();
 
     /// Установить параметры мем-свича.
-    static bool setMemorySwitch(int aSwitch, ushort aValue);
+    bool setMemorySwitch(int aSwitch, ushort aValue);
 
     /// Получить параметры мем-свича.
-    static bool getMemorySwitch(int aSwitch, ushort &aValue);
+    bool getMemorySwitch(int aSwitch, ushort &aValue);
 
     /// Прочитать мем-свичей.
     void getMemorySwitches();
@@ -59,10 +59,10 @@ protected:
     bool readMSWAnswer(QByteArray &aAnswer);
 
     /// Получить ответ на ASB статус.
-    static bool readASBAnswer(QByteArray &aAnswer, int &aLength);
+    bool readASBAnswer(QByteArray &aAnswer, int &aLength);
 
     /// Получить ответ на запрос идентификации.
-    static bool readIdentificationAnswer(QByteArray &aAnswer);
+    bool readIdentificationAnswer(QByteArray &aAnswer);
 
     /// Напечатать картинку.
     virtual bool printImage(const QImage &aImage, const Tags::TTypes &aTags);
@@ -74,7 +74,7 @@ protected:
     bool isPaperInPresenter();
 
     /// Наложить маску на 1 байт и сдвинуть.
-    static inline int
+    inline int
     shiftData(const QByteArray aAnswer, int aByteNumber, int aSource, int aShift, int aDigits);
 
     /// Мем-свичи.

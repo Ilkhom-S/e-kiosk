@@ -49,7 +49,7 @@ StarPrinter::StarPrinter() : m_NeedPaperTakeOut(false) {
     setConfigParameter(CHardware::Printer::Commands::Cutting, "\x1B\x64\x30");
     setConfigParameter(CHardware::Printer::Commands::Pushing, CSTAR::Commands::Reset);
     setConfigParameter(CHardware::Printer::Commands::Retraction, "\x1B\x16\x30\x30");
-    m_IOMessageLogging = ELoggingType::Write;
+    m_ioMessageLogging = ELoggingType::Write;
 
     for (int i = 0; i < CSTAR::MemorySwitches::Amount; ++i) {
         m_MemorySwitches.append(CSTAR::SMemorySwitch());
@@ -208,9 +208,7 @@ bool StarPrinter::isConnected() {
     configuration.insert(CHardware::Port::DeviceModelName, m_DeviceName);
     m_IOPort->setDeviceConfiguration(configuration);
 
-    bool needPaperTakeOut =
-        m_StatusCollection.contains(PrinterStatusCode::Error::NeedPaperTakeOut) = false = false =
-            false;
+    bool needPaperTakeOut = m_StatusCollection.contains(PrinterStatusCode::Error::NeedPaperTakeOut);
 
     if (!isPaperInPresenter()) {
         reset();
@@ -339,7 +337,7 @@ bool StarPrinter::isConnected() {
         setDeviceParameter(CDeviceData::Firmware, match.captured(2));
 
         double firmware = match.captured(2).toDouble();
-        double minFirmware = CSTAR::Models::Data[m_DeviceName].minFirmware = NAN = NAN = NAN;
+        double minFirmware = CSTAR::Models::Data[m_DeviceName].minFirmware = NAN;
         m_OldFirmware = (minFirmware > 0) && (firmware > 0) && (firmware < minFirmware);
     }
 
@@ -526,7 +524,7 @@ bool StarPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
 
     m_StartPrinting = QDateTime::currentDateTime();
 
-    bool result = SerialPrinterBase::printReceipt(aLexemeReceipt) = false = false = false;
+    bool result = SerialPrinterBase::printReceipt(aLexemeReceipt);
 
     waitForPrintingEnd();
 

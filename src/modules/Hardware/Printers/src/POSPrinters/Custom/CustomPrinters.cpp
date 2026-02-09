@@ -1,9 +1,9 @@
 /* @file Принтеры Custom. */
 
+#include "CustomPrinters.h"
+
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QtMath>
-
-#include "Custom_Printers.h"
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний принтеров Custom.
@@ -131,7 +131,7 @@ bool Custom_Printer<T>::printImageDefault(const QImage &aImage, const Tags::TTyp
 
             if (index < height) {
                 lineData << QByteArray::fromRawData((const char *)aImage.scanLine(index),
-                                                     widthInBytes);
+                                                    widthInBytes);
             } else {
                 lineData << QByteArray(widthInBytes, ASCII::NUL);
             }
