@@ -1,6 +1,7 @@
 /* @file Константы принтеров Star. */
 
 #include "StarPrinterData.h"
+
 #include <Hardware/Printers/StarModelData.h>
 
 /// Команды.
