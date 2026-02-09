@@ -338,7 +338,7 @@ inline SPluginParameter setProtocolType(const QString &aDefaultType,
 #define COMMON_DRIVER(aClassName, aParameters)                                                     \
     COMMON_DRIVER_WITH_PARAMETERS(aClassName, &createPlugin<aClassName>, aParameters)
 #define SIMPLE_COMMON_DRIVER(aClassName, aParameters)                                              \
-    COMMON_DRIVER(aClassName, &(aParameters) < aClassName >)
+    COMMON_DRIVER(aClassName, aParameters<aClassName>)
 
 #define BEGIN_REGISTER_PLUGIN
 #define END_REGISTER_PLUGIN
