@@ -2,7 +2,7 @@
 
 #include "CCNetCreatorConstants.h"
 
-namespace CCCNet {
+namespace CCCNetCreator {
 namespace Commands {
 namespace UpdatingFirmware {
 const char SetBaudRate[] = "\xA0";
@@ -14,4 +14,4 @@ const char Exit[] = "\xA3";
 const char GetInternalVersion[] = "\x70";
 const char GetSerial[] = "\x72";
 } // namespace Commands
-} // namespace CCCNet
+} // namespace CCCNetCreator

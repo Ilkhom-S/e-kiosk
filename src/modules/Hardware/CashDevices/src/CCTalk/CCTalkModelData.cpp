@@ -125,9 +125,11 @@ QStringList CModelDataBase::getModels(bool aComplexEnabling) {
 } // namespace CCCTalk
 
 //--------------------------------------------------------------------------------
+namespace CCCTalk {
 const char DefaultDeviceName[] =
     "Unknown cash device based on ccTalk protocol"; /// Название устройства по умолчанию.
 const char DeviceNamePostfix[] =
     "cash device, unknown model based on ccTalk protocol"; /// Оконание названия устройства
                                                            /// известного производителя по
                                                            /// умолчанию.
+} // namespace CCCTalk

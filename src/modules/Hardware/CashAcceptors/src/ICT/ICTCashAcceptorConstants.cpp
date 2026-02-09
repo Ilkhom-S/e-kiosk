@@ -2,7 +2,7 @@
 
 #include "ICTCashAcceptorConstants.h"
 
-namespace CICT {
+namespace CICTBase {
 namespace Answers {
 const char Identification[] = "\x5E\x3E\x5E";
 } // namespace Answers
@@ -10,4 +10,4 @@ const char Identification[] = "\x5E\x3E\x5E";
 namespace States {
 const char PowerUp[] = "\x80\x8F";
 } // namespace States
-} // namespace CICT
+} // namespace CICTBase
