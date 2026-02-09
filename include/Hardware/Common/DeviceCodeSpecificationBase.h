@@ -26,14 +26,14 @@ struct SDeviceCodeSpecification {
         : statusCode(aStatusCode), description(aDescription) {}
 };
 
-extern const char UnknownDeviceCodeDescription[];
+const char *getUnknownDeviceCodeDescription();
 
 /// Спецификация состояний устройства.
 template <class T>
 class DeviceCodeSpecificationBase : public CSpecification<T, SDeviceCodeSpecification> {
 public:
     DeviceCodeSpecificationBase() {
-        this->setDefault(SDeviceCodeSpecification(0, UnknownDeviceCodeDescription));
+        this->setDefault(SDeviceCodeSpecification(0, getUnknownDeviceCodeDescription()));
     }
 
     void appendStatus(T aCode, int aStatusCode, const QString &aDescription = "") {

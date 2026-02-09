@@ -143,7 +143,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
         if (this->m_DeviceCodeBuffers.isEmpty()) {
             this->toLog(logLevel,
                         this->m_DeviceName + QString(": %1 -> %2")
-                                                 .arg(UnknownDeviceCodeDescription)
+                                                 .arg(getUnknownDeviceCodeDescription())
                                                  .arg(defaultDescriptionLog.join(", ")));
         } else {
             for (TDeviceCodeSpecifications::iterator it = deviceCodeSpecifications.begin();
@@ -156,7 +156,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
 
                     QString codeLog;
 
-                    if (it->description == UnknownDeviceCodeDescription) {
+                    if (it->description == getUnknownDeviceCodeDescription()) {
                         codeLog = QString(" (%1)").arg(it.key());
                     }
 

@@ -27,6 +27,10 @@ const char StatusSeparator[] = "; ";
 
 const char UnknownDeviceCodeDescription[] = "unknown device code";
 
+const char *getUnknownDeviceCodeDescription() {
+    return UnknownDeviceCodeDescription;
+}
+
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
