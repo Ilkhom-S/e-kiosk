@@ -17,7 +17,7 @@
 #include "ServiceTags.h"
 
 DiagnosticsServiceWindow::DiagnosticsServiceWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend), m_SpacerItem(0) {
+    : QFrame(aParent), ServiceWindowBase(aBackend), m_SpacerItem(nullptr) {
     setupUi(this);
 
     connect(
@@ -55,7 +55,7 @@ bool DiagnosticsServiceWindow::activate() {
 
     vlTestWidgets->removeItem(m_SpacerItem);
     delete m_SpacerItem;
-    m_SpacerItem = 0;
+    m_SpacerItem = nullptr;
 
     // Получаем список устройств из конфигов.
     QStringList configNames = m_Backend->getHardwareManager()->getConfigurations();
@@ -122,7 +122,7 @@ void DiagnosticsServiceWindow::updateInfoPanel() {
         result.insert(service->getParameters());
     }
 
-    lbSim_Balance->setText(
+    lbSimBalance->setText(
         result[SDK::PaymentProcessor::CServiceParameters::Networking::SimBalance].toString());
     lbRejectedBills->setText(QString::number(
         result[SDK::PaymentProcessor::CServiceParameters::Funds::RejectCount].toInt()));

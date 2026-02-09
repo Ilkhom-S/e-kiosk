@@ -7,7 +7,7 @@
 DialupConnectionWindow::DialupConnectionWindow(QWidget *aParent) : QWidget(aParent) {
     setupUi(this);
 
-    lwModems->setItem_Delegate(new ListDelegate(lwModems));
+    lwModems->setItemDelegate(new ListDelegate(lwModems));
 
     connect(btnTest, SIGNAL(clicked()), SLOT(onTestConnection()));
     connect(btnNew, SIGNAL(clicked()), SLOT(switchToCreatePage()));
@@ -61,7 +61,7 @@ void DialupConnectionWindow::fillConnectionList(const QStringList &aConnections,
     QList<QListWidgetItem *> items = lwConnections->findItems(aCurrent, Qt::MatchFixedString);
 
     if (items.size()) {
-        lwConnections->setCurrentItem(items.first(), QItem_SelectionModel::ClearAndSelect);
+        lwConnections->setCurrentItem(items.first(), QItemSelectionModel::ClearAndSelect);
         items.first()->setSelected(true);
     } else {
         lwConnections->setCurrentRow(0);

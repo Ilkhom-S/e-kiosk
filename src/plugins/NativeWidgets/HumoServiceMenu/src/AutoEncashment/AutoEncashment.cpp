@@ -36,8 +36,8 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
 
 //--------------------------------------------------------------------------
 AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : m_MainWidget(0), m_Environment(aFactory), m_InstancePath(aInstancePath),
-      m_AutoEncashmentWindow(0), m_IsReady(false) {
+    : m_MainWidget(nullptr), m_Environment(aFactory), m_InstancePath(aInstancePath),
+      m_AutoEncashmentWindow(nullptr), m_IsReady(false) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
@@ -48,7 +48,7 @@ AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QStrin
         m_Environment->getLog("HumoService")->write(LogLevel::Error, "Failed to get ICore");
     }
 
-    m_IsReady = core != 0;
+    m_IsReady = core != nullptr;
 
     if (m_IsReady) {
         m_MainWidget = new QGraphicsProxyWidget();
@@ -64,13 +64,13 @@ AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QStrin
 
         qreal newWidgetWidth =
             core->getGUIService()->getScreenSize(0).width() / m_MainWidget->scale();
-        m_MainWidget->setMinimum_Width(newWidgetWidth);
-        m_MainWidget->setMaximum_Width(newWidgetWidth);
+        m_MainWidget->setMinimumWidth(newWidgetWidth);
+        m_MainWidget->setMaximumWidth(newWidgetWidth);
 
         qreal newWidgetHeight =
             core->getGUIService()->getScreenSize(0).height() / m_MainWidget->scale();
-        m_MainWidget->setMinimum_Height(newWidgetHeight);
-        m_MainWidget->setMaximum_Height(newWidgetHeight);
+        m_MainWidget->setMinimumHeight(newWidgetHeight);
+        m_MainWidget->setMaximumHeight(newWidgetHeight);
     }
 }
 
@@ -139,17 +139,17 @@ QQuickItem *AutoEncashment::getWidget() const {
 //---------------------------------------------------------------------------
 QVariantMap AutoEncashment::getContext() const {
     // TODO
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
 bool AutoEncashment::isValid() const {
-    return m_MainWidget != 0;
+    return m_MainWidget != nullptr;
 }
 
 //---------------------------------------------------------------------------
 QString AutoEncashment::getError() const {
-    return QString();
+    return {};
 }
 
 //---------------------------------------------------------------------------

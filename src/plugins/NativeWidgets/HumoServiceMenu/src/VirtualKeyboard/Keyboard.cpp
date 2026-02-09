@@ -37,12 +37,12 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
 
 //--------------------------------------------------------------------------
 Keyboard::Keyboard(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : m_MainWidget(0), m_Environment(aFactory), m_InstancePath(aInstancePath), m_KeyboardWindow(0),
-      m_IsReady(false) {
+    : m_MainWidget(nullptr), m_Environment(aFactory), m_InstancePath(aInstancePath),
+      m_KeyboardWindow(nullptr), m_IsReady(false) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
-    m_IsReady = core != 0;
+    m_IsReady = core != nullptr;
 
     if (m_IsReady) {
         m_MainWidget = new QGraphicsProxyWidget();
@@ -51,7 +51,7 @@ Keyboard::Keyboard(SDK::Plugin::IEnvironment *aFactory, const QString &aInstance
         m_KeyboardWindow->initialize();
 
         m_MainWidget->setWidget(m_KeyboardWindow);
-        m_MainWidget->setFlag(QGraphicsItem::Item_IsFocusable, false);
+        m_MainWidget->setFlag(QGraphicsItem::ItemIsFocusable, false);
 
         m_MainWidget->setScale(qMin(1.0,
                                     qreal(qMin(core->getGUIService()->getScreenSize(0).width() /
@@ -131,17 +131,17 @@ bool Keyboard::isValid() const {
 
 //--------------------------------------------------------------------------
 QString Keyboard::getError() const {
-    return QString();
+    return {};
 }
 
 //--------------------------------------------------------------------------
 QQuickItem *Keyboard::getWidget() const {
-    return 0;
+    return nullptr;
 }
 
 //--------------------------------------------------------------------------
 QVariantMap Keyboard::getContext() const {
-    return QVariantMap();
+    return {};
 }
 
 //--------------------------------------------------------------------------

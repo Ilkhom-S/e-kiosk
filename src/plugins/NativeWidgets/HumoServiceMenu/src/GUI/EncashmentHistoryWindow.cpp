@@ -43,8 +43,8 @@ void EncashmentHistoryWindow::updateHistory() {
                        tr("#total") + ": " + encashment[CServiceTags::CashAmount].toString();
 
         QPushButton *button = new QPushButton(text, this);
-        button->setMinimum_Height(35);
-        button->setMaximum_Width(250);
+        button->setMinimumHeight(35);
+        button->setMaximumWidth(250);
         button->setEnabled(
             paymentManager->canPrint(SDK::PaymentProcessor::CReceiptType::Encashment));
 

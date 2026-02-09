@@ -99,7 +99,7 @@ public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    virtual Qt::Item_Flags flags(const QModelIndex &index) const;
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     virtual QVariant
     headerData(int aSection, Qt::Orientation aOrientation, int aRole = Qt::DisplayRole) const;
     void setPayments(QList<PaymentInfo> aPaymentInfoList);

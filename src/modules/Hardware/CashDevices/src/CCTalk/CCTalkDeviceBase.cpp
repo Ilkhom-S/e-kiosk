@@ -23,11 +23,11 @@ template <class T> QStringList CCTalkDeviceBase<T>::getProtocolTypes() {
 
 //--------------------------------------------------------------------------------
 template <class T> QDate CCTalkDeviceBase<T>::parseDate(const QByteArray &aData) {
-    ushort data = qToBigEndian(aData.toHex().toUShort(0, 16));
+    ushort data = qToBigEndian(aData.toHex().toUShort(nullptr, 16));
 
-    return QDate(int((data >> 9) & 0x3F) + this->m_BaseYear,
-                 int((data >> 5) & 0x0F),
-                 int((data >> 0) & 0x1F));
+    return {int((data >> 9) & 0x3F) + this->m_BaseYear,
+            int((data >> 5) & 0x0F),
+            int((data >> 0) & 0x1F)};
 }
 
 //--------------------------------------------------------------------------------

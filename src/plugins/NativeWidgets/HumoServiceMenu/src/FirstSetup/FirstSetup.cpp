@@ -38,7 +38,8 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
 
 //--------------------------------------------------------------------------
 FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : m_MainWidget(0), m_Environment(aFactory), m_InstancePath(aInstancePath), m_IsReady(false) {
+    : m_MainWidget(nullptr), m_Environment(aFactory), m_InstancePath(aInstancePath),
+      m_IsReady(false) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
@@ -49,7 +50,7 @@ FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInst
         m_Environment->getLog("HumoService")->write(LogLevel::Error, "Failed to get ICore");
     }
 
-    m_IsReady = core != 0;
+    m_IsReady = core != nullptr;
 
     if (m_IsReady) {
         m_MainWidget = new QGraphicsProxyWidget();
@@ -65,13 +66,13 @@ FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInst
 
         qreal newWidgetWidth =
             core->getGUIService()->getScreenSize(0).width() / m_MainWidget->scale();
-        m_MainWidget->setMinimum_Width(newWidgetWidth);
-        m_MainWidget->setMaximum_Width(newWidgetWidth);
+        m_MainWidget->setMinimumWidth(newWidgetWidth);
+        m_MainWidget->setMaximumWidth(newWidgetWidth);
 
         qreal newWidgetHeight =
             core->getGUIService()->getScreenSize(0).height() / m_MainWidget->scale();
-        m_MainWidget->setMinimum_Height(newWidgetHeight);
-        m_MainWidget->setMaximum_Height(newWidgetHeight);
+        m_MainWidget->setMinimumHeight(newWidgetHeight);
+        m_MainWidget->setMaximumHeight(newWidgetHeight);
     }
 }
 
@@ -145,17 +146,17 @@ bool FirstSetup::isValid() const {
 
 //--------------------------------------------------------------------------
 QString FirstSetup::getError() const {
-    return QString();
+    return {};
 }
 
 //--------------------------------------------------------------------------
 QQuickItem *FirstSetup::getWidget() const {
-    return 0;
+    return nullptr;
 }
 
 //--------------------------------------------------------------------------
 QVariantMap FirstSetup::getContext() const {
-    return QVariantMap();
+    return {};
 }
 
 //--------------------------------------------------------------------------

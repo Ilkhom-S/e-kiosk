@@ -98,7 +98,7 @@ void MainScenario::signalTriggered(const QString & /*aSignal*/,
 
 //---------------------------------------------------------------------------
 QString MainScenario::getState() const {
-    return QString("main");
+    return {"main"};
 }
 
 //---------------------------------------------------------------------------

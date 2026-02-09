@@ -144,7 +144,7 @@ bool SendRequest::sendRequest(QString request, int timeOut) {
 
 void SendRequest::slotQHttpAbort() {
     toDebug("SendRequest::slotQHttpAbort()");
-    if (reply != NULL) {
+    if (reply != nullptr) {
         toDebug("if(reply != NULL){");
         if (!reply->isFinished()) {
             toDebug("if(!reply->isFinished()){");

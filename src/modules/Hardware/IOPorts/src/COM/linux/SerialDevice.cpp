@@ -122,7 +122,7 @@ qint64 SerialDevice::bytesAvailable() {
         timeout.tv_sec = m_settings.timeout / 1000;
         timeout.tv_usec = (m_settings.timeout % 1000) * 1000;
 
-        int n = select(m_file.handle() + 1, &fileSet, 0, &fileSet, &timeout);
+        int n = select(m_file.handle() + 1, &fileSet, nullptr, &fileSet, &timeout);
 
         if (n == 0) {
             // by timeout

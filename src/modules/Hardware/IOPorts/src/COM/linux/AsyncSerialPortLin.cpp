@@ -284,7 +284,7 @@ bool AsyncSerialPortLin::processReading(QByteArray &aData, int aTimeout) {
     FD_ZERO(&readfds);
     FD_SET(m_PortFd, &readfds);
 
-    int result = select(m_PortFd + 1, &readfds, NULL, NULL, &tv);
+    int result = select(m_PortFd + 1, &readfds, nullptr, nullptr, &tv);
     if (result > 0) {
         char buffer[1024];
         ssize_t bytesRead = ::read(m_PortFd, buffer, sizeof(buffer));

@@ -17,7 +17,7 @@ const QString System_PrinterName = "Default Default";
 } // namespace CEditorPane
 
 //------------------------------------------------------------------------
-EditorPane::EditorPane() : m_Slot(0), m_FirstShow(true) {}
+EditorPane::EditorPane() : m_Slot(nullptr), m_FirstShow(true) {}
 
 //------------------------------------------------------------------------
 EditorPane::~EditorPane() {}
@@ -370,7 +370,7 @@ QWidget *EditorPane::createWidget() {
     connect(m_Ui.leValue, SIGNAL(returnPressed()), this, SLOT(onTextValueChanged()));
     m_Ui.leValue->setStyle(new SIPStyle);
 
-    m_Ui.lwParameters->setItem_Delegate(new EditorPaneListItem_Delegate());
+    m_Ui.lwParameters->setItemDelegate(new EditorPaneListItem_Delegate());
 
     return widget.release();
 }

@@ -91,7 +91,7 @@ protected slots:
     void onCancel();
 
 private:
-    Ui::frm_EditorPane m_Ui;
+    Ui::frmEditorPane m_Ui;
     DeviceSlot *m_Slot;
     QPointer<QWidget> m_Widget;
 

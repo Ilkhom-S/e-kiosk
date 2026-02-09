@@ -38,9 +38,13 @@ namespace PPSDK = SDK::PaymentProcessor;
 using TPtreeOperators = boost::property_tree::basic_ptree<std::string, std::string>;
 
 //---------------------------------------------------------------------------
+namespace SDK {
+namespace PaymentProcessor {
 namespace EncashmentParameter {
 const char StackerID[] = "STACKER_ID";
 } // namespace EncashmentParameter
+} // namespace PaymentProcessor
+} // namespace SDK
 
 //---------------------------------------------------------------------------
 namespace CMultistage {

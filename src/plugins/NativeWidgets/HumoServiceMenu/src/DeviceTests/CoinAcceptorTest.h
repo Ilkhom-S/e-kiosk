@@ -14,7 +14,7 @@ class IDevice;
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class CoinAcceptorTest : public SDK::PaymentProcessor::IDeviceTest {
+class CoinAcceptorTest : public QObject, public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
 public:
@@ -34,6 +34,10 @@ public:
 
     /// Возвращает true, если тест устройства возвращает результат теста
     virtual bool hasResult();
+
+signals:
+    /// Сигнал о получении результатов теста.
+    void result(const QString &aTestName, const QVariant &aTestResult);
 
 private slots:
     void onStacked(SDK::Driver::TParList aNotes);

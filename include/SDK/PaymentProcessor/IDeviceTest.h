@@ -12,8 +12,9 @@ namespace PaymentProcessor {
 
 //------------------------------------------------------------------------------
 /// Интерфейс для тестирования устройств.
-class IDeviceTest : public QObject {
-    Q_OBJECT
+class IDeviceTest {
+    // Note: Removed QObject inheritance to avoid moc issues with pure virtual interface
+    // Concrete implementations should inherit from QObject separately
 
 public:
     /// Деструктор.

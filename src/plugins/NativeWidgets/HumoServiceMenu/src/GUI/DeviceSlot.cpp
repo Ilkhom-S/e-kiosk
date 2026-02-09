@@ -154,7 +154,7 @@ void DeviceSlot::updateDeviceStatus(const QString &aNewStatus,
 
 //------------------------------------------------------------------------------
 void DeviceSlot::onDeviceRunTest() {
-    connect(m_DeviceTest.data(),
+    connect(reinterpret_cast<QObject *>(m_DeviceTest.data()),
             SIGNAL(result(const QString &, const QVariant &)),
             this,
             SLOT(onTestResult(const QString &, const QVariant &)));
@@ -205,7 +205,7 @@ void DeviceSlot::onTestResult(const QString &aTestName, const QVariant &aTestRes
 //------------------------------------------------------------------------------
 void DeviceSlot::onClicked(const QVariantMap & /*aParameters*/) {
     m_DeviceTest->stop();
-    disconnect(m_DeviceTest.data(),
+    disconnect(reinterpret_cast<QObject *>(m_DeviceTest.data()),
                SIGNAL(result(const QString &, const QVariant &)),
                this,
                SLOT(onTestResult(const QString &, const QVariant &)));

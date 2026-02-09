@@ -6,7 +6,7 @@
 
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFuture>
-#include <QtCore/QItem_SelectionModel>
+#include <QtCore/QItemSelectionModel>
 #include <QtCore/QSettings>
 #include <QtCore/QSortFilterProxyModel>
 #include <QtCore/QTimer>
@@ -266,9 +266,9 @@ void PaymentServiceWindow::processCurrentPayment() {
 
 //----------------------------------------------------------------------------
 QModelIndex PaymentServiceWindow::getSelectedIndex() {
-    QItem_SelectionModel *selectionModel = tvPayments->selectionModel();
-    QItem_Selection item_Selection = selectionModel->selection();
-    QItem_Selection sourceSelection = m_ProxyModel->mapSelectionToSource(item_Selection);
+    QItemSelectionModel *selectionModel = tvPayments->selectionModel();
+    QItemSelection item_Selection = selectionModel->selection();
+    QItemSelection sourceSelection = m_ProxyModel->mapSelectionToSource(item_Selection);
 
     return sourceSelection.isEmpty() ? QModelIndex() : sourceSelection.indexes().first();
 }
@@ -373,7 +373,7 @@ int PaymentTableModel::columnCount(const QModelIndex & /*parent*/) const {
 //----------------------------------------------------------------------------
 QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid()) {
-        return QVariant();
+        return {};
     }
 
     int row = index.row();
@@ -411,7 +411,7 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
         case Processed:
             return m_PaymentInfoList[row].isProcessed();
         default:
-            return QVariant();
+            return {};
         }
     }
 
@@ -444,7 +444,7 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
         case Processed:
             return m_PaymentInfoList[row].isProcessed();
         default:
-            return QVariant();
+            return {};
         }
     }
 
@@ -471,12 +471,12 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
         return QBrush(QColor(255, 172, 174));
     }
 
-    return QVariant();
+    return {};
 }
 
 //----------------------------------------------------------------------------
-Qt::Item_Flags PaymentTableModel::flags(const QModelIndex & /*index*/) const {
-    return Qt::Item_IsSelectable | Qt::Item_IsEnabled;
+Qt::ItemFlags PaymentTableModel::flags(const QModelIndex & /*index*/) const {
+    return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }
 
 //----------------------------------------------------------------------------
@@ -490,7 +490,7 @@ PaymentTableModel::headerData(int aSection, Qt::Orientation aOrientation, int aR
             return QString();
         }
     } else {
-        return QVariant();
+        return {};
     }
 }
 
@@ -754,7 +754,7 @@ void PaymentProxyModel::enableProcessedPaymentsFilter() {
 
 //----------------------------------------------------------------------------
 bool PaymentProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const {
-    QAbstractItem_Model *sourceModel = this->sourceModel();
+    QAbstractItemModel *sourceModel = this->sourceModel();
     QRegularExpression regExp = filterRegularExpression();
 
     QModelIndex providerFieldsIndex =

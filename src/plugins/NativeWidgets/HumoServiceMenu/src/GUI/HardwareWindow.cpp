@@ -223,7 +223,7 @@ void HardwareWindow::onDeviceFound(const QString &aConfigName) {
     // Сначала проверим, может быть, у нас уже есть такая железка, просто мы подтвердили статус её
     // нахождения. Хорошо бы проверять доп. параметры на случай если у нас подключено несколько
     // железок одного типа и модели.
-    DeviceSlot *slot = 0;
+    DeviceSlot *slot = nullptr;
 
     foreach (const TDeviceSlotList::value_type &item, m_Slots) {
         if (item.data()->getType() == aConfigName.section(".", 2, 2)) {
@@ -254,7 +254,7 @@ void HardwareWindow::onDeviceFound(const QString &aConfigName) {
 void HardwareWindow::onShowAddSlotDialog() {
     ui.stackedWidget->setCurrentIndex(1);
 
-    ui.btnOk->setEnabled(ui.lwTypes->currentItem() != 0);
+    ui.btnOk->setEnabled(ui.lwTypes->currentItem() != nullptr);
 }
 
 //------------------------------------------------------------------------
@@ -356,7 +356,7 @@ SDK::Plugin::TParameterList HardwareWindow::getModelParameters(const QString &aT
         return m_Backend->getHardwareManager()->getDriverParameters((*it).driver);
     }
 
-    return SDK::Plugin::TParameterList();
+    return {};
 }
 
 //------------------------------------------------------------------------

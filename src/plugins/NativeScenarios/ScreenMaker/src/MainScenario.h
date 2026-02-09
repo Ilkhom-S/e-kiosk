@@ -132,7 +132,7 @@ private:
         params["signal"] = "finish";
 
         SDK::PaymentProcessor::Event e(
-            SDK::PaymentProcessor::EEventType::UpdateScenario, "", QVariant::from_Value(params));
+            SDK::PaymentProcessor::EEventType::UpdateScenario, "", QVariant::fromValue(params));
         m_Core->getEventService()->sendEvent(e);
     }
 

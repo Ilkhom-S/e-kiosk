@@ -68,7 +68,7 @@ QStringList CCNetCashAcceptorBase::getModelList() {
     result -= QSet<QString>() << CCCNet::Models::CashcodeG200 << CCCNet::Models::CashcodeGX
                               << CCCNet::Models::CreatorC100;
 
-    return QList<QString>(result.begin(), result.end());
+    return {result.begin(), result.end()};
 }
 
 //---------------------------------------------------------------------------------

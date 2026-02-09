@@ -41,7 +41,7 @@ QStringList System_DeviceUtils::getSerialDeviceNames() {
     if (::RegOpenKeyEx(
             HKEY_LOCAL_MACHINE, CRegistrySerialPort::QuickInitialPath, 0, KEY_QUERY_VALUE, &hKey) !=
         ERROR_SUCCESS) {
-        return QStringList();
+        return {};
     }
 
     QStringList result;
