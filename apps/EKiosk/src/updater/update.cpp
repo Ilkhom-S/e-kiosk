@@ -887,26 +887,26 @@ bool DownloadManager::insertNewRecordFile(QString path, QString name, QString si
 }
 
 void DownloadManager::traverseNode(const QDomNode &node) {
-    QDomNode dom_Node = node.firstChild();
+    QDomNode domNode = node.firstChild();
 
-    while (!dom_Node.isNull()) {
-        if (dom_Node.isElement()) {
-            QDomElement dom_Element = dom_Node.toElement();
-            QString strTag = dom_Element.tagName();
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
+            QDomElement domElement = domNode.toElement();
+            QString strTag = domElement.tagName();
 
             if (strTag == "file") {
                 countFileTag++;
 
                 ServerXmlMap[countFileTag]["path"] =
-                    dom_Element.attribute("path", "")
-                        .right(dom_Element.attribute("path", "").length() - 1);
-                ServerXmlMap[countFileTag]["name"] = dom_Element.attribute("name", "");
-                ServerXmlMap[countFileTag]["size"] = dom_Element.attribute("size", "");
-                ServerXmlMap[countFileTag]["hash"] = dom_Element.text();
+                    domElement.attribute("path", "")
+                        .right(domElement.attribute("path", "").length() - 1);
+                ServerXmlMap[countFileTag]["name"] = domElement.attribute("name", "");
+                ServerXmlMap[countFileTag]["size"] = domElement.attribute("size", "");
+                ServerXmlMap[countFileTag]["hash"] = domElement.text();
             }
         }
-        traverseNode(dom_Node);
-        dom_Node = dom_Node.nextSibling();
+        traverseNode(domNode);
+        domNode = domNode.nextSibling();
     }
 }
 
