@@ -82,7 +82,7 @@ Updater::Updater(QString aConfigURL,
     : m_ConfigURL(std::move(aConfigURL)),
       m_UpdateURL(aUpdateURL + "/" + aAppId + "/" + aConfiguration), m_Version(std::move(aVersion)),
       m_AppId(aAppId), m_Configuration(aConfiguration),
-      m_NetworkTaskManager(ILog::getInstance(CUpdater::Name)), , , m_FailCount(0),
+      m_NetworkTaskManager(ILog::getInstance(CUpdater::Name)), m_FailCount(0),
       m_AP(std::move(aPointId)), m_AllTasksCount(0), m_ProgressPercent(0),
 #ifdef Q_OS_WIN32
       m_BitsManager(ILog::getInstance(CUpdater::Name)), m_UseBITS(true), m_JobPriority(CBITS::HIGH)

@@ -76,7 +76,7 @@ void JsonRequest::sendRequest(QJsonObject json,
             //            qDebug() << "readAll" << resp.toUtf8();
 
             // Success
-            doc = QJsonDocument::from_Json(resp.toUtf8(), &e);
+            doc = QJsonDocument::fromJson(resp.toUtf8(), &e);
 
             if (!doc.isNull() && e.error == QJsonParseError::NoError) {
                 QVariantMap data;
@@ -97,7 +97,7 @@ void JsonRequest::sendRequest(QJsonObject json,
 
             //            qDebug() << "resp " << resp;
 
-            doc = QJsonDocument::from_Json(resp.toUtf8(), &e);
+            doc = QJsonDocument::fromJson(resp.toUtf8(), &e);
             auto response = doc.object().toVariantMap();
             auto message = response.value("message").toString();
 

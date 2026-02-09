@@ -154,7 +154,7 @@ void CheckConnection::replyFinished(QNetworkReply *reply) {
     if (error_id == QNetworkReply::NoError) {
         auto replyData = reply->readAll();
 
-        auto json = QJsonDocument::from_Json(replyData);
+        auto json = QJsonDocument::fromJson(replyData);
         emit emit_toLoging(0, "PING", QString("REPLY: %1").arg(QString::fromUtf8(replyData)));
 
         auto resp = json.toVariant().toMap();

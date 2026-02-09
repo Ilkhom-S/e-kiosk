@@ -28,7 +28,7 @@ struct SDatabaseSettings {
     QString password;
     int port{0};
 
-    SDatabaseSettings() : {}
+    SDatabaseSettings() = default;
 };
 
 //---------------------------------------------------------------------------
@@ -46,7 +46,7 @@ struct SKeySettings {
     QString secretPassword;    /// Кодовая фраза.
     QString description;       /// Поле для заметок
 
-    SKeySettings() : {}
+    SKeySettings() = default;
 };
 
 //----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ struct SCurrencySettings {
     QList<Currency::Nominal> coins; /// Список всех существующих номиналов монет
     QList<Currency::Nominal> notes; /// Список всех существующих номиналов купюр
 
-    SCurrencySettings() : {}
+    SCurrencySettings() = default;
 };
 
 //----------------------------------------------------------------------------
@@ -90,7 +90,7 @@ struct SCommonSettings {
         Penetration
     };
 
-    QSet<BlockReason> blockOn;
+    QSet<BlockReason> _blockOn;
     QList<SBlockByNote> blockNotes;  /// Блокировка по номиналам
     bool blockCheatedPayment{false}; /// Блокировка при подозрении на манипуляции с устройством
     bool autoEncashment{false};
@@ -110,19 +110,19 @@ struct SCommonSettings {
     QTime autoZReportTime;          /// Автоматическое закрытие смены ККТ в определенное время
     bool enableBlankFiscalData{false}; /// Разрешать печатать фискальные чеки без фискальных данных
 
-    SCommonSettings() : minPar(10), {
-        blockOn << ValidatorError << PrinterError << CardReaderError;
+    SCommonSettings() : minPar(10) {
+        _blockOn << ValidatorError << PrinterError << CardReaderError;
     }
 
     void setBlockOn(BlockReason aReason, bool aBlock) {
         if (aBlock) {
-            blockOn << aReason;
+            _blockOn << aReason;
         } else {
-            blockOn.remove(aReason);
+            _blockOn.remove(aReason);
         }
     }
 
-    [[nodiscard]] bool blockOn(BlockReason aReason) const { return blockOn.contains(aReason); }
+    [[nodiscard]] bool blockOn(BlockReason aReason) const { return _blockOn.contains(aReason); }
 };
 
 //----------------------------------------------------------------------------
@@ -136,7 +136,7 @@ struct SMonitoringSettings {
     QStringList cleanupItems;
     QStringList cleanupExclude;
 
-    SMonitoringSettings() : {}
+    SMonitoringSettings() = default;
 
     [[nodiscard]] bool isBlockByAccountBalance() const {
         return restLimit > 0 && restUrl.isValid();
@@ -145,7 +145,7 @@ struct SMonitoringSettings {
 
 //----------------------------------------------------------------------------
 struct SServiceMenuPasswords {
-    SServiceMenuPasswords() : {}
+    SServiceMenuPasswords() = default;
 
     int operatorId{0};
     QString phone;
@@ -156,7 +156,7 @@ struct SServiceMenuPasswords {
 struct SServiceMenuSettings {
     bool allowAnyKeyPair{false}; // Разрешаем генерировать ключи с произвольным номером пары
 
-    SServiceMenuSettings() : {}
+    SServiceMenuSettings() = default;
 };
 
 //----------------------------------------------------------------------------

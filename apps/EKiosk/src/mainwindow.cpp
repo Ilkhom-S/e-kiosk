@@ -4555,7 +4555,7 @@ QVariantMap MainWindow::nominalData() {
         return {};
     }
 
-    auto json = QJsonDocument::from_Json(file.readAll());
+    auto json = QJsonDocument::fromJson(file.readAll());
     auto data = json.toVariant().toMap();
 
     file.close();

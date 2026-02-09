@@ -217,7 +217,7 @@ void NetworkService::sendReceipt(const QString &aEmail, const QString &aContact)
     }
 
     if (!fiscalResponse.isEmpty()) {
-        QJsonDocument doc = QJsonDocument::from_Json(fiscalResponse.toUtf8());
+        QJsonDocument doc = QJsonDocument::fromJson(fiscalResponse.toUtf8());
         QVariantMap payment;
         if (doc.isObject()) {
             QVariantMap root = doc.object().toVariantMap();

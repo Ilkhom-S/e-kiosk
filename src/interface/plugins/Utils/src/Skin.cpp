@@ -99,7 +99,7 @@ bool Skin::loadSkinConfig() {
 
     if (json.open(QIODevice::ReadOnly)) {
         QJsonParseError error;
-        QJsonDocument result = QJsonDocument::from_Json(json.readAll(), &error);
+        QJsonDocument result = QJsonDocument::fromJson(json.readAll(), &error);
 
         if (QJsonParseError::NoError == error.error) {
             QVariantMap config = result.object().toVariantMap();

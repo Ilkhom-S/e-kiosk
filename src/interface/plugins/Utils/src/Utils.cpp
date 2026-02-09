@@ -355,7 +355,7 @@ static QVariantMap Utils::str2json(const QString &aString) {
 
     QJsonParseError ok;
     QString str = aString;
-    QJsonDocument result = QJsonDocument::from_Json(str.replace("'", "\"").toUtf8(), &ok);
+    QJsonDocument result = QJsonDocument::fromJson(str.replace("'", "\"").toUtf8(), &ok);
 
     if (ok.error == QJsonParseError::NoError) {
         return result.object().toVariantMap();
