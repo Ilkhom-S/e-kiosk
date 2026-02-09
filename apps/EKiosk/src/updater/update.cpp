@@ -895,14 +895,14 @@ void DownloadManager::traverseNode(const QDomNode &node) {
             QString strTag = domElement.tagName();
 
             if (strTag == "file") {
-                countFileTag++;
+                this->countFileTag++;
 
-                ServerXmlMap[countFileTag]["path"] =
+                this->ServerXmlMap[this->countFileTag]["path"] =
                     domElement.attribute("path", "")
                         .right(domElement.attribute("path", "").length() - 1);
-                ServerXmlMap[countFileTag]["name"] = domElement.attribute("name", "");
-                ServerXmlMap[countFileTag]["size"] = domElement.attribute("size", "");
-                ServerXmlMap[countFileTag]["hash"] = domElement.text();
+                this->ServerXmlMap[this->countFileTag]["name"] = domElement.attribute("name", "");
+                this->ServerXmlMap[this->countFileTag]["size"] = domElement.attribute("size", "");
+                this->ServerXmlMap[this->countFileTag]["hash"] = domElement.text();
             }
         }
         traverseNode(domNode);
