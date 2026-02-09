@@ -19,7 +19,7 @@
 #include <AdBackend/IDatabaseUtils.h>
 
 namespace Ad {
-const char DefaultChannelPostfix[] = "_default";
+extern const char DefaultChannelPostfix[] = "_default";
 } // namespace Ad
 #include <NetworkTaskManager/DataStream.h>
 #include <NetworkTaskManager/FileDownloadTask.h>

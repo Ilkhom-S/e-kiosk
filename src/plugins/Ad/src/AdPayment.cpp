@@ -41,7 +41,9 @@ AdPayment::AdPayment(PaymentFactory *aFactory)
     : PaymentBase(aFactory, aFactory->getCore()),
       m_RequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
     m_RequestSender.setResponseCreator(
-        [this] { return createResponse(boost::placeholders::_1, boost::placeholders::_2); });
+        [this](const Request &aRequest, const QString &aResponseString) {
+            return createResponse(aRequest, aResponseString);
+        });
 }
 
 //------------------------------------------------------------------------------

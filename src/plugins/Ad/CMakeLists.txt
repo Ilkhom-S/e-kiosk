@@ -21,6 +21,11 @@ set(AD_SOURCES
     src/PaymentFactory.h
     src/PaymentFactoryBase.cpp
     src/PaymentFactoryBase.h
+    # Include application constants that plugins need
+    ${CMAKE_SOURCE_DIR}/apps/EKiosk/src/Services/ServiceNames.cpp
+    ${CMAKE_SOURCE_DIR}/apps/EKiosk/src/Services/ServiceNames.h
+    ${CMAKE_SOURCE_DIR}/apps/EKiosk/src/System/SettingsConstants.cpp
+    ${CMAKE_SOURCE_DIR}/apps/EKiosk/src/System/SettingsConstants.h
 )
 
 set(AD_VERSION_RC ${CMAKE_SOURCE_DIR}/include/Common/CoreVersion.rc)
@@ -40,6 +45,7 @@ ek_add_plugin(ad
     AdBackend
     PluginsSDK
     PPSDK
+    DriversSDK
     ek_common
     ek_boost
     INCLUDE_DIRS
