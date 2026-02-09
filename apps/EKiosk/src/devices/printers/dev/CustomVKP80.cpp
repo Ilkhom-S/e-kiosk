@@ -27,16 +27,21 @@ bool Custom_VKP80_PRINTER::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
-            if (!serialPort->setParity(QSerialPort::NoParity))
+            }
+            if (!serialPort->setParity(QSerialPort::NoParity)) {
                 return false;
-            if (!serialPort->setStopBits(QSerialPort::OneStop))
+            }
+            if (!serialPort->setStopBits(QSerialPort::OneStop)) {
                 return false;
-            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl))
+            }
+            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) {
                 return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud19200))
+            }
+            if (!serialPort->setBaudRate(QSerialPort::Baud19200)) {
                 return false;
+            }
 
             is_open = true;
         } else {
@@ -452,8 +457,9 @@ void Custom_VKP80_PRINTER::getSpecialCharacters(QByteArray &printText) {
     // Добавляем звезды
     int col_z = (checkWidth - 11 - leftMargin) / 2;
     QByteArray star;
-    for (int j = 1; j <= col_z; j++)
+    for (int j = 1; j <= col_z; j++) {
         star.append("*");
+    }
 
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::StarCount +
                               CScharsetParam::CloseTagDelimiter)
@@ -536,8 +542,9 @@ void Custom_VKP80_PRINTER::print(const QString &aCheck) {
     this->initialize();
 
     // Картинка
-    if (viewLogoImg)
+    if (viewLogoImg) {
         this->printImage();
+    }
 
     //     QString content = getImage("2.bmp");
     //          QString content/* = getImage("2.bmp")*/;

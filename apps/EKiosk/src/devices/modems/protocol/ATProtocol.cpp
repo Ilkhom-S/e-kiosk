@@ -43,16 +43,19 @@ bool ATProtocol::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setBaudRate(QSerialPort::Baud115200))
+            if (!serialPort->setBaudRate(QSerialPort::Baud115200)) {
                 return false;
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            }
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
+            }
             //                if (!devicePort->setParity(AbstractSerial::ParityNone))
             //                return false; if
             //                (!devicePort->setStopBits(AbstractSerial::StopBits1))
             //                return false;
-            if (!serialPort->setFlowControl(QSerialPort::HardwareControl))
+            if (!serialPort->setFlowControl(QSerialPort::HardwareControl)) {
                 return false;
+            }
             //            if (!serialPort->setCharIntervalTimeout(40)) return false;
 
             //                if(Debugger) qDebug() << "\nModem " << " to Port " <<
@@ -196,25 +199,26 @@ bool ATProtocol::unpacketData(const QByteArray &aPacket, QByteArray &aData) {
 ATErrors::Enum ATProtocol::unpacketError(const QByteArray &aPacket) {
     ATErrors::Enum result = ATErrors::Unknown;
     QString strPacket(aPacket);
-    if (strPacket.indexOf(ATErrors::Strings::OK) != -1)
+    if (strPacket.indexOf(ATErrors::Strings::OK) != -1) {
         result = ATErrors::OK;
-    else if (strPacket.indexOf(ATErrors::Strings::Connect600) != -1 ||
-             strPacket.indexOf(ATErrors::Strings::Connect1200) != -1 ||
-             strPacket.indexOf(ATErrors::Strings::Connect2400) != -1 ||
-             strPacket.indexOf(ATErrors::Strings::Connect) != -1) {
+    } else if (strPacket.indexOf(ATErrors::Strings::Connect600) != -1 ||
+               strPacket.indexOf(ATErrors::Strings::Connect1200) != -1 ||
+               strPacket.indexOf(ATErrors::Strings::Connect2400) != -1 ||
+               strPacket.indexOf(ATErrors::Strings::Connect) != -1) {
         result = ATErrors::Connect;
-    } else if (strPacket.indexOf(ATErrors::Strings::Busy) != -1)
+    } else if (strPacket.indexOf(ATErrors::Strings::Busy) != -1) {
         result = ATErrors::Busy;
-    else if (strPacket.indexOf(ATErrors::Strings::Ring) != -1)
+    } else if (strPacket.indexOf(ATErrors::Strings::Ring) != -1) {
         result = ATErrors::Ring;
-    else if (strPacket.indexOf(ATErrors::Strings::Error) != -1)
+    } else if (strPacket.indexOf(ATErrors::Strings::Error) != -1) {
         result = ATErrors::Error;
-    else if (strPacket.indexOf(ATErrors::Strings::NoAnswer) != -1)
+    } else if (strPacket.indexOf(ATErrors::Strings::NoAnswer) != -1) {
         result = ATErrors::NoAnswer;
-    else if (strPacket.indexOf(ATErrors::Strings::NoCarrier) != -1)
+    } else if (strPacket.indexOf(ATErrors::Strings::NoCarrier) != -1) {
         result = ATErrors::NoCarrier;
-    else if (strPacket.indexOf(ATErrors::Strings::NoDialtone) != -1)
+    } else if (strPacket.indexOf(ATErrors::Strings::NoDialtone) != -1) {
         result = ATErrors::NoDialtone;
+    }
 
     return result;
 }
@@ -433,8 +437,9 @@ bool ATProtocol::sendCommand(QByteArray dataRequest,
         }
 
         // Задержка после команды
-        if (timeSleep)
+        if (timeSleep) {
             this->msleep(timeSleep);
+        }
         return respOk;
     }
     return false;
@@ -445,11 +450,13 @@ bool ATProtocol::readPort(QByteArray &tempAnswer) {
 
     if (bResp) {
         tempAnswer = serialPort->readAll();
-        if (Debugger)
+        if (Debugger) {
             qDebug() << "\n<<---------Response\n";
+        }
         QString str(tempAnswer);
-        if (Debugger)
+        if (Debugger) {
             qDebug() << str;
+        }
         this->printDataToHex(tempAnswer);
     }
 
@@ -467,8 +474,9 @@ bool ATProtocol::getAnswer(QByteArray &aData,
     for (int i = 0; i < aAddRepeatCount + 1; ++i) {
         QCoreApplication::processEvents();
         QByteArray tempAnswer;
-        if (!readPort(tempAnswer))
+        if (!readPort(tempAnswer)) {
             return false;
+        }
 
         // если пакет пуст и дополнительных чтений нет, то пишем сообщение об ошибке
         if (!tempAnswer.size() && !aAddRepeatCount) {
@@ -480,8 +488,9 @@ bool ATProtocol::getAnswer(QByteArray &aData,
         packetAnswer.push_back(tempAnswer);
 
         // если необходима пауза - включаем её
-        if (aPauseTime)
+        if (aPauseTime) {
             this->msleep(aPauseTime);
+        }
     }
 
     // ошибка кодировки
@@ -638,13 +647,14 @@ bool ATProtocol::prepareAnswer(Modem_ProtocolCommands::Enum aCommand, QByteArray
         // вытаскиваем оператора из окружения кавычек
         int indexFirstQuote = operatorString.indexOf("\"");
         int indexSecondQuote = -1;
-        if (indexFirstQuote != -1)
+        if (indexFirstQuote != -1) {
             indexSecondQuote = operatorString.indexOf("\"", indexFirstQuote + 1);
+        }
 
-        if ((indexFirstQuote != -1) && (indexSecondQuote != -1))
+        if ((indexFirstQuote != -1) && (indexSecondQuote != -1)) {
             operatorString =
                 operatorString.mid(indexFirstQuote + 1, indexSecondQuote - indexFirstQuote - 1);
-        else {
+        } else {
             //                                if(Debugger) qDebug() << "Protocol AT:
             //                                Invalid format of operator";
             return false;
@@ -662,12 +672,13 @@ bool ATProtocol::prepareAnswer(Modem_ProtocolCommands::Enum aCommand, QByteArray
         // вытаскиваем оператора из окружения 1) пробел 2) запятая
         int indexFirst = signalString.indexOf(" ");
         int indexSecond = -1;
-        if (indexFirst != -1)
+        if (indexFirst != -1) {
             indexSecond = signalString.indexOf(",");
+        }
 
-        if ((indexFirst != -1) && (indexSecond != -1))
+        if ((indexFirst != -1) && (indexSecond != -1)) {
             signalString = signalString.mid(indexFirst + 1, indexSecond - indexFirst - 1);
-        else {
+        } else {
             //                                if(Debugger) qDebug() << "Protocol AT:
             //                                Invalid format of operator";
             return false;
@@ -704,8 +715,9 @@ bool ATProtocol::prepareAnswer(Modem_ProtocolCommands::Enum aCommand, QByteArray
 
         int indexFirstQuote = responseString.indexOf("+CUSD: 0,\"");
         int indexSecondQuote = -1;
-        if (indexFirstQuote != -1)
+        if (indexFirstQuote != -1) {
             indexSecondQuote = responseString.indexOf("\"", indexFirstQuote + 10);
+        }
 
         responseString =
             responseString.mid(indexFirstQuote + 10, indexSecondQuote - indexFirstQuote - 10)
@@ -743,8 +755,9 @@ bool ATProtocol::prepareAnswer(Modem_ProtocolCommands::Enum aCommand, QByteArray
 
         int indexFirstQuote = responseString.indexOf("+CUSD: 0,\"");
         int indexSecondQuote = -1;
-        if (indexFirstQuote != -1)
+        if (indexFirstQuote != -1) {
             indexSecondQuote = responseString.indexOf("\"", indexFirstQuote + 10);
+        }
 
         responseString =
             responseString.mid(indexFirstQuote + 10, indexSecondQuote - indexFirstQuote - 10)
@@ -808,10 +821,12 @@ bool ATProtocol::getStatusInfo(SModem_StatusInfo &aStatusInfo) {
             m_error = Modem_Errors::NotAvailable;
             isConnect = false;
             // if(Debugger) qDebug() << "Protocol AT: NotAvailabled";
-        } else
+        } else {
             return false;
-    } else
+        }
+    } else {
         m_state = Modem_States::Initialize;
+    }
 
     aStatusInfo.state = m_state;
     aStatusInfo.error = m_error;

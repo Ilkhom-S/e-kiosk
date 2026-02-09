@@ -154,8 +154,9 @@ void WebGraphicsItem::onLoadFinished(bool aOk) {
                     QVariantMap params = args.first().toMap();
                     QString paramsJson = "{";
                     for (auto it = params.begin(); it != params.end(); ++it) {
-                        if (it != params.begin())
+                        if (it != params.begin()) {
                             paramsJson += ",";
+                        }
                         paramsJson += QString("\"%1\":\"%2\"").arg(it.key(), it.value().toString());
                     }
                     paramsJson += "}";
@@ -170,8 +171,9 @@ void WebGraphicsItem::onLoadFinished(bool aOk) {
                     QVariantMap params = args.last().toMap();
                     QString paramsJson = "{";
                     for (auto it = params.begin(); it != params.end(); ++it) {
-                        if (it != params.begin())
+                        if (it != params.begin()) {
                             paramsJson += ",";
+                        }
                         paramsJson += QString("\"%1\":\"%2\"").arg(it.key(), it.value().toString());
                     }
                     paramsJson += "}";

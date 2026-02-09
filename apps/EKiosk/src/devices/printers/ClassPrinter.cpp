@@ -72,12 +72,15 @@ bool ClassPrinter::isItYou(QStringList &com_List,
 }
 
 void ClassPrinter::setCounterPrinterIndicator(bool sts_indicate) {
-    if (system_Model == PrinterModel::Custom_VKP80)
+    if (system_Model == PrinterModel::Custom_VKP80) {
         Custom_VKP80->counterIndicate = sts_indicate;
-    if (system_Model == PrinterModel::Citizen_PPU700)
+    }
+    if (system_Model == PrinterModel::Citizen_PPU700) {
         CitizenPPU700->counterIndicate = sts_indicate;
-    if (system_Model == PrinterModel::Citizen_CTS2000)
+    }
+    if (system_Model == PrinterModel::Citizen_CTS2000) {
         CitizenCTS2000->counterIndicate = sts_indicate;
+    }
 }
 
 void ClassPrinter::setPrinterModel(const QString printerModel) {
@@ -85,61 +88,80 @@ void ClassPrinter::setPrinterModel(const QString printerModel) {
     // qDebug() << "printerModel - " << printerModel;
     system_Model = printerModel;
 
-    if (system_Model == PrinterModel::Custom_VKP80)
+    if (system_Model == PrinterModel::Custom_VKP80) {
         Custom_VKP80 = new Custom_VKP80_PRINTER();
-    if (system_Model == PrinterModel::Custom_TG2480)
+    }
+    if (system_Model == PrinterModel::Custom_TG2480) {
         Custom_TG2480 = new TG2480_PRINTER();
-    if (system_Model == PrinterModel::AV_268)
+    }
+    if (system_Model == PrinterModel::AV_268) {
         AV268 = new AV268_PRINTER();
-    if (system_Model == PrinterModel::CitizenCBM1000)
+    }
+    if (system_Model == PrinterModel::CitizenCBM1000) {
         CitizenCBM1000 = new CitizenCBM1000_PRINTER();
-    if (system_Model == PrinterModel::Citizen_PPU700)
+    }
+    if (system_Model == PrinterModel::Citizen_PPU700) {
         CitizenPPU700 = new CitizenPPU700_PRINTER();
-    if (system_Model == PrinterModel::Citizen_CTS2000)
+    }
+    if (system_Model == PrinterModel::Citizen_CTS2000) {
         CitizenCTS2000 = new CitizenCTS2000_PRINTER();
-    if (system_Model == PrinterModel::Phoenix_model)
+    }
+    if (system_Model == PrinterModel::Phoenix_model) {
         Phoenix = new Phoenix_PRINTER();
-    if (system_Model == PrinterModel::KM1X)
+    }
+    if (system_Model == PrinterModel::KM1X) {
         KM1X = new KM1X_PRINTER();
+    }
 
-    if (system_Model == PrinterModel::Windows_Printer)
+    if (system_Model == PrinterModel::Windows_Printer) {
         textBrowser = new QTextBrowser();
+    }
 }
 
 void ClassPrinter::setChekWidth(const int width) {
     checkWidth = width;
-    if (system_Model == PrinterModel::Custom_VKP80)
+    if (system_Model == PrinterModel::Custom_VKP80) {
         Custom_VKP80->setCheckWidth(width);
+    }
 }
 
 void ClassPrinter::setFirm_Patern(const QString firm_name) {
     firm_Name = firm_name;
-    if (system_Model == PrinterModel::Custom_VKP80)
+    if (system_Model == PrinterModel::Custom_VKP80) {
         Custom_VKP80->setFirm_Pattern(firm_Name);
-    if (system_Model == PrinterModel::Citizen_PPU700)
+    }
+    if (system_Model == PrinterModel::Citizen_PPU700) {
         CitizenPPU700->setFirm_Pattern(firm_Name);
-    if (system_Model == PrinterModel::Citizen_CTS2000)
+    }
+    if (system_Model == PrinterModel::Citizen_CTS2000) {
         CitizenCTS2000->setFirm_Pattern(firm_Name);
+    }
 }
 
 void ClassPrinter::setSmallBeetwenString(bool beet) {
     smallBeetwenStr = beet;
 
-    if (system_Model == PrinterModel::Custom_VKP80)
+    if (system_Model == PrinterModel::Custom_VKP80) {
         Custom_VKP80->setSmallBetweenString(beet);
-    if (system_Model == PrinterModel::Citizen_PPU700)
+    }
+    if (system_Model == PrinterModel::Citizen_PPU700) {
         CitizenPPU700->setSmallBetweenString(beet);
-    if (system_Model == PrinterModel::Citizen_CTS2000)
+    }
+    if (system_Model == PrinterModel::Citizen_CTS2000) {
         CitizenCTS2000->setSmallBetweenString(beet);
+    }
 }
 
 void ClassPrinter::setSmallText(bool small_i) {
-    if (system_Model == PrinterModel::Custom_VKP80)
+    if (system_Model == PrinterModel::Custom_VKP80) {
         Custom_VKP80->setCheckSmall(small_i);
-    if (system_Model == PrinterModel::Citizen_PPU700)
+    }
+    if (system_Model == PrinterModel::Citizen_PPU700) {
         CitizenPPU700->setCheckSmall(small_i);
-    if (system_Model == PrinterModel::Citizen_CTS2000)
+    }
+    if (system_Model == PrinterModel::Citizen_CTS2000) {
         CitizenCTS2000->setCheckSmall(small_i);
+    }
 }
 
 void ClassPrinter::setCom_List(const QStringList list) {
@@ -148,20 +170,27 @@ void ClassPrinter::setCom_List(const QStringList list) {
 
 void ClassPrinter::setLeftMargin(int left_margin) {
     leftMargin = left_margin;
-    if (system_Model == PrinterModel::Custom_VKP80)
+    if (system_Model == PrinterModel::Custom_VKP80) {
         Custom_VKP80->setLeftMargin(leftMargin);
-    if (system_Model == PrinterModel::Custom_TG2480)
+    }
+    if (system_Model == PrinterModel::Custom_TG2480) {
         Custom_TG2480->setLeftMargin(leftMargin);
-    if (system_Model == PrinterModel::AV_268)
+    }
+    if (system_Model == PrinterModel::AV_268) {
         AV268->setLeftMargin(leftMargin);
-    if (system_Model == PrinterModel::CitizenCBM1000)
+    }
+    if (system_Model == PrinterModel::CitizenCBM1000) {
         CitizenCBM1000->setLeftMargin(leftMargin);
-    if (system_Model == PrinterModel::Citizen_PPU700)
+    }
+    if (system_Model == PrinterModel::Citizen_PPU700) {
         CitizenPPU700->setLeftMargin(leftMargin);
-    if (system_Model == PrinterModel::Citizen_CTS2000)
+    }
+    if (system_Model == PrinterModel::Citizen_CTS2000) {
         CitizenCTS2000->setLeftMargin(leftMargin);
-    if (system_Model == PrinterModel::Phoenix_model)
+    }
+    if (system_Model == PrinterModel::Phoenix_model) {
         Phoenix->setLeftMargin(leftMargin);
+    }
 }
 
 void ClassPrinter::setPortName(const QString port_name) {
@@ -210,52 +239,59 @@ void ClassPrinter::tarminateThis() {
 
 void ClassPrinter::CIsItYou() {
     if (system_Model == PrinterModel::Custom_VKP80) {
-        if (Custom_VKP80->isItYou())
+        if (Custom_VKP80->isItYou()) {
             qDebug() << QString("ClassPrinter -- Availabled");
-        else
+        } else {
             qDebug() << QString("ClassPrinter -- NotAvailabled");
+        }
     }
 
     if (system_Model == PrinterModel::Custom_TG2480) {
-        if (Custom_TG2480->isItYou())
+        if (Custom_TG2480->isItYou()) {
             qDebug() << QString("ClassPrinter -- Availabled");
-        else
+        } else {
             qDebug() << QString("ClassPrinter -- NotAvailabled");
+        }
     }
 
     if (system_Model == PrinterModel::AV_268) {
-        if (AV268->isItYou())
+        if (AV268->isItYou()) {
             qDebug() << QString("ClassPrinter -- Availabled");
-        else
+        } else {
             qDebug() << QString("ClassPrinter -- NotAvailabled");
+        }
     }
 
     if (system_Model == PrinterModel::CitizenCBM1000) {
-        if (CitizenCBM1000->isItYou())
+        if (CitizenCBM1000->isItYou()) {
             qDebug() << QString("ClassPrinter -- Availabled");
-        else
+        } else {
             qDebug() << QString("ClassPrinter -- NotAvailabled");
+        }
     }
 
     if (system_Model == PrinterModel::Citizen_PPU700) {
-        if (CitizenPPU700->isItYou())
+        if (CitizenPPU700->isItYou()) {
             qDebug() << QString("ClassPrinter -- Availabled");
-        else
+        } else {
             qDebug() << QString("ClassPrinter -- NotAvailabled");
+        }
     }
 
     if (system_Model == PrinterModel::Citizen_CTS2000) {
-        if (CitizenCTS2000->isItYou())
+        if (CitizenCTS2000->isItYou()) {
             qDebug() << QString("ClassPrinter -- Availabled");
-        else
+        } else {
             qDebug() << QString("ClassPrinter -- NotAvailabled");
+        }
     }
 
     if (system_Model == PrinterModel::Phoenix_model) {
-        if (Phoenix->isItYou())
+        if (Phoenix->isItYou()) {
             qDebug() << QString("ClassPrinter -- Availabled");
-        else
+        } else {
             qDebug() << QString("ClassPrinter -- NotAvailabled");
+        }
     }
 }
 
@@ -263,8 +299,9 @@ bool ClassPrinter::CIsItYou(QString &comment) {
     if (system_Model == PrinterModel::Custom_VKP80) {
         if (Custom_VKP80->isItYou()) {
             qDebug() << QString("ClassPrinter -- Availabled");
-            if (Custom_VKP80->comment != "")
+            if (Custom_VKP80->comment != "") {
                 comment = "ROM v. " + Custom_VKP80->comment;
+            }
             return true;
         } else {
             qDebug() << QString("ClassPrinter -- NotAvailabled");
@@ -407,8 +444,9 @@ void ClassPrinter::winPrint(QString text) {
         textBrowser->setFont(font);
         textBrowser->setHtml(text);
 
-        if (printer.printerName() != "")
+        if (printer.printerName() != "") {
             textBrowser->print(&printer);
+        }
 
 #endif
     }

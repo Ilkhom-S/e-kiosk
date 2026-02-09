@@ -54,8 +54,9 @@ bool BasePrinterDevices::closePort() {
 QByteArray BasePrinterDevices::packetImage(const QString &aPixelString, uchar aWidth) {
     QByteArray result;
     uchar height = 0;
-    if (aWidth)
+    if (aWidth) {
         height = (uchar)(aPixelString.size() / aWidth);
+    }
     uchar horizontalSize = aWidth;   // Размер по горизонтали, который мы передадим принтеру
     uchar verticalSize = height / 8; // Размер по вертикали, который мы передадим принтеру
     if (height % 8) {
@@ -86,8 +87,9 @@ QByteArray BasePrinterDevices::packetImage(const QString &aPixelString, uchar aW
                 fNeedAdd = false;
             }
         }
-        if (fNeedAdd)
+        if (fNeedAdd) {
             result.push_back(sum);
+        }
     }
     uchar nil = 0; // Нужно, чтобы запихнуть в массив нули
     int nilsCount = horizontalSize * verticalSize * 8 - (result.size());

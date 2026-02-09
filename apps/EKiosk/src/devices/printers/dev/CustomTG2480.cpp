@@ -26,8 +26,9 @@ bool TG2480_PRINTER::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
+            }
             //                if (!devicePort->setParity(AbstractSerial::ParityNone))
             //                return false; if
             //                (!devicePort->setStopBits(AbstractSerial::StopBits1))
@@ -36,8 +37,9 @@ bool TG2480_PRINTER::openPort() {
             //                return false; if
             //                (!serialPort->setCharIntervalTimeout(CMDTG2480::charTimeOut))
             //                return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud19200))
+            if (!serialPort->setBaudRate(QSerialPort::Baud19200)) {
                 return false;
+            }
 
             // if(Debugger) qDebug() << "\nPrinter " << CMDTG2480::DeviceName << " to
             // Port " << devicePort->deviceName() << " open in " <<
@@ -79,8 +81,9 @@ bool TG2480_PRINTER::isItYou() {
 
 bool TG2480_PRINTER::isEnabled(int status) {
     //        int status = 0;
-    if (!getStatus(status))
+    if (!getStatus(status)) {
         return false;
+    }
     return (status != PrinterState::PrinterNotAvailable);
 }
 

@@ -160,8 +160,9 @@ void DownloadManager::startNextDownload() {
     //    %1").arg(tmpDirectory));
 
     // Надо проверить есть ли такая папка в assets
-    if (this->nowDownloadFilePath != "")
+    if (this->nowDownloadFilePath != "") {
         this->createPathDirIfNotExist(this->nowDownloadFilePath);
+    }
 
     count_download++;
     // if(Debugger) qDebug() << "Count of Download ---- " << count_download;
@@ -249,10 +250,12 @@ void DownloadManager::startNextDownload() {
     // Необходимо создать abort так как закачка может подвиснуть
     /// задаем время
     int timeAbort = 480; // sec
-    if (this->nowDownloadFileName == this->XmlName)
+    if (this->nowDownloadFileName == this->XmlName) {
         timeAbort = 180; // 3 min
-    if (this->nowDownloadFileName == "EKiosk.exe")
+    }
+    if (this->nowDownloadFileName == "EKiosk.exe") {
         timeAbort = 900; // 8 min
+    }
 
     abortTimer->start(timeAbort * 1000);
 
@@ -296,9 +299,9 @@ void DownloadManager::abortReply() {
         // if(Debugger) qDebug() << "-----Abort download now----";
         this->currentDownload->abort();
         /// Надо повторно отправить закачку
-        if (this->count_download < 20)
+        if (this->count_download < 20) {
             resendTimer->start(20000);
-        else {
+        } else {
             this->reDownloadFile();
         }
     }
@@ -470,9 +473,9 @@ void DownloadManager::openDocumentXml() {
         // Удаляем файл
         file.remove(tmpDirectory + this->XmlName);
         // Начинаем закачку через 10 сек.
-        if (this->count_download < 5)
+        if (this->count_download < 5) {
             this->resendTimer->start(10000);
-        else {
+        } else {
             this->reDownloadFile();
         }
         emit this->emit_Loging(
@@ -556,8 +559,9 @@ void DownloadManager::run() {
                     } else {
                         qDebug() << "ERROR UPDATE RECORD FOR MORE;";
                     }
-                } else
+                } else {
                     qDebug() << "FAELD TO UPDATE " + name;
+                }
             }
         } else {
             // Создаем новую запись со статусом 1 для дальнейшей закачки
@@ -675,10 +679,11 @@ void DownloadManager::afterCopyAllFiles() {
         QDir dir;
         if (dir.rename(
                 "tmp",
-                QString("tmp_%1").arg(QDateTime::currentDateTime().toString("yyyyMMddHHmmss"))))
+                QString("tmp_%1").arg(QDateTime::currentDateTime().toString("yyyyMMddHHmmss")))) {
             qDebug() << "--- DIRECTORY tmp RENAMED ---";
-        else
+        } else {
             qDebug() << "--- DIRECTORY tmp NOT RENAMED ---";
+        }
 
         this->compliteUpdateIn();
     }
@@ -783,8 +788,9 @@ void DownloadManager::reCopyAllFiles() {
 
         return;
     } catch (std::exception &e) {
-        if (Debugger)
+        if (Debugger) {
             qDebug() << "Error recucrciyo " << QString(e.what());
+        }
         return;
     }
 }
@@ -803,8 +809,9 @@ QStringList DownloadManager::getDirFiles(const QString &dirName) {
     QStringList fileList = dir.entryList(QDir::Files);
 
     // Пробегаемся по файлам
-    for (QStringList::Iterator fit = fileList.begin(); fit != fileList.end(); ++fit)
+    for (QStringList::Iterator fit = fileList.begin(); fit != fileList.end(); ++fit) {
         fileNames.append(dir.absolutePath() + "/" + *fit);
+    }
 
     // Берем список каталогов
     QStringList dirList = dir.entryList(QDir::Dirs);
@@ -821,8 +828,9 @@ QStringList DownloadManager::getDirFiles(const QString &dirName) {
         // Делаем переход
         curDir.cd(*dit);
         QStringList curList = getDirFiles(curDir.absolutePath());
-        for (QStringList::Iterator it = curList.begin(); it != curList.end(); ++it)
+        for (QStringList::Iterator it = curList.begin(); it != curList.end(); ++it) {
             fileNames.append(QFileInfo(*it).absoluteFilePath());
+        }
     }
     return fileNames;
 }

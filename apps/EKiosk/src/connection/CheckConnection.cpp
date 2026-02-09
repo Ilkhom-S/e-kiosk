@@ -42,8 +42,9 @@ void CheckConnection::handleSslErrors(QNetworkReply *reply, QList<QSslError> lis
 }
 
 void CheckConnection::slotConnectedOk() {
-    if (stsTimer->isActive())
+    if (stsTimer->isActive()) {
         stsTimer->stop();
+    }
 
     m_pTcpSocket->disconnectFromHost();
 

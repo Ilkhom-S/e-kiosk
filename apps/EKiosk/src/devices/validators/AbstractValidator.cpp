@@ -91,8 +91,9 @@ bool BaseValidatorDevices::sendCommand(QByteArray dataRequest,
         //         this->printDataToHex(dataRequest);
 
         // Задержка после команды
-        if (timeSleep > 0)
+        if (timeSleep > 0) {
             this->msleep(timeSleep);
+        }
 
         if (getResponse) {
             // Если нам нужен респонс

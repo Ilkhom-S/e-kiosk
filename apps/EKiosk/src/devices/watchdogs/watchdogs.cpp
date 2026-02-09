@@ -120,16 +120,21 @@ bool WatchDogs::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
-            if (!serialPort->setParity(QSerialPort::NoParity))
+            }
+            if (!serialPort->setParity(QSerialPort::NoParity)) {
                 return false;
-            if (!serialPort->setStopBits(QSerialPort::OneStop))
+            }
+            if (!serialPort->setStopBits(QSerialPort::OneStop)) {
                 return false;
-            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl))
+            }
+            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) {
                 return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud9600))
+            }
+            if (!serialPort->setBaudRate(QSerialPort::Baud9600)) {
                 return false;
+            }
 
             qDebug() << "\nWatchDogs " << COSMP1::DeviceName << " to Port "
                      << serialPort->portName() << " open in " << serialPort->openMode();
@@ -259,8 +264,9 @@ bool WatchDogs::toCommandExec(bool thread, WDProtocolCommands::Enum aCommand) {
 
         nowCommand = aCommand;
         this->start();
-    } else
+    } else {
         res = this->sendCommandToExec(aCommand);
+    }
 
     return res;
 }
