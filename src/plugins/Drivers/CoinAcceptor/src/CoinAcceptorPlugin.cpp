@@ -7,7 +7,7 @@ using namespace SDK::Driver;
 using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
-template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
     return new DevicePluginBase<T>(CComponents::CoinAcceptor, aEnvironment, aInstancePath);
 }
 
