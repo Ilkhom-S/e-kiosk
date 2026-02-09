@@ -1889,7 +1889,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
         wsQuery("restart", data);
     } break;
     case AdminCommand::aCmdRestartASO: {
-        if (!Connect::restartWindows(true)) {
+        if (!ConnectionPart::restartWindows(true)) {
 #ifdef Q_OS_WIN32
             proc.startDetached("c:/windows/system32/cmd.exe",
                                QStringList() << "/c" << "shutdown -r -t 0");
@@ -1897,7 +1897,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
         }
     } break;
     case AdminCommand::aCmdShutDounASO: {
-        if (!Connect::restartWindows(false)) {
+        if (!ConnectionPart::restartWindows(false)) {
 #ifdef Q_OS_WIN32
             proc.startDetached("c:/windows/system32/cmd.exe",
                                QStringList() << "/c" << "shutdown -s -t 0");
@@ -2016,7 +2016,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
                 adminDialog->setDataToAdmin(AdminCommand::aCmdConnectInfo, data);
 
                 // Надо опустить соединение
-                Connect::disconnectNet();
+                ConnectionPart::disconnectNet();
 
                 data["message"] =
                     QString("Соединение %1 опущено, начинаем проверять данные SIM карты...")
