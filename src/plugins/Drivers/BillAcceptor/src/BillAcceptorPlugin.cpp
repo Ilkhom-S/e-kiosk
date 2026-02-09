@@ -66,9 +66,9 @@ CCNET_CASH_ACCEPTOR_PLUGIN(CCNetRecycler, CashcodeG200)
 
 COMMON_CASH_ACCEPTOR_PLUGIN(EBDSCashAcceptor, CashAcceptor::EBDS, defaultParameters)
 COMMON_CASH_ACCEPTOR_PLUGIN(ICTCashAcceptor, CashAcceptor::ICT, defaultParameters)
-COMMON_CASH_ACCEPTOR_PLUGIN(ID003CashAcceptor, CashAcceptor::ID003, ID003Parameters)
+COMMON_CASH_ACCEPTOR_PLUGIN(ID003CashAcceptor, CashAcceptor::ID003, iD003Parameters)
 COMMON_CASH_ACCEPTOR_PLUGIN(V2eCashAcceptor, CashAcceptor::V2e, defaultParameters)
-COMMON_CASH_ACCEPTOR_PLUGIN(CCTalkCashAcceptor, CashDevice::CCTalk, CCTalkParameters)
+COMMON_CASH_ACCEPTOR_PLUGIN(CCTalkCashAcceptor, CashDevice::CCTalk, ccTalkParameters)
 // COMMON_CASH_ACCEPTOR_PLUGIN(SSPCashAcceptor,  CashDevice::SSP,     defaultParameters)
 END_REGISTER_PLUGIN
 
