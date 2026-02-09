@@ -86,16 +86,16 @@ protected:
     SDK::Driver::IIOPort *m_IOPort;
 
     /// Ошибки порта.
-    TStatusCodes m_IOPortStatusCodes;
+    TStatusCodes m_ioPortStatusCodes;
 
     /// Логгирование посылок в классе порта.
-    ELoggingType::Enum m_IOMessageLogging;
+    ELoggingType::Enum m_ioMessageLogging;
 
     /// Экземпляр класса-описателя статусов портов.
-    IOPortStatusCode::CSpecifications m_IOPortStatusCodesSpecification;
+    IOPortStatusCode::CSpecifications m_ioPortStatusCodesSpecification;
 
     /// Контролировать включение/выключение.
-    bool m_ControlRemoving;
+    bool m_controlRemoving;
 };
 
 //---------------------------------------------------------------------------

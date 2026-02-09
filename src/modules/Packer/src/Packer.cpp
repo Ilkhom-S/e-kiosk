@@ -16,8 +16,8 @@ namespace CPacker {
 const int DefaultTimeout = 300 * 1000; // таймаут распаковки/запаковки в мс.
 
 // ported from https://stackoverflow.com/questions/2690328/qt-quncompress-gzip-data
-const int GZIP_WINDOWS_BIT = 15 + 16;
-const int GZIP_CHUNK_SIZE = 32 * 1024;
+const int GzipWindowsBit = 15 + 16;
+const int GzipChunkSize = 32 * 1024;
 }; // namespace CPacker
 
 //---------------------------------------------------------------------------
@@ -77,7 +77,7 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer,
         int ret = deflateInit2(&strm,
                                qMax(-1, qMin(9, aLevel)),
                                Z_DEFLATED,
-                               CPacker::GZIP_WINDOWS_BIT,
+                               CPacker::GzipWindowsBit,
                                8,
                                Z_DEFAULT_STRATEGY);
 
@@ -102,33 +102,33 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer,
         aOutBuffer.clear();
 
         // Extract pointer to input data
-        const char *input_data = aInBuffer.data();
-        int input_data_left = aInBuffer.length();
+        const char *inputData = aInBuffer.data();
+        int inputDataLeft = aInBuffer.length();
 
         // Compress data until available
         do {
             // Determine current chunk size
-            int chunk_size = qMin(CPacker::GZIP_CHUNK_SIZE, input_data_left);
+            int chunkSize = qMin(CPacker::GzipChunkSize, inputDataLeft);
 
             // Set deflator references
-            strm.next_in = reinterpret_cast<unsigned char *>(const_cast<char *>(input_data));
-            strm.avail_in = chunk_size;
+            strm.next_in = reinterpret_cast<unsigned char *>(const_cast<char *>(inputData));
+            strm.avail_in = chunkSize;
 
             // Update interval variables
-            input_data += chunk_size;
-            input_data_left -= chunk_size;
+            inputData += chunkSize;
+            inputDataLeft -= chunkSize;
 
             // Determine if it is the last chunk
-            flush = (input_data_left <= 0 ? Z_FINISH : Z_NO_FLUSH);
+            flush = (inputDataLeft <= 0 ? Z_FINISH : Z_NO_FLUSH);
 
             // Deflate chunk and cumulate output
             do {
                 // Declare vars
-                char out[CPacker::GZIP_CHUNK_SIZE];
+                char out[CPacker::GzipChunkSize];
 
                 // Set deflator references
                 strm.next_out = reinterpret_cast<unsigned char *>(out);
-                strm.avail_out = CPacker::GZIP_CHUNK_SIZE;
+                strm.avail_out = CPacker::GzipChunkSize;
 
                 // Try to deflate chunk
                 ret = deflate(&strm, flush);
@@ -143,7 +143,7 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer,
                 }
 
                 // Determine compressed size
-                int have = (CPacker::GZIP_CHUNK_SIZE - strm.avail_out);
+                int have = (CPacker::GzipChunkSize - strm.avail_out);
 
                 // Cumulate result
                 if (have > 0) {
@@ -178,7 +178,7 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer,
         memset(&strm, 0, sizeof(strm));
 
         // Initialize inflater
-        int ret = inflateInit2(&strm, CPacker::GZIP_WINDOWS_BIT);
+        int ret = inflateInit2(&strm, CPacker::GzipWindowsBit);
 
         if (ret != Z_OK) {
             return false;
@@ -197,35 +197,35 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer,
         }
 
         // Extract pointer to aInBuffer data
-        const char *input_data = aInBuffer.data();
-        int input_data_left = aInBuffer.length();
+        const char *inputData = aInBuffer.data();
+        int inputDataLeft = aInBuffer.length();
 
         // Decompress data until available
         do {
             // Determine current chunk size
-            int chunk_size = qMin(CPacker::GZIP_CHUNK_SIZE, input_data_left);
+            int chunkSize = qMin(CPacker::GzipChunkSize, inputDataLeft);
 
             // Check for termination
-            if (chunk_size <= 0) {
+            if (chunkSize <= 0) {
                 break;
             }
 
             // Set inflater references
-            strm.next_in = reinterpret_cast<unsigned char *>(const_cast<char *>(input_data));
-            strm.avail_in = chunk_size;
+            strm.next_in = reinterpret_cast<unsigned char *>(const_cast<char *>(inputData));
+            strm.avail_in = chunkSize;
 
             // Update interval variables
-            input_data += chunk_size;
-            input_data_left -= chunk_size;
+            inputData += chunkSize;
+            inputDataLeft -= chunkSize;
 
             // Inflate chunk and cumulate output
             do {
                 // Declare vars
-                char out[CPacker::GZIP_CHUNK_SIZE];
+                char out[CPacker::GzipChunkSize];
 
                 // Set inflater references
                 strm.next_out = reinterpret_cast<unsigned char *>(out);
-                strm.avail_out = CPacker::GZIP_CHUNK_SIZE;
+                strm.avail_out = CPacker::GzipChunkSize;
 
                 // Try to inflate chunk
                 ret = inflate(&strm, Z_NO_FLUSH);
@@ -241,7 +241,7 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer,
                 }
 
                 // Determine decompressed size
-                int have = (CPacker::GZIP_CHUNK_SIZE - strm.avail_out);
+                int have = (CPacker::GzipChunkSize - strm.avail_out);
 
                 // Cumulate result
                 if (have > 0) {

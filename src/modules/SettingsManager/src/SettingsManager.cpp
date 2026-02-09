@@ -379,9 +379,9 @@ bool SettingsManager::writeINI(const QString &aFileName, const TPtree &aTree) {
 #endif
     iniFile.clear();
 
-    static const TPtree emptyTree;
+    static const TPtree EmptyTree;
     foreach (const TPtree::value_type &value,
-             aTree.get_child(QFileInfo(aFileName).completeBaseName().toStdString(), emptyTree)) {
+             aTree.get_child(QFileInfo(aFileName).completeBaseName().toStdString(), EmptyTree)) {
         iniFile.beginGroup(QString::fromStdString(value.first));
 
         foreach (const TPtree::value_type &child, value.second) {

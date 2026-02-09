@@ -20,8 +20,8 @@ ATProtocol::ATProtocol(QObject *parent)
     createDevicePort();
 }
 
-void ATProtocol::setPortName(const QString com_Name) {
-    this->com_Name = com_Name;
+void ATProtocol::setPortName(const QString comName) {
+    this->com_Name = comName;
 }
 
 bool ATProtocol::openPort() {
@@ -166,20 +166,20 @@ bool ATProtocol::unpacketData(const QByteArray &aPacket, QByteArray &aData) {
     // первыми и последними символами должны идти CR LF
     // однако в модем может в ответ повторить саму команду, поэтому это надо
     // учесть
-    QByteArray CRLF;
-    CRLF.push_back(CATProtocolCommands::CR);
-    CRLF.push_back(CATProtocolCommands::LF);
+    QByteArray crlf;
+    crlf.push_back(CATProtocolCommands::CR);
+    crlf.push_back(CATProtocolCommands::LF);
 
-    int firstCRLF = aPacket.indexOf(CRLF);
-    int lastCRLF = aPacket.indexOf(CRLF, aPacket.size() - CRLF.size() - 1);
+    int firstCRLF = aPacket.indexOf(crlf);
+    int lastCRLF = aPacket.indexOf(crlf, aPacket.size() - crlf.size() - 1);
     if (firstCRLF == -1 || lastCRLF == firstCRLF) {
         qDebug() << "Protocol AT: Invalid format of the response, need first CRLF";
         return false;
     }
 
     // находим символы CR LF, обрезаем
-    int messageLength = aPacket.size() - 2 * CRLF.size() - firstCRLF;
-    tempData = aPacket.mid(firstCRLF + CRLF.size(), messageLength);
+    int messageLength = aPacket.size() - 2 * crlf.size() - firstCRLF;
+    tempData = aPacket.mid(firstCRLF + crlf.size(), messageLength);
 
     qDebug() << "-- tempData -- " << tempData;
 

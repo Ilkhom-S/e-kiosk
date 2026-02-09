@@ -11,11 +11,11 @@ void Confirm_Otp::resendRequest() {
     emit emit_Confirm_OtpResult("");
 }
 
-void Confirm_Otp::setDataNote(const QDomNode &dom_Element) {
+void Confirm_Otp::setDataNote(const QDomNode &domElement) {
     resultCode = "";
 
     // Парсим данные
-    parcerNote(dom_Element);
+    parcerNote(domElement);
 
     if (resultCode != "") {
         // Тут отправляем сигнал с балансом
@@ -27,33 +27,33 @@ void Confirm_Otp::setDataNote(const QDomNode &dom_Element) {
     return;
 }
 
-void Confirm_Otp::parcerNote(const QDomNode &dom_Element) {
+void Confirm_Otp::parcerNote(const QDomNode &domElement) {
     // Необходимо отпарсить документ
-    QDomNode dom_Node = dom_Element.firstChild();
+    QDomNode domNode = domElement.firstChild();
 
-    while (!dom_Node.isNull()) {
-        if (dom_Node.isElement()) {
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
 
-            QDomElement dom_Element = dom_Node.toElement();
-            QString strTag = dom_Element.tagName();
+            QDomElement domElement = domNode.toElement();
+            QString strTag = domElement.tagName();
 
             if (strTag == "resultCode") {
-                resultCode = dom_Element.text();
+                resultCode = domElement.text();
             }
         }
 
-        parcerNote(dom_Node);
-        dom_Node = dom_Node.nextSibling();
+        parcerNote(domNode);
+        domNode = domNode.nextSibling();
     }
 }
 
 void Confirm_Otp::confirm_OtpRequest(QString otpId, QString otpValue) {
-    QString header_xml = getHeaderRequest(Request::Type::Confirm_Otp);
+    QString headerXml = getHeaderRequest(Request::Type::Confirm_Otp);
 
-    QString footer_xml = getFooterRequest();
+    QString footerXml = getFooterRequest();
 
     QString xml =
-        QString(header_xml + "<otp_id>%1</otp_id>\n" + "<otp_value>%2</otp_value>\n" + footer_xml)
+        QString(headerXml + "<otp_id>%1</otp_id>\n" + "<otp_value>%2</otp_value>\n" + footerXml)
             .arg(otpId, otpValue);
 
     sendRequest(xml, 20000);

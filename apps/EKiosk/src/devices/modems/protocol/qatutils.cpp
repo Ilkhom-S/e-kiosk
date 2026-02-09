@@ -5,7 +5,7 @@
 #include "qatresultparser.h"
 #include "qgsmcodec.h"
 
-static const char hexchars[] = "0123456789ABCDEF";
+static const char Hexchars[] = "0123456789ABCDEF";
 static bool octalEscapesFlag = false;
 
 /*!
@@ -29,8 +29,8 @@ QString QAtUtils::quote(const QString &str) {
         ch = str[posn++].unicode();
         if (ch == '"' || ch == '\\' || ch == '\r' || ch == '\n') {
             result += (QChar)'\\';
-            result += (QChar)(hexchars[(ch >> 4) & 0x0F]);
-            result += (QChar)(hexchars[ch & 0x0F]);
+            result += (QChar)(Hexchars[(ch >> 4) & 0x0F]);
+            result += (QChar)(Hexchars[ch & 0x0F]);
         } else {
             result += (QChar)ch;
         }
@@ -45,11 +45,11 @@ QString QAtUtils::quote(const QString &str) {
 */
 QString QAtUtils::toHex(const QByteArray &binary) {
     QString str = "";
-    static char const hexchars[] = "0123456789ABCDEF";
+    static char const Hexchars[] = "0123456789ABCDEF";
 
     for (int i = 0; i < binary.size(); i++) {
-        str += (QChar)(hexchars[(binary[i] >> 4) & 0x0F]);
-        str += (QChar)(hexchars[binary[i] & 0x0F]);
+        str += (QChar)(Hexchars[(binary[i] >> 4) & 0x0F]);
+        str += (QChar)(Hexchars[binary[i] & 0x0F]);
     }
 
     return str;
@@ -140,7 +140,7 @@ QString QAtUtils::encodeNumber(const QString &value, bool keepPlus) {
     }
 }
 
-static int From_HexDigit(uint ch) {
+static int fromHexDigit(uint ch) {
     if (ch >= '0' && ch <= '9') {
         return (int)(ch - '0');
     } else if (ch >= 'A' && ch <= 'F') {
@@ -152,7 +152,7 @@ static int From_HexDigit(uint ch) {
     }
 }
 
-static int From_OctalDigit(uint ch) {
+static int fromOctalDigit(uint ch) {
     if (ch >= '0' && ch <= '7') {
         return (int)(ch - '0');
     } else {
@@ -185,7 +185,7 @@ QString QAtUtils::nextString(const QString &buf, uint &posn) {
                 if (posn >= (uint)buf.length()) {
                     break;
                 }
-                digit = From_HexDigit(buf[posn].unicode());
+                digit = fromHexDigit(buf[posn].unicode());
                 if (digit == -1) {
                     result += (QChar)'\\';
                     continue;
@@ -194,7 +194,7 @@ QString QAtUtils::nextString(const QString &buf, uint &posn) {
                     ch = (uint)digit;
                     ++posn;
                 } else {
-                    digit2 = From_HexDigit(buf[posn + 1].unicode());
+                    digit2 = fromHexDigit(buf[posn + 1].unicode());
                     if (digit2 == -1) {
                         ch = (uint)digit;
                         ++posn;
@@ -208,7 +208,7 @@ QString QAtUtils::nextString(const QString &buf, uint &posn) {
                 if (posn >= (uint)buf.length()) {
                     break;
                 }
-                digit = From_OctalDigit(buf[posn].unicode());
+                digit = fromOctalDigit(buf[posn].unicode());
                 if (digit == -1) {
                     result += (QChar)'\\';
                     continue;
@@ -217,7 +217,7 @@ QString QAtUtils::nextString(const QString &buf, uint &posn) {
                     ch = (uint)digit;
                     ++posn;
                 } else {
-                    digit2 = From_OctalDigit(buf[posn + 1].unicode());
+                    digit2 = fromOctalDigit(buf[posn + 1].unicode());
                     if (digit2 == -1) {
                         ch = (uint)digit;
                         ++posn;
@@ -226,7 +226,7 @@ QString QAtUtils::nextString(const QString &buf, uint &posn) {
                             ch = (uint)(digit * 8 + digit2);
                             posn += 2;
                         } else {
-                            digit3 = From_OctalDigit(buf[posn + 2].unicode());
+                            digit3 = fromOctalDigit(buf[posn + 2].unicode());
                             if (digit3 == -1) {
                                 ch = (uint)(digit * 8 + digit2);
                                 posn += 2;
@@ -279,10 +279,10 @@ void QAtUtils::skipField(const QString &str, uint &posn) {
     }
 }
 
-class QGsm_HexCodec : public QTextCodec {
+class QGsmHexCodec : public QTextCodec {
 public:
-    QGsm_HexCodec();
-    ~QGsm_HexCodec();
+    QGsmHexCodec();
+    ~QGsmHexCodec();
 
     QByteArray name() const;
     int mibEnum() const;
@@ -292,19 +292,19 @@ protected:
     QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
 };
 
-QGsm_HexCodec::QGsm_HexCodec() {}
+QGsmHexCodec::QGsmHexCodec() {}
 
-QGsm_HexCodec::~QGsm_HexCodec() {}
+QGsmHexCodec::~QGsmHexCodec() {}
 
-QByteArray QGsm_HexCodec::name() const {
+QByteArray QGsmHexCodec::name() const {
     return QByteArray("gsm-hex");
 }
 
-int QGsm_HexCodec::mibEnum() const {
+int QGsmHexCodec::mibEnum() const {
     return 61239;
 }
 
-QString QGsm_HexCodec::convertToUnicode(const char *in, int length, ConverterState *) const {
+QString QGsmHexCodec::convertToUnicode(const char *in, int length, ConverterState *) const {
     QString str;
     int nibble = 0;
     int value = 0;
@@ -343,16 +343,16 @@ QString QGsm_HexCodec::convertToUnicode(const char *in, int length, ConverterSta
     return str;
 }
 
-QByteArray QGsm_HexCodec::convertFromUnicode(const QChar *in, int length, ConverterState *) const {
+QByteArray QGsmHexCodec::convertFromUnicode(const QChar *in, int length, ConverterState *) const {
     QByteArray buf;
     while (length-- > 0) {
         unsigned short ch = QGsm_Codec::twoByteFrom_Unicode(*in++);
         if (ch >= 256) {
-            buf += hexchars[(ch >> 12) & 0x0F];
-            buf += hexchars[(ch >> 8) & 0x0F];
+            buf += Hexchars[(ch >> 12) & 0x0F];
+            buf += Hexchars[(ch >> 8) & 0x0F];
         }
-        buf += hexchars[(ch >> 4) & 0x0F];
-        buf += hexchars[ch & 0x0F];
+        buf += Hexchars[(ch >> 4) & 0x0F];
+        buf += Hexchars[ch & 0x0F];
     }
     return buf;
 }
@@ -414,10 +414,10 @@ QByteArray QUcs2HexCodec::convertFromUnicode(const QChar *in, int length, Conver
     while (length-- > 0) {
         uint ch = in->unicode();
         ++in;
-        buf += hexchars[(ch >> 12) & 0x0F];
-        buf += hexchars[(ch >> 8) & 0x0F];
-        buf += hexchars[(ch >> 4) & 0x0F];
-        buf += hexchars[ch & 0x0F];
+        buf += Hexchars[(ch >> 12) & 0x0F];
+        buf += Hexchars[(ch >> 8) & 0x0F];
+        buf += Hexchars[(ch >> 4) & 0x0F];
+        buf += Hexchars[ch & 0x0F];
     }
     return buf;
 }
@@ -433,11 +433,11 @@ public:
 
 protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
-    QByteArray convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const;
+    QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
 };
 
 // Convert IBM437 character codes 0x00 - 0xFF into Unicode.
-static ushort const cp437ToUnicode[256] = {
+static ushort const Cp437ToUnicode[256] = {
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 0x0008, 0x0009, 0x000a, 0x000b,
     0x000c, 0x000d, 0x000e, 0x000f, 0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
     0x0018, 0x0019, 0x001c, 0x001b, 0x007f, 0x001d, 0x001e, 0x001f, 0x0020, 0x0021, 0x0022, 0x0023,
@@ -462,7 +462,7 @@ static ushort const cp437ToUnicode[256] = {
     0x207f, 0x00b2, 0x25a0, 0x00a0};
 
 // Convert Unicode 0x0000 - 0x00FF into IBM437.
-static unsigned char const cp437From_Unicode[256] = {
+static unsigned char const Cp437FromUnicode[256] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
     0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x7f, 0x1b, 0x1a, 0x1d, 0x1e, 0x1f,
     0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
@@ -532,14 +532,14 @@ QString QCodePage437Codec::convertToUnicode(const char *in, int length, Converte
 
         // Regular 437-encoded string.
         while (length-- > 0) {
-            str += QChar((unsigned int)cp437ToUnicode[*in++ & 0xFF]);
+            str += QChar((unsigned int)Cp437ToUnicode[*in++ & 0xFF]);
         }
     }
     return str;
 }
 
 QByteArray
-QCodePage437Codec::convertFrom_Unicode(const QChar *in, int length, ConverterState *) const {
+QCodePage437Codec::convertFromUnicode(const QChar *in, int length, ConverterState *) const {
     QByteArray result;
     unsigned int ch;
     char *out;
@@ -550,7 +550,7 @@ QCodePage437Codec::convertFrom_Unicode(const QChar *in, int length, ConverterSta
         ch = in[posn].unicode();
         if (ch >= 0x0100) {
             non437 = true;
-        } else if (cp437From_Unicode[ch] == '?' && ch != '?') {
+        } else if (Cp437FromUnicode[ch] == '?' && ch != '?') {
             non437 = true;
         }
     }
@@ -563,10 +563,10 @@ QCodePage437Codec::convertFrom_Unicode(const QChar *in, int length, ConverterSta
         while (length-- > 0) {
             uint ch = in->unicode();
             ++in;
-            *out++ = hexchars[(ch >> 12) & 0x0F];
-            *out++ = hexchars[(ch >> 8) & 0x0F];
-            *out++ = hexchars[(ch >> 4) & 0x0F];
-            *out++ = hexchars[ch & 0x0F];
+            *out++ = Hexchars[(ch >> 12) & 0x0F];
+            *out++ = Hexchars[(ch >> 8) & 0x0F];
+            *out++ = Hexchars[(ch >> 4) & 0x0F];
+            *out++ = Hexchars[ch & 0x0F];
         }
         *out++ = 'F';
         *out++ = 'F';
@@ -580,7 +580,7 @@ QCodePage437Codec::convertFrom_Unicode(const QChar *in, int length, ConverterSta
     result.resize(length);
     out = result.data();
     while (length-- > 0) {
-        *out++ = (char)cp437From_Unicode[in->unicode()];
+        *out++ = (char)Cp437FromUnicode[in->unicode()];
         ++in;
     }
     return result;
@@ -597,11 +597,11 @@ public:
 
 protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
-    QByteArray convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const;
+    QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
 };
 
 // Convert IBM850 character codes 0x00 - 0xFF into Unicode.
-static ushort const cp850ToUnicode[256] = {
+static ushort const Cp850ToUnicode[256] = {
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 0x0008, 0x0009, 0x000a, 0x000b,
     0x000c, 0x000d, 0x000e, 0x000f, 0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
     0x0018, 0x0019, 0x001c, 0x001b, 0x007f, 0x001d, 0x001e, 0x001f, 0x0020, 0x0021, 0x0022, 0x0023,
@@ -627,7 +627,7 @@ static ushort const cp850ToUnicode[256] = {
 };
 
 // Convert Unicode 0x0000 - 0x00FF into IBM850.
-static unsigned char const cp850From_Unicode[256] = {
+static unsigned char const Cp850FromUnicode[256] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
     0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x7f, 0x1b, 0x1a, 0x1d, 0x1e, 0x1f,
     0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
@@ -661,7 +661,7 @@ static ushort const cp850MappingInput[] = {
     0xff45, 0xff46, 0xff47, 0xff48, 0xff49, 0xff4a, 0xff4b, 0xff4c, 0xff4d, 0xff4e, 0xff4f, 0xff50,
     0xff51, 0xff52, 0xff53, 0xff54, 0xff55, 0xff56, 0xff57, 0xff58, 0xff59, 0xff5a, 0xff5b, 0xff5c,
     0xff5d, 0xff5e, 0xffe8, 0xffe9, 0xffea, 0xffeb, 0xffec, 0xffed, 0xffee};
-static unsigned char const cp850MappingOutput[] = {
+static unsigned char const Cp850MappingOutput[] = {
     0xd1, 0xd5, 0x9f, 0xf2, 0x07, 0x13, 0xee, 0x1b, 0x18, 0x1a, 0x19, 0x1d, 0x12, 0x17, 0x1c,
     0x7f, 0xc4, 0xb3, 0xda, 0xbf, 0xc0, 0xd9, 0xc3, 0xb4, 0xc2, 0xc1, 0xc5, 0xcd, 0xba, 0xc9,
     0xbb, 0xc8, 0xbc, 0xcc, 0xb9, 0xcb, 0xca, 0xce, 0xdf, 0xdc, 0xdb, 0xb0, 0xb1, 0xb2, 0xfe,
@@ -673,7 +673,7 @@ static unsigned char const cp850MappingOutput[] = {
     0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
     0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76,
     0x77, 0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0xb3, 0x1b, 0x18, 0x1a, 0x19, 0xfe, 0x09};
-#define cp850MappingSize ((int)sizeof(cp850MappingInput))
+#define CP850_MAPPING_SIZE ((int)sizeof(cp850MappingInput))
 
 QCodePage850Codec::QCodePage850Codec() {}
 
@@ -696,13 +696,13 @@ int QCodePage850Codec::mibEnum() const {
 QString QCodePage850Codec::convertToUnicode(const char *in, int length, ConverterState *) const {
     QString str;
     while (length-- > 0) {
-        str += QChar((unsigned int)cp850ToUnicode[*in++ & 0xFF]);
+        str += QChar((unsigned int)Cp850ToUnicode[*in++ & 0xFF]);
     }
     return str;
 }
 
 QByteArray
-QCodePage850Codec::convertFrom_Unicode(const QChar *in, int length, ConverterState *) const {
+QCodePage850Codec::convertFromUnicode(const QChar *in, int length, ConverterState *) const {
     QByteArray result;
     unsigned int ch;
     char *out;
@@ -712,11 +712,11 @@ QCodePage850Codec::convertFrom_Unicode(const QChar *in, int length, ConverterSta
         ch = in->unicode();
         ++in;
         if (ch < 0x0100) {
-            *out++ = (char)cp850From_Unicode[ch];
+            *out++ = (char)Cp850FromUnicode[ch];
         } else {
             // Perform a binary search on the sparse mapping table.
             int left = 0;
-            int right = cp850MappingSize - 1;
+            int right = CP850_MAPPING_SIZE - 1;
             int middle;
             while (left <= right) {
                 middle = (left + right) / 2;
@@ -725,7 +725,7 @@ QCodePage850Codec::convertFrom_Unicode(const QChar *in, int length, ConverterSta
                 } else if (ch > cp850MappingInput[middle]) {
                     left = middle + 1;
                 } else {
-                    *out++ = (char)cp850MappingOutput[middle];
+                    *out++ = (char)Cp850MappingOutput[middle];
                     break;
                 }
             }
@@ -781,8 +781,8 @@ QCodePage850Codec::convertFrom_Unicode(const QChar *in, int length, ConverterSta
 
         \sa QTextCodec, QGsm_Codec
 */
-QTextCodec *QAtUtils::codec(const QString &gsm_Charset) {
-    QString cs = gsm_Charset.toLower();
+QTextCodec *QAtUtils::codec(const QString &gsmCharset) {
+    QString cs = gsmCharset.toLower();
     QTextCodec *codec = 0;
 
     // Convert the name into an appropriate codec.
@@ -795,11 +795,11 @@ QTextCodec *QAtUtils::codec(const QString &gsm_Charset) {
         codec = gsm;
     } else if (cs == "gsm-noloss") {
         // 7-bit GSM character set, with no loss of quality.
-        static QTextCodec *gsm_NoLoss = 0;
-        if (!gsm_NoLoss) {
-            gsm_NoLoss = new QGsm_Codec(true);
+        static QTextCodec *gsmNoLoss = 0;
+        if (!gsmNoLoss) {
+            gsmNoLoss = new QGsm_Codec(true);
         }
-        codec = gsm_NoLoss;
+        codec = gsmNoLoss;
     } else if (cs == "hex") {
         // Direct hex character set.  The underlying character set could
         // be anything according to the specification, but we need to pick
@@ -807,7 +807,7 @@ QTextCodec *QAtUtils::codec(const QString &gsm_Charset) {
         // likely value.
         static QTextCodec *hex = 0;
         if (!hex) {
-            hex = new QGsm_HexCodec();
+            hex = new QGsmHexCodec();
         }
         codec = hex;
     } else if (cs == "ucs2") {
@@ -863,7 +863,7 @@ QTextCodec *QAtUtils::codec(const QString &gsm_Charset) {
         codec = QTextCodec::codecForName("ISO-" + cs.toLatin1());
     } else {
         // Not one of the standard GSM charset specifiers.  Look it up as-is.
-        codec = QTextCodec::codecForName(gsm_Charset.toLatin1());
+        codec = QTextCodec::codecForName(gsmCharset.toLatin1());
     }
 
     // Return the codec that we found, or bail out with Latin1 if unknown.
@@ -903,8 +903,8 @@ QString QAtUtils::quote(const QString &str, QTextCodec *codec) {
         ch = bytes[posn++] & 0xFF;
         if (ch == '"' || ch == '\\' || ch == '\r' || ch == '\n') {
             result += (QChar)'\\';
-            result += (QChar)(hexchars[(ch >> 4) & 0x0F]);
-            result += (QChar)(hexchars[ch & 0x0F]);
+            result += (QChar)(Hexchars[(ch >> 4) & 0x0F]);
+            result += (QChar)(Hexchars[ch & 0x0F]);
         } else {
             result += (QChar)ch;
         }
@@ -996,12 +996,12 @@ void QAtUtils::setOctalEscapes(bool value) {
 }
 
 enum QSMSDataCodingScheme {
-    QSMS_Compressed = 0x0020,
-    QSMS_MessageClass = 0x0010,
-    QSMS_DefaultAlphabet = 0x0000,
+    QsmsCompressed = 0x0020,
+    QsmsMessageClass = 0x0010,
+    QsmsDefaultAlphabet = 0x0000,
     QSMS_8BitAlphabet = 0x0004,
-    QSMS_UCS2Alphabet = 0x0008,
-    QSMS_ReservedAlphabet = 0x000C
+    QsmsUcS2Alphabet = 0x0008,
+    QsmsReservedAlphabet = 0x000C
 };
 
 /*!
@@ -1016,11 +1016,11 @@ QString QAtUtils::decodeString(const QString &value, uint dcs) {
     // Extract just the alphabet bits.
     QSMSDataCodingScheme scheme;
     if ((dcs & 0xC0) == 0) {
-        scheme = QSMS_DefaultAlphabet; // Other bits indicate 7-bit GSM language.
+        scheme = QsmsDefaultAlphabet; // Other bits indicate 7-bit GSM language.
     } else {
         scheme = (QSMSDataCodingScheme)(dcs & 0x0C);
     }
-    if (scheme == QSMS_UCS2Alphabet) {
+    if (scheme == QsmsUcS2Alphabet) {
         // The string is hex-encoded UCS-2.
         return codec("ucs2")->toUnicode(value.toLatin1());
     } else if (scheme == QSMS_8BitAlphabet) {

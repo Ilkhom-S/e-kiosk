@@ -41,11 +41,11 @@ void SendLogInfo::sendRequestRepeet() {
     sendRequest(requestXml, 30000);
 }
 
-void SendLogInfo::setDataNote(const QDomNode &dom_Element) {
+void SendLogInfo::setDataNote(const QDomNode &domElement) {
     resultCode = false;
 
     // Парсим данные
-    parcerNote(dom_Element);
+    parcerNote(domElement);
 
     if (resultCode) {
         // Обнуляем счетчик
@@ -61,19 +61,19 @@ void SendLogInfo::setDataNote(const QDomNode &dom_Element) {
     }
 }
 
-void SendLogInfo::parcerNote(const QDomNode &dom_Element) {
+void SendLogInfo::parcerNote(const QDomNode &domElement) {
     // Необходимо отпарсить документ
-    QDomNode dom_Node = dom_Element.firstChild();
+    QDomNode domNode = domElement.firstChild();
 
-    while (!dom_Node.isNull()) {
-        if (dom_Node.isElement()) {
-            QDomElement dom_Element = dom_Node.toElement();
-            QString strTag = dom_Element.tagName();
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
+            QDomElement domElement = domNode.toElement();
+            QString strTag = domElement.tagName();
 
             // if(Debugger) qDebug() << strTag + " " + dom_Element.text();
 
             if (strTag == "resultCode") {
-                QString sts = dom_Element.text();
+                QString sts = domElement.text();
 
                 if (sts == "0") {
                     resultCode = true;
@@ -81,30 +81,30 @@ void SendLogInfo::parcerNote(const QDomNode &dom_Element) {
             }
         }
 
-        parcerNote(dom_Node);
-        dom_Node = dom_Node.nextSibling();
+        parcerNote(domNode);
+        domNode = domNode.nextSibling();
     }
 }
 
 void SendLogInfo::sendLogInfoToServer(QString trn, QString date) {
 
-    QString header_xml = getHeaderRequest(Request::Type::SendLogInfo);
+    QString headerXml = getHeaderRequest(Request::Type::SendLogInfo);
 
     // дата создания
-    QString vrm_Date = QDate::fromString(date, "yyyy-MM-dd").toString("dd.MM.yyyy");
+    QString vrmDate = QDate::fromString(date, "yyyy-MM-dd").toString("dd.MM.yyyy");
     QString striper = "";
     bool result = false;
 
-    getCompressLogData(vrm_Date, result, striper);
+    getCompressLogData(vrmDate, result, striper);
 
     QString idTrn = QDateTime::currentDateTime().toString("sszzz");
     nowIdTrn = idTrn.toInt();
-    QFileInfo vrm_FileInf;
-    vrm_FileInf.setFile("log/" + vrm_Date + ".txt");
+    QFileInfo vrmFileInf;
+    vrmFileInf.setFile("log/" + vrmDate + ".txt");
 
-    QString dateCreate = vrm_FileInf.birthTime().toString("yyyy-MM-dd HH:mm:ss");
+    QString dateCreate = vrmFileInf.birthTime().toString("yyyy-MM-dd HH:mm:ss");
 
-    QString center_xml =
+    QString centerXml =
         QString("<messages>\n"
                 "<message id=\"%1\" cmdtrn=\"%6\" datecreate=\"%2\">\n"
                 "<title>Log Message %3</title>\n"
@@ -113,11 +113,11 @@ void SendLogInfo::sendLogInfoToServer(QString trn, QString date) {
                 "</attachments>\n"
                 "</message>\n"
                 "</messages>\n")
-            .arg(idTrn, dateCreate == "" ? vrm_Date : dateCreate, vrm_Date, striper, trn);
+            .arg(idTrn, dateCreate == "" ? vrmDate : dateCreate, vrmDate, striper, trn);
 
-    QString footer_xml = getFooterRequest();
+    QString footerXml = getFooterRequest();
 
-    QString xml = QString(header_xml + center_xml + footer_xml);
+    QString xml = QString(headerXml + centerXml + footerXml);
 
     emit emit_Loging(0,
                      "SEND_LOG_INFO",
@@ -132,21 +132,21 @@ void SendLogInfo::sendLogInfoToServer(QString trn, QString date) {
 }
 
 void SendLogInfo::sendLogValidatorToServer(QString trn, QString date, QString account) {
-    QString header_xml = getHeaderRequest(Request::Type::SendLogInfo);
+    QString headerXml = getHeaderRequest(Request::Type::SendLogInfo);
 
-    QString vrm_Date = date;
+    QString vrmDate = date;
     QString striper = "";
     bool result = false;
-    getCompressValiatorLogData(vrm_Date, account, result, striper);
+    getCompressValiatorLogData(vrmDate, account, result, striper);
 
     QString idTrn = QDateTime::currentDateTime().toString("sszzz");
     nowIdTrn = idTrn.toInt();
-    QFileInfo vrm_FileInf;
-    vrm_FileInf.setFile("logvalidator/" + date + "/" + account + ".txt");
+    QFileInfo vrmFileInf;
+    vrmFileInf.setFile("logvalidator/" + date + "/" + account + ".txt");
 
-    QString dateCreate = vrm_FileInf.birthTime().toString("yyyy-MM-dd HH:mm:ss");
+    QString dateCreate = vrmFileInf.birthTime().toString("yyyy-MM-dd HH:mm:ss");
 
-    QString center_xml =
+    QString centerXml =
         QString("<messages>\n"
                 "<message id=\"%1\" cmdtrn=\"%6\" datecreate=\"%2\">\n"
                 "<title>Log Validator Message %5</title>\n"
@@ -155,11 +155,11 @@ void SendLogInfo::sendLogValidatorToServer(QString trn, QString date, QString ac
                 "</attachments>\n"
                 "</message>\n"
                 "</messages>\n")
-            .arg(idTrn, dateCreate == "" ? vrm_Date : dateCreate, account, striper, date, trn);
+            .arg(idTrn, dateCreate == "" ? vrmDate : dateCreate, account, striper, date, trn);
 
-    QString footer_xml = getFooterRequest();
+    QString footerXml = getFooterRequest();
 
-    QString xml = QString(header_xml + center_xml + footer_xml);
+    QString xml = QString(headerXml + centerXml + footerXml);
 
     emit emit_Loging(0,
                      "SEND_LOG_VALIDATOR_INFO",

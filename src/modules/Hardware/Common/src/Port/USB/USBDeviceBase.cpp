@@ -78,10 +78,10 @@ template <class T> bool USBDeviceBase<T>::setFreePDOName() {
 template <class T> void USBDeviceBase<T>::resetPDOName() {
     QMutexLocker lock(&m_PDODataGuard);
     // Извлекаем системное имя из конфигурации порта
-    QString PDOName =
+    QString pdoName =
         this->m_IOPort->getDeviceConfiguration().value(CHardwareSDK::System_Name).toString();
 
-    if (m_PDOData.contains(PDOName)) {
+    if (m_PDOData.contains(pdoName)) {
         m_PDOData[PDOName] = true;
     }
 }
@@ -102,11 +102,11 @@ template <class T> bool USBDeviceBase<T>::setPDOName(const QString &aPDOName) {
     }
 
     // 2. Получаем VID и PID напрямую из QSerialPortInfo
-    quint16 VID = portInfo.hasVendorIdentifier() ? portInfo.vendorIdentifier() : 0;
-    quint16 PID = portInfo.hasProductIdentifier() ? portInfo.productIdentifier() : 0;
+    quint16 vid = portInfo.hasVendorIdentifier() ? portInfo.vendorIdentifier() : 0;
+    quint16 pid = portInfo.hasProductIdentifier() ? portInfo.productIdentifier() : 0;
 
-    QString logVID = ProtocolUtils::toHexLog(VID);
-    QString logPID = ProtocolUtils::toHexLog(PID);
+    QString logVID = ProtocolUtils::toHexLog(vid);
+    QString logPID = ProtocolUtils::toHexLog(pid);
 
     // 3. Проверка VID в данных авто поиска (CSpecification)
     if (!m_DetectingData->data().contains(VID)) {
@@ -115,10 +115,10 @@ template <class T> bool USBDeviceBase<T>::setPDOName(const QString &aPDOName) {
         return false;
     }
 
-    const auto &PIDData = m_DetectingData->value(VID).constData();
+    const auto &pidData = m_DetectingData->value(VID).constData();
 
     // 4. Проверка PID
-    if (!PIDData.contains(PID)) {
+    if (!PIDData.contains(pid)) {
         this->toLog(
             LogLevel::Normal,
             QStringLiteral("%1: No PID %2 for VID %3").arg(this->m_DeviceName, logPID, logVID));
@@ -126,7 +126,7 @@ template <class T> bool USBDeviceBase<T>::setPDOName(const QString &aPDOName) {
     }
 
     // 5. Установка данных устройства из мета-данных
-    const auto &data = PIDData[PID];
+    const auto &data = PIDData[pid];
     this->m_DeviceName = data.model;
     this->m_Verified = data.verified;
 
@@ -155,7 +155,7 @@ template <class T> void USBDeviceBase<T>::initializeUSBPort() {
     const auto availablePorts = QSerialPortInfo::availablePorts();
 
     // Подготавливаем набор имен текущих физических портов для синхронизации
-    QSet<QString> system_PortNames;
+    QSet<QString> systemPortNames;
     for (const QSerialPortInfo &info : availablePorts) {
         system_PortNames.insert(info.portName());
     }

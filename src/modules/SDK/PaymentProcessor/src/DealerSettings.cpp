@@ -44,8 +44,8 @@ void DealerSettings::initialize() {
     m_IsValid = r1 && r2 && r3;
 
     // Проверяем наличие групп.
-    static const TPtree emptyTree;
-    if (m_Properties.get_child("groups", emptyTree).empty()) {
+    static const TPtree EmptyTree;
+    if (m_Properties.get_child("groups", EmptyTree).empty()) {
         m_IsValid = false;
     }
 
@@ -244,26 +244,26 @@ bool DealerSettings::loadProviders() {
 }
 
 //---------------------------------------------------------------------------
-void loadProviderEnum_Items(SProviderField::TEnum_Items &aItem_List, const TPtreeOperators &aTree) {
+void loadProviderEnumItems(SProviderField::TEnum_Items &aItemList, const TPtreeOperators &aTree) {
     auto searchBounds = aTree.equal_range("item");
 
-    for (auto item_It = searchBounds.first; item_It != searchBounds.second; ++item_It) {
+    for (auto itemIt = searchBounds.first; itemIt != searchBounds.second; ++itemIt) {
         SProviderField::SEnum_Item item;
 
-        auto attr = item_It->second.get_child("<xmlattr>");
+        auto attr = itemIt->second.get_child("<xmlattr>");
 
         item.title = attr.get<QString>("name");
         item.value = attr.get<QString>("value", QString());
         item.id = attr.get<QString>("id", QString());
         item.sort = attr.get<int>("sort", 65535);
 
-        loadProviderEnum_Items(item.subItems, item_It->second);
+        loadProviderEnumItems(item.subItems, itemIt->second);
 
-        aItem_List << item;
+        aItemList << item;
     }
 
-    std::stable_sort(aItem_List.begin(),
-                     aItem_List.end(),
+    std::stable_sort(aItemList.begin(),
+                     aItemList.end(),
                      [](const SProviderField::SEnum_Item &a, const SProviderField::SEnum_Item &b) {
                          return a.sort < b.sort;
                      });
@@ -445,8 +445,8 @@ bool DealerSettings::loadProvidersFrom_Buffer(const std::string &aBuffer, SProvi
                     aProvider.externalDataHandler = externalDataHandler;
                 }
 
-                loadProviderEnum_Items(field.enum_Items,
-                                       fieldIt.second.get_child("enum", emptyTree));
+                loadProviderEnumItems(field.enum_Items,
+                                      fieldIt.second.get_child("enum", emptyTree));
 
                 auto security = fieldIt.second.get_child("security", emptyTree);
                 if (!security.empty()) {

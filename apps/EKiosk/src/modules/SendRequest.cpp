@@ -62,34 +62,34 @@ void SendRequest::sendRequestData() {
     QSslConfiguration config = QSslConfiguration::defaultConfiguration();
     config.setProtocol(QSsl::TlsV1_3);
     qDebug() << url;
-    QNetworkRequest a_request;
-    a_request.setUrl(url);
-    a_request.setRawHeader("Host", QUrl::toAce(host()));
-    a_request.setRawHeader("User-Agent", headerPic);
-    a_request.setRawHeader("Accept",
-                           "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-    a_request.setRawHeader("Accept-Language", "ru,en-us;q=0.7,en;q=0.3");
-    a_request.setRawHeader("Accept-Charset", "utf-8;q=0.7,*;q=0.7");
-    a_request.setRawHeader("Keep-Alive", timeOutRec);
-    a_request.setRawHeader("Connection", "keep-alive");
-    a_request.setRawHeader("Referer", "");
-    a_request.setRawHeader("Cookie", "auth=NO");
-    a_request.setRawHeader("Content-Type", "text/xml");
+    QNetworkRequest aRequest;
+    aRequest.setUrl(url);
+    aRequest.setRawHeader("Host", QUrl::toAce(host()));
+    aRequest.setRawHeader("User-Agent", headerPic);
+    aRequest.setRawHeader("Accept",
+                          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+    aRequest.setRawHeader("Accept-Language", "ru,en-us;q=0.7,en;q=0.3");
+    aRequest.setRawHeader("Accept-Charset", "utf-8;q=0.7,*;q=0.7");
+    aRequest.setRawHeader("Keep-Alive", timeOutRec);
+    aRequest.setRawHeader("Connection", "keep-alive");
+    aRequest.setRawHeader("Referer", "");
+    aRequest.setRawHeader("Cookie", "auth=NO");
+    aRequest.setRawHeader("Content-Type", "text/xml");
 
     if (!token.isEmpty()) {
         QMessageAuthenticationCode code(QCryptographicHash::Sha256);
         code.setKey(sendReqRes.toUtf8());
         code.addData(uuid.toUtf8());
 
-        a_request.setRawHeader("Authorization", token.toUtf8());
-        a_request.setRawHeader("X-Sign", code.result().toHex());
+        aRequest.setRawHeader("Authorization", token.toUtf8());
+        aRequest.setRawHeader("X-Sign", code.result().toHex());
     }
 
-    a_request.setSslConfiguration(config);
+    aRequest.setSslConfiguration(config);
 
     QByteArray postData = sendReqRes.toUtf8();
 
-    reply = pManager.post(a_request, postData);
+    reply = pManager.post(aRequest, postData);
     connect(reply,
             SIGNAL(error(QNetworkReply::NetworkError)),
             SLOT(slotError(QNetworkReply::NetworkError)));
@@ -164,7 +164,7 @@ void SendRequest::slotReadyRead() {
     }
 
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    int error_id = reply->error();
+    int errorId = reply->error();
     reply->deleteLater();
 
     toDebug("after reply->deleteLater()");
@@ -174,7 +174,7 @@ void SendRequest::slotReadyRead() {
     // Коментарий к ошибке
     QString statusErrorComment;
 
-    switch (error_id) {
+    switch (errorId) {
     case QNetworkReply::NoError: {
         if (statusCode == 200) {
             if (reply->bytesAvailable() > 0) {
@@ -184,12 +184,13 @@ void SendRequest::slotReadyRead() {
                 toDebug("\n===============RESPONSE===============\n");
                 toDebug(str);
 
-                QDomDocument dom_Doc;
+                QDomDocument ddomDoc
 
-                if (dom_Doc.setContent(str.toUtf8())) {
-                    QDomElement dom_Element = dom_Doc.documentElement();
-                    emit emit_Dom_Element(dom_Element);
-                } else {
+                    if (domDoc.setContent(str.toUtf8())) {
+                    QDomElement ddomElement = ddomDocdocumentElement();
+                    emit emit_Dom_Element(domElement);
+                }
+                else {
                     emit emit_Loging(
                         2, senderName, "Пришел ответ от сервера Не верный формат XML.");
                     statusError = 400;

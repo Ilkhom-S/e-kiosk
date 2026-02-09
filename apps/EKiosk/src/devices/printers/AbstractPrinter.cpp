@@ -100,8 +100,8 @@ QByteArray BasePrinterDevices::packetImage(const QString &aPixelString, uchar aW
     return result;
 }
 
-void BasePrinterDevices::setPortName(const QString com_Name) {
-    this->com_Name = com_Name;
+void BasePrinterDevices::setPortName(const QString comName) {
+    this->com_Name = comName;
 }
 
 // bool BasePrinterDevices::print(const QString& aCheck)
@@ -114,8 +114,8 @@ void BasePrinterDevices::setPortName(const QString com_Name) {
 
 //}
 
-void BasePrinterDevices::setFirm_Pattern(const QString firm_name) {
-    company_name = firm_name;
+void BasePrinterDevices::setFirm_Pattern(const QString firmName) {
+    company_name = firmName;
     viewLogoImg = false;
 }
 
@@ -133,8 +133,8 @@ void BasePrinterDevices::setCheckWidth(int width) {
     checkWidth = width;
 }
 
-void BasePrinterDevices::setLeftMargin(int left_margin) {
-    leftMargin = left_margin;
+void BasePrinterDevices::setLeftMargin(int leftMargin) {
+    leftMargin = leftMargin;
 }
 
 bool BasePrinterDevices::sendCommand(QByteArray dataRequest,

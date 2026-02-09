@@ -93,8 +93,8 @@ Client::Client(SDK::PaymentProcessor::ICore *aCore, ILog *aLog, int aKeyPair)
                           m_Core->getCryptService()->getCryptEngine()));
 
     m_Http->setCryptKeyPair(aKeyPair);
-    m_Http->setResponseCreator([this](auto &&PH1, auto &&PH2) {
-        return createResponse(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+    m_Http->setResponseCreator([this](auto &&pH1, auto &&pH2) {
+        return createResponse(std::forward<decltype(pH1)>(pH1), std::forward<decltype(pH2)>(pH2));
     });
 
     connect(m_Core->getRemoteService(),

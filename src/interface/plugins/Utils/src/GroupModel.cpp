@@ -38,7 +38,7 @@ const char JSON[] = "json";
 } // namespace CGroupModel
 
 //------------------------------------------------------------------------------
-static QString rm_Bom(const QString &aFile) {
+static QString rmBom(const QString &aFile) {
     QFile file(aFile);
 
     if (file.open(QIODevice::ReadWrite)) {
@@ -186,7 +186,7 @@ bool GroupModel::loadContent(const QString &aFileName, QDom_Document &aDocument)
 //------------------------------------------------------------------------------
 void GroupModel::mergeGroups(QDom_Element aTargetGroup, QDom_Element aSourceGroup) {
     // auto getAttr = [](const QDom_Element & aElement, )
-    auto ID = [](QDom_Element aElement) -> qint64 {
+    auto id = [](QDom_Element aElement) -> qint64 {
         return aElement.attribute("id", "0").toLongLong();
     };
 
@@ -195,7 +195,7 @@ void GroupModel::mergeGroups(QDom_Element aTargetGroup, QDom_Element aSourceGrou
         for (QDomNode n = aElement.firstChild(); !n.isNull(); n = n.nextSibling()) {
             if (n.nodeName() == "group") {
                 QDom_Element element = n.toElement();
-                if (ID(element) == aID) {
+                if (id(element) == aID) {
                     aGroupElement = element;
                     return true;
                 }
@@ -332,7 +332,7 @@ void GroupModel::clearNodes() {
 }
 
 //------------------------------------------------------------------------------
-const GroupModel::Item_List &GroupModel::getItem_List(qint64 aGroupID) {
+const GroupModel::Item_List &GroupModel::getItemList(qint64 aGroupID) {
     if (m_NodesCache.contains(aGroupID)) {
         return m_NodesCache[aGroupID];
     }
@@ -388,8 +388,8 @@ void GroupModel::setRootElementInternal(qint64 aRootElement) {
     if (aRootElement && !m_ProvidersStatistic.isEmpty()) {
         qStableSort(m_Nodes.begin(),
                     m_Nodes.end(),
-                    [](const Item_Ptr &aItem_A, const Item_Ptr &aItem_B) -> bool {
-                        return aItem_A->getOrder() > aItem_B->getOrder();
+                    [](const Item_Ptr &aItemA, const Item_Ptr &aItemB) -> bool {
+                        return aItemA->getOrder() > aItemB->getOrder();
                     });
     }
 
@@ -402,8 +402,8 @@ void GroupModel::setRootElementInternal(qint64 aRootElement) {
 
 //------------------------------------------------------------------------------
 quint32 GroupModel::getGroupOrder(qint64 aGroupID) {
-    auto lessOrder = [](const Item_Ptr &aItem_A, const Item_Ptr &aItem_B) -> bool {
-        return aItem_A->getOrder() < aItem_B->getOrder();
+    auto lessOrder = [](const Item_Ptr &aItemA, const Item_Ptr &aItemB) -> bool {
+        return aItemA->getOrder() < aItemB->getOrder();
     };
 
     auto items = getItem_List(aGroupID);

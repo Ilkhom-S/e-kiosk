@@ -9,7 +9,7 @@ using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
 template <class T>
-IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aEnvironment, const QString &aInstancePath) {
+IPlugin *createPlugin(SDK::Plugin::IEnvironment *aEnvironment, const QString &aInstancePath) {
     return new DevicePluginBase<T>(
         SDK::Driver::CComponents::BillAcceptor, aEnvironment, aInstancePath);
 }
@@ -33,14 +33,14 @@ TParameterList defaultParameters(const QString &aProtocol, const T2 &aModelList)
 
 //------------------------------------------------------------------------------
 template <class T1, class T2>
-TParameterList ID003Parameters(const QString &aProtocol, const T2 &aModelList) {
+TParameterList iD003Parameters(const QString &aProtocol, const T2 &aModelList) {
     return defaultParameters<T1, T2>(aProtocol, aModelList)
            << setModifiedValues(CHardwareSDK::ModelName, "JCM iVISION", "JCM IVISION");
 }
 
 //------------------------------------------------------------------------------
 template <class T1, class T2>
-TParameterList CCTalkParameters(const QString &aProtocol, const T2 &aModelList) {
+TParameterList ccTalkParameters(const QString &aProtocol, const T2 &aModelList) {
     return defaultParameters<T1, T2>(aProtocol, aModelList)
            << setProtocolType(CHardware::CashDevice::CCTalkTypes::CRC8, CCCTalk::ProtocolTypes);
 }

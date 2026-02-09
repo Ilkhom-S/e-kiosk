@@ -9,7 +9,7 @@
 #include <Common/ILog.h>
 
 namespace CQMLGraphicsItem {
-const char Item_Key[] = "item";
+const char ItemKey[] = "item";
 
 const char ShowHandlerName[] = "showHandler";
 const char ShowHandlerSignature[] = "showHandler()";
@@ -30,7 +30,7 @@ QMLGraphicsItem::QMLGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
                                  ILog *aLog)
     : m_Log(aLog), m_Engine(aEngine), m_Item(0), m_Info(aInfo) {
     QString qmlPath = QDir::toNativeSeparators(QDir::cleanPath(
-        aInfo.directory + QDir::separator() + aInfo.parameters[CQMLGraphicsItem::Item_Key]));
+        aInfo.directory + QDir::separator() + aInfo.parameters[CQMLGraphicsItem::ItemKey]));
     QQmlComponent component(
         m_Engine, qmlPath.startsWith("qrc") ? QUrl(qmlPath) : QUrl::fromLocalFile(qmlPath));
 

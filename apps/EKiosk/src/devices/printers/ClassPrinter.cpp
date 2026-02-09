@@ -23,19 +23,19 @@ ClassPrinter::ClassPrinter(QObject *parent) : QThread(parent) {
     WpBottom_Margin = 1;
 }
 
-bool ClassPrinter::isItYou(QStringList &com_List,
-                           QString &printer_name,
-                           QString &com_str,
-                           QString &printer_coment) {
-    if ((printer_name != "") && (com_str != "") && (com_str.contains("COM"))) {
-        this->setPrinterModel(printer_name);
-        this->setPortName(com_str);
+bool ClassPrinter::isItYou(QStringList &comList,
+                           QString &printerName,
+                           QString &comStr,
+                           QString &printerComent) {
+    if ((printerName != "") && (comStr != "") && (comStr.contains("COM"))) {
+        this->setPrinterModel(printerName);
+        this->setPortName(comStr);
 
         if (this->printerOpen()) {
-            if (this->CIsItYou(printer_coment)) {
-                nowPrinterName = printer_name;
-                nowPortName = com_str;
-                nowComent = printer_coment;
+            if (this->CIsItYou(printerComent)) {
+                nowPrinterName = printerName;
+                nowPortName = comStr;
+                nowComent = printerComent;
                 return true;
             }
         } else {
@@ -46,21 +46,21 @@ bool ClassPrinter::isItYou(QStringList &com_List,
     // qDebug() << "com_str << " << com_str;
     // qDebug() << "Printer_List count << " << Printer_List.count();
 
-    for (int dev_count = 0; dev_count < Printer_List.count(); dev_count++) {
+    for (int devCount = 0; devCount < Printer_List.count(); devCount++) {
         // qDebug() << "dev_count << " << dev_count;
 
-        this->setPrinterModel(Printer_List.at(dev_count));
+        this->setPrinterModel(Printer_List.at(devCount));
 
         // qDebug() << "printerName << " << Printer_List.at(dev_count);
 
-        for (int com_count = 0; com_count < com_List.count(); com_count++) {
-            this->setPortName(com_List.at(com_count));
+        for (int comCount = 0; comCount < comList.count(); comCount++) {
+            this->setPortName(comList.at(comCount));
             // qDebug() << "com_Port << " << com_List.at(com_count);
             if (this->printerOpen()) {
-                if (this->CIsItYou(printer_coment)) {
-                    nowPrinterName = printer_name = Printer_List.at(dev_count);
-                    nowPortName = com_str = com_List.at(com_count);
-                    nowComent = printer_coment;
+                if (this->CIsItYou(printerComent)) {
+                    nowPrinterName = printerName = Printer_List.at(devCount);
+                    nowPortName = comStr = comList.at(comCount);
+                    nowComent = printerComent;
                     return true;
                 }
             } else {
@@ -71,15 +71,15 @@ bool ClassPrinter::isItYou(QStringList &com_List,
     return false;
 }
 
-void ClassPrinter::setCounterPrinterIndicator(bool sts_indicate) {
+void ClassPrinter::setCounterPrinterIndicator(bool stsIndicate) {
     if (system_Model == PrinterModel::Custom_VKP80) {
-        Custom_VKP80->counterIndicate = sts_indicate;
+        Custom_VKP80->counterIndicate = stsIndicate;
     }
     if (system_Model == PrinterModel::Citizen_PPU700) {
-        CitizenPPU700->counterIndicate = sts_indicate;
+        CitizenPPU700->counterIndicate = stsIndicate;
     }
     if (system_Model == PrinterModel::Citizen_CTS2000) {
-        CitizenCTS2000->counterIndicate = sts_indicate;
+        CitizenCTS2000->counterIndicate = stsIndicate;
     }
 }
 
@@ -125,8 +125,8 @@ void ClassPrinter::setChekWidth(const int width) {
     }
 }
 
-void ClassPrinter::setFirm_Patern(const QString firm_name) {
-    firm_Name = firm_name;
+void ClassPrinter::setFirm_Patern(const QString firmName) {
+    firm_Name = firmName;
     if (system_Model == PrinterModel::Custom_VKP80) {
         Custom_VKP80->setFirm_Pattern(firm_Name);
     }
@@ -152,15 +152,15 @@ void ClassPrinter::setSmallBeetwenString(bool beet) {
     }
 }
 
-void ClassPrinter::setSmallText(bool small_i) {
+void ClassPrinter::setSmallText(bool smallI) {
     if (system_Model == PrinterModel::Custom_VKP80) {
-        Custom_VKP80->setCheckSmall(small_i);
+        Custom_VKP80->setCheckSmall(smallI);
     }
     if (system_Model == PrinterModel::Citizen_PPU700) {
-        CitizenPPU700->setCheckSmall(small_i);
+        CitizenPPU700->setCheckSmall(smallI);
     }
     if (system_Model == PrinterModel::Citizen_CTS2000) {
-        CitizenCTS2000->setCheckSmall(small_i);
+        CitizenCTS2000->setCheckSmall(smallI);
     }
 }
 
@@ -168,8 +168,8 @@ void ClassPrinter::setCom_List(const QStringList list) {
     com_List = list;
 }
 
-void ClassPrinter::setLeftMargin(int left_margin) {
-    leftMargin = left_margin;
+void ClassPrinter::setLeftMargin(int leftMargin) {
+    leftMargin = leftMargin;
     if (system_Model == PrinterModel::Custom_VKP80) {
         Custom_VKP80->setLeftMargin(leftMargin);
     }
@@ -193,8 +193,8 @@ void ClassPrinter::setLeftMargin(int left_margin) {
     }
 }
 
-void ClassPrinter::setPortName(const QString port_name) {
-    portName = port_name;
+void ClassPrinter::setPortName(const QString portName) {
+    portName = portName;
 }
 
 void ClassPrinter::CMD_Print(QString text) {
@@ -455,58 +455,58 @@ void ClassPrinter::winPrint(QString text) {
 void ClassPrinter::CGetStatus() {
     // qDebug() << "START TO GET STATUS";
     // Статус принтера глобал
-    int i_status = PrinterState::PrinterNotAvailable;
+    int iStatus = PrinterState::PrinterNotAvailable;
 
     if (system_Model == PrinterModel::Custom_VKP80) {
-        CMDCustom_VKP80::SStatus s_status;
+        CMDCustom_VKP80::SStatus sStatus;
 
-        bool getSts = Custom_VKP80->isEnabled(s_status, i_status);
+        bool getSts = Custom_VKP80->isEnabled(sStatus, iStatus);
         if (getSts) {
             // qDebug() << QString("ClassPrinter -- get status true --
             // %1").arg(system_Model);
-            if (s_status.NotAvailabled) {
+            if (sStatus.NotAvailabled) {
                 // qDebug() << QString("ClassPrinter -- NotAvailabled");
             }
-            if (s_status.CoverOpen) {
+            if (sStatus.CoverOpen) {
                 // qDebug() << QString("ClassPrinter -- CoverOpen");
             }
-            if (s_status.PaperOut) {
+            if (sStatus.PaperOut) {
                 // qDebug() << QString("ClassPrinter -- PaperOut");
             }
-            if (s_status.Offline) {
+            if (sStatus.Offline) {
                 // qDebug() << QString("ClassPrinter -- Offline");
             }
-            if (s_status.Error) {
+            if (sStatus.Error) {
                 // qDebug() << QString("ClassPrinter -- Error");
             }
-            if (s_status.Paper.End) {
+            if (sStatus.Paper.End) {
                 // qDebug() << QString("ClassPrinter -- SPaper::End");
             }
-            if (s_status.Paper.NearEnd) {
+            if (sStatus.Paper.NearEnd) {
                 // qDebug() << QString("ClassPrinter -- SPaper::NearEnd");
             }
-            if (s_status.Failures.Cutter) {
+            if (sStatus.Failures.Cutter) {
                 // qDebug() << QString("ClassPrinter -- SFailures::Cutter");
             }
-            if (s_status.Failures.Unrecoverable) {
+            if (sStatus.Failures.Unrecoverable) {
                 // qDebug() << QString("ClassPrinter -- SFailures::Unrecoverable");
             }
-            if (s_status.Failures.AutoRecovery) {
+            if (sStatus.Failures.AutoRecovery) {
                 // qDebug() << QString("ClassPrinter -- SFailures::AutoRecovery");
             }
         } else {
             // qDebug() << QString("ClassPrinter -- get status false --
             // %1").arg(system_Model);
-            if (s_status.NotAvailabled) {
+            if (sStatus.NotAvailabled) {
                 // qDebug() << QString("ClassPrinter -- NotAvailabled");
             }
         }
     }
 
     if (system_Model == PrinterModel::Custom_TG2480) {
-        i_status = PrinterState::PrinterOK;
+        iStatus = PrinterState::PrinterOK;
 
-        bool getSts = Custom_TG2480->isEnabled(i_status);
+        bool getSts = Custom_TG2480->isEnabled(iStatus);
         if (getSts) {
             // qDebug() << "getSts true";
         } else {
@@ -515,9 +515,9 @@ void ClassPrinter::CGetStatus() {
     }
 
     if (system_Model == PrinterModel::AV_268) {
-        i_status = PrinterState::PrinterOK;
+        iStatus = PrinterState::PrinterOK;
 
-        bool getSts = AV268->isEnabled(i_status);
+        bool getSts = AV268->isEnabled(iStatus);
         if (getSts) {
             // qDebug() << "getSts true";
         } else {
@@ -526,9 +526,9 @@ void ClassPrinter::CGetStatus() {
     }
 
     if (system_Model == PrinterModel::CitizenCBM1000) {
-        i_status = PrinterState::PrinterOK;
+        iStatus = PrinterState::PrinterOK;
 
-        bool getSts = CitizenCBM1000->isEnabled(i_status);
+        bool getSts = CitizenCBM1000->isEnabled(iStatus);
         if (getSts) {
             // qDebug() << "getSts true";
         } else {
@@ -537,80 +537,80 @@ void ClassPrinter::CGetStatus() {
     }
 
     if (system_Model == PrinterModel::Citizen_PPU700) {
-        CMDCitizenPPU700::SStatus s_status;
+        CMDCitizenPPU700::SStatus sStatus;
 
-        bool getSts = CitizenPPU700->isEnabled(s_status, i_status);
+        bool getSts = CitizenPPU700->isEnabled(sStatus, iStatus);
         if (getSts) {
             // qDebug() << QString("ClassPrinter -- get status true --
             // %1").arg(system_Model);
-            if (s_status.NotAvailabled) {
+            if (sStatus.NotAvailabled) {
                 // qDebug() << QString("ClassPrinter -- NotAvailabled");
             }
-            if (s_status.CoverOpen) {
+            if (sStatus.CoverOpen) {
                 // qDebug() << QString("ClassPrinter -- CoverOpen");
             }
-            if (s_status.PaperOut) {
+            if (sStatus.PaperOut) {
                 // qDebug() << QString("ClassPrinter -- PaperOut");
             }
-            if (s_status.Offline) {
+            if (sStatus.Offline) {
                 // qDebug() << QString("ClassPrinter -- Offline");
             }
-            if (s_status.Error) {
+            if (sStatus.Error) {
                 // qDebug() << QString("ClassPrinter -- Error");
             }
-            if (s_status.Paper.InPresenter) {
+            if (sStatus.Paper.InPresenter) {
                 // qDebug() << QString("ClassPrinter -- SPaper::InPresenter");
             }
-            if (s_status.Paper.NearEndSensor1) {
+            if (sStatus.Paper.NearEndSensor1) {
                 // qDebug() << QString("ClassPrinter -- SPaper::NearEndSensor1");
             }
-            if (s_status.Paper.NearEndSensor2) {
+            if (sStatus.Paper.NearEndSensor2) {
                 // qDebug() << QString("ClassPrinter -- SPaper::NearEndSensor2");
             }
-            if (s_status.Failures.Cutter) {
+            if (sStatus.Failures.Cutter) {
                 // qDebug() << QString("ClassPrinter -- SFailures::Cutter");
             }
-            if (s_status.Failures.Unrecoverable) {
+            if (sStatus.Failures.Unrecoverable) {
                 // qDebug() << QString("ClassPrinter -- SFailures::Unrecoverable");
             }
-            if (s_status.Failures.AutoRecovery) {
+            if (sStatus.Failures.AutoRecovery) {
                 // qDebug() << QString("ClassPrinter -- SFailures::AutoRecovery");
             }
-            if (s_status.Failures.DetectionPresenter) {
+            if (sStatus.Failures.DetectionPresenter) {
                 // qDebug() << QString("ClassPrinter -- SFailures::DetectionPresenter");
             }
-            if (s_status.Failures.HeadOverheat) {
+            if (sStatus.Failures.HeadOverheat) {
                 // qDebug() << QString("ClassPrinter -- SFailures::HeadOverheat");
             }
-            if (s_status.Failures.LowVoltage) {
+            if (sStatus.Failures.LowVoltage) {
                 // qDebug() << QString("ClassPrinter -- SFailures::LowVoltage");
             }
-            if (s_status.Failures.HighVoltage) {
+            if (sStatus.Failures.HighVoltage) {
                 // qDebug() << QString("ClassPrinter -- SFailures::HighVoltage");
             }
-            if (s_status.Failures.Memory) {
+            if (sStatus.Failures.Memory) {
                 // qDebug() << QString("ClassPrinter -- SFailures::Memory");
             }
-            if (s_status.Failures.CRC) {
+            if (sStatus.Failures.CRC) {
                 // qDebug() << QString("ClassPrinter -- SFailures::CRC");
             }
-            if (s_status.Failures.Presentor) {
+            if (sStatus.Failures.Presentor) {
                 // qDebug() << QString("ClassPrinter -- SFailures::Presentor");
             }
-            if (s_status.Failures.CPU) {
+            if (sStatus.Failures.CPU) {
                 // qDebug() << QString("ClassPrinter -- SFailures::CPU");
             }
         } else {
             // qDebug() << QString("ClassPrinter -- get status false --
             // %1").arg(system_Model);
-            if (s_status.NotAvailabled) {
+            if (sStatus.NotAvailabled) {
                 // qDebug() << QString("ClassPrinter -- NotAvailabled");
             }
         }
     }
 
     if (system_Model == PrinterModel::Citizen_CTS2000) {
-        bool getSts = CitizenCTS2000->isEnabled(i_status);
+        bool getSts = CitizenCTS2000->isEnabled(iStatus);
         //        //qDebug() << "-------i_status - " << QString::number(i_status);
         if (getSts) {
             // qDebug() << "-------getSts true-------";
@@ -619,12 +619,12 @@ void ClassPrinter::CGetStatus() {
         }
     }
     if (system_Model == PrinterModel::Windows_Printer) {
-        i_status = PrinterState::PrinterOK;
+        iStatus = PrinterState::PrinterOK;
     }
     if (system_Model == PrinterModel::Phoenix_model) {
-        i_status = PrinterState::PrinterOK;
+        iStatus = PrinterState::PrinterOK;
 
-        bool getSts = Phoenix->isEnabled(i_status);
+        bool getSts = Phoenix->isEnabled(iStatus);
         if (getSts) {
             // qDebug() << "getSts true";
         } else {
@@ -633,7 +633,7 @@ void ClassPrinter::CGetStatus() {
     }
 
     if (system_Model == PrinterModel::KM1X) {
-        i_status = PrinterState::PrinterOK;
+        iStatus = PrinterState::PrinterOK;
 
         bool getSts = KM1X->isEnabled();
         if (getSts) {
@@ -642,132 +642,132 @@ void ClassPrinter::CGetStatus() {
             // qDebug() << "getSts false";
         }
     }
-    status = i_status;
-    emit this->emit_status(i_status);
+    status = iStatus;
+    emit this->emit_status(iStatus);
 }
 
 bool ClassPrinter::printerOpen() {
     // qDebug() << "Start to open printer port";
     // qDebug() << "PrinterModel - " << system_Model;
-    bool open_port = false;
+    bool openPort = false;
     if (system_Model == PrinterModel::Custom_VKP80) {
         Custom_VKP80->setPortName(portName);
-        bool port_printer = false;
-        port_printer = Custom_VKP80->OpenPrinterPort();
-        if (port_printer) {
+        bool portPrinter = false;
+        portPrinter = Custom_VKP80->OpenPrinterPort();
+        if (portPrinter) {
             // qDebug() << QString("ClassPrinter -- port opened --
             // %1").arg(system_Model);
-            open_port = true;
+            openPort = true;
         } else {
             // qDebug() << QString("ClassPrinter -- error port opened --
             // %1").arg(system_Model);
-            open_port = false;
+            openPort = false;
         }
     }
 
     if (system_Model == PrinterModel::Custom_TG2480) {
         Custom_TG2480->setPortName(portName);
-        bool port_printer = false;
-        port_printer = Custom_TG2480->OpenPrinterPort();
-        if (port_printer) {
+        bool portPrinter = false;
+        portPrinter = Custom_TG2480->OpenPrinterPort();
+        if (portPrinter) {
             // qDebug() << QString("ClassPrinter -- port opened --
             // %1").arg(system_Model);
-            open_port = true;
+            openPort = true;
         } else {
             // qDebug() << QString("ClassPrinter -- error port opened --
             // %1").arg(system_Model);
-            open_port = false;
+            openPort = false;
         }
     }
 
     if (system_Model == PrinterModel::AV_268) {
         AV268->setPortName(portName);
-        bool port_printer = false;
-        port_printer = AV268->OpenPrinterPort();
-        if (port_printer) {
+        bool portPrinter = false;
+        portPrinter = AV268->OpenPrinterPort();
+        if (portPrinter) {
             // qDebug() << QString("ClassPrinter -- port opened --
             // %1").arg(system_Model);
-            open_port = true;
+            openPort = true;
         } else {
             // qDebug() << QString("ClassPrinter -- error port opened --
             // %1").arg(system_Model);
-            open_port = false;
+            openPort = false;
         }
     }
     if (system_Model == PrinterModel::CitizenCBM1000) {
         CitizenCBM1000->setPortName(portName);
-        bool port_printer = false;
-        port_printer = CitizenCBM1000->OpenPrinterPort();
-        if (port_printer) {
+        bool portPrinter = false;
+        portPrinter = CitizenCBM1000->OpenPrinterPort();
+        if (portPrinter) {
             // qDebug() << QString("ClassPrinter -- port opened --
             // %1").arg(system_Model);
-            open_port = true;
+            openPort = true;
         } else {
             // qDebug() << QString("ClassPrinter -- error port opened --
             // %1").arg(system_Model);
-            open_port = false;
+            openPort = false;
         }
     }
     if (system_Model == PrinterModel::Citizen_PPU700) {
         CitizenPPU700->setPortName(portName);
-        bool port_printer = false;
-        port_printer = CitizenPPU700->OpenPrinterPort();
-        if (port_printer) {
+        bool portPrinter = false;
+        portPrinter = CitizenPPU700->OpenPrinterPort();
+        if (portPrinter) {
             // qDebug() << QString("ClassPrinter -- port opened --
             // %1").arg(system_Model);
-            open_port = true;
+            openPort = true;
         } else {
             // qDebug() << QString("ClassPrinter -- error port opened --
             // %1").arg(system_Model);
-            open_port = false;
+            openPort = false;
         }
     }
     if (system_Model == PrinterModel::Citizen_CTS2000) {
         CitizenCTS2000->setPortName(portName);
-        bool port_printer = false;
-        port_printer = CitizenCTS2000->OpenPrinterPort();
-        if (port_printer) {
+        bool portPrinter = false;
+        portPrinter = CitizenCTS2000->OpenPrinterPort();
+        if (portPrinter) {
             // qDebug() << QString("ClassPrinter -- port opened --
             // %1").arg(system_Model);
-            open_port = true;
+            openPort = true;
         } else {
             // qDebug() << QString("ClassPrinter -- error port opened --
             // %1").arg(system_Model);
-            open_port = false;
+            openPort = false;
         }
     }
     if (system_Model == PrinterModel::Phoenix_model) {
         Phoenix->setPortName(portName);
-        bool port_printer = false;
-        port_printer = Phoenix->OpenPrinterPort();
-        if (port_printer) {
+        bool portPrinter = false;
+        portPrinter = Phoenix->OpenPrinterPort();
+        if (portPrinter) {
             // qDebug() << QString("ClassPrinter -- port opened --
             // %1").arg(system_Model);
-            open_port = true;
+            openPort = true;
         } else {
             // qDebug() << QString("ClassPrinter -- error port opened --
             // %1").arg(system_Model);
-            open_port = false;
+            openPort = false;
         }
     }
 
     if (system_Model == PrinterModel::KM1X) {
         KM1X->port_speed = this->portSpeed;
         KM1X->setPortName(portName);
-        bool port_printer = false;
-        port_printer = KM1X->OpenPrinterPort();
-        if (port_printer) {
+        bool portPrinter = false;
+        portPrinter = KM1X->OpenPrinterPort();
+        if (portPrinter) {
             // qDebug() << QString("ClassPrinter -- port opened --
             // %1").arg(system_Model);
-            open_port = true;
+            openPort = true;
         } else {
             // qDebug() << QString("ClassPrinter -- error port opened --
             // %1").arg(system_Model);
-            open_port = false;
+            openPort = false;
         }
     }
 
-    return open_port;
+    return openPort;
 }
 
 void ClassPrinter::closeThis() {

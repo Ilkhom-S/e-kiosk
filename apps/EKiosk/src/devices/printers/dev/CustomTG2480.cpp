@@ -92,12 +92,12 @@ bool TG2480_PRINTER::getStatus(int &aStatus) {
     // засылаем в порт команду самоидентификации
     QByteArray cmd;
     QByteArray answer;
-    bool resp_data = false;
+    bool respData = false;
 
     cmd.push_back(CMDTG2480::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDTG2480::PrinterStatusCommandSecondByte);
 
-    if (!this->sendCommand(cmd, true, 200, resp_data, answer, 0)) {
+    if (!this->sendCommand(cmd, true, 200, respData, answer, 0)) {
         // if(Debugger) qDebug() << "error in sendPacketInPort()";
         return false;
     }
@@ -169,10 +169,10 @@ bool TG2480_PRINTER::initialize() {
     cmd.push_back(CMDTG2480::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDTG2480::PrinterInitCommandSecondByte);
 
-    bool resp_data = false;
+    bool respData = false;
     QByteArray response;
 
-    return sendCommand(cmd, true, 200, resp_data, response, 290);
+    return sendCommand(cmd, true, 200, respData, response, 290);
 }
 
 bool TG2480_PRINTER::cut() {
@@ -181,9 +181,9 @@ bool TG2480_PRINTER::cut() {
     cmd.push_back(CMDTG2480::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDTG2480::PrinterCutCommandSecondByte);
 
-    bool resp_data = false;
+    bool respData = false;
     QByteArray response;
-    bool res = this->sendCommand(cmd, true, 200, resp_data, response, 50);
+    bool res = this->sendCommand(cmd, true, 200, respData, response, 50);
 
     return res;
 }
@@ -255,10 +255,10 @@ void TG2480_PRINTER::getSpecialCharacters(QByteArray &printText) {
                       probel);
 
     // Добавляем звезды
-    int col_z = (checkWidth - 11 - leftMargin) / 2;
+    int colZ = (checkWidth - 11 - leftMargin) / 2;
     QByteArray star;
 
-    for (int j = 1; j <= col_z; j++) {
+    for (int j = 1; j <= colZ; j++) {
         star.append("*");
     }
 
@@ -289,10 +289,10 @@ void TG2480_PRINTER::print(const QString &aCheck) {
     cmd.push_back(0x4D);
     cmd.push_back(0x01);
 
-    bool resp_data = false;
+    bool respData = false;
     QByteArray response;
 
-    this->sendCommand(cmd, false, 200, resp_data, response, 290);
+    this->sendCommand(cmd, false, 200, respData, response, 290);
 
     // Печатаем текст
     this->printCheck(aCheck);

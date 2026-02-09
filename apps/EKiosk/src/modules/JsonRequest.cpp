@@ -16,12 +16,12 @@ void JsonRequest::setBaseUrl(QString url) {
 }
 
 void JsonRequest::sendRequest(QJsonObject json,
-                              QString url_,
+                              QString url,
                               QString requestName,
-                              int method_,
+                              int method,
                               const int timeout,
                               QVariantMap header) {
-    QUrl url = QUrl(baseUrl + url_);
+    QUrl url = QUrl(baseUrl + url);
     qDebug() << url;
 
     QJsonDocument jsonDoc(json);
@@ -42,7 +42,7 @@ void JsonRequest::sendRequest(QJsonObject json,
 
     QNetworkReply *reply;
 
-    if (method_ == Method::GET) {
+    if (method == Method::GET) {
         request.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
 
         reply = mgr->get(request);

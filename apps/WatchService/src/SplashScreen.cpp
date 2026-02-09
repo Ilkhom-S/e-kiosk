@@ -22,7 +22,7 @@ using namespace boost::placeholders;
 
 namespace CSplashScreen {
 const char DefaultBackgroundStyle[] = "QWidget#wgtBackground { background-color: #f07e1b; }";
-const char Custom_BackgroundStyle[] = "QWidget#wgtBackground { border-image: url(%1); }";
+const char CustomBackgroundStyle[] = "QWidget#wgtBackground { border-image: url(%1); }";
 const char StateImagesPath[] = ":/images/states/";
 const char StateImageExtension[] = ".png";
 const int MinStateShowSeconds = 2;
@@ -227,7 +227,7 @@ void SplashScreen::removeStates(const QString &aSender) {
 // Установка пользовательского фона экрана заставки
 void SplashScreen::setCustom_Background(const QString &aPath) {
     aPath.isEmpty() ? setStyleSheet(CSplashScreen::DefaultBackgroundStyle)
-                    : setStyleSheet(QString(CSplashScreen::Custom_BackgroundStyle).arg(aPath));
+                    : setStyleSheet(QString(CSplashScreen::CustomBackgroundStyle).arg(aPath));
 }
 
 //----------------------------------------------------------------------------

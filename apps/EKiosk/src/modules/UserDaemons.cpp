@@ -11,13 +11,13 @@ void UserDaemons::resendRequest() {
     emit emit_UserData("---");
 }
 
-void UserDaemons::setDataNote(const QDomNode &dom_Element) {
+void UserDaemons::setDataNote(const QDomNode &domElement) {
     resultCode = false;
     getData = false;
     balance = "";
 
     // Парсим данные
-    parcerNote(dom_Element);
+    parcerNote(domElement);
 
     if (balance != "") {
         // Тут отправляем сигнал с балансом
@@ -28,34 +28,34 @@ void UserDaemons::setDataNote(const QDomNode &dom_Element) {
     emit emit_UserData("---");
 }
 
-void UserDaemons::parcerNote(const QDomNode &dom_Element) {
-    QDomNode dom_Node = dom_Element.firstChild();
+void UserDaemons::parcerNote(const QDomNode &domElement) {
+    QDomNode domNode = domElement.firstChild();
 
-    while (!dom_Node.isNull()) {
-        if (dom_Node.isElement()) {
-            QDomElement dom_Element = dom_Node.toElement();
-            QString strTag = dom_Element.tagName();
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
+            QDomElement domElement = domNode.toElement();
+            QString strTag = domElement.tagName();
 
             // Данные о дилере
             if (strTag == "info") {
-                if (dom_Element.attribute("result", "") == "0") {
-                    balance = dom_Element.attribute("balance", "");
+                if (domElement.attribute("result", "") == "0") {
+                    balance = domElement.attribute("balance", "");
                 }
             }
         }
 
-        parcerNote(dom_Node);
-        dom_Node = dom_Node.nextSibling();
+        parcerNote(domNode);
+        domNode = domNode.nextSibling();
     }
 }
 
 void UserDaemons::sendUserDataRequest(QString account, QString prvId) {
-    QString header_xml = getHeaderRequest(Request::Type::GetAbonentInfo);
+    QString headerXml = getHeaderRequest(Request::Type::GetAbonentInfo);
 
-    QString footer_xml = getFooterRequest();
+    QString footerXml = getFooterRequest();
 
-    QString xml = QString(header_xml + "<info account=\"%1\" prv=\"%2\" />\n" + footer_xml)
-                      .arg(account, prvId);
+    QString xml =
+        QString(headerXml + "<info account=\"%1\" prv=\"%2\" />\n" + footerXml).arg(account, prvId);
 
     sendRequest(xml, 20000);
 }

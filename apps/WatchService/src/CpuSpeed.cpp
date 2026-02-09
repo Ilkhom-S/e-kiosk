@@ -40,7 +40,7 @@ const unsigned MaxReasonableCpuSpeedMHz = 10000; // 10 GHz maximum
  *
  * @return CPU speed in MHz, or default value if detection fails
  */
-unsigned CPUSpeed() {
+unsigned cpuSpeed() {
     static unsigned speed = 0;
 
     if (speed == 0) {

@@ -33,8 +33,8 @@ bool WatchDogs::closePort() {
     return true;
 }
 
-void WatchDogs::setPort(const QString com_Name) {
-    this->com_Name = com_Name;
+void WatchDogs::setPort(const QString comName) {
+    this->com_Name = comName;
 }
 
 bool WatchDogs::isOpened() {
@@ -151,30 +151,27 @@ bool WatchDogs::openPort() {
     return is_open;
 }
 
-bool WatchDogs::isItYou(QStringList &com_List,
-                        QString &wd_name,
-                        QString &com_str,
-                        QString &wd_coment) {
-    wd_name = WD_List.at(0);
+bool WatchDogs::isItYou(QStringList &comList, QString &wdName, QString &comStr, QString &wdComent) {
+    wdName = WD_List.at(0);
 
-    if ((wd_name != "") && (com_str != "") && (com_str.contains("COM"))) {
-        this->setPort(com_str);
-        if (this->isItYou(wd_coment)) {
+    if ((wdName != "") && (comStr != "") && (comStr.contains("COM"))) {
+        this->setPort(comStr);
+        if (this->isItYou(wdComent)) {
             return true;
         }
     }
 
-    int com_lst_c = com_List.count();
-    for (int com_count = 0; com_count < com_lst_c; com_count++) {
+    int comLstC = comList.count();
+    for (int comCount = 0; comCount < comLstC; comCount++) {
 
-        QString vrm_Port = com_List.at(com_count);
-        qDebug() << "--- com_count  - " << com_count;
-        qDebug() << "--- vrm_Port    - " << vrm_Port;
+        QString vrmPort = comList.at(comCount);
+        qDebug() << "--- com_count  - " << comCount;
+        qDebug() << "--- vrm_Port    - " << vrmPort;
 
-        this->setPort(vrm_Port);
+        this->setPort(vrmPort);
 
-        if (this->isItYou(wd_coment)) {
-            com_str = vrm_Port;
+        if (this->isItYou(wdComent)) {
+            comStr = vrmPort;
             return true;
         }
     }
@@ -182,8 +179,8 @@ bool WatchDogs::isItYou(QStringList &com_List,
     return false;
 }
 
-bool WatchDogs::isItYou(QString &wd_coment) {
-    bool result_p = false;
+bool WatchDogs::isItYou(QString &wdComent) {
+    bool resultP = false;
     // открываем модем для записи
     if (this->openPort()) {
 
@@ -202,15 +199,15 @@ bool WatchDogs::isItYou(QString &wd_coment) {
         } else {
             //            qDebug() << " WatchDogs::isItYou return true;";
 
-            wd_coment = "WDT " + COSMP1::DeviceID;
+            wdComent = "WDT " + COSMP1::DeviceID;
 
-            result_p = true;
+            resultP = true;
         }
     }
 
     this->closePort();
 
-    return result_p;
+    return resultP;
 }
 
 bool WatchDogs::processCommand(WDProtocolCommands::Enum aCommand,

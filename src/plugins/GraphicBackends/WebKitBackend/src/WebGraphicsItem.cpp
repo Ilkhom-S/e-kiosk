@@ -45,7 +45,7 @@ WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
     m_WebView->setWindowFlags(Qt::FramelessWindowHint);
 
     // Добавляем обновление страницы по F5
-    QKeySequence keys_refresh(QKeySequence::Refresh);
+    QKeySequence keysRefresh(QKeySequence::Refresh);
     QAction *actionRefresh = new QAction(this);
     actionRefresh->setShortcut(keys_refresh);
     m_WebView->addAction(actionRefresh);

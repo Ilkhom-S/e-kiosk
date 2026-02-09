@@ -267,7 +267,7 @@ void PaymentServiceWindow::processCurrentPayment() {
 //----------------------------------------------------------------------------
 QModelIndex PaymentServiceWindow::getSelectedIndex() {
     QItem_SelectionModel *selectionModel = tvPayments->selectionModel();
-    QItem_Selection item_Selection = selectionModel->selection();
+    QItem_Selection itemSelection = selectionModel->selection();
     QItem_Selection sourceSelection = m_ProxyModel->mapSelectionToSource(item_Selection);
 
     return sourceSelection.isEmpty() ? QModelIndex() : sourceSelection.indexes().first();

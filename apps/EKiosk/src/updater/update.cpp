@@ -240,8 +240,8 @@ void DownloadManager::startNextDownload() {
         }
 
         /// Готовим параметры для заголовка файла закачки
-        QFileInfo vrm_Inf(filename);
-        int size = vrm_Inf.size(); // размер частично загруженного файла
+        QFileInfo vrmInf(filename);
+        int size = vrmInf.size(); // размер частично загруженного файла
         request.setRawHeader(QByteArray("Range"), QString("bytes=%1-").arg(size).toLatin1());
         // if(Debugger) qDebug() << "----- request.setRawHeader ----- size - " <<
         // size;
@@ -487,8 +487,8 @@ void DownloadManager::openDocumentXml() {
         emit this->emit_Loging(
             0, this->senderName, QString("Начинаем парсить %1 файл.").arg(this->XmlName));
         this->ServerXmlMap.clear();
-        QDomElement dom_Element = doc.documentElement();
-        traverseNode(dom_Element);
+        QDomElement domElement = doc.documentElement();
+        traverseNode(domElement);
     }
 
     // Файл отпарсен успешно
@@ -511,7 +511,7 @@ void DownloadManager::openDocumentXml() {
 
 void DownloadManager::run() {
     bool updateFile = false;
-    QSqlQuery DataQuery(this->db_);
+    QSqlQuery dataQuery(this->db_);
 
     QString strQuery = QString("SELECT id,hash,name,status FROM local_files "
                                "WHERE path = \"%1\" AND name = \"%2\" LIMIT 1;");
@@ -525,7 +525,7 @@ void DownloadManager::run() {
 
     // Начинаем пробегаться по базе беря параметры путь и имя файла
     for (int i = 1; i <= countFileTag; i++) {
-        if (!DataQuery.exec(strQuery.arg(ServerXmlMap[i]["path"], ServerXmlMap[i]["name"]))) {
+        if (!dataQuery.exec(strQuery.arg(ServerXmlMap[i]["path"], ServerXmlMap[i]["name"]))) {
             // if(Debugger) qDebug() << "Error Select hash for update status";
             // if(Debugger) qDebug() << DataQuery.lastError();
             /// Ошибка выборки данных с базы с файлами
@@ -534,14 +534,14 @@ void DownloadManager::run() {
             return;
         }
 
-        QSqlRecord record = DataQuery.record();
+        QSqlRecord record = dataQuery.record();
 
-        if (DataQuery.next()) {
-            QString hash = DataQuery.value(record.indexOf("hash")).toString();
-            QString name = DataQuery.value(record.indexOf("name")).toString();
-            int sts = DataQuery.value(record.indexOf("status")).toInt();
+        if (dataQuery.next()) {
+            QString hash = dataQuery.value(record.indexOf("hash")).toString();
+            QString name = dataQuery.value(record.indexOf("name")).toString();
+            int sts = dataQuery.value(record.indexOf("status")).toInt();
 
-            int id = DataQuery.value(record.indexOf("id")).toInt();
+            int id = dataQuery.value(record.indexOf("id")).toInt();
 
             if (ServerXmlMap[i]["hash"] != hash || sts == 1) {
                 // Обновляем строку на статус 1 для дальнейшей закачки
@@ -614,27 +614,27 @@ void DownloadManager::addToDatabaseFile() {
 
 void DownloadManager::downloadOneByOneFile() {
 
-    QSqlQuery DataQuery(this->db_);
+    QSqlQuery dataQuery(this->db_);
 
     QString strQuery = QString("SELECT * FROM local_files WHERE status = 1 LIMIT 1;");
 
-    if (!DataQuery.exec(strQuery)) {
+    if (!dataQuery.exec(strQuery)) {
         // if(Debugger) qDebug() << "Error SELECT record file";
         // if(Debugger) qDebug() << DataQuery.lastError();
         return;
     }
 
-    QSqlRecord record = DataQuery.record();
+    QSqlRecord record = dataQuery.record();
 
-    if (DataQuery.next()) {
+    if (dataQuery.next()) {
         // Обнуляем количество повторов
         count_download = 0;
 
-        this->nowDownloadFileName = DataQuery.value(record.indexOf("name")).toString();
-        this->nowDownloadFileSize = DataQuery.value(record.indexOf("size")).toInt();
-        this->nowDownloadFileHash = DataQuery.value(record.indexOf("hash")).toString();
-        this->nowDownloadFileId = DataQuery.value(record.indexOf("id")).toInt();
-        this->nowDownloadFilePath = DataQuery.value(record.indexOf("path")).toString();
+        this->nowDownloadFileName = dataQuery.value(record.indexOf("name")).toString();
+        this->nowDownloadFileSize = dataQuery.value(record.indexOf("size")).toInt();
+        this->nowDownloadFileHash = dataQuery.value(record.indexOf("hash")).toString();
+        this->nowDownloadFileId = dataQuery.value(record.indexOf("id")).toInt();
+        this->nowDownloadFilePath = dataQuery.value(record.indexOf("path")).toString();
 
         // Что именно качаем
         nowDownloadFileAll = nowDownloadFilePath + nowDownloadFileName;
@@ -642,7 +642,7 @@ void DownloadManager::downloadOneByOneFile() {
         // Путь куда будет идти закачка
         tmpDirectory = "tmp/" + this->nowDownloadFilePath;
 
-        QString vrm_Url =
+        QString vrmUrl =
             QString("%1/%2/%3").arg(this->IpServer, this->FolderName, nowDownloadFileAll);
         // if(Debugger) qDebug() << vrm_Url;
         emit this->emit_Loging(0,
@@ -651,7 +651,7 @@ void DownloadManager::downloadOneByOneFile() {
                                    .arg(nowDownloadFileName)
                                    .arg(nowDownloadFileSize)
                                    .arg(this->tmpDirectory));
-        this->append(QUrl(vrm_Url));
+        this->append(QUrl(vrmUrl));
         return;
     } else {
         /// Тут надо сделать перемещение файлов из папки tmp в реальную директорию
@@ -732,41 +732,41 @@ void DownloadManager::reCopyAllFiles() {
         allFilesList = getDirFiles(startDir);
 
         // Список создан делаем готовим к замене файлы
-        int count_i_files = 0;
+        int countIFiles = 0;
         for (QStringList::Iterator iter = allFilesList.begin(); iter != allFilesList.end();
              ++iter) {
             //            qDebug() << "--- FILES PATH --- " << *iter;
-            QString vrm_Path = *iter;
-            int compex = vrm_Path.indexOf("assets/");
-            QString fileFrom = vrm_Path.mid(compex);
+            QString vrmPath = *iter;
+            int compex = vrmPath.indexOf("assets/");
+            QString fileFrom = vrmPath.mid(compex);
             //            qDebug() << "--- FILES PATH --- " << fileFrom;
             QFileInfo infoIn(*iter);
             QFile fileCopy;
             if (infoIn.fileName() != "EKiosk.exe" && infoIn.fileName() != "h-sheller.exe") {
-                copyXmlMap[count_i_files]["pathFrom"] = "tmp/" + fileFrom;
-                copyXmlMap[count_i_files]["pathTo"] = fileFrom;
-                qDebug() << "--- FILE-PATH FROM --- " << copyXmlMap[count_i_files]["pathFrom"];
+                copyXmlMap[countIFiles]["pathFrom"] = "tmp/" + fileFrom;
+                copyXmlMap[countIFiles]["pathTo"] = fileFrom;
+                qDebug() << "--- FILE-PATH FROM --- " << copyXmlMap[countIFiles]["pathFrom"];
 
-                if (fileCopy.exists(copyXmlMap[count_i_files]["pathFrom"])) {
+                if (fileCopy.exists(copyXmlMap[countIFiles]["pathFrom"])) {
                     qDebug() << "PRESENT";
                 } else {
                     qDebug() << "NOT PRESENT";
                 }
 
-                qDebug() << "--- FILE-PATH TO --- " << copyXmlMap[count_i_files]["pathTo"];
+                qDebug() << "--- FILE-PATH TO --- " << copyXmlMap[countIFiles]["pathTo"];
 
-                if (fileCopy.exists(copyXmlMap[count_i_files]["pathTo"])) {
+                if (fileCopy.exists(copyXmlMap[countIFiles]["pathTo"])) {
                     qDebug() << "PRESENT";
                 } else {
                     qDebug() << "NOT PRESENT";
                 }
 
-                if (fileCopy.exists(copyXmlMap[count_i_files]["pathTo"])) {
-                    fileCopy.remove(copyXmlMap[count_i_files]["pathTo"]);
+                if (fileCopy.exists(copyXmlMap[countIFiles]["pathTo"])) {
+                    fileCopy.remove(copyXmlMap[countIFiles]["pathTo"]);
                 }
 
-                if (fileCopy.copy(copyXmlMap[count_i_files]["pathFrom"],
-                                  copyXmlMap[count_i_files]["pathTo"])) {
+                if (fileCopy.copy(copyXmlMap[countIFiles]["pathFrom"],
+                                  copyXmlMap[countIFiles]["pathTo"])) {
                     qDebug() << "--- COPY FILE OK --- " << infoIn.fileName();
                     emit this->emit_Loging(
                         0,
@@ -782,7 +782,7 @@ void DownloadManager::reCopyAllFiles() {
                             .arg(infoIn.fileName()));
                 }
 
-                count_i_files++;
+                countIFiles++;
             }
         }
 
@@ -953,11 +953,11 @@ QString DownloadManager::getOldHash() {
     QSqlRecord record = selectHash.record();
 
     if (selectHash.next()) {
-        QString global_hash = selectHash.value(record.indexOf("hash")).toString();
+        QString globalHash = selectHash.value(record.indexOf("hash")).toString();
         // if(Debugger) qDebug() << "===================================";
         // if(Debugger) qDebug() << QString("global_hash = %1").arg(global_hash);
         // if(Debugger) qDebug() << "===================================";
-        return global_hash;
+        return globalHash;
     }
     return "";
 }

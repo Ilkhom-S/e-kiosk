@@ -54,43 +54,43 @@ bool Custom_VKP80_PRINTER::openPort() {
     return is_open;
 }
 
-bool Custom_VKP80_PRINTER::isEnabled(CMDCustom_VKP80::SStatus &s_status, int &state) {
-    if (!this->getStatus(state, s_status)) {
+bool Custom_VKP80_PRINTER::isEnabled(CMDCustom_VKP80::SStatus &sStatus, int &state) {
+    if (!this->getStatus(state, sStatus)) {
         return false;
     }
 
     return (state != PrinterState::PrinterNotAvailable);
 }
 
-bool Custom_VKP80_PRINTER::getStatus(int &aStatus, CMDCustom_VKP80::SStatus &s_status) {
+bool Custom_VKP80_PRINTER::getStatus(int &aStatus, CMDCustom_VKP80::SStatus &sStatus) {
     // смотрим оффлайн
-    if (!getState(CMDCustom_VKP80::Constants::Status::Printer, s_status)) {
+    if (!getState(CMDCustom_VKP80::Constants::Status::Printer, sStatus)) {
         // if(Debugger) qDebug() << "Unable to get status, type Printer!";
         return false;
     }
 
     // если в оффлайне - смотрим причину
-    if (s_status.Offline) {
-        if (!getState(CMDCustom_VKP80::Constants::Status::Offline, s_status)) {
+    if (sStatus.Offline) {
+        if (!getState(CMDCustom_VKP80::Constants::Status::Offline, sStatus)) {
             // if(Debugger) qDebug() <<  "Unable to get status, type Offline!";
             return false;
         }
     }
 
     // статус ошибки смотрим всегда
-    if (!getState(CMDCustom_VKP80::Constants::Status::Errors, s_status)) {
+    if (!getState(CMDCustom_VKP80::Constants::Status::Errors, sStatus)) {
         // if(Debugger) qDebug() << "Unable to get status, type Errors!";
         return false;
     }
 
-    if (!getState(CMDCustom_VKP80::Constants::Status::Printing, s_status)) {
+    if (!getState(CMDCustom_VKP80::Constants::Status::Printing, sStatus)) {
         // if(Debugger) qDebug() << "Unable to get status, type Printing!";
         return false;
     }
 
     // статус бумаги смотрим только если не в оффлайне из-за конца бумаги
-    if (!s_status.PaperOut) {
-        if (!getState(CMDCustom_VKP80::Constants::Status::Paper, s_status)) {
+    if (!sStatus.PaperOut) {
+        if (!getState(CMDCustom_VKP80::Constants::Status::Paper, sStatus)) {
             // if(Debugger) qDebug() << "Unable to get status, type Paper!";
             return false;
         }
@@ -100,15 +100,15 @@ bool Custom_VKP80_PRINTER::getStatus(int &aStatus, CMDCustom_VKP80::SStatus &s_s
     aStatus = PrinterState::PrinterOK;
 
     // ошибки
-    if (s_status.NotAvailabled) {
+    if (sStatus.NotAvailabled) {
         aStatus |= PrinterState::PrinterNotAvailable;
-    } else if (s_status.CoverOpen) {
+    } else if (sStatus.CoverOpen) {
         aStatus |= PrinterState::CoverIsOpened;
-    } else if (s_status.Failures.Cutter) {
+    } else if (sStatus.Failures.Cutter) {
         aStatus |= PrinterState::CutterError;
-    } else if (s_status.PaperOut || s_status.Paper.End || s_status.Printing.PaperOff) {
+    } else if (sStatus.PaperOut || sStatus.Paper.End || sStatus.Printing.PaperOff) {
         aStatus |= PrinterState::PaperEnd;
-    } else if (s_status.Failures.Unrecoverable || s_status.Error) {
+    } else if (sStatus.Failures.Unrecoverable || sStatus.Error) {
         aStatus |= PrinterState::PrinterError;
     }
 
@@ -339,110 +339,110 @@ bool Custom_VKP80_PRINTER::getControlInfo(char aInfoType,
 
 void Custom_VKP80_PRINTER::getSpecialCharacters(QByteArray &printText) {
 
-    QByteArray fontTypeBold_start;
-    fontTypeBold_start.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
-    fontTypeBold_start.push_back(CMDCustom_VKP80::PrinterFontBoldSecondByte);
-    fontTypeBold_start.push_back(1);
+    QByteArray fontTypeBoldStart;
+    fontTypeBoldStart.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
+    fontTypeBoldStart.push_back(CMDCustom_VKP80::PrinterFontBoldSecondByte);
+    fontTypeBoldStart.push_back(1);
 
-    QByteArray fontTypeBold_end;
-    fontTypeBold_end.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
-    fontTypeBold_end.push_back(CMDCustom_VKP80::PrinterFontBoldSecondByte);
-    fontTypeBold_end.push_back(48);
+    QByteArray fontTypeBoldEnd;
+    fontTypeBoldEnd.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
+    fontTypeBoldEnd.push_back(CMDCustom_VKP80::PrinterFontBoldSecondByte);
+    fontTypeBoldEnd.push_back(48);
 
-    QByteArray fontTypeDoubleHeight_start;
-    fontTypeDoubleHeight_start.push_back(CMDCustom_VKP80::PrinterCommandGetIDFirstByte);
-    fontTypeDoubleHeight_start.push_back(CMDCustom_VKP80::PrinterFontDoubleWidthHeight);
-    fontTypeDoubleHeight_start.push_back(1);
+    QByteArray fontTypeDoubleHeightStart;
+    fontTypeDoubleHeightStart.push_back(CMDCustom_VKP80::PrinterCommandGetIDFirstByte);
+    fontTypeDoubleHeightStart.push_back(CMDCustom_VKP80::PrinterFontDoubleWidthHeight);
+    fontTypeDoubleHeightStart.push_back(1);
 
-    QByteArray fontTypeDoubleHeight_end;
-    fontTypeDoubleHeight_end.push_back(CMDCustom_VKP80::PrinterCommandGetIDFirstByte);
-    fontTypeDoubleHeight_end.push_back(CMDCustom_VKP80::PrinterFontDoubleWidthHeight);
-    fontTypeDoubleHeight_end.push_back(ASCII::NUL);
+    QByteArray fontTypeDoubleHeightEnd;
+    fontTypeDoubleHeightEnd.push_back(CMDCustom_VKP80::PrinterCommandGetIDFirstByte);
+    fontTypeDoubleHeightEnd.push_back(CMDCustom_VKP80::PrinterFontDoubleWidthHeight);
+    fontTypeDoubleHeightEnd.push_back(ASCII::NUL);
 
-    QByteArray fontTypeDoubleWidth_start;
-    fontTypeDoubleWidth_start.push_back(CMDCustom_VKP80::PrinterCommandGetIDFirstByte);
-    fontTypeDoubleWidth_start.push_back(CMDCustom_VKP80::PrinterFontDoubleWidthHeight);
-    fontTypeDoubleWidth_start.push_back(0x10);
+    QByteArray fontTypeDoubleWidthStart;
+    fontTypeDoubleWidthStart.push_back(CMDCustom_VKP80::PrinterCommandGetIDFirstByte);
+    fontTypeDoubleWidthStart.push_back(CMDCustom_VKP80::PrinterFontDoubleWidthHeight);
+    fontTypeDoubleWidthStart.push_back(0x10);
 
-    QByteArray fontTypeDoubleWidth_end;
-    fontTypeDoubleWidth_end.push_back(CMDCustom_VKP80::PrinterCommandGetIDFirstByte);
-    fontTypeDoubleWidth_end.push_back(CMDCustom_VKP80::PrinterFontDoubleWidthHeight);
-    fontTypeDoubleWidth_end.push_back(ASCII::NUL);
+    QByteArray fontTypeDoubleWidthEnd;
+    fontTypeDoubleWidthEnd.push_back(CMDCustom_VKP80::PrinterCommandGetIDFirstByte);
+    fontTypeDoubleWidthEnd.push_back(CMDCustom_VKP80::PrinterFontDoubleWidthHeight);
+    fontTypeDoubleWidthEnd.push_back(ASCII::NUL);
 
-    QByteArray fontTypeUnderLine_start;
-    fontTypeUnderLine_start.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
-    fontTypeUnderLine_start.push_back(CMDCustom_VKP80::PrinterFontUnderline);
-    fontTypeUnderLine_start.push_back(1);
+    QByteArray fontTypeUnderLineStart;
+    fontTypeUnderLineStart.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
+    fontTypeUnderLineStart.push_back(CMDCustom_VKP80::PrinterFontUnderline);
+    fontTypeUnderLineStart.push_back(1);
 
-    QByteArray fontTypeUnderLine_end;
-    fontTypeUnderLine_end.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
-    fontTypeUnderLine_end.push_back(CMDCustom_VKP80::PrinterFontUnderline);
-    fontTypeUnderLine_end.push_back(48);
+    QByteArray fontTypeUnderLineEnd;
+    fontTypeUnderLineEnd.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
+    fontTypeUnderLineEnd.push_back(CMDCustom_VKP80::PrinterFontUnderline);
+    fontTypeUnderLineEnd.push_back(48);
 
-    QByteArray fontTypeItalic_start;
-    fontTypeItalic_start.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
-    fontTypeItalic_start.push_back(CMDCustom_VKP80::PrinterFontItalic);
-    fontTypeItalic_start.push_back(1);
+    QByteArray fontTypeItalicStart;
+    fontTypeItalicStart.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
+    fontTypeItalicStart.push_back(CMDCustom_VKP80::PrinterFontItalic);
+    fontTypeItalicStart.push_back(1);
 
-    QByteArray fontTypeItalic_end;
-    fontTypeItalic_end.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
-    fontTypeItalic_end.push_back(CMDCustom_VKP80::PrinterFontItalic);
-    fontTypeItalic_end.push_back(48);
+    QByteArray fontTypeItalicEnd;
+    fontTypeItalicEnd.push_back(CMDCustom_VKP80::PrinterCommandFirstByte);
+    fontTypeItalicEnd.push_back(CMDCustom_VKP80::PrinterFontItalic);
+    fontTypeItalicEnd.push_back(48);
 
     // Устанавливаем если есть жирный фонт
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeBold +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeBold_start);
+                      fontTypeBoldStart);
 
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeBold + CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeBold_end);
+                      fontTypeBoldEnd);
 
     // Устанавливаем если есть двойной высоты фонт
     printText.replace(QString(CScharsetParam::OpenTagDelimiter +
                               CScharsetParam::FontTypeDoubleHeight +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleHeight_start);
+                      fontTypeDoubleHeightStart);
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeDoubleHeight +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleHeight_end);
+                      fontTypeDoubleHeightEnd);
 
     // Устанавливаем если есть двойной ширины фонт
     printText.replace(QString(CScharsetParam::OpenTagDelimiter +
                               CScharsetParam::FontTypeDoubleWidth +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleWidth_start);
+                      fontTypeDoubleWidthStart);
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeDoubleWidth +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleWidth_end);
+                      fontTypeDoubleWidthEnd);
 
     // Устанавливаем если есть курсивный фонт
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeItalic +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeItalic_start);
+                      fontTypeItalicStart);
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeItalic + CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeItalic_end);
+                      fontTypeItalicEnd);
 
     // Устанавливаем если есть подчеркнутый фонт
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeUnderLine +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeUnderLine_start);
+                      fontTypeUnderLineStart);
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeUnderLine + CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeUnderLine_end);
+                      fontTypeUnderLineEnd);
 
     // Если надо добавить пробел
     QByteArray space;
@@ -455,9 +455,9 @@ void Custom_VKP80_PRINTER::getSpecialCharacters(QByteArray &printText) {
                       space);
 
     // Добавляем звезды
-    int col_z = (checkWidth - 11 - leftMargin) / 2;
+    int colZ = (checkWidth - 11 - leftMargin) / 2;
     QByteArray star;
-    for (int j = 1; j <= col_z; j++) {
+    for (int j = 1; j <= colZ; j++) {
         star.append("*");
     }
 
@@ -695,8 +695,8 @@ bool Custom_VKP80_PRINTER::printImageI(const QString &aPixelString,
                                        uchar aWidth,
                                        bool aNeedRegisterLogo) {
     QByteArray cmd;
-    QByteArray resp_data;
-    bool resp_ok = false;
+    QByteArray respData;
+    bool respOk = false;
 
     if (aNeedRegisterLogo) {
         if (!registerLogo(aPixelString, aWidth)) {
@@ -712,7 +712,7 @@ bool Custom_VKP80_PRINTER::printImageI(const QString &aPixelString,
     cmd.append(CMDCustom_VKP80::PrinterCommandAnotherFeedSecondByte);
     cmd.append(nil);
 
-    return this->sendCommand(cmd, true, 100, resp_ok, resp_data, 0);
+    return this->sendCommand(cmd, true, 100, respOk, respData, 0);
 }
 
 bool Custom_VKP80_PRINTER::registerLogo(const QString &aPixelString, uchar aWidth) {
@@ -724,7 +724,7 @@ bool Custom_VKP80_PRINTER::registerLogo(const QString &aPixelString, uchar aWidt
 
     QByteArray cmd;
     QByteArray response;
-    bool resp_data = false;
+    bool respData = false;
 
     QByteArray imageData /* = packetImage(aPixelString, aWidth)*/;
     imageData = this->getImage("2.bmp");
@@ -750,6 +750,6 @@ bool Custom_VKP80_PRINTER::registerLogo(const QString &aPixelString, uchar aWidt
     // if(Debugger) qDebug() << "aPixelString.size()" << aPixelString.size();
     //        this->printDataToHex(imageData);
     cmd.append(imageData);
-    bool res = this->sendCommand(cmd, true, 3000, resp_data, response, 3000);
+    bool res = this->sendCommand(cmd, true, 3000, respData, response, 3000);
     return res;
 }

@@ -309,15 +309,15 @@ bool PaymentBase::getLimits(double &aMinAmount, double &aMaxAmount) {
 
     QRegularExpressionMatch match;
     while ((match = macroPattern.match(minLimit)).hasMatch()) {
-        QString param_Name = match.captured(1);
-        QString param_Value = getParameter(param_Name).value.toString();
-        minLimit.replace(match.captured(0), param_Value);
+        QString paramName = match.captured(1);
+        QString paramValue = getParameter(paramName).value.toString();
+        minLimit.replace(match.captured(0), paramValue);
     }
 
     while ((match = macroPattern.match(maxLimit)).hasMatch()) {
-        QString param_Name = match.captured(1);
-        QString param_Value = getParameter(param_Name).value.toString();
-        maxLimit.replace(match.captured(0), param_Value);
+        QString paramName = match.captured(1);
+        QString paramValue = getParameter(paramName).value.toString();
+        maxLimit.replace(match.captured(0), paramValue);
     }
 
     QJSEngine myEngine;
@@ -360,23 +360,23 @@ bool PaymentBase::calculateLimits() {
 
     const bool isFixedAmount = qFuzzyCompare(minAmount, maxAmount);
     const auto provider = getMNPProviderSettings();
-    double system_Max = provider.limits.system.toDouble();
-    system_Max = maxAmount > system_Max ? system_Max : maxAmount;
+    double systemMax = provider.limits.system.toDouble();
+    systemMax = maxAmount > systemMax ? systemMax : maxAmount;
 
     if (!isFixedAmount) {
         // Корректируем максимальный платеж в зависимости от системного лимита
-        if (qFuzzyIsNull(maxAmount) || qFuzzyIsNull(system_Max)) {
+        if (qFuzzyIsNull(maxAmount) || qFuzzyIsNull(systemMax)) {
             // Если какой-либо из лимитов не задан, то берем тот, который задан.
-            maxAmount = qMax(system_Max, maxAmount);
+            maxAmount = qMax(systemMax, maxAmount);
         } else {
             // Иначе берем нижнюю границу.
-            maxAmount = qMin(system_Max, maxAmount);
+            maxAmount = qMin(systemMax, maxAmount);
         }
     }
 
     // Проверяем значение системного лимита
-    if (qFuzzyIsNull(system_Max)) {
-        system_Max = maxAmount;
+    if (qFuzzyIsNull(systemMax)) {
+        systemMax = maxAmount;
     }
 
     // Если провайдер требует округления - применим округление к пограничным значениям
@@ -466,8 +466,8 @@ bool PaymentBase::calculateLimits() {
     if (isFixedAmount) {
         // если лимиты равны и комиссия больше системного лимита, то пропускаем эти лимиты дальше.
         maxAmountAll = localAmountAllLimit;
-    } else if (localAmountAllLimit > system_Max) {
-        maxAmountAll = system_Max;
+    } else if (localAmountAllLimit > systemMax) {
+        maxAmountAll = systemMax;
         maxAmount = calcAmountAllByAmountAll(maxAmount);
     } else {
         maxAmountAll = qMax(localAmountAllLimit, maxAmount);

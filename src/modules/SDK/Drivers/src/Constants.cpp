@@ -54,7 +54,7 @@ extern const char ModelName[] = "model_name";
 extern const char ProtocolName[] = "protocol_name";
 extern const char DetectingPriority[] = "detect_priority";
 extern const char Mask[] = "mask";
-extern const char System_Name[] = "system_name";
+extern const char SystemName[] = "system_name";
 extern const char SearchingType[] = "searching_type";
 extern const char RequiredResource[] = "required_resource";
 extern const char Existence[] = "existence";
@@ -89,7 +89,7 @@ extern const char Multiple[] = "multiple";
 
 // Константы устройств приема денег.
 namespace CashAcceptor {
-extern const char System_CurrencyId[] = "system_currency_id";
+extern const char SystemCurrencyId[] = "system_currency_id";
 } // namespace CashAcceptor
 
 // Константы фискального регистратора.
@@ -317,7 +317,7 @@ void dummyReference() {
     dummy = CAllHardware::ProtocolName;
     dummy = CAllHardware::DetectingPriority;
     dummy = CAllHardware::Mask;
-    dummy = CAllHardware::System_Name;
+    dummy = CAllHardware::SystemName;
     dummy = CAllHardware::SearchingType;
     dummy = CAllHardware::RequiredResource;
     dummy = CAllHardware::Existence;
@@ -341,7 +341,7 @@ void dummyReference() {
     dummy = CAllHardware::ExistenceTypes::Unique;
     dummy = CAllHardware::ExistenceTypes::Multiple;
     // CAllHardware::CashAcceptor
-    dummy = CAllHardware::CashAcceptor::System_CurrencyId;
+    dummy = CAllHardware::CashAcceptor::SystemCurrencyId;
     // CAllHardware::FR
     dummy = CAllHardware::FR::FSSerialNumber;
     dummy = CAllHardware::FR::TaxSystems;

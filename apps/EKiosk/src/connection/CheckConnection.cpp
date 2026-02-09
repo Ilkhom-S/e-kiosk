@@ -148,11 +148,11 @@ void CheckConnection::replyFinished(QNetworkReply *reply) {
         abortTimer->stop();
     }
 
-    int error_id = reply->error();
+    int errorId = reply->error();
 
     reply->deleteLater();
 
-    if (error_id == QNetworkReply::NoError) {
+    if (errorId == QNetworkReply::NoError) {
         auto replyData = reply->readAll();
 
         auto json = QJsonDocument::fromJson(replyData);
