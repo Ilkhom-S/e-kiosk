@@ -33,7 +33,7 @@ const int DefaultAlpha = 0xd8;
 class ModalBackgroundWidget : public QQuickPaintedItem {
 public:
     ModalBackgroundWidget() {
-        setFlag(QQuickItem::Item_HasContents);
+        setFlag(QQuickItem::ItemHasContents);
         setFillColor(ModalBackgroundWidget::getColor(DefaultBackgroundColor));
 
         // Необходимо для обработки мыши
@@ -47,8 +47,8 @@ public:
     }
 
 protected:
-    void paint(QPainter *aPainter) override { Q_UNUSED(aPainter) }
-    void mousePressEvent(QMouseEvent *aEvent) override { Q_UNUSED(aEvent) }
+    void paint(QPainter *aPainter) { Q_UNUSED(aPainter) }
+    void mousePressEvent(QMouseEvent *aEvent) { Q_UNUSED(aEvent) }
 
 private:
     QColor getColor(const QString &aColor, int aAlpha = DefaultAlpha) {
@@ -103,11 +103,11 @@ private:
         Q_OBJECT
 
 public:
-        virtual QString identifierName();
-        virtual QString language();
-        virtual bool isComposing() const;
-        virtual void reset();
-        virtual bool filterEvent(const QEvent* aEvent);
+        QString identifierName();
+        QString language();
+        bool isComposing() const;
+        void reset();
+        bool filterEvent(const QEvent* aEvent);
 
 signals:
         void requestSoftwareInputPanel();
@@ -179,10 +179,10 @@ public:
     void setGraphicsHost(SDK::GUI::IGraphicsHost *aHost);
 
     /// IGraphicsEngine: Возвращает указатель на владельца графического контейнера.
-    virtual SDK::GUI::IGraphicsHost *getGraphicsHost();
+    SDK::GUI::IGraphicsHost *getGraphicsHost();
 
     /// IGraphicsEngine: Возвращает лог.
-    virtual ILog *getLog() const;
+    ILog *getLog() const;
 
     /// Возвращает разрешение дисплея
     QRect getDisplayRectangle(int aIndex) const;
@@ -208,7 +208,7 @@ signals:
 
 private: // Методы
          // Перехватываем события активности пользователя и закрытия окна.
-    virtual bool eventFilter(QObject *aObject, QEvent *aEvent);
+    bool eventFilter(QObject *aObject, QEvent *aEvent);
     bool showWidget(const QString &aWidget, bool aPopup, const QVariantMap &aParameters);
 
     // Показать/спрятать виртуальную клавиатуру

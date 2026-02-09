@@ -209,19 +209,6 @@ WatchServiceController::~WatchServiceController() {
     // Hide tray icon
     m_Icon.hide();
 
-    // Disconnect all signals (Qt does this automatically, but explicit for clarity)
-    disconnect(&m_Timer, &QTimer::timeout, this, &WatchServiceController::onCheck);
-    disconnect(
-        &m_Icon, &QSystemTrayIcon::activated, this, &WatchServiceController::onTrayIconActivated);
-    disconnect(m_StopServiceAction,
-               &QAction::triggered,
-               this,
-               &WatchServiceController::onStopServiceClicked);
-    disconnect(m_CloseTrayIconAction,
-               &QAction::triggered,
-               this,
-               &WatchServiceController::onCloseIconClicked);
-
     LOG(getLog(), LogLevel::Normal, "WatchServiceController stopped.");
 }
 

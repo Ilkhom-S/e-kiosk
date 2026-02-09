@@ -1,4 +1,4 @@
-/* @file Реализация криптодвижока на libipriv. */
+/* @file Реализация криптодвижка на libipriv. */
 
 // boost
 
@@ -193,7 +193,7 @@ QByteArray CryptEngine::generatePassword() const {
     // automatically seeded with high-quality system entropy.
     // fillRange() is the most efficient way to fill a buffer.
     QRandomGenerator::global()->fillRange(reinterpret_cast<uint *>(phrase.data()),
-                                           phrase.size() / sizeof(uint));
+                                          phrase.size() / sizeof(uint));
 
     return phrase;
 }
@@ -403,7 +403,7 @@ bool CryptEngine::loadKeyPair(int aKeyPair,
 
     switch (aEngine) {
     case CCrypt::ETypeEngine::File:
-        res = ::Crypt_OpenSecretKeyFrom_File(aEngine,
+        res = ::Crypt_OpenSecretKeyFromFile(aEngine,
                                              aSecretKeyPath.toLocal8Bit().data(),
                                              aPassword.toLatin1().data(),
                                              &keyPair.first);
@@ -413,7 +413,7 @@ bool CryptEngine::loadKeyPair(int aKeyPair,
         res = ::Crypt_Ctrl(aEngine, IPRIV_ENGCMD_SET_PIN, getRootPassword()[0].data());
 
         if (CRYPT_IS_SUCCESS(res)) {
-            res = ::Crypt_OpenSecretKeyFrom_Store(aEngine, aSerialNumber, &keyPair.first);
+            res = ::Crypt_OpenSecretKeyFromStore(aEngine, aSerialNumber, &keyPair.first);
         }
         break;
     }
@@ -424,7 +424,7 @@ bool CryptEngine::loadKeyPair(int aKeyPair,
         return false;
     }
 
-    res = ::Crypt_OpenPublicKeyFrom_File(CCrypt::ETypeEngine::File,
+    res = ::Crypt_OpenPublicKeyFromFile(CCrypt::ETypeEngine::File,
                                          aPublicKeyPath.toLocal8Bit(),
                                          aBankSerialNumber,
                                          &keyPair.second,

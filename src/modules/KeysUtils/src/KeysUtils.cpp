@@ -113,13 +113,13 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt,
         QByteArray value = QByteArray::fromPercentEncoding(parameter.last());
 
         if (name == CKeysFactory::ServerFields::AP) {
-            pair.ap = QByteArray::from_Base64(value);
+            pair.ap = QByteArray::fromBase64(value);
         } else if (name == CKeysFactory::ServerFields::SD) {
-            pair.sd = QByteArray::from_Base64(value);
+            pair.sd = QByteArray::fromBase64(value);
         } else if (name == CKeysFactory::ServerFields::OP) {
-            pair.op = QByteArray::from_Base64(value);
+            pair.op = QByteArray::fromBase64(value);
         } else if (name == CKeysFactory::ServerFields::KeyCard) {
-            keyCard = QByteArray::from_Base64(value);
+            keyCard = QByteArray::fromBase64(value);
         } else if (name == CKeysFactory::ServerFields::Error) {
             if (value == CKeysFactory::ServerErrors::WrongPassword) {
                 return EKeysUtilsError::WrongPassword;

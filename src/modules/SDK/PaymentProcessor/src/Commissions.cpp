@@ -312,8 +312,8 @@ CommissionByTimeList &CommissionByTimeList::operator<<(const Commission &aCommis
 CommissionByTimeList CommissionByTimeList::from_Settings(const TPtree &aSettings) {
     CommissionByTimeList list;
 
-    list.m_Begin = QTime::from_String(aSettings.get<QString>("<xmlattr>.begin"), "hh:mm:ss");
-    list.m_End = QTime::from_String(aSettings.get<QString>("<xmlattr>.end"), "hh:mm:ss");
+    list.m_Begin = QTime::fromString(aSettings.get<QString>("<xmlattr>.begin"), "hh:mm:ss");
+    list.m_End = QTime::fromString(aSettings.get<QString>("<xmlattr>.end"), "hh:mm:ss");
     list.m_Commissions = CommissionList::from_Settings(aSettings);
 
     return list;

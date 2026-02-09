@@ -27,28 +27,28 @@ public:
     virtual ~AudioService();
 
     /// IService: Инициализация сервиса.
-    virtual bool initialize() override;
+    virtual bool initialize();
 
     /// IService: Закончена инициализация всех сервисов.
-    virtual void finishInitialize() override;
+    virtual void finishInitialize();
 
     /// Возвращает false, если сервис не может быть остановлен в текущий момент.
-    virtual bool canShutdown() override;
+    virtual bool canShutdown();
 
     /// IService: Завершение работы сервиса.
-    virtual bool shutdown() override;
+    virtual bool shutdown();
 
     /// IService: Возвращает имя сервиса.
-    virtual QString getName() const override;
+    virtual QString getName() const;
 
     /// IService: Список необходимых сервисов.
-    virtual const QSet<QString> &getRequiredServices() const override;
+    virtual const QSet<QString> &getRequiredServices() const;
 
     /// IService: Получить параметры сервиса.
-    virtual QVariantMap getParameters() const override;
+    virtual QVariantMap getParameters() const;
 
     /// IService: Сброс служебной информации.
-    virtual void resetParameters(const QSet<QString> &aParameters) override;
+    virtual void resetParameters(const QSet<QString> &aParameters);
 
 #pragma region SDK::PaymentProcessor::IAudioService interface
 

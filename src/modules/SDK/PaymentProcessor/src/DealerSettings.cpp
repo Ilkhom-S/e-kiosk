@@ -228,7 +228,7 @@ bool DealerSettings::loadProviders() {
             continue;
         }
 
-        QString operatorsPath = QString::from_StdWString(operators.second.get_value(L""));
+        QString operatorsPath = QString::fromStdWString(operators.second.get_value(L""));
 
         toLog(LogLevel::Normal, QString("Loading %1.").arg(operatorsPath));
 

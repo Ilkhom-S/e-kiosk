@@ -99,7 +99,7 @@ bool DatabaseUtils::addStatisticRecord(qint64 aId, const QString &aChannel) {
                   .arg(query.lastError().text()));
     }
 
-    if (query.num_RowsAffected() == 0) {
+    if (query.numRowsAffected() == 0) {
         QSqlQuery createQuery(m_Database);
         createQuery.prepare(CDatabaseUtils::CreateStatRecordQuery);
         createQuery.addBindValue(aId);
@@ -143,7 +143,7 @@ bool DatabaseUtils::setStatisticRecord(qint64 aId, const QString &aChannel, int 
                   .arg(query.lastError().text()));
     }
 
-    if (query.num_RowsAffected() == 0) {
+    if (query.numRowsAffected() == 0) {
         QSqlQuery createQuery(m_Database);
         createQuery.prepare(CDatabaseUtils::CreateStatRecordQuery);
         createQuery.addBindValue(aId);

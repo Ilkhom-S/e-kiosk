@@ -12,7 +12,7 @@
 #include "DatabaseQuery.h"
 
 MySqlDatabaseProxy::MySqlDatabaseProxy()
-    :, m_Db(nullptr), m_Log(ILog::getInstance(CMySqlDatabaseProxy::DefaultLog)),
+    : m_Db(nullptr), m_Log(ILog::getInstance(CMySqlDatabaseProxy::DefaultLog)),
       m_QueryChecker(nullptr) {}
 
 //---------------------------------------------------------------------------
@@ -122,7 +122,7 @@ bool MySqlDatabaseProxy::execDML(const QString &strQuery, long &rowsAffected) {
 
     bool execResult = safeExec(&dbQuery, strQuery);
 
-    rowsAffected = dbQuery.num_RowsAffected();
+    rowsAffected = dbQuery.numRowsAffected();
 
     return execResult;
 }

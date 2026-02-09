@@ -17,7 +17,7 @@ const int MaxTryCount = 3;
 
 //---------------------------------------------------------------------------
 SQLiteDatabaseProxy::SQLiteDatabaseProxy()
-    : ILogable(CIDatabaseProxy::LogName), , m_QueryChecker(nullptr) {}
+    : ILogable(CIDatabaseProxy::LogName), m_QueryChecker(nullptr) {}
 
 //---------------------------------------------------------------------------
 SQLiteDatabaseProxy::~SQLiteDatabaseProxy() = default;
@@ -137,7 +137,7 @@ bool SQLiteDatabaseProxy::execDML(const QString &aQuery, long &aRowsAffected) {
     QSqlQuery dbQuery(*m_Db);
 
     if (safeExec(&dbQuery, aQuery)) {
-        aRowsAffected = dbQuery.num_RowsAffected();
+        aRowsAffected = dbQuery.numRowsAffected();
 
         return true;
     }

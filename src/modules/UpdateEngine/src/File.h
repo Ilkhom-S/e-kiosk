@@ -31,7 +31,7 @@ public:
     qint64 size() const { return m_Size; }
 
     // Возвращает корневую папку файла, или само имя файла
-    QString dir() const { return QDir::from_NativeSeparators(m_Name).split("/").at(0); }
+    QString dir() const { return QDir::fromNativeSeparators(m_Name).split("/").at(0); }
 
 private:
     QString m_Name; // путь относительно корня дистрибутива

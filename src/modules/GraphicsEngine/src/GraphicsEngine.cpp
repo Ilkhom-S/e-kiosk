@@ -143,7 +143,7 @@ bool GraphicsEngine::initialize(
     m_QuickView = new QQuickWindow;
 
     m_QuickContainer = QWidget::createWindowContainer(m_QuickView, m_RootView);
-    m_QuickContainer->setMinimum_Size(m_RootView->size());
+    m_QuickContainer->setMinimumSize(m_RootView->size());
 
     /*
     m_DebugWidget.setPosition(QPoint(0, aHeight));
@@ -422,7 +422,7 @@ bool GraphicsEngine::hidePopup(const QVariantMap &aParameters) {
 void GraphicsEngine::notify(const QString &aEvent, const QVariantMap &aParameters) {
     auto formatParams = [](const QVariantMap &aParameters) -> QString {
         return QString::fromUtf8(
-            QJsonDocument::from_Variant(aParameters).toJson(QJsonDocument::Compact));
+            QJsonDocument::fromVariant(aParameters).toJson(QJsonDocument::Compact));
     };
 
     TWidgetList::Iterator w = m_Widgets.end();
@@ -462,7 +462,7 @@ void GraphicsEngine::popupNotify(const QString &aEvent, const QVariantMap &aPara
               QString("NOTIFY_BY_POPUP '%1'. Parameters: %2")
                   .arg(m_TopWidget->info.name)
                   .arg(QString::fromUtf8(
-                      QJsonDocument::from_Variant(aParameters).toJson(QJsonDocument::Compact))));
+                      QJsonDocument::fromVariant(aParameters).toJson(QJsonDocument::Compact))));
     }
 }
 
@@ -625,7 +625,7 @@ bool GraphicsEngine::showWidget(const QString &aWidget,
 
         QString popupMessage =
             aPopup ? QString::fromUtf8(
-                         QJsonDocument::from_Variant(aParameters).toJson(QJsonDocument::Compact))
+                         QJsonDocument::fromVariant(aParameters).toJson(QJsonDocument::Compact))
                    : QString();
 
         aPopup

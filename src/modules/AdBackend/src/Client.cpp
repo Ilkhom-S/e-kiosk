@@ -6,7 +6,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QTimer>
 #include <QtCore/QTimerEvent>
-#include <QtXml/QDom_Document>
+#include <QtXml/QDomDocument>
 
 #include <SDK/PaymentProcessor/Core/ICryptService.h>
 #include <SDK/PaymentProcessor/Core/INetworkService.h>

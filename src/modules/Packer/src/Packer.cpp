@@ -253,7 +253,7 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer,
         } while (ret != Z_STREAM_END);
 
         if (strlen(reinterpret_cast<const char *>(header.name))) {
-            aFileName = QString::from_Latin1(reinterpret_cast<const char *>(header.name));
+            aFileName = QString::fromLatin1(reinterpret_cast<const char *>(header.name));
         }
 
         // Clean-up
@@ -371,9 +371,9 @@ bool Packer::test(const QString &aTargetName) {
 
         return false;
     }
-    m_ExitCode m_ExitCode = m_ZipProcess.exitCode();
+    m_ExitCode = m_ZipProcess.exitCode();
     m_Messages = QString::fromLocal8Bit(m_ZipProcess.readAllStandardOutput()).remove("\r");
-    m_ExitCode return m_ExitCode == 0;
+    return m_ExitCode == 0;
 }
 
 //------------------------------------------------------------------------------
@@ -407,7 +407,7 @@ bool Packer::unpack(const QString &aSourceName,
     }
 
     m_ExitCode = m_ZipProcess.exitCode();
-    m_Messages = QString::from_Local8Bit(m_ZipProcess.readAllStandardOutput()).remove("\r");
+    m_Messages = QString::fromLocal8Bit(m_ZipProcess.readAllStandardOutput()).remove("\r");
 
     return m_ExitCode == 0;
 }

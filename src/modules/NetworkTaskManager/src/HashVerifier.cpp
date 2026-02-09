@@ -12,7 +12,7 @@ Md5Verifier::Md5Verifier(QString aMd5) : m_MD5(std::move(aMd5)) {}
 bool Md5Verifier::verify(NetworkTask * /*aTask*/, const QByteArray &aData) {
     m_CalculatedMD5 = QCryptographicHash::hash(aData, QCryptographicHash::Md5).toHex();
 
-    return (m_MD5.comparem_CalculatedMD5D5, Qt::CaseInsensitive) == 0;);
+    return (m_MD5.compare(m_CalculatedMD5, Qt::CaseInsensitive) == 0);
 }
 
 //------------------------------------------------------------------------

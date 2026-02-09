@@ -32,7 +32,7 @@ Directory::Directory(TPtree &aProperties)
 
     BOOST_FOREACH (const TPtree::value_type &record, m_Properties.get_child("numcapacity", empty)) {
         if (record.first == "<xmlattr>") {
-            m_RangesTimestamp = QDateTime::from_String(record.second.get_value<QString>("stamp"));
+            m_RangesTimestamp = QDateTime::fromString(record.second.get_value<QString>("stamp"));
         } else {
             range.cids.clear();
             range.ids.clear();
