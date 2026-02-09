@@ -32,10 +32,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     toLog(LoggerLevel::Info, senderName, logData);
 
-    setWindowTitle(versionFull());
+    setWindowTitle(MainWindow::versionFull());
 
     // Ключ для кодирования декодирования данных
-    config.coddingKey = generateEncodeKey();
+    config.coddingKey = MainWindow::generateEncodeKey();
 
     // Серверы
     serverAddress["tjk_prod"] = "https://aso.humo.tj/aso/v3/";
@@ -45,10 +45,10 @@ MainWindow::MainWindow(QWidget *parent)
     serverAddress["uzb_test"] = "http://192.168.145.28/aso/api/";
 
     // Загружаем стиль интерфейса
-    loadStyleSheet();
+    MainWindow::loadStyleSheet();
 
     // Настройки браузера
-    loadWebSettings();
+    MainWindow::loadWebSettings();
 }
 
 MainWindow::~MainWindow() {
@@ -119,7 +119,7 @@ void MainWindow::init() {
     // Присваиваем базу
     searchDevices->setDbName(db);
 
-    searchDevices->setCom_ListInfo(portList());
+    searchDevices->setCom_ListInfo(MainWindow::portList());
     searchDevices->takeBalanceSim = config.checkGetBalanceSim;
     searchDevices->takeSim_Number = config.checkGetNumberSim;
 
@@ -193,8 +193,8 @@ void MainWindow::init() {
         registrationForm->validatorList = billValidatorList;
         registrationForm->coinAcceptorList = coinAcceptorList;
         registrationForm->printerList = printerList;
-        registrationForm->winprinterList = getWinPrinterNames();
-        registrationForm->com_PortList = portList();
+        registrationForm->winprinterList = MainWindow::getWinPrinterNames();
+        registrationForm->com_PortList = MainWindow::portList();
 
         registrationForm->setDataListConnection(connectionList);
 
@@ -651,7 +651,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
 
     downManager->setDbName(dbUpdater);
     downManager->setUrlServerIp(ipServerName);
-    downManager->settingsPath = settingsPath();
+    downManager->settingsPath = MainWindow::settingsPath();
 
     toLog(LoggerLevel::Info, senderName, "Поиск устройств...");
 
@@ -1497,7 +1497,7 @@ void MainWindow::openAdminDialog() {
     }
 
     // Присваиваем тайтл
-    adminDialog->setWindowTitle("Admin ( " + versionFull() + " )");
+    adminDialog->setWindowTitle("Admin ( " + MainWindow::versionFull() + " )");
 
     QVariantMap data;
 
@@ -1567,7 +1567,7 @@ void MainWindow::openAdminDialog() {
 
     /// Страница устройств
 
-    QStringList pList = portList();
+    QStringList pList = MainWindow::portList();
 
     // Вставляем список купюрников
     QString vrm_ValidatorInfo =
@@ -1598,12 +1598,12 @@ void MainWindow::openAdminDialog() {
     adminDialog->setDataToAdmin(AdminCommand::aCmdCoinAcceptorInf, data);
 
     // Вставляем список принтеров
-    data["printer_comment"] = config.printerData.comment; // Info
-    data["printer_list"] = printerList;                   // ListPrinter
-    data["winprinter_list"] = getWinPrinterNames();       // ListWinprinter
-    data["printer_name"] = config.printerData.name;       // Name
-    data["printer_port_list"] = pList;                    // List Com Portov
-    data["printer_port"] = config.printerData.port;       // Active Port
+    data["printer_comment"] = config.printerData.comment;       // Info
+    data["printer_list"] = printerList;                         // ListPrinter
+    data["winprinter_list"] = MainWindow::getWinPrinterNames(); // ListWinprinter
+    data["printer_name"] = config.printerData.name;             // Name
+    data["printer_port_list"] = pList;                          // List Com Portov
+    data["printer_port"] = config.printerData.port;             // Active Port
 
     adminDialog->setDataToAdmin(AdminCommand::aCmdPrinterInform, data);
 
@@ -1889,7 +1889,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
         wsQuery("restart", data);
     } break;
     case AdminCommand::aCmdRestartASO: {
-        if (!connObject->restartWindows(true)) {
+        if (!Connect::restartWindows(true)) {
 #ifdef Q_OS_WIN32
             proc.startDetached("c:/windows/system32/cmd.exe",
                                QStringList() << "/c" << "shutdown -r -t 0");
@@ -1897,7 +1897,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
         }
     } break;
     case AdminCommand::aCmdShutDounASO: {
-        if (!connObject->restartWindows(false)) {
+        if (!Connect::restartWindows(false)) {
 #ifdef Q_OS_WIN32
             proc.startDetached("c:/windows/system32/cmd.exe",
                                QStringList() << "/c" << "shutdown -s -t 0");
@@ -2016,7 +2016,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
                 adminDialog->setDataToAdmin(AdminCommand::aCmdConnectInfo, data);
 
                 // Надо опустить соединение
-                connObject->disconnectNet();
+                Connect::disconnectNet();
 
                 data["message"] =
                     QString("Соединение %1 опущено, начинаем проверять данные SIM карты...")
@@ -2439,42 +2439,51 @@ void MainWindow::deviceSearchResult(
     case SearchDev::search_validator: {
         switch (result) {
         case SearchDev::start_search: {
-            sDevicesForm->setValidatorSearchText(SearchDev::start_search,
-                                                 interfaceText("validator_info_searching"));
-            toLog(LoggerLevel::Info, senderName, interfaceText("validator_info_searching"));
+            sDevicesForm->setValidatorSearchText(
+                SearchDev::start_search, MainWindow::interfaceText("validator_info_searching"));
+            toLog(LoggerLevel::Info,
+                  senderName,
+                  MainWindow::interfaceText("validator_info_searching"));
         } break;
         case SearchDev::device_found: {
-            auto inf = interfaceText("validator_info_found")
+            auto inf = MainWindow::interfaceText("validator_info_found")
                            .replace("[v1]", QString("%1 %2").arg(devName, devComment))
                            .replace("[v2]", devPort);
             sDevicesForm->setValidatorSearchText(SearchDev::device_found, inf);
             toLog(LoggerLevel::Info, senderName, inf);
         } break;
         case SearchDev::device_notfound: {
-            sDevicesForm->setValidatorSearchText(SearchDev::device_notfound,
-                                                 interfaceText("validator_info_notfound"));
-            toLog(LoggerLevel::Error, senderName, interfaceText("validator_info_notfound"));
+            sDevicesForm->setValidatorSearchText(
+                SearchDev::device_notfound, MainWindow::interfaceText("validator_info_notfound"));
+            toLog(LoggerLevel::Error,
+                  senderName,
+                  MainWindow::interfaceText("validator_info_notfound"));
         } break;
         }
     } break;
     case SearchDev::search_coin_acceptor: {
         switch (result) {
         case SearchDev::start_search: {
-            sDevicesForm->setCoinAcceptorSearchText(SearchDev::start_search,
-                                                    interfaceText("coin_acceptor_info_searching"));
-            toLog(LoggerLevel::Info, senderName, interfaceText("coin_acceptor_info_searching"));
+            sDevicesForm->setCoinAcceptorSearchText(
+                SearchDev::start_search, MainWindow::interfaceText("coin_acceptor_info_searching"));
+            toLog(LoggerLevel::Info,
+                  senderName,
+                  MainWindow::interfaceText("coin_acceptor_info_searching"));
         } break;
         case SearchDev::device_found: {
-            auto inf = interfaceText("coin_acceptor_info_found")
+            auto inf = MainWindow::interfaceText("coin_acceptor_info_found")
                            .replace("[v1]", QString("%1 %2").arg(devName, devComment))
                            .replace("[v2]", devPort);
             sDevicesForm->setCoinAcceptorSearchText(SearchDev::device_found, inf);
             toLog(LoggerLevel::Info, senderName, inf);
         } break;
         case SearchDev::device_notfound: {
-            sDevicesForm->setCoinAcceptorSearchText(SearchDev::device_notfound,
-                                                    interfaceText("coin_acceptor_info_notfound"));
-            toLog(LoggerLevel::Error, senderName, interfaceText("coin_acceptor_info_notfound"));
+            sDevicesForm->setCoinAcceptorSearchText(
+                SearchDev::device_notfound,
+                MainWindow::interfaceText("coin_acceptor_info_notfound"));
+            toLog(LoggerLevel::Error,
+                  senderName,
+                  MainWindow::interfaceText("coin_acceptor_info_notfound"));
         } break;
         }
     } break;
@@ -2482,11 +2491,12 @@ void MainWindow::deviceSearchResult(
         switch (result) {
         case SearchDev::start_search: {
             sDevicesForm->setPrinterSearchText(SearchDev::start_search,
-                                               interfaceText("printer_info_searching"));
-            toLog(LoggerLevel::Info, senderName, interfaceText("printer_info_searching"));
+                                               MainWindow::interfaceText("printer_info_searching"));
+            toLog(
+                LoggerLevel::Info, senderName, MainWindow::interfaceText("printer_info_searching"));
         } break;
         case SearchDev::device_found: {
-            auto inf = interfaceText("printer_info_found")
+            auto inf = MainWindow::interfaceText("printer_info_found")
                            .replace("[v1]", QString("%1 %2").arg(devName, devComment))
                            .replace("[v2]", devPort);
             sDevicesForm->setPrinterSearchText(SearchDev::device_found, inf);
@@ -2494,8 +2504,10 @@ void MainWindow::deviceSearchResult(
         } break;
         case SearchDev::device_notfound: {
             sDevicesForm->setPrinterSearchText(SearchDev::device_notfound,
-                                               interfaceText("printer_info_notfound"));
-            toLog(LoggerLevel::Error, senderName, interfaceText("printer_info_notfound_" + lang));
+                                               MainWindow::interfaceText("printer_info_notfound"));
+            toLog(LoggerLevel::Error,
+                  senderName,
+                  MainWindow::interfaceText("printer_info_notfound_" + lang));
         } break;
         }
     } break;
@@ -2504,11 +2516,11 @@ void MainWindow::deviceSearchResult(
         switch (result) {
         case SearchDev::start_search: {
             sDevicesForm->setModem_SearchText(SearchDev::start_search,
-                                              interfaceText("modem_info_searching"));
-            toLog(LoggerLevel::Info, senderName, interfaceText("modem_info_searching"));
+                                              MainWindow::interfaceText("modem_info_searching"));
+            toLog(LoggerLevel::Info, senderName, MainWindow::interfaceText("modem_info_searching"));
         } break;
         case SearchDev::device_found: {
-            auto inf = interfaceText("modem_info_found")
+            auto inf = MainWindow::interfaceText("modem_info_found")
                            .replace("[v1]", QString("%1 %2").arg(devName, devComment))
                            .replace("[v2]", devPort);
             sDevicesForm->setModem_SearchText(SearchDev::device_found, inf);
@@ -2516,8 +2528,8 @@ void MainWindow::deviceSearchResult(
         } break;
         case SearchDev::device_notfound: {
             sDevicesForm->setModem_SearchText(SearchDev::device_notfound,
-                                              interfaceText("modem_info_notfound"));
-            toLog(LoggerLevel::Error, senderName, interfaceText("modem_info_notfound"));
+                                              MainWindow::interfaceText("modem_info_notfound"));
+            toLog(LoggerLevel::Error, senderName, MainWindow::interfaceText("modem_info_notfound"));
         } break;
         }
     } break;
@@ -2932,7 +2944,7 @@ void MainWindow::toSendMonitoringStatus() {
     Sender::Data sData;
     sData.lockStatus = getLock();
     sData.version = ConstData::version;
-    sData.fullVersion = versionFull();
+    sData.fullVersion = MainWindow::versionFull();
     sData.firstSend = oneSendStatus;
 
     // Если первый раз отправляем
@@ -4543,7 +4555,7 @@ QString MainWindow::interfaceText(QString key) {
 void MainWindow::filesUpdated(QVariantMap files) {
     if (files.value("style.qss").toBool()) {
         // Загружаем интерфейс
-        loadStyleSheet();
+        MainWindow::loadStyleSheet();
     }
 }
 
