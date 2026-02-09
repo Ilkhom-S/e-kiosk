@@ -28,7 +28,7 @@ RegistrationForm::RegistrationForm(QWidget *parent)
         ui->chbCoinAcceptorSearch, SIGNAL(toggled(bool)), SLOT(searchCointAcceptorToggle(bool)));
     connect(ui->chbPrinterSearch, SIGNAL(toggled(bool)), SLOT(searchPrinterToggle(bool)));
     connect(ui->chbWatchDogSearch, SIGNAL(toggled(bool)), SLOT(searchWatchdogToggle(bool)));
-    connect(ui->chbModem_Search, SIGNAL(toggled(bool)), SLOT(searchModem_Toggle(bool)));
+    connect(ui->chbModemSearch, SIGNAL(toggled(bool)), SLOT(searchModem_Toggle(bool)));
 
     connect(ui->btnTestValidator, SIGNAL(clicked()), SLOT(validatorTest()));
     connect(ui->btnTestCoinAcceptor, SIGNAL(clicked()), SLOT(coinAcceptorTest()));
@@ -56,7 +56,7 @@ RegistrationForm::RegistrationForm(QWidget *parent)
 
     connect(ui->cbxWatchdogPort, SIGNAL(activated(int)), SLOT(watchdogSave()));
 
-    connect(ui->cbxModem_Port, SIGNAL(activated(int)), SLOT(modem_Save()));
+    connect(ui->cbxModemPort, SIGNAL(activated(int)), SLOT(modem_Save()));
 
     connect(ui->radioDialUpConnection, SIGNAL(toggled(bool)), SLOT(showDialUpParams(bool)));
     connect(ui->listWidgetConnectionList,
@@ -80,14 +80,14 @@ RegistrationForm::RegistrationForm(QWidget *parent)
     ui->editSecretPasswordReg->setValidator(secretPassValidator);
 
     QRegularExpressionValidator *secretPassConfirm_Validator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,15}"), ui->editSecretPasswordConfirm_Reg);
-    ui->editSecretPasswordConfirm_Reg->setValidator(secretPassConfirm_Validator);
+        QRegularExpression("[\\S\\w\\W\\d\\D]{1,15}"), ui->editSecretPasswordConfirmReg);
+    ui->editSecretPasswordConfirmReg->setValidator(secretPassConfirm_Validator);
 
     connect(ui->editLoginReg, SIGNAL(textChanged(QString)), SLOT(checkAuthInput(QString)));
     connect(ui->editOtpReg, SIGNAL(textChanged(QString)), SLOT(checkAuthInput(QString)));
     connect(ui->editSecretLoginReg, SIGNAL(textChanged(QString)), SLOT(checkAuthInput(QString)));
     connect(ui->editSecretPasswordReg, SIGNAL(textChanged(QString)), SLOT(checkAuthInput(QString)));
-    connect(ui->editSecretPasswordConfirm_Reg,
+    connect(ui->editSecretPasswordConfirmReg,
             SIGNAL(textChanged(QString)),
             SLOT(checkAuthInput(QString)));
 
@@ -197,7 +197,7 @@ void RegistrationForm::btnNextClicked() {
     } break;
     case Page::EnterAuthData: {
         auto secretPass = ui->editSecretPasswordReg->text().trimmed();
-        auto secretPassConfirm = ui->editSecretPasswordConfirm_Reg->text().trimmed();
+        auto secretPassConfirm = ui->editSecretPasswordConfirmReg->text().trimmed();
 
         if (secretPass != secretPassConfirm) {
             setStatusText(Status::Error, "Не совпадает пароль входа в админ");
@@ -242,9 +242,9 @@ void RegistrationForm::authResponse(const QString resultCode,
         data["connection"] = ui->radioDialUpConnection->isChecked()
                                  ? ui->listWidgetConnectionList->currentItem()->text()
                                  : "Local Connection";
-        data["sim_balance_req"] = ui->cbxRequestBalanceSim_Reg->currentText().trimmed();
-        data["sim_balance_position"] = ui->cbxPositionBalanceSim_Reg->currentText().trimmed();
-        data["sim_number_req"] = ui->cbxRequestNumberSim_Reg->currentText().trimmed();
+        data["sim_balance_req"] = ui->cbxRequestBalanceSimReg->currentText().trimmed();
+        data["sim_balance_position"] = ui->cbxPositionBalanceSimReg->currentText().trimmed();
+        data["sim_number_req"] = ui->cbxRequestNumberSimReg->currentText().trimmed();
 
         data["test"] = ui->chbTest->isChecked();
         data["tpl"] = ui->radioTplUZB->isChecked() ? "uzb" : "tjk";
@@ -367,9 +367,9 @@ void RegistrationForm::addPageData() {
 
         //            if (ui->editSecretLoginReg->hasAcceptableInput() &&
         //            ui->editSecretPasswordReg->hasAcceptableInput() &&
-        //            ui->editSecretPasswordConfirm_Reg->hasAcceptableInput() &&
+        //            ui->editSecretPasswordConfirmReg->hasAcceptableInput() &&
         //            (ui->editSecretPasswordReg->text() ==
-        //            ui->editSecretPasswordConfirm_Reg->text())) {
+        //            ui->editSecretPasswordConfirmReg->text())) {
         //                btnNextEnabled = true;
         //            }
         //        }
@@ -577,7 +577,7 @@ void RegistrationForm::watchdogTest() {
 
 void RegistrationForm::modem_Test() {
     QString devName = "AT-Modem";
-    QString port = ui->cbxModem_Port->currentText();
+    QString port = ui->cbxModemPort->currentText();
     QString comment = "";
 
     setLoading(true);
@@ -634,7 +634,7 @@ void RegistrationForm::watchdogSave() {
 void RegistrationForm::modem_Save() {
     if (com_PortList.size() > 0) {
         QString devName = "AT-Modem";
-        QString portName = ui->cbxModem_Port->currentText();
+        QString portName = ui->cbxModemPort->currentText();
         QString comment = "";
 
         emit emitSaveDevice(3, devName, portName, comment, 1);
@@ -685,7 +685,7 @@ void RegistrationForm::setSearchDeviceParams(QVariantMap data) {
     ui->chbWatchDogSearch->setChecked(searchWD);
     searchWatchdogToggle(searchWD);
 
-    ui->chbModem_Search->setChecked(searchModem);
+    ui->chbModemSearch->setChecked(searchModem);
     searchModem_Toggle(searchModem);
 }
 
@@ -709,7 +709,7 @@ void RegistrationForm::deviceSearchStart() {
     data["search_coin_acceptor"] = ui->chbCoinAcceptorSearch->isChecked();
     data["search_printer"] = ui->chbPrinterSearch->isChecked();
     data["search_watchdog"] = ui->chbWatchDogSearch->isChecked();
-    data["search_modem"] = ui->chbModem_Search->isChecked();
+    data["search_modem"] = ui->chbModemSearch->isChecked();
 
     emit emitStartSearchDevices(data);
 }
@@ -874,7 +874,7 @@ void RegistrationForm::deviceSearchResult(
             }
             // Устанавливаем текущую позицию
             if (curPos >= 0) {
-                ui->cbxModem_Port->setCurrentIndex(curPos);
+                ui->cbxModemPort->setCurrentIndex(curPos);
             }
 
             ui->lblAdminTextDeviceInfModem->setText(
@@ -1025,7 +1025,7 @@ void RegistrationForm::showMe() {
     ui->cbxValidatorPort->clear();
     ui->cbxCoinAcceptorPort->clear();
     ui->cbxPrinterPort->clear();
-    ui->cbxModem_Port->clear();
+    ui->cbxModemPort->clear();
     ui->cbxWatchdogPort->clear();
 
     com_PortList.prepend("");
@@ -1033,7 +1033,7 @@ void RegistrationForm::showMe() {
     ui->cbxValidatorPort->addItems(com_PortList);
     ui->cbxCoinAcceptorPort->addItems(com_PortList);
     ui->cbxPrinterPort->addItems(com_PortList);
-    ui->cbxModem_Port->addItems(com_PortList);
+    ui->cbxModemPort->addItems(com_PortList);
     ui->cbxWatchdogPort->addItems(com_PortList);
 
     ui->cbxValidatorName->setCurrentText(devices.value("validator_name").toString());
@@ -1056,7 +1056,7 @@ void RegistrationForm::showMe() {
 
     ui->cbxWatchdogPort->setCurrentText(devices.value("watchdog_port").toString());
 
-    ui->cbxModem_Port->setCurrentText(devices.value("modem_port").toString());
+    ui->cbxModemPort->setCurrentText(devices.value("modem_port").toString());
 
     //    searchDevices->setCom_ListInfo(com_PortList);
 
@@ -1122,7 +1122,7 @@ bool RegistrationForm::isValidAuthInput() {
         ui->editLoginReg->hasAcceptableInput() && ui->editOtpReg->hasAcceptableInput();
     bool validAuthAdminData = ui->editSecretLoginReg->hasAcceptableInput() &&
                               ui->editSecretPasswordReg->hasAcceptableInput() &&
-                              ui->editSecretPasswordConfirm_Reg->hasAcceptableInput();
+                              ui->editSecretPasswordConfirmReg->hasAcceptableInput();
 
     return validAuthData && validAuthAdminData;
 }
@@ -1219,12 +1219,12 @@ void RegistrationForm::secretPassView(bool show) {
 
 void RegistrationForm::secretPassConfirm_View(bool show) {
     if (show) {
-        ui->editSecretPasswordConfirm_Reg->setEchoMode(QLineEdit::Normal);
+        ui->editSecretPasswordConfirmReg->setEchoMode(QLineEdit::Normal);
     } else {
-        ui->editSecretPasswordConfirm_Reg->setEchoMode(QLineEdit::Password);
+        ui->editSecretPasswordConfirmReg->setEchoMode(QLineEdit::Password);
     }
 
-    ui->editSecretPasswordConfirm_Reg->setFocus();
+    ui->editSecretPasswordConfirmReg->setFocus();
 }
 
 void RegistrationForm::closeConfirm() {

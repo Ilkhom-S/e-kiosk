@@ -466,7 +466,7 @@ TResult AFPFR::processCommand(char aCommand,
                     break;
                 }
                 case CAFPFR::EAnswerTypes::Date: {
-                    QDate result = QDate::from_String(part.insert(4, "20"), CAFPFR::DateFormat);
+                    QDate result = QDate::fromString(part.insert(4, "20"), CAFPFR::DateFormat);
 
                     if (!result.isValid()) {
                         toLog(LogLevel::Error,
@@ -482,7 +482,7 @@ TResult AFPFR::processCommand(char aCommand,
                     break;
                 }
                 case CAFPFR::EAnswerTypes::Time: {
-                    QTime result = QTime::from_String(part, CAFPFR::TimeFormat);
+                    QTime result = QTime::fromString(part, CAFPFR::TimeFormat);
 
                     if (!result.isValid()) {
                         toLog(LogLevel::Error,

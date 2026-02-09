@@ -7,7 +7,7 @@ SendLogInfo::SendLogInfo(QObject *parent) : SendRequest(parent) {
     senderName = "COMMAND_CONFIRM";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
+    connect(this, SIGNAL(emit_Dom_Element(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 
     timerPic = new QTimer(this);
     timerPic->setSingleShot(true);
@@ -41,7 +41,7 @@ void SendLogInfo::sendRequestRepeet() {
     sendRequest(requestXml, 30000);
 }
 
-void SendLogInfo::setDataNote(const QDom_Node &dom_Element) {
+void SendLogInfo::setDataNote(const QDomNode &dom_Element) {
     resultCode = false;
 
     // Парсим данные
@@ -61,13 +61,13 @@ void SendLogInfo::setDataNote(const QDom_Node &dom_Element) {
     }
 }
 
-void SendLogInfo::parcerNote(const QDom_Node &dom_Element) {
+void SendLogInfo::parcerNote(const QDomNode &dom_Element) {
     // Необходимо отпарсить документ
-    QDom_Node dom_Node = dom_Element.firstChild();
+    QDomNode dom_Node = dom_Element.firstChild();
 
     while (!dom_Node.isNull()) {
         if (dom_Node.isElement()) {
-            QDom_Element dom_Element = dom_Node.toElement();
+            QDomElement dom_Element = dom_Node.toElement();
             QString strTag = dom_Element.tagName();
 
             // if(Debugger) qDebug() << strTag + " " + dom_Element.text();
@@ -91,7 +91,7 @@ void SendLogInfo::sendLogInfoToServer(QString trn, QString date) {
     QString header_xml = getHeaderRequest(Request::Type::SendLogInfo);
 
     // дата создания
-    QString vrm_Date = QDate::from_String(date, "yyyy-MM-dd").toString("dd.MM.yyyy");
+    QString vrm_Date = QDate::fromString(date, "yyyy-MM-dd").toString("dd.MM.yyyy");
     QString striper = "";
     bool result = false;
 

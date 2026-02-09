@@ -32,7 +32,7 @@ QMLGraphicsItem::QMLGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
     QString qmlPath = QDir::toNativeSeparators(QDir::cleanPath(
         aInfo.directory + QDir::separator() + aInfo.parameters[CQMLGraphicsItem::Item_Key]));
     QQmlComponent component(
-        m_Engine, qmlPath.startsWith("qrc") ? QUrl(qmlPath) : QUrl::from_LocalFile(qmlPath));
+        m_Engine, qmlPath.startsWith("qrc") ? QUrl(qmlPath) : QUrl::fromLocalFile(qmlPath));
 
     QObject *object = component.create();
     if (object) {

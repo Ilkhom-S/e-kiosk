@@ -6,14 +6,14 @@ CheckOnline::CheckOnline(QObject *parent) : SendRequest(parent) {
     senderName = "CHECK_ONLINE";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
+    connect(this, SIGNAL(emit_Dom_Element(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 }
 
 void CheckOnline::resendRequest() {
     emit emit_CheckOnlineResult("", "", "", QVariantList());
 }
 
-void CheckOnline::setDataNote(const QDom_Node &dom_Element) {
+void CheckOnline::setDataNote(const QDomNode &dom_Element) {
     getData = false;
     resultCode = "";
     items.clear();
@@ -31,14 +31,14 @@ void CheckOnline::setDataNote(const QDom_Node &dom_Element) {
     return;
 }
 
-void CheckOnline::parcerNote(const QDom_Node &dom_Element) {
+void CheckOnline::parcerNote(const QDomNode &dom_Element) {
     // Необходимо отпарсить документ
-    QDom_Node dom_Node = dom_Element.firstChild();
+    QDomNode dom_Node = dom_Element.firstChild();
 
     while (!dom_Node.isNull()) {
         if (dom_Node.isElement()) {
 
-            QDom_Element dom_Element = dom_Node.toElement();
+            QDomElement dom_Element = dom_Node.toElement();
             QString strTag = dom_Element.tagName();
 
             if (strTag == "resultCode") {
@@ -73,7 +73,7 @@ void CheckOnline::sendCheckOnlineRequest(
 
     QString footer_xml = getFooterRequest();
 
-    QString json = QJsonDocument::from_Variant(param).toJson(QJsonDocument::Compact);
+    QString json = QJsonDocument::fromVariant(param).toJson(QJsonDocument::Compact);
     QString param_Str = param.isEmpty() ? "" : QString("<param>%1</param>\n").arg(json);
     QString amountStr = amount > 0 ? QString("<amount>%1</amount>\n").arg(amount) : "";
 

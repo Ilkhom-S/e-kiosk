@@ -5,7 +5,7 @@
 #include <QtCore/QSharedPointer>
 
 // GUI SDK
-#include <SDK/GUI/GraphicsItem_Info.h>
+#include <SDK/GUI/GraphicsItemInfo.h>
 #include <SDK/GUI/IGraphicsItem.h>
 
 class QQuickItem;

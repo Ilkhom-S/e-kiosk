@@ -397,7 +397,8 @@ QVariantMap TerminalSettings::getChargeProviderAccess() const {
     static TPtree emptyTreeChargeAccess;
     BOOST_FOREACH (const TPtree::value_type &value,
                    m_properties.get_child("system.charge_access", emptyTreeChargeAccess)) {
-        result.insert(QString::fromStdString(value.first), value.second.get_value<QString>().split(","));
+        result.insert(QString::fromStdString(value.first),
+                      value.second.get_value<QString>().split(","));
     }
 
     return result;

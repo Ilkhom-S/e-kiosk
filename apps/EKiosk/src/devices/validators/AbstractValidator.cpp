@@ -30,7 +30,7 @@ bool BaseValidatorDevices::isOpened() {
 }
 
 void BaseValidatorDevices::setPortName(const QString com_Name) {
-    com_Name = com_Name;
+    this->com_Name = com_Name;
 }
 
 void BaseValidatorDevices::setPartNumber(const QString partNumber) {

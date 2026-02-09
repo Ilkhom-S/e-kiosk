@@ -13,7 +13,7 @@ private:
         QString parent_folder = _dir.absolutePath();
 
         QDirIterator directories(parent_folder,
-                                 QDir::Dirs | QDir::NoSym_Links | QDir::NoDotAndDotDot);
+                                 QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot);
         while (directories.hasNext()) {
             directories.next();
             if (directories.filePath().contains("tmp_")) {
@@ -61,7 +61,7 @@ private:
 
         if (dir.exists(dirName)) {
             Q_FOREACH (QFileInfo info, dir.entryInfoList(QDir::Files)) {
-                QDate _logDate = QDate::from_String(info.fileName().left(10), "dd.MM.yyyy");
+                QDate _logDate = QDate::fromString(info.fileName().left(10), "dd.MM.yyyy");
                 if (_logDate < QDate::currentDate().addDays(-61)) {
                     result = QFile::remove(info.absoluteFilePath());
 
@@ -86,7 +86,7 @@ private:
                        dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden |
                                              QDir::AllDirs | QDir::Files,
                                          QDir::DirsFirst)) {
-                QDate _logDate = QDate::from_String(info.fileName().left(10), "yyyy-MM-dd");
+                QDate _logDate = QDate::fromString(info.fileName().left(10), "yyyy-MM-dd");
 
                 if (_logDate < QDate::currentDate().addDays(-61)) {
                     if (info.isDir()) {

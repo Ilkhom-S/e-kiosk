@@ -172,7 +172,7 @@ template <class T> void AtolOnlineFRBase<T>::processDeviceData() {
     };
 
     if (processCommand(CAtolOnlineFR::Commands::FS::GetValidity, &data) && (data.size() >= 5)) {
-        QDate date = QDate::from_String("20" + hexToBCD(data.mid(2, 3)), CAtolOnlineFR::DateFormat);
+        QDate date = QDate::fromString("20" + hexToBCD(data.mid(2, 3)), CAtolOnlineFR::DateFormat);
 
         if (date.isValid()) {
             setDeviceParameter(CDeviceData::FS::ValidityData, CFR::FSValidityDateOff(date));

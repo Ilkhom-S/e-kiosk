@@ -4,7 +4,7 @@ AuthRequest::AuthRequest(QObject *parent) : SendRequest(parent) {
     senderName = "AUTH";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(errorResponse()));
-    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
+    connect(this, SIGNAL(emit_Dom_Element(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 }
 
 void AuthRequest::sendAuthRequest(QString login, QString otp, QString hash, QString cid) {
@@ -31,7 +31,7 @@ void AuthRequest::errorResponse() {
     emit emitResult("", "", "", "");
 }
 
-void AuthRequest::setDataNote(const QDom_Node &dom_Element) {
+void AuthRequest::setDataNote(const QDomNode &dom_Element) {
     resultCode = "";
     token = "";
     message = "";
@@ -47,14 +47,14 @@ void AuthRequest::setDataNote(const QDom_Node &dom_Element) {
     emit emitResult("", "", "", "");
 }
 
-void AuthRequest::parcerNote(const QDom_Node &dom_Element) {
+void AuthRequest::parcerNote(const QDomNode &dom_Element) {
     // Необходимо отпарсить документ
-    QDom_Node dom_Node = dom_Element.firstChild();
+    QDomNode dom_Node = dom_Element.firstChild();
 
     while (!dom_Node.isNull()) {
         if (dom_Node.isElement()) {
 
-            QDom_Element dom_Element = dom_Node.toElement();
+            QDomElement dom_Element = dom_Node.toElement();
             QString strTag = dom_Element.tagName();
 
             if (strTag == "resultCode") {

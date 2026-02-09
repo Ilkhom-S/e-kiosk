@@ -194,7 +194,7 @@ void MainPageLoader::precheck(QString idPrv, QString account, double amount) {
         }
     }
 
-    QString param = QJsonDocument::from_Variant(param_Precheck).toJson(QJsonDocument::Compact);
+    QString param = QJsonDocument::fromVariant(param_Precheck).toJson(QJsonDocument::Compact);
     emit emit_toLoging(
         0,
         "MAIN",
@@ -1109,7 +1109,7 @@ QString MainPageLoader::commissionProfile() {
     }
 
     QJsonDocument doc;
-    doc.setArray(QJsonArray::from_VariantList(items));
+    doc.setArray(QJsonArray::fromVariantList(items));
 
     return doc.toJson();
 }

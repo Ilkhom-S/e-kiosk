@@ -186,8 +186,8 @@ SchedulerService::Item::Item(const QString &aName,
     m_RetryTimeout = aSettings.value(CScheduler::Config::RetryTimeout, "-1").toInt();
 
     m_LastExecute =
-        QDateTime::from_String(aUserSettings.value(CScheduler::UserConfig::LastExecute).toString(),
-                               CScheduler::DateTimeFormat);
+        QDateTime::fromString(aUserSettings.value(CScheduler::UserConfig::LastExecute).toString(),
+                              CScheduler::DateTimeFormat);
     m_FailExecuteCounter =
         aUserSettings.value(CScheduler::UserConfig::FailExecuteCounter, 0).toInt();
 
@@ -206,7 +206,7 @@ SchedulerService::Item::Item(const QString &aName,
             m_Time = QTime::currentTime().addSecs(60 * 60);
         }
     } else {
-        m_Time = QTime::from_String(timeStr, CScheduler::TimeFormat);
+        m_Time = QTime::fromString(timeStr, CScheduler::TimeFormat);
         m_OnlyOnce = aSettings.value(CScheduler::Config::OnlyOnce, false).toBool();
     }
 }

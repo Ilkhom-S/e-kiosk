@@ -192,7 +192,7 @@ void GroupModel::mergeGroups(QDom_Element aTargetGroup, QDom_Element aSourceGrou
 
     auto findGroup =
         [&](const QDom_Element &aElement, qint64 aID, QDom_Element &aGroupElement) -> bool {
-        for (QDom_Node n = aElement.firstChild(); !n.isNull(); n = n.nextSibling()) {
+        for (QDomNode n = aElement.firstChild(); !n.isNull(); n = n.nextSibling()) {
             if (n.nodeName() == "group") {
                 QDom_Element element = n.toElement();
                 if (ID(element) == aID) {
@@ -222,13 +222,13 @@ void GroupModel::mergeGroups(QDom_Element aTargetGroup, QDom_Element aSourceGrou
             } else {
                 // вставляем в начало списка
                 auto nextElement = element.previousSiblingElement();
-                aTargetGroup.insertBefore(element, QDom_Node());
+                aTargetGroup.insertBefore(element, QDomNode());
                 element = nextElement;
             }
         } else {
             // вставляем в начало списка
             auto nextElement = element.previousSiblingElement();
-            aTargetGroup.insertBefore(element, QDom_Node());
+            aTargetGroup.insertBefore(element, QDomNode());
             element = nextElement;
         }
     }
@@ -251,7 +251,7 @@ void GroupModel::setSource(QString aSource) {
     // Корневая группа
     m_Groups[0] = m_Document.documentElement();
 
-    QDom_NodeList groups = m_Document.elementsByTagName(CGroupModel::Group);
+    QDomNodeList groups = m_Document.elementsByTagName(CGroupModel::Group);
     for (int i = 0; i < groups.count(); i++) {
         Item item(groups.at(i));
 
@@ -264,7 +264,7 @@ void GroupModel::setSource(QString aSource) {
     // Заполняем категории для каждого провайдера
     m_ProviderCategorys[Providers::AutodetectID] = 101;
 
-    QDom_NodeList providers = m_Document.elementsByTagName(CGroupModel::Operator);
+    QDomNodeList providers = m_Document.elementsByTagName(CGroupModel::Operator);
     for (int i = 0; i < providers.count(); i++) {
         Item item(providers.at(i));
 
@@ -299,7 +299,7 @@ void GroupModel::setElementFilter(QStringList aFilter) {
 }
 
 //------------------------------------------------------------------------------
-qint64 GroupModel::getCategory(QDom_Node aNode) {
+qint64 GroupModel::getCategory(QDomNode aNode) {
     if (aNode.isNull()) {
         // Не нашли вышестоящей корневой группы
         return 0;
@@ -338,7 +338,7 @@ const GroupModel::Item_List &GroupModel::getItem_List(qint64 aGroupID) {
     }
 
     Item_List result;
-    QDom_NodeList nodes = m_Groups[aGroupID].childNodes();
+    QDomNodeList nodes = m_Groups[aGroupID].childNodes();
 
     for (int i = 0; i < nodes.count(); i++) {
         result << QSharedPointer<Item>(new Item(nodes.at(i)));
@@ -486,7 +486,7 @@ QSet<qint64> GroupModel::allProviders() const {
 
 //------------------------------------------------------------------------------
 QString GroupModel::getProviderName(qint64 aProviderId) const {
-    QDom_NodeList providers = m_Document.elementsByTagName(CGroupModel::Operator);
+    QDomNodeList providers = m_Document.elementsByTagName(CGroupModel::Operator);
 
     for (int i = 0; i < providers.count(); i++) {
         Item item(providers.at(i));
@@ -505,7 +505,7 @@ void GroupModel::setStatistic(QMap<qint64, quint32> &aStatistic) {
 }
 
 //------------------------------------------------------------------------------
-Item::Item(const QDom_Node &aNode)
+Item::Item(const QDomNode &aNode)
     : m_Attributes(aNode.attributes()),
       m_IsGroup(aNode.nodeName().contains(CGroupModel::Group, Qt::CaseInsensitive) == true),
       m_ElementName(aNode.nodeName().toLower()), m_Order(0) {}

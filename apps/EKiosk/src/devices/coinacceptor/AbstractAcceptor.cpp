@@ -28,7 +28,7 @@ bool BaseAcceptorDevices::isOpened() {
 }
 
 void BaseAcceptorDevices::setPortName(const QString com_Name) {
-    com_Name = com_Name;
+    this->com_Name = com_Name;
 }
 
 void BaseAcceptorDevices::setPartNumber(const QString partNumber) {

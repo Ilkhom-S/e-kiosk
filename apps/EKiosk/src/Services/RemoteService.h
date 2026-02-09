@@ -21,7 +21,7 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 class IApplication;
 class IHardwareDatabaseUtils;
-class QFileSystem_Watcher;
+class QFileSystemWatcher;
 
 //---------------------------------------------------------------------------
 class RemoteService : public SDK::PaymentProcessor::IRemoteService,
@@ -209,7 +209,7 @@ public:
 
 private:
     /// Обновить список файлов
-    void restartUpdateWatcher(QFileSystem_Watcher *aWatcher = nullptr);
+    void restartUpdateWatcher(QFileSystemWatcher *aWatcher = nullptr);
 
     void timerEvent(QTimerEvent *aEvent);
 

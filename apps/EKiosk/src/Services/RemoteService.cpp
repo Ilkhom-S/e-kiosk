@@ -6,7 +6,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QtCore/QFileSystem_Watcher>
+#include <QtCore/QFileSystemWatcher>
 #include <QtCore/QMutexLocker>
 
 #include <SDK/Drivers/Components.h>
@@ -684,7 +684,7 @@ void RemoteService::onUpdateDirChanged() {
 
     toLog(LogLevel::Normal, "Directory 'update' changed.");
 
-    restartUpdateWatcher(dynamic_cast<QFileSystem_Watcher *>(sender()));
+    restartUpdateWatcher(dynamic_cast<QFileSystemWatcher *>(sender()));
 
     // Таймаут что бы этот обработчик, вызыванный много раз в течении короткого времени, не запускал
     // долгую процедуру проверки файлов отчетов.
@@ -709,8 +709,8 @@ QList<CommandReport> getReports(const QString &aReportsPath) {
 
         r.status = static_cast<SDK::PaymentProcessor::IRemoteService::EStatus>(
             report.value("status").toInt());
-        r.lastUpdate = QDateTime::from_String(report.value("last_update").toString(),
-                                              CRemoteService::DateTimeFormat);
+        r.lastUpdate = QDateTime::fromString(report.value("last_update").toString(),
+                                             CRemoteService::DateTimeFormat);
         r.description = report.value("status_desc");
         r.progress = report.value("progress");
 
@@ -905,8 +905,8 @@ void RemoteService::restoreCommandQueue() {
         cmd.type = static_cast<EUpdateType>(m_Settings.value("type").toInt());
         cmd.status = static_cast<EStatus>(m_Settings.value("status").toInt());
         cmd.parameters = m_Settings.value("parameters").toString().split("#");
-        cmd.lastUpdate = QDateTime::from_String(m_Settings.value("lastUpdate").toString(),
-                                                CRemoteService::DateTimeFormat);
+        cmd.lastUpdate = QDateTime::fromString(m_Settings.value("lastUpdate").toString(),
+                                               CRemoteService::DateTimeFormat);
 
         // Если метка времени до сих пор не использовалась, заполняем её текущим временем.
         if (cmd.lastUpdate.isNull() || !cmd.lastUpdate.isValid()) {
@@ -939,9 +939,9 @@ RemoteService::UpdateCommand RemoteService::findUpdateCommand(EUpdateType aType)
 }
 
 //---------------------------------------------------------------------------
-void RemoteService::restartUpdateWatcher(QFileSystem_Watcher *aWatcher) {
+void RemoteService::restartUpdateWatcher(QFileSystemWatcher *aWatcher) {
     if (!aWatcher) {
-        aWatcher = new QFileSystem_Watcher(this);
+        aWatcher = new QFileSystemWatcher(this);
         connect(
             aWatcher, SIGNAL(directoryChanged(const QString &)), this, SLOT(onUpdateDirChanged()));
         connect(aWatcher, SIGNAL(fileChanged(const QString &)), this, SLOT(onUpdateDirChanged()));

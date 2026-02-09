@@ -83,7 +83,7 @@ void AudioService::play(const QString &aFileName) {
             stop();
         }
 
-        m_Player->setSource(QUrl::from_LocalFile(filePath));
+        m_Player->setSource(QUrl::fromLocalFile(filePath));
         m_Player->play();
     } else {
         stop();

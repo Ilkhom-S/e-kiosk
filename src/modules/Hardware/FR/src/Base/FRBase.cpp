@@ -318,7 +318,7 @@ template <class T> void FRBase<T>::finalizeInitialization() {
 //--------------------------------------------------------------------------------
 template <class T> void FRBase<T>::initializeZReportByTimer() {
     QString configOpeningTime = getConfigParameter(CHardware::FR::SessionOpeningTime).toString();
-    QTime OT = QTime::from_String(configOpeningTime, CFR::TimeLogFormat);
+    QTime OT = QTime::fromString(configOpeningTime, CFR::TimeLogFormat);
 
     QTime ZT = getConfigParameter(CHardwareSDK::FR::ZReportTime).toTime();
     QTime CT = QDateTime::currentDateTime().time();
@@ -1250,7 +1250,7 @@ template <class T> bool FRBase<T>::processStatus(TStatusCodes &aStatusCodes) {
         }
 
         QString validityFSData = getDeviceParameter(CDeviceData::FS::ValidityData).toString();
-        QDate validityFSDate = QDate::from_String(validityFSData, CFR::DateLogFormat);
+        QDate validityFSDate = QDate::fromString(validityFSData, CFR::DateLogFormat);
         QDate currentDate = QDate::currentDate();
 
         if (validityFSDate.isValid() && (currentDate >= validityFSDate)) {
@@ -1676,7 +1676,7 @@ template <class T> bool FRBase<T>::isFS36() const {
     }
 
     QString FSValidityDateText = getDeviceParameter(CDeviceData::FS::ValidityData).toString();
-    QDate FSValidityDate = QDate::from_String(FSValidityDateText, CFR::DateLogFormat);
+    QDate FSValidityDate = QDate::fromString(FSValidityDateText, CFR::DateLogFormat);
 
     if (!FSValidityDate.isValid() || FSValidityDate.isNull()) {
         toLog(LogLevel::Error, m_DeviceName + ": Failed to check FS validity date");

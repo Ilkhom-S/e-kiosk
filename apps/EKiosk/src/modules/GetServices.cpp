@@ -2,7 +2,7 @@
 
 GetServices::GetServices(QObject *parent) : SendRequest(parent) {
     this->senderName = "GET_SERVICES";
-    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
+    connect(this, SIGNAL(emit_Dom_Element(QDomNode)), this, SLOT(setDataNote(QDomNode)));
     //    connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(errorResponse()));
 }
 
@@ -15,7 +15,7 @@ GetServices::GetServices(QObject *parent) : SendRequest(parent) {
 //    emit emit_getServices(true);
 //}
 
-void GetServices::setDataNote(const QDom_Node &dom_Element) {
+void GetServices::setDataNote(const QDomNode &dom_Element) {
     this->getReqStatus = true;
 
     bool fullParsing = true;
@@ -102,13 +102,13 @@ void GetServices::setDataNote(const QDom_Node &dom_Element) {
     }
 }
 
-void GetServices::parcerHash(const QDom_Node &dom_Element) {
-    QDom_Node dom_Node = dom_Element.firstChild();
+void GetServices::parcerHash(const QDomNode &dom_Element) {
+    QDomNode dom_Node = dom_Element.firstChild();
 
     while (!dom_Node.isNull()) {
         if (dom_Node.isElement()) {
 
-            QDom_Element dom_Element = dom_Node.toElement();
+            QDomElement dom_Element = dom_Node.toElement();
             QString strTag = dom_Element.tagName();
 
             // проверяем респонс
@@ -187,13 +187,13 @@ void GetServices::parcerHash(const QDom_Node &dom_Element) {
     }
 }
 
-void GetServices::parcerNote(const QDom_Node &dom_Element) {
-    QDom_Node dom_Node = dom_Element.firstChild();
+void GetServices::parcerNote(const QDomNode &dom_Element) {
+    QDomNode dom_Node = dom_Element.firstChild();
 
     while (!dom_Node.isNull()) {
         if (dom_Node.isElement()) {
 
-            QDom_Element dom_Element = dom_Node.toElement();
+            QDomElement dom_Element = dom_Node.toElement();
             QString strTag = dom_Element.tagName();
 
             // if(Debugger) qDebug() << strTag + " " + dom_Element.text();

@@ -33,7 +33,7 @@ extern const char CashUnits[] = "cash_units";
 // Definitions for CServiceParameters constants
 namespace CServiceParameters {
 namespace Networking {
-extern const char SimBalance[] = "sim_balance";
+extern const char Sim_Balance[] = "sim_balance";
 extern const char SignalLevel[] = "signal_level";
 extern const char Provider[] = "provider";
 } // namespace Networking

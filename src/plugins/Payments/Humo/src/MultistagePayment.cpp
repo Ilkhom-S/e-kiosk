@@ -168,7 +168,7 @@ PPSDK::TProviderFields MultistagePayment::getFieldsForStep(const QString &aStep)
 }
 
 //---------------------------------------------------------------------------
-void loadProviderEnum_Items(PPSDK::SProviderField::TEnum_Items &aItem_List, QDom_Node aNode) {
+void loadProviderEnum_Items(PPSDK::SProviderField::TEnum_Items &aItem_List, QDomNode aNode) {
     QDom_Element item_Element = aNode.firstChildElement("item");
 
     while (!item_Element.isNull()) {
@@ -196,13 +196,13 @@ void loadProviderEnum_Items(PPSDK::SProviderField::TEnum_Items &aItem_List, QDom
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::TProviderFields
 MultistagePayment::parseFieldsXml(const QString &aFieldsXml) const {
-    auto toBool = [](QDom_Node aNode, bool aDefault) -> bool {
+    auto toBool = [](QDomNode aNode, bool aDefault) -> bool {
         QString value = aNode.nodeValue();
 
         return (value == "true") ? true : (value == "false" ? false : aDefault);
     };
 
-    auto toInt = [](QDom_Node aNode, int aDefault) -> int {
+    auto toInt = [](QDomNode aNode, int aDefault) -> int {
         QString value = aNode.nodeValue();
 
         return value.isEmpty() ? aDefault : value.toInt();
@@ -212,10 +212,10 @@ MultistagePayment::parseFieldsXml(const QString &aFieldsXml) const {
 
     QDom_Document doc("mydocument");
     if (doc.setContent(aFieldsXml)) {
-        QDom_NodeList fieldsList = doc.elementsByTagName("field");
+        QDomNodeList fieldsList = doc.elementsByTagName("field");
 
         for (int i = 0; i < fieldsList.size(); ++i) {
-            QDom_Node node = fieldsList.item(i);
+            QDomNode node = fieldsList.item(i);
 
             PPSDK::SProviderField field;
 

@@ -95,7 +95,7 @@ public:
     bool firstSend;
 
 private:
-    void parcerNote(const QDom_Node &dom_Element);
+    void parcerNote(const QDomNode &dom_Element);
 
     double gbl_overdraft;
     double gbl_balance;
@@ -110,7 +110,7 @@ private:
 private slots:
     void resendRequest();
     void r_RequestRepeet();
-    void setDataNote(const QDom_Node &dom_Element);
+    void setDataNote(const QDomNode &dom_Element);
 
 signals:
     void getRequestParam();

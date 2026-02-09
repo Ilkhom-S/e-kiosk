@@ -268,7 +268,7 @@ template <class T> void ShtrihOnlineFRBase<T>::processDeviceData() {
 
     if (processCommand(CShtrihOnlineFR::Commands::FS::GetValidity, &data)) {
         QDate date =
-            QDate::from_String(hexToBCD(data.mid(3, 3)).prepend("20"), CShtrihOnlineFR::DateFormat);
+            QDate::fromString(hexToBCD(data.mid(3, 3)).prepend("20"), CShtrihOnlineFR::DateFormat);
 
         if (date.isValid()) {
             setDeviceParameter(CDeviceData::FS::ValidityData, CFR::FSValidityDateOff(date));

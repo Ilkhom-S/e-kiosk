@@ -88,7 +88,7 @@ private:
     /// Высчитываем максимальную индекс сортировки для содержимого группы
     quint32 getGroupOrder(qint64 aGroupID);
 
-    qint64 getCategory(QDom_Node aNode);
+    qint64 getCategory(QDomNode aNode);
 
     void clearNodes();
 
@@ -106,7 +106,7 @@ private:
     QDom_Document m_Document;
 
     /// Список групп по их идентификаторам
-    QHash<qint64, QDom_Node> m_Groups;
+    QHash<qint64, QDomNode> m_Groups;
 
     /// Соответствие категории для каждой группы
     QHash<qint64, qint64> m_Categories;
@@ -138,7 +138,7 @@ private:
 //------------------------------------------------------------------------------
 class Item {
 public:
-    Item(const QDom_Node &aNode);
+    Item(const QDomNode &aNode);
 
     virtual qint64 getId() const;
     virtual QString getName() const;

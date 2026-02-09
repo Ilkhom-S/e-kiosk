@@ -4,14 +4,14 @@ GetBalanceAgent::GetBalanceAgent(QObject *parent) : SendRequest(parent) {
     senderName = "AGENT_BALANCE";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
+    connect(this, SIGNAL(emit_Dom_Element(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 }
 
 void GetBalanceAgent::resendRequest() {
     emit emit_BalanceAgent("---", "---");
 }
 
-void GetBalanceAgent::setDataNote(const QDom_Node &dom_Element) {
+void GetBalanceAgent::setDataNote(const QDomNode &dom_Element) {
     resultCode = false;
     getData = false;
     balance = "resultCode";
@@ -29,14 +29,14 @@ void GetBalanceAgent::setDataNote(const QDom_Node &dom_Element) {
     emit emit_BalanceAgent("---", "---");
 }
 
-void GetBalanceAgent::parcerNote(const QDom_Node &dom_Element) {
+void GetBalanceAgent::parcerNote(const QDomNode &dom_Element) {
     // Необходимо отпарсить документ
-    QDom_Node dom_Node = dom_Element.firstChild();
+    QDomNode dom_Node = dom_Element.firstChild();
 
     while (!dom_Node.isNull()) {
         if (dom_Node.isElement()) {
 
-            QDom_Element dom_Element = dom_Node.toElement();
+            QDomElement dom_Element = dom_Node.toElement();
             QString strTag = dom_Element.tagName();
 
             // if(Debugger) qDebug() << strTag + " " + dom_Element.text();

@@ -594,7 +594,7 @@ template <class T> void ProtoShtrihFR<T>::parseDeviceData(const QByteArray &aDat
     FRInfo.version = aData.mid(3, 2).insert(1, ASCII::Dot);
     FRInfo.build = revert(aData.mid(5, 2)).toHex().toUShort(0, 16);
     QString FRDate = hexToBCD(aData.mid(7, 3)).insert(4, "20");
-    FRInfo.date = QDate::from_String(FRDate, CFR::DateFormat);
+    FRInfo.date = QDate::fromString(FRDate, CFR::DateFormat);
 
     m_OldFirmware = (m_ModelData.build && (FRInfo.build != m_ModelData.build)) ||
                     ((m_ModelData.date < QDate::currentDate()) && (FRInfo.date < m_ModelData.date));

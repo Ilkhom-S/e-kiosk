@@ -11,9 +11,9 @@ public:
     GetServices(QObject *parent = 0);
 
 public slots:
-    void parcerHash(const QDom_Node &dom_Element);
-    void parcerNote(const QDom_Node &dom_Element);
-    void setDataNote(const QDom_Node &dom_Element);
+    void parcerHash(const QDomNode &dom_Element);
+    void parcerNote(const QDomNode &dom_Element);
+    void setDataNote(const QDomNode &dom_Element);
     void sendGetServicesQuery();
     //        void errorResponse();
 

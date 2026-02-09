@@ -138,7 +138,7 @@ private:
                        double moneyOutSum,
                        QString trnFrom,
                        QString trnTo);
-    void parcerNote(const QDom_Node &dom_Element);
+    void parcerNote(const QDomNode &dom_Element);
 
     QString getCollectIdByDate(QString date);
 
@@ -159,7 +159,7 @@ private slots:
     void sendCollectRequest();
     void getRequestParam();
     void errResponse();
-    void setDataNote(const QDom_Node &dom_Element);
+    void setDataNote(const QDomNode &dom_Element);
 
 signals:
     void lockUnlockAvtorization(bool lock, int sts);

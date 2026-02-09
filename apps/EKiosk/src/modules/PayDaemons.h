@@ -39,7 +39,7 @@ private:
     bool getPaymentMap(QString &payment, int &count_pay, double &all_sum);
     bool
     updateOperationStatus(const QString &id_trm, const QString &status, const QString &dateConfirm);
-    void parcerNote(const QDom_Node &dom_Element);
+    void parcerNote(const QDomNode &dom_Element);
 
     void confirm_Payments();
 
@@ -58,7 +58,7 @@ private:
     QString getCollectionId();
 
 private slots:
-    void setDataNote(const QDom_Node &dom_Element);
+    void setDataNote(const QDomNode &dom_Element);
     void getErrResponse();
 
 public slots:

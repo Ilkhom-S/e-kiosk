@@ -16,11 +16,11 @@ private:
     QString token;
     QString message;
 
-    void parcerNote(const QDom_Node &dom_Element);
+    void parcerNote(const QDomNode &dom_Element);
 
 private slots:
     void errorResponse();
-    void setDataNote(const QDom_Node &dom_Element);
+    void setDataNote(const QDomNode &dom_Element);
 
 public slots:
     void sendAuthRequest(QString login, QString otp, QString hash, QString cid);

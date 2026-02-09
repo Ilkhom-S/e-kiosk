@@ -1098,7 +1098,7 @@ void MainWindow::getSystem_Info(QVariantMap data) {
     system_InfoGot = true;
 
     toLog(LoggerLevel::Info, senderName, "GET SYSINFO FINISHED");
-    QJsonDocument json = QJsonDocument::from_Variant(config.system_Info);
+    QJsonDocument json = QJsonDocument::fromVariant(config.system_Info);
     toLog(LoggerLevel::Info, senderName, QString(json.toJson(QJsonDocument::Compact)));
 }
 
@@ -2343,8 +2343,8 @@ void MainWindow::incameStatusFrom_Validator(int sts, QString comment) {
             openValidatorBox();
 
             auto dt = QDateTime::currentDateTime();
-            int offset = dt.offsetFrom_Utc();
-            dt.setOffsetFrom_Utc(offset);
+            int offset = dt.offsetFromUtc();
+            dt.setOffsetFromUtc(offset);
 
             if (saveBillValidatorEvent("CASHBOX-OPENED", dt.toString(Qt::ISODateWithMs))) {
                 bValidatorEventCheck();
@@ -2992,7 +2992,7 @@ void MainWindow::toSendMonitoringStatus() {
 
         sData.system_Info = config.system_Info;
         toLog(LoggerLevel::Info, senderName, "SYSINFO MONITORING");
-        QJsonDocument json = QJsonDocument::from_Variant(sData.system_Info);
+        QJsonDocument json = QJsonDocument::fromVariant(sData.system_Info);
         toLog(LoggerLevel::Info, senderName, QString(json.toJson(QJsonDocument::Compact)));
 
         //        if(config.modem_Data.Name != "")
@@ -4579,7 +4579,7 @@ void MainWindow::wsQuery(const QString query, const QVariantMap data) {
     auto queryData = data;
     queryData.insert("query", query);
 
-    auto json = QJsonDocument::from_Variant(queryData);
+    auto json = QJsonDocument::fromVariant(queryData);
     auto bytes = json.toJson(QJsonDocument::Compact);
 
     if (webSocket.isValid()) {
@@ -4653,13 +4653,13 @@ QString MainWindow::versionFull() {
 
 qint32 MainWindow::generateEncodeKey() {
     QString vrm_CodeData = "YTBnMFdXUjRXV3BM";
-    QByteArray vrm_CodeData = QByteArray::from_Base64(vrm_CodeData.toLatin1());
-    vrm_CodeData = "";
-    vrm_CodeData.append(vrm_CodeData);
-    vrm_CodeData.clear();
-    vrm_CodeData = QByteArray::from_Base64(vrm_CodeData.toLatin1());
+    QByteArray vrm_ByteCodeData = QByteArray::fromBase64(vrm_CodeData.toLatin1());
+    vrm_ByteCodeData = "";
+    vrm_ByteCodeData.append(vrm_ByteCodeData);
+    vrm_ByteCodeData.clear();
+    vrm_ByteCodeData = QByteArray::fromBase64(vrm_ByteCodeData);
     QString vrm_StrCodeData;
-    vrm_StrCodeData.append(vrm_CodeData);
+    vrm_StrCodeData.append(vrm_ByteCodeData);
 
     return vrm_StrCodeData.toInt();
 }

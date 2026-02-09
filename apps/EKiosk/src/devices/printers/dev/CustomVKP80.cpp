@@ -1,9 +1,9 @@
+#include "CustomVKP80.h"
+
 #include <QtCore/QBuffer>
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QIODevice>
-
-#include "Custom_VKP80.h"
 
 Custom_VKP80_PRINTER::Custom_VKP80_PRINTER(QObject *parent) : BasePrinterDevices(parent) {
     //    printer_name = "Custom-VKP80";

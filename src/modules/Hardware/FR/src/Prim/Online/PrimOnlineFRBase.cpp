@@ -258,7 +258,7 @@ void Prim_OnlineFRBase::processDeviceData() {
                 data[13] = data[13].insert(4, "20");
             }
 
-            QDate date = QDate::from_String(data[13], CFR::DateFormat);
+            QDate date = QDate::fromString(data[13], CFR::DateFormat);
 
             if (date.isValid()) {
                 setDeviceParameter(CDeviceData::FS::ValidityData, CFR::FSValidityDateOff(date));

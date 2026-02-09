@@ -87,7 +87,7 @@ WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
             return;
         }
         QTextStream stream(&content);
-        m_WebView->setHtml(stream.readAll(), QUrl::from_LocalFile(aInfo.directory + "/"));
+        m_WebView->setHtml(stream.readAll(), QUrl::fromLocalFile(aInfo.directory + "/"));
     }
     m_Url = path;
 

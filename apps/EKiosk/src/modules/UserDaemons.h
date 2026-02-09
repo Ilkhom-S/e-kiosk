@@ -12,13 +12,13 @@ public:
 
 private slots:
     void resendRequest();
-    void setDataNote(const QDom_Node &dom_Element);
+    void setDataNote(const QDomNode &dom_Element);
 
 public slots:
     void sendUserDataRequest(QString account, QString prvId);
 
 private:
-    void parcerNote(const QDom_Node &dom_Element);
+    void parcerNote(const QDomNode &dom_Element);
 
     bool resultCode;
     bool getData;

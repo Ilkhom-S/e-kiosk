@@ -4,14 +4,14 @@ SendOtp::SendOtp(QObject *parent) : SendRequest(parent) {
     senderName = "SEND_OTP";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
+    connect(this, SIGNAL(emit_Dom_Element(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 }
 
 void SendOtp::resendRequest() {
     emit emit_SendOtpResult("", "");
 }
 
-void SendOtp::setDataNote(const QDom_Node &dom_Element) {
+void SendOtp::setDataNote(const QDomNode &dom_Element) {
     resultCode = "";
     otpId = "";
 
@@ -28,14 +28,14 @@ void SendOtp::setDataNote(const QDom_Node &dom_Element) {
     return;
 }
 
-void SendOtp::parcerNote(const QDom_Node &dom_Element) {
+void SendOtp::parcerNote(const QDomNode &dom_Element) {
     // Необходимо отпарсить документ
-    QDom_Node dom_Node = dom_Element.firstChild();
+    QDomNode dom_Node = dom_Element.firstChild();
 
     while (!dom_Node.isNull()) {
         if (dom_Node.isElement()) {
 
-            QDom_Element dom_Element = dom_Node.toElement();
+            QDomElement dom_Element = dom_Node.toElement();
             QString strTag = dom_Element.tagName();
 
             if (strTag == "resultCode") {

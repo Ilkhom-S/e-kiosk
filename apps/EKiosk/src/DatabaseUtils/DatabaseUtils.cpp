@@ -41,7 +41,7 @@ struct {
 //---------------------------------------------------------------------------
 DatabaseUtils::DatabaseUtils(IDatabaseProxy &aProxy, IApplication *aApplication)
     : m_Database(aProxy), m_Application(aApplication), m_Log(aApplication->getLog()),
-      m_PaymentLog(ILog::getInstance("Payments")), {}
+      m_PaymentLog(ILog::getInstance("Payments")) {}
 
 //---------------------------------------------------------------------------
 DatabaseUtils::~DatabaseUtils() = default;

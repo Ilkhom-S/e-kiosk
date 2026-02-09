@@ -351,8 +351,8 @@ Ad::Campaign Client::getAdInternal(const QString &aType) const {
     camp.type = aType;
     camp.url = m_Settings->value(Settings::Source).toUrl();
     camp.md5 = m_Settings->value(Settings::MD5).toString();
-    camp.expired = QDateTime::from_String(m_Settings->value(Settings::Expired).toString(),
-                                          Ad::Parameters::DateTimeFormat);
+    camp.expired = QDateTime::fromString(m_Settings->value(Settings::Expired).toString(),
+                                         Ad::Parameters::DateTimeFormat);
     camp.text = m_Settings->value(Settings::Text).toString();
 
     m_Settings->endGroup();

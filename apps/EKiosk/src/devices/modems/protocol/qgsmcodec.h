@@ -28,7 +28,7 @@ public:
 
 protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
-    QByteArray convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const;
+    QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
 
 private:
     bool noLoss;

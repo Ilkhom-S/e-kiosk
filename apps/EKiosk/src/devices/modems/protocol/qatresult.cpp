@@ -41,7 +41,7 @@
 
 class QAtResultPrivate {
 public:
-    QAtResultPrivate() : result("OK"), {}
+    QAtResultPrivate() : result("OK") {}
     ~QAtResultPrivate() {
         {
             delete userData;
@@ -603,7 +603,6 @@ QString QAtResult::codeToResult(const QString &defaultValue) const {
             return "+CMS ERROR: " + QString::number(d->resultCode);
         }
         return "+CME ERROR: " + QString::number(d->resultCode);
-
     }
     return defaultValue;
 }

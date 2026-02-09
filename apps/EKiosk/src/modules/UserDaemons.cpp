@@ -4,14 +4,14 @@ UserDaemons::UserDaemons(QObject *parent) : SendRequest(parent) {
     senderName = "USER_DAEMONS";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
-    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
+    connect(this, SIGNAL(emit_Dom_Element(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 }
 
 void UserDaemons::resendRequest() {
     emit emit_UserData("---");
 }
 
-void UserDaemons::setDataNote(const QDom_Node &dom_Element) {
+void UserDaemons::setDataNote(const QDomNode &dom_Element) {
     resultCode = false;
     getData = false;
     balance = "";
@@ -28,12 +28,12 @@ void UserDaemons::setDataNote(const QDom_Node &dom_Element) {
     emit emit_UserData("---");
 }
 
-void UserDaemons::parcerNote(const QDom_Node &dom_Element) {
-    QDom_Node dom_Node = dom_Element.firstChild();
+void UserDaemons::parcerNote(const QDomNode &dom_Element) {
+    QDomNode dom_Node = dom_Element.firstChild();
 
     while (!dom_Node.isNull()) {
         if (dom_Node.isElement()) {
-            QDom_Element dom_Element = dom_Node.toElement();
+            QDomElement dom_Element = dom_Node.toElement();
             QString strTag = dom_Element.tagName();
 
             // Данные о дилере

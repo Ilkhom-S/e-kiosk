@@ -102,7 +102,7 @@ void ShtrihSerialFR::parseDeviceData(const QByteArray &aData) {
     FMInfo.version = aData.mid(18, 2).insert(1, ASCII::Dot);
     FMInfo.build = ProtocolUtils::revert(aData.mid(20, 2)).toHex().toUShort(0, 16);
     QString FMDate = ProtocolUtils::hexToBCD(aData.mid(22, 3)).insert(4, "20");
-    FMInfo.date = QDate::from_String(FMDate, CFR::DateFormat);
+    FMInfo.date = QDate::fromString(FMDate, CFR::DateFormat);
 
     setDeviceParameter(CDeviceData::Version, FMInfo.version, CDeviceData::FM::Firmware, true);
     setDeviceParameter(CDeviceData::Build, FMInfo.build, CDeviceData::FM::Firmware);
@@ -164,7 +164,7 @@ void ShtrihSerialFR::parseDeviceData(const QByteArray &aData) {
                                          .split(" ")[0]
                                          .replace("/", "")
                                          .insert(4, "20");
-        QDate EKLZActivizationDate = QDate::from_String(EKLZActivationData, CFR::DateFormat);
+        QDate EKLZActivizationDate = QDate::fromString(EKLZActivationData, CFR::DateFormat);
 
         setDeviceParameter(CDeviceData::EKLZ::ActivizationDate,
                            EKLZActivizationDate.toString(CFR::DateLogFormat));

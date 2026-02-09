@@ -432,7 +432,7 @@ void DownloadManager::openDocumentXml() {
     countFileTag = 0;
 
     // Документ для парсинга xml
-    QDom_Document doc;
+    QDomDocument doc;
     QFile file(tmpDirectory + this->XmlName);
 
     // Проверяем можно ли открыть файл
@@ -484,7 +484,7 @@ void DownloadManager::openDocumentXml() {
         emit this->emit_Loging(
             0, this->senderName, QString("Начинаем парсить %1 файл.").arg(this->XmlName));
         this->ServerXmlMap.clear();
-        QDom_Element dom_Element = doc.documentElement();
+        QDomElement dom_Element = doc.documentElement();
         traverseNode(dom_Element);
     }
 
@@ -886,12 +886,12 @@ bool DownloadManager::insertNewRecordFile(QString path, QString name, QString si
     return true;
 }
 
-void DownloadManager::traverseNode(const QDom_Node &node) {
-    QDom_Node dom_Node = node.firstChild();
+void DownloadManager::traverseNode(const QDomNode &node) {
+    QDomNode dom_Node = node.firstChild();
 
     while (!dom_Node.isNull()) {
         if (dom_Node.isElement()) {
-            QDom_Element dom_Element = dom_Node.toElement();
+            QDomElement dom_Element = dom_Node.toElement();
             QString strTag = dom_Element.tagName();
 
             if (strTag == "file") {

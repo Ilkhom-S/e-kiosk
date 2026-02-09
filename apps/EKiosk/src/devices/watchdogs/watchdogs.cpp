@@ -34,7 +34,7 @@ bool WatchDogs::closePort() {
 }
 
 void WatchDogs::setPort(const QString com_Name) {
-    com_Name = com_Name;
+    this->com_Name = com_Name;
 }
 
 bool WatchDogs::isOpened() {

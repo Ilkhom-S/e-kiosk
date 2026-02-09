@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-CCTalk::CCTalk() : debugger(false), preDate(0), checkCoin(true), coinAcceptorLogEnable(false) : {
+CCTalk::CCTalk() : debugger(false), preDate(0), checkCoin(true), coinAcceptorLogEnable(false) {
 
     setBillConstData();
 }
@@ -484,7 +484,7 @@ void CCTalk::CmdInit() {
 
     billTable.clear();
 
-    QString billTable = "";
+    QString billTableString = "";
 
     for (int i = 1; i <= 16; i++) {
 
@@ -509,21 +509,21 @@ void CCTalk::CmdInit() {
         billTable[i] = billValue.replace("......", "").trimmed();
 
         if (billTable[i] != "") {
-            billTable += QString("%1:%2  ").arg(i).arg(billTable[i]);
+            billTableString += QString("%1:%2  ").arg(i).arg(billTable[i]);
         } else {
-            billTable += QString("%1:--  ").arg(i);
+            billTableString += QString("%1:--  ").arg(i);
         }
 
         if (i == 8) {
-            billTable += "\n";
+            billTableString += "\n";
         }
     }
 
-    billTableResp = billTable;
+    billTableResp = billTableString;
 
     msleep(500);
 
-    emit emitBillTable(billTable);
+    emit emitBillTable(billTableString);
 
     QCoreApplication::processEvents();
 }

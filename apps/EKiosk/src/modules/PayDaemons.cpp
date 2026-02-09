@@ -7,7 +7,7 @@ PayDaemons::PayDaemons(QObject *parent) : SendRequest(parent) {
 
     senderName = "PAY_DAEMONS";
 
-    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
+    connect(this, SIGNAL(emit_Dom_Element(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 
     count_non_send = 0;
 
@@ -41,7 +41,7 @@ void PayDaemons::getErrResponse() {
     abortPresent = true;
 }
 
-void PayDaemons::setDataNote(const QDom_Node &dom_Element) {
+void PayDaemons::setDataNote(const QDomNode &dom_Element) {
     abortPresent = false;
 
     if (restatTimer->isActive()) {
@@ -71,15 +71,15 @@ void PayDaemons::setDataNote(const QDom_Node &dom_Element) {
     }
 }
 
-void PayDaemons::parcerNote(const QDom_Node &dom_Element) {
+void PayDaemons::parcerNote(const QDomNode &dom_Element) {
 
     // Необходимо отпарсить документ
-    QDom_Node dom_Node = dom_Element.firstChild();
+    QDomNode dom_Node = dom_Element.firstChild();
 
     while (!dom_Node.isNull()) {
         if (dom_Node.isElement()) {
 
-            QDom_Element dom_Element = dom_Node.toElement();
+            QDomElement dom_Element = dom_Node.toElement();
             QString strTag = dom_Element.tagName();
 
             // if(Debugger) qDebug() << strTag + " " + dom_Element.text();
@@ -167,7 +167,7 @@ void PayDaemons::get_new_pay(QVariantMap payment) {
     auto extraInfo = payment.value("extra_info").toMap();
     QString extra = extraInfo.isEmpty()
                         ? ""
-                        : QJsonDocument::from_Variant(extraInfo).toJson(QJsonDocument::Compact);
+                        : QJsonDocument::fromVariant(extraInfo).toJson(QJsonDocument::Compact);
 
     if (GetOperationCount(trnId)) {
         emit emit_Loging(1,

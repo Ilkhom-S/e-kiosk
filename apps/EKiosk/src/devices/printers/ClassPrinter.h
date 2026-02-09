@@ -7,8 +7,8 @@
 #include "dev/CitizenCBM1000.h"
 #include "dev/CitizenCTS2000.h"
 #include "dev/CitizenPPU700.h"
-#include "dev/Custom_TG2480.h"
-#include "dev/Custom_VKP80.h"
+#include "dev/CustomTG2480.h"
+#include "dev/CustomVKP80.h"
 #include "dev/KM1X.h"
 #include "dev/Phoenix.h"
 
@@ -57,8 +57,10 @@ public:
     void closeThis();
     void setLeftMargin(int left_margin);
     void setSmallBeetwenString(bool beet);
-    bool
-    isItYou(QStringList &com_List, QString &printer_name, QString &com_str, QString &printer_coment);
+    bool isItYou(QStringList &com_List,
+                 QString &printer_name,
+                 QString &com_str,
+                 QString &printer_coment);
     void tarminateThis();
     void clearListPrinterData(QString name);
 

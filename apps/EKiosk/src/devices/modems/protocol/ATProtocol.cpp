@@ -21,7 +21,7 @@ ATProtocol::ATProtocol(QObject *parent)
 }
 
 void ATProtocol::setPortName(const QString com_Name) {
-    com_Name = com_Name;
+    this->com_Name = com_Name;
 }
 
 bool ATProtocol::openPort() {

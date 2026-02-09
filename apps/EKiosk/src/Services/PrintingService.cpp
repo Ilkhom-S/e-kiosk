@@ -11,7 +11,7 @@
 #include <QtCore/QXmlStreamWriter>
 #include <QtQml/QJSEngine>
 #include <QtQml/QJSValue>
-#include <QtXML/QDom_Document>
+#include <QtXml/QDomDocument>
 
 // Thirdparty
 #include <qzint.h>
@@ -1161,7 +1161,7 @@ bool PrintingService::loadReceiptTemplate(const QFileInfo &aFileInfo) {
         return false;
     }
 
-    QDom_Document xmlFile(aFileInfo.fileName());
+    QDomDocument xmlFile(aFileInfo.fileName());
     QFile file(aFileInfo.filePath());
 
     if (!file.open(QIODevice::ReadOnly)) {
@@ -1171,12 +1171,12 @@ bool PrintingService::loadReceiptTemplate(const QFileInfo &aFileInfo) {
 
     xmlFile.setContent(&file);
 
-    QDom_Element body = xmlFile.documentElement();
+    QDomElement body = xmlFile.documentElement();
 
     QStringList receiptContents;
 
-    for (QDom_Node node = body.firstChild(); !node.isNull(); node = node.nextSibling()) {
-        QDom_Element row = node.toElement();
+    for (QDomNode node = body.firstChild(); !node.isNull(); node = node.nextSibling()) {
+        QDomElement row = node.toElement();
 
         if (row.tagName() == "string" || row.tagName() == "else") {
             QString prefix =

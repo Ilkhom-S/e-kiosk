@@ -848,8 +848,8 @@ bool SparkFR::cancelDocument(bool aDocumentIsOpened) {
 
 //--------------------------------------------------------------------------------
 QDateTime SparkFR::parseDateTime(TKKMInfoData &aData) {
-    QTime time = QTime::from_String(aData[9], CSparkFR::TimeFormat);
-    QDate date = QDate::from_String(aData[10].insert(4, "20"), CFR::DateFormat);
+    QTime time = QTime::fromString(aData[9], CSparkFR::TimeFormat);
+    QDate date = QDate::fromString(aData[10].insert(4, "20"), CFR::DateFormat);
 
     return QDateTime(date, time);
 }

@@ -187,7 +187,7 @@ QString PPApplication::getUserDataPath() const {
                           ? getSettings().value(CSettings::UserDataPath).toString()
                           : "user";
 
-    return QDir::cleanPath(QDir::from_NativeSeparators(
+    return QDir::cleanPath(QDir::fromNativeSeparators(
         QDir::isAbsolutePath(dataDir) ? dataDir
                                       : BasicApplication::getWorkingDirectory() + "/" + dataDir));
 }
@@ -198,7 +198,7 @@ QString PPApplication::getPluginPath() const {
                             ? getSettings().value(CSettings::PluginsPath).toString()
                             : "plugins";
 
-    return QDir::cleanPath(QDir::from_NativeSeparators(
+    return QDir::cleanPath(QDir::fromNativeSeparators(
         QDir::isAbsolutePath(pluginDir)
             ? pluginDir
             : BasicApplication::getWorkingDirectory() + "/" + pluginDir));

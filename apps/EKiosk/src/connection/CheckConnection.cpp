@@ -45,7 +45,7 @@ void CheckConnection::slotConnectedOk() {
     if (stsTimer->isActive())
         stsTimer->stop();
 
-    m_pTcpSocket->disconnectFrom_Host();
+    m_pTcpSocket->disconnectFromHost();
 
     emit this->emit_Ping(true);
 }
@@ -64,7 +64,7 @@ void CheckConnection::connectToHost(QString ipAddress) {
     stsTimer->start(29000);
 
     if (m_pTcpSocket->state() == QAbstractSocket::ConnectedState) {
-        m_pTcpSocket->disconnectFrom_Host();
+        m_pTcpSocket->disconnectFromHost();
     }
 
     m_pTcpSocket->connectToHost(ipAddress, 80);

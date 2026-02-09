@@ -78,7 +78,7 @@ AdminDialog::AdminDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AdminDia
     connect(ui->btnPowerOffTypeDevices, SIGNAL(clicked()), SLOT(shutDounASO()));
     connect(ui->btnSaveChangeTypeDevices, SIGNAL(clicked()), SLOT(saveDeviceParam()));
     connect(ui->btnAdminCheckConnection, SIGNAL(clicked()), SLOT(checkConnection()));
-    connect(ui->btnAdminGetDataFrom_Modem, SIGNAL(clicked()), SLOT(getModem_DataInfo()));
+    connect(ui->btnAdminGetDataFromModem, SIGNAL(clicked()), SLOT(getModem_DataInfo()));
     connect(ui->btnAdminSaveTerminalAccept, SIGNAL(clicked()), SLOT(saveTrm_AutorizationData()));
     connect(ui->btnAdminSelectLogParam, SIGNAL(clicked()), SLOT(openSelectCategory()));
     connect(ui->btnAdminUpdateLogData, SIGNAL(clicked()), SLOT(openLogInfoDate()));
@@ -91,9 +91,9 @@ AdminDialog::AdminDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AdminDia
     connect(ui->btnAdminSaveConnectionParams, SIGNAL(clicked()), SLOT(saveConnectionParam()));
     connect(ui->btnAdminSavePrinterParam, SIGNAL(clicked()), SLOT(savePrinterParam()));
     connect(ui->btnAdminGetServicesData, SIGNAL(clicked()), SLOT(getServices()));
-    connect(ui->btnAdminSaveTrm_Settings2, SIGNAL(clicked()), SLOT(saveOtherSettings()));
+    connect(ui->btnAdminSaveTrmSettings2, SIGNAL(clicked()), SLOT(saveOtherSettings()));
     connect(ui->btnAdminSaveTerminaSecret, SIGNAL(clicked()), SLOT(saveUserAutorizationData()));
-    connect(ui->btnAdminTestRestartModem_Real, SIGNAL(clicked()), SLOT(restartModem()));
+    connect(ui->btnAdminTestRestartModemReal, SIGNAL(clicked()), SLOT(restartModem()));
     connect(
         ui->cbxAdminNamePrinter, SIGNAL(currentIndexChanged(int)), SLOT(printerNameChanged(int)));
 
@@ -193,7 +193,7 @@ void AdminDialog::savePrinterParam() {
     settings["prt_win_top_margin"] =
         ui->cbxAdminTopMarginWinprtCheck->currentText().trimmed().toInt();
     settings["prt_win_bottom_margin"] =
-        ui->cbxAdminBottom_MarginWinprtCheck->currentText().trimmed().toInt();
+        ui->cbxAdminBottomMarginWinprtCheck->currentText().trimmed().toInt();
     settings["chek_small_beetwen_string"] = ui->chbxAdminSmallLineText->isChecked();
     settings["chek_small_text"] = ui->chbxAdminSmallCheck->isChecked();
     settings["chek_width"] = ui->cbxAdminWidthCheck->currentText().trimmed().toInt();
@@ -939,7 +939,7 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
     } break;
     case AdminCommand::aCmdConnectInfo: {
         auto msg = data.value("message").toString();
-        ui->lblAdminInfoGetDataFrom_Modem->setText(msg);
+        ui->lblAdminInfoGetDataFromModem->setText(msg);
     } break;
     case AdminCommand::aCmdModem_InfData: {
         ui->chbxAdminCheckBalanceSim->setChecked(data.value("check_balance_sim").toBool());
@@ -971,7 +971,7 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
             data.value("prt_win_right_margin").toString());
         ui->cbxAdminTopMarginWinprtCheck->setCurrentText(
             data.value("prt_win_top_margin").toString());
-        ui->cbxAdminBottom_MarginWinprtCheck->setCurrentText(
+        ui->cbxAdminBottomMarginWinprtCheck->setCurrentText(
             data.value("prt_win_bottom_margin").toString());
     } break;
     case AdminCommand::aCmdCounterCheckInf: {

@@ -9,7 +9,7 @@
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
-#include <QtXml/QDom_Node>
+#include <QtXml/QDomNode>
 
 namespace Request {
 
@@ -114,7 +114,7 @@ public slots:
 signals:
     void emit_QHttpAbort();
     void emit_Loging(int status, QString title, QString text);
-    void emit_Dom_Element(const QDom_Node &dom_Element);
+    void emit_Dom_Element(const QDomNode &dom_Element);
     void emit_ErrResponse();
     void emit_abortTimer(int msec);
     void send_req_data();

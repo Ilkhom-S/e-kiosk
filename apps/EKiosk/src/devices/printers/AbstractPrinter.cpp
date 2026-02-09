@@ -99,7 +99,7 @@ QByteArray BasePrinterDevices::packetImage(const QString &aPixelString, uchar aW
 }
 
 void BasePrinterDevices::setPortName(const QString com_Name) {
-    com_Name = com_Name;
+    this->com_Name = com_Name;
 }
 
 // bool BasePrinterDevices::print(const QString& aCheck)

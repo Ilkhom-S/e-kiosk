@@ -1,5 +1,5 @@
 
-#include "Custom_TG2480.h"
+#include "CustomTG2480.h"
 
 TG2480_PRINTER::TG2480_PRINTER(QObject *parent) : BasePrinterDevices(parent) {
     //    printer_name = "Custom-VKP80";

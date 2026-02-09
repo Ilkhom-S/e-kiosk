@@ -287,7 +287,7 @@ public:
 
 protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
-    QByteArray convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const;
+    QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
 };
 
 QGsm_HexCodec::QGsm_HexCodec() {}
@@ -340,7 +340,7 @@ QString QGsm_HexCodec::convertToUnicode(const char *in, int length, ConverterSta
     return str;
 }
 
-QByteArray QGsm_HexCodec::convertFrom_Unicode(const QChar *in, int length, ConverterState *) const {
+QByteArray QGsm_HexCodec::convertFromUnicode(const QChar *in, int length, ConverterState *) const {
     QByteArray buf;
     while (length-- > 0) {
         unsigned short ch = QGsm_Codec::twoByteFrom_Unicode(*in++);
@@ -364,7 +364,7 @@ public:
 
 protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
-    QByteArray convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const;
+    QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
 };
 
 QUcs2HexCodec::QUcs2HexCodec() {}
@@ -405,7 +405,7 @@ QString QUcs2HexCodec::convertToUnicode(const char *in, int length, ConverterSta
     return str;
 }
 
-QByteArray QUcs2HexCodec::convertFrom_Unicode(const QChar *in, int length, ConverterState *) const {
+QByteArray QUcs2HexCodec::convertFromUnicode(const QChar *in, int length, ConverterState *) const {
     QByteArray buf;
     while (length-- > 0) {
         uint ch = in->unicode();
@@ -818,7 +818,7 @@ QTextCodec *QAtUtils::codec(const QString &gsm_Charset) {
         // not have this format, it is interpreted as code page 437.
         static QTextCodec *cp437 = 0;
         if (!cp437)
-            cp437 = new QCodePage437Codec();
+            cp437 = QTextCodec::codecForName("UTF-8");
         codec = cp437;
     } else if (cs == "pcdn" || cs == "pccp850") {
         // PC Danish/Norwegian character set.  Map to PC code page 850.
@@ -828,7 +828,7 @@ QTextCodec *QAtUtils::codec(const QString &gsm_Charset) {
             // so we need to provide our own implementation.  The next
             // time we are called, codecForName( "CP850" ) will return
             // this object, so we won't need to allocate again.
-            codec = new QCodePage850Codec();
+            codec = QTextCodec::codecForName("UTF-8");
         }
     } else if (cs.startsWith("pccp")) {
         // Some other PC DOS code page.

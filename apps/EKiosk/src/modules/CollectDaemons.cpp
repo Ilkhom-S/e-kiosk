@@ -15,12 +15,12 @@ CollectDaemons::CollectDaemons(QObject *parent) : SendRequest(parent) {
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(errResponse()));
 
-    connect(this, SIGNAL(emit_Dom_Element(QDom_Node)), this, SLOT(setDataNote(QDom_Node)));
+    connect(this, SIGNAL(emit_Dom_Element(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 
     debugger = false;
 }
 
-void CollectDaemons::setDataNote(const QDom_Node &dom_Element) {
+void CollectDaemons::setDataNote(const QDomNode &dom_Element) {
     emit emit_Loging(0, senderName, QString("Пришел ответ инкассации от сервера. Парсим данные"));
 
     cIdUpdate = "";
@@ -74,12 +74,12 @@ bool CollectDaemons::getDataCollectList(QStringList &lst, int &count_i) {
     return true;
 }
 
-void CollectDaemons::parcerNote(const QDom_Node &dom_Element) {
-    QDom_Node dom_Node = dom_Element.firstChild();
+void CollectDaemons::parcerNote(const QDomNode &dom_Element) {
+    QDomNode dom_Node = dom_Element.firstChild();
 
     while (!dom_Node.isNull()) {
         if (dom_Node.isElement()) {
-            QDom_Element dom_Element = dom_Node.toElement();
+            QDomElement dom_Element = dom_Node.toElement();
             QString strTag = dom_Element.tagName();
 
             // проверям респонс
@@ -909,14 +909,14 @@ bool CollectDaemons::parsDenomilSlot(const QString &xmlDenom) {
     }
 
     // Объявляем XML объект
-    QDom_Document dom_Doc;
+    QDomDocument dom_Doc;
 
     if (dom_Doc.setContent(xmlDenom.toUtf8())) {
         // if(Debugger) qDebug() << "SetContent from collect";
-        QDom_Element dom_Element = dom_Doc.documentElement();
+        QDomElement dom_Element = dom_Doc.documentElement();
 
-        QDom_Node dom_Node = dom_Element.firstChild();
-        QDom_Element dom_Element1 = dom_Node.toElement();
+        QDomNode dom_Node = dom_Element.firstChild();
+        QDomElement dom_Element1 = dom_Node.toElement();
 
         for (int loop = 1; loop <= 9; loop++) {
             int face = dom_Element1.attribute("face", "").toInt();

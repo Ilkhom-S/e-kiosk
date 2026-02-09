@@ -184,10 +184,10 @@ void SendRequest::slotReadyRead() {
                 toDebug("\n===============RESPONSE===============\n");
                 toDebug(str);
 
-                QDom_Document dom_Doc;
+                QDomDocument dom_Doc;
 
                 if (dom_Doc.setContent(str.toUtf8())) {
-                    QDom_Element dom_Element = dom_Doc.documentElement();
+                    QDomElement dom_Element = dom_Doc.documentElement();
                     emit emit_Dom_Element(dom_Element);
                 } else {
                     emit emit_Loging(
