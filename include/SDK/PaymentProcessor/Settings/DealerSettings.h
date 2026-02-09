@@ -103,7 +103,7 @@ public:
                                          QSet<qint64> aExclude = QSet<qint64>());
 
     /// Возвращает список провайдеров по конкретному типу процессинга.
-    const QList<qint64> getProviders(const QString &aProcessingType);
+    QList<qint64> getProviders(const QString &aProcessingType);
 
     /// Возвращает список типов процессинга
     QStringList getProviderProcessingTypes();

@@ -60,7 +60,7 @@ double Commission::getValueFor(double aSum, bool aAtAmount) const {
     if (m_Type == Percent) {
         if (aAtAmount || m_Base == Amount) {
             // Комиссия считается по сумме к зачислению
-            commission = aSum - aSum / (1 + m_Value / 100.0);
+            commission = aSum - (aSum / (1 + m_Value / 100.0));
         } else {
             // Комиссия считается по внесённым средствам
             commission = m_Value * aSum * 0.01;
@@ -201,7 +201,7 @@ Commission Commission::from_Variant(const QVariant &aCommissions) {
 }
 
 //----------------------------------------------------------------------------
-CommissionList::CommissionList() {}
+CommissionList::CommissionList() = default;
 
 //----------------------------------------------------------------------------
 TCommissions CommissionList::getCommissions() const {
@@ -276,7 +276,7 @@ CommissionList CommissionList::from_Variant(const QVariant &aCommissions) {
 }
 
 //----------------------------------------------------------------------------
-CommissionByTimeList::CommissionByTimeList() {}
+CommissionByTimeList::CommissionByTimeList() = default;
 
 //----------------------------------------------------------------------------
 TCommissions CommissionByTimeList::getCommissions() const {
@@ -284,9 +284,8 @@ TCommissions CommissionByTimeList::getCommissions() const {
 
     if ((currentTime >= m_Begin) && (currentTime <= m_End)) {
         return m_Commissions.getCommissions();
-    } else {
-        return TCommissions();
     }
+    return TCommissions();
 }
 
 //----------------------------------------------------------------------------
@@ -329,7 +328,7 @@ CommissionByTimeList CommissionByTimeList::from_Variant(const QVariant &aCommiss
 }
 
 //----------------------------------------------------------------------------
-CommissionByDayList::CommissionByDayList() {}
+CommissionByDayList::CommissionByDayList() = default;
 
 //----------------------------------------------------------------------------
 TCommissions CommissionByDayList::getCommissions() const {
@@ -449,7 +448,7 @@ ProcessingCommission ProcessingCommission::from_Variant(const QVariant &aCommiss
 
 //----------------------------------------------------------------------------
 double ProcessingCommission::getValue(double aAmount, double aAmountAll) {
-    double result = 0.f;
+    double result = 0.F;
 
     switch (m_Type) {
     case Real:

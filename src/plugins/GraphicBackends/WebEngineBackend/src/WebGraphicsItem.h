@@ -92,14 +92,14 @@ private slots:
     void onRefresh();
 
 private:
-    ILog *m_Log;                              ///< Логгер для диагностики
-    QString m_Url;                            ///< Текущий URL страницы
-    QString m_Error;                          ///< Описание последней ошибки
-    QSharedPointer<QWebEngineView> m_WebView; ///< WebEngine виджет для отображения веб-контента
+    ILog *m_Log;                                ///< Логгер для диагностики
+    QString m_Url;                              ///< Текущий URL страницы
+    QString m_Error;                            ///< Описание последней ошибки
+    QSharedPointer<QWebEngineView> m_WebView{}; ///< WebEngine виджет для отображения веб-контента
     SDK::PaymentProcessor::Scripting::Core
-        *m_CoreProxy;      ///< Прокси для взаимодействия с платежной системой
-    bool m_Item_Loaded;     ///< Флаг готовности виджета
-    QVariantMap m_Context; ///< Контекст виджета для сохранения состояния
+        *m_CoreProxy;        ///< Прокси для взаимодействия с платежной системой
+    bool m_Item_Loaded;      ///< Флаг готовности виджета
+    QVariantMap m_Context{}; ///< Контекст виджета для сохранения состояния
     QList<QPair<QString, QList<QVariant>>>
-        m_SignalQueue; ///< Очередь сигналов для отложенной обработки
+        m_SignalQueue{}; ///< Очередь сигналов для отложенной обработки
 };

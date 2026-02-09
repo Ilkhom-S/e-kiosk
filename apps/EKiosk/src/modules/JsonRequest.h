@@ -30,7 +30,7 @@ private:
     QString uuid;
 
 public slots:
-    void sendRequest(QJsonObject json,
+    void sendRequest(const QJsonObject &json,
                      QString url,
                      QString requestName,
                      int method,

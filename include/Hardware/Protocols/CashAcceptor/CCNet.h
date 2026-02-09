@@ -33,10 +33,10 @@ protected:
     bool readAnswers(TAnswers &aAnswers, int aTimeout);
 
     /// Упаковка команды с данными.
-    void pack(QByteArray &aCommandData) const const;
+    void pack(QByteArray &aCommandData) const;
 
     /// Проверка пришедших из порта данных.
-    QString check(const QByteArray &aAnswer) const const;
+    QString check(const QByteArray &aAnswer) const;
 
     /// Отсылка ACK в порт.
     bool sendACK();

@@ -69,12 +69,12 @@ private:
     ILog *m_Log;
     QString m_Url;
     QString m_Error;
-    QSharedPointer<QGraphicsWebView> m_WebView;
+    QSharedPointer<QGraphicsWebView> m_WebView{};
     SDK::PaymentProcessor::Scripting::Core *m_CoreProxy;
     SDK::PaymentProcessor::EEventType m_EventTypeMetaInfo;
     bool m_Item_Loaded;
-    QVariantMap m_Context;
-    QList<QPair<QString, QList<QVariant>>> m_SignalQueue;
+    QVariantMap m_Context{};
+    QList<QPair<QString, QList<QVariant>>> m_SignalQueue{};
 };
 
 //---------------------------------------------------------------------------

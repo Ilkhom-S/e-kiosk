@@ -17,12 +17,12 @@ public:
 
 public:
     File();
-    File(const QString &aName, const QString &aHash, const QString &aUrl, qint64 aSize = 0);
+    File(QString aName, QString aHash, QString aUrl, qint64 aSize = 0);
 
     bool operator==(const File &aFile) const;
 
     /// Проверить, нужно ли скачивать файл
-    Result verify(const QString &aTempFilePath);
+    Result verify(const QString &aTempFilePath) const;
 
 public:
     const QString &name() const { return m_Name; }
