@@ -243,7 +243,7 @@ void DownloadManager::startNextDownload() {
 
         /// Готовим параметры для заголовка файла закачки
         QFileInfo vrmInf(filename);
-        int size = vrmInf.size(); // размер частично загруженного файла
+        qint64 size = vrmInf.size(); // размер частично загруженного файла
         request.setRawHeader(QByteArray("Range"), QString("bytes=%1-").arg(size).toLatin1());
         // if(Debugger) qDebug() << "----- request.setRawHeader ----- size - " <<
         // size;
@@ -518,7 +518,7 @@ void DownloadManager::run() {
     QString strQuery = QString("SELECT id,hash,name,status FROM local_files "
                                "WHERE path = \"%1\" AND name = \"%2\" LIMIT 1;");
 
-    int countTag = this->ServerXmlMap.count();
+    int countTag = static_cast<int>(this->ServerXmlMap.count());
     if (countFileTag != countTag) {
         countFileTag = countTag;
     }
@@ -972,8 +972,8 @@ QString DownloadManager::fileChecksum(const QString &fileName,
 
     if (sourceFile.open(QIODevice::ReadOnly)) {
         char buffer[bufferSize];
-        int bytesRead;
-        int readSize = qMin(fileSize, bufferSize);
+        qint64 bytesRead = 0;
+        qint64 readSize = qMin(fileSize, bufferSize);
 
         QCryptographicHash hash(hashAlgorithm);
         while (readSize > 0 && (bytesRead = sourceFile.read(buffer, readSize)) > 0) {

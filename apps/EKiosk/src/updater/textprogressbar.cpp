@@ -21,7 +21,7 @@ void TextProgressBar::update() {
     if (maximum > 0) {
         // we know the maximum
         // draw a progress bar
-        int percent = value * 100 / maximum;
+        int percent = static_cast<int>((value * 100LL) / maximum);
         int hashes = percent / 2;
 
         QByteArray progressbar(hashes, '#');
