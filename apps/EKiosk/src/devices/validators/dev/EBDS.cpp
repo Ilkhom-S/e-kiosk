@@ -285,7 +285,7 @@ TResult EBDS::processCommand(QByteArray &aCommandData, QByteArray &aAnswerData, 
     }
     if (aAnswerData.isEmpty()) {
         return CommandResult::NoAnswer;
-    } else if (!check(aCommandData, aAnswerData)) {
+    } if (!check(aCommandData, aAnswerData)) {
         return CommandResult::Protocol;
     }
 

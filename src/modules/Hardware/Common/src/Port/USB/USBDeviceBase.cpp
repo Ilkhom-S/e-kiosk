@@ -212,7 +212,7 @@ template <class T> bool USBDeviceBase<T>::checkConnectionAbility() {
 template <class T> bool USBDeviceBase<T>::checkPort() {
     if (this->m_IOPort->isExist()) {
         return true;
-    } else if (!this->m_IOPort->deviceConnected()) {
+    } if (!this->m_IOPort->deviceConnected()) {
         return false;
     }
 

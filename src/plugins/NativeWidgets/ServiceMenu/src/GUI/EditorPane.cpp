@@ -300,7 +300,7 @@ void EditorPane::onParameterRowChanged(QListWidgetItem * /*aCurrent*/,
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onEnum_ValueChanged(QListWidgetItem *aItem) {
+void EditorPane::onEnumValueChanged(QListWidgetItem *aItem) {
     setCurrentParameterValue(aItem->text());
 }
 

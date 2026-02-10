@@ -149,7 +149,7 @@ void WizardFrame::setupControl(Control aControl,
 QString WizardFrame::stageIndex(const QString &aContext) const {
     if (aContext == CWizardContext::SetupHardware) {
         return "1";
-    } else if (aContext == CWizardContext::SetupNetwork) {
+    } if (aContext == CWizardContext::SetupNetwork) {
         return "2";
     } else if (aContext == CWizardContext::SetupDialup) {
         return "3";

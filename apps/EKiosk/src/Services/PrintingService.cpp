@@ -158,23 +158,27 @@ bool PrintingService::shutdown() {
 PrintCommand *PrintingService::getPrintCommand(const QString &aReceiptType) {
     if (aReceiptType == PPSDK::CReceiptType::Payment) {
         return new PrintPayment(aReceiptType, this);
-    } else if (aReceiptType == PPSDK::CReceiptType::Balance ||
-               aReceiptType == PPSDK::CReceiptType::XReport) {
+    }
+    if (aReceiptType == PPSDK::CReceiptType::Balance ||
+        aReceiptType == PPSDK::CReceiptType::XReport) {
         return new PrintBalance(aReceiptType, this);
-    } else if (aReceiptType == PPSDK::CReceiptType::DispenserBalance ||
-               aReceiptType == PPSDK::CReceiptType::DispenserEncashment) {
+    }
+    if (aReceiptType == PPSDK::CReceiptType::DispenserBalance ||
+        aReceiptType == PPSDK::CReceiptType::DispenserEncashment) {
         auto command = new PrintBalance(aReceiptType, this);
         command->setFiscal(false);
         return command;
-    } else if (aReceiptType == PPSDK::CReceiptType::Encashment) {
-        return new PrintEncashment(aReceiptType, this);
-    } else if (aReceiptType == PPSDK::CReceiptType::ZReport) {
-        return new PrintZReport(aReceiptType, this, false);
-    } else if (aReceiptType == PPSDK::CReceiptType::ZReportFull) {
-        return new PrintZReport(aReceiptType, this, true);
-    } else {
-        return new PrintReceipt(aReceiptType, this);
     }
+    if (aReceiptType == PPSDK::CReceiptType::Encashment) {
+        return new PrintEncashment(aReceiptType, this);
+    }
+    if (aReceiptType == PPSDK::CReceiptType::ZReport) {
+        return new PrintZReport(aReceiptType, this, false);
+    }
+    if (aReceiptType == PPSDK::CReceiptType::ZReportFull) {
+        return new PrintZReport(aReceiptType, this, true);
+    }
+    return new PrintReceipt(aReceiptType, this);
 }
 
 //---------------------------------------------------------------------------
@@ -295,7 +299,7 @@ int PrintingService::perform_Print(PrintCommand *aCommand,
             if (!getFiscalRegister()) {
                 return makeResult(
                     false, "Failed to process receipt without printer due to no fiscal register");
-            } else if (!paymentPrintingCommand) {
+            } if (!paymentPrintingCommand) {
                 return makeResult(
                     false, "Failed to process receipt without printer due to no printing command");
             }
@@ -460,9 +464,8 @@ void PrintingService::incrementReceiptCount(DSDK::IPrinter *aPrinter) const {
 unsigned PrintingService::getReceiptID() const {
     if (m_Random_ReceiptsID) {
         return m_Random_Generator();
-    } else {
-        return getReceiptCount() + 1;
-    }
+    }         return getReceiptCount() + 1;
+   
 }
 
 //---------------------------------------------------------------------------
@@ -488,9 +491,8 @@ bool PrintingService::loadTags() {
     if (key0.ap.isEmpty()) {
         toLog(LogLevel::Error, "Failed to retrieve terminal number from configs.");
         return false;
-    } else {
-        m_StaticParameters.insert(CPrintConstants::Term_Number, key0.ap);
-    }
+    }         m_StaticParameters.insert(CPrintConstants::Term_Number, key0.ap);
+   
 
     PPSDK::DealerSettings *dealerSettings = settingsService->getAdapter<PPSDK::DealerSettings>();
 

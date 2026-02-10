@@ -278,13 +278,12 @@ void UpdaterApp::run() {
                     QString("Run updater from temp path: '%1' is OK.").arg(getUpdaterTempDir()));
                 setResultCode(CUpdaterApp::ExitCode::ContinueExecution);
                 return;
-            } else {
-                getLog()->write(
+            }                 getLog()->write(
                     LogLevel::Error,
                     QString("Failed run updater from temp path: '%1'.").arg(getUpdaterTempDir()));
                 setResultCode(CUpdaterApp::ExitCode::ErrorRunFrom_TempDir);
                 return;
-            }
+           
         } else {
             // Устанавливаем рабочую папку.
             m_Updater->setWorkingDir(workingDir);

@@ -605,9 +605,8 @@ PaymentBase::calculateCommission(const QList<PPSDK::IPayment::SParameter> &aPara
 
         if (dealerFee > 0) {
             return QPair<double, double>(aProcessingFee, dealerFee);
-        } else {
-            return QPair<double, double>(aFee, 0.0);
-        }
+        }             return QPair<double, double>(aFee, 0.0);
+       
     };
 
     result << SParameter(

@@ -78,7 +78,7 @@ bool OSMP::reset(const QString &aLine) {
 
     if (aLine == SDK::Driver::LineTypes::Modem) {
         return perform_Command(m_Data[EOSMPCommandId::ResetModem]);
-    } else if (aLine == SDK::Driver::LineTypes::Terminal) {
+    } if (aLine == SDK::Driver::LineTypes::Terminal) {
         return perform_Command(m_Data[EOSMPCommandId::RebootPC]);
     }
 

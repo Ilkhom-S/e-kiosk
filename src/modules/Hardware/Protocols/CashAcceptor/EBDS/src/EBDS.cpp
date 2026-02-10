@@ -84,7 +84,7 @@ TResult EBDSProtocol::processCommand(const QByteArray &aCommandData,
     }
     if (!getAnswer(aAnswerData)) {
         return CommandResult::Port;
-    } else if (aAnswerData.isEmpty()) {
+    } if (aAnswerData.isEmpty()) {
         return CommandResult::NoAnswer;
     } else if (!check(request, aAnswerData)) {
         return CommandResult::Protocol;

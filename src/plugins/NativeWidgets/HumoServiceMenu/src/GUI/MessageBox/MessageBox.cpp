@@ -100,9 +100,8 @@ int MessageBox::showPopup(const QString &aText,
     m_Window->setup(aText, aIcon, aButton);
     if (aIcon == SDK::GUI::MessageBoxParams::Question) {
         return m_Window->exec();
-    } else {
-        m_Window->show();
-    }
+    }         m_Window->show();
+   
 
     return 0;
 }

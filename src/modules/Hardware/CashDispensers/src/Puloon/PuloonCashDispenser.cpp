@@ -110,7 +110,7 @@ TResult PuloonLCDM::processCommand(char aCommand,
                 toLog(LogLevel::Error,
                       QString("%1: %2").arg(m_DeviceName).arg(deviceCodeData.description));
                 return CommandResult::Answer;
-            } else if (warningLevel == EWarningLevel::Warning) {
+            } if (warningLevel == EWarningLevel::Warning) {
                 toLog(LogLevel::Warning,
                       QString("%1: %2").arg(m_DeviceName).arg(deviceCodeData.description));
             }

@@ -292,9 +292,8 @@ bool RequestSender::defaultRequestSigner(const QByteArray &aRequest,
             aSignedRequest = aSignedRequest.toPercentEncoding();
 
             return true;
-        } else {
-            return false;
-        }
+        }             return false;
+       
     }
 
     case Detached: {
@@ -303,9 +302,8 @@ bool RequestSender::defaultRequestSigner(const QByteArray &aRequest,
             aSignature = aSignature.toPercentEncoding();
 
             return true;
-        } else {
-            return false;
-        }
+        }             return false;
+       
     }
 
     default:
@@ -328,9 +326,8 @@ bool RequestSender::defaultResponseVerifier(const QByteArray &aSignedResponse,
             aResponse = aSignedResponse;
 
             return true;
-        } else {
-            return false;
-        }
+        }             return false;
+       
     }
 
     default:

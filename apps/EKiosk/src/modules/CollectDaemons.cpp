@@ -338,12 +338,11 @@ void CollectDaemons::getRequestParam() {
         emit emit_Loging(0, senderName, QString("В системе нет новых инкассаций."));
         demonTimer->stop();
         return;
-    } else {
-        emit emit_Loging(
+    }         emit emit_Loging(
             0,
             senderName,
             QString("В системе имеется новая инкассация под номером - %1.").arg(collectionId));
-    }
+   
 
     if (getCollectionInfo(collectionId, collectionIdNext, trnId, dateCreate, xmlDenom)) {
         // Теперь надо отпарсить xml

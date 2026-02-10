@@ -34,7 +34,7 @@ public:
     bool checkHashMonitor(QString hash);
     void setDbName(QSqlDatabase &db);
 
-    bool bisyNow;
+    bool busyNow;
 
     QString settingsPath;
 
@@ -58,7 +58,7 @@ private:
     void createFileList(QString path);
     void reCopyAllFiles();
     QStringList getDirFiles(const QString &dirName);
-    bool isUpdaterLocked();
+    bool isUpdaterLocked() const;
     int getAppFileSize();
 
     CopyFileQs *copyFile;

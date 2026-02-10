@@ -325,8 +325,7 @@ bool PaymentService::savePayment(PPSDK::IPayment *aPayment) {
                 PPSDK::EEventType::PaymentUpdated, CServices::PaymentService, aPayment->getID()));
 
         return true;
-    } else {
-        QString amountAll =
+    }         QString amountAll =
             aPayment->getParameter(PPSDK::CPayment::Parameters::AmountAll).value.toString();
         QString msg = QString("Payment [%1] error write to database (AMOUNT_ALL=%2).")
                           .arg(aPayment->getInitialSession())
@@ -337,7 +336,7 @@ bool PaymentService::savePayment(PPSDK::IPayment *aPayment) {
             SDK::PaymentProcessor::EEventType::Critical, CServices::DatabaseService, msg));
 
         return false;
-    }
+   
 }
 
 //---------------------------------------------------------------------------
@@ -630,9 +629,8 @@ TPaymentParameters PaymentService::getPaymentFields(qint64 aPayment) {
         std::shared_ptr<PPSDK::IPayment> payment = getPayment(aPayment);
 
         return payment ? payment->getParameters() : QList<PPSDK::IPayment::SParameter>();
-    } else {
-        return m_DBUtils->getPaymentParameters(aPayment);
-    }
+    }         return m_DBUtils->getPaymentParameters(aPayment);
+   
 }
 
 //------------------------------------------------------------------------------

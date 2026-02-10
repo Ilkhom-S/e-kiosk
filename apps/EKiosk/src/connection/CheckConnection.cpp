@@ -98,10 +98,9 @@ bool CheckConnection::ping(int timeOut, QString ipAddress) {
     if (contents.contains("TTL")) {
         emit this->emit_Ping(true);
         return true;
-    } else {
-        emit this->emit_Ping(false);
+    }         emit this->emit_Ping(false);
         return false;
-    }
+   
 }
 
 void CheckConnection::checkConnection(int type) {

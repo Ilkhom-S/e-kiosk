@@ -177,12 +177,11 @@ void Package::applyPostActions(const QString &aWorkingDir) noexcept(false) {
                                 .arg(action)
                                 .arg(runAction.exitCode())
                                 .arg(QString(runAction.readAllStandardOutput())));
-        } else {
-            Log(LogLevel::Normal,
+        }             Log(LogLevel::Normal,
                 QString("Process %1 run OK, output: %2.")
                     .arg(action)
                     .arg(QString(runAction.readAllStandardOutput())));
-        }
+       
     }
 }
 

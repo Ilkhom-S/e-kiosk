@@ -2,11 +2,13 @@
 
 #include <QtCore/QCryptographicHash>
 
+#include <utility>
+
 DownloadManager::DownloadManager()
-    : QThread(), currentDownload(nullptr), nowDownloadFileSize(0), nowDownloadFileId(0),
-      totalCount(0), fileWrite(false), countFileTag(0), count_download(0), Debugger(1),
-      senderName("UPDATER"), bisyNow(false), abortTimer(new QTimer(this)),
-      resendTimer(new QTimer(this)), copyFile(new CopyFileQs()), restartTimer(new QTimer(this)) {
+    : currentDownload(nullptr), nowDownloadFileSize(0), nowDownloadFileId(0), totalCount(0),
+      fileWrite(false), countFileTag(0), count_download(0), Debugger(1), senderName("UPDATER"),
+      busyNow(false), abortTimer(new QTimer(this)), resendTimer(new QTimer(this)),
+      copyFile(new CopyFileQs()), restartTimer(new QTimer(this)) {
     abortTimer->setSingleShot(true);
     connect(abortTimer, SIGNAL(timeout()), SLOT(abortReply()));
 
@@ -69,7 +71,7 @@ int DownloadManager::getAppFileSize() {
     return 0;
 }
 
-bool DownloadManager::isUpdaterLocked() {
+bool DownloadManager::isUpdaterLocked() const {
     QSettings settings(settingsPath, QSettings::IniFormat);
     return settings.value("updater_lock", true).toBool();
 }
@@ -111,7 +113,7 @@ void DownloadManager::startToUpdate() {
     count_download = 0;
 
     // Ставим параметр updater занят
-    this->bisyNow = true;
+    this->busyNow = true;
 
     // Обнуляем счетчик общих закачек
     this->totalCount = 0;
@@ -138,7 +140,7 @@ void DownloadManager::startToUpdate() {
 
 void DownloadManager::append(QUrl url) {
     // Глобальный URL
-    now_url = url;
+    now_url = std::move(url);
 
     // Начинаем закачку не сразу а через 1 сек
     //    QTimer::singleShot(1, this, SLOT(startNextDownload()));
@@ -173,7 +175,7 @@ void DownloadManager::startNextDownload() {
     // Проверяем на существование файла
     /// Если это не xml Файл со списком файлов для закачки
     if (this->nowDownloadFileName != this->XmlName) {
-        if (output.exists(filename)) {
+        if (QFile::exists(filename)) {
             // if(Debugger) qDebug() << "----- Enter into file exist -----";
             // Объект для проверки файла
             QString hash = fileChecksum(filename, QCryptographicHash::Md5);
@@ -214,10 +216,9 @@ void DownloadManager::startNextDownload() {
                                    this->senderName,
                                    QString("Не возможно создать файл %1").arg(nowDownloadFileName));
             return; // Пропускаем закачку
-        } else {
-            // if(Debugger) qDebug() << "----- output.open(QIODevice::WriteOnly)
-            // -----";
-        }
+        } // if(Debugger) qDebug() << "----- output.open(QIODevice::WriteOnly)
+          // -----";
+
     } else {
         /// Если надо дозаписать файл открываем с параметром (Append)
         if (!output.open(QIODevice::Append)) {
@@ -232,9 +233,7 @@ void DownloadManager::startNextDownload() {
                 this->senderName,
                 QString("Не возможно открыть файл для до записи %1").arg(nowDownloadFileName));
             return; // Пропускаем закачку
-        } else {
-            // if(Debugger) qDebug() << "----- output.open(QIODevice::Append) -----";
-        }
+        } // if(Debugger) qDebug() << "----- output.open(QIODevice::Append) -----";
 
         /// Готовим параметры для заголовка файла закачки
         QFileInfo vrmInf(filename);
@@ -338,7 +337,7 @@ void DownloadManager::downloadFinished() {
         this->downloadFileResponse();
     } else {
 
-        if (currentDownload->error()) {
+        if (currentDownload->error() != 0U) {
             /// Если есть ошибка при закачивании файла
 
             // Печатаем в консоль ошибку
@@ -364,60 +363,56 @@ void DownloadManager::downloadFinished() {
                 // if(Debugger) qDebug() << "----- count_download < 5 -----";
                 this->resendTimer->start(20000);
                 return;
-            } else {
-                emit this->emit_Loging(
-                    1,
-                    this->senderName,
-                    QString("Превышено число попыток для закачки файла %1 (повторная "
-                            "закачка через 5 мин.)")
-                        .arg(nowDownloadFileName));
-                // На всякий случай удаляем файл
-                /// Надо подумать надо удалять или нет
-                //            this->deleteErrorDownloadFile(nowDownloadFileId);
-                this->reDownloadFile();
-
-                return;
             }
-        } else {
+            emit this->emit_Loging(
+                1,
+                this->senderName,
+                QString("Превышено число попыток для закачки файла %1 (повторная "
+                        "закачка через 5 мин.)")
+                    .arg(nowDownloadFileName));
+            // На всякий случай удаляем файл
+            /// Надо подумать надо удалять или нет
+            //            this->deleteErrorDownloadFile(nowDownloadFileId);
+            this->reDownloadFile();
 
-            /// Ошибок типо нет но может и вырубили соединение
-
-            printf("-------Download return.-------\n");
-
-            // Проверяем что
-            if (nowDownloadFileName == this->XmlName) {
-                this->openDocumentXml();
-                return;
-            }
-
-            QString filename = tmpDirectory + nowDownloadFileName;
-
-            QString hash = fileChecksum(filename, QCryptographicHash::Md5);
-
-            if (hash != nowDownloadFileHash) {
-                if (count_download < 20) {
-                    emit this->emit_Loging(
-                        0,
-                        this->senderName,
-                        QString("Хеш файла %1 не совпадает (делаем докачку через 20 сек...)")
-                            .arg(nowDownloadFileName));
-                    this->resendTimer->start(20000);
-                    return;
-                } else {
-                    this->reDownloadFile();
-                    return;
-                }
-            }
-            // if(Debugger) qDebug() << "------------START NEXT Download-------------";
-            this->downloadFileResponse();
+            return;
         }
+        /// Ошибок типо нет но может и вырубили соединение
+
+        printf("-------Download return.-------\n");
+
+        // Проверяем что
+        if (nowDownloadFileName == this->XmlName) {
+            this->openDocumentXml();
+            return;
+        }
+
+        QString filename = tmpDirectory + nowDownloadFileName;
+
+        QString hash = fileChecksum(filename, QCryptographicHash::Md5);
+
+        if (hash != nowDownloadFileHash) {
+            if (count_download < 20) {
+                emit this->emit_Loging(
+                    0,
+                    this->senderName,
+                    QString("Хеш файла %1 не совпадает (делаем докачку через 20 сек...)")
+                        .arg(nowDownloadFileName));
+                this->resendTimer->start(20000);
+                return;
+            }
+            this->reDownloadFile();
+            return;
+        }
+        // if(Debugger) qDebug() << "------------START NEXT Download-------------";
+        this->downloadFileResponse();
     }
 
     currentDownload->deleteLater();
 }
 
 void DownloadManager::reDownloadFile() {
-    this->bisyNow = false;
+    this->busyNow = false;
     count_download = 0;
     this->abortTimer->stop();
     this->resendTimer->stop();
@@ -440,14 +435,14 @@ void DownloadManager::openDocumentXml() {
 
         /// Файл открыть нельзя удаляем его и начинаем качать заново
         // Удаляем файл
-        file.remove(tmpDirectory + this->XmlName);
+        QFile::remove(tmpDirectory + this->XmlName);
         // Начинаем закачку через 10 сек.
         if (this->count_download < 5) {
             this->resendTimer->start(10000);
             return;
-        } else {
-            this->reDownloadFile();
         }
+        this->reDownloadFile();
+
         emit this->emit_Loging(
             1,
             this->senderName,
@@ -468,7 +463,7 @@ void DownloadManager::openDocumentXml() {
         // Целостность документа нарушена
         // if(Debugger) qDebug() << "--------Parse Error "+this->XmlName+"--------";
         // Удаляем файл
-        file.remove(tmpDirectory + this->XmlName);
+        QFile::remove(tmpDirectory + this->XmlName);
         // Начинаем закачку через 10 сек.
         if (this->count_download < 5) {
             this->resendTimer->start(10000);
@@ -497,7 +492,7 @@ void DownloadManager::openDocumentXml() {
     file.close();
 
     // Удаляем файл
-    file.remove(tmpDirectory + this->XmlName);
+    QFile::remove(tmpDirectory + this->XmlName);
 
     qDebug() << QString(" =====> File %1%2 REMOVED;").arg(tmpDirectory).arg(this->XmlName);
 
@@ -588,20 +583,15 @@ void DownloadManager::run() {
 
         emit this->emit_downOneByOne();
         return;
-    }         /// Нет доступных обновлений
-        updateGlobalHash();
-        emit emit_Loging(0,
-                         this->senderName,
-                         QString("Нет новых файлов на сервере (обновляем hash и "
-                                 "закрываем UPDATER)"));
+    } /// Нет доступных обновлений
+    updateGlobalHash();
+    emit emit_Loging(0,
+                     this->senderName,
+                     QString("Нет новых файлов на сервере (обновляем hash и "
+                             "закрываем UPDATER)"));
 
-        //        this->reDownloadFile();
-        emit emit_reDown();
-
-        return;
-        /// Exit
-   
-    return;
+    //        this->reDownloadFile();
+    emit emit_reDown();
 }
 
 void DownloadManager::addToDatabaseFile() {
@@ -649,13 +639,9 @@ void DownloadManager::downloadOneByOneFile() {
                                    .arg(this->tmpDirectory));
         this->append(QUrl(vrmUrl));
         return;
-    } else {
-        /// Тут надо сделать перемещение файлов из папки tmp в реальную директорию
-        this->copyFile->start();
-
-        return;
-        /// Exit
-    }
+    } /// Тут надо сделать перемещение файлов из папки tmp в реальную директорию
+    this->copyFile->start();
+    /// Exit
 }
 
 void DownloadManager::afterCopyAllFiles() {
@@ -683,8 +669,6 @@ void DownloadManager::afterCopyAllFiles() {
 
         this->compliteUpdateIn();
     }
-
-    return;
 }
 
 void DownloadManager::compliteUpdateIn() {
@@ -729,9 +713,9 @@ void DownloadManager::reCopyAllFiles() {
 
         // Список создан делаем готовим к замене файлы
         int countIFiles = 0;
-        for (auto & iter : allFilesList) {
+        for (auto &iter : allFilesList) {
             qDebug() << "--- FILES PATH --- " << iter;
-            QString vrmPath = iter;
+            const QString &vrmPath = iter;
             const int compex = vrmPath.indexOf("assets/");
             QString fileFrom = vrmPath.mid(compex);
             //            qDebug() << "--- FILES PATH --- " << fileFrom;
@@ -742,7 +726,7 @@ void DownloadManager::reCopyAllFiles() {
                 copyXmlMap[countIFiles]["pathTo"] = fileFrom;
                 qDebug() << "--- FILE-PATH FROM --- " << copyXmlMap[countIFiles]["pathFrom"];
 
-                if (fileCopy.exists(copyXmlMap[countIFiles]["pathFrom"])) {
+                if (QFile::exists(copyXmlMap[countIFiles]["pathFrom"])) {
                     qDebug() << "PRESENT";
                 } else {
                     qDebug() << "NOT PRESENT";
@@ -750,17 +734,18 @@ void DownloadManager::reCopyAllFiles() {
 
                 qDebug() << "--- FILE-PATH TO --- " << copyXmlMap[countIFiles]["pathTo"];
 
-                if (fileCopy.exists(copyXmlMap[countIFiles]["pathTo"])) {
+                if (QFile::exists(copyXmlMap[countIFiles]["pathTo"])) {
                     qDebug() << "PRESENT";
                 } else {
                     qDebug() << "NOT PRESENT";
                 }
 
-                if (fileCopy.exists(copyXmlMap[countIFiles]["pathTo"])) {
+                if (QFile::exists(copyXmlMap[countIFiles]["pathTo"])) {
                     QFile::remove(copyXmlMap[countIFiles]["pathTo"]);
                 }
 
-                if (fileCopy.copy(copyXmlMap[countIFiles]["pathFrom"], copyXmlMap[countIFiles]["pathTo"])) {
+                if (QFile::copy(copyXmlMap[countIFiles]["pathFrom"],
+                                copyXmlMap[countIFiles]["pathTo"])) {
                     qDebug() << "--- COPY FILE OK --- " << infoIn.fileName();
                     emit this->emit_Loging(
                         0,
@@ -782,7 +767,7 @@ void DownloadManager::reCopyAllFiles() {
 
         return;
     } catch (std::exception &e) {
-        if (Debugger) {
+        if (Debugger != 0) {
             qDebug() << "Error recucrciyo " << QString(e.what());
         }
         return;
@@ -839,7 +824,6 @@ void DownloadManager::updateGlobalHash() {
         // if(Debugger) qDebug() << insertQuery.lastError();
         return;
     }
-    return;
 }
 
 bool DownloadManager::updateRecordFile(int id, QString fieldName, QString value) {
@@ -913,8 +897,10 @@ void DownloadManager::traverseNode(const QDomNode &node) {
 
 void DownloadManager::createDirIfNotExist(QString dirPath) {
     QFile info;
-    if (!info.exists(dirPath)) {
-        if (Debugger) qDebug() << "isNotDir";
+    if (!QFile::exists(dirPath)) {
+        if (Debugger != 0) {
+            qDebug() << "isNotDir";
+        }
         // Тут надо создать папку
         this->dirCont.mkdir(dirPath);
     }
@@ -922,8 +908,10 @@ void DownloadManager::createDirIfNotExist(QString dirPath) {
 
 void DownloadManager::createPathDirIfNotExist(QString dirPath) {
     QFile info;
-    if (!info.exists(dirPath)) {
-        if (Debugger) qDebug() << "isNotPathDir";
+    if (!QFile::exists(dirPath)) {
+        if (Debugger != 0) {
+            qDebug() << "isNotPathDir";
+        }
         // Тут надо создать папку
         this->dirCont.mkpath(dirPath);
     }
@@ -976,5 +964,5 @@ QString DownloadManager::fileChecksum(const QString &fileName,
         sourceFile.close();
         return QString(hash.result().toHex());
     }
-    return QString();
+    return {};
 }

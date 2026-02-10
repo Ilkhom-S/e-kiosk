@@ -276,9 +276,8 @@ void CryptService::resetParameters(const QSet<QString> &) {}
 PP::SKeySettings CryptService::getKey(int aId) const {
     if (m_Keys.contains(aId)) {
         return m_Keys[aId];
-    } else {
-        return PP::SKeySettings();
-    }
+    }         return PP::SKeySettings();
+   
 }
 
 //---------------------------------------------------------------------------

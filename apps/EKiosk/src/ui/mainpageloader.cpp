@@ -153,8 +153,7 @@ QVariantMap MainPageLoader::serviceMaxSum() {
 bool MainPageLoader::moneyExistInPay() {
     if (nominalCash > 0)
         return true;
-    else
-        return false;
+            return false;
 }
 
 void MainPageLoader::showHideReturnNominal(bool status) {

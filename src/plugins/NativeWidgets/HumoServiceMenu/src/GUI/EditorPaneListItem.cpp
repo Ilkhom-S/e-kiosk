@@ -11,7 +11,7 @@ EditorPaneListItem_Delegate::EditorPaneListItem_Delegate(QObject *aParent)
 QVariant EditorPaneListItem::data(int aRole) const {
     if (aRole == Qt::SizeHintRole) {
         return QSize(0, 40);
-    } else if (aRole == ParameterName) {
+    } if (aRole == ParameterName) {
         return m_Name;
     } else if (aRole == ParameterValue) {
         return m_Value;

@@ -108,10 +108,9 @@ bool CCNetSm::isItYou() {
         this->closePort();
         return false;
 
-    } else {
-
+    } 
         return false;
-    }
+   
 
     return false;
 }
@@ -1444,13 +1443,12 @@ bool CCNetSm::CmdFirmwareUpdate(QString version) {
     if (checkBootloader()) {
         bool result = firmwareUpdate(fwData);
         return result;
-    } else {
-        emit emitLog(0, "FIRMWARE_CCNET", "Bootloader false");
+    }         emit emitLog(0, "FIRMWARE_CCNET", "Bootloader false");
         resetValidator();
         msleep(1000);
         emit emitFirmwareUpdate("error");
         return false;
-    }
+   
 }
 
 bool CCNetSm::firmwareUpdate(const QByteArray fw) {

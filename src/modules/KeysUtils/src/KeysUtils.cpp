@@ -123,7 +123,7 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt,
         } else if (name == CKeysFactory::ServerFields::Error) {
             if (value == CKeysFactory::ServerErrors::WrongPassword) {
                 return EKeysUtilsError::WrongPassword;
-            } else if (value != CKeysFactory::ServerErrors::NoError) {
+            } if (value != CKeysFactory::ServerErrors::NoError) {
                 return EKeysUtilsError::UnknownServerError;
             }
         }
@@ -219,7 +219,7 @@ EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt,
         if (name == CKeysFactory::ServerFields::Error) {
             if (value == CKeysFactory::ServerErrors::WrongPassword) {
                 return EKeysUtilsError::WrongPassword;
-            } else if (value == CKeysFactory::ServerErrors::NoError) {
+            } if (value == CKeysFactory::ServerErrors::NoError) {
                 continue;
             }
         } else if (name == CKeysFactory::ServerFields::PublicKey) {

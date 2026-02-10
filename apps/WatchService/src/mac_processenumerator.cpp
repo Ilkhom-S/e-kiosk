@@ -75,7 +75,7 @@ bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) {
             aErrorCode = errno;
             return false;
 
-        } else if (result == static_cast<pid_t>(aPid)) {
+        } if (result == static_cast<pid_t>(aPid)) {
             // Process terminated gracefully
             return true;
         } else {

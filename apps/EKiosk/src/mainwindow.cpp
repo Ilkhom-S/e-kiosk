@@ -3020,7 +3020,7 @@ void MainWindow::toSendMonitoringStatus() {
     }
 
     // Если идет обновление
-    if (downManager->bisyNow) {
+    if (downManager->busyNow) {
         actionList[Action::aPoUpdateNow] = true;
     }
 
@@ -3272,7 +3272,7 @@ Lock::Data MainWindow::getLock() {
 void MainWindow::getCommandFrom_Server(QVariantList cmdList) {
 
     // Идет обновление
-    if (downManager->bisyNow) {
+    if (downManager->busyNow) {
         return;
     }
 
@@ -3315,7 +3315,7 @@ void MainWindow::getCommandFrom_Server(QVariantList cmdList) {
 
 void MainWindow::commandCheck() {
     // Идет обновление
-    if (downManager->bisyNow) {
+    if (downManager->busyNow) {
         return;
     }
 
@@ -3578,7 +3578,7 @@ void MainWindow::checkUpdateHash(QString hash, QString path) {
     bool check = downManager->checkHashMonitor(hash);
 
     if (check && config.autoUpdateStatus) {
-        if (!downManager->bisyNow) {
+        if (!downManager->busyNow) {
             toLog(LoggerLevel::Info, "MAIN", "Hash Upadte-xml изменился...");
 
             // Тут надо запустить updater

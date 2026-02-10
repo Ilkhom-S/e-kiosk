@@ -110,7 +110,7 @@ bool IntelHex::parseRecords(const QStringList &aRecords,
                         .arg(recordDataSize) +
                     messageLog;
                 return false;
-            } else if (!aAddressedBlockList.isEmpty()) {
+            } if (!aAddressedBlockList.isEmpty()) {
                 int prevRecordSize = aAddressedBlockList.last().second.size();
 
                 if ((prevRecordSize != aBlockSize) && (prevRecordSize != recordDataSize)) {

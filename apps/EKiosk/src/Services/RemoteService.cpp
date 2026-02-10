@@ -348,13 +348,13 @@ int RemoteService::registerPaymentCommand(EPaymentOperation aOperation,
 
     if (!paymentCommand) {
         return 0;
-    } else {
-        int command = increaseLastCommandID();
-
-        m_PaymentCommands.insert(paymentCommand, command);
-
-        return command;
     }
+
+    int command = increaseLastCommandID();
+
+    m_PaymentCommands.insert(paymentCommand, command);
+
+    return command;
 }
 
 //---------------------------------------------------------------------------

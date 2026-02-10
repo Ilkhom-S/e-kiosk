@@ -414,8 +414,7 @@ int PaymentManager::printZReport(bool aFullZReport) {
         return !!m_PrinterService->printReport(aFullZReport ? PPSDK::CReceiptType::ZReportFull
                                                             : PPSDK::CReceiptType::ZReport,
                                                QVariantMap());
-    } else {
-        int result = 0;
+    }         int result = 0;
         if (m_PaymentsRegistryPrintJob == 0) {
             // Перед отчётом печатаем все не напечатанные чеки
             if (!printUnprintedReceiptsRegistry(m_Encashment.balance.notPrintedPayments)) {
@@ -428,7 +427,7 @@ int PaymentManager::printZReport(bool aFullZReport) {
             aFullZReport ? PPSDK::CReceiptType::ZReportFull : PPSDK::CReceiptType::ZReport;
 
         return result;
-    }
+   
 }
 
 //------------------------------------------------------------------------

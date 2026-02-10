@@ -206,7 +206,7 @@ bool CCTalkCashAcceptor::route(bool aDirection) {
     if (data == CCCTalk::RoutingErrors::EmptyEscrow) {
         toLog(LogLevel::Error, log + ", due to no bill in escrow");
         return false;
-    } else if (data == CCCTalk::RoutingErrors::Unknown) {
+    } if (data == CCCTalk::RoutingErrors::Unknown) {
         toLog(LogLevel::Error, log + ", due to an error");
         return false;
     }

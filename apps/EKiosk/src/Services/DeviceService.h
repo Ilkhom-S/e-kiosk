@@ -95,7 +95,7 @@ public:
     // IDeviceService
 
     /// Неблокирующий поиск всех устройств.
-    virtual void detect(const QString &aDeviceType);
+    virtual void detect(const QString &aFilter);
 
     /// Прервать поиск устройств.
     virtual void stopDetection();
@@ -157,7 +157,7 @@ public:
                                        int aStatus);
 
 private:
-    void doDetect(const QString &aDeviceType);
+    void doDetect(const QString &aFilter);
     bool initializeDevice(const QString &aConfigName, SDK::Driver::IDevice *aDevice);
     void statusChanged(SDK::Driver::IDevice *aDevice, Status &aStatus);
 

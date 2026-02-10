@@ -147,7 +147,7 @@ static int fromHexDigit(uint ch) {
         return (int)(ch - '0');
     } if (ch >= 'A' && ch <= 'F') {
         return (int)(ch - 'A' + 10);
-    } else if (ch >= 'a' && ch <= 'f') {
+    } if (ch >= 'a' && ch <= 'f') {
         return (int)(ch - 'a' + 10);
     } else {
         return -1;
@@ -1029,8 +1029,7 @@ QString QAtUtils::decodeString(const QString &value, uint dcs) {
     } if (scheme == QSMS_8BitAlphabet) {
         // The string is 8-bit encoded in the current locale.
         return QTextCodec::codecForLocale()->toUnicode(value.toLatin1());
-    } else {
-        // Assume that everything else is in the default GSM alphabet.
+    }         // Assume that everything else is in the default GSM alphabet.
         return codec("gsm")->toUnicode(value.toLatin1());
-    }
+   
 }
