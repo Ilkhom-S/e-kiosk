@@ -151,7 +151,7 @@ CashDispenserManager::checkSignal(QObject *aSender, const QString &aSignalName, 
     }
 
     QString configurationName = m_Dispensers.value(dispenser);
-    int unitCount = m_CurrencyCashList[configurationName].size();
+    qsizetype unitCount = m_CurrencyCashList[configurationName].size();
 
     if (unitCount <= aUnit) {
         toLog(LogLevel::Error,

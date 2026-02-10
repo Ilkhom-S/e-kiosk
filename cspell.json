@@ -225,6 +225,7 @@
         "qputenv",
         "qrand",
         "qreal",
+        "qsizetype",
         "QSQLITE",
         "qstate",
         "Qt'шной",

@@ -515,13 +515,11 @@ void DeviceService::overwriteDeviceStatus(DSDK::IDevice *aDevice,
 void DeviceService::onDeviceStatus(DSDK::EWarningLevel::Enum aLevel,
                                    const QString &aDescription,
                                    int aStatus) {
-    LogLevel::Enum logLevel;
+    LogLevel::Enum logLevel = LogLevel::Warning;
     if (aLevel == DSDK::EWarningLevel::OK) {
         logLevel = LogLevel::Normal;
     } else if (aLevel == DSDK::EWarningLevel::Error) {
         logLevel = LogLevel::Error;
-    } else {
-        logLevel = LogLevel::Warning;
     }
     LOG(m_Log,
         logLevel,

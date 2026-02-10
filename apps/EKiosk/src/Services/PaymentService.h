@@ -110,7 +110,7 @@ public:
                                      const QList<PPSDK::IPayment::SParameter> &aFields,
                                      bool aForce = false);
 
-    /// Выполенение шага платежа в онлайне.
+    /// Выполнение шага платежа в онлайне.
     virtual void
     processPaymentStep(qint64 aPayment, PPSDK::EPaymentStep::Enum aStep, bool aBlocking = false);
 
@@ -168,10 +168,10 @@ public:
     virtual PPSDK::EncashmentResult::Enum perform_Encashment(const QVariantMap &aParameters,
                                                              PPSDK::SEncashment &aEncashment);
 
-    /// Получение информации о последней инкасации
+    /// Получение информации о последней инкассации
     virtual PPSDK::SEncashment getLastEncashment();
 
-    /// Получение информации о последних инкасациях
+    /// Получение информации о последних инкассациях
     virtual QList<PPSDK::SEncashment> getEncashmentList(int aDepth);
 
     /// Получить кол-во платежей по каждому использованному провайдеру

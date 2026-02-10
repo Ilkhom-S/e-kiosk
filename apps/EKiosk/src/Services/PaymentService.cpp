@@ -119,7 +119,7 @@ bool PaymentService::initialize() {
         auto *factory = dynamic_cast<SDK::PaymentProcessor::IPaymentFactory *>(plugin);
         if (factory) {
             factory->setSerializer(
-                [this](auto &&PH1) { return savePayment(std::forward<decltype(PH1)>(PH1)); });
+                [this](auto &&pH1) { return savePayment(std::forward<decltype(pH1)>(pH1)); });
 
             foreach (const QString &type, factory->getSupportedPaymentTypes()) {
                 m_FactoryByType[type] = factory;
@@ -270,7 +270,7 @@ qint64 PaymentService::createPayment(qint64 aProvider) {
 
         std::shared_ptr<PPSDK::IPayment> payment(
             factory->createPayment(provider.processor.type),
-            [factory](auto &&PH1) { factory->releasePayment(std::forward<decltype(PH1)>(PH1)); });
+            [factory](auto &&pH1) { factory->releasePayment(std::forward<decltype(pH1)>(pH1)); });
         if (!payment) {
             toLog(LogLevel::Error, "Failed to create payment object.");
 
@@ -555,8 +555,8 @@ std::shared_ptr<PPSDK::IPayment> PaymentService::getPayment(qint64 aID) {
     if (!type.isNull() && m_FactoryByType.contains(type.value.toString())) {
         std::shared_ptr<PPSDK::IPayment> payment(
             m_FactoryByType[type.value.toString()]->createPayment(type.value.toString()),
-            [capture0 = m_FactoryByType[type.value.toString()]](auto &&PH1) {
-                capture0->releasePayment(std::forward<decltype(PH1)>(PH1));
+            [capture0 = m_FactoryByType[type.value.toString()]](auto &&pH1) {
+                capture0->releasePayment(std::forward<decltype(pH1)>(pH1));
             });
         if (!payment) {
             toLog(LogLevel::Normal,
@@ -1097,7 +1097,7 @@ void PaymentService::onProcessPayments() {
 
     QList<qint64> payments = m_DBUtils->getPaymentQueue();
 
-    if (!payments.empty() != 0) {
+    if (static_cast<int>(!payments.empty()) != 0) {
         qint64 id = payments.takeFirst();
 
         if (m_Enabled) {
@@ -1393,8 +1393,8 @@ bool PaymentService::setChangeAmount(double aChange,
             m_ChangePayment = std::shared_ptr<PPSDK::IPayment>(
                 m_FactoryByType[CPaymentService::ChangePaymentType]->createPayment(
                     CPaymentService::ChangePaymentType),
-                [capture0 = m_FactoryByType[CPaymentService::ChangePaymentType]](auto &&PH1) {
-                    capture0->releasePayment(std::forward<decltype(PH1)>(PH1));
+                [capture0 = m_FactoryByType[CPaymentService::ChangePaymentType]](auto &&pH1) {
+                    capture0->releasePayment(std::forward<decltype(pH1)>(pH1));
                 });
 
             if (m_ChangePayment) {
