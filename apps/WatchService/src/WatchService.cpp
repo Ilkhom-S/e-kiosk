@@ -299,7 +299,7 @@ void WatchService::loadConfiguration() {
             info.startPriority = settings.value(group + "/priority").toUInt();
             info.closePriority = settings.value(group + "/close_priority").toUInt();
             info.afterStartDelay = settings.value(group + "/afterstartdelay", "0").toUInt();
-            info.needToStart = info.autoStart ? true : false;
+            info.needToStart = info.autoStart;
             info.previousNeedToStart = false;
             info.maxStartCount = settings.value(group + "/maxstartcount", "0").toUInt();
             info.params.clear();
@@ -617,7 +617,7 @@ void WatchService::onCheckModules() {
 
                 startModule(*it);
             } else {
-                if (it.value().needToStart == false) {
+                if (!it.value().needToStart) {
                     // Модуль необходимо закрыть
                     closeModule(it.value(), true);
 
@@ -869,15 +869,14 @@ bool WatchService::closeModule(SModule &aModule, bool aIgnorePriority) {
                 QString("sender=watch_service;target=%1;type=close").arg(aModule.name).toUtf8());
 
             return false;
-        } else {
-            toLog(
-                LogLevel::Normal,
-                QString(
-                    "Can't terminate %1 cause module with higher close priority is still running.")
-                    .arg(aModule.name));
-
-            return false;
         }
+
+        toLog(
+            LogLevel::Normal,
+            QString("Can't terminate %1 cause module with higher close priority is still running.")
+                .arg(aModule.name));
+
+        return false;
     }
 
     return true;

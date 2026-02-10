@@ -664,8 +664,7 @@ bool Prim_FRBase::printLine(const QByteArray &aString) {
 //--------------------------------------------------------------------------------
 bool Prim_FRBase::perform_Receipt(const QStringList &aReceipt, bool aProcessing) {
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging,
-                         QVariant().fromValue(ELoggingType::ReadWrite));
+    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::ReadWrite));
     m_IOPort->setDeviceConfiguration(configuration);
 
     bool result = TSerialFRBase::processReceipt(aReceipt, aProcessing);
@@ -707,7 +706,7 @@ void Prim_FRBase::getRTStatuses(TStatusCodes &aStatusCodes) {
         aStatusCodes.unite(getRTStatus(command));
     }
 
-    bool notAvailabled = aStatusCodes.contains(DeviceStatusCode::Error::NotAvailable);
+    bool NotAvailable = aStatusCodes.contains(DeviceStatusCode::Error::NotAvailable);
     bool oldNotAvailabled = m_StatusCollection.isEmpty() ||
                             m_StatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
     bool error =
@@ -715,7 +714,7 @@ void Prim_FRBase::getRTStatuses(TStatusCodes &aStatusCodes) {
             return m_StatusCodesSpecification->value(aCode).warningLevel == EWarningLevel::Error;
         }) != aStatusCodes.end();
 
-    m_Offline = notAvailabled || (!oldNotAvailabled && error);
+    m_Offline = NotAvailable || (!oldNotAvailabled && error);
 }
 
 //--------------------------------------------------------------------------------
@@ -857,7 +856,7 @@ void Prim_FRBase::setFiscalData(CPrim_FR::TData &aCommandData,
                  << addGFieldToBuffer(aReceiptSize + 3, date.size() + 16 + time.size()) // время
                  << addGFieldToBuffer(aReceiptSize + 2, INN.size() + 2)                 // ИНН
                  << addGFieldToBuffer(aReceiptSize + 3, 7)
-                 << m_Codec->fromUnicode(operatorId)                              // ID оператора
+                 << m_Codec->fromUnicode(operatorId)                               // ID оператора
                  << addGFieldToBuffer(aReceiptSize + 4, amount.size() + 2) << sum; // сумма
 
     // произворльные G-поля
@@ -1175,10 +1174,10 @@ Prim_FRBase::addArbitraryFieldToBuffer(int aX, int aY, const QString &aData, int
                   .toLatin1() // позиция реквизита по X
            << QString("%1")
                   .arg(qToBigEndian(unsigned short(aY)), 4, 16, QLatin1Char(ASCII::Zero))
-                  .toLatin1()               // позиция реквизита по Y
-           << int2String(aFont).toLatin1()  // шрифт, см. ESC !
-           << "01"                          // Печать произвольного реквизита
-           << "00"                          // N вывода на контрольную ленту
+                  .toLatin1()              // позиция реквизита по Y
+           << int2String(aFont).toLatin1() // шрифт, см. ESC !
+           << "01"                         // Печать произвольного реквизита
+           << "00"                         // N вывода на контрольную ленту
            << m_Codec->fromUnicode(aData); // данные
 }
 
@@ -1228,8 +1227,7 @@ TStatusCodes Prim_FRBase::getRTStatus(int aCommand) {
     m_RTProtocol.setLog(m_Log);
 
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging,
-                         QVariant().fromValue(ELoggingType::ReadWrite));
+    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::ReadWrite));
     m_IOPort->setDeviceConfiguration(configuration);
 
     char answer;

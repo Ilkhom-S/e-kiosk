@@ -57,8 +57,8 @@ const QString DisplayOnOffTaskName = "DisplayOnOff";
 
 //---------------------------------------------------------------------------
 SchedulerService *SchedulerService::instance(IApplication *aApplication) {
-    return static_cast<SchedulerService *>(
-        aApplication->getCore()->getService(CServices::SchedulerService));
+    IService *service = aApplication->getCore()->getService(CServices::SchedulerService);
+    return dynamic_cast<SchedulerService *>(service);
 }
 
 //---------------------------------------------------------------------------
@@ -221,7 +221,7 @@ bool SchedulerService::Item::execute(SDK::PaymentProcessor::ITask *aTask, ILog *
     if (isOK() && aTask) {
         LOG(aLog, LogLevel::Normal, QString("[%1]: Execute").arg(m_Name));
 
-        if (m_FailExecuteCounter) {
+        if (m_FailExecuteCounter != 0) {
             LOG(aLog,
                 LogLevel::Normal,
                 QString("[%1]: Restart #%2 time.").arg(m_Name).arg(m_FailExecuteCounter));
@@ -245,7 +245,7 @@ QTimer *SchedulerService::Item::createTimer() {
     timer->setSingleShot(true);
 
     // если последний запуск неудачный, то проверяем нужно ли перезапустить задачу
-    if (m_FailExecuteCounter && m_FailExecuteCounter <= m_RepeatCountIfFail &&
+    if ((m_FailExecuteCounter != 0) && m_FailExecuteCounter <= m_RepeatCountIfFail &&
         m_RetryTimeout >= 0) {
         timer->setInterval(m_RetryTimeout * 1000);
         return timer;
@@ -365,7 +365,7 @@ void SchedulerService::execute() {
             SDK::PaymentProcessor::ITask *task;
 
             // Проверим, что таск может быть пользовательским
-            if (m_ExternalTasks[item.name()]) {
+            if (m_ExternalTasks[item.name()] != nullptr) {
                 task = m_ExternalTasks[item.name()];
             } else {
                 task = m_Factory[item.type()](item.name(), CScheduler::LogName, item.params());

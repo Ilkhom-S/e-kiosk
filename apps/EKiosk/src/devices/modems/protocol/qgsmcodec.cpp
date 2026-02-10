@@ -205,8 +205,7 @@ char QGsm_Codec::singleFrom_Unicode(QChar c) {
     }
     if (ch >= 0x0390 && ch <= 0x03AF)
         return (char)(greekGSMTable[ch - 0x0390]);
-    else
-        return (char)GUC;
+    return (char)GUC;
 }
 
 /*!
@@ -236,10 +235,9 @@ unsigned short QGsm_Codec::twoByteFrom_Unicode(QChar ch) {
     }
     if (c < 256)
         return latin1GSMTable[c];
-    else if (c >= 0x0390 && c <= 0x03AF)
+    if (c >= 0x0390 && c <= 0x03AF)
         return (char)(greekGSMTable[c - 0x0390]);
-    else
-        return GUC;
+    return GUC;
 }
 
 /*!
@@ -254,13 +252,10 @@ QChar QGsm_Codec::twoByteToUnicode(unsigned short ch) {
     }
     if ((ch & 0xFF00) != 0x1B00)
         return QChar(0);
-    else {
-        unsigned short mapping = extensionLatin1Table[ch & 0xFF];
-        if (mapping != UUC)
-            return QChar(mapping);
-        else
-            return QChar(gsm_Latin1Table[ch & 0xFF]);
-    }
+    unsigned short mapping = extensionLatin1Table[ch & 0xFF];
+    if (mapping != UUC)
+        return QChar(mapping);
+    return QChar(gsm_Latin1Table[ch & 0xFF]);
 }
 
 /*!

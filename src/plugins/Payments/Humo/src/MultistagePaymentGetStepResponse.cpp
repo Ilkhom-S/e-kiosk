@@ -52,7 +52,7 @@ MultistagePaymentGetStepResponse::MultistagePaymentGetStepResponse(const Request
 
 //---------------------------------------------------------------------------
 bool MultistagePaymentGetStepResponse::isOk() {
-    return ((getError() == EServerError::Ok) && m_IsOk) ? true : false;
+    return (getError() == EServerError::Ok) && m_IsOk;
 }
 
 //---------------------------------------------------------------------------

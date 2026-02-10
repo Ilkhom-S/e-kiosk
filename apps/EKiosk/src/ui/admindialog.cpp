@@ -403,7 +403,6 @@ void AdminDialog::getLogDataFrom_File(QStringList &logLst, QString &all) {
     all = codec->toUnicode(ba);
     logLst = all.split("\n");
     fileInfo.close();
-    return;
 }
 
 void AdminDialog::go_to_end_text_edit() {

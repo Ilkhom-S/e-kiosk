@@ -230,7 +230,6 @@ void ClassPrinter::run() {
     if (cmd_now == PrinterCommand::cmdIsItYou) {
         this->CIsItYou();
     }
-    return;
 }
 
 void ClassPrinter::tarminateThis() {
@@ -240,57 +239,57 @@ void ClassPrinter::tarminateThis() {
 void ClassPrinter::CIsItYou() {
     if (system_Model == PrinterModel::Custom_VKP80) {
         if (Custom_VKP80->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
         } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
+            qDebug() << QString("ClassPrinter -- NotAvailable");
         }
     }
 
     if (system_Model == PrinterModel::Custom_TG2480) {
         if (Custom_TG2480->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
         } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
+            qDebug() << QString("ClassPrinter -- NotAvailable");
         }
     }
 
     if (system_Model == PrinterModel::AV_268) {
         if (AV268->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
         } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
+            qDebug() << QString("ClassPrinter -- NotAvailable");
         }
     }
 
     if (system_Model == PrinterModel::CitizenCBM1000) {
         if (CitizenCBM1000->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
         } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
+            qDebug() << QString("ClassPrinter -- NotAvailable");
         }
     }
 
     if (system_Model == PrinterModel::Citizen_PPU700) {
         if (CitizenPPU700->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
         } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
+            qDebug() << QString("ClassPrinter -- NotAvailable");
         }
     }
 
     if (system_Model == PrinterModel::Citizen_CTS2000) {
         if (CitizenCTS2000->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
         } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
+            qDebug() << QString("ClassPrinter -- NotAvailable");
         }
     }
 
     if (system_Model == PrinterModel::Phoenix_model) {
         if (Phoenix->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
         } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
+            qDebug() << QString("ClassPrinter -- NotAvailable");
         }
     }
 }
@@ -298,71 +297,71 @@ void ClassPrinter::CIsItYou() {
 bool ClassPrinter::CIsItYou(QString &comment) {
     if (system_Model == PrinterModel::Custom_VKP80) {
         if (Custom_VKP80->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
             if (Custom_VKP80->comment != "") {
                 comment = "ROM v. " + Custom_VKP80->comment;
             }
             return true;
-        } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
-            return false;
         }
+
+        qDebug() << QString("ClassPrinter -- NotAvailable");
+        return false;
     }
 
     if (system_Model == PrinterModel::Custom_TG2480) {
         if (Custom_TG2480->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
             return true;
-        } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
-            return false;
         }
+
+        qDebug() << QString("ClassPrinter -- NotAvailable");
+        return false;
     }
 
     if (system_Model == PrinterModel::AV_268) {
         if (AV268->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
             return true;
-        } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
-            return false;
         }
+
+        qDebug() << QString("ClassPrinter -- NotAvailable");
+        return false;
     }
     if (system_Model == PrinterModel::CitizenCBM1000) {
         if (CitizenCBM1000->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
             return true;
-        } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
-            return false;
         }
+
+        qDebug() << QString("ClassPrinter -- NotAvailable");
+        return false;
     }
     if (system_Model == PrinterModel::Citizen_PPU700) {
         if (CitizenPPU700->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
             return true;
-        } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
-            return false;
         }
+
+        qDebug() << QString("ClassPrinter -- NotAvailable");
+        return false;
     }
     if (system_Model == PrinterModel::Citizen_CTS2000) {
         if (CitizenCTS2000->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
             return true;
-        } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
-            return false;
         }
+
+        qDebug() << QString("ClassPrinter -- NotAvailable");
+        return false;
     }
     if (system_Model == PrinterModel::Phoenix_model) {
         if (Phoenix->isItYou()) {
-            qDebug() << QString("ClassPrinter -- Availabled");
+            qDebug() << QString("ClassPrinter -- Available");
             return true;
-        } else {
-            qDebug() << QString("ClassPrinter -- NotAvailabled");
-            return false;
         }
+
+        qDebug() << QString("ClassPrinter -- NotAvailable");
+        return false;
     }
 
     return false;
@@ -464,8 +463,8 @@ void ClassPrinter::CGetStatus() {
         if (getSts) {
             // qDebug() << QString("ClassPrinter -- get status true --
             // %1").arg(system_Model);
-            if (sStatus.NotAvailabled) {
-                // qDebug() << QString("ClassPrinter -- NotAvailabled");
+            if (sStatus.NotAvailable) {
+                // qDebug() << QString("ClassPrinter -- NotAvailable");
             }
             if (sStatus.CoverOpen) {
                 // qDebug() << QString("ClassPrinter -- CoverOpen");
@@ -497,8 +496,8 @@ void ClassPrinter::CGetStatus() {
         } else {
             // qDebug() << QString("ClassPrinter -- get status false --
             // %1").arg(system_Model);
-            if (sStatus.NotAvailabled) {
-                // qDebug() << QString("ClassPrinter -- NotAvailabled");
+            if (sStatus.NotAvailable) {
+                // qDebug() << QString("ClassPrinter -- NotAvailable");
             }
         }
     }
@@ -543,8 +542,8 @@ void ClassPrinter::CGetStatus() {
         if (getSts) {
             // qDebug() << QString("ClassPrinter -- get status true --
             // %1").arg(system_Model);
-            if (sStatus.NotAvailabled) {
-                // qDebug() << QString("ClassPrinter -- NotAvailabled");
+            if (sStatus.NotAvailable) {
+                // qDebug() << QString("ClassPrinter -- NotAvailable");
             }
             if (sStatus.CoverOpen) {
                 // qDebug() << QString("ClassPrinter -- CoverOpen");
@@ -603,8 +602,8 @@ void ClassPrinter::CGetStatus() {
         } else {
             // qDebug() << QString("ClassPrinter -- get status false --
             // %1").arg(system_Model);
-            if (sStatus.NotAvailabled) {
-                // qDebug() << QString("ClassPrinter -- NotAvailabled");
+            if (sStatus.NotAvailable) {
+                // qDebug() << QString("ClassPrinter -- NotAvailable");
             }
         }
     }

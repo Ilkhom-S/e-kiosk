@@ -81,8 +81,8 @@ QByteArray QAtUtils::from_Hex(const QString &hex) {
             continue;
         }
         value = (value << 4) | nibble;
-        flag = !flag;
-        if (!flag) {
+        flag = static_cast<int>(flag) == 0;
+        if (flag == 0) {
             bytes.resize(size + 1);
             bytes[size++] = (char)value;
             value = 0;
@@ -103,8 +103,8 @@ QByteArray QAtUtils::from_Hex(const QString &hex) {
 QString QAtUtils::decodeNumber(const QString &value, uint type) {
     if (type == 145 && value.length() != 0 && value[0] != '+') {
         return "+" + value;
-    } else
-        return value;
+    }
+    return value;
 }
 
 /*!
@@ -133,11 +133,10 @@ QString QAtUtils::encodeNumber(const QString &value, bool keepPlus) {
     if (value.length() > 0 && value[0] == '+') {
         if (keepPlus) {
             return "\"" + quote(value) + "\",145";
-        } else
-            return "\"" + quote(value.mid(1)) + "\",145";
-    } else {
-        return "\"" + quote(value) + "\",129";
+        }
+        return "\"" + quote(value.mid(1)) + "\",145";
     }
+    return "\"" + quote(value) + "\",129";
 }
 
 static int fromHexDigit(uint ch) {
@@ -321,7 +320,7 @@ QString QGsmHexCodec::convertToUnicode(const char *in, int length, ConverterStat
         } else {
             continue;
         }
-        if (!nibble) {
+        if (nibble == 0) {
             value = digit * 16;
             nibble = 1;
         } else {
@@ -869,8 +868,8 @@ QTextCodec *QAtUtils::codec(const QString &gsmCharset) {
     // Return the codec that we found, or bail out with Latin1 if unknown.
     if (codec) {
         return codec;
-    } else
-        return QTextCodec::codecForName("ISO-8859-1");
+    }
+    return QTextCodec::codecForName("ISO-8859-1");
 }
 
 /*!
@@ -920,8 +919,8 @@ QString QAtUtils::quote(const QString &str, QTextCodec *codec) {
 QString QAtUtils::decode(const QString &str, QTextCodec *codec) {
     if (codec) {
         return codec->toUnicode(str.toLatin1());
-    } else
-        return str;
+    }
+    return str;
 }
 
 /*!

@@ -63,23 +63,23 @@ RegistrationForm::RegistrationForm(QWidget *parent)
             SIGNAL(currentTextChanged(QString)),
             SLOT(connectionSelect(QString)));
 
-    auto loginRegValidator = new QRegularExpressionValidator(
+    auto *loginRegValidator = new QRegularExpressionValidator(
         QRegularExpression(R"([\S\w\W\d\D]{4,15})"), ui->editLoginReg);
     ui->editLoginReg->setValidator(loginRegValidator);
 
-    auto passRegValidator = new QRegularExpressionValidator(
+    auto *passRegValidator = new QRegularExpressionValidator(
         QRegularExpression(R"([\S\w\W\d\D]{4,15})"), ui->editOtpReg);
     ui->editOtpReg->setValidator(passRegValidator);
 
-    auto secretLoginValidator = new QRegularExpressionValidator(
+    auto *secretLoginValidator = new QRegularExpressionValidator(
         QRegularExpression(R"([\S\w\W\d\D]{1,15})"), ui->editSecretLoginReg);
     ui->editSecretLoginReg->setValidator(secretLoginValidator);
 
-    auto secretPassValidator = new QRegularExpressionValidator(
+    auto *secretPassValidator = new QRegularExpressionValidator(
         QRegularExpression(R"([\S\w\W\d\D]{1,15})"), ui->editSecretPasswordReg);
     ui->editSecretPasswordReg->setValidator(secretPassValidator);
 
-    auto secretPassConfirm_Validator = new QRegularExpressionValidator(
+    auto *secretPassConfirm_Validator = new QRegularExpressionValidator(
         QRegularExpression(R"([\S\w\W\d\D]{1,15})"), ui->editSecretPasswordConfirmReg);
     ui->editSecretPasswordConfirmReg->setValidator(secretPassConfirm_Validator);
 
@@ -174,7 +174,7 @@ void RegistrationForm::btnNextClicked() {
         ui->stackedWgtReg->setCurrentIndex(Page::SearchDevice);
         addPageData();
 
-        auto tpl = ui->radioTplUZB->isChecked() ? "uzb" : "tjk";
+        const auto *tpl = ui->radioTplUZB->isChecked() ? "uzb" : "tjk";
         auto test = ui->chbTest->isChecked();
         emit emitTpl(tpl, test);
     } break;

@@ -158,7 +158,7 @@ void ATProtocol::packetData(const QByteArray &aCommandPacket, QByteArray &aPacke
 bool ATProtocol::unpacketData(const QByteArray &aPacket, QByteArray &aData) {
     aData.clear();
     QByteArray tempData;
-    if (!aPacket.size()) {
+    if (aPacket.size() == 0) {
         qDebug() << "Protocol AT: The length of the packet is 0";
         return false;
     }
@@ -389,10 +389,7 @@ void ATProtocol::printDataToHex(const QByteArray &data) {
 }
 
 bool ATProtocol::isOpened() {
-    if (serialPort->isOpen())
-        is_open = true;
-    else
-        is_open = false;
+    is_open = serialPort->isOpen();
 
     return is_open;
 }
@@ -437,7 +434,7 @@ bool ATProtocol::sendCommand(QByteArray dataRequest,
         }
 
         // Задержка после команды
-        if (timeSleep) {
+        if (timeSleep != 0) {
             this->msleep(timeSleep);
         }
         return respOk;
@@ -479,7 +476,7 @@ bool ATProtocol::getAnswer(QByteArray &aData,
         }
 
         // если пакет пуст и дополнительных чтений нет, то пишем сообщение об ошибке
-        if (!tempAnswer.size() && !aAddRepeatCount) {
+        if ((tempAnswer.size() == 0) && (aAddRepeatCount == 0)) {
             // возможно, произошел дисконнект
             // в качестве ответных данных положим один пустой байт
             aData.push_back(QChar(CATProtocolConstants::EmptyByte).cell());
@@ -488,7 +485,7 @@ bool ATProtocol::getAnswer(QByteArray &aData,
         packetAnswer.push_back(tempAnswer);
 
         // если необходима пауза - включаем её
-        if (aPauseTime) {
+        if (aPauseTime != 0) {
             this->msleep(aPauseTime);
         }
     }
@@ -511,7 +508,7 @@ bool ATProtocol::getAnswer(QByteArray &aData,
         return false;
     }
 
-    if (!aData.size()) {
+    if (aData.size() == 0) {
         return false;
     }
 
@@ -815,12 +812,12 @@ bool ATProtocol::getStatusInfo(SModem_StatusInfo &aStatusInfo) {
 
         // ошибка, возможно произошла из-за дисконнекта.
         // проверим данные на пустой байт
-        if (answerData.size() && answerData.at(0) == CATProtocolConstants::EmptyByte) {
+        if ((answerData.size() != 0) && answerData.at(0) == CATProtocolConstants::EmptyByte) {
             // так и есть, уставливаем статус в "недоступен"
             m_state = Modem_States::Error;
             m_error = Modem_Errors::NotAvailable;
             isConnect = false;
-            // if(Debugger) qDebug() << "Protocol AT: NotAvailabled";
+            // if(Debugger) qDebug() << "Protocol AT: NotAvailable";
         } else {
             return false;
         }

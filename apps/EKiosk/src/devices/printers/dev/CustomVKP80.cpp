@@ -100,7 +100,7 @@ bool Custom_VKP80_PRINTER::getStatus(int &aStatus, CMDCustom_VKP80::SStatus &sSt
     aStatus = PrinterState::PrinterOK;
 
     // ошибки
-    if (sStatus.NotAvailabled) {
+    if (sStatus.NotAvailable) {
         aStatus |= PrinterState::PrinterNotAvailable;
     } else if (sStatus.CoverOpen) {
         aStatus |= PrinterState::CoverIsOpened;
@@ -142,8 +142,8 @@ bool Custom_VKP80_PRINTER::getStatus(int &aStatus, CMDCustom_VKP80::SStatus &sSt
 bool Custom_VKP80_PRINTER::getState(char aStatusType, CMDCustom_VKP80::SStatus &aStatus) {
     qDebug() << "----------inter to get state---------";
 
-    if (aStatus.NotAvailabled) {
-        qDebug() << "----------aStatus.NotAvailabled---------";
+    if (aStatus.NotAvailable) {
+        qDebug() << "----------aStatus.NotAvailable---------";
         return true;
     }
 
@@ -157,18 +157,18 @@ bool Custom_VKP80_PRINTER::getState(char aStatusType, CMDCustom_VKP80::SStatus &
 
     if (this->sendCommand(commandPacket, true, 50, respData, answerPacket, 0)) {
         if (answerPacket.size() != CMDCustom_VKP80::AnswersLength::Status) {
-            qDebug() << "==========aStatus.NotAvailabled = true;======";
-            aStatus.NotAvailabled = true;
+            qDebug() << "==========aStatus.NotAvailable = true;======";
+            aStatus.NotAvailable = true;
             return true;
         }
 
-        aStatus.NotAvailabled = false;
+        aStatus.NotAvailable = false;
         char answer = answerPacket.right(1)[0];
 
         // если ответило другое устройство
         if (!(positiveMasking(answer, CMDCustom_VKP80::Control::StatusMask1) &&
               negativeMasking(answer, CMDCustom_VKP80::Control::StatusMask0))) {
-            aStatus.NotAvailabled = true;
+            aStatus.NotAvailable = true;
             return true;
         }
 
@@ -492,11 +492,7 @@ bool Custom_VKP80_PRINTER::printCheck(const QString &aCheck) {
     //    cmd.push_back(CMDCustom_VKP80::PrinterCommandPaperSizeThirdByteSmall);
     //    cmd.push_back(0x0A);
 
-    if (!this->sendCommand(printText, true, 200, respData, answer, 50)) {
-        return false;
-    }
-
-    return true;
+    return this->sendCommand(printText, true, 200, respData, answer, 50);
 }
 
 QByteArray Custom_VKP80_PRINTER::getImage(QString fileName) {
@@ -629,11 +625,7 @@ bool Custom_VKP80_PRINTER::initialize() {
     cmd.push_back(CMDCustom_VKP80::PrinterCommandCharacterSetSecondByte);
     cmd.push_back(CMDCustom_VKP80::PrinterCommandCharacterSetThirdByte);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 0)) {
-        return false;
-    }
-
-    return true;
+    return this->sendCommand(cmd, false, 0, respData, answer, 0);
 }
 
 void Custom_VKP80_PRINTER::sendFiscalData() {
@@ -659,11 +651,7 @@ bool Custom_VKP80_PRINTER::cut() {
     cmd.push_back(CMDCustom_VKP80::PrinterCommandCutSecondByte);
     //    cmd.push_back(CMDCustom_VKP80::PaperEnd);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 0)) {
-        return false;
-    }
-
-    return true;
+    return this->sendCommand(cmd, false, 0, respData, answer, 0);
 }
 
 bool Custom_VKP80_PRINTER::feed(int aCount) {
@@ -684,11 +672,7 @@ bool Custom_VKP80_PRINTER::printImage() {
     cmd.push_back(ASCII::NUL);
     cmd.push_back(CMDCustom_VKP80::PrinterCommandLogoPrintFothByte);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 50)) {
-        return false;
-    }
-
-    return true;
+    return this->sendCommand(cmd, false, 0, respData, answer, 50);
 }
 
 bool Custom_VKP80_PRINTER::printImageI(const QString &aPixelString,
@@ -718,7 +702,7 @@ bool Custom_VKP80_PRINTER::printImageI(const QString &aPixelString,
 bool Custom_VKP80_PRINTER::registerLogo(const QString &aPixelString, uchar aWidth) {
     Q_UNUSED(aPixelString)
 
-    if (!aWidth) {
+    if (aWidth == 0u) {
         return true;
     }
 

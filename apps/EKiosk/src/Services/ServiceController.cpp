@@ -85,7 +85,7 @@ void ServiceController::onEvent(const PP::Event &aEvent) {
     case PPSDK::EEventType::StopSoftware: {
         m_ReturnCode = aEvent.getData().toMap().take("returnCode").toInt();
 
-        auto wsClient = TerminalService::instance(m_Application)->getClient();
+        auto *wsClient = TerminalService::instance(m_Application)->getClient();
 
         if (wsClient && wsClient->isConnected()) {
             wsClient->stopService();
@@ -101,7 +101,7 @@ void ServiceController::onEvent(const PP::Event &aEvent) {
 //---------------------------------------------------------------------------
 bool ServiceController::initializeServices() {
     // Создаем EventService.
-    auto eventService = new EventService();
+    auto *eventService = new EventService();
     eventService->initialize();
 
     eventService->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
@@ -163,7 +163,7 @@ bool ServiceController::initializeServices() {
             service->finishInitialize();
         }
 
-        auto watchServiceClient = TerminalService::instance(m_Application)->getClient();
+        auto *watchServiceClient = TerminalService::instance(m_Application)->getClient();
         watchServiceClient->subscribeOnDisconnected(this);
         watchServiceClient->subscribeOnCloseCommandReceived(this);
 
@@ -177,7 +177,7 @@ bool ServiceController::initializeServices() {
 
 //---------------------------------------------------------------------------
 void ServiceController::initializeCoreItems() {
-    auto pluginLoader = PluginService::instance(m_Application)->getPluginLoader();
+    auto *pluginLoader = PluginService::instance(m_Application)->getPluginLoader();
     QStringList corePlugins = pluginLoader->getPluginList(QRegularExpression(
         QString("PaymentProcessor\\.%1\\..*").arg(PPSDK::CComponents::CoreItem)));
 
@@ -186,7 +186,7 @@ void ServiceController::initializeCoreItems() {
             LogLevel::Normal,
             QString("Create core item: %1.").arg(pluginName));
 
-        auto plugin = pluginLoader->createPlugin(pluginName);
+        auto *plugin = pluginLoader->createPlugin(pluginName);
 
         if (plugin) {
             m_CorePluginList << plugin;
@@ -283,7 +283,7 @@ void ServiceController::finalizeCoreItems() {
     PluginService *ps = PluginService::instance(m_Application);
 
     if (ps) {
-        auto pluginLoader = ps->getPluginLoader();
+        auto *pluginLoader = ps->getPluginLoader();
 
         foreach (auto coreItem, m_CorePluginList) {
             LOG(m_Application->getLog(),

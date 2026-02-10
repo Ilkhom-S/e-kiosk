@@ -9,20 +9,13 @@ BaseAcceptorDevices::BaseAcceptorDevices(QObject *parent) : QThread(parent) {
 bool BaseAcceptorDevices::createDevicePort() {
     serialPort = new QSerialPort(this);
 
-    if (serialPort) {
-        devicesCreated = true;
-    } else {
-        devicesCreated = false;
-    }
+    devicesCreated = serialPort != nullptr;
 
     return devicesCreated;
 }
 
 bool BaseAcceptorDevices::isOpened() {
-    if (serialPort->isOpen())
-        is_open = true;
-    else
-        is_open = false;
+    is_open = serialPort->isOpen();
 
     return is_open;
 }

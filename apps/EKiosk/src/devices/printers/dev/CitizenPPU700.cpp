@@ -105,7 +105,7 @@ bool CitizenPPU700_PRINTER::getStatus(int &aStatus, CMDCitizenPPU700::SStatus &s
     aStatus = PrinterState::PrinterOK;
 
     // ошибки
-    if (sStatus.NotAvailabled) {
+    if (sStatus.NotAvailable) {
         aStatus |= PrinterState::PrinterNotAvailable;
     }
 
@@ -136,7 +136,7 @@ bool CitizenPPU700_PRINTER::getStatus(int &aStatus, CMDCitizenPPU700::SStatus &s
 }
 
 bool CitizenPPU700_PRINTER::getState(char aStatusType, CMDCitizenPPU700::SStatus &aStatus) {
-    if (aStatus.NotAvailabled) {
+    if (aStatus.NotAvailable) {
         return true;
     }
 
@@ -149,16 +149,16 @@ bool CitizenPPU700_PRINTER::getState(char aStatusType, CMDCitizenPPU700::SStatus
 
     if (this->sendCommand(commandPacket, true, 200, respData, answerPacket, 0)) {
         if (answerPacket.size() != CMDCitizenPPU700::StatusAnswerLength) {
-            aStatus.NotAvailabled = true;
+            aStatus.NotAvailable = true;
             return true;
         }
 
-        aStatus.NotAvailabled = false;
+        aStatus.NotAvailable = false;
         char answer = answerPacket.right(1)[0];
 
         // если ответило другое устройство
         if (!positiveMasking(answer, CMDCitizenPPU700::Control::StatusMask)) {
-            aStatus.NotAvailabled = true;
+            aStatus.NotAvailable = true;
             return true;
         }
 

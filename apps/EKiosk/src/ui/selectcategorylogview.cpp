@@ -26,15 +26,15 @@ void SelectCategoryLogView::deSelectAll() {
 }
 
 void SelectCategoryLogView::showLikeThis() {
-    bool selectValidatorJam = ui->chbxSelectValidatorJam->checkState();
-    bool selectMoneyOut = ui->chbxSelectMoneyOut->checkState();
-    bool selectError = ui->chbxSelectERROR->checkState();
-    bool selectPayDaemon = ui->chbxSelectPayDaemon->checkState();
-    bool selectStatusAso = ui->chbxSelectStatusAso->checkState();
-    bool selectStatusPrinter = ui->chbxSelectStatusPrinter->checkState();
-    bool selectStatusValidator = ui->chbxSelectStatusValidator->checkState();
-    bool selectConnectionState = ui->chbxSelectConnectionState->checkState();
-    bool selectUpdater = ui->chbxSelectUpdater->checkState();
+    bool selectValidatorJam = ui->chbxSelectValidatorJam->checkState() != 0u;
+    bool selectMoneyOut = ui->chbxSelectMoneyOut->checkState() != 0u;
+    bool selectError = ui->chbxSelectERROR->checkState() != 0u;
+    bool selectPayDaemon = ui->chbxSelectPayDaemon->checkState() != 0u;
+    bool selectStatusAso = ui->chbxSelectStatusAso->checkState() != 0u;
+    bool selectStatusPrinter = ui->chbxSelectStatusPrinter->checkState() != 0u;
+    bool selectStatusValidator = ui->chbxSelectStatusValidator->checkState() != 0u;
+    bool selectConnectionState = ui->chbxSelectConnectionState->checkState() != 0u;
+    bool selectUpdater = ui->chbxSelectUpdater->checkState() != 0u;
 
     emit this->emit_SelectOptions(selectValidatorJam,
                                   selectMoneyOut,

@@ -145,8 +145,6 @@ void RegistrationDialog::showMsgDialog(QString title, QString text) {
     messageBox1.setIcon(QMessageBox::Information);
 
     messageBox1.exec();
-
-    return;
 }
 
 void RegistrationDialog::createNewConnection() {
@@ -277,7 +275,6 @@ void RegistrationDialog::save1BtnReg() {
         //            ui->editConfirmPasswordReg->setPlaceholderText("Пароль
         //            введен верно.");
     }
-    return;
 }
 
 void RegistrationDialog::save2BtnReg() {
@@ -504,7 +501,6 @@ void RegistrationDialog::tabToRegistration1() {
     }
 
     ui->editNumTrmReg->setFocus();
-    return;
 }
 
 void RegistrationDialog::tabToRegistration2() {

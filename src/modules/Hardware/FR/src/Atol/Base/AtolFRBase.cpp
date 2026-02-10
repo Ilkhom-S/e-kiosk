@@ -125,8 +125,9 @@ bool AtolFRBase::checkTaxValue(TVAT aVAT,
         if (!aCanCorrectTaxValue) {
             toLog(LogLevel::Error, m_DeviceName + ": Cannot to set tax value = " + log);
             return false;
-        } else if (!setFRParameter(aFRParameterData(aData.group),
-                                   getBCD(double(aVAT) * 100.0, 2))) {
+        }
+
+        if (!setFRParameter(aFRParameterData(aData.group), getBCD(double(aVAT) * 100.0, 2))) {
             toLog(LogLevel::Error, m_DeviceName + ": Failed to set tax value = " + log);
             return false;
         }
@@ -505,7 +506,9 @@ bool AtolFRBase::getCommonStatus(TStatusCodes &aStatusCodes) {
 
     if (data == CFR::Result::Fail) {
         return false;
-    } else if ((data != CFR::Result::Error) && (data[9] & CAtolFR::States::CoverIsOpened)) {
+    }
+
+    if ((data != CFR::Result::Error) && (data[9] & CAtolFR::States::CoverIsOpened)) {
         aStatusCodes.insert(DeviceStatusCode::Error::CoverIsOpened);
     }
 
@@ -609,7 +612,9 @@ bool AtolFRBase::perform_Fiscal(const QStringList &aReceipt,
 bool AtolFRBase::isFiscalReady(bool aOnline, EFiscalPrinterCommand::Enum aCommand) {
     if (!TSerialFRBase::isFiscalReady(aOnline, aCommand)) {
         return false;
-    } else if (aCommand == EFiscalPrinterCommand::Encashment) {
+    }
+
+    if (aCommand == EFiscalPrinterCommand::Encashment) {
         int sessionInterval = m_LastOpenSession.secsTo(QDateTime::currentDateTime()) / 60;
 
         if (sessionInterval >= 24 * 60) {
@@ -1078,11 +1083,15 @@ bool AtolFRBase::waitForChangeXReportMode() {
                 toLog(LogLevel::Error,
                       "AtolFR: unexpected error occured when printing Z-report, exit!");
                 return false;
-            } else if ((m_Mode == CAtolFR::InnerModes::Choice) ||
-                       ((m_Mode == CAtolFR::InnerModes::NotCancel) && (m_Submode == 0))) {
+            }
+
+            if ((m_Mode == CAtolFR::InnerModes::Choice) ||
+                ((m_Mode == CAtolFR::InnerModes::NotCancel) && (m_Submode == 0))) {
                 // все нормально, выходим
                 return true;
-            } else if ((m_Mode == CAtolFR::InnerModes::NotCancel) && (m_Submode == 2)) {
+            }
+
+            if ((m_Mode == CAtolFR::InnerModes::NotCancel) && (m_Submode == 2)) {
                 toLog(LogLevel::Normal, "AtolFR: service X-report process, wait...");
             } else {
                 // режим не тот, который ожидаем в соответствии с протоколом, выходим с ошибкой
@@ -1124,14 +1133,18 @@ bool AtolFRBase::waitForChangeZReportMode() {
                 toLog(LogLevel::Error,
                       "AtolFR: unexpected error occured when printing Z-report, exit!");
                 return false;
-            } else if ((m_Mode == CAtolFR::InnerModes::Choice) ||
-                       ((m_Mode == CAtolFR::InnerModes::Cancel) && (m_Submode == 0))) {
+            }
+
+            if ((m_Mode == CAtolFR::InnerModes::Choice) ||
+                ((m_Mode == CAtolFR::InnerModes::Cancel) && (m_Submode == 0))) {
                 // все нормально, выходим
                 return true;
-            } else if (((m_Mode == CAtolFR::InnerModes::ExtraCommand) && (m_Submode == 1)) ||
-                       (((m_Mode == CAtolFR::InnerModes::Cancel) ||
-                         (m_Mode == CAtolFR::InnerModes::NotCancel)) &&
-                        (m_Submode == 2))) {
+            }
+
+            if (((m_Mode == CAtolFR::InnerModes::ExtraCommand) && (m_Submode == 1)) ||
+                (((m_Mode == CAtolFR::InnerModes::Cancel) ||
+                  (m_Mode == CAtolFR::InnerModes::NotCancel)) &&
+                 (m_Submode == 2))) {
                 toLog(LogLevel::Normal, "AtolFR: service Z-report process, wait...");
             } else {
                 // режим не тот, который ожидаем в соответствии с протоколом, выходим с ошибкой
@@ -1160,7 +1173,9 @@ bool AtolFRBase::enterInnerMode(char aInnerMode) {
     // если хотим войти в такой же режим, в котором сейчас находимся - выходим
     if (m_Mode == aInnerMode) {
         return true;
-    } else if (m_Mode) {
+    }
+
+    if (m_Mode) {
         bool result = exitInnerMode();
 
         // если хотим войти в режим выбора, либо не вышло выйти из режима - выходим
@@ -1261,7 +1276,8 @@ bool AtolFRBase::execZReport(bool aAuto) {
 
     if (sessionState == ESessionState::Error)
         return false;
-    else if (sessionState == ESessionState::Closed)
+
+    if (sessionState == ESessionState::Closed)
         return true;
 
     bool cannotAutoZReport =
@@ -1431,7 +1447,9 @@ bool AtolFRBase::getShortStatus(TStatusCodes &aStatusCodes) {
 
     if (data == CFR::Result::Fail) {
         return false;
-    } else if (data != CFR::Result::Error) {
+    }
+
+    if (data != CFR::Result::Error) {
         m_Mode = (data[1] >> 0) & CAtolFR::ModeMask;
         m_Submode = (data[1] >> 4) & CAtolFR::ModeMask;
 

@@ -110,7 +110,7 @@ struct SPaper {
 
 // структура для парсинга статусов
 struct SStatus {
-    bool NotAvailabled;
+    bool NotAvailable;
 
     // статус принтера
     bool Offline;
@@ -130,7 +130,7 @@ struct SStatus {
     bool Error;
 
     SStatus()
-        : NotAvailabled(false), Offline(false), CoverOpen(false), PaperOut(false), Error(false) {}
+        : NotAvailable(false), Offline(false), CoverOpen(false), PaperOut(false), Error(false) {}
 };
 
 // структура для парсинга информации
@@ -208,7 +208,7 @@ const uchar PrinterIsNotAvailable = 0xFF; /// Принтер недоступе�
 const uchar PaperEnd = 0x0C;              /// Бумага закончилась
 const uchar PaperNearEnd = 0x03;          /// Бумага почти закончилась
 const uchar UnknownCommand = 0x20;        /// Неизвестная команда
-const uchar PaperJam_Error = 0x40;         /// Бумага зажевалась
+const uchar PaperJam_Error = 0x40;        /// Бумага зажевалась
 const uchar PrinterIsOK = 0x00;           /// Нет ошибок
 
 /// Константы для установки шрифта принтера
@@ -221,7 +221,7 @@ const uchar PrinterFontUnderline = 0x2D;         /// Подчеркнутый
 
 const uchar PrinterCommandSetBarCodeHeightSecondByte = 0x68; /// Высота штрих-кода
 const uchar PrinterCommandPrintBarCodeSecondByte = 0x6B;     /// Печать штрих-кода
-const uchar PrinterCommandSetBarCodeSystem_ThirdByte = 0x49;  /// Система штрих-кода CODE128
+const uchar PrinterCommandSetBarCodeSystem_ThirdByte = 0x49; /// Система штрих-кода CODE128
 const uchar PrinterCommandSetBarCodeHRIPositionSecondByte = 0x48;
 const uchar PrinterCommandSetBarCodeFontSizeSecondByte = 0x66;
 const uchar PrinterCommandSetBarCodeWidthSecondByte = 0x77;

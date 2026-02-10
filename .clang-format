@@ -13,16 +13,16 @@ AllowShortLoopsOnASingleLine: false
 BinPackArguments: false
 BinPackParameters: false
 BraceWrapping:
-  AfterClass: false
-  AfterControlStatement: false
-  AfterEnum: false
-  AfterFunction: true
-  AfterNamespace: false
-  AfterStruct: false
-  AfterUnion: false
-  BeforeCatch: false
-  BeforeElse: false
-  IndentBraces: false
+    AfterClass: false
+    AfterControlStatement: false
+    AfterEnum: false
+    AfterFunction: true
+    AfterNamespace: false
+    AfterStruct: false
+    AfterUnion: false
+    BeforeCatch: false
+    BeforeElse: false
+    IndentBraces: false
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: true
@@ -45,22 +45,22 @@ SortIncludes: true
 IncludeBlocks: Regroup
 
 IncludeCategories:
-  # 1. Qt Framework (Highest Priority)
-  - Regex: '^<Q.*'
-    Priority: 10
+    # 1. Qt Framework (Highest Priority)
+    - Regex: "^<Q.*"
+      Priority: 10
 
-  # 2. Global/Common Includes (<Common/...)
-  - Regex: '^<Common/.*'
-    Priority: 20
+    # 2. Global/Common Includes (<Common/...)
+    - Regex: "^<Common/.*"
+      Priority: 20
 
-  # 3. SDK Includes (<SDK/...)
-  - Regex: '^<SDK/.*'
-    Priority: 30
+    # 3. SDK Includes (<SDK/...)
+    - Regex: "^<SDK/.*"
+      Priority: 30
 
-  # 4. Standard System Headers (<vector>, <stdio.h>, etc.)
-  - Regex: '^<.*'
-    Priority: 40
+    # 4. Standard System Headers (<vector>, <stdio.h>, etc.)
+    - Regex: "^<.*"
+      Priority: 40
 
-  # 5. Local Project Headers ("File.h")
-  - Regex: '.*'
-    Priority: 50
+    # 5. Local Project Headers ("File.h")
+    - Regex: ".*"
+      Priority: 50
