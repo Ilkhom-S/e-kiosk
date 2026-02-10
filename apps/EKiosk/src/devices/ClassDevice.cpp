@@ -5,7 +5,7 @@ SearchDevices::SearchDevices(QObject *parent)
       printer(new ClassPrinter()), modem(new ClassModem()), watchDogs(new WatchDogs()),
       modem_ConUp(false), debugger(false) {}
 
-void SearchDevices::setCom_ListInfo(QStringList comList) {
+void SearchDevices::setComListInfo(QStringList comList) {
     com_List = comList;
 }
 
@@ -48,7 +48,7 @@ void SearchDevices::run() {
         }
     }
 
-    if (searchValidator) {
+    if (SearchDev::search_validator) {
         emit emitDeviceSearch(
             SearchDev::search_validator, SearchDev::start_search, vName, vComment, cPort);
 
@@ -89,7 +89,7 @@ void SearchDevices::run() {
         }
     }
 
-    if (searchCoinAcceptor) {
+    if (SearchDev::search_coin_acceptor) {
         emit emitDeviceSearch(
             SearchDev::search_coin_acceptor, SearchDev::start_search, vName, vComment, cPort);
 
@@ -134,7 +134,7 @@ void SearchDevices::run() {
 
     if (vName != PrinterModel::Windows_Printer) {
         // Надо ли искать принтер вообще
-        if (searchPrinter) {
+        if (SearchDev::search_printer) {
             emit emitDeviceSearch(
                 SearchDev::search_printer, SearchDev::start_search, vName, vComment, cPort);
 
@@ -261,7 +261,7 @@ void SearchDevices::run() {
     }
 
     // Надо ли искать модем вообще
-    if (searchModem) {
+    if (SearchDev::search_modem) {
         emit emitDeviceSearch(
             SearchDev::search_modem, SearchDev::start_search, vName, vComment, cPort);
 
@@ -292,12 +292,12 @@ void SearchDevices::run() {
                     if (takeBalanceSim) {
                         takeBalanceSim = true;
                     }
-                    if (takeSim_Number) {
-                        takeSim_Number = true;
+                    if (takeSimNumber) {
+                        takeSimNumber = true;
                     }
                 } else {
                     takeBalanceSim = false;
-                    takeSim_Number = false;
+                    takeSimNumber = false;
                 }
                 vrm_Modem_Port = cPort;
                 SearchDevices::msleep(2000);
@@ -308,7 +308,7 @@ void SearchDevices::run() {
                 setDeviseInBase(SearchDev::search_modem, vName, cPort, vComment, 0);
 
                 takeBalanceSim = false;
-                takeSim_Number = false;
+                takeSimNumber = false;
             }
         } else {
             // Устройство не найдено
@@ -317,13 +317,13 @@ void SearchDevices::run() {
             setDeviseInBase(SearchDev::search_modem, vName, cPort, vComment, 0);
 
             takeBalanceSim = false;
-            takeSim_Number = false;
+            takeSimNumber = false;
         }
         //))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
         msleep(1000);
 
-        if (takeSim_Number) {
+        if (takeSimNumber) {
             modem->setPort(vrm_Modem_Port);
             modem->ussdRequestNumberSim = s_ussdRequestNumberSim;
 
@@ -339,14 +339,14 @@ void SearchDevices::run() {
         msleep(1000);
 
         if (takeBalanceSim) {
-            if (!takeSim_Number) {
+            if (!takeSimNumber) {
                 modem->setPort(cPort);
             }
 
-            modem->ussdRequestBalanseSim = s_ussdRequestBalanseSim;
+            modem->ussdRequestBalanseSim = s_ussdRequestBalanceSim;
             modem->indexBalanceParse = s_indexBalanceParse;
 
-            if (s_ussdRequestBalanseSim.trimmed() != "") {
+            if (s_ussdRequestBalanceSim.trimmed() != "") {
                 modem->execCommand(Modem_ProtocolCommands::GetBalance, false);
                 sim_Balance = modem->nowBalanceSim;
                 msleep(1000);

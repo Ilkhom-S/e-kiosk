@@ -84,9 +84,11 @@ TResult EBDSProtocol::processCommand(const QByteArray &aCommandData,
     }
     if (!getAnswer(aAnswerData)) {
         return CommandResult::Port;
-    } if (aAnswerData.isEmpty()) {
+    }
+    if (aAnswerData.isEmpty()) {
         return CommandResult::NoAnswer;
-    } else if (!check(request, aAnswerData)) {
+    }
+    if (!check(request, aAnswerData)) {
         return CommandResult::Protocol;
     }
 
@@ -118,7 +120,7 @@ bool EBDSProtocol::getAnswer(QByteArray &aAnswer) {
             length = aAnswer[1];
         }
     } while ((clockTimer.elapsed() < CEBDS::AnswerTimeout) &&
-             ((aAnswer.size() < length) || (length == 0u)));
+             ((aAnswer.size() < length) || (length == 0U)));
 
     toLog(LogLevel::Normal, QString("EBDS: << {%1}").arg(aAnswer.toHex().data()));
 

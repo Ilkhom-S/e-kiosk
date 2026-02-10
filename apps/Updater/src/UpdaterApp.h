@@ -33,11 +33,11 @@ typedef enum {
 
 namespace ExitCode {
 enum Enum {
-    NoError = 0,         /// Выход без ошибок.
+    NoError = 0,          /// Выход без ошибок.
     ErrorRunFrom_TempDir, /// Ошибка запуска из временной папки
-    NoWatchService,      /// Отсутствует соединение с WatchService
-    UnknownCommand,      /// Неизвестная команда
-    SecondInstance,      /// Повторный запуск приложения
+    NoWatchService,       /// Отсутствует соединение с WatchService
+    UnknownCommand,       /// Неизвестная команда
+    SecondInstance,       /// Повторный запуск приложения
     UnknownError,
     NetworkError,   /// Сетевая ошибка (не смог скачать)
     ParseError,     /// Ошибка разбора ответа сервера обновления
@@ -117,7 +117,7 @@ private:
     CUpdaterApp::State m_State;
     QPointer<QTimer> m_ErrorStopTimer;
 
-    int m_ResultCode_;
+    int m_ResultCode_{};
     QString m_ResultDescription;
 
 private:
@@ -146,7 +146,7 @@ private:
     void delayedExit(int aTimeout, CUpdaterErrors::Enum aError);
 
     /// Выставить код возврата updater
-    void setResultCode(CUpdaterErrors::Enum aResult, const QString aMessage = QString());
+    void setResultCode(CUpdaterErrors::Enum aError, const QString aMessage = QString());
     void setResultCode(CUpdaterApp::ExitCode::Enum aExitCode, const QString aMessage = QString());
     void updateErrorDescription();
 

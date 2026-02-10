@@ -242,7 +242,7 @@ bool EBDS::execCommand(int cmdType, QByteArray &cmdResponse) {
                 return true;
             }
 
-            if (result == 0u) {
+            if (result == 0U) {
                 qDebug() << "result " << result;
             }
 
@@ -285,7 +285,8 @@ TResult EBDS::processCommand(QByteArray &aCommandData, QByteArray &aAnswerData, 
     }
     if (aAnswerData.isEmpty()) {
         return CommandResult::NoAnswer;
-    } if (!check(aCommandData, aAnswerData)) {
+    }
+    if (!check(aCommandData, aAnswerData)) {
         return CommandResult::Protocol;
     }
 
@@ -326,7 +327,7 @@ bool EBDS::getAnswer(QByteArray &aAnswer) {
             length = aAnswer[1];
         }
     } while ((clockTimer.elapsed() < EBDSConstruct::AnswerTimeout) &&
-             ((aAnswer.size() < length) || (length == 0u)));
+             ((aAnswer.size() < length) || (length == 0U)));
 
     if (debugger) {
         qDebug() << QString("EBDS: << {%1}").arg(aAnswer.toHex().data());
@@ -559,7 +560,7 @@ int EBDS::readPollInfo(QByteArray byte) {
 
     if (checkBit(byte0, EBDSConstruct::State_0::Stacked)) {
 
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         this->setReturnNominalState(false);
 
         int nominal = getNominal(byte);
@@ -573,15 +574,15 @@ int EBDS::readPollInfo(QByteArray byte) {
         } else {
             this->sendStatusTo(VStatus::Errors::BadStackerPosition,
                                QString("Открыта касета купюроприемника"));
-            this->setBoolingDlgState(false);
+            EBDS::setBoolingDlgState(false);
             return 0;
         }
     }
 
     if (checkBit(byte0, EBDSConstruct::State_0::Accepting)) {
         this->sendStatusTo(VStatus::Success::Ok, QString("Accepting"));
-        this->setBoolingDlgState(true);
-        this->setBoolingDlgState(false); /*qDebug() << "----Accepting----";*/
+        EBDS::setBoolingDlgState(true);
+        EBDS::setBoolingDlgState(false); /*qDebug() << "----Accepting----";*/
         return 0;
     }
 
@@ -593,52 +594,52 @@ int EBDS::readPollInfo(QByteArray byte) {
 
     if (checkBit(byte0, EBDSConstruct::State_0::Returning)) {
         this->sendStatusTo(VStatus::Success::Ok, QString("Returning"));
-        this->setBoolingDlgState(false); /*qDebug() << "----Returning----";*/
+        EBDS::setBoolingDlgState(false); /*qDebug() << "----Returning----";*/
         return 0;
     }
 
     if (checkBit(byte0, EBDSConstruct::State_0::Returned)) {
         emit emitLog(VStatus::Success::Ok, "EBDS", QString("Купюра возвращена (Returned)"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
     if (checkBit(byte1, EBDSConstruct::State_1::Cheated)) {
         this->sendStatusTo(VStatus::Warning::Cheated, QString("Попытка мошенничество (Cheated)"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
     if (checkBit(byte1, EBDSConstruct::State_1::Rejected)) {
         this->sendStatusTo(VStatus::Warning::Rejected, QString("Купюра отклонена (Rejected)"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
     if (checkBit(byte1, EBDSConstruct::State_1::Jammed)) {
         this->sendStatusTo(VStatus::Errors::ValidatorJammed,
                            QString("Ошибка! Замятие купюры в купюроприемнике"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
     if (checkBit(byte1, EBDSConstruct::State_1::CassetteFull)) {
         this->sendStatusTo(VStatus::Errors::StackerFull,
                            QString("Переполнение бокса (Сделайте инкасацию)"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
     if (checkBit(byte1, EBDSConstruct::State_1::Paused)) {
         this->sendStatusTo(VStatus::Success::Ok,
                            QString("Thus Bill Validator stops motion. Paused"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
     if (checkBit(byte1, EBDSConstruct::State_1::Calibration)) {
         this->sendStatusTo(VStatus::Warning::Calibration, QString("Калибровка (Calibration)"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
@@ -646,21 +647,21 @@ int EBDS::readPollInfo(QByteArray byte) {
 
     if (checkBit(byte2, EBDSConstruct::State_2::PowerUp)) {
         this->sendStatusTo(VStatus::Success::Ok, QString("Идет питание на Купюроприемник.(11)"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
     if (checkBit(byte2, EBDSConstruct::State_2::InvalidCommand)) {
         this->sendStatusTo(VStatus::Warning::InvalidCommand,
                            QString("Неверная команда (Invalid Command)"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
     if (checkBit(byte2, EBDSConstruct::State_2::Failure)) {
         this->sendStatusTo(VStatus::Errors::Failure,
                            QString("Ошибка! Инициализации купюроприемника.(Failure)"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
@@ -668,19 +669,19 @@ int EBDS::readPollInfo(QByteArray byte) {
 
     if (checkBit(byte3, EBDSConstruct::State_3::NoPushMode)) {
         this->sendStatusTo(VStatus::Warning::NoPushMode, QString("NoPush Mode"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
     if (checkBit(byte3, EBDSConstruct::State_3::FlashDownload)) {
         this->sendStatusTo(VStatus::Warning::FlashDownload, QString("Flash Download"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 
     if (checkBit(byte3, EBDSConstruct::State_3::PreStack)) {
         this->sendStatusTo(VStatus::Warning::PreStack, QString("Pre Stack"));
-        this->setBoolingDlgState(false);
+        EBDS::setBoolingDlgState(false);
         return 0;
     }
 

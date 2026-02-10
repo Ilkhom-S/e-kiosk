@@ -109,7 +109,7 @@ void MainWindow::init() {
             this,
             SLOT(toLog(int, QString, QString)));
 
-    // Объект поиска устпойств
+    // Объект поиска устройств
     searchDevices = new SearchDevices(this);
     connect(searchDevices,
             SIGNAL(emitDeviceSearch(int, int, QString, QString, QString)),
@@ -119,11 +119,11 @@ void MainWindow::init() {
     // Присваиваем базу
     searchDevices->setDbName(db);
 
-    searchDevices->setCom_ListInfo(MainWindow::portList());
+    searchDevices->setComListInfo(MainWindow::portList());
     searchDevices->takeBalanceSim = config.checkGetBalanceSim;
-    searchDevices->takeSim_Number = config.checkGetNumberSim;
+    searchDevices->takeSimNumber = config.checkGetNumberSim;
 
-    searchDevices->s_ussdRequestBalanseSim = config.sim_BalanceRequest;
+    searchDevices->s_ussdRequestBalanceSim = config.sim_BalanceRequest;
     searchDevices->s_ussdRequestNumberSim = config.sim_NumberRequest;
     searchDevices->s_indexBalanceParse = config.indexCheckBalance;
 
@@ -165,7 +165,7 @@ void MainWindow::init() {
         QStringList connectionList;
         connectionList << QString("Local connection");
 
-        auto rasConnectionList = connObject->getRasConnectionList();
+        auto rasConnectionList = ConnectionPart::getRasConnectionList();
         if (rasConnectionList.count() > 0) {
             connectionList.append(rasConnectionList);
         }
@@ -201,7 +201,7 @@ void MainWindow::init() {
         // Вставляем устройства
         QStringList lstDevDialup;
 
-        bool dialDev = connObject->hasInstalledModems(lstDevDialup);
+        bool dialDev = ConnectionPart::hasInstalledModems(lstDevDialup);
 
         if (!dialDev) {
             toLog(LoggerLevel::Error, "CONNECTION", "На терминале нет установленных модемов...");
@@ -838,8 +838,8 @@ void MainWindow::startToConnection() {
         toLog(LoggerLevel::Warning, "CONNECTION", text);
     }
 
-    QStringList vrm_Lst;
-    vrm_Lst << text;
+    QStringList vrmLst;
+    vrmLst << text;
     auto data = QVariantMap({{"message", text}});
 
     if (adminDialog->isVisible()) {
@@ -963,7 +963,7 @@ void MainWindow::deleteSearchParam() {
 
 bool MainWindow::isModem_ConnectionUp(QString &connectionName) {
     QStringList lstCon;
-    bool isConnectionUp = connObject->getNowConnectionState(lstCon);
+    bool isConnectionUp = ConnectionPart::getNowConnectionState(lstCon);
 
     connectionName = lstCon.count() > 1 ? lstCon.at(0) : "";
 
@@ -1175,28 +1175,28 @@ bool MainWindow::checkUserInBase() {
 
     QSqlRecord record = userSql.record();
 
-    QString vrm_Login = "";
-    QString vrm_Token = "";
-    QString vrm_SecretLogin = "";
-    QString vrm_SecretPass = "";
+    QString vrmLogin = "";
+    QString vrmToken = "";
+    QString vrmSecretLogin = "";
+    QString vrmSecretPass = "";
 
     if (userSql.next()) {
-        vrm_Login = userSql.value(record.indexOf("login")).toString();
-        vrm_Token = userSql.value(record.indexOf("token")).toString();
-        vrm_SecretLogin = userSql.value(record.indexOf("secret_login")).toString();
-        vrm_SecretPass = userSql.value(record.indexOf("secret_pass")).toString();
+        vrmLogin = userSql.value(record.indexOf("login")).toString();
+        vrmToken = userSql.value(record.indexOf("token")).toString();
+        vrmSecretLogin = userSql.value(record.indexOf("secret_login")).toString();
+        vrmSecretPass = userSql.value(record.indexOf("secret_pass")).toString();
     }
 
-    if (vrm_Login.trimmed() == "" || vrm_Token.trimmed() == "") {
+    if (vrmLogin.trimmed() == "" || vrmToken.trimmed() == "") {
         // Некорректные данные о пользователе
         return false;
     }
 
     // Расшифровка данных и запись их в переменные
-    config.terminalData.login = decodeStr(vrm_Login, config.coddingKey);
-    config.terminalData.token = decodeStr(vrm_Token, config.coddingKey);
-    config.terminalData.secretLogin = decodeStr(vrm_SecretLogin, config.coddingKey);
-    config.terminalData.secretPass = decodeStr(vrm_SecretPass, config.coddingKey);
+    config.terminalData.login = decodeStr(vrmLogin, config.coddingKey);
+    config.terminalData.token = decodeStr(vrmToken, config.coddingKey);
+    config.terminalData.secretLogin = decodeStr(vrmSecretLogin, config.coddingKey);
+    config.terminalData.secretPass = decodeStr(vrmSecretPass, config.coddingKey);
 
     return true;
 }
@@ -1336,7 +1336,7 @@ void MainWindow::createDialUpConnection(QVariantMap data) {
                   .arg(devName, conName, phone, login, pass));
 
     // Создаем соединение
-    int status = connObject->createNewDialupConnection(conName, devName, phone, login, pass);
+    int status = ConnectionPart::createNewDialupConnection(conName, devName, phone, login, pass);
 
     QString title = "Создание соединения";
     QString text = "";
@@ -1375,7 +1375,7 @@ void MainWindow::createDialUpConnection(QVariantMap data) {
             QStringList connectionList;
             connectionList << QString("Local connection");
 
-            auto rasConnectionList = connObject->getRasConnectionList();
+            auto rasConnectionList = ConnectionPart::getRasConnectionList();
             if (rasConnectionList.count() > 0) {
                 connectionList.append(rasConnectionList);
             }
@@ -1570,12 +1570,12 @@ void MainWindow::openAdminDialog() {
     QStringList pList = MainWindow::portList();
 
     // Вставляем список купюрников
-    QString vrm_ValidatorInfo =
+    QString vrmValidatorInfo =
         QString("firmware: %1\n"
                 "serial: %2")
             .arg(config.validatorData.partNumber, config.validatorData.serialNumber);
 
-    data["validator_info"] = vrm_ValidatorInfo;         // Info
+    data["validator_info"] = vrmValidatorInfo;          // Info
     data["validator_list"] = billValidatorList;         // ListValidator
     data["validator_name"] = config.validatorData.name; // Name
     data["validator_port_list"] = pList;                // List Com Portov
@@ -1584,12 +1584,12 @@ void MainWindow::openAdminDialog() {
     adminDialog->setDataToAdmin(AdminCommand::aCmdValidatorInform, data);
 
     // Вставляем список монетоприемников
-    QString vrm_CoinAcceptorInfo =
+    QString vrmCoinAcceptorInfo =
         QString("model:  %1\n"
                 "serial:   %2")
             .arg(config.coinAcceptorData.partNumber, config.coinAcceptorData.serialNumber);
 
-    data["coin_acceptor_info"] = vrm_CoinAcceptorInfo;         // Info
+    data["coin_acceptor_info"] = vrmCoinAcceptorInfo;          // Info
     data["coin_acceptor_list"] = coinAcceptorList;             // ListValidator
     data["coin_acceptor_name"] = config.coinAcceptorData.name; // Name
     data["coin_acceptor_port_list"] = pList;                   // List Com Portov
@@ -1649,7 +1649,7 @@ void MainWindow::openAdminDialog() {
 
     // Список устройств для создания Dialup подключения
     QStringList lstDevDialup;
-    bool dialDev = connObject->hasInstalledModems(lstDevDialup);
+    bool dialDev = ConnectionPart::hasInstalledModems(lstDevDialup);
     if (!dialDev) {
         toLog(LoggerLevel::Error, "CONNECTION", "На терминале нет установленных модемов...");
     }
@@ -1852,13 +1852,13 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
             clsPrinter->printerOpen();
         }
 
-        QStringList vrm_Lst;
+        QStringList vrmLst;
         int prtStatus = printerStatusList().toInt();
 
         if (prtStatus != 0) {
             auto data = QVariantMap({{"message", printerStatus.at(prtStatus)}});
             adminDialog->setDataToAdmin(AdminCommand::aCmdInfrmationPanel, data);
-            toLog(LoggerLevel::Error, "PRINTER", QString("Статус (%1)").arg(vrm_Lst.at(0)));
+            toLog(LoggerLevel::Error, "PRINTER", QString("Статус (%1)").arg(vrmLst.at(0)));
             return;
         }
 
@@ -1932,7 +1932,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
         auto printerName = data.value("printer_name").toString();
         auto printerPort = data.value("printer_port").toString();
         auto printerComment = data.value("printer_comment").toString();
-        auto modem_Port = data.value("modem_port").toString();
+        auto modemPort = data.value("modem_port").toString();
         auto watchdogPort = data.value("watchdog_port").toString();
 
         // если выбран принтер KM1X, то в коммент добавим скорость порта
@@ -1943,7 +1943,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
         // Тут надо в базу записать устройства
         saveDevice(1, validatorName, validatorPort, config.validatorData.comment, 1);
         saveDevice(2, printerName, printerPort, printerComment, 1);
-        saveDevice(3, config.modem_Data.name, modem_Port, config.modem_Data.comment, 1);
+        saveDevice(3, config.modem_Data.name, modemPort, config.modem_Data.comment, 1);
         saveDevice(4, config.WDData.name, watchdogPort, config.WDData.comment, 1);
         saveDevice(5, coinAcceptorName, coinAcceptorPort, config.coinAcceptorData.comment, 1);
 
@@ -1973,7 +1973,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
         QStringList connectionList;
         connectionList << QString("Local connection");
 
-        auto rasConnectionList = connObject->getRasConnectionList();
+        auto rasConnectionList = ConnectionPart::getRasConnectionList();
         if (rasConnectionList.count() > 0) {
             connectionList.append(rasConnectionList);
         }
@@ -2034,35 +2034,35 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
 
                 clsModem->setPort(config.modem_Data.port);
 
-                bool nowSim_Present = false;
+                bool nowSimPresent = false;
                 QString signalQuality;
                 QString operatorName;
-                QString modem_Comment;
-                QString sim_Number;
-                QString sim_Balance;
-                bool modem_P = false;
+                QString modemComment;
+                QString simNumber;
+                QString simBalance;
+                bool modemP = false;
 
-                if (clsModem->isItYou(modem_Comment)) {
-                    modem_P = true;
+                if (clsModem->isItYou(modemComment)) {
+                    modemP = true;
                     // toDebuging("--- EXIT MODEM isItYou ---");
-                    nowSim_Present = clsModem->nowSim_Present;
+                    nowSimPresent = clsModem->nowSim_Present;
                     signalQuality = clsModem->nowModem_Quality;
                     operatorName = clsModem->nowProviderSim;
-                    modem_Comment = clsModem->nowModem_Comment;
+                    modemComment = clsModem->nowModem_Comment;
 
                     // Присваиваем программе
-                    config.modem_Data.comment = modem_Comment.replace("'", "").replace(".", "");
+                    config.modem_Data.comment = modemComment.replace("'", "").replace(".", "");
                     config.modem_Data.found = true;
-                    config.modem_Data.present = nowSim_Present;
+                    config.modem_Data.present = nowSimPresent;
                     config.modem_Data.provider = operatorName;
                     config.modem_Data.rate = signalQuality;
                 }
 
                 // Проверяем номер и баланс если есть ответ от модема
-                if (modem_P) {
+                if (modemP) {
                     clsModem->ussdRequestNumberSim = config.sim_NumberRequest;
                     clsModem->execCommand(Modem_ProtocolCommands::GetSim_Number, false);
-                    sim_Number = clsModem->nowNumberSim;
+                    simNumber = clsModem->nowNumberSim;
                     // toDebuging("--- Now Number Sim --- " + sim_Number);
 
                     // Баланс
@@ -2070,11 +2070,11 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
                     clsModem->ussdRequestBalanseSim = config.sim_BalanceRequest;
                     clsModem->indexBalanceParse = config.indexCheckBalance;
                     clsModem->execCommand(Modem_ProtocolCommands::GetBalance, false);
-                    sim_Balance = clsModem->nowBalanceSim;
+                    simBalance = clsModem->nowBalanceSim;
                     // toDebuging("--- Now Balance Sim --- " + sim_Balance);
 
-                    config.modem_Data.number = sim_Number;
-                    config.modem_Data.balance = sim_Balance;
+                    config.modem_Data.number = simNumber;
+                    config.modem_Data.balance = simBalance;
 
                     // Отправляем на сервер данные мониторинга
                     statusDaemons->firstSend = true;
@@ -4128,8 +4128,8 @@ void MainWindow::insertSmsContentInf() {
                 QString::number(SmsSend::OK) + ", " + QString::number(SmsSend::Unlock) + ");");
 
     for (int i = 1; i <= 6; i++) {
-        QString vrm_Query = userQuery.arg(i);
-        if (!userSql.exec(vrm_Query)) {
+        QString vrmQuery = userQuery.arg(i);
+        if (!userSql.exec(vrmQuery)) {
             toLog(LoggerLevel::Error, "DB_CONNECT", "Ошибка при вставке смс контента...");
             return;
         }
@@ -4302,8 +4302,8 @@ bool MainWindow::clearDataBase() {
 
     QDate dateTo = QDate::currentDate();
     dateTo = dateTo.addDays(-20);
-    QString vrm_DateTo = dateTo.toString("yyyy-MM-dd");
-    QString vrm_DateFrom = QString("%1-01-01").arg(QDate::currentDate().year() - 1);
+    QString vrmDateTo = dateTo.toString("yyyy-MM-dd");
+    QString vrmDateFrom = QString("%1-01-01").arg(QDate::currentDate().year() - 1);
 
     QString lstSql1;
     QString lstSql2;
@@ -4318,11 +4318,11 @@ bool MainWindow::clearDataBase() {
                       "terminal_collect as c WHERE c.collect_id "
                       "= terminal_operation.operation_collect_id AND c.status = "
                       "\"confirmed\");")
-                  .arg(vrm_DateFrom, vrm_DateTo);
+                  .arg(vrmDateFrom, vrmDateTo);
 
     lstSql2 = QString("DELETE FROM terminal_collect WHERE status = 'confirmed'"
                       " AND date_create BETWEEN \"%1 00:00:00\" AND \"%2 23:59:59\";")
-                  .arg(vrm_DateFrom, vrm_DateTo);
+                  .arg(vrmDateFrom, vrmDateTo);
 
     lstSql3 = QString("DELETE FROM terminal_commands WHERE status = 'confirmed';");
 
@@ -4381,7 +4381,7 @@ bool MainWindow::deleteTerminalData() {
     return true;
 }
 
-void MainWindow::settingsSave() {
+void MainWindow::settingsSave() const {
     QSettings settings(settingsPath(), QSettings::IniFormat);
 
     settings.setValue("check_balance_sim", config.checkGetBalanceSim);
@@ -4664,16 +4664,16 @@ QString MainWindow::versionFull() {
 }
 
 qint32 MainWindow::generateEncodeKey() {
-    QString vrm_CodeData = "YTBnMFdXUjRXV3BM";
-    QByteArray vrm_ByteCodeData = QByteArray::fromBase64(vrm_CodeData.toLatin1());
-    vrm_ByteCodeData = "";
-    vrm_ByteCodeData.append(vrm_ByteCodeData);
-    vrm_ByteCodeData.clear();
-    vrm_ByteCodeData = QByteArray::fromBase64(vrm_ByteCodeData);
-    QString vrm_StrCodeData;
-    vrm_StrCodeData.append(vrm_ByteCodeData);
+    QString vrmCodeData = "YTBnMFdXUjRXV3BM";
+    QByteArray vrmByteCodeData = QByteArray::fromBase64(vrmCodeData.toLatin1());
+    vrmByteCodeData = "";
+    vrmByteCodeData.append(vrmByteCodeData);
+    vrmByteCodeData.clear();
+    vrmByteCodeData = QByteArray::fromBase64(vrmByteCodeData);
+    QString vrmStrCodeData;
+    vrmStrCodeData.append(vrmByteCodeData);
 
-    return vrm_StrCodeData.toInt();
+    return vrmStrCodeData.toInt();
 }
 
 #ifdef Q_OS_WIN32

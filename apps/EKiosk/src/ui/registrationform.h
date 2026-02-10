@@ -53,10 +53,10 @@ public:
     QStringList connectionList;
     QStringList dialupDevice;
 
-    void setDB(const QSqlDatabase& db);
+    void setDB(const QSqlDatabase &db);
     void setSearchDeviceParams(QVariantMap data);
     void deviceSearchResult(
-        int device, int result, QString dev_name, QString dev_comment, QString dev_port);
+        int device, int result, QString devName, QString devComment, QString devPort);
     void deviceSearchFinished();
     void setDataListConnection(QStringList list);
     void setStatusText(int status, QString text);

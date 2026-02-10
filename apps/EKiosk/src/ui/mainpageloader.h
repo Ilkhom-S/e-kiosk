@@ -158,16 +158,16 @@ private:
     double gblCmsSum;
     bool btnPayClck;
 
-    QString gblNowTranzaction;
+    QString gblNowTransaction;
 
     void clearNominalData();
     void getCommissionMap();
-    void getSum_ToFrom_MinusCommis(double amountFrom);
+    void getSum_ToFrom_MinusCommission(double amountFrom);
     double getMoneyToFrom_All(int cmsType, double from, double value);
     double getRatioFrom_In(double from, double to);
 
     void playSound(QString fileName);
-    void playSoundRepeet(int page);
+    void playSoundRepeat(int page);
     void setPageStatus(PageIn::page page);
 
     QFileInfo mainWebPage;

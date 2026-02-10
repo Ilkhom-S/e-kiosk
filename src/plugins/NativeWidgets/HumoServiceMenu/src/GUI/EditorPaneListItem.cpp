@@ -11,11 +11,14 @@ EditorPaneListItem_Delegate::EditorPaneListItem_Delegate(QObject *aParent)
 QVariant EditorPaneListItem::data(int aRole) const {
     if (aRole == Qt::SizeHintRole) {
         return QSize(0, 40);
-    } if (aRole == ParameterName) {
+    }
+    if (aRole == ParameterName) {
         return m_Name;
-    } else if (aRole == ParameterValue) {
+    }
+    if (aRole == ParameterValue) {
         return m_Value;
-    } else if (aRole == Qt::DisplayRole) {
+    }
+    if (aRole == Qt::DisplayRole) {
         return m_Name + ":\n" + m_Value;
     } else {
         return QListWidgetItem::data(aRole);

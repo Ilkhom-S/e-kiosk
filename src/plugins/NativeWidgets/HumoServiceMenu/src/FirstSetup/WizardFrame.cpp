@@ -22,7 +22,7 @@ char *ContextProperty = "humoContext";
 
 //----------------------------------------------------------------------------
 WizardFrame::WizardFrame(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), m_Backend(aBackend), m_CurrentPage(0) {
+    : QWidget(aParent), m_Backend(aBackend), m_CurrentPage(nullptr) {
     setupUi(this);
     wPage->setLayout(new QGridLayout);
 
@@ -38,7 +38,7 @@ WizardFrame::WizardFrame(HumoServiceBackend *aBackend, QWidget *aParent)
 }
 
 //----------------------------------------------------------------------------
-WizardFrame::~WizardFrame() {}
+WizardFrame::~WizardFrame() = default;
 
 //----------------------------------------------------------------------------
 void WizardFrame::initialize() {
@@ -62,7 +62,7 @@ void WizardFrame::setStatus(const QString &aStatus) {
 //----------------------------------------------------------------------------
 void WizardFrame::setPage(const QString &aContext, WizardPageBase *aPage, bool aCanCache) {
     if (aCanCache) {
-        CacheItem item;
+        CacheItem item{};
         item.page = aPage;
         m_Pages[aContext] = item;
     }
@@ -120,7 +120,7 @@ void WizardFrame::setupControl(Control aControl,
                                const QString &aTitle,
                                const QString &aContext,
                                bool aCanCache) {
-    QPushButton *button = 0;
+    QPushButton *button = nullptr;
 
     switch (aControl) {
     case BackButton:
@@ -149,11 +149,14 @@ void WizardFrame::setupControl(Control aControl,
 QString WizardFrame::stageIndex(const QString &aContext) const {
     if (aContext == CWizardContext::SetupHardware) {
         return "1";
-    } if (aContext == CWizardContext::SetupNetwork) {
+    }
+    if (aContext == CWizardContext::SetupNetwork) {
         return "2";
-    } else if (aContext == CWizardContext::SetupDialup) {
+    }
+    if (aContext == CWizardContext::SetupDialup) {
         return "3";
-    } else if (aContext == CWizardContext::SetupUnmanaged) {
+    }
+    if (aContext == CWizardContext::SetupUnmanaged) {
         return "3";
     } else if (aContext == CWizardContext::SetupToken) {
         return "4";
@@ -175,14 +178,14 @@ void WizardFrame::onChangePage(const QString &aContext) {
 #endif
 
     if (aContext == CWizardContext::StartPage) {
-        WelcomeWizardPage *wwp = new WelcomeWizardPage(m_Backend, this);
+        auto *wwp = new WelcomeWizardPage(m_Backend, this);
 
         setPage(aContext, wwp);
         setupDecoration("", "", "");
 
         connectAllAbstractButtons(wwp);
     } else if (aContext == CWizardContext::SetupHardware) {
-        HardwareWizardPage *hwp = new HardwareWizardPage(m_Backend, this);
+        auto *hwp = new HardwareWizardPage(m_Backend, this);
 
         setPage(aContext, hwp);
         setupDecoration(
@@ -196,7 +199,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(hwp);
     } else if (aContext == CWizardContext::SetupNetwork) {
-        NetworkWizardPage *nwp = new NetworkWizardPage(m_Backend, this);
+        auto *nwp = new NetworkWizardPage(m_Backend, this);
 
         setPage(aContext, nwp);
         setupDecoration(
@@ -206,7 +209,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(nwp);
     } else if (aContext == CWizardContext::SetupDialup) {
-        DialupWizardPage *dwp = new DialupWizardPage(m_Backend, this);
+        auto *dwp = new DialupWizardPage(m_Backend, this);
 
         setPage(aContext, dwp);
         setupDecoration(stageIndex(aContext), tr("#dialup_setup_stage"), tr("#dialup_setup_howto"));
@@ -225,7 +228,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(dwp);
     } else if (aContext == CWizardContext::SetupUnmanaged) {
-        UnmanagedWizardPage *uwp = new UnmanagedWizardPage(m_Backend, this);
+        auto *uwp = new UnmanagedWizardPage(m_Backend, this);
 
         setPage(aContext, uwp);
         setupDecoration(
@@ -245,7 +248,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(uwp);
     } else if (aContext == CWizardContext::SetupToken) {
-        TokenWizardPage *rwp = new TokenWizardPage(m_Backend, this);
+        auto *rwp = new TokenWizardPage(m_Backend, this);
 
         setPage(aContext, rwp);
         setupDecoration(stageIndex(aContext), tr("#token_setup_stage"), tr("#token_setup_howto"));
@@ -256,7 +259,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(rwp);
     } else if (aContext == CWizardContext::SetupKeys) {
-        KeysWizardPage *kwp = new KeysWizardPage(m_Backend, this);
+        auto *kwp = new KeysWizardPage(m_Backend, this);
 
         setPage(aContext, kwp);
         setupDecoration(stageIndex(aContext), tr("#keys_setup_stage"), tr("#keys_setup_howto"));
@@ -278,7 +281,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(kwp);
     } else if (aContext == CWizardContext::SaveSettings) {
-        SaveSettingsWizardPage *swp = new SaveSettingsWizardPage(m_Backend, this);
+        auto *swp = new SaveSettingsWizardPage(m_Backend, this);
 
         setPage(aContext, swp);
         setupDecoration(
@@ -304,7 +307,7 @@ void WizardFrame::onControlEvent(const QString &aContext) {
 
 //----------------------------------------------------------------------------
 void WizardFrame::onExit() {
-    if (GUI::MessageBox::question(tr("#question_exit"))) {
+    if (GUI::MessageBox::question(tr("#question_exit")) != 0) {
         QVariantMap parameters;
         parameters["signal"] = "exit";
 
@@ -327,11 +330,11 @@ void WizardFrame::connectAllAbstractButtons(QWidget *aParentWidget) {
 
 //----------------------------------------------------------------------------
 void WizardFrame::onAbstractButtonClicked() {
-    QAbstractButton *button = qobject_cast<QAbstractButton *>(sender());
+    auto *button = qobject_cast<QAbstractButton *>(sender());
 
     QString message(QString("Button clicked: %1").arg(button->text()));
 
-    QCheckBox *checkBox = qobject_cast<QCheckBox *>(sender());
+    auto *checkBox = qobject_cast<QCheckBox *>(sender());
     if (checkBox) {
         checkBox->isChecked() ? message += " (checked)" : message += " (unchecked)";
     }

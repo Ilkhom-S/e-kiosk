@@ -3,20 +3,22 @@
 #include "ui_registrationform.h"
 
 RegistrationForm::RegistrationForm(QWidget *parent)
-    : QDialog(parent), ui(new Ui::RegistrationForm), createDialupConnection(new CreateDialupConnection(this)), KeyPud(new keyPud(this)), tplStyleEnable("border: 2px solid;"
+    : QDialog(parent), ui(new Ui::RegistrationForm),
+      createDialupConnection(new CreateDialupConnection(this)), KeyPud(new keyPud(this)),
+      tplStyleEnable("border: 2px solid;"
                      "border-color: #ff850e;"
-                     "border-radius: 8px;"), tplStyleDisable("border: 2px solid;"
+                     "border-radius: 8px;"),
+      tplStyleDisable("border: 2px solid;"
                       "border-color: #e5e5e5;"
                       "border-radius: 8px;") {
     ui->setupUi(this);
 
     // Создание нового соединения
-    
+
     connect(createDialupConnection,
             SIGNAL(emitDialupParam(QVariantMap)),
             SIGNAL(emitCreateNewConnection(QVariantMap)));
 
-    
     ui->layoutWgtKeyPud->addWidget(KeyPud);
 
     connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
@@ -104,10 +106,6 @@ RegistrationForm::RegistrationForm(QWidget *parent)
     connect(ui->tplImageTJK, SIGNAL(clicked()), SLOT(tplTJKSet()));
     connect(ui->tplImageUZB, SIGNAL(clicked()), SLOT(tplUZBSet()));
 
-    
-
-    
-
     ui->tplImageTJK->setStyleSheet(tplStyleDisable);
     ui->tplImageUZB->setStyleSheet(tplStyleDisable);
 
@@ -133,7 +131,7 @@ RegistrationForm::~RegistrationForm() {
     delete ui;
 }
 
-void RegistrationForm::setDB(const QSqlDatabase& db) {
+void RegistrationForm::setDB(const QSqlDatabase &db) {
     this->db = db;
 
     //    searchDevices->setDbName(db);
@@ -656,9 +654,9 @@ void RegistrationForm::modem_Save() {
 
 void RegistrationForm::setSearchDeviceParams(QVariantMap data) {
     //    searchDevices->takeBalanceSim          =
-    //    data.value("check_balance_sim").toBool(); searchDevices->takeSim_Number
+    //    data.value("check_balance_sim").toBool(); searchDevices->takeSimNumber
     //    = data.value("check_number_sim").toBool();
-    //    searchDevices->s_ussdRequestBalanseSim =
+    //    searchDevices->s_ussdRequestBalanceSim =
     //    data.value("ussd_balance_sim").toString();
     //    searchDevices->s_ussdRequestNumberSim  =
     //    data.value("ussd_number_sim").toString();
@@ -928,8 +926,7 @@ void RegistrationForm::deviceSearchResult(
                 ui->cbxWatchdogPort->setCurrentIndex(curPos);
             }
 
-            ui->lblAdminTextDeviceInfWD->setText(
-                QString("<b>%1</b> %2").arg(devName, devComment));
+            ui->lblAdminTextDeviceInfWD->setText(QString("<b>%1</b> %2").arg(devName, devComment));
 
             devComment = QString("(%1)").arg(devComment);
             QString vrmContent1 = tr("Сторожевой таймер [v1] на [v2] найден.");
@@ -1067,7 +1064,7 @@ void RegistrationForm::showMe() {
 
     ui->cbxModemPort->setCurrentText(devices.value("modem_port").toString());
 
-    //    searchDevices->setCom_ListInfo(com_PortList);
+    //    searchDevices->setComListInfo(com_PortList);
 
     addPageData();
     showFullScreen();

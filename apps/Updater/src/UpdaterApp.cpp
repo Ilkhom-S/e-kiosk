@@ -195,8 +195,7 @@ void UpdaterApp::run() {
     m_ReportBuilder.setStatus(SDK::PaymentProcessor::IRemoteService::Executing);
 
     // Проверка на запуск второй копии программы (SingleApplication).
-    SingleApplication *appInstance =
-        qobject_cast<SingleApplication *>(SingleApplication::instance());
+    auto *appInstance = qobject_cast<SingleApplication *>(SingleApplication::instance());
     if (appInstance && appInstance->isSecondary()) {
         getLog()->write(LogLevel::Warning, "Another instance is already running.");
         setResultCode(CUpdaterApp::ExitCode::SecondInstance);
@@ -231,7 +230,7 @@ void UpdaterApp::run() {
 #endif
     }
 
-    QTimer *tooLongDownloadTimer = new QTimer(this);
+    auto *tooLongDownloadTimer = new QTimer(this);
     connect(tooLongDownloadTimer, SIGNAL(timeout()), this, SLOT(tooLondToDownload()));
     tooLongDownloadTimer->start(CUpdaterApp::MaxDownloadTime);
 
@@ -278,16 +277,15 @@ void UpdaterApp::run() {
                     QString("Run updater from temp path: '%1' is OK.").arg(getUpdaterTempDir()));
                 setResultCode(CUpdaterApp::ExitCode::ContinueExecution);
                 return;
-            }                 getLog()->write(
-                    LogLevel::Error,
-                    QString("Failed run updater from temp path: '%1'.").arg(getUpdaterTempDir()));
-                setResultCode(CUpdaterApp::ExitCode::ErrorRunFrom_TempDir);
-                return;
-           
-        } else {
-            // Устанавливаем рабочую папку.
-            m_Updater->setWorkingDir(workingDir);
-        }
+            }
+            getLog()->write(
+                LogLevel::Error,
+                QString("Failed run updater from temp path: '%1'.").arg(getUpdaterTempDir()));
+            setResultCode(CUpdaterApp::ExitCode::ErrorRunFrom_TempDir);
+            return;
+
+        } // Устанавливаем рабочую папку.
+        m_Updater->setWorkingDir(workingDir);
 
         // Добавляем директории в список исключений. Файлы в этих папках не участвуют в обновлении.
         m_Updater->addExceptionDirs(exceptionDirs());
@@ -444,7 +442,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
 
 //---------------------------------------------------------------------------
 void UpdaterApp::updateSystem_IsWaiting() {
-    Updater *updater = dynamic_cast<Updater *>(sender());
+    auto *updater = dynamic_cast<Updater *>(sender());
 
     int nextUpdateTimeout = 10 * 60;
 
@@ -547,7 +545,7 @@ void UpdaterApp::onUpdateComplete(CUpdaterErrors::Enum aError) {
         }
 
         // Заново запускаем watchservice и убеждаемся, что он успешно запустился.
-        QProcess *startService = new QProcess();
+        auto *startService = new QProcess();
         startService->start(CWatchService::Modules::WatchService);
 
         if (!startService->waitForStarted()) {
@@ -566,7 +564,7 @@ void UpdaterApp::onUpdateComplete(CUpdaterErrors::Enum aError) {
 
 //---------------------------------------------------------------------------
 void UpdaterApp::errorExit() {
-    if (!m_ResultCode_) {
+    if (m_ResultCode_ == 0) {
         m_ResultCode_ = CUpdaterApp::ExitCode::UnknownError;
     }
 
@@ -603,10 +601,10 @@ void UpdaterApp::delayedExit(int aTimeout, CUpdaterErrors::Enum aError) {
 
     setResultCode(aError);
 
-    getLog()->write(aError ? LogLevel::Error : LogLevel::Normal,
+    getLog()->write((aError != 0u) ? LogLevel::Error : LogLevel::Normal,
                     QString("Closing after %1 seconds.").arg(aTimeout));
 
-    if (m_ResultCode_) {
+    if (m_ResultCode_ != 0) {
         QTimer::singleShot(aTimeout * 1000, this, SLOT(errorExit()));
     } else {
         QTimer::singleShot(aTimeout * 1000, qApp, SLOT(quit()));
@@ -624,7 +622,7 @@ QString UpdaterApp::getUpdaterTempDir() const {
             getLog()->write(
                 LogLevel::Fatal,
                 QString("Error mkdir '%1' in '%2'.").arg(tempDirName).arg(QDir::tempPath()));
-            return QString();
+            return {};
         }
     }
 
@@ -637,7 +635,7 @@ QString UpdaterApp::getExecutableExtension() const {
 #ifdef Q_OS_WIN
     return ".exe";
 #else
-    return QString();
+    return {};
 #endif
 }
 
@@ -664,11 +662,11 @@ bool UpdaterApp::reRunFrom_TempDirectory() {
                                 << getArguments() << "--workdir" << getWorkingDirectory();
 
         {
-            QString program_SettingsFile =
+            QString programSettingsFile =
                 QDir(getUpdaterTempDir())
                     .absoluteFilePath(QFileInfo(QCoreApplication::arguments()[0]).baseName()) +
                 ".ini";
-            QSettings tempSettings(ISysUtils::rm_BOM(program_SettingsFile), QSettings::IniFormat);
+            QSettings tempSettings(ISysUtils::rm_BOM(programSettingsFile), QSettings::IniFormat);
 
             tempSettings.setValue("common/working_directory", getWorkingDirectory());
         }
@@ -744,12 +742,12 @@ bool UpdaterApp::CopyToTempPath() {
 
 //---------------------------------------------------------------------------
 bool UpdaterApp::copyFiles(const QString &from, const QString &mask, const QString &to) {
-    QDir from_Dir = QDir(from);
+    QDir fromDir = QDir(from);
 
-    Q_FOREACH (QString file, from_Dir.entryList(QStringList() << mask)) {
+    Q_FOREACH (QString file, fromDir.entryList(QStringList() << mask)) {
         QString dstFileName = to + QDir::separator() + QFileInfo(file).fileName();
         getLog()->write(LogLevel::Normal, QString("Copy: '%1'.").arg(file));
-        if (!QFile::copy(from_Dir.filePath(file), dstFileName)) {
+        if (!QFile::copy(fromDir.filePath(file), dstFileName)) {
             getLog()->write(LogLevel::Fatal,
                             QString("Error copy from '%1' to '%2'.").arg(file).arg(dstFileName));
             return false;

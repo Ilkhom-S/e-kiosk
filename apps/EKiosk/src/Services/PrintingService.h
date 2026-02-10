@@ -133,7 +133,7 @@ signals:
 
 private:
     /// Возвращает чек определенного тип с заполненными полями.
-    QStringList getReceipt(const QString &aReceiptTemplate, const QVariantMap &aFields);
+    QStringList getReceipt(const QString &aReceiptTemplate, const QVariantMap &aParameters);
 
     /// Получить принтер из списка доступных.
     SDK::Driver::IPrinter *takePrinter(const QString &aReceiptType, bool aCheckOnline);
@@ -161,8 +161,8 @@ private:
 
     /// Печать чека, возвращает индекс задания, поставленного в очередь.
     int perform_Print(PrintCommand *aCommand,
-                     const QVariantMap &aParameters,
-                     QStringList aReceiptTemplate = QStringList());
+                      const QVariantMap &aParameters,
+                      QStringList aReceiptTemplate = QStringList());
 
     /// Увеличение числа чеков в бд.
     void incrementReceiptCount(SDK::Driver::IPrinter *aPrinter) const;

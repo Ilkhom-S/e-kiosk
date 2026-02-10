@@ -388,7 +388,7 @@ private:
     // Config / settings
     Config config;
     static QString settingsPath();
-    void settingsSave();
+    void settingsSave() const;
     void settingsGet();
     void settingsSet(const QString key, const QVariant value);
 
@@ -549,7 +549,7 @@ private slots:
     // Devices
     void deviceSearchStart(QVariantMap data);
     void deviceSearchResult(
-        int device, int result, QString dev_name, QString dev_comment, QString dev_port);
+        int device, int result, QString devName, QString devComment, QString devPort);
     void deviceSearchFinished();
     void deviceTest(int device, QString name, QString port, QString comment);
     void saveDevice(int deviceId, QString deviceName, QString port, QString comment, int state);

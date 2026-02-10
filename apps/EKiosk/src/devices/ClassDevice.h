@@ -29,10 +29,11 @@ class SearchDevices : public QThread {
 public:
     SearchDevices(QObject *parent = 0);
 
-    void setCom_ListInfo(QStringList com_list);
+    void setComListInfo(QStringList comList);
     void setDbName(QSqlDatabase &dbName);
     bool takeBalanceSim;
-    bool takeSim_Number;
+    bool takeSimNumber;
+    ;
 
     QString signalQuality;
     QString sim_Number;
@@ -40,12 +41,14 @@ public:
     QString operatorName;
     QString modem_Comment;
     QString prtWinName;
-    bool nowSim_Present;
+    bool nowSim_Present{};
+    ;
     QString receiptTest;
 
-    QString s_ussdRequestBalanseSim;
+    QString s_ussdRequestBalanceSim;
     QString s_ussdRequestNumberSim;
     int s_indexBalanceParse;
+    ;
 
     QString validatorSerialNum;
     QString validatorPartNum;
@@ -85,19 +88,19 @@ private:
     static void msleep(int ms) { QThread::msleep(ms); }
     virtual void run();
     bool getDeviseInBase(int id_device, QString &name_device, QString &port);
-    bool setDeviseInBase(int id_device,
-                         const QString &name_device,
+    bool setDeviseInBase(int idDevice,
+                         const QString &nameDevice,
                          const QString &port,
                          const QString &comment,
                          int state);
-    bool insertDeviseInBase(int id_device, QString &name_device, QString &port);
+    bool insertDeviseInBase(int idDevice, QString &nameDevice, QString &port);
 
 public slots:
     bool searchDeviceMethod(int device,
-                            QString &dev_name,
-                            QString &com_str,
-                            QString &dev_coment,
-                            const bool with_test = false);
+                            QString &devName,
+                            QString &comStr,
+                            QString &devComent,
+                            const bool withTest = false);
     void getModem_Info();
 
 signals:

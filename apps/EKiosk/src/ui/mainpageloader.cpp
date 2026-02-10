@@ -111,7 +111,7 @@ void MainPageLoader::paymentConfirm() {
     emit validator_activate(false);
 
     // Обновляем платёж и даем ему статус confirm
-    emit emit_confirm_pay(gblNowTranzaction, false);
+    emit emit_confirm_pay(gblNowTransaction, false);
 
     gotoPage(PageIn::PrintDialog);
 }
@@ -121,13 +121,13 @@ void MainPageLoader::payToWhenBoxOpen() {
     btnPayClck = true;
 
     // Обновляем платёж и даем ему статус confirm
-    emit emit_confirm_pay(gblNowTranzaction, false);
+    emit emit_confirm_pay(gblNowTransaction, false);
 
     // Обновляем платёж и ставим статус напечатан чек
-    emit emit_confirm_pay(gblNowTranzaction, true);
+    emit emit_confirm_pay(gblNowTransaction, true);
 
     // Отправляем сигнал на печать
-    emit emit_print_pay(gblNowTranzaction);
+    emit emit_print_pay(gblNowTransaction);
 
     btnPayClck = false;
 
@@ -153,7 +153,7 @@ QVariantMap MainPageLoader::serviceMaxSum() {
 bool MainPageLoader::moneyExistInPay() {
     if (nominalCash > 0)
         return true;
-            return false;
+    return false;
 }
 
 void MainPageLoader::showHideReturnNominal(bool status) {
@@ -433,7 +433,7 @@ void MainPageLoader::receiptSend(QString phone) {
         return;
     }
 
-    emit emit_sendReceipt(gblNowTranzaction, phone);
+    emit emit_sendReceipt(gblNowTransaction, phone);
 }
 
 void MainPageLoader::otpSend(QString account) {
@@ -491,7 +491,7 @@ void MainPageLoader::loadMainPage() {
     emit validator_activate(false);
 
     // Обновляем платёж и даем ему статус confirm
-    emit emit_confirm_pay(gblNowTranzaction, false);
+    emit emit_confirm_pay(gblNowTransaction, false);
 
     loadHtmlPage(PageIn::Main);
 }
@@ -913,7 +913,7 @@ QVariantMap MainPageLoader::categoryCurrent() {
 }
 
 QString MainPageLoader::paymentId() {
-    return gblNowTranzaction;
+    return gblNowTransaction;
 }
 
 void MainPageLoader::setFieldData(QString key, QString val) {
@@ -931,10 +931,10 @@ void MainPageLoader::receiptPrint(bool withSound) {
 
     if (printerStatus) {
         // Обновляем платёж и ставим статус напечатан чек
-        emit emit_confirm_pay(gblNowTranzaction, true);
+        emit emit_confirm_pay(gblNowTransaction, true);
 
         // Отправляем сигнал на печать
-        emit emit_print_pay(gblNowTranzaction);
+        emit emit_print_pay(gblNowTransaction);
     }
 }
 
@@ -968,7 +968,7 @@ void MainPageLoader::inputNominal(int nominal, bool coin) {
     // если это первая купюра то отображаем существующую
     if (nominalInserted == 1) {
         // Генерируем ID транзакции платежа
-        gblNowTranzaction =
+        gblNowTransaction =
             gblTrnOnlineCheck != ""
                 ? gblTrnOnlineCheck
                 : QString("%1%2").arg(
@@ -993,10 +993,10 @@ void MainPageLoader::inputNominal(int nominal, bool coin) {
     }
 
     // Вычисляем комиссии
-    getSum_ToFrom_MinusCommis(nominalCash);
+    getSum_ToFrom_MinusCommission(nominalCash);
 
     QVariantMap payment;
-    payment["trn_id"] = gblNowTranzaction;
+    payment["trn_id"] = gblNowTransaction;
     payment["sum_from"] = nominalCash;
     payment["sum_to"] = nominalAmount;
     payment["denomination"] = nominalDenomination;
@@ -1029,7 +1029,7 @@ void MainPageLoader::inputNominal(int nominal, bool coin) {
     webView->page()->runJavaScript(jsFunction);
 }
 
-void MainPageLoader::getSum_ToFrom_MinusCommis(double amountFrom) {
+void MainPageLoader::getSum_ToFrom_MinusCommission(double amountFrom) {
     int count_comis = commissionMap.count();
 
     if (count_comis > 1) {
@@ -1057,7 +1057,7 @@ void MainPageLoader::getSum_ToFrom_MinusCommis(double amountFrom) {
     return;
 }
 void MainPageLoader::clearNominalData() {
-    gblNowTranzaction = "";
+    gblNowTransaction = "";
     nominalInserted = 0;
     nominalAmount = 0;
     gblRatioPrv = 0;
@@ -1190,7 +1190,7 @@ void MainPageLoader::langDefaultSet(QString lang) {
     _langDefault = lang;
 }
 
-void MainPageLoader::playSoundRepeet(int page) {
+void MainPageLoader::playSoundRepeat(int page) {
     QString fileNmae = "";
 
     switch (page) {

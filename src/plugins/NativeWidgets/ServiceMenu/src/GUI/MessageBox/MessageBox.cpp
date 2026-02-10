@@ -7,7 +7,7 @@
 namespace GUI {
 
 //------------------------------------------------------------------------
-MessageBox *MessageBox::m_Instance = 0;
+MessageBox *MessageBox::m_Instance = nullptr;
 
 //------------------------------------------------------------------------
 MessageBox::MessageBox() : m_SignalReceiver(nullptr) {
@@ -24,7 +24,7 @@ void MessageBox::initialize() {
 void MessageBox::shutdown() {
     m_Instance->hideWindow();
     delete m_Instance;
-    m_Instance = 0;
+    m_Instance = nullptr;
 }
 
 //------------------------------------------------------------------------
@@ -66,7 +66,7 @@ int MessageBox::question(const QString &aText) {
 
 //------------------------------------------------------------------------
 void MessageBox::update(const QVariantMap &aParameters) {
-    return getInstance()->updatePopup(aParameters);
+    getInstance()->updatePopup(aParameters);
 }
 
 //------------------------------------------------------------------------
@@ -100,8 +100,8 @@ int MessageBox::showPopup(const QString &aText,
     m_Window->setup(aText, aIcon, aButton);
     if (aIcon == SDK::GUI::MessageBoxParams::Question) {
         return m_Window->exec();
-    }         m_Window->show();
-   
+    }
+    m_Window->show();
 
     return 0;
 }
@@ -152,7 +152,7 @@ void MessageBox::hideWindow() {
                             SIGNAL(clicked(const QVariantMap &)),
                             m_SignalReceiver,
                             SLOT(onClicked(const QVariantMap &)));
-        m_SignalReceiver = 0;
+        m_SignalReceiver = nullptr;
     }
 
     if (!m_WaitTimer.isActive()) {
