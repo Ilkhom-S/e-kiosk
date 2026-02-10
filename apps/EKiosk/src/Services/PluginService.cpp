@@ -70,14 +70,14 @@ bool PluginService::canShutdown() {
 
 //------------------------------------------------------------------------------
 #ifndef SM_SHUTTINGDOWN
-#define SM_SHUTTINGDOWN 0x2000
+constexpr int KSystemMetricShuttingDown = 0x2000;
 #endif
 
 //------------------------------------------------------------------------------
 bool PluginService::shutdown() {
     // Не выгружаем библиотеки на выходе из ПО в процессе перезагрузки системы. #48972
 #ifdef Q_OS_WIN
-    if (GetSystem_Metrics(SM_SHUTTINGDOWN) == 0) {
+    if (GetSystemMetrics(KSystemMetricShuttingDown) == 0) {
 #endif
         toLog(LogLevel::Debug, "Destroy plugins loader...");
 

@@ -136,15 +136,17 @@ void TerminalService::finishInitialize() {
         QStringList screenList;
         QRect resolution;
 
-        do {
-            resolution = guiService->getScreenSize(screenList.size());
+        for (int screenIndex = 0;; ++screenIndex) {
+            resolution = guiService->getScreenSize(screenIndex);
 
-            if (!resolution.isEmpty()) {
-                screenList << QString(R"({"width":%1,"height":%2})")
-                                  .arg(resolution.width())
-                                  .arg(resolution.height());
+            if (resolution.isEmpty()) {
+                break;
             }
-        } while (!resolution.isEmpty());
+
+            screenList << QString(R"({"width":%1,"height":%2})")
+                              .arg(resolution.width())
+                              .arg(resolution.height());
+        }
 
         m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                   QString(PPSDK::CDatabaseConstants::Parameters::DisplayResolution),
@@ -392,7 +394,7 @@ QPair<SDK::Driver::EWarningLevel::Enum, QString> TerminalService::getTerminalSta
         resultMessage << "OK";
     }
 
-    return QPair<SDK::Driver::EWarningLevel::Enum, QString>(resultLevel, resultMessage.join("\n"));
+    return {resultLevel, resultMessage.join("\n")};
 }
 
 //---------------------------------------------------------------------------
@@ -423,7 +425,7 @@ void TerminalService::onDeviceStatusChanged(const QString &aConfigName,
 
     bool autoencashment = false;
 
-    // Автоинкассация.
+    // Авто инкассация.
     if (deviceType == DeviceType::BillAcceptor &&
         aStatus == SDK::Driver::ECashAcceptorStatus::StackerOpen && m_Settings.autoEncashment) {
         // Запускаем авто инкассацию только тогда, когда нет ошибок у валидатора.
@@ -530,14 +532,15 @@ void TerminalService::checkConfigsIntegrity() {
                                     .toDateTime();
         QDateTime now = QDateTime::currentDateTime();
 
-        if (!lastTryTime.isValid() || lastTryTime.addSecs(60 * ConfigRestoreInterval) <= now) {
+        if (!lastTryTime.isValid() || lastTryTime.addSecs(60LL * ConfigRestoreInterval) <= now) {
             EventService::instance(m_Application)
                 ->sendEvent(PPSDK::EEventType::RestoreConfiguration, QVariant());
 
             m_DbUtils->setDeviceParam(
                 DbConstants::Devices::Terminal, DbConstants::Parameters::LastUpdateTime, now);
         } else {
-            int retryTimeout = now.secsTo(lastTryTime.addSecs(60 * ConfigRestoreInterval));
+            qint64 retryTimeoutSecs = now.secsTo(lastTryTime.addSecs(60LL * ConfigRestoreInterval));
+            int retryTimeout = static_cast<int>(retryTimeoutSecs);
 
             toLog(LogLevel::Warning,
                   QString("Configuration restore failed: maximum attemps reached. Will try again "
