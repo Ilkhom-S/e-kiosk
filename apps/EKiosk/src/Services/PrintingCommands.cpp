@@ -49,20 +49,16 @@ PrintFiscalCommand::PrintFiscalCommand(const QString &aReceiptType,
                                        PrintingService *aService)
     : PrintCommand(aReceiptType), m_FiscalCommand(aFiscalCommand), m_Service(aService) {}
 
-#if 0
 //---------------------------------------------------------------------------
-QVariantMap toUpperCaseKeys(const QVariantMap & aParameters)
-{
-	QVariantMap result;
+QVariantMap toUpperCaseKeys(const QVariantMap &aParameters) {
+    QVariantMap result;
 
-	foreach (auto key, aParameters.keys())
-	{
-		result.insert(key.toUpper(), aParameters.value(key));
-	}
+    foreach (auto key, aParameters.keys()) {
+        result.insert(key.toUpper(), aParameters.value(key));
+    }
 
-	return result;
+    return result;
 }
-#endif
 
 //---------------------------------------------------------------------------
 DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParameters) {

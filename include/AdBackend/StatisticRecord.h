@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include <QtCore/QDateTime>
+#include <QtCore/QDate>
+#include <QtCore/QString>
 
 namespace Ad {
 

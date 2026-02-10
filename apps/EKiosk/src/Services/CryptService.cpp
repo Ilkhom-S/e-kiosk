@@ -349,14 +349,14 @@ int CryptService::generateKey(int aKeyId,
 
     SKeyPair keyPair;
 
-    EKeysUtilsError::Enum result;
-    if ((result = createKeyPair(getCryptEngine(),
-                                aKeyId,
-                                networkService->getNetworkTaskManager(),
-                                aURL,
-                                aLogin,
-                                aPassword,
-                                keyPair)) != EKeysUtilsError::Ok) {
+    EKeysUtilsError::Enum result = createKeyPair(getCryptEngine(),
+                                                  aKeyId,
+                                                  networkService->getNetworkTaskManager(),
+                                                  aURL,
+                                                  aLogin,
+                                                  aPassword,
+                                                  keyPair);
+    if (result != EKeysUtilsError::Ok) {
         LOG(m_Log,
             LogLevel::Error,
             QString("Failed to create key pair %1. Error is %2")
@@ -368,13 +368,14 @@ int CryptService::generateKey(int aKeyId,
     m_KeyPair = keyPair;
     m_KeyPair.description = aDescription;
 
-    if ((result = registerKeyPair(getCryptEngine(),
-                                  aKeyId,
-                                  networkService->getNetworkTaskManager(),
-                                  aURL,
-                                  aLogin,
-                                  aPassword,
-                                  m_KeyPair)) != EKeysUtilsError::Ok) {
+    result = registerKeyPair(getCryptEngine(),
+                            aKeyId,
+                            networkService->getNetworkTaskManager(),
+                            aURL,
+                            aLogin,
+                            aPassword,
+                            m_KeyPair);
+    if (result != EKeysUtilsError::Ok) {
         LOG(m_Log,
             LogLevel::Error,
             QString("Failed to register key pair %1. Error is %2")

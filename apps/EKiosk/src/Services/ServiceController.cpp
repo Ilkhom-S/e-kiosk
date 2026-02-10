@@ -95,6 +95,10 @@ void ServiceController::onEvent(const PP::Event &aEvent) {
         }
         break;
     }
+
+    default:
+        // Игнорируем необработанные события
+        break;
     }
 }
 
@@ -179,7 +183,7 @@ bool ServiceController::initializeServices() {
 void ServiceController::initializeCoreItems() {
     auto *pluginLoader = PluginService::instance(m_Application)->getPluginLoader();
     QStringList corePlugins = pluginLoader->getPluginList(QRegularExpression(
-        QString("PaymentProcessor\\.%1\\..*").arg(PPSDK::CComponents::CoreItem)));
+        QString("PaymentProcessor\\.%1\\..*").arg(QString(PPSDK::CComponents::CoreItem))));
 
     foreach (const QString &pluginName, corePlugins) {
         LOG(m_Application->getLog(),

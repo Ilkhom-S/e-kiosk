@@ -33,7 +33,7 @@ const char PublicKey[] = "PublicKey";
 
 namespace ServerErrors {
 const char NoError[] = "0 OK";
-const char WrongPassword[] = "2 Authentification error";
+const char WrongPassword[] = "2 Authentication error";
 } // namespace ServerErrors
 
 namespace Queries {
@@ -85,7 +85,7 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt,
         if (qAbs(serverDate.secsTo(localDate)) > maxDeltaSec) {
             qDebug()
                 << QString(
-                       "Local date and server date don't match. Sytem date: %1. Server date: %2.")
+                       "Local date and server date don't match. System date: %1. Server date: %2.")
                        .arg(localDate.toLocalTime().toString("yyyy.MM.dd hh:mm:ss"))
                        .arg(serverDate.toLocalTime().toString("yyyy.MM.dd hh:mm:ss"));
 
@@ -109,7 +109,7 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt,
             continue;
         }
 
-        QByteArray name = parameter.first();
+        const QByteArray &name = parameter.first();
         QByteArray value = QByteArray::fromPercentEncoding(parameter.last());
 
         if (name == CKeysFactory::ServerFields::AP) {
@@ -123,7 +123,8 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt,
         } else if (name == CKeysFactory::ServerFields::Error) {
             if (value == CKeysFactory::ServerErrors::WrongPassword) {
                 return EKeysUtilsError::WrongPassword;
-            } if (value != CKeysFactory::ServerErrors::NoError) {
+            }
+            if (value != CKeysFactory::ServerErrors::NoError) {
                 return EKeysUtilsError::UnknownServerError;
             }
         }
@@ -213,13 +214,14 @@ EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt,
             continue;
         }
 
-        QByteArray name = parameter.first();
+        const QByteArray &name = parameter.first();
         QByteArray value = QByteArray::fromPercentEncoding(parameter.last());
 
         if (name == CKeysFactory::ServerFields::Error) {
             if (value == CKeysFactory::ServerErrors::WrongPassword) {
                 return EKeysUtilsError::WrongPassword;
-            } if (value == CKeysFactory::ServerErrors::NoError) {
+            }
+            if (value == CKeysFactory::ServerErrors::NoError) {
                 continue;
             }
         } else if (name == CKeysFactory::ServerFields::PublicKey) {

@@ -434,10 +434,9 @@ QString PaymentService::createSignature(PPSDK::IPayment *aPayment, bool aWithCRC
     signature += aPayment->getParameter(PPSDK::CPayment::Parameters::Step).value.toString();
 
     if (aWithCRC) {
-        signature +=
-            QString("\n%1:%2")
-                .arg(PPSDK::CPayment::Parameters::CRC)
-                .arg(aPayment->getParameter(PPSDK::CPayment::Parameters::CRC).value.toString());
+        signature += QString("\n%1:%2").arg(
+            PPSDK::CPayment::Parameters::CRC,
+            aPayment->getParameter(PPSDK::CPayment::Parameters::CRC).value.toString());
 
 #ifdef _DEBUG
     }
@@ -1045,16 +1044,16 @@ bool PaymentService::processPaymentInternal(const std::shared_ptr<PPSDK::IPaymen
               QString("Payment %1. Online payment can't process with offline mode.")
                   .arg(aPayment->getID()));
 
-        if (aPayment->getStatus() == PPSDK::EPaymentStatus::ProcessError) {
-            aPayment->setStatus(PPSDK::EPaymentStatus::BadPayment);
-        } else if (aPayment->getCreationDate().msecsTo(QDateTime::currentDateTime()) >
-                   CPaymentService::OnlinePaymentOvertime) {
+        // Переводим платеж в статус BadPayment если произошла ошибка обработки или истек таймаут
+        if (aPayment->getStatus() == PPSDK::EPaymentStatus::ProcessError ||
+            aPayment->getCreationDate().msecsTo(QDateTime::currentDateTime()) >
+                static_cast<qint64>(CPaymentService::OnlinePaymentOvertime)) {
             aPayment->setStatus(PPSDK::EPaymentStatus::BadPayment);
         } else {
             toLog(LogLevel::Warning,
                   QString("Suspending online payment %1.").arg(aPayment->getID()));
 
-            aPayment->setNextTryDate(QDateTime::currentDateTime().addSecs(5 * 60)); // 5min
+            aPayment->setNextTryDate(QDateTime::currentDateTime().addSecs(qint64(5) * 60)); // 5min
         }
     }
 

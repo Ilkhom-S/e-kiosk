@@ -4,7 +4,7 @@
 
 #include <QtCore/QList>
 
-#include "StatisticRecord.h"
+#include <AdBackend/StatisticRecord.h>
 
 namespace Ad {
 
@@ -26,7 +26,7 @@ public:
     virtual bool deleteStatisticRecords(const QList<SStatisticRecord> &aRecords) = 0;
 
 protected:
-    virtual ~IDatabaseUtils() {}
+    virtual ~IDatabaseUtils() = default;
 };
 
 //------------------------------------------------------------------------

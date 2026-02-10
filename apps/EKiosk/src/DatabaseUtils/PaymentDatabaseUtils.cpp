@@ -474,9 +474,9 @@ QList<qint64> DatabaseUtils::getPaymentQueue() {
         return result;
     }
 
-    do {
+    for (; query->isValid(); query->next()) {
         result << query->value(0).toLongLong();
-    } while (query->next());
+    }
 
     return result;
 }
@@ -622,7 +622,7 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
         }
 
         if (query->first()) {
-            do {
+            while (query->isValid()) {
                 qint64 paymentId = query->value(0).toLongLong();
                 PPSDK::EPaymentStatus::Enum paymentStatus =
                     static_cast<PPSDK::EPaymentStatus::Enum>(query->value(2).toInt());
@@ -632,7 +632,9 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
                     !query->value(1).toBool()) {
                     result.notPrintedPayments << paymentId;
                 }
-            } while (query->next());
+
+                query->next();
+            }
 
             // 4. Посчитаем комиссию терминала. Не можем считать по notes'ам, так как нужно
             // учитывать платежи, оплаченные сдачей.
@@ -825,6 +827,12 @@ void DatabaseUtils::fillEncashmentReport(PPSDK::SEncashment &aEncashment) {
                 notes << QString("%1:%2")
                              .arg(query->value(0).toString())
                              .arg(query->value(1).toString());
+                break;
+
+            default:
+                LOG(m_Log,
+                    LogLevel::Warning,
+                    QString("Unknown payment note type: %1.").arg(query->value(2).toInt()));
                 break;
             }
         }
@@ -1155,9 +1163,9 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
             q->bindValue(":ejection", encashment.date.toString(CIDatabaseProxy::DateFormat));
 
             if (q->exec() && q->first()) {
-                do {
+                for (; q->isValid(); q->next()) {
                     encashment.balance.payments << q->value(0).toLongLong();
-                } while (q->next());
+                }
             }
         }
 
@@ -1178,9 +1186,9 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
             q->bindValue(":id", encashment.id);
 
             if (q->exec() && q->first()) {
-                do {
+                for (; q->isValid(); q->next()) {
                     encashment.parameters.insert(q->value(0).toString(), q->value(1).toString());
-                } while (q->next());
+                }
             }
         }
 

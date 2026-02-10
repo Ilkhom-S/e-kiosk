@@ -152,7 +152,7 @@ Response *Client::sendRequest(const QUrl &aUrl, Request &aRequest) {
     if (m_Http) {
         toLog(LogLevel::Normal, QString("> %1.").arg(aRequest.toLogString()));
 
-        RequestSender::ESendError error = RequestSender::ESendError::NoError;
+        RequestSender::ESendError error = RequestSender::ESendError::Ok;
 
         std::unique_ptr<Response> response(
             m_Http->post(aUrl, aRequest, RequestSender::Solid, error));
@@ -469,7 +469,7 @@ void Client::addEvent(const QString &aType) {
 //------------------------------------------------------------------------
 bool Client::updateExpired() const {
     return m_UpdateStamp.isNull() ||
-           (m_UpdateStamp.addSecs(6 * 60 * 60) < QDateTime::currentDateTime());
+           (m_UpdateStamp.addSecs(static_cast<qint64>(6 * 60 * 60)) < QDateTime::currentDateTime());
 }
 
 //------------------------------------------------------------------------

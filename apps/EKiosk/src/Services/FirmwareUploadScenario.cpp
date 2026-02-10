@@ -4,6 +4,7 @@
 
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QDir>
+#include <QtCore/QMetaObject>
 
 #include <SDK/Drivers/HardwareConstants.h>
 #include <SDK/Drivers/IDevice.h>
@@ -81,7 +82,7 @@ void FirmwareUploadScenario::start(const QVariantMap &aContext) {
         firmwareFile.close();
 
         toLog(LogLevel::Normal,
-              QString("Firmware readed from file. size=%1.").arg(m_Firmware.size()));
+              QString("Firmware read from file. size=%1.").arg(m_Firmware.size()));
     } else {
         m_RetryCount = 0;
         abortScenario(QString("Error open file %1.").arg(firmwareFile.fileName()));
@@ -212,10 +213,11 @@ void FirmwareUploadScenario::acquireDevice() {
 
     toLog(LogLevel::Normal, QString("Device '%1' acquire OK.").arg(device->getName()));
 
-    if (!connect(dynamic_cast<QObject *>(device),
-                 SDK::Driver::IDevice::UpdatedSignal,
-                 this,
-                 SLOT(onUpdated(bool)))) {
+    const QMetaObject::Connection updatedConnection = connect(dynamic_cast<QObject *>(device),
+                                                              SDK::Driver::IDevice::UpdatedSignal,
+                                                              this,
+                                                              SLOT(onUpdated(bool)));
+    if (updatedConnection == QMetaObject::Connection()) {
         abortScenario("Fail connect to device UpdatedSignal.");
         return;
     }
@@ -234,10 +236,12 @@ void FirmwareUploadScenario::acquireDevice() {
 
         QMetaObject::invokeMethod(this, "onDeviceInitialized", Qt::QueuedConnection);
     } else {
-        if (!connect(dynamic_cast<QObject *>(device),
-                     SDK::Driver::IDevice::InitializedSignal,
-                     this,
-                     SLOT(onDeviceInitialized()))) {
+        const QMetaObject::Connection initializedConnection =
+            connect(dynamic_cast<QObject *>(device),
+                    SDK::Driver::IDevice::InitializedSignal,
+                    this,
+                    SLOT(onDeviceInitialized()));
+        if (initializedConnection == QMetaObject::Connection()) {
             abortScenario("Fail connect to device Initialized signal.");
             return;
         }

@@ -740,13 +740,19 @@ void NetworkService::onNetworkTaskStatus(bool aFailure) {
     } else if (m_NetworkTaskFailureStamp.isNull()) {
         // первая ошибка
         m_NetworkTaskFailureStamp = QDateTime::currentDateTime();
-    } else if (qAbs(m_NetworkTaskFailureStamp.secsTo(QDateTime::currentDateTime()) / 60.) >
-               CNetworkService::NetworkFailureTimeout) {
-        toLog(LogLevel::Error,
-              QString("Errors network calls for %1 minutes. Connection lost.")
-                  .arg(CNetworkService::NetworkFailureTimeout));
+    } else {
+        const qint64 failureMinutes =
+            qAbs(m_NetworkTaskFailureStamp.secsTo(QDateTime::currentDateTime())) / 60;
 
-        m_NetworkTaskFailureStamp = QDateTime();
+        if (failureMinutes > CNetworkService::NetworkFailureTimeout) {
+            toLog(LogLevel::Error,
+                  QString("Errors network calls for %1 minutes. Connection lost.")
+                      .arg(CNetworkService::NetworkFailureTimeout));
+
+            m_NetworkTaskFailureStamp = QDateTime();
+
+            QMetaObject::invokeMethod(this, "onConnectionLost", Qt::QueuedConnection);
+        }
 
         QMetaObject::invokeMethod(this, "onConnectionLost", Qt::QueuedConnection);
     }
