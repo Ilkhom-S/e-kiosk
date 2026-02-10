@@ -211,7 +211,7 @@ private:
     /// Обновить список файлов
     void restartUpdateWatcher(QFileSystemWatcher *aWatcher = nullptr);
 
-    void timerEvent(QTimerEvent *aEvent);
+    void timerEvent(QTimerEvent *aEvent) override;
 
     /// Закончить обработку команды
     void updateCommandFinish(int aCmdID, EStatus aStatus, QVariantMap aParameters = QVariantMap());

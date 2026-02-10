@@ -52,7 +52,7 @@ PPApplication::PPApplication(const QString &aName,
     getQtApplication().setQuitOnLastWindowClosed(false);
 
     // Перенаправляем логи.
-    QString appDest = getLog()->getDestination();
+    QString appDest = BasicQtApplication::getLog()->getDestination();
     ILog::getInstance("CryptEngine")->setDestination(appDest);
     ILog::getInstance("DatabaseProxy")->setDestination(appDest);
     ILog::getInstance("MessageQueue")->setDestination(appDest);
@@ -89,19 +89,19 @@ int PPApplication::exec() {
     // Устанавливаем обработчик системных событий.
     QAbstractEventDispatcher::instance()->installNativeEventFilter(this);
 
-    // блокируем скринсеййвер
+    // блокируем скринсейвер
     ISysUtils::disableScreenSaver();
 
     if (m_ServiceController->initializeServices()) {
         return BasicQtApplication::exec();
-    } else {
-        LOG(getLog(), LogLevel::Error, "Failed to initialize PaymentProcessor.");
-
-        // Выводим подробный отчет о запуске сервисов.
-        m_ServiceController->dumpFailureReport();
-
-        return ExitCode::Error;
     }
+
+    LOG(getLog(), LogLevel::Error, "Failed to initialize PaymentProcessor.");
+
+    // Выводим подробный отчет о запуске сервисов.
+    m_ServiceController->dumpFailureReport();
+
+    return ExitCode::Error;
 }
 
 //------------------------------------------------------------------------
