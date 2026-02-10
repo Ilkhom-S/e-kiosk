@@ -17,8 +17,6 @@
 
 #include <Common/ILog.h>
 
-#include <singleapplication.h>
-
 class ILog;              // forward declaration for logging interface (project-specific)
 class SingleApplication; // forward declaration
 

@@ -26,21 +26,21 @@ enum AdminCmd {
     aCmdGetBalance = 0,
     // Количество новых платежей
     aCmdGetNewOperation = 1,
-    // Список имеющихся инкасаций
-    aCmdListAllIncash = 2,
-    // Показать содержимое инкасации
-    aCmdHtmlIncash = 3,
-    // Сделать инкасацию
-    aCmdExecIncashmant = 4,
-    // Сделать инкасацию по дате
-    aCmdExecDateIncash = 5,
+    // Список имеющихся инкассаций
+    aCmdListAllEncashment = 2,
+    // Показать содержимое инкассации
+    aCmdHtmlEncashment = 3,
+    // Сделать инкассацию
+    aCmdExecEncashment = 4,
+    // Сделать инкассацию по дате
+    aCmdExecDateEncashment = 5,
     // Показать состояние асо
     aCmdShowAsoStatus = 6,
     // Показать клавиатуру
     aCmdShowKeyPud = 7,
-    // Показать експлорер
+    // Показать эксплорер
     aCmdShowExplorer = 8,
-    // Скрыть експлорер
+    // Скрыть эксплорер
     aCmdHideExplorer = 9,
     // Информация о купюроприемнике
     aCmdValidatorInform = 10,
@@ -57,13 +57,13 @@ enum AdminCmd {
     // Параметры поиска
     aCmdSearchParam_Ref = 16,
     // Информация действия с устройствами
-    aCmdInfrmationPanel = 17,
+    aCmdInformationPanel = 17,
     // Перезагрузить программу
     aCmdRestartApp = 18,
     // Перезагрузить АСО
     aCmdRestartASO = 19,
     // Выключить АСО
-    aCmdShutDounASO = 20,
+    aCmdShutDownASO = 20,
     // Сохранить параметры устройств
     aCmdSaveDeviceParam = 21,
     // Сохранить параметры устройств c перезагрузкой
@@ -71,14 +71,14 @@ enum AdminCmd {
     // Информация о сим карте
     aCmdSim_InfoData = 23,
     // Список соединений
-    aCmdRasConnlist = 24,
+    aCmdRasConnectionList = 24,
     // Перезагрузка ПО интервал
     aCmdErrorRasReb = 25,
     // Проверка соединения
     aCmdCheckConnect = 26,
     // Информация на странице соединения
     aCmdConnectInfo = 27,
-    // Проверка данных SIM крты
+    // Проверка данных SIM карты
     aCmdGetSim_Info = 28,
     // Создание соединения
     aCmdRasConnCreate = 29,
@@ -94,16 +94,16 @@ enum AdminCmd {
     aCmdSmsSending = 34,
     // Сохранить параметры соединения
     aCmdSaveConnParam = 35,
-    // Праметры win принтера
+    // Параметры win принтера
     aCmdWinPrinterParam = 36,
-    // Праметры счетчика чека
+    // Параметры счетчика чека
     aCmdCounterCheckInf = 37,
-    // Праметры счетчика чека сколько накрутило
+    // Параметры счетчика чека сколько накрутило
     aCmdCounterCheckVal = 38,
     // Сохранение параметров печати
     aCmdSavePrinterParam = 40,
     // Параметры авторизации терминала
-    aCmdAvtorizationTrm_P = 41,
+    aCmdAuthorizationTrm_P = 41,
     // Остальные настройки
     aCmdOtherSettings = 42,
     // Получаем конфигурацию
@@ -115,7 +115,7 @@ enum AdminCmd {
     // Сохраняем параметры авторизации терминала
     aCmdSaveTrm_Num_Sett = 46,
     // Сохраняем параметры авторизации пользователя
-    aCmdSaveUserAvtoriza = 47,
+    aCmdSaveUserAuthorization = 47,
     // Параметры сторожевика
     aCmdWDInform = 48,
     aCmdShowDesktop = 49,
@@ -139,7 +139,7 @@ public:
     QVariantMap data;
 
     QString dateCollectParam;
-    QString titleDataIncashment;
+    QString titleDataEncashment;
     QStringList dialupDevice;
 
     QVariantMap settings;
@@ -191,10 +191,10 @@ private slots:
 
     void getCollectDate(QString date);
 
-    // Сделать инкасацию
+    // Сделать инкассацию
     void doCollectExec();
 
-    // Сделать инкасацию по дате
+    // Сделать инкассацию по дате
     void doCollectDateExec();
 
     void hideExplorer();
@@ -212,13 +212,13 @@ private slots:
     void restartApp();
     void restartASO();
     void saveDeviceParam();
-    void shutDounASO();
+    void shutDownASO();
     void checkConnection();
     void getModem_DataInfo();
-    void saveTrm_AutorizationData();
+    void saveTrm_AuthorizationData();
     void openSelectCategory();
     void go_to_up_log();
-    void go_to_doun_log();
+    void go_to_down_log();
     void openLogInfoDate();
     void go_to_end_text_edit();
     void searchWithKeyParam();
@@ -239,7 +239,7 @@ private slots:
     void savePrinterParam();
     void getServices();
     void saveOtherSettings();
-    void saveUserAutorizationData();
+    void saveUserAuthorizationData();
     void sendCharacter(QChar character);
 
 signals:

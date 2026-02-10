@@ -28,7 +28,7 @@ Component::Component(const QString &aId,
 }
 
 //---------------------------------------------------------------------------
-Component::~Component() {}
+Component::~Component() = default;
 
 //---------------------------------------------------------------------------
 TFileList Component::getFiles() const {

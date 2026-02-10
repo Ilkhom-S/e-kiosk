@@ -111,7 +111,7 @@ PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider
     if (aProvider.processor.type == CProcessorType::Multistage) {
         return aProvider;
     }
-    return PPSDK::SProvider();
+    return {};
 }
 
 //------------------------------------------------------------------------------

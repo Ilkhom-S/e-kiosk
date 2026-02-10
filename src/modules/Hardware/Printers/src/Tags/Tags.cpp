@@ -90,10 +90,11 @@ void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagL
             lexeme = (begin == -1) ? aSource : source.left(begin);
 
             // Если тегов не найдено, выходим из цикла после добавления всей строки
-            if (begin == -1)
+            if (begin == -1) {
                 pos = -1;
-            else
+            } else {
                 pos = begin;
+}
         } else if (begin != -1) {
             // 3. Используем match.captured(n) вместо capturedTexts() для производительности
             QString tagName = match.captured(1);

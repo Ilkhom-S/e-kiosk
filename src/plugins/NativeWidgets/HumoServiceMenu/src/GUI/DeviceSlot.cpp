@@ -39,7 +39,7 @@ DeviceSlot::~DeviceSlot() {
 
 //------------------------------------------------------------------------
 QWidget *DeviceSlot::createWidget() {
-    QWidget *widget = new QWidget();
+    auto *widget = new QWidget();
 
     ui.setupUi(widget);
 

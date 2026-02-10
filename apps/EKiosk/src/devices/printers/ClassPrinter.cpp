@@ -8,19 +8,13 @@
 
 QStringList Printer_List;
 
-ClassPrinter::ClassPrinter(QObject *parent) : QThread(parent) {
+ClassPrinter::ClassPrinter(QObject *parent)
+    : QThread(parent), WpBottom_Margin(1), WpFont(8), WpHeight(150), WpLeftMargin(2),
+      WpRightMargin(1), WpTopMargin(1), WpWidth(90) {
     Printer_List << PrinterModel::Custom_VKP80 << PrinterModel::CitizenCBM1000
                  << PrinterModel::Citizen_CTS2000 << PrinterModel::Custom_TG2480
                  << PrinterModel::Citizen_PPU700 << PrinterModel::AV_268
                  << PrinterModel::Phoenix_model;
-
-    WpWidth = 90;
-    WpHeight = 150;
-    WpFont = 8;
-    WpLeftMargin = 2;
-    WpTopMargin = 1;
-    WpRightMargin = 1;
-    WpBottom_Margin = 1;
 }
 
 bool ClassPrinter::isItYou(QStringList &comList,
@@ -634,7 +628,7 @@ void ClassPrinter::CGetStatus() {
     if (system_Model == PrinterModel::KM1X) {
         iStatus = PrinterState::PrinterOK;
 
-        bool getSts = KM1X->isEnabled();
+        bool getSts = KM1X_PRINTER::isEnabled();
         if (getSts) {
             // qDebug() << "getSts true";
         } else {

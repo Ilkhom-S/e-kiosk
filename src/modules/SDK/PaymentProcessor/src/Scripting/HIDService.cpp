@@ -115,7 +115,7 @@ void HIDService::onData(const QVariantMap &aDataMap) {
     if (aDataMap.contains(CHardwareSDK::HID::Image)) {
         bool faceDetected = aDataMap.value(CHardwareSDK::HID::FaceDetected, false).value<bool>();
 
-        QImage image = aDataMap.value(CHardwareSDK::HID::Image).value<QImage>();
+        auto image = aDataMap.value(CHardwareSDK::HID::Image).value<QImage>();
         QBuffer buffer;
         buffer.open(QIODevice::WriteOnly);
         image.convertToFormat(QImage::Format_RGB16).save(&buffer, "jpg");

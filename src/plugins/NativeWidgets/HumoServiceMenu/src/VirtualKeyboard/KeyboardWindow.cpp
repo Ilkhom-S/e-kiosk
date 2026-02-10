@@ -24,7 +24,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent)
 }
 
 //---------------------------------------------------------------------------
-KeyboardWindow::~KeyboardWindow() {}
+KeyboardWindow::~KeyboardWindow() = default;
 
 //---------------------------------------------------------------------------
 void KeyboardWindow::initialize() {
@@ -92,10 +92,10 @@ void KeyboardWindow::initialize() {
         Qt::Key_Apostrophe, QString::fromUtf8("э"), Qt::Key_QuoteDbl, QString::fromUtf8("Э"));
     m_AltKeyMap["KEY_MINUS"] = VirtualButton(
         Qt::Key_Minus, QString::fromUtf8("х"), Qt::Key_Underscore, QString::fromUtf8("Х"));
-    m_AltKeyMap["KEY_EQUAL"] = VirtualButton(
-        Qt::Key_Equal, QString::fromUtf8("ъ"), Qt::Key_Plus, QString::fromUtf8("Ъ"));
-    m_AltKeyMap["KEY_COMMA"] = VirtualButton(
-        Qt::Key_Comma, QString::fromUtf8("б"), Qt::Key_Less, QString::fromUtf8("Б"));
+    m_AltKeyMap["KEY_EQUAL"] =
+        VirtualButton(Qt::Key_Equal, QString::fromUtf8("ъ"), Qt::Key_Plus, QString::fromUtf8("Ъ"));
+    m_AltKeyMap["KEY_COMMA"] =
+        VirtualButton(Qt::Key_Comma, QString::fromUtf8("б"), Qt::Key_Less, QString::fromUtf8("Б"));
     m_AltKeyMap["KEY_PERIOD"] = VirtualButton(
         Qt::Key_Period, QString::fromUtf8("ю"), Qt::Key_Greater, QString::fromUtf8("Ю"));
     m_AltKeyMap["KEY_SLASH"] = VirtualButton(
@@ -178,7 +178,7 @@ void KeyboardWindow::shutdown() {}
 
 //---------------------------------------------------------------------------
 void KeyboardWindow::onButtonClicked() {
-    QToolButton *button = qobject_cast<QToolButton *>(sender());
+    auto *button = qobject_cast<QToolButton *>(sender());
     if (!button) {
         return;
     }
@@ -189,7 +189,7 @@ void KeyboardWindow::onButtonClicked() {
                                       : m_KeyMap.value(buttonName);
 
     if (virtualButton.getKey(m_Shifted) != Qt::Key_unknown) {
-        QKeyEvent *keyEvent =
+        auto *keyEvent =
             new QKeyEvent(QEvent::KeyPress, virtualButton.getKey(m_Shifted), Qt::NoModifier);
         QApplication::postEvent(QApplication::focusWidget(), keyEvent);
     }

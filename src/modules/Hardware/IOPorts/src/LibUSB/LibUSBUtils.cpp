@@ -109,8 +109,9 @@ void addDescriptorData(libusb_device_handle *aHandle, uint8_t aDescriptor, QVari
     data.fill(ASCII::NUL, CLibUSBUtils::DescriptorDataSize);
     aData.clear();
 
-    if (aDescriptor && libusb_get_string_descriptor_ascii(
-                           aHandle, aDescriptor, &data[0], CLibUSBUtils::DescriptorDataSize)) {
+    if ((aDescriptor != 0u) &&
+        (libusb_get_string_descriptor_ascii(
+             aHandle, aDescriptor, data.data(), CLibUSBUtils::DescriptorDataSize) != 0)) {
         aData = ProtocolUtils::clean(QString((char *)data.data()));
     }
 }
@@ -124,16 +125,14 @@ QString getPropertyLog(const QVariantMap &aData) {
 QString getPropertyLog(const CLibUSB::TDeviceDataList &aList, int aIndex) {
     QString result;
 
-    for (int i = 0; i < aList.size(); ++i) {
-        const QVariantMap &data = aList[i];
+    for (const auto &data : aList) {
         TDeviceData deviceData;
         QStringList complexKeys;
 
         for (auto it = data.begin(); it != data.end(); ++it) {
             if (it->typeId() == QMetaType::User) {
                 complexKeys << it.key();
-                CLibUSB::TDeviceDataList complexList =
-                    data[it.key()].value<CLibUSB::TDeviceDataList>();
+                auto complexList = data[it.key()].value<CLibUSB::TDeviceDataList>();
             } else {
                 deviceData.insert(it.key(), it->toString());
             }
@@ -141,13 +140,12 @@ QString getPropertyLog(const CLibUSB::TDeviceDataList &aList, int aIndex) {
 
         result += "\n" + DeviceUtils::getPartDeviceData(deviceData, true, aIndex);
 
-        for (int j = 0; j < complexKeys.size(); ++j) {
-            CLibUSB::TDeviceDataList complexList =
-                data[complexKeys[j]].value<CLibUSB::TDeviceDataList>();
+        for (const auto &complexKey : complexKeys) {
+            auto complexList = data[complexKey].value<CLibUSB::TDeviceDataList>();
 
             if (!complexList.isEmpty()) {
                 int index = aIndex;
-                result += "\n" + QString(aIndex, ASCII::TAB) + QString("%1 :").arg(complexKeys[j]);
+                result += "\n" + QString(aIndex, ASCII::TAB) + QString("%1 :").arg(complexKey);
                 result += getPropertyLog(complexList, ++aIndex);
                 aIndex = index;
             }
@@ -166,8 +164,7 @@ bool getDevicesProperties(CLibUSB::TDeviceProperties &aDeviceProperties, bool aF
         return false;
     }
 
-    for (int i = 0; i < deviceList.size(); ++i) {
-        libusb_device *device = deviceList[i];
+    for (auto device : deviceList) {
         aDeviceProperties.insert(device, getDevicesProperties(device));
     }
 
@@ -234,7 +231,7 @@ void getDeviceDescriptorData(libusb_device *aDevice,
 
     libusb_device_handle *deviceHandle = nullptr;
 
-    if (LIB_USB_CALL_DEBUG(libusb_open, aDevice, &deviceHandle) && deviceHandle) {
+    if (LIB_USB_CALL_DEBUG(libusb_open, aDevice, &deviceHandle) && (deviceHandle != nullptr)) {
         addDescriptorData(
             deviceHandle, aDeviceDescriptor.iManufacturer, deviceData[DeviceUSBData::Vendor]);
         addDescriptorData(
@@ -273,22 +270,22 @@ void getDeviceDescriptorData(libusb_device *aDevice,
             namespace InterfaceData = DeviceUSBData::Config::Interface;
 
             if (getDataFrom_Map(data, InterfaceData::EndpointData, false)) {
-                QVariantMap EPData =
+                QVariantMap epData =
                     data[InterfaceData::EndpointData].value<CLibUSB::TDeviceDataList>()[i];
 
                 namespace EndpointData = DeviceUSBData::Config::Interface::Endpoint;
 
-                QByteArray EP = getBufferFrom_String(EPData[EndpointData::Address].toString());
-                int maxPacketSize = EPData[EndpointData::MaxPacketSize].toInt();
-                int pollingInterval = EPData[EndpointData::PollingInterval].toInt();
-                QString transferTypeData = EPData[EndpointData::TransferType].toString();
+                QByteArray ep = getBufferFrom_String(epData[EndpointData::Address].toString());
+                int maxPacketSize = epData[EndpointData::MaxPacketSize].toInt();
+                int pollingInterval = epData[EndpointData::PollingInterval].toInt();
+                QString transferTypeData = epData[EndpointData::TransferType].toString();
                 libusb_transfer_type transferType =
                     CLibUSBUtils::TransferTypeDescriptions.key(transferTypeData);
 
-                CLibUSB::SEndPoint &deviceEP = (EP[0] & LIBUSB_ENDPOINT_DIR_MASK)
+                CLibUSB::SEndPoint &deviceEP = ((ep[0] & LIBUSB_ENDPOINT_DIR_MASK) != 0)
                                                    ? aDeviceProperties.deviceToHost
                                                    : aDeviceProperties.hostToDevice;
-                deviceEP = CLibUSB::SEndPoint(transferType, EP[0], maxPacketSize, pollingInterval);
+                deviceEP = CLibUSB::SEndPoint(transferType, ep[0], maxPacketSize, pollingInterval);
                 deviceEP.processIO = (transferType == LIBUSB_TRANSFER_TYPE_BULK)
                                          ? &libusb_bulk_transfer
                                          : &libusb_interrupt_transfer;
@@ -301,29 +298,29 @@ void getDeviceDescriptorData(libusb_device *aDevice,
 QVariantMap getBOSData(libusb_device_handle *aDeviceHandle) {
     QVariantMap result;
 
-    struct libusb_bos_descriptor *BOS;
+    struct libusb_bos_descriptor *bos = nullptr;
 
-    if (LIB_USB_CALL_DEBUG(libusb_get_bos_descriptor, aDeviceHandle, &BOS)) {
-        if (BOS->dev_capability[0]->bDevCapabilityType == LIBUSB_BT_USB_2_0_EXTENSION) {
-            libusb_usb_2_0_extension_descriptor *usb_2_0_extension;
+    if (LIB_USB_CALL_DEBUG(libusb_get_bos_descriptor, aDeviceHandle, &bos)) {
+        if (bos->dev_capability[0]->bDevCapabilityType == LIBUSB_BT_USB_2_0_EXTENSION) {
+            libusb_usb_2_0_extension_descriptor *usb20Extension = nullptr;
 
             if (LIB_USB_CALL_DEBUG(libusb_get_usb_2_0_extension_descriptor,
                                    getContext(),
-                                   BOS->dev_capability[0],
-                                   &usb_2_0_extension)) {
+                                   bos->dev_capability[0],
+                                   &usb20Extension)) {
                 result.insert(DeviceUSBData::BOS::Capability, "USB 2.0");
                 result.insert(DeviceUSBData::BOS::Capability2_0::Attributes,
-                              toHexLog(usb_2_0_extension->bmAttributes));
+                              toHexLog(usb20Extension->bmAttributes));
 
-                libusb_free_usb_2_0_extension_descriptor(usb_2_0_extension);
+                libusb_free_usb_2_0_extension_descriptor(usb20Extension);
             }
-        } else if (BOS->dev_capability[0]->bDevCapabilityType ==
+        } else if (bos->dev_capability[0]->bDevCapabilityType ==
                    LIBUSB_BT_SS_USB_DEVICE_CAPABILITY) {
-            libusb_ss_usb_device_capability_descriptor *deviceCapability;
+            libusb_ss_usb_device_capability_descriptor *deviceCapability = nullptr;
 
             if (LIB_USB_CALL_DEBUG(libusb_get_ss_usb_device_capability_descriptor,
                                    getContext(),
-                                   BOS->dev_capability[0],
+                                   bos->dev_capability[0],
                                    &deviceCapability)) {
                 result.insert(DeviceUSBData::BOS::Capability, "USB 3.0");
                 result.insert(DeviceUSBData::BOS::Capability3_0::Attributes,
@@ -341,7 +338,7 @@ QVariantMap getBOSData(libusb_device_handle *aDeviceHandle) {
             }
         }
 
-        libusb_free_bos_descriptor(BOS);
+        libusb_free_bos_descriptor(bos);
     }
 
     return result;
@@ -353,7 +350,7 @@ TLibUSBDataList getConfigData(libusb_device *aDevice,
     TLibUSBDataList result;
 
     for (uint8_t i = 0; i < aDeviceDescriptor.bNumConfigurations; ++i) {
-        libusb_config_descriptor *config;
+        libusb_config_descriptor *config = nullptr;
 
         if (LIB_USB_CALL_DEBUG(libusb_get_config_descriptor, aDevice, i, &config)) {
             namespace ConfigData = DeviceUSBData::Config;
@@ -503,9 +500,9 @@ TLibUSBDataList getEndpointData(const libusb_interface_descriptor &aInterface) {
         int extra_length;
         */
 
-        TLibUSBDataList EPCompanionData = getEPCompanionData(endpoint);
+        TLibUSBDataList epCompanionData = getEPCompanionData(endpoint);
         endpointData.insert(EndpointData::CompanionData,
-                            QVariant::fromValue<TLibUSBDataList>(EPCompanionData));
+                            QVariant::fromValue<TLibUSBDataList>(epCompanionData));
 
         result << endpointData;
     }
@@ -519,7 +516,7 @@ TLibUSBDataList getEPCompanionData(const libusb_endpoint_descriptor &aEndpoint) 
 
     for (int i = 0; i < aEndpoint.extra_length;) {
         if (LIBUSB_DT_SS_ENDPOINT_COMPANION == aEndpoint.extra[i + 1]) {
-            struct libusb_ss_endpoint_companion_descriptor *epCompanionDescriptor;
+            struct libusb_ss_endpoint_companion_descriptor *epCompanionDescriptor = nullptr;
 
             if (LIB_USB_CALL_DEBUG(libusb_get_ss_endpoint_companion_descriptor,
                                    getContext(),
@@ -598,7 +595,7 @@ bool getDataFrom_Map(QVariantMap &aData, const QString &aKey, bool aSetNextData)
         return false;
     }
 
-    CLibUSB::TDeviceDataList deviceDataList = aData[aKey].value<CLibUSB::TDeviceDataList>();
+    auto deviceDataList = aData[aKey].value<CLibUSB::TDeviceDataList>();
 
     if (deviceDataList.isEmpty()) {
         return false;

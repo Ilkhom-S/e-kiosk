@@ -17,13 +17,13 @@ SplashScreen::SplashScreen(QWidget *aParent) : QWidget(aParent, Qt::SplashScreen
     ui.setupUi(this);
     showMinimized();
 
-    QMovie *animation = new QMovie(":/images/wait.gif");
+    auto *animation = new QMovie(":/images/wait.gif");
     ui.lbAnimation->setMovie(animation);
     animation->start();
 }
 
 //----------------------------------------------------------------------------
-SplashScreen::~SplashScreen() {}
+SplashScreen::~SplashScreen() = default;
 
 //----------------------------------------------------------------------------
 void SplashScreen::closeEvent(QCloseEvent *aEvent) {

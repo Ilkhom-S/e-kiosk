@@ -28,7 +28,7 @@ public:
     virtual void hide();
 
     /// Посылает уведомление виджету.
-    virtual void notify(const QString &aReason, const QVariantMap &aParameters);
+    virtual void notify(const QString &aEvent, const QVariantMap &aParameters);
 
     /// Проверяет готов ли виджет.
     virtual bool isValid() const;

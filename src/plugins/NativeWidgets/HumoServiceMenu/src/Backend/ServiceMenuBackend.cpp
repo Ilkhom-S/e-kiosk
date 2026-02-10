@@ -190,7 +190,8 @@ void ServiceMenuBackend::printDispenserDiffState() {
         units << "FIRST" << "SECOND";
 
         for (int i = 0; i < units.count(); i++) {
-            PPSDK::SCashUnit beforeUnit, afterUnit;
+            PPSDK::SCashUnit beforeUnit;
+            PPSDK::SCashUnit afterUnit;
 
             const auto &beforeList = m_CashUnitsState.values();
             if (beforeList.size()) {
@@ -337,7 +338,7 @@ QList<QWidget *> ServiceMenuBackend::getExternalWidgets(bool aReset) {
     QList<QWidget *> widgetList;
 
     foreach (SDK::Plugin::IPlugin *plugin, m_WidgetPluginList) {
-        SDK::GUI::IGraphicsItem *item_Object = dynamic_cast<SDK::GUI::IGraphicsItem *>(plugin);
+        auto *item_Object = dynamic_cast<SDK::GUI::IGraphicsItem *>(plugin);
         if (item_Object) {
             if (aReset) {
                 item_Object->reset(QVariantMap());

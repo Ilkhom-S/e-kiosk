@@ -45,12 +45,13 @@ void CitizenCPP8001::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     int lineSpacing = getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
 
     int feeding = 6;
-    if (lineSpacing >= 75)
+    if (lineSpacing >= 75) {
         feeding = 3;
-    else if (lineSpacing >= 60)
+    } else if (lineSpacing >= 60) {
         feeding = 4;
-    else if (lineSpacing >= 50)
+    } else if (lineSpacing >= 50) {
         feeding = 5;
+}
 
     setConfigParameter(CHardware::Printer::FeedingAmount, feeding);
 }

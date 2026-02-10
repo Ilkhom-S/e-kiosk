@@ -31,7 +31,7 @@ bool DispenserServiceWindow::activate() {
         QVariantMap config = m_Backend->getHardwareManager()->getDeviceConfiguration(device);
 
         for (const PPSDK::SCashUnit &cashUnit : cashUnitState.value(device)) {
-            QListWidgetItem *item =
+            auto *item =
                 new QListWidgetItem(QString("%1:%2 -> %3 x %4 %5 = %6%7")
                                         .arg(config.value("system_name").toString())
                                         .arg(config.value("model_name").toString())

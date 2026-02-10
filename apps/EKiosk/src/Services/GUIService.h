@@ -70,9 +70,9 @@ public:
 
 #pragma region SDK::PaymentProcessor::IGUIService interface
     /// Отображает виджет.
-    virtual bool show(const QString &aWidget, const QVariantMap &aParameters);
+    virtual bool show(const QString &aScene, const QVariantMap &aParameters);
 
-    /// Отображает popup-виджет (на уровнь выше текущего).
+    /// Отображает popup-виджет (на уровень выше текущего).
     virtual bool showPopup(const QString &aWidget, const QVariantMap &aParameters);
 
     /// Отображает модальный виджет.

@@ -28,7 +28,7 @@ void SendRequest::setUrl(QString url) {
     serverUrl = url;
 }
 
-void SendRequest::timerAbortStarted() {
+void SendRequest::timerAbortStarted() const {
     // Устанавливаем таймер разрыва
     if (abortTimer->isActive()) {
         abortTimer->stop();
@@ -92,7 +92,7 @@ void SendRequest::sendRequestData() {
     connect(reply, SIGNAL(finished()), this, SLOT(slotReadyRead()));
 }
 
-QString SendRequest::host() {
+QString SendRequest::host() const {
     auto host = serverUrl;
 
     if (serverUrl.startsWith("https://")) {
@@ -373,14 +373,14 @@ QString SendRequest::getHeaderRequest(int type) {
     return header;
 }
 
-QString SendRequest::getFooterRequest() {
+QString SendRequest::getFooterRequest() const {
     return QString("<version>" + version +
                    "</version>\n"
                    "<clientType>ASO</clientType>\n"
                    "</request>\n");
 }
 
-void SendRequest::toDebug(QString data) {
+void SendRequest::toDebug(QString data) const {
     if (debugger) {
         qDebug() << data;
     }

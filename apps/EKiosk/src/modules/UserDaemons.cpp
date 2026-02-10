@@ -17,7 +17,7 @@ void UserDaemons::setDataNote(const QDomNode &domElement) {
     balance = "";
 
     // Парсим данные
-    parcerNote(domElement);
+    parseNode(domElement);
 
     if (balance != "") {
         // Тут отправляем сигнал с балансом
@@ -28,7 +28,7 @@ void UserDaemons::setDataNote(const QDomNode &domElement) {
     emit emit_UserData("---");
 }
 
-void UserDaemons::parcerNote(const QDomNode &domElement) {
+void UserDaemons::parseNode(const QDomNode &domElement) {
     QDomNode domNode = domElement.firstChild();
 
     while (!domNode.isNull()) {
@@ -44,7 +44,7 @@ void UserDaemons::parcerNote(const QDomNode &domElement) {
             }
         }
 
-        parcerNote(domNode);
+        parseNode(domNode);
         domNode = domNode.nextSibling();
     }
 }

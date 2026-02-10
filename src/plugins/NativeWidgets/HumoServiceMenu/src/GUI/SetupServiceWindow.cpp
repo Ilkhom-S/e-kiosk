@@ -21,7 +21,7 @@ SetupServiceWindow::SetupServiceWindow(HumoServiceBackend *aBackend, QWidget *aP
 
 //------------------------------------------------------------------------
 void SetupServiceWindow::onCurrentPageChanged(int aIndex) {
-    IServiceWindow *prev = dynamic_cast<IServiceWindow *>(twPages->widget(m_CurrentPageIndex));
+    auto *prev = dynamic_cast<IServiceWindow *>(twPages->widget(m_CurrentPageIndex));
 
     if (prev) {
         if (!prev->deactivate()) {
@@ -34,7 +34,7 @@ void SetupServiceWindow::onCurrentPageChanged(int aIndex) {
         }
     }
 
-    IServiceWindow *next = dynamic_cast<IServiceWindow *>(twPages->widget(aIndex));
+    auto *next = dynamic_cast<IServiceWindow *>(twPages->widget(aIndex));
 
     if (next) {
         next->activate();
@@ -50,10 +50,10 @@ void SetupServiceWindow::onCurrentPageChanged(int aIndex) {
 
 //------------------------------------------------------------------------
 bool SetupServiceWindow::activate() {
-    IServiceWindow *page = 0;
+    IServiceWindow *page = nullptr;
 
     if (m_CurrentPageIndex == -1) {
-        if (twPages->count()) {
+        if (twPages->count() != 0) {
             m_CurrentPageIndex = 0;
         }
     }
@@ -69,7 +69,7 @@ bool SetupServiceWindow::activate() {
 
 //------------------------------------------------------------------------
 bool SetupServiceWindow::deactivate() {
-    IServiceWindow *page = dynamic_cast<IServiceWindow *>(twPages->widget(m_CurrentPageIndex));
+    auto *page = dynamic_cast<IServiceWindow *>(twPages->widget(m_CurrentPageIndex));
 
     if (page) {
         return page->deactivate();
@@ -86,13 +86,13 @@ bool SetupServiceWindow::initialize() {
     HumoServiceBackend::TAccessRights rights = m_Backend->getAccessRights();
 
     if (rights.contains(HumoServiceBackend::SetupHardware) || !m_Backend->hasAnyPassword()) {
-        HardwareServiceWindow *hardwareWindow = new HardwareServiceWindow(m_Backend, this);
+        auto *hardwareWindow = new HardwareServiceWindow(m_Backend, this);
         hardwareWindow->initialize();
         twPages->addTab(hardwareWindow, tr("#hardware"));
     }
 
     if (rights.contains(HumoServiceBackend::SetupNetwork) || !m_Backend->hasAnyPassword()) {
-        NetworkServiceWindow *networkWindow = new NetworkServiceWindow(m_Backend, this);
+        auto *networkWindow = new NetworkServiceWindow(m_Backend, this);
         networkWindow->initialize();
         twPages->addTab(networkWindow, tr("#network"));
     }
@@ -106,13 +106,13 @@ bool SetupServiceWindow::initialize() {
 #endif
 
     if (rights.contains(HumoServiceBackend::SetupKeys) || !m_Backend->hasAnyPassword()) {
-        KeysServiceWindow *keysWindow = new KeysServiceWindow(m_Backend, this);
+        auto *keysWindow = new KeysServiceWindow(m_Backend, this);
         keysWindow->initialize();
         twPages->addTab(keysWindow, tr("#keys"));
     }
 
     if (rights.contains(HumoServiceBackend::Encash)) {
-        DispenserServiceWindow *dispenserWindow = new DispenserServiceWindow(m_Backend, this);
+        auto *dispenserWindow = new DispenserServiceWindow(m_Backend, this);
         dispenserWindow->initialize();
         twPages->addTab(dispenserWindow, tr("#dispenser"));
     }

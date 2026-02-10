@@ -221,7 +221,7 @@ public:
     Commissions();
 
     /// Получение списка актуальных комиссий по оператору.
-    TCommissions getCommissions(qint64 aOperator) const;
+    TCommissions getCommissions(qint64 aProvider) const;
 
     /// Получение актуальной комиссии по идентификатору оператора и сумме платежа.
     Commission getCommission(qint64 aProvider, double aSum) const;

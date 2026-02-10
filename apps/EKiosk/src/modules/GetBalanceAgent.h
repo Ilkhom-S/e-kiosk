@@ -11,17 +11,17 @@ public:
     GetBalanceAgent(QObject *parent = 0);
 
 private:
-    void parcerNote(const QDomNode &dom_Element);
+    void parseNode(const QDomNode &domElement);
 
-    bool resultCode;
-    bool getData;
+    bool resultCode{};
+    bool getData{};
 
     QString balance;
     QString overdraft;
 
 private slots:
     void resendRequest();
-    void setDataNote(const QDomNode &dom_Element);
+    void setDataNote(const QDomNode &domElement);
 
 public slots:
     void sendDataRequest();

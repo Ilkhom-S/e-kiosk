@@ -30,8 +30,8 @@ private:
     QTimer *stsTimer;
     QTimer *abortTimer;
 
-    int timePing;
-    int cmd;
+    int timePing{};
+    int cmd{};
 
     virtual void run();
     bool ping(int timeOut, QString ipAddress);

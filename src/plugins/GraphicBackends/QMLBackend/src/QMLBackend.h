@@ -49,7 +49,7 @@ public:
 #pragma region SDK::GUI::IGraphicsBackend interface
 
     /// Инициализируем
-    virtual bool initialize(SDK::GUI::IGraphicsEngine *aContainer);
+    virtual bool initialize(SDK::GUI::IGraphicsEngine *aEngine);
 
     /// Очищаем ресурсы
     virtual void shutdown();

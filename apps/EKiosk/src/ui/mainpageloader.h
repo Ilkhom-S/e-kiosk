@@ -123,9 +123,9 @@ public:
 
     QString lockReason;
 
-    bool printerStatus;
-    bool printDialogShow;
-    bool connectionIsUp;
+    bool printerStatus{};
+    bool printDialogShow{};
+    bool connectionIsUp{};
 
     QString originalNumber;
     QString afterMaskNumber;
@@ -149,14 +149,14 @@ private:
 
     QString tpl;
 
-    int nominalInserted;
+    int nominalInserted{};
     QString nominalDenomination;
-    double nominalCash;
-    double nominalAmount;
+    double nominalCash{};
+    double nominalAmount{};
 
-    double gblRatioPrv;
-    double gblCmsSum;
-    bool btnPayClck;
+    double gblRatioPrv{};
+    double gblCmsSum{};
+    bool btnPayClck{};
 
     QString gblNowTransaction;
 
@@ -211,7 +211,7 @@ public slots:
     void gotoPageInputFrom_Payment(const int serviceId = 0);
     void paymentConfirm();
     void userInfoCheck(QString account, QString idPrv);
-    void langSet(QString lng);
+    void langSet(QString lang);
     void playNumpadSound(QString fileName);
     void receiptPrint(bool withSound);
     void receiptSend(QString phone);

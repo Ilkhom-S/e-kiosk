@@ -13,10 +13,10 @@
 #include "MessageBox/MessageBox.h"
 
 TokenServiceWindow::TokenServiceWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend) {
+    : QFrame(aParent), ServiceWindowBase(aBackend), m_Window(new TokenWindow(aBackend, this)) {
     setupUi(this);
 
-    m_Window = new TokenWindow(aBackend, this);
+    
 
     connect(m_Window, SIGNAL(beginFormat()), SLOT(onBeginFormat()));
     connect(m_Window, SIGNAL(endFormat()), SLOT(onEndFormat()));
@@ -86,7 +86,7 @@ void TokenServiceWindow::onError(QString aError) {
 }
 
 //------------------------------------------------------------------------
-void TokenServiceWindow::timerEvent(QTimerEvent *) {
+void TokenServiceWindow::timerEvent(QTimerEvent * /*event*/) {
     m_Window->initialize(m_Backend->getKeysManager()->tokenStatus());
 }
 

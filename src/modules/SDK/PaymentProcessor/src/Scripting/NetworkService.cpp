@@ -52,7 +52,7 @@ Response::Response(const SDK::PaymentProcessor::Humo::Request &aRequest,
 
 //------------------------------------------------------------------------------
 NetworkService::NetworkService(ICore *aCore)
-    : m_Core(aCore), m_CurrentTask(0), m_NetworkService(aCore->getNetworkService()) {
+    : m_Core(aCore), m_CurrentTask(nullptr), m_NetworkService(aCore->getNetworkService()) {
     if (m_NetworkService) {
         m_TaskManager = m_NetworkService->getNetworkTaskManager();
         m_RequestSender = QSharedPointer<PPSDK::Humo::RequestSender>(new PPSDK::Humo::RequestSender(
@@ -92,7 +92,7 @@ NetworkService::~NetworkService() {
         m_TaskManager->removeTask(m_CurrentTask);
         m_CurrentTask->deleteLater();
 
-        m_CurrentTask = 0;
+        m_CurrentTask = nullptr;
     }
 }
 
@@ -127,7 +127,7 @@ bool NetworkService::post(const QString &aUrl, const QString &aData) {
             m_TaskManager->removeTask(m_CurrentTask);
             m_CurrentTask->deleteLater();
 
-            m_CurrentTask = 0;
+            m_CurrentTask = nullptr;
         }
 
         std::unique_ptr<NetworkTask> task(new NetworkTask());
@@ -157,7 +157,7 @@ void NetworkService::taskComplete() {
         emit complete(true, QString());
     }
 
-    m_CurrentTask = 0;
+    m_CurrentTask = nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -261,7 +261,7 @@ void NetworkService::sendReceipt(const QString &aEmail, const QString &aContact)
     PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
-    Request *request = new Request(params);
+    auto *request = new Request(params);
 
     QString receiptUrl = terminalSettings->getReceiptMailURL();
     m_ResponseSendReceiptWatcher.setFuture(QtConcurrent::run(

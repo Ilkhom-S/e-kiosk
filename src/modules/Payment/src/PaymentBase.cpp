@@ -54,7 +54,7 @@ PaymentBase::PaymentBase(SDK::PaymentProcessor::IPaymentFactory *aFactory,
     QStringList states;
 
     foreach (PPSDK::IService *service, aCore->getServices()) {
-        if (PPSDK::IServiceState *ss = dynamic_cast<PPSDK::IServiceState *>(service)) {
+        if (auto *ss = dynamic_cast<PPSDK::IServiceState *>(service)) {
             states << ss->getState();
         }
     }

@@ -13,21 +13,21 @@ public:
     QString system_Log;
 
 private:
-    void parcerNote(const QDomNode &dom_Element);
+    void parseNode(const QDomNode &domElement);
     void getCompressLogData(QString date, bool &result, QString &strip);
     void getCompressValiatorLogData(QString date, QString account, bool &result, QString &strip);
 
     bool resultCode;
-    int countAllRep;
+    int countAllRep{};
     QString requestXml;
-    int nowIdTrn;
+    int nowIdTrn{};
 
     QTimer *timerPic;
 
 private slots:
     void resendRequest();
-    void setDataNote(const QDomNode &dom_Element);
-    void sendRequestRepeet();
+    void setDataNote(const QDomNode &domElement);
+    void sendRequestRepeat();
 
 public slots:
     void sendLogInfoToServer(QString trn, QString date);

@@ -14,7 +14,7 @@ using namespace SDK::Driver::IOPort::COM;
 using namespace ProtocolUtils;
 
 //---------------------------------------------------------------------------
-SSPCashAcceptor::SSPCashAcceptor() {
+SSPCashAcceptor::SSPCashAcceptor() : m_LastConnectionOK(false), m_Enabled(false) {
     // параметры порта
     m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
     m_PortParameters[EParameters::Parity].append(EParity::No);
@@ -26,8 +26,8 @@ SSPCashAcceptor::SSPCashAcceptor() {
     m_DeviceName = CSSP::Models::Default;
     m_EscrowPosition = 1;
     m_ResetWaiting = EResetWaiting::Available;
-    m_LastConnectionOK = false;
-    m_Enabled = false;
+    
+    
     m_ParInStacked = true;
 
     // параметры протокола
@@ -192,7 +192,7 @@ void SSPCashAcceptor::processDeviceData() {
     QByteArray answer;
 
     if (processCommand(CSSP::Commands::GetSerial, &answer) && !answer.isEmpty()) {
-        setDeviceParameter(CDeviceData::SerialNumber, answer.toHex().toUInt(0, 16));
+        setDeviceParameter(CDeviceData::SerialNumber, answer.toHex().toUInt(nullptr, 16));
     }
 
     if (!containsDeviceParameter(CDeviceData::Firmware) &&
@@ -312,7 +312,7 @@ bool SSPCashAcceptor::loadParTable() {
         int index = answer[12 + i];
         QString currency = answer.mid(16 + 2 * channels, 3);
         double nominal =
-            multiplier * revert(answer.mid(16 + 5 * channels + 4 * i, 4)).toHex().toInt(0, 16);
+            multiplier * revert(answer.mid(16 + 5 * channels + 4 * i, 4)).toHex().toInt(nullptr, 16);
 
         MutexLocker locker(&m_ResourceMutex);
 

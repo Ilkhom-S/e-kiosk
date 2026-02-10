@@ -2,8 +2,8 @@
 
 #include "qjsonarray.h"
 
-JsonRequest::JsonRequest(QObject *parent) : QObject(parent) {
-    mgr = new QNetworkAccessManager(this);
+JsonRequest::JsonRequest(QObject *parent) : QObject(parent), mgr(new QNetworkAccessManager(this)) {
+    
 }
 
 void JsonRequest::setAuthData(const QString token, const QString uuid) {
@@ -40,7 +40,7 @@ void JsonRequest::sendRequest(const QJsonObject &json,
 
     qDebug() << request.rawHeaderList();
 
-    QNetworkReply *reply;
+    QNetworkReply *reply = nullptr;
 
     if (method == Method::GET) {
         request.setRawHeader("Content-Type", "application/x-www-form-urlencoded");

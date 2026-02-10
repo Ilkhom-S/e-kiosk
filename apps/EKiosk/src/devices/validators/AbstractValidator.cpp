@@ -2,9 +2,8 @@
 
 bool debugger = false;
 
-BaseValidatorDevices::BaseValidatorDevices(QObject *parent) : QThread(parent) {
-    debugger = false;
-    devicesCreated = false;
+BaseValidatorDevices::BaseValidatorDevices(QObject *parent)
+    : QThread(parent), debugger(false), devicesCreated(false) {
 
     this->createDevicePort();
 }
@@ -85,7 +84,7 @@ bool BaseValidatorDevices::sendCommand(QByteArray dataRequest,
 
         // Задержка после команды
         if (timeSleep > 0) {
-            this->msleep(timeSleep);
+            BaseValidatorDevices::msleep(timeSleep);
         }
 
         if (getResponse) {

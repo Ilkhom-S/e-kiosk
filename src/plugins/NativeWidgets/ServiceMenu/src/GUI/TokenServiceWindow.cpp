@@ -13,10 +13,8 @@
 #include "MessageBox/MessageBox.h"
 
 TokenServiceWindow::TokenServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend) {
+    : QFrame(aParent), ServiceWindowBase(aBackend), m_Window(new TokenWindow(aBackend, this)) {
     setupUi(this);
-
-    m_Window = new TokenWindow(aBackend, this);
 
     connect(m_Window, SIGNAL(beginFormat()), SLOT(onBeginFormat()));
     connect(m_Window, SIGNAL(endFormat()), SLOT(onEndFormat()));
@@ -60,7 +58,7 @@ bool TokenServiceWindow::shutdown() {
 
 //------------------------------------------------------------------------
 void TokenServiceWindow::onBeginFormat() {
-    if (GUI::MessageBox::question(tr("#question_format_token_warning"))) {
+    if (GUI::MessageBox::question(tr("#question_format_token_warning")) != 0) {
         GUI::MessageBox::hide();
         GUI::MessageBox::wait(tr("#format_token"));
 
@@ -86,7 +84,7 @@ void TokenServiceWindow::onError(QString aError) {
 }
 
 //------------------------------------------------------------------------
-void TokenServiceWindow::timerEvent(QTimerEvent *) {
+void TokenServiceWindow::timerEvent(QTimerEvent * /*event*/) {
     m_Window->initialize(m_Backend->getKeysManager()->tokenStatus());
 }
 

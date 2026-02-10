@@ -37,7 +37,7 @@ class FirmwareUploadScenario : public GUI::Scenario {
     Q_OBJECT
 
 public:
-    FirmwareUploadScenario(IApplication *m_Application);
+    FirmwareUploadScenario(IApplication *aApplication);
     virtual ~FirmwareUploadScenario();
 
 public:

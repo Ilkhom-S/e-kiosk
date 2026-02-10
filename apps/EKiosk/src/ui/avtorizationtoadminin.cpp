@@ -73,9 +73,7 @@ void AvtorizationToAdminIn::checkInputData() {
         messageBox1.setIcon(QMessageBox::Critical);
 
         messageBox1.exec();
-
-        return;
-   
+  
 }
 
 AvtorizationToAdminIn::~AvtorizationToAdminIn() {

@@ -9,7 +9,7 @@ using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------------
-ATModem_Base::ATModem_Base() {
+ATModem_Base::ATModem_Base() : m_Modem_ConfigTimeout(CATGSMModem::Timeouts::Config) {
     // данные порта
     m_PortParameters[EParameters::BaudRate].append(
         EBaudRate::BR115200); // preferable for work, but not works in autobauding mode
@@ -24,7 +24,7 @@ ATModem_Base::ATModem_Base() {
     // Отключено - записи в лог дублируются.
     // m_IOMessageLogging = true;
 
-    m_Modem_ConfigTimeout = CATGSMModem::Timeouts::Config;
+    
 }
 
 //--------------------------------------------------------------------------------

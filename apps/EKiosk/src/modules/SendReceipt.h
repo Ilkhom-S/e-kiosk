@@ -12,18 +12,18 @@ public:
 
 private slots:
     void resendRequest();
-    void setDataNote(const QDomNode &dom_Element);
-    void sendRequestRepeet();
+    void setDataNote(const QDomNode &domElement);
+    void sendRequestRepeat();
 
 public slots:
     void sendReceiptRequest(QString trn, QString notify);
 
 private:
-    void parcerNote(const QDomNode &dom_Element);
+    void parseNode(const QDomNode &domElement);
 
-    bool getData;
+    bool getData{};
 
-    int countAllRep;
+    int countAllRep{};
     QString requestXml;
 
     QString resultCode;

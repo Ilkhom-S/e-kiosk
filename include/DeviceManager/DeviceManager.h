@@ -40,7 +40,7 @@ public:
     /// Подключение/захват устройства, c заданной конфигурацией. По умолчанию конфигурация грузится
     /// из конфига плагина.
     SDK::Driver::IDevice *acquireDevice(const QString &aInstancePath,
-                                        const QString &aConfigPath = "");
+                                        const QString &aConfigInstancePath = "");
 
     /// Отключение/освобождение указанного устройства.
     void releaseDevice(SDK::Driver::IDevice *aDevice);

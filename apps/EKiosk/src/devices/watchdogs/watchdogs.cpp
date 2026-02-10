@@ -38,10 +38,7 @@ void WatchDogs::setPort(const QString comName) {
 }
 
 bool WatchDogs::isOpened() {
-    if (serialPort->isOpen())
-        is_open = true;
-    else
-        is_open = false;
+    is_open = serialPort->isOpen();
 
     return is_open;
 }
@@ -184,7 +181,8 @@ bool WatchDogs::isItYou(QString &wdComent) {
     // открываем модем для записи
     if (this->openPort()) {
 
-        QByteArray cmdData, answerData;
+        QByteArray cmdData;
+        QByteArray answerData;
 
         WDProtocolCommands::Enum protocolCommand = WDProtocolCommands::GetID;
 
@@ -278,7 +276,8 @@ bool WatchDogs::sendCommandToExec(WDProtocolCommands::Enum aCommand) {
 
         if (this->openPort()) {
 
-            QByteArray cmdData, answerData;
+            QByteArray cmdData;
+            QByteArray answerData;
 
             // Отправляем команду
             respData = this->processCommand(aCommand, cmdData, answerData);

@@ -20,8 +20,8 @@
 #include "ServiceTags.h"
 
 NetworkServiceWindow::NetworkServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), ServiceWindowBase(aBackend), m_Backend(aBackend), m_DialupWindow(0),
-      m_UnmanagedWindow(0) {
+    : QWidget(aParent), ServiceWindowBase(aBackend), m_Backend(aBackend), m_DialupWindow(nullptr),
+      m_UnmanagedWindow(nullptr) {
     setupUi(this);
 
     m_TypeButtonGroup.addButton(rbDialupLink);
@@ -63,7 +63,7 @@ bool NetworkServiceWindow::initialize() {
     QVariantMap networkInfo;
     m_Backend->getNetworkManager()->getNetworkInfo(networkInfo);
 
-    EConnectionTypes::Enum type =
+    auto type =
         EConnectionTypes::Enum(networkInfo[CServiceTags::ConnectionType].toInt());
 
     // Инициализация окна с настройками модемного соединения

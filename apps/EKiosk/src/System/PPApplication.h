@@ -55,7 +55,7 @@ signals:
 
 private slots:
     void onScreenshot();
-    void exit(int aResultCode);
+    void exit(int aResultCode) const;
     void closeBySystem_Request(QSessionManager &aSessionManager);
 
 private:

@@ -12,15 +12,15 @@
 #include "ServiceTags.h"
 
 EncashmentHistoryWindow::EncashmentHistoryWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), m_Backend(aBackend) {
+    : QWidget(aParent), m_Backend(aBackend), m_SignalMapper(new QSignalMapper(this)) {
     setupUi(this);
 
-    m_SignalMapper = new QSignalMapper(this);
+    
     connect(m_SignalMapper, SIGNAL(mapped(int)), this, SLOT(printEncashment(int)));
 }
 
 //------------------------------------------------------------------------
-EncashmentHistoryWindow::~EncashmentHistoryWindow() {}
+EncashmentHistoryWindow::~EncashmentHistoryWindow() = default;
 
 //------------------------------------------------------------------------
 void EncashmentHistoryWindow::updateHistory() {
@@ -31,7 +31,7 @@ void EncashmentHistoryWindow::updateHistory() {
     }
     m_Widgets.clear();
 
-    auto paymentManager = m_Backend->getPaymentManager();
+    auto *paymentManager = m_Backend->getPaymentManager();
     int count = paymentManager->getEncashmentsHistoryCount();
 
     for (int i = 0; i < count; i++) {
@@ -42,7 +42,7 @@ void EncashmentHistoryWindow::updateHistory() {
                            .arg(encashment[CServiceTags::EncashmentDate].toString()) +
                        tr("#total") + ": " + encashment[CServiceTags::CashAmount].toString();
 
-        QPushButton *button = new QPushButton(text, this);
+        auto *button = new QPushButton(text, this);
         button->setMinimumHeight(35);
         button->setMaximumWidth(250);
         button->setEnabled(
@@ -61,7 +61,7 @@ void EncashmentHistoryWindow::updateHistory() {
 
 //------------------------------------------------------------------------
 void EncashmentHistoryWindow::printEncashment(int aIndex) {
-    auto paymentManager = m_Backend->getPaymentManager();
+    auto *paymentManager = m_Backend->getPaymentManager();
 
     paymentManager->printEncashment(aIndex);
 }

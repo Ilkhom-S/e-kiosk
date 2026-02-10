@@ -74,7 +74,7 @@ HardwareWindow::HardwareWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
         m_Types[type] = QCoreApplication::translate("Hardware::Types", type.toLatin1());
 
         if (lastType != type) {
-            QListWidgetItem *item = new QListWidgetItem(m_Types[type]);
+            auto *item = new QListWidgetItem(m_Types[type]);
             item->setTextAlignment(Qt::AlignCenter);
             ui.lwTypes->addItem(item);
         }
@@ -103,7 +103,7 @@ HardwareWindow::HardwareWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
 }
 
 //------------------------------------------------------------------------
-HardwareWindow::~HardwareWindow() {}
+HardwareWindow::~HardwareWindow() = default;
 
 //------------------------------------------------------------------------
 bool HardwareWindow::initialize() {
@@ -223,7 +223,7 @@ void HardwareWindow::onDeviceFound(const QString &aConfigName) {
     // Сначала проверим, может быть, у нас уже есть такая железка, просто мы подтвердили статус её
     // нахождения. Хорошо бы проверять доп. параметры на случай если у нас подключено несколько
     // железок одного типа и модели.
-    DeviceSlot *slot = 0;
+    DeviceSlot *slot = nullptr;
 
     foreach (const TDeviceSlotList::value_type &item, m_Slots) {
         if (item.data()->getType() == aConfigName.section(".", 2, 2)) {
@@ -254,7 +254,7 @@ void HardwareWindow::onDeviceFound(const QString &aConfigName) {
 void HardwareWindow::onShowAddSlotDialog() {
     ui.stackedWidget->setCurrentIndex(1);
 
-    ui.btnOk->setEnabled(ui.lwTypes->currentItem() != 0);
+    ui.btnOk->setEnabled(ui.lwTypes->currentItem() != nullptr);
 }
 
 //------------------------------------------------------------------------
@@ -264,7 +264,7 @@ void HardwareWindow::onTypeSelected() {
 
 //------------------------------------------------------------------------
 void HardwareWindow::onEdit() {
-    DeviceSlot *slot = qobject_cast<DeviceSlot *>(sender());
+    auto *slot = qobject_cast<DeviceSlot *>(sender());
     if (slot) {
         emit editSlot(slot, getEditor(slot));
     }
@@ -272,7 +272,7 @@ void HardwareWindow::onEdit() {
 
 //------------------------------------------------------------------------
 void HardwareWindow::onRemove() {
-    DeviceSlot *slot = qobject_cast<DeviceSlot *>(sender());
+    auto *slot = qobject_cast<DeviceSlot *>(sender());
     if (slot) {
         emit removeSlot(slot);
     }
@@ -356,7 +356,7 @@ SDK::Plugin::TParameterList HardwareWindow::getModelParameters(const QString &aT
         return m_Backend->getHardwareManager()->getDriverParameters((*it).driver);
     }
 
-    return SDK::Plugin::TParameterList();
+    return {};
 }
 
 //------------------------------------------------------------------------

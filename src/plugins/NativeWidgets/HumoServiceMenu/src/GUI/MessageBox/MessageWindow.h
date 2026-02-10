@@ -28,5 +28,5 @@ private:
     virtual void hideEvent(QHideEvent *aEvent) override;
 
 private:
-    Ui::MessageWindow ui;
+    Ui::MessageWindow ui{};
 };

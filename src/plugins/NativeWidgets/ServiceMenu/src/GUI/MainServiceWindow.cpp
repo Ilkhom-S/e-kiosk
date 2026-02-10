@@ -113,7 +113,7 @@ void MainServiceWindow::shutdown() {
     disconnect(
         twServiceScreens, SIGNAL(currentChanged(int)), this, SLOT(onCurrentPageChanged(int)));
 
-    IServiceWindow *current =
+    auto *current =
         dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
     if (current) {
         current->deactivate();
@@ -226,7 +226,7 @@ void MainServiceWindow::connectAllAbstractButtons(QWidget *aParentWidget) {
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onCurrentPageChanged(int aIndex) {
-    IServiceWindow *prev =
+    auto *prev =
         dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
 
     if (prev) {
@@ -240,7 +240,7 @@ void MainServiceWindow::onCurrentPageChanged(int aIndex) {
         }
     }
 
-    IServiceWindow *next = dynamic_cast<IServiceWindow *>(twServiceScreens->widget(aIndex));
+    auto *next = dynamic_cast<IServiceWindow *>(twServiceScreens->widget(aIndex));
 
     if (next) {
         next->activate();
@@ -256,7 +256,7 @@ void MainServiceWindow::onCurrentPageChanged(int aIndex) {
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onAbstractButtonClicked() {
-    QAbstractButton *button = qobject_cast<QAbstractButton *>(sender());
+    auto *button = qobject_cast<QAbstractButton *>(sender());
 
     // Кнопки цифровой клавиатуры не логируем
     if (wNumericPad->isAncestorOf(button)) {
@@ -265,7 +265,7 @@ void MainServiceWindow::onAbstractButtonClicked() {
 
     QString message(QString("Button clicked: %1").arg(button->text()));
 
-    QCheckBox *checkBox = qobject_cast<QCheckBox *>(sender());
+    auto *checkBox = qobject_cast<QCheckBox *>(sender());
     if (checkBox) {
         checkBox->isChecked() ? message += " (checked)" : message += " (unchecked)";
     }
@@ -289,7 +289,7 @@ void MainServiceWindow::onClearClicked() {
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onDigitClicked(QAbstractButton *aButton) {
-    QPushButton *button = qobject_cast<QPushButton *>(aButton);
+    auto *button = qobject_cast<QPushButton *>(aButton);
     if (button) {
         QString digit = button->text();
         lePassword->setText(lePassword->text() + digit);
@@ -370,7 +370,7 @@ bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
     }
 
     if (GUI::MessageBox::question(aMessage) != 0) {
-        IServiceWindow *window =
+        auto *window =
             dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
         if (window) {
             window->deactivate();

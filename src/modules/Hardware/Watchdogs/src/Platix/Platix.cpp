@@ -101,11 +101,7 @@ bool Platix::processCommand(char aCommand) {
     QByteArray answer;
 
     // TODO: чтение данных с контролем длины
-    if (!m_IOPort->read(answer) || !check(answer)) {
-        return false;
-    }
-
-    return true;
+    return m_IOPort->read(answer) && check(answer);
 }
 
 //----------------------------------------------------------------------------

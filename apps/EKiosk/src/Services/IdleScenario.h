@@ -26,7 +26,7 @@ public:
     enum Command { None, Autoencashment };
 
 public:
-    IdleScenario(IApplication *m_Application);
+    IdleScenario(IApplication *aApplication);
     virtual ~IdleScenario();
 
     /// Запуск сценария.

@@ -601,7 +601,7 @@ void UpdaterApp::delayedExit(int aTimeout, CUpdaterErrors::Enum aError) {
 
     setResultCode(aError);
 
-    getLog()->write((aError != 0u) ? LogLevel::Error : LogLevel::Normal,
+    getLog()->write((aError != 0U) ? LogLevel::Error : LogLevel::Normal,
                     QString("Closing after %1 seconds.").arg(aTimeout));
 
     if (m_ResultCode_ != 0) {

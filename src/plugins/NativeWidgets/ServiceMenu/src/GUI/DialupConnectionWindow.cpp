@@ -23,7 +23,7 @@ DialupConnectionWindow::DialupConnectionWindow(QWidget *aParent) : QWidget(aPare
 }
 
 //---------------------------------------------------------------------------
-DialupConnectionWindow::~DialupConnectionWindow() {}
+DialupConnectionWindow::~DialupConnectionWindow() = default;
 
 //---------------------------------------------------------------------------
 void DialupConnectionWindow::initialize() {
@@ -39,7 +39,7 @@ QString DialupConnectionWindow::getUserSelection() const {
 void DialupConnectionWindow::fillModem_List(const QList<QPair<QString, QString>> &aModems) {
     lwModems->clear();
     foreach (auto modem, aModems) {
-        QListWidgetItem *item = new QListWidgetItem();
+        auto *item = new QListWidgetItem();
         item->setData(Qt::DisplayRole, modem.first);
         item->setData(Qt::UserRole + 1, modem.second);
 
@@ -79,8 +79,8 @@ void DialupConnectionWindow::fillTemplateList(const QStringList &aTemplates) {
 
 //---------------------------------------------------------------------------
 void DialupConnectionWindow::onUpdated() {
-    btnTest->setEnabled(lwConnections->count() ? true : false);
-    btnRemove->setEnabled(lwConnections->count() ? true : false);
+    btnTest->setEnabled(lwConnections->count() != 0);
+    btnRemove->setEnabled(lwConnections->count() != 0);
     btnCreate->setEnabled(lwModems->count() && lwTemplates->count());
 }
 

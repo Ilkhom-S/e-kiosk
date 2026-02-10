@@ -13,11 +13,11 @@ DeviceStatusWindow::DeviceStatusWindow(ServiceMenuBackend *aBackend,
 }
 
 //------------------------------------------------------------------------------
-DeviceStatusWindow::~DeviceStatusWindow() {}
+DeviceStatusWindow::~DeviceStatusWindow() = default;
 
 //------------------------------------------------------------------------
 QWidget *DeviceStatusWindow::createWidget() {
-    QFrame *widget = new QFrame(dynamic_cast<QWidget *>(parent()));
+    auto *widget = new QFrame(dynamic_cast<QWidget *>(parent()));
 
     ui.setupUi(widget);
 

@@ -1,7 +1,9 @@
+/* @file Реализация главного окна приложения. */
 #include "mainwindow.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QSettings>
+#include <QtCore/QTimeZone>
 #include <QtGui/QCloseEvent>
 
 #include "ui_mainwindow.h"
@@ -374,7 +376,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
             SLOT(getBalanceUser(double, double, double)));
     connect(getServices, SIGNAL(emit_responseIsActive(bool)), this, SLOT(isActiveLock(bool)));
     connect(getServices,
-            SIGNAL(lockUnlockAvtorization(bool, int)),
+            SIGNAL(lockUnlockAuthorization(bool, int)),
             this,
             SLOT(avtorizationLockUnlock(bool, int)));
     connect(getServices, SIGNAL(emit_ErrResponse()), this, SLOT(getServicesError()));
@@ -470,7 +472,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
             SLOT(getBalanceUser(double, double, double)));
     connect(statusDaemons, SIGNAL(emit_responseIsActive(bool)), this, SLOT(isActiveLock(bool)));
     connect(statusDaemons,
-            SIGNAL(lockUnlockAvtorization(bool, int)),
+            SIGNAL(lockUnlockAuthorization(bool, int)),
             this,
             SLOT(avtorizationLockUnlock(bool, int)));
     connect(statusDaemons,
@@ -736,7 +738,7 @@ void MainWindow::connectionResult(bool result) {
         }
 
         // Проверим исчерпаны ли попытки отправки инкасации
-        if (collectDaemons->countAllRep >= collectDaemons->RealRepeet) {
+        if (collectDaemons->countAllRep >= collectDaemons->RealRepeat) {
             // Запустим таймер отправки инкасаций
             if (!collectDaemons->demonTimer->isActive()) {
                 collectDaemons->demonTimer->start(55000);
@@ -1364,7 +1366,7 @@ void MainWindow::createDialUpConnection(QVariantMap data) {
         adminDialog->showMsgDialog(title, text);
 
         // Вставляем список
-        getCommandFrom_Admin(AdminCommand::aCmdRasConnlist);
+        getCommandFrom_Admin(AdminCommand::aCmdRasConnectionList);
     }
 
     if (registrationForm && registrationForm->isVisible()) {
@@ -1525,11 +1527,11 @@ void MainWindow::openAdminDialog() {
 
     // Список инкасаций
     QStringList lstIncash;
-    lstIncash << adminDialog->titleDataIncashment;
+    lstIncash << adminDialog->titleDataEncashment;
     int countInc = 0;
     collectDaemons->getDataCollectList(lstIncash, countInc);
     data["encash_list"] = lstIncash;
-    adminDialog->setDataToAdmin(AdminCommand::aCmdListAllIncash, data);
+    adminDialog->setDataToAdmin(AdminCommand::aCmdListAllEncashment, data);
 
     // Показываем html инкасации
     // Вставляем информацию о состоянии бокса
@@ -1563,7 +1565,7 @@ void MainWindow::openAdminDialog() {
     data["trn_from"] = trnFrom;
     data["trn_to"] = trnTo;
 
-    adminDialog->setDataToAdmin(AdminCommand::aCmdHtmlIncash, data);
+    adminDialog->setDataToAdmin(AdminCommand::aCmdHtmlEncashment, data);
 
     /// Страница устройств
 
@@ -1641,7 +1643,7 @@ void MainWindow::openAdminDialog() {
     adminDialog->setDataToAdmin(AdminCommand::aCmdSim_InfoData, data);
 
     // Вставляем список соединений
-    getCommandFrom_Admin(AdminCommand::aCmdRasConnlist);
+    getCommandFrom_Admin(AdminCommand::aCmdRasConnectionList);
 
     // Интервал перезагрузки ПО при RAS ошибках
     data["ras_error_interval_reboot"] = config.timerRasReb;
@@ -1713,7 +1715,7 @@ void MainWindow::openAdminDialog() {
     data["login"] = config.terminalData.login;
     data["secret_login"] = config.terminalData.secretLogin;
 
-    adminDialog->setDataToAdmin(AdminCommand::aCmdAvtorizationTrm_P, data);
+    adminDialog->setDataToAdmin(AdminCommand::aCmdAuthorizationTrm_P, data);
 
     // Остальные настройки
     data["status_validator_jam_in_box"] = config.statusValidatorJam_InBox;
@@ -1737,9 +1739,9 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
     case AdminCommand::aCmdGetBalance: {
         getBalanceAgent->sendDataRequest();
     } break;
-    case AdminCommand::aCmdHtmlIncash: {
+    case AdminCommand::aCmdHtmlEncashment: {
         QString dateCollect = "";
-        if (adminDialog->dateCollectParam != adminDialog->titleDataIncashment) {
+        if (adminDialog->dateCollectParam != adminDialog->titleDataEncashment) {
             dateCollect = adminDialog->dateCollectParam;
         }
 
@@ -1757,7 +1759,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
         // Делаем небольшой html
         QString header =
             QString("<ul>"
-                    "<li>Не инкасированных платежей - " +
+                    "<li>Не инкассированных платежей - " +
                     nonCollectPay +
                     "</li>"
                     "<li>Количество купюр мимо      - " +
@@ -1774,9 +1776,9 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
         data["trn_from"] = trnFrom;
         data["trn_to"] = trnTo;
 
-        adminDialog->setDataToAdmin(AdminCommand::aCmdHtmlIncash, data);
+        adminDialog->setDataToAdmin(AdminCommand::aCmdHtmlEncashment, data);
     } break;
-    case AdminCommand::aCmdExecIncashmant: {
+    case AdminCommand::aCmdExecEncashment: {
         int page = ui->mainStacker->currentIndex();
 
         if (page == Page::LoadingMain) {
@@ -1794,7 +1796,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
             msgBox.exec();
         }
     } break;
-    case AdminCommand::aCmdExecDateIncash: {
+    case AdminCommand::aCmdExecDateEncashment: {
         auto dateCollect = adminDialog->dateCollectParam;
         // Делаем инкассацию
         QString text = "";
@@ -1857,7 +1859,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
 
         if (prtStatus != 0) {
             auto data = QVariantMap({{"message", printerStatus.at(prtStatus)}});
-            adminDialog->setDataToAdmin(AdminCommand::aCmdInfrmationPanel, data);
+            adminDialog->setDataToAdmin(AdminCommand::aCmdInformationPanel, data);
             toLog(LoggerLevel::Error, "PRINTER", QString("Статус (%1)").arg(vrmLst.at(0)));
             return;
         }
@@ -1871,7 +1873,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
             clsPrinter->winPrinterName = adminDialog->printerComment;
             clsPrinter->CMD_Print(text);
             auto data = QVariantMap({{"message", "Идет печать пробного чека..."}});
-            adminDialog->setDataToAdmin(AdminCommand::aCmdInfrmationPanel, data);
+            adminDialog->setDataToAdmin(AdminCommand::aCmdInformationPanel, data);
         }
     } break;
     case AdminCommand::aCmdRestartValidator: {
@@ -1896,7 +1898,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
 #endif // Q_OS_WIN32
         }
     } break;
-    case AdminCommand::aCmdShutDounASO: {
+    case AdminCommand::aCmdShutDownASO: {
         if (!ConnectionPart::restartWindows(false)) {
 #ifdef Q_OS_WIN32
             proc.startDetached("c:/windows/system32/cmd.exe",
@@ -1914,7 +1916,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
         settingsGet();
 
         auto msg = QVariantMap({{"message", "Изменения успешно сохранены..."}});
-        adminDialog->setDataToAdmin(AdminCommand::aCmdInfrmationPanel, msg);
+        adminDialog->setDataToAdmin(AdminCommand::aCmdInformationPanel, msg);
     } break;
     case AdminCommand::aCmdSaveDeviceParam_R: {
         auto data = adminDialog->settings;
@@ -1951,7 +1953,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
 
         auto msg = QVariantMap({{"message", "Изменения успешно сохранены..."}});
 
-        adminDialog->setDataToAdmin(AdminCommand::aCmdInfrmationPanel, msg);
+        adminDialog->setDataToAdmin(AdminCommand::aCmdInformationPanel, msg);
 
         // Тут делаем перезагрузку программы
         QVariantMap d;
@@ -1966,7 +1968,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
     case AdminCommand::aCmdRasConnCreate: {
         createDialUpConnection(adminDialog->data);
     } break;
-    case AdminCommand::aCmdRasConnlist: {
+    case AdminCommand::aCmdRasConnectionList: {
         // Вставляем список соединений
         QVariantMap data;
 
@@ -1981,7 +1983,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
         data["connection_list"] = connectionList;
         data["vpn_point"] = config.vpnName;
 
-        adminDialog->setDataToAdmin(AdminCommand::aCmdRasConnlist, data);
+        adminDialog->setDataToAdmin(AdminCommand::aCmdRasConnectionList, data);
     } break;
     case AdminCommand::aCmdGetActiveDialup: {
         // Вытаскиваем активное рас соединение
@@ -2188,7 +2190,7 @@ void MainWindow::getCommandFrom_Admin(AdminCommand::AdminCmd cmd) {
             adminDialog->authButtonSet(true);
         }
     } break;
-    case AdminCommand::aCmdSaveUserAvtoriza: {
+    case AdminCommand::aCmdSaveUserAuthorization: {
         auto data = adminDialog->settings;
 
         auto secretLogin = data.value("secret_login").toString();
@@ -2284,7 +2286,7 @@ void MainWindow::nominalDuplicateGet(int nominal) {
 
     mainPage->loadMainPage();
 
-    lockUnlockCenter(Lock::ErrorDublicateNominal, true);
+    lockUnlockCenter(Lock::ErrorDuplicateNominal, true);
 
     saveLockDuplicateNominal(true);
 }
@@ -2320,7 +2322,7 @@ void MainWindow::coinDuplicateGet(int coin) {
 
     mainPage->loadMainPage();
 
-    lockUnlockCenter(Lock::ErrorDublicateNominal, true);
+    lockUnlockCenter(Lock::ErrorDuplicateNominal, true);
 
     saveLockDuplicateNominal(true);
 }
@@ -2344,7 +2346,13 @@ void MainWindow::incameStatusFrom_Validator(int sts, QString comment) {
 
             auto dt = QDateTime::currentDateTime();
             int offset = dt.offsetFromUtc();
+            // Обрабатываем смещение времени: в Qt 6.9 setOffsetFromUtc устарел, используем
+            // setTimeZone.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+            dt.setTimeZone(QTimeZone::fromSecondsAheadOfUtc(offset));
+#else
             dt.setOffsetFromUtc(offset);
+#endif
 
             if (saveBillValidatorEvent("CASHBOX-OPENED", dt.toString(Qt::ISODateWithMs))) {
                 bValidatorEventCheck();
@@ -2423,7 +2431,7 @@ bool MainWindow::saveLockDuplicateNominal(bool lock) {
 
     config.lockDuplicateNominal = lock;
 
-    lockUnlockCenter(Lock::ErrorDublicateNominal, lock);
+    lockUnlockCenter(Lock::ErrorDuplicateNominal, lock);
 
     return true;
 }
@@ -2601,7 +2609,7 @@ void MainWindow::deviceSearchFinished() {
 
     // Блокируем терминал из за дубликата купюры
     if (config.lockDuplicateNominal) {
-        lockUnlockCenter(Lock::ErrorDublicateNominal, true);
+        lockUnlockCenter(Lock::ErrorDuplicateNominal, true);
     }
 }
 
@@ -3201,7 +3209,7 @@ void MainWindow::cmdWatchdogDone(bool state, int aCommand) {
 
         if (adminDialog->isVisible()) {
             auto data = QVariantMap({{"message", stateNote}});
-            adminDialog->setDataToAdmin(AdminCommand::aCmdInfrmationPanel, data);
+            adminDialog->setDataToAdmin(AdminCommand::aCmdInformationPanel, data);
         }
     }
 }
@@ -3237,8 +3245,8 @@ void MainWindow::setLockList() {
     lockList[Lock::Status_12].lock = false;
     lockList[Lock::Status_12].comment = "Заблокирован по статусу агент неактивен";
 
-    lockList[Lock::ErrorAvtorizat].lock = false;
-    lockList[Lock::ErrorAvtorizat].comment = "Заблокирован из за ошибки авторизации";
+    lockList[Lock::ErrorAuthorization].lock = false;
+    lockList[Lock::ErrorAuthorization].comment = "Заблокирован из за ошибки авторизации";
 
     lockList[Lock::ErrorTypeTrm].lock = false;
     lockList[Lock::ErrorTypeTrm].comment = "Заблокирован по статусу неверный тип терминала";
@@ -3252,8 +3260,8 @@ void MainWindow::setLockList() {
     lockList[Lock::ErrorOpenAdminP].lock = false;
     lockList[Lock::ErrorOpenAdminP].comment = "Заблокирован по причине открыта админка";
 
-    lockList[Lock::ErrorDublicateNominal].lock = false;
-    lockList[Lock::ErrorDublicateNominal].comment = "Заблокирован из за дубликата купюры";
+    lockList[Lock::ErrorDuplicateNominal].lock = false;
+    lockList[Lock::ErrorDuplicateNominal].comment = "Заблокирован из за дубликата купюры";
 
     lockList[Lock::ErrorDatabase].lock = false;
     lockList[Lock::ErrorDatabase].comment = "Заблокирован из за ошибки базы данных";
@@ -3619,16 +3627,18 @@ void MainWindow::avtorizationLockUnlock(bool lock, int sts) {
             lockType = Lock::ErrorTypeUser;
             break;
         case 150:
-            lockType = Lock::ErrorAvtorizat;
+            lockType = Lock::ErrorAuthorization;
             break;
         case 151:
-            lockType = Lock::ErrorAvtorizat;
+            lockType = Lock::ErrorAuthorization;
             break;
         case 245:
             lockType = Lock::ErrorTypeTrm;
             break;
         case 133:
             lockType = Lock::ErrorNoRoulPay;
+            break;
+        default:
             break;
         }
 
@@ -3640,7 +3650,7 @@ void MainWindow::avtorizationLockUnlock(bool lock, int sts) {
         lockUnlockCenter(Lock::Status_11, false);
         lockUnlockCenter(Lock::Status_12, false);
         lockUnlockCenter(Lock::ErrorTypeUser, false);
-        lockUnlockCenter(Lock::ErrorAvtorizat, false);
+        lockUnlockCenter(Lock::ErrorAuthorization, false);
         lockUnlockCenter(Lock::ErrorTypeTrm, false);
         lockUnlockCenter(Lock::ErrorNoRoulPay, false);
     }

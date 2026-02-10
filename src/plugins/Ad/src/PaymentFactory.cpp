@@ -107,7 +107,7 @@ PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider
 
         return provider;
     }
-    return PPSDK::SProvider();
+    return {};
 }
 
 //------------------------------------------------------------------------------

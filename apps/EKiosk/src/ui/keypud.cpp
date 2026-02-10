@@ -5,13 +5,13 @@
 
 #include "ui_keypud.h"
 
-keyPud::keyPud(QWidget *parent) : QWidget(parent), ui(new Ui::keyPud) {
+keyPud::keyPud(QWidget *parent) : QWidget(parent), ui(new Ui::keyPud), double_on(false), shiftKEY(false) {
     ui->setupUi(this);
 
     // QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
-    shiftKEY = false;
-    double_on = false;
+    
+    
 
     signalMapper.setMapping(ui->KEY_1, ui->KEY_1);
     signalMapper.setMapping(ui->KEY_2, ui->KEY_2);
@@ -410,8 +410,9 @@ void keyPud::fordouble(QString lang) {
 void keyPud::shiftClicked() {
 
     // для ГАИ? отключаем шифт
-    if (double_on)
+    if (double_on) {
         return;
+}
 
     if (!shiftKEY) {
         ui->KEY_1->setText(BcharMap["KEY_1"]);
@@ -504,10 +505,7 @@ void keyPud::shiftClicked() {
         ui->KEY_SLASH->setText(ScharMap["KEY_SLASH"]);
     }
 
-    if (shiftKEY)
-        shiftKEY = false;
-    else
-        shiftKEY = true;
+    shiftKEY = !shiftKEY;
 }
 
 void keyPud::buttonClicked(QWidget *w) {
@@ -517,8 +515,9 @@ void keyPud::buttonClicked(QWidget *w) {
 
     QString RU_change = "";
 
-    if (gblLang == "RU")
+    if (gblLang == "RU") {
         RU_change = "RU_";
+}
 
     if (shiftKEY) {
         QString str = BcharMap[on];

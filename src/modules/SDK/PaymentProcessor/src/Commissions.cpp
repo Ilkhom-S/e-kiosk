@@ -285,7 +285,7 @@ TCommissions CommissionByTimeList::getCommissions() const {
     if ((currentTime >= m_Begin) && (currentTime <= m_End)) {
         return m_Commissions.getCommissions();
     }
-    return TCommissions();
+    return {};
 }
 
 //----------------------------------------------------------------------------

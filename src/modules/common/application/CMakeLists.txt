@@ -10,7 +10,7 @@ ek_add_library(BasicApplication
     FOLDER "modules/Common"
     SOURCES src/BasicApplication.cpp ${CMAKE_SOURCE_DIR}/include/Common/SafeApplication.h
     QT_MODULES Core Network Widgets
-    DEPENDS ek_common Log DebugUtils SysUtils EK::SingleApplication
+    DEPENDS ek_common EK::SingleApplication Log DebugUtils SysUtils
 )
 
 # Add template implementation file for IDE visibility

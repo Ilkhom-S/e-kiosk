@@ -49,7 +49,7 @@ RequestSender::RequestSender(NetworkTaskManager *aNetwork, ICryptEngine *aCryptE
 }
 
 //---------------------------------------------------------------------------
-RequestSender::~RequestSender() {}
+RequestSender::~RequestSender() = default;
 
 //---------------------------------------------------------------------------
 void RequestSender::setNetworkTaskManager(NetworkTaskManager *aNetwork) {
@@ -106,7 +106,7 @@ Response *RequestSender::request(NetworkTask::Type aType,
     if (aUrl.scheme().toLower() == "http" && m_OnlySecureConnection) {
         aError = HttpIsNotSupported;
 
-        return 0;
+        return nullptr;
     }
 
     aError = Ok;
@@ -114,7 +114,7 @@ Response *RequestSender::request(NetworkTask::Type aType,
     if (m_Network.isNull()) {
         aError = NoNetworkInterfaceSpecified;
 
-        return 0;
+        return nullptr;
     }
 
     // Подставляем серийный номер пары ключа в каждый запрос.
@@ -123,7 +123,7 @@ Response *RequestSender::request(NetworkTask::Type aType,
     if (keyPairSerial.isEmpty()) {
         aError = ClientCryptError;
 
-        return 0;
+        return nullptr;
     }
 
     if (aSignatureType == Solid) {
@@ -145,14 +145,14 @@ Response *RequestSender::request(NetworkTask::Type aType,
     if (!m_RequestEncoder(aRequest.toString(), std::ref(encodedRequest))) {
         aError = EncodeError;
 
-        return 0;
+        return nullptr;
     }
 
     if (!m_RequestSigner(
             encodedRequest, std::ref(signedRequest), aSignatureType, std::ref(detachedSignature))) {
         aError = ClientCryptError;
 
-        return 0;
+        return nullptr;
     }
 
     if (aSignatureType == Solid) {
@@ -168,13 +168,13 @@ Response *RequestSender::request(NetworkTask::Type aType,
     } else {
         aError = UnknownSignatureType;
 
-        return 0;
+        return nullptr;
     }
 
     if (!m_RequestModifier(aRequest, std::ref(task->getRequestHeader()), std::ref(signedRequest))) {
         aError = RequestModifyError;
 
-        return 0;
+        return nullptr;
     }
 
     task->getDataStream()->write(signedRequest);
@@ -186,7 +186,7 @@ Response *RequestSender::request(NetworkTask::Type aType,
     if (task->getError() != NetworkTask::NoError) {
         aError = NetworkError;
 
-        return 0;
+        return nullptr;
     }
 
     QByteArray signedResponseData = task->getDataStream()->takeAll();
@@ -210,13 +210,13 @@ Response *RequestSender::request(NetworkTask::Type aType,
             signedResponseData, std::ref(encodedResponseData), aSignatureType, responseSignature)) {
         aError = ServerCryptError;
 
-        return 0;
+        return nullptr;
     }
 
     if (!m_ResponseDecoder(encodedResponseData, std::ref(responseData))) {
         aError = DecodeError;
 
-        return 0;
+        return nullptr;
     }
 
     return m_ResponseCreator(aRequest, responseData);
@@ -250,7 +250,7 @@ bool RequestSender::defaultRequestEncoder(const QString &aRequest, QByteArray &a
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QStringEncoder encoder(QStringConverter::System, QStringConverter::Flag::Default);
     aEncodedRequest = encoder.encode(aRequest);
-    return encoder.hasError() == false;
+    return !encoder.hasError();
 #else
     QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
     if (!codec) {
@@ -267,7 +267,7 @@ bool RequestSender::defaultResponseDecoder(const QByteArray &aResponse, QString 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QStringDecoder decoder(QStringConverter::System, QStringConverter::Flag::Default);
     aDecodedResponse = decoder.decode(aResponse);
-    return decoder.hasError() == false;
+    return !decoder.hasError();
 #else
     QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
     if (!codec) {

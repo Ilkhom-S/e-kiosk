@@ -46,10 +46,10 @@ const QString DefaultScenario = "menu";
 //---------------------------------------------------------------------------
 GUIService *GUIService::instance(IApplication *aApplication) {
     try {
-        auto core = aApplication->getCore();
+        auto *core = aApplication->getCore();
 
-        if (core->getService(CServices::GUIService)) {
-            return static_cast<GUIService *>(core->getGUIService());
+        if (core->getService(CServices::GUIService) != nullptr) {
+            return dynamic_cast<GUIService *>(core->getGUIService());
         }
     } catch (PPSDK::ServiceIsNotImplemented) {
         return nullptr;
@@ -65,7 +65,7 @@ GUIService::GUIService(IApplication *aApplication)
       m_Height(0) {}
 
 //---------------------------------------------------------------------------
-GUIService::~GUIService() {}
+GUIService::~GUIService() = default;
 
 //---------------------------------------------------------------------------
 bool GUIService::initialize() {
@@ -260,11 +260,11 @@ const QSet<QString> &GUIService::getRequiredServices() const {
 
 //---------------------------------------------------------------------------
 QVariantMap GUIService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
-void GUIService::resetParameters(const QSet<QString> &) {}
+void GUIService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 QStringList GUIService::getInterfacesName() const {
@@ -320,7 +320,7 @@ void GUIService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
     case PPSDK::EEventType::StartScenario: {
         // Запуск сценария. Передаем параметрами имя сценария и контекст активации (параметры
         // сценария).
-        QVariantMap eventData = aEvent.getData().value<QVariantMap>();
+        auto eventData = aEvent.getData().value<QVariantMap>();
 
         if (eventData.contains("name")) {
             QString scenarioName = eventData["name"].toString();
@@ -476,7 +476,8 @@ void GUIService::reset() {
 
 //---------------------------------------------------------------------------
 QRect GUIService::getScreenSize(int aIndex) const {
-    return aIndex ? m_GraphicsEngine.getDisplayRectangle(aIndex) : QRect(0, 0, m_Width, m_Height);
+    return (aIndex != 0) ? m_GraphicsEngine.getDisplayRectangle(aIndex)
+                         : QRect(0, 0, m_Width, m_Height);
 }
 
 //---------------------------------------------------------------------------
@@ -505,8 +506,8 @@ void GUIService::loadAdSources() {
         QRegularExpression("PaymentProcessor\\.AdSource\\..*"));
 
     foreach (const QString &source, adSources) {
-        auto plugin = m_PluginService->getPluginLoader()->createPlugin(source);
-        auto adSource = dynamic_cast<SDK::GUI::IAdSource *>(plugin);
+        auto *plugin = m_PluginService->getPluginLoader()->createPlugin(source);
+        auto *adSource = dynamic_cast<SDK::GUI::IAdSource *>(plugin);
 
         if (adSource) {
             m_AdSourceList << adSource;
@@ -522,8 +523,8 @@ void GUIService::loadNativeScenarios() {
         QRegularExpression("PaymentProcessor\\.ScenarioFactory\\..*"));
 
     foreach (const QString &scenario, scenarios) {
-        auto plugin = m_PluginService->getPluginLoader()->createPlugin(scenario);
-        auto factory = dynamic_cast<SDK::Plugin::IFactory<GUI::Scenario> *>(plugin);
+        auto *plugin = m_PluginService->getPluginLoader()->createPlugin(scenario);
+        auto *factory = dynamic_cast<SDK::Plugin::IFactory<GUI::Scenario> *>(plugin);
 
         if (factory) {
             // Создаем сценарии.
@@ -549,8 +550,7 @@ void GUIService::loadBackends() {
     foreach (const QString &backend, backends) {
         SDK::Plugin::IPlugin *plugin = m_PluginService->getPluginLoader()->createPlugin(backend);
 
-        SDK::GUI::IGraphicsBackend *backendObject =
-            dynamic_cast<SDK::GUI::IGraphicsBackend *>(plugin);
+        auto *backendObject = dynamic_cast<SDK::GUI::IGraphicsBackend *>(plugin);
         if (backendObject) {
             backendObject->initialize(&m_GraphicsEngine);
             m_GraphicsEngine.addBackend(backendObject);
@@ -571,8 +571,8 @@ void GUIService::loadScriptObjects() {
         QRegularExpression("PaymentProcessor\\.ScriptFactory\\..*"));
 
     foreach (const QString &scriptPluginName, scriptObjects) {
-        auto plugin = m_PluginService->getPluginLoader()->createPlugin(scriptPluginName);
-        auto factory =
+        auto *plugin = m_PluginService->getPluginLoader()->createPlugin(scriptPluginName);
+        auto *factory =
             dynamic_cast<SDK::Plugin::IFactory<PPSDK::Scripting::IBackendScenarioObject> *>(plugin);
 
         if (factory) {
@@ -600,7 +600,7 @@ void GUIService::loadScriptObjects() {
 
 //---------------------------------------------------------------------------
 SDK::GUI::IAdSource *GUIService::getAdSource() const {
-    return m_AdSourceList.count() ? m_AdSourceList.first() : nullptr;
+    return (m_AdSourceList.count() != 0) ? m_AdSourceList.first() : nullptr;
 }
 
 //------------------------------------------------------------------------

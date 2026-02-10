@@ -87,7 +87,7 @@ private:
 
     static void msleep(int ms) { QThread::msleep(ms); }
     virtual void run();
-    bool getDeviseInBase(int id_device, QString &name_device, QString &port);
+    bool getDeviseInBase(int idDevice, QString &nameDevice, QString &port);
     bool setDeviseInBase(int idDevice,
                          const QString &nameDevice,
                          const QString &port,

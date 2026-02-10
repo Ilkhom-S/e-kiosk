@@ -16,7 +16,7 @@
 #include "SetupServiceWindow.h"
 
 MainHumoServiceMenuWindow::MainHumoServiceMenuWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), m_Backend(aBackend), m_CurrentPageIndex(0) {
+    : QWidget(aParent), m_Backend(aBackend), digitGroup(new QButtonGroup(this)), m_CurrentPageIndex(0) {
     setupUi(this);
 
     // Setup timers
@@ -63,7 +63,7 @@ MainHumoServiceMenuWindow::MainHumoServiceMenuWindow(HumoServiceBackend *aBacken
     connect(btnClear, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onClearClicked);
 
     // Connect digit buttons
-    digitGroup = new QButtonGroup(this);
+    
     digitGroup->addButton(btnDigit0, 0);
     digitGroup->addButton(btnDigit1, 1);
     digitGroup->addButton(btnDigit2, 2);
@@ -194,7 +194,7 @@ void MainHumoServiceMenuWindow::onClearClicked() {
 
 //--------------------------------------------------------------------------
 void MainHumoServiceMenuWindow::onDigitClicked(QAbstractButton *aButton) {
-    QPushButton *button = qobject_cast<QPushButton *>(aButton);
+    auto *button = qobject_cast<QPushButton *>(aButton);
     if (button) {
         QString digit = button->text();
         lePassword->setText(lePassword->text() + digit);
@@ -229,7 +229,7 @@ void MainHumoServiceMenuWindow::applyConfiguration() {
     if (rights.contains(HumoServiceBackend::SetupHardware) ||
         rights.contains(HumoServiceBackend::SetupNetwork) ||
         rights.contains(HumoServiceBackend::SetupKeys) || !m_Backend->hasAnyPassword()) {
-        SetupServiceWindow *setupWindow = new SetupServiceWindow(m_Backend, this);
+        auto *setupWindow = new SetupServiceWindow(m_Backend, this);
         setupWindow->initialize();
         twServiceScreens->addTab(setupWindow, tr("#setup"));
         m_ServiceWindowList.append(setupWindow);
@@ -237,7 +237,7 @@ void MainHumoServiceMenuWindow::applyConfiguration() {
 
     // Diagnostics tab
     if (rights.contains(HumoServiceBackend::Diagnostic) || !m_Backend->hasAnyPassword()) {
-        DiagnosticsServiceWindow *diagnosticsWindow = new DiagnosticsServiceWindow(m_Backend, this);
+        auto *diagnosticsWindow = new DiagnosticsServiceWindow(m_Backend, this);
         diagnosticsWindow->initialize();
         twServiceScreens->addTab(diagnosticsWindow, tr("#diagnostics"));
         m_ServiceWindowList.append(diagnosticsWindow);
@@ -245,7 +245,7 @@ void MainHumoServiceMenuWindow::applyConfiguration() {
 
     // Payments tab
     if (rights.contains(HumoServiceBackend::ViewPayments) || !m_Backend->hasAnyPassword()) {
-        PaymentServiceWindow *paymentWindow = new PaymentServiceWindow(m_Backend, this);
+        auto *paymentWindow = new PaymentServiceWindow(m_Backend, this);
         paymentWindow->initialize();
         twServiceScreens->addTab(paymentWindow, tr("#payments"));
         m_ServiceWindowList.append(paymentWindow);
@@ -253,7 +253,7 @@ void MainHumoServiceMenuWindow::applyConfiguration() {
 
     // Logs tab
     if (rights.contains(HumoServiceBackend::ViewLogs) || !m_Backend->hasAnyPassword()) {
-        LogsServiceWindow *logsWindow = new LogsServiceWindow(m_Backend, this);
+        auto *logsWindow = new LogsServiceWindow(m_Backend, this);
         logsWindow->initialize();
         twServiceScreens->addTab(logsWindow, tr("#logs"));
         m_ServiceWindowList.append(logsWindow);
@@ -261,7 +261,7 @@ void MainHumoServiceMenuWindow::applyConfiguration() {
 
     // Encashment tab
     if (rights.contains(HumoServiceBackend::Encash) || !m_Backend->hasAnyPassword()) {
-        EncashmentServiceWindow *encashmentWindow = new EncashmentServiceWindow(m_Backend, this);
+        auto *encashmentWindow = new EncashmentServiceWindow(m_Backend, this);
         encashmentWindow->initialize();
         twServiceScreens->addTab(encashmentWindow, tr("#encashment"));
         m_ServiceWindowList.append(encashmentWindow);
@@ -289,13 +289,14 @@ void MainHumoServiceMenuWindow::closeMenu(bool aStartIdle) {
 
 //--------------------------------------------------------------------------
 void MainHumoServiceMenuWindow::onAbstractButtonClicked() {
-    QAbstractButton *button = qobject_cast<QAbstractButton *>(sender());
-    if (!button)
+    auto *button = qobject_cast<QAbstractButton *>(sender());
+    if (!button) {
         return;
+}
 
     QString message(QString("Button clicked: %1").arg(button->text()));
 
-    QCheckBox *checkBox = qobject_cast<QCheckBox *>(sender());
+    auto *checkBox = qobject_cast<QCheckBox *>(sender());
     if (checkBox) {
         checkBox->isChecked() ? message += " (checked)" : message += " (unchecked)";
     }

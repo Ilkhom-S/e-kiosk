@@ -15,23 +15,23 @@ GetServices::GetServices(QObject *parent) : SendRequest(parent) {
 //    emit emit_getServices(true);
 //}
 
-void GetServices::setDataNote(const QDomNode &dom_Element) {
+void GetServices::setDataNote(const QDomNode &domElement) {
     this->getReqStatus = true;
 
     bool fullParsing = true;
 
     banners.clear();
 
-    if (!getProviderCount()) {
+    if (getProviderCount() == 0) {
         fullParsing = true;
     } else {
         // Парсим хеш
-        this->parcerHash(dom_Element);
+        this->parcerHash(domElement);
 
         // Сравниваем хешы
-        QString db_hash = getHashConfig();
+        QString dbHash = getHashConfig();
 
-        if (db_hash == infoMap["hash"]) {
+        if (dbHash == infoMap["hash"]) {
             // Берем данные Extra из БД
             fullParsing = false;
             getTerminalExtra(infoMap);
@@ -52,7 +52,7 @@ void GetServices::setDataNote(const QDomNode &dom_Element) {
                 servicesInputs.clear();
 
                 // Парсим данные
-                this->parcerNote(dom_Element);
+                this->parseNode(domElement);
 
                 if (!getReqStatus) {
                     return;
@@ -102,109 +102,109 @@ void GetServices::setDataNote(const QDomNode &dom_Element) {
     }
 }
 
-void GetServices::parcerHash(const QDomNode &dom_Element) {
-    QDomNode dom_Node = dom_Element.firstChild();
+void GetServices::parcerHash(const QDomNode &domElement) {
+    QDomNode domNode = domElement.firstChild();
 
-    while (!dom_Node.isNull()) {
-        if (dom_Node.isElement()) {
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
 
-            QDomElement dom_Element = dom_Node.toElement();
-            QString strTag = dom_Element.tagName();
+            QDomElement domElement = domNode.toElement();
+            QString strTag = domElement.tagName();
 
             // проверяем респонс
             if (strTag == "resultCode") {
-                QString sts = dom_Element.text();
+                QString sts = domElement.text();
                 if (sts == "150" || sts == "151" || sts == "245" || sts == "11" || sts == "12" ||
                     sts == "133" || sts == "14") {
-                    emit this->lockUnlockAvtorization(true, sts.toInt());
+                    emit this->lockUnlockAuthorization(true, sts.toInt());
                     getReqStatus = false;
                     return;
                 }
 
                 if (sts == "0") {
-                    emit this->lockUnlockAvtorization(false, 0);
+                    emit this->lockUnlockAuthorization(false, 0);
                 }
             }
 
             // Данные о дилере
             if (strTag == "balance") {
-                infoMap["balance"] = dom_Element.text();
+                infoMap["balance"] = domElement.text();
                 toLogData += QString("- Баланс агента              - %1\n")
                                  .arg(infoMap["balance"].toString());
             }
 
             if (strTag == "overdraft") {
-                infoMap["overdraft"] = dom_Element.text();
+                infoMap["overdraft"] = domElement.text();
                 toLogData += QString("- Овердрафт агента           - %1  \n")
                                  .arg(infoMap["overdraft"].toString());
             }
 
             if (strTag == "threshold") {
-                infoMap["threshold"] = dom_Element.text();
+                infoMap["threshold"] = domElement.text();
                 toLogData += QString("- Порог отключения           - %1  \n")
                                  .arg(infoMap["threshold"].toString());
             }
 
             if (strTag == "hash") {
-                infoMap["hash"] = dom_Element.text();
+                infoMap["hash"] = domElement.text();
                 toLogData +=
                     QString("- Идентификатор конфигурации - %1 \n").arg(infoMap["hash"].toString());
             }
 
             if (strTag == "active") {
-                infoMap["active"] = dom_Element.text();
+                infoMap["active"] = domElement.text();
                 toLogData += QString("- Активность терминала       - %1  \n")
                                  .arg(infoMap["active"].toString());
             }
 
             if (strTag == "cur") {
-                int id = dom_Element.attribute("id", "").toInt();
-                this->curMap[id] = dom_Element.text();
+                int id = domElement.attribute("id", "").toInt();
+                this->curMap[id] = domElement.text();
             }
 
             if (strTag == "server_time") {
-                infoMap["server_time"] = dom_Element.text();
+                infoMap["server_time"] = domElement.text();
             }
 
             if (strTag == "coin_acceptor") {
-                if (dom_Element.parentNode().toElement().tagName() == "devices") {
-                    infoMap["coin_acceptor"] = dom_Element.text();
+                if (domElement.parentNode().toElement().tagName() == "devices") {
+                    infoMap["coin_acceptor"] = domElement.text();
                 }
             }
 
             if (strTag == "banner") {
                 QVariantMap banner;
-                banner["id"] = dom_Element.attribute("id").toInt();
-                banner["delay"] = dom_Element.attribute("delay").toInt();
-                banner["go_to"] = dom_Element.attribute("go_to").toInt();
-                banner["action"] = dom_Element.attribute("action");
+                banner["id"] = domElement.attribute("id").toInt();
+                banner["delay"] = domElement.attribute("delay").toInt();
+                banner["go_to"] = domElement.attribute("go_to").toInt();
+                banner["action"] = domElement.attribute("action");
 
                 banners.append(banner);
             }
         }
-        parcerHash(dom_Node);
-        dom_Node = dom_Node.nextSibling();
+        parcerHash(domNode);
+        domNode = domNode.nextSibling();
     }
 }
 
-void GetServices::parcerNote(const QDomNode &dom_Element) {
-    QDomNode dom_Node = dom_Element.firstChild();
+void GetServices::parseNode(const QDomNode &domElement) {
+    QDomNode domNode = domElement.firstChild();
 
-    while (!dom_Node.isNull()) {
-        if (dom_Node.isElement()) {
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
 
-            QDomElement dom_Element = dom_Node.toElement();
-            QString strTag = dom_Element.tagName();
+            QDomElement domElement = domNode.toElement();
+            QString strTag = domElement.tagName();
 
-            // if(Debugger) qDebug() << strTag + " " + dom_Element.text();
+            // if(Debugger) qDebug() << strTag + " " + domElement.text();
 
             // проверям респонс
             if (strTag == "resultCode") {
-                QString sts = dom_Element.text();
+                QString sts = domElement.text();
 
                 if (sts == "150" || sts == "151" || sts == "245" || sts == "11" || sts == "12" ||
                     sts == "133" || sts == "14") {
-                    emit this->lockUnlockAvtorization(true, sts.toInt());
+                    emit this->lockUnlockAuthorization(true, sts.toInt());
                     getReqStatus = false;
                     // Говорим что конфигурация не загруженна
                     emit this->emit_getServices(false);
@@ -212,67 +212,67 @@ void GetServices::parcerNote(const QDomNode &dom_Element) {
                 }
 
                 if (sts == "0") {
-                    emit this->lockUnlockAvtorization(false, 0);
+                    emit this->lockUnlockAuthorization(false, 0);
                 }
             }
 
             // Узнаем сколько провайдеров
             if (strTag == "providers") {
-                count_providers = dom_Node.childNodes().count();
+                count_providers = domNode.childNodes().count();
             }
 
             // Данные о дилере
             if (strTag == "balance") {
-                infoMap["balance"] = dom_Element.text();
+                infoMap["balance"] = domElement.text();
                 toLogData += QString("- Баланс агента              - %1\n")
                                  .arg(infoMap["balance"].toString());
             }
 
             if (strTag == "overdraft") {
-                infoMap["overdraft"] = dom_Element.text();
+                infoMap["overdraft"] = domElement.text();
                 toLogData += QString("- Овердрафт агента           - %1  \n")
                                  .arg(infoMap["overdraft"].toString());
             }
 
             if (strTag == "id_agent") {
-                infoMap["id_agent"] = dom_Element.text();
+                infoMap["id_agent"] = domElement.text();
                 toLogData += QString("- ID агента                  - %1  \n")
                                  .arg(infoMap["id_agent"].toString());
             }
 
             if (strTag == "name") {
-                infoMap["name_agent"] = dom_Element.text().replace("\'", "").replace("\"", "");
+                infoMap["name_agent"] = domElement.text().replace("\'", "").replace("\"", "");
                 toLogData += QString("- Наименование агента        - %1  \n")
                                  .arg(infoMap["name_agent"].toString());
             }
 
             if (strTag == "inn") {
-                infoMap["inn_agent"] = dom_Element.text();
+                infoMap["inn_agent"] = domElement.text();
                 toLogData += QString("- ИНН агента                 - %1  \n")
                                  .arg(infoMap["inn_agent"].toString());
             }
 
             if (strTag == "phone") {
-                infoMap["phone_agent"] = dom_Element.text().replace("\'", "").replace("\"", "");
+                infoMap["phone_agent"] = domElement.text().replace("\'", "").replace("\"", "");
                 toLogData += QString("- Служба поддержки           - %1 \n")
                                  .arg(infoMap["phone_agent"].toString());
             }
 
             if (strTag == "threshold") {
-                infoMap["threshold"] = dom_Element.text();
+                infoMap["threshold"] = domElement.text();
                 toLogData += QString("- Порог отключения           - %1  \n")
                                  .arg(infoMap["threshold"].toString());
             }
 
             if (strTag == "hash") {
-                infoMap["hash"] = dom_Element.text();
+                infoMap["hash"] = domElement.text();
                 toLogData +=
                     QString("- Идентификатор конфигурации - %1 \n").arg(infoMap["hash"].toString());
             }
 
             if (strTag == "hash_conf") {
-                infoMap["hashxml"] = dom_Element.text();
-                infoMap["path_name"] = dom_Element.attribute("p", "");
+                infoMap["hashxml"] = domElement.text();
+                infoMap["path_name"] = domElement.attribute("p", "");
                 toLogData += QString("- Идентификатор интерфейса   - %1 \n")
                                  .arg(infoMap["hashxml"].toString());
                 toLogData += QString("- Путь для закачки           - %1  \n")
@@ -280,73 +280,73 @@ void GetServices::parcerNote(const QDomNode &dom_Element) {
             }
 
             if (strTag == "currency_usd") {
-                infoMap["usd_curce"] = dom_Element.text();
+                infoMap["usd_curce"] = domElement.text();
                 toLogData += QString("- Курс доллара               - %1  \n")
                                  .arg(infoMap["usd_curce"].toString());
             }
 
             if (strTag == "active") {
-                infoMap["active"] = dom_Element.text();
+                infoMap["active"] = domElement.text();
                 toLogData += QString("- Активность терминала       - %1  \n")
                                  .arg(infoMap["active"].toString());
             }
 
             if (strTag == "address") {
-                infoMap["address"] = dom_Element.text().replace("\'", "").replace("\"", "");
+                infoMap["address"] = domElement.text().replace("\'", "").replace("\"", "");
                 toLogData += QString("- Адрес                      - %1  \n")
                                  .arg(infoMap["address"].toString());
             }
 
             if (strTag == "cur") {
-                int id = dom_Element.attribute("id", "").toInt();
-                this->curMap[id] = dom_Element.text();
+                int id = domElement.attribute("id", "").toInt();
+                this->curMap[id] = domElement.text();
             }
 
             // Данные провайдера
             if (strTag == "prv") {
-                providerList[index_prv]["id"] = dom_Element.attribute("id", "");
-                providerList[index_prv]["nbl"] = dom_Element.attribute("nbl", "");
-                providerList[index_prv]["cid"] = dom_Element.attribute("cid", "");
-                providerList[index_prv]["cms"] = dom_Element.attribute("cms", "");
-                providerList[index_prv]["otp"] = dom_Element.attribute("otp", "");
-                providerList[index_prv]["category_id"] = dom_Element.attribute("cat", "");
-                providerList[index_prv]["amount_min"] = dom_Element.attribute("min", "");
-                providerList[index_prv]["amount_max"] = dom_Element.attribute("max", "");
+                providerList[index_prv]["id"] = domElement.attribute("id", "");
+                providerList[index_prv]["nbl"] = domElement.attribute("nbl", "");
+                providerList[index_prv]["cid"] = domElement.attribute("cid", "");
+                providerList[index_prv]["cms"] = domElement.attribute("cms", "");
+                providerList[index_prv]["otp"] = domElement.attribute("otp", "");
+                providerList[index_prv]["category_id"] = domElement.attribute("cat", "");
+                providerList[index_prv]["amount_min"] = domElement.attribute("min", "");
+                providerList[index_prv]["amount_max"] = domElement.attribute("max", "");
                 providerList[index_prv]["name_local"] =
-                    dom_Element.attribute("nloc", "").trimmed().replace("'", "''");
+                    domElement.attribute("nloc", "").trimmed().replace("'", "''");
                 providerList[index_prv]["name_secondary"] =
-                    dom_Element.attribute("nsc", "").trimmed().replace("'", "''");
-                providerList[index_prv]["name_ru"] = dom_Element.attribute("nru", "").trimmed();
-                providerList[index_prv]["name_en"] = dom_Element.attribute("nen", "").trimmed();
-                providerList[index_prv]["precheck"] = dom_Element.attribute("pchk", "");
-                providerList[index_prv]["autosum"] = dom_Element.attribute("asum", "");
-                providerList[index_prv]["presum"] = dom_Element.attribute("psum", "");
-                providerList[index_prv]["sms_code"] = dom_Element.attribute("sms", "");
-                providerList[index_prv]["cms_add"] = dom_Element.attribute("cadd", "");
-                providerList[index_prv]["que"] = dom_Element.attribute("que", "");
-                providerList[index_prv]["cms_warn"] = dom_Element.attribute("cwarn", "");
-                providerList[index_prv]["return_max"] = dom_Element.attribute("hmax", "");
-                providerList[index_prv]["regions"] = dom_Element.attribute("rgns", "");
-                providerList[index_prv]["favorite"] = dom_Element.attribute("faque", "");
+                    domElement.attribute("nsc", "").trimmed().replace("'", "''");
+                providerList[index_prv]["name_ru"] = domElement.attribute("nru", "").trimmed();
+                providerList[index_prv]["name_en"] = domElement.attribute("nen", "").trimmed();
+                providerList[index_prv]["precheck"] = domElement.attribute("pchk", "");
+                providerList[index_prv]["autosum"] = domElement.attribute("asum", "");
+                providerList[index_prv]["presum"] = domElement.attribute("psum", "");
+                providerList[index_prv]["sms_code"] = domElement.attribute("sms", "");
+                providerList[index_prv]["cms_add"] = domElement.attribute("cadd", "");
+                providerList[index_prv]["que"] = domElement.attribute("que", "");
+                providerList[index_prv]["cms_warn"] = domElement.attribute("cwarn", "");
+                providerList[index_prv]["return_max"] = domElement.attribute("hmax", "");
+                providerList[index_prv]["regions"] = domElement.attribute("rgns", "");
+                providerList[index_prv]["favorite"] = domElement.attribute("faque", "");
 
                 index_prv++;
             }
 
             if (strTag == "categories") {
                 QVariantMap category;
-                category["id"] = dom_Element.attribute("id").toInt();
-                category["name_local"] = dom_Element.attribute("name_loc").replace("'", "''");
+                category["id"] = domElement.attribute("id").toInt();
+                category["name_local"] = domElement.attribute("name_loc").replace("'", "''");
                 category["name_secondary"] =
-                    dom_Element.attribute("name_secondary").replace("'", "''");
-                category["name_ru"] = dom_Element.attribute("name_ru");
-                category["name_en"] = dom_Element.attribute("name_en");
+                    domElement.attribute("name_secondary").replace("'", "''");
+                category["name_ru"] = domElement.attribute("name_ru");
+                category["name_en"] = domElement.attribute("name_en");
                 category["description_local"] =
-                    dom_Element.attribute("description_loc").replace("'", "''");
+                    domElement.attribute("description_loc").replace("'", "''");
                 category["description_secondary"] =
-                    dom_Element.attribute("description_secondary").replace("'", "''");
-                category["description_ru"] = dom_Element.attribute("description_ru");
-                category["description_en"] = dom_Element.attribute("description_en");
-                category["queue"] = dom_Element.attribute("queue").toInt();
+                    domElement.attribute("description_secondary").replace("'", "''");
+                category["description_ru"] = domElement.attribute("description_ru");
+                category["description_en"] = domElement.attribute("description_en");
+                category["queue"] = domElement.attribute("queue").toInt();
 
                 if (category.value("queue").toInt() >= 0) {
                     saveCategoriesDB(category);
@@ -355,73 +355,73 @@ void GetServices::parcerNote(const QDomNode &dom_Element) {
 
             if (strTag == "inputs") {
                 QVariantMap input;
-                input["id"] = dom_Element.attribute("id").toInt();
-                input["input_panel"] = dom_Element.attribute("ipan").toInt();
-                input["regexp"] = dom_Element.attribute("reg");
-                input["mask"] = dom_Element.attribute("mask");
-                input["help_local"] = dom_Element.attribute("hloc").replace("'", "''");
-                input["help_secondary"] = dom_Element.attribute("hlsl").replace("'", "''");
-                input["help_ru"] = dom_Element.attribute("hru");
-                input["help_en"] = dom_Element.attribute("hen");
-                input["placeholder_local"] = dom_Element.attribute("ploc").replace("'", "''");
-                input["placeholder_secondary"] = dom_Element.attribute("plsl").replace("'", "''");
-                input["placeholder_ru"] = dom_Element.attribute("pru");
-                input["placeholder_en"] = dom_Element.attribute("pen");
+                input["id"] = domElement.attribute("id").toInt();
+                input["input_panel"] = domElement.attribute("ipan").toInt();
+                input["regexp"] = domElement.attribute("reg");
+                input["mask"] = domElement.attribute("mask");
+                input["help_local"] = domElement.attribute("hloc").replace("'", "''");
+                input["help_secondary"] = domElement.attribute("hlsl").replace("'", "''");
+                input["help_ru"] = domElement.attribute("hru");
+                input["help_en"] = domElement.attribute("hen");
+                input["placeholder_local"] = domElement.attribute("ploc").replace("'", "''");
+                input["placeholder_secondary"] = domElement.attribute("plsl").replace("'", "''");
+                input["placeholder_ru"] = domElement.attribute("pru");
+                input["placeholder_en"] = domElement.attribute("pen");
 
                 saveInputsDB(input);
             }
 
             if (strTag == "si") {
                 QVariantMap si;
-                si["input_id"] = dom_Element.attribute("input_id");
-                si["service_id"] = dom_Element.attribute("service_id");
-                si["field"] = dom_Element.attribute("field");
-                si["field_type"] = dom_Element.attribute("field_type");
-                si["prefix"] = dom_Element.attribute("prefix");
-                si["que"] = dom_Element.attribute("queue");
+                si["input_id"] = domElement.attribute("input_id");
+                si["service_id"] = domElement.attribute("service_id");
+                si["field"] = domElement.attribute("field");
+                si["field_type"] = domElement.attribute("field_type");
+                si["prefix"] = domElement.attribute("prefix");
+                si["que"] = domElement.attribute("queue");
 
                 servicesInputs.append(si);
             }
 
             // Данные о комиссии
             if (strTag == "commission") {
-                auto serviceId = dom_Element.parentNode().toElement().attribute("id", "");
-                auto cid = dom_Element.parentNode().toElement().attribute("cid", "");
+                auto serviceId = domElement.parentNode().toElement().attribute("id", "");
+                auto cid = domElement.parentNode().toElement().attribute("cid", "");
 
                 if (serviceId != "") {
-                    auto index = dom_Element.attribute("index", "").toInt();
-                    auto sum_From = dom_Element.attribute("start", "").toDouble();
-                    auto sum_To = dom_Element.attribute("end", "").toDouble();
-                    auto value = dom_Element.attribute("value", "").toDouble();
-                    auto typeId = dom_Element.attribute("type_id", "").toInt();
+                    auto index = domElement.attribute("index", "").toInt();
+                    auto sumFrom = domElement.attribute("start", "").toDouble();
+                    auto sumTo = domElement.attribute("end", "").toDouble();
+                    auto value = domElement.attribute("value", "").toDouble();
+                    auto typeId = domElement.attribute("type_id", "").toInt();
 
                     saveCommissionDB(
-                        cid.toInt(), sum_From, sum_To, typeId, value, serviceId.toInt(), index);
+                        cid.toInt(), sumFrom, sumTo, typeId, value, serviceId.toInt(), index);
                 }
             }
 
             if (strTag == "server_time") {
-                infoMap["server_time"] = dom_Element.text();
+                infoMap["server_time"] = domElement.text();
             }
 
             if (strTag == "coin_acceptor") {
-                if (dom_Element.parentNode().toElement().tagName() == "devices") {
-                    infoMap["coin_acceptor"] = dom_Element.text();
+                if (domElement.parentNode().toElement().tagName() == "devices") {
+                    infoMap["coin_acceptor"] = domElement.text();
                 }
             }
 
             if (strTag == "banner") {
                 QVariantMap banner;
-                banner["id"] = dom_Element.attribute("id").toInt();
-                banner["delay"] = dom_Element.attribute("delay").toInt();
-                banner["go_to"] = dom_Element.attribute("go_to").toInt();
-                banner["action"] = dom_Element.attribute("action");
+                banner["id"] = domElement.attribute("id").toInt();
+                banner["delay"] = domElement.attribute("delay").toInt();
+                banner["go_to"] = domElement.attribute("go_to").toInt();
+                banner["action"] = domElement.attribute("action");
 
                 banners.append(banner);
             }
         }
-        parcerNote(dom_Node);
-        dom_Node = dom_Node.nextSibling();
+        parseNode(domNode);
+        domNode = domNode.nextSibling();
     }
 }
 
@@ -509,8 +509,8 @@ bool GetServices::saveServicesDB() {
 }
 
 bool GetServices::saveCommissionDB(const int id,
-                                   const double sum_From,
-                                   const double sum_To,
+                                   const double sumFrom,
+                                   const double sumTo,
                                    const int type,
                                    const double value,
                                    const int serviceId,
@@ -522,8 +522,8 @@ bool GetServices::saveCommissionDB(const int id,
                             "commission_sum_to, commission_i_type, commission_value, service_id, "
                             "idx) VALUES ( %1, '%2', '%3', %4, '%5', '%6', '%7');")
                         .arg(id)
-                        .arg(sum_From)
-                        .arg(sum_To)
+                        .arg(sumFrom)
+                        .arg(sumTo)
                         .arg(type)
                         .arg(value)
                         .arg(serviceId)
@@ -663,8 +663,9 @@ bool GetServices::insertTerminalExtra(QVariantMap map) {
 
     // Записываем данные в Базу
     if (!insertDataQuery.exec(query)) {
-        if (debugger)
+        if (debugger) {
             qDebug() << insertDataQuery.lastError();
+        }
         return false;
     }
 
@@ -706,13 +707,13 @@ QString GetServices::getHashConfig() {
 
     QSqlRecord record = userSql.record();
 
-    QString hash_config = "";
+    QString hashConfig = "";
 
     if (userSql.next()) {
-        hash_config = userSql.value(record.indexOf("hash")).toString();
+        hashConfig = userSql.value(record.indexOf("hash")).toString();
     }
 
-    return hash_config;
+    return hashConfig;
 }
 
 int GetServices::getProviderCount() {
@@ -739,10 +740,10 @@ int GetServices::getProviderCount() {
 }
 
 void GetServices::sendGetServicesQuery() {
-    QString header_xml = getHeaderRequest(Request::Type::GetServices);
-    QString footer_xml = getFooterRequest();
+    QString headerXml = getHeaderRequest(Request::Type::GetServices);
+    QString footerXml = getFooterRequest();
 
-    QString request = header_xml + footer_xml;
+    QString request = headerXml + footerXml;
 
     // Обънуляем переменные
     index_prv = 0;
@@ -771,48 +772,54 @@ bool GetServices::deleteOldData() {
     QString sqlDeletePrv = "DELETE FROM terminal_services;";
 
     if (!deleteData.exec(sqlDeletePrv)) {
-        if (debugger)
+        if (debugger) {
             qDebug() << deleteData.lastError();
+        }
         result = false;
     }
 
     sqlDeletePrv = "DELETE FROM terminal_categories;";
 
     if (!deleteData.exec(sqlDeletePrv)) {
-        if (debugger)
+        if (debugger) {
             qDebug() << deleteData.lastError();
+        }
         result = false;
     }
 
     sqlDeletePrv = "DELETE FROM terminal_commission;";
 
     if (!deleteData.exec(sqlDeletePrv)) {
-        if (debugger)
+        if (debugger) {
             qDebug() << deleteData.lastError();
+        }
         result = false;
     }
 
     sqlDeletePrv = "DELETE FROM terminal_extra;";
 
     if (!deleteData.exec(sqlDeletePrv)) {
-        if (debugger)
+        if (debugger) {
             qDebug() << deleteData.lastError();
+        }
         result = false;
     }
 
     sqlDeletePrv = "DELETE FROM terminal_inputs;";
 
     if (!deleteData.exec(sqlDeletePrv)) {
-        if (debugger)
+        if (debugger) {
             qDebug() << deleteData.lastError();
+        }
         result = false;
     }
 
     sqlDeletePrv = "DELETE FROM terminal_services_inputs;";
 
     if (!deleteData.exec(sqlDeletePrv)) {
-        if (debugger)
+        if (debugger) {
             qDebug() << deleteData.lastError();
+        }
         result = false;
     }
 

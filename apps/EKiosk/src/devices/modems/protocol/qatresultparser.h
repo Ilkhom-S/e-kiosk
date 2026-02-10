@@ -31,7 +31,7 @@ public:
 
         Node(uint number);
         Node(uint first, uint last);
-        Node(const QString &str);
+        Node(QString str);
         Node(QList<Node> *list);
 
     public:

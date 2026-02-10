@@ -37,7 +37,7 @@ CryptService::CryptService(IApplication *aApplication)
     : m_Application(aApplication), m_Log(aApplication->getLog()) {}
 
 //---------------------------------------------------------------------------
-CryptService::~CryptService() {}
+CryptService::~CryptService() = default;
 
 //---------------------------------------------------------------------------
 bool CryptService::initialize() {
@@ -49,7 +49,7 @@ bool CryptService::initialize() {
     }
 
     // Подготавливаем к работе пары ключей.
-    PP::TerminalSettings *settings =
+    auto *settings =
         SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
     QList<QByteArray> passwords = crypt.getRootPassword();
@@ -266,17 +266,17 @@ const QSet<QString> &CryptService::getRequiredServices() const {
 
 //---------------------------------------------------------------------------
 QVariantMap CryptService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
-void CryptService::resetParameters(const QSet<QString> &) {}
+void CryptService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 PP::SKeySettings CryptService::getKey(int aId) const {
     if (m_Keys.contains(aId)) {
         return m_Keys[aId];
-    }         return PP::SKeySettings();
+    }         return {};
    
 }
 
@@ -313,7 +313,7 @@ bool CryptService::addKey(const PP::SKeySettings &aKey) {
         }
 
         // Добавляем запись в дерево настроек.
-        PP::TerminalSettings *settings =
+        auto *settings =
             SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
         // Сериализуем настройки.
@@ -420,7 +420,7 @@ bool CryptService::replaceKeys(int aKeyIdSrc, int aKeyIdDst) {
             // загружаем новый ключ в память
             loadKey(dstKey);
 
-            PP::TerminalSettings *settings =
+            auto *settings =
                 SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
             // чистим список ключей

@@ -43,7 +43,8 @@ private slots:
     }
 
     void testDumpCallstackWithContext() {
-        QStringList stack1, stack2;
+        QStringList stack1;
+        QStringList stack2;
 
         // Get stack from current location
         DumpCallstack(stack1, nullptr);
@@ -83,7 +84,8 @@ private slots:
     }
 
     void testDumpCallstackConsistency() {
-        QStringList stack1, stack2;
+        QStringList stack1;
+        QStringList stack2;
 
         // Get two consecutive stack traces
         DumpCallstack(stack1, nullptr);

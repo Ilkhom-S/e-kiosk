@@ -99,7 +99,6 @@ void FirmwareUploadScenario::start(const QVariantMap &aContext) {
           QString("Firmware MD5 verify OK. (%1).").arg(m_Command.parameters.at(2)));
 
     QMetaObject::invokeMethod(this, "acquireDevice", Qt::QueuedConnection);
-    return;
 }
 
 //---------------------------------------------------------------------------
@@ -121,7 +120,7 @@ void FirmwareUploadScenario::signalTriggered(const QString & /*aSignal*/,
 
 //---------------------------------------------------------------------------
 QString FirmwareUploadScenario::getState() const {
-    return QString("main");
+    return {"main"};
 }
 
 //---------------------------------------------------------------------------
@@ -134,7 +133,7 @@ bool FirmwareUploadScenario::canStop() {
 
 //--------------------------------------------------------------------------
 void FirmwareUploadScenario::lockGUI() {
-    auto guiService = GUIService::instance(m_Application);
+    auto *guiService = GUIService::instance(m_Application);
 
     // Показываем экран блокировки и определяем, что делать дальше.
     guiService->show("SplashScreen", QVariantMap());

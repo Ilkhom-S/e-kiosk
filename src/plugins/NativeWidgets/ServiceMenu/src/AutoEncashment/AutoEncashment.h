@@ -15,7 +15,7 @@ class ServiceMenuBackend;
 //--------------------------------------------------------------------------
 class AutoEncashment : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
 public:
-    AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    AutoEncashment(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
     ~AutoEncashment();
 
 #pragma region SDK::Plugin::IPlugin interface

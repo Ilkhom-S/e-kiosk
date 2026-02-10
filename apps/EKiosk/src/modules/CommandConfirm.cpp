@@ -10,20 +10,20 @@ CommandConfirm::CommandConfirm(QObject *parent) : SendRequest(parent) {
 void CommandConfirm::resendRequest() {
     if (countAllRep < 20) {
         // Повторная отправка
-        QTimer::singleShot(20000 * countAllRep, this, SLOT(sendRequestRepeet()));
+        QTimer::singleShot(20000 * countAllRep, this, SLOT(sendRequestRepeat()));
     }
 }
 
-void CommandConfirm::sendRequestRepeet() {
+void CommandConfirm::sendRequestRepeat() {
     countAllRep++;
     sendRequest(requestXml, 30000);
 }
 
-void CommandConfirm::setDataNote(const QDomNode &dom_Element) {
+void CommandConfirm::setDataNote(const QDomNode &domElement) {
     resultCode = false;
 
     // Парсим данные
-    parcerNote(dom_Element);
+    parseNode(domElement);
 
     if (resultCode) {
         // Обнуляем счетчик
@@ -32,16 +32,16 @@ void CommandConfirm::setDataNote(const QDomNode &dom_Element) {
     }
 }
 
-void CommandConfirm::parcerNote(const QDomNode &dom_Element) {
-    QDomNode dom_Node = dom_Element.firstChild();
+void CommandConfirm::parseNode(const QDomNode &domElement) {
+    QDomNode domNode = domElement.firstChild();
 
-    while (!dom_Node.isNull()) {
-        if (dom_Node.isElement()) {
-            QDomElement dom_Element = dom_Node.toElement();
-            QString strTag = dom_Element.tagName();
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
+            QDomElement domElement = domNode.toElement();
+            QString strTag = domElement.tagName();
 
             if (strTag == "resultCode") {
-                QString sts = dom_Element.text();
+                QString sts = domElement.text();
 
                 if (sts == "0") {
                     resultCode = true;
@@ -49,24 +49,24 @@ void CommandConfirm::parcerNote(const QDomNode &dom_Element) {
             }
         }
 
-        parcerNote(dom_Node);
-        dom_Node = dom_Node.nextSibling();
+        parseNode(domNode);
+        domNode = domNode.nextSibling();
     }
 }
 
 void CommandConfirm::sendCommandConfirm(QString trn, int cmd) {
     trnCmd = trn;
 
-    QString center_xml = QString("<commands>\n"
+    QString centerXml = QString("<commands>\n"
                                  "<cmd trn=\"%1\" resultCode=\"%2\">%3</cmd>\n"
                                  "</commands>\n")
                              .arg(trn, "0", QString::number(cmd));
 
-    QString header_xml = getHeaderRequest(Request::Type::SendCommandConfirm);
+    QString headerXml = getHeaderRequest(Request::Type::SendCommandConfirm);
 
-    QString footer_xml = getFooterRequest();
+    QString footerXml = getFooterRequest();
 
-    QString xml = QString(header_xml + center_xml + footer_xml);
+    QString xml = QString(headerXml + centerXml + footerXml);
 
     requestXml = xml;
 

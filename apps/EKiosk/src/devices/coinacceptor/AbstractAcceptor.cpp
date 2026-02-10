@@ -1,8 +1,8 @@
 #include "AbstractAcceptor.h"
 
-BaseAcceptorDevices::BaseAcceptorDevices(QObject *parent) : QThread(parent) {
-    Debugger = 0;
-    devicesCreated = false;
+BaseAcceptorDevices::BaseAcceptorDevices(QObject *parent) : QThread(parent), Debugger(0), devicesCreated(false) {
+    
+    
     this->createDevicePort();
 }
 

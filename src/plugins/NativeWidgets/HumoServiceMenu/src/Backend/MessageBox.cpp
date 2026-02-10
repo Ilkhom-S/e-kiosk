@@ -2,11 +2,11 @@
 
 #include "MessageBox.h"
 
-MessageBox *MessageBox::m_Instance = 0;
+MessageBox *MessageBox::m_Instance = nullptr;
 
 //------------------------------------------------------------------------
 MessageBox::MessageBox(SDK::PaymentProcessor::IGUIService *aGUIService)
-    : m_GUIService(aGUIService), m_SignalReceiver(0) {
+    : m_GUIService(aGUIService), m_SignalReceiver(nullptr) {
     connect(&m_WaitTimer, SIGNAL(timeout()), this, SLOT(hideWindow()));
 }
 
@@ -20,7 +20,7 @@ void MessageBox::initialize(SDK::PaymentProcessor::IGUIService *aGUIService) {
 void MessageBox::shutdown() {
     m_Instance->hideWindow();
     delete m_Instance;
-    m_Instance = 0;
+    m_Instance = nullptr;
 }
 
 //------------------------------------------------------------------------
@@ -157,7 +157,7 @@ void MessageBox::hideWindow() {
                             SIGNAL(clicked(const QVariantMap &)),
                             m_SignalReceiver,
                             SLOT(onClicked(const QVariantMap &)));
-        m_SignalReceiver = 0;
+        m_SignalReceiver = nullptr;
     }
 
     if (!m_WaitTimer.isActive()) {

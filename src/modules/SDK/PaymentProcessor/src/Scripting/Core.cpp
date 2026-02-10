@@ -47,7 +47,7 @@ QObject *Core::getService(const QString &aName) {
     if (m_Services.contains(aName)) {
         return m_Services[aName];
     }
-    return 0;
+    return nullptr;
 }
 
 //------------------------------------------------------------------------------

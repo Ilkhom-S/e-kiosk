@@ -17,19 +17,19 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-NetworkManager::NetworkManager(SDK::PaymentProcessor::ICore *aCore) : m_Core(aCore) {
-    m_NetworkService = m_Core->getNetworkService();
+NetworkManager::NetworkManager(SDK::PaymentProcessor::ICore *aCore) : m_Core(aCore), m_NetworkService(m_Core->getNetworkService()), m_SelectedConnection(m_InitialConnection) {
+    
     m_TerminalSettings = static_cast<PPSDK::TerminalSettings *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
     m_Directory = static_cast<PPSDK::Directory *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::Directory));
 
     m_InitialConnection = m_NetworkService->getConnection();
-    m_SelectedConnection = m_InitialConnection;
+    
 }
 
 //---------------------------------------------------------------------------
-NetworkManager::~NetworkManager() {}
+NetworkManager::~NetworkManager() = default;
 
 //---------------------------------------------------------------------------
 bool NetworkManager::isConfigurationChanged() const {
@@ -98,7 +98,7 @@ QStringList NetworkManager::getInterfaces() const {
         GUI::MessageBox::critical(tr("#get_interface_error"));
     }
 
-    return QStringList();
+    return {};
 }
 
 //---------------------------------------------------------------------------
@@ -109,7 +109,7 @@ QStringList NetworkManager::getRemoteConnections() const {
         GUI::MessageBox::critical(tr("#get_remote_connections_error"));
     }
 
-    return QStringList();
+    return {};
 }
 
 //---------------------------------------------------------------------------
@@ -120,7 +120,7 @@ QStringList NetworkManager::getLocalConnections() const {
         GUI::MessageBox::critical(tr("#get_local_connections_error"));
     }
 
-    return QStringList();
+    return {};
 }
 
 //---------------------------------------------------------------------------

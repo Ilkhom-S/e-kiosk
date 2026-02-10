@@ -19,7 +19,7 @@ InputBox::InputBox(QWidget *parent, ValidatorFunction aValidator)
 }
 
 //---------------------------------------------------------------------------
-InputBox::~InputBox() {}
+InputBox::~InputBox() = default;
 
 //---------------------------------------------------------------------------
 void InputBox::setLabelText(const QString &aText) {

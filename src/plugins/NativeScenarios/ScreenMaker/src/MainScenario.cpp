@@ -63,7 +63,7 @@ MainScenario::MainScenario(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
 }
 
 //---------------------------------------------------------------------------
-MainScenario::~MainScenario() {}
+MainScenario::~MainScenario() = default;
 
 //---------------------------------------------------------------------------
 bool MainScenario::initialize(const QList<GUI::SScriptObject> & /*aScriptObjects*/) {

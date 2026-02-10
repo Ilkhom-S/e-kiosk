@@ -213,8 +213,8 @@ bool CCNetCreator::writeBlock(const QByteArray &aBuffer, int aIndex, bool aLast)
         return false;
     }
 
-    uchar index = uchar(aIndex);
-    uchar answerIndex = uchar(answer[1]);
+    auto index = uchar(aIndex);
+    auto answerIndex = uchar(answer[1]);
 
     if (answerIndex != index) {
         toLog(LogLevel::Error,

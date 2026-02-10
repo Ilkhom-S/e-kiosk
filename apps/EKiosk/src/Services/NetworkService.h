@@ -103,7 +103,7 @@ private slots:
 
 private:
     SDK::Driver::IModem *getModem();
-    SDK::Driver::IModem *prepareModem(SDK::Driver::IModem *aModem_Device,
+    SDK::Driver::IModem *prepareModem(SDK::Driver::IModem *aModemDevice,
                                       const QString &aConnectionName);
     bool getConnectionTemplate(const QString &aConnectionName,
                                SDK::PaymentProcessor::SConnectionTemplate &aConnectionTem) const;

@@ -43,7 +43,7 @@ void TestSettingsManager::testLoadXML() {
     auto it2 = settings.find("field1");
     QVERIFY(it2 != settings.not_found());
 
-    QString val = settings.to_iterator(it2)->second.get_value<QString>();
+    auto val = settings.to_iterator(it2)->second.get_value<QString>();
     QCOMPARE(val, QString("value1"));
 }
 

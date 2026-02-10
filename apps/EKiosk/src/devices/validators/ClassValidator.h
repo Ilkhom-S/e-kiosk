@@ -18,15 +18,15 @@ public:
 
     void setValidator(QString name);
     void setPortName(QString portName);
-    static void setPortListInfo(QStringList port_list);
+    static void setPortListInfo(QStringList portList);
     void setPartNumber(QString partNumber);
     void setDBError(bool error);
 
     bool openPort();
-    bool isItYou(QStringList &com_List,
-                 QString &validator_name,
-                 QString &com_str,
-                 QString &validator_coment);
+    bool isItYou(QStringList &comList,
+                 QString &validatorName,
+                 QString &comStr,
+                 QString &validatorComent);
 
     void closeThis();
     bool pollState();
@@ -55,7 +55,7 @@ private:
     QStringList portList;
     QString validatorName;
 
-    bool CIsItYou(QString &validat_name);
+    bool CIsItYou(QString &validatName);
 
     int cmdExec{};
 

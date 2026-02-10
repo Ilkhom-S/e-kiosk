@@ -17,7 +17,7 @@
 #include "ServiceTags.h"
 
 DiagnosticsServiceWindow::DiagnosticsServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend), m_SpacerItem(0) {
+    : QFrame(aParent), ServiceWindowBase(aBackend), m_SpacerItem(nullptr) {
     setupUi(this);
 
     connect(
@@ -55,13 +55,13 @@ bool DiagnosticsServiceWindow::activate() {
 
     vlTestWidgets->removeItem(m_SpacerItem);
     delete m_SpacerItem;
-    m_SpacerItem = 0;
+    m_SpacerItem = nullptr;
 
     // Получаем список устройств из конфигов.
     QStringList configNames = m_Backend->getHardwareManager()->getConfigurations();
 
     foreach (const QString config, configNames) {
-        DeviceStatusWindow *dtw = new DeviceStatusWindow(m_Backend, config, this);
+        auto *dtw = new DeviceStatusWindow(m_Backend, config, this);
         vlTestWidgets->addWidget(dtw->getWidget());
 
         m_DeviceStatusWidget[config] = dtw;
@@ -107,7 +107,7 @@ void DiagnosticsServiceWindow::onDeviceStatusChanged(const QString &aConfigurati
 
 //------------------------------------------------------------------------
 void DiagnosticsServiceWindow::onClickedEncashmentInfo() {
-    bool state = btnInfoPanel->isChecked() == true;
+    bool state = btnInfoPanel->isChecked();
 
     state ? btnInfoPanel->setText(tr("#title_turn_off"))
           : btnInfoPanel->setText(tr("#title_turn_on"));

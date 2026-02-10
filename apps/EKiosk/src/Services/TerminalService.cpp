@@ -23,6 +23,7 @@
 #include <Packer/Packer.h>
 #include <SysUtils/ISysUtils.h>
 #include <WatchServiceClient/Constants.h>
+#include <algorithm>
 
 #include "DatabaseUtils/IHardwareDatabaseUtils.h"
 #include "NetworkTaskManager/MemoryDataStream.h"
@@ -41,25 +42,23 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
 TerminalService *TerminalService::instance(IApplication *aApplication) {
-    return static_cast<TerminalService *>(
+    return dynamic_cast<TerminalService *>(
         aApplication->getCore()->getService(CServices::TerminalService));
 }
 
 //---------------------------------------------------------------------------
 TerminalService::TerminalService(IApplication *aApplication)
-    : m_DbUtils(nullptr), m_EventService(nullptr), m_Application(aApplication),
+    : m_DbUtils(nullptr), m_EventService(m_Application->getCore()->getEventService()),
+      m_Application(aApplication),
       m_Client(createWatchServiceClient(CWatchService::Modules::PaymentProcessor,
                                         IWatchServiceClient::MainThread)) {
     setLog(m_Application->getLog());
 
-    m_Application = aApplication;
-
-    m_EventService = m_Application->getCore()->getEventService();
     m_EventService->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
 }
 
 //---------------------------------------------------------------------------
-TerminalService::~TerminalService() {}
+TerminalService::~TerminalService() = default;
 
 //---------------------------------------------------------------------------
 bool TerminalService::initialize() {
@@ -153,7 +152,7 @@ void TerminalService::finishInitialize() {
     }
 
     // Получаем информацию о дефолтном ключе
-    auto terminalSettings =
+    auto *terminalSettings =
         SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
     PPSDK::SKeySettings key = terminalSettings->getKeys().value(0);
 
@@ -360,9 +359,7 @@ QPair<SDK::Driver::EWarningLevel::Enum, QString> TerminalService::getTerminalSta
         i.next();
 
         auto status = convertStatus(static_cast<PPSDK::EEventType::Enum>(i.value().getType()));
-        if (status > resultLevel) {
-            resultLevel = status;
-        }
+        resultLevel = std::max(status, resultLevel);
 
         QString data = i.value().getData().toString();
 
@@ -383,9 +380,7 @@ QPair<SDK::Driver::EWarningLevel::Enum, QString> TerminalService::getTerminalSta
     foreach (int status, statuses) {
         resultMessage << TerminalStatusCode::Specification[status].translation;
 
-        if (resultLevel < TerminalStatusCode::Specification[status].warningLevel) {
-            resultLevel = TerminalStatusCode::Specification[status].warningLevel;
-        }
+        resultLevel = std::max(resultLevel, TerminalStatusCode::Specification[status].warningLevel);
     }
 
     if (isLocked()) {
@@ -560,7 +555,7 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
     // Отбрасываем дубли сообщений
     static QSet<QString> sentMessages;
 
-    QString url = static_cast<PPSDK::TerminalSettings *>(
+    QString url = dynamic_cast<PPSDK::TerminalSettings *>(
                       m_Application->getCore()->getSettingsService()->getAdapter(
                           PPSDK::CAdapterNames::TerminalAdapter))
                       ->getFeedbackURL();

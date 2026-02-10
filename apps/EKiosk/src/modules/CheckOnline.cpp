@@ -19,7 +19,7 @@ void CheckOnline::setDataNote(const QDomNode &domElement) {
     items.clear();
 
     // Парсим данные
-    parcerNote(domElement);
+    parseNode(domElement);
 
     if (resultCode != "") {
         // Тут отправляем сигнал с балансом
@@ -28,10 +28,9 @@ void CheckOnline::setDataNote(const QDomNode &domElement) {
     }
 
     emit emit_CheckOnlineResult("", "", "", QVariantList());
-    return;
 }
 
-void CheckOnline::parcerNote(const QDomNode &domElement) {
+void CheckOnline::parseNode(const QDomNode &domElement) {
     // Необходимо отпарсить документ
     QDomNode domNode = domElement.firstChild();
 
@@ -62,7 +61,7 @@ void CheckOnline::parcerNote(const QDomNode &domElement) {
             }
         }
 
-        parcerNote(domNode);
+        parseNode(domNode);
         domNode = domNode.nextSibling();
     }
 }

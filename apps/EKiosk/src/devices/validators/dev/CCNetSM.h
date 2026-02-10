@@ -383,7 +383,7 @@ private:
 
 private slots:
     void sendStatusTo(int sts, QString comment);
-    void toValidatorLog(int status, QByteArray data, QString text);
+    void toValidatorLog(int state, QByteArray data, QString text);
 
 protected:
     bool readAnswers(QList<QByteArray> &aAnswers, int aTimeout);

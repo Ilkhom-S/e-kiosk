@@ -24,7 +24,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent)
 }
 
 //---------------------------------------------------------------------------
-KeyboardWindow::~KeyboardWindow() {}
+KeyboardWindow::~KeyboardWindow() = default;
 
 //---------------------------------------------------------------------------
 void KeyboardWindow::initialize() {
@@ -206,7 +206,6 @@ void KeyboardWindow::updateKeys() {
 //---------------------------------------------------------------------------
 void KeyboardWindow::mousePressEvent(QMouseEvent * /*aEvent*/) {
     // Блокируем дальнейшее прохождение кликов
-    return;
-}
+    }
 
 //---------------------------------------------------------------------------

@@ -34,7 +34,7 @@ EncashmentWindow::EncashmentWindow(HumoServiceBackend *aBackend, QWidget *aParen
       m_InputBox(nullptr), m_HistoryWindow(nullptr), m_LastPrintJob(0) {}
 
 //---------------------------------------------------------------------------
-EncashmentWindow::~EncashmentWindow() {}
+EncashmentWindow::~EncashmentWindow() = default;
 
 bool EncashmentWindow::activate() {
     connect(m_Backend->getPaymentManager(),
@@ -58,7 +58,7 @@ bool EncashmentWindow::deactivate() {
 
 //---------------------------------------------------------------------------
 void EncashmentWindow::doEncashment() {
-    auto paymentManager = m_Backend->getPaymentManager();
+    auto *paymentManager = m_Backend->getPaymentManager();
     bool isPrinterOK = paymentManager->canPrint(PPSDK::CReceiptType::Encashment);
     QString text = isPrinterOK ? tr("#question_encash") : tr("#question_encash_without_receipt");
 
@@ -89,7 +89,7 @@ void EncashmentWindow::doEncashment() {
 //---------------------------------------------------------------------------
 bool EncashmentWindow::doEncashmentProcess() {
     bool result = false;
-    auto paymentManager = m_Backend->getPaymentManager();
+    auto *paymentManager = m_Backend->getPaymentManager();
     bool printerOK = paymentManager->canPrint(PPSDK::CReceiptType::Encashment);
 
     m_IdleTimer.stop();
@@ -139,7 +139,7 @@ bool EncashmentWindow::doEncashmentProcess() {
 
 //---------------------------------------------------------------------------
 void EncashmentWindow::onPrintZReport() {
-    QPushButton *zReportButton = dynamic_cast<QPushButton *>(sender());
+    auto *zReportButton = dynamic_cast<QPushButton *>(sender());
     GUI::MessageBox::hide();
 
     m_MessageError = tr("#zreport_failed");

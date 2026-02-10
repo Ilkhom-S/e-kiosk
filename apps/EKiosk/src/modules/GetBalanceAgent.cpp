@@ -11,14 +11,14 @@ void GetBalanceAgent::resendRequest() {
     emit emit_BalanceAgent("---", "---");
 }
 
-void GetBalanceAgent::setDataNote(const QDomNode &dom_Element) {
+void GetBalanceAgent::setDataNote(const QDomNode &domElement) {
     resultCode = false;
     getData = false;
     balance = "resultCode";
     overdraft = "resultCode";
 
     // Парсим данные
-    parcerNote(dom_Element);
+    parseNode(domElement);
 
     if (balance != "resultCode" && overdraft != "resultCode") {
         // Тут отправляем сигнал с балансом
@@ -29,39 +29,39 @@ void GetBalanceAgent::setDataNote(const QDomNode &dom_Element) {
     emit emit_BalanceAgent("---", "---");
 }
 
-void GetBalanceAgent::parcerNote(const QDomNode &dom_Element) {
+void GetBalanceAgent::parseNode(const QDomNode &domElement) {
     // Необходимо отпарсить документ
-    QDomNode dom_Node = dom_Element.firstChild();
+    QDomNode domNode = domElement.firstChild();
 
-    while (!dom_Node.isNull()) {
-        if (dom_Node.isElement()) {
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
 
-            QDomElement dom_Element = dom_Node.toElement();
-            QString strTag = dom_Element.tagName();
+            QDomElement domElement = domNode.toElement();
+            QString strTag = domElement.tagName();
 
-            // if(Debugger) qDebug() << strTag + " " + dom_Element.text();
+            // if(Debugger) qDebug() << strTag + " " + domElement.text();
 
             // Данные о дилере
             if (strTag == "balance") {
-                balance = dom_Element.text();
+                balance = domElement.text();
             }
 
             if (strTag == "overdraft") {
-                overdraft = dom_Element.text();
+                overdraft = domElement.text();
             }
         }
-        parcerNote(dom_Node);
-        dom_Node = dom_Node.nextSibling();
+        parseNode(domNode);
+        domNode = domNode.nextSibling();
     }
 }
 
 void GetBalanceAgent::sendDataRequest() {
-    QString header_xml = getHeaderRequest(Request::Type::GetBalance);
+    QString headerXml = getHeaderRequest(Request::Type::GetBalance);
     ;
 
-    QString footer_xml = getFooterRequest();
+    QString footerXml = getFooterRequest();
 
-    QString xml = header_xml + footer_xml;
+    QString xml = headerXml + footerXml;
 
     sendRequest(xml, 20000);
 }

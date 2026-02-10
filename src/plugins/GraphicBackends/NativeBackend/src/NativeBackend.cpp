@@ -49,10 +49,10 @@ REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
 
 //------------------------------------------------------------------------------
 NativeBackend::NativeBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : m_Factory(aFactory), m_InstancePath(aInstancePath), m_Engine(0), m_Core(0) {}
+    : m_Factory(aFactory), m_InstancePath(aInstancePath), m_Engine(nullptr), m_Core(nullptr) {}
 
 //------------------------------------------------------------------------------
-NativeBackend::~NativeBackend() {}
+NativeBackend::~NativeBackend() = default;
 
 //------------------------------------------------------------------------------
 QString NativeBackend::getPluginName() const {

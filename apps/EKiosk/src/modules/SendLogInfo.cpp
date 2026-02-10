@@ -3,24 +3,21 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 
-SendLogInfo::SendLogInfo(QObject *parent) : SendRequest(parent) {
+SendLogInfo::SendLogInfo(QObject *parent)
+    : SendRequest(parent), resultCode(false), system_Log(""), timerPic(new QTimer(this)) {
     senderName = "COMMAND_CONFIRM";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
     connect(this, SIGNAL(emit_Dom_Element(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 
-    timerPic = new QTimer(this);
     timerPic->setSingleShot(true);
     connect(timerPic, SIGNAL(timeout()), SLOT(resendRequest()));
-
-    resultCode = false;
-    system_Log = "";
 }
 
 void SendLogInfo::resendRequest() {
     if (countAllRep < 20) {
         // Повторная отправка
-        QTimer::singleShot(20000 * this->countAllRep, this, SLOT(sendRequestRepeet()));
+        QTimer::singleShot(20000 * this->countAllRep, this, SLOT(sendRequestRepeat()));
     } else {
         emit emit_Loging(2,
                          "SEND_LOG_INFO",
@@ -30,7 +27,7 @@ void SendLogInfo::resendRequest() {
     }
 }
 
-void SendLogInfo::sendRequestRepeet() {
+void SendLogInfo::sendRequestRepeat() {
     countAllRep++;
 
     emit emit_Loging(
@@ -45,7 +42,7 @@ void SendLogInfo::setDataNote(const QDomNode &domElement) {
     resultCode = false;
 
     // Парсим данные
-    parcerNote(domElement);
+    parseNode(domElement);
 
     if (resultCode) {
         // Обнуляем счетчик
@@ -61,7 +58,7 @@ void SendLogInfo::setDataNote(const QDomNode &domElement) {
     }
 }
 
-void SendLogInfo::parcerNote(const QDomNode &domElement) {
+void SendLogInfo::parseNode(const QDomNode &domElement) {
     // Необходимо отпарсить документ
     QDomNode domNode = domElement.firstChild();
 
@@ -70,7 +67,7 @@ void SendLogInfo::parcerNote(const QDomNode &domElement) {
             QDomElement domElement = domNode.toElement();
             QString strTag = domElement.tagName();
 
-            // if(Debugger) qDebug() << strTag + " " + dom_Element.text();
+            // if(Debugger) qDebug() << strTag + " " + domElement.text();
 
             if (strTag == "resultCode") {
                 QString sts = domElement.text();
@@ -81,7 +78,7 @@ void SendLogInfo::parcerNote(const QDomNode &domElement) {
             }
         }
 
-        parcerNote(domNode);
+        parseNode(domNode);
         domNode = domNode.nextSibling();
     }
 }

@@ -166,7 +166,7 @@ private slots:
 
     void testMemoryAllocationDuringStackTrace() {
         // Test that DumpCallstack doesn't cause issues with memory allocation
-        QStringList *stacks = new QStringList[10];
+        auto *stacks = new QStringList[10];
 
         for (int i = 0; i < 10; ++i) {
             DumpCallstack(stacks[i], nullptr);

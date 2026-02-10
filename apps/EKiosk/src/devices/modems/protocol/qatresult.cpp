@@ -52,7 +52,7 @@ public:
     QString content;
     QAtResult::ResultCode resultCode{QAtResult::OK};
     bool verbose{true};
-    QAtResult::UserData *userData{0};
+    QAtResult::UserData *userData{nullptr};
 };
 
 /*!

@@ -22,12 +22,11 @@ const char BRtag[] = "<br>";
 } // namespace CSystem_Printer
 
 //--------------------------------------------------------------------------------
-System_Printer::System_Printer() {
+System_Printer::System_Printer() : m_SideMargin(1.0) {
     // данные устройства
     m_DeviceName = "System printer";
     setConfigParameter(CHardware::Printer::NeedSeparating, false);
     m_LineFeed = false;
-    m_SideMargin = 1.0;
 
     // теги
     m_TagEngine = Tags::PEngine(new CSystem_Printer::TagEngine());
@@ -109,26 +108,26 @@ bool System_Printer::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
     QRegularExpression nonSpaceRegex(QStringLiteral("[^ ]"));
     QRegularExpression endSpaceRegex(QStringLiteral(" +$"));
 
-    for (int i = 0; i < receipt.size(); ++i) {
-        QRegularExpressionMatch match = nonSpaceRegex.match(receipt[i]);
+    for (auto &i : receipt) {
+        QRegularExpressionMatch match = nonSpaceRegex.match(i);
         int index = match.hasMatch() ? static_cast<int>(match.capturedStart()) : -1;
 
         if (index > 0) {
-            receipt[i] = receipt[i].replace(0, index, QStringLiteral("&nbsp;").repeated(index));
+            i = i.replace(0, index, QStringLiteral("&nbsp;").repeated(index));
         }
         // Замена QRegExp на QRegularExpression
-        receipt[i] = receipt[i].replace(endSpaceRegex, QString());
+        i = i.replace(endSpaceRegex, QString());
     }
 
-    qreal bottom_Margin = getConfigParameter(PrinterSettings::PrintPageNumber).toBool()
-                              ? 12.7
-                              : CSystem_Printer::DefaultMargin;
+    qreal bottomMargin = getConfigParameter(PrinterSettings::PrintPageNumber).toBool()
+                             ? 12.7
+                             : CSystem_Printer::DefaultMargin;
     qreal leftMargin = getConfigParameter(PrinterSettings::LeftMargin, m_SideMargin).toDouble();
     qreal rightMargin = getConfigParameter(PrinterSettings::RightMargin, m_SideMargin).toDouble();
 
     // Qt 6: Использование QPageLayout и QMarginsF для установки полей
     m_Printer.setPageMargins(
-        QMarginsF(leftMargin, CSystem_Printer::DefaultMargin, rightMargin, bottom_Margin),
+        QMarginsF(leftMargin, CSystem_Printer::DefaultMargin, rightMargin, bottomMargin),
         QPageLayout::Millimeter);
 
     QTextDocument document;
@@ -143,10 +142,12 @@ bool System_Printer::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
         // textParameters << "font-family: Terminal";
     }
 
-    if (lineSpacing)
+    if (lineSpacing != 0) {
         textParameters << QStringLiteral("line-height: %1%").arg(lineSpacing);
-    if (fontSize)
+    }
+    if (fontSize != 0) {
         textParameters << QStringLiteral("font-size: %1px").arg(fontSize);
+    }
 
     toPrint = QStringLiteral("<style>p {%1} </style><p>%2</p>")
                   .arg(textParameters.join(QStringLiteral("; ")))
@@ -199,9 +200,9 @@ bool System_Printer::getStatus(TStatusCodes &aStatusCodes) {
             } else {
                 // Извлекаем QSet через шаблон value<T>().
                 // В Qt 6 это безопасный способ получить доступ к кастомным типам в QVariant.
-                QSet<QString> statusSet = val.value<QSet<QString>>();
+                auto statusSet = val.value<QSet<QString>>();
 
-                // В Qt 6 метод .toList() удален. Конструктор от итераторов — стандарт 2026 года.
+       auto� Qt; 6 метод .toList() удален. Конструктор от итераторов стандарт 2026 года.
                 statusNames = QStringList(statusSet.begin(), statusSet.end());
             }
 

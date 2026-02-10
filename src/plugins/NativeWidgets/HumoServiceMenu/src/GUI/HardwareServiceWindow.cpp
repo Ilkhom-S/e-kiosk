@@ -56,11 +56,7 @@ bool HardwareServiceWindow::deactivate() {
 
 //------------------------------------------------------------------------
 bool HardwareServiceWindow::initialize() {
-    if (!m_Window->initialize()) {
-        return false;
-    }
-
-    return true;
+    return m_Window->initialize();
 }
 
 //------------------------------------------------------------------------
@@ -116,7 +112,7 @@ void HardwareServiceWindow::onRemoveSlot(DeviceSlot *aSlot) {
 void HardwareServiceWindow::onEditFinished() {
     wContainer->setCurrentWidget(wMainPage);
 
-    EditorPane *editor = qobject_cast<EditorPane *>(sender());
+    auto *editor = qobject_cast<EditorPane *>(sender());
     if (editor) {
         wEditorPage->layout()->removeWidget(editor->getWidget());
         QString deviceType(editor->getSlot()->getType());

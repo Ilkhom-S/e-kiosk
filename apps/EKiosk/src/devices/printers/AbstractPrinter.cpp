@@ -3,12 +3,9 @@
 #include <QtCore/QDebug>
 #include <QtCore5Compat/QTextCodec>
 
-BasePrinterDevices::BasePrinterDevices(QObject *parent) : QThread(parent) {
-    Debugger = false;
-    smallCheck = false;
-    viewLogoImg = false;
-    devicesCreated = false;
-    counterIndicate = false;
+BasePrinterDevices::BasePrinterDevices(QObject *parent)
+    : QThread(parent), Debugger(false), counterIndicate(false), devicesCreated(false),
+      smallCheck(false), viewLogoImg(false) {
 
     createDevicePort();
 }
@@ -27,10 +24,7 @@ bool BasePrinterDevices::createDevicePort() {
 }
 
 bool BasePrinterDevices::isOpened() {
-    if (serialPort->isOpen())
-        is_open = true;
-    else
-        is_open = false;
+    is_open = serialPort->isOpen();
 
     return is_open;
 }
@@ -54,12 +48,12 @@ bool BasePrinterDevices::closePort() {
 QByteArray BasePrinterDevices::packetImage(const QString &aPixelString, uchar aWidth) {
     QByteArray result;
     uchar height = 0;
-    if (aWidth) {
+    if (aWidth != 0u) {
         height = (uchar)(aPixelString.size() / aWidth);
     }
     uchar horizontalSize = aWidth;   // Размер по горизонтали, который мы передадим принтеру
     uchar verticalSize = height / 8; // Размер по вертикали, который мы передадим принтеру
-    if (height % 8) {
+    if ((height % 8) != 0) {
         verticalSize++;
     }
     // Разделим каждый столбец на элементы высотой по 8 точек и будем передавать
@@ -75,7 +69,7 @@ QByteArray BasePrinterDevices::packetImage(const QString &aPixelString, uchar aW
         // высоты рисунка на 8
         for (int i = 0; i < height; ++i) {
             fNeedAdd = true;
-            int pixel = aPixelString[j * height + i].toLatin1();
+            int pixel = aPixelString[(j * height) + i].toLatin1();
             if (pixel > 0) {
                 sum = sum + (uchar)pow((double)2, (double)num); // Возведение в степень
             }
@@ -92,7 +86,7 @@ QByteArray BasePrinterDevices::packetImage(const QString &aPixelString, uchar aW
         }
     }
     uchar nil = 0; // Нужно, чтобы запихнуть в массив нули
-    int nilsCount = horizontalSize * verticalSize * 8 - (result.size());
+    int nilsCount = (horizontalSize * verticalSize * 8) - (result.size());
     // Количество элементов, которые нужно заполнить нулями
     for (int i = 0; i < nilsCount; ++i) {
         result.push_back(nil);
@@ -154,7 +148,7 @@ bool BasePrinterDevices::sendCommand(QByteArray dataRequest,
 
         if (getResponse) {
             // Если нам нужен респонс
-            this->msleep(timeResponse);
+            BasePrinterDevices::msleep(timeResponse);
             bool ret = serialPort->waitForReadyRead(timeResponse);
             if (ret) {
                 // Есть ответ
@@ -171,7 +165,7 @@ bool BasePrinterDevices::sendCommand(QByteArray dataRequest,
         }
 
         // Задержка после команды
-        this->msleep(timeSleep);
+        BasePrinterDevices::msleep(timeSleep);
         return true;
     }
     return false;
@@ -255,7 +249,7 @@ QByteArray BasePrinterDevices::asciiNull() {
 
 //--------------------------------------------------------------------------------
 bool getBit(char aValue, int aShift) {
-    return (aValue >> aShift) & 1;
+    return ((aValue >> aShift) & 1) != 0;
 }
 
 //--------------------------------------------------------------------------------
@@ -266,7 +260,7 @@ bool positiveMasking(char aValue, char aMask) {
     for (int i = 0; i < aValue * 8; ++i) {
         char localMask = 1 << i;
 
-        if (aMask & localMask) {
+        if ((aMask & localMask) != 0) {
             result &= getBit(aValue, i);
         }
     }
@@ -282,7 +276,7 @@ bool negativeMasking(char aValue, char aMask) {
     for (int i = 0; i < aValue * 8; ++i) {
         char localMask = 1 << i;
 
-        if (~aMask & localMask) {
+        if ((~aMask & localMask) != 0) {
             result &= !getBit(aValue, i);
         }
     }

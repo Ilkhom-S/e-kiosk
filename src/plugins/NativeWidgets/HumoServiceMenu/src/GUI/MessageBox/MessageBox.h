@@ -82,7 +82,7 @@ private:
     QPointer<QObject> m_SignalReceiver;
     QTimer m_WaitTimer;
     QPointer<MessageWindow> m_Window;
-    QWidget *m_ParentWidget;
+    QWidget *m_ParentWidget{};
 };
 
 } // namespace GUI

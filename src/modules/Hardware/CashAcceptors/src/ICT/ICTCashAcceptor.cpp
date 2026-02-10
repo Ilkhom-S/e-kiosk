@@ -140,8 +140,8 @@ bool ICTCashAcceptor::isConnected() {
         m_DeviceCodeSpecification.dynamicCast<CICTBase::DeviceCodeSpecification>().data();
 
     if ((answer.right(3) != CICTBase::Answers::Identification) &&
-        !((answer.size() > 2) && (answer[0] == answer[1]) && (answer[0] == answer[2]) &&
-          specification->contains(answer[0]))) {
+        ((answer.size() <= 2) || (answer[0] != answer[1]) || (answer[0] != answer[2]) ||
+          !specification->contains(answer[0]))) {
         return false;
     }
 

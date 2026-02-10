@@ -8,8 +8,8 @@
 #include "GUI/TokenWindow.h"
 
 TokenWizardPage::TokenWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : WizardPageBase(aBackend, aParent), m_UIUpdateTimer(0) {
-    m_TokenWindow = new TokenWindow(aBackend, this);
+    : WizardPageBase(aBackend, aParent), m_UIUpdateTimer(0), m_TokenWindow(new TokenWindow(aBackend, this)) {
+    
 
     connect(m_TokenWindow, SIGNAL(beginFormat()), SLOT(onBeginFormat()));
     connect(m_TokenWindow, SIGNAL(endFormat()), SLOT(onEndFormat()));
@@ -80,7 +80,7 @@ void TokenWizardPage::onError(QString aError) {
 }
 
 //------------------------------------------------------------------------
-void TokenWizardPage::timerEvent(QTimerEvent *) {
+void TokenWizardPage::timerEvent(QTimerEvent * /*event*/) {
     auto status = m_Backend->getKeysManager()->tokenStatus();
 
     m_TokenWindow->initialize(status);

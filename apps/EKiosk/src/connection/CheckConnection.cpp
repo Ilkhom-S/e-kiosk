@@ -2,26 +2,26 @@
 
 #include <QtCore/QJsonDocument>
 
-CheckConnection::CheckConnection(QObject *parent) : QThread(parent) {
-    m_pTcpSocket = new QTcpSocket(this);
+CheckConnection::CheckConnection(QObject *parent) : QThread(parent), abortTimer(new QTimer(this)), m_pTcpSocket(new QTcpSocket(this)), manager(new QNetworkAccessManager(this)), stsTimer(new QTimer(this)) {
+    
     connect(m_pTcpSocket, SIGNAL(connected()), SLOT(slotConnectedOk()));
     connect(m_pTcpSocket,
             SIGNAL(error(QAbstractSocket::SocketError)),
             this,
             SLOT(slotErrorConnected(QAbstractSocket::SocketError)));
 
-    manager = new QNetworkAccessManager(this);
+    
     connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
     connect(manager,
             SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
             this,
             SLOT(handleSslErrors(QNetworkReply *, QList<QSslError>)));
 
-    abortTimer = new QTimer(this);
+    
     abortTimer->setSingleShot(true);
     connect(abortTimer, SIGNAL(timeout()), this, SLOT(timeOutDisconnect()));
 
-    stsTimer = new QTimer(this);
+    
     stsTimer->setSingleShot(true);
     connect(stsTimer, SIGNAL(timeout()), this, SLOT(timeOutDisconnect()));
 }

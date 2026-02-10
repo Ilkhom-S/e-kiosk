@@ -56,7 +56,7 @@ private:
     virtual void mousePressEvent(QMouseEvent *aEvent);
 
 private:
-    Ui::KeyboardWindow ui;
+    Ui::KeyboardWindow ui{};
 
 private:
     typedef QMap<QString, VirtualButton> TKeyMap;

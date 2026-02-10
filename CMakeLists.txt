@@ -1,99 +1,86 @@
 cmake_minimum_required(VERSION 3.16)
 
-# Include EKiosk version configuration logic
+# 1. Versioning logic
 include(scripts/build/cmake/EKVersionConfig.cmake)
-
-# Generate version files during configure step (so they always exist for IDEs and build)
 ek_configure_version()
 
-if(APPLE)
-    add_link_options("-Wl,-no_warn_duplicate_libraries")
-endif()
-
-# Ensure SingleApplication include path is available globally on non-Windows platforms
-if(NOT WIN32)
-    include_directories(${CMAKE_SOURCE_DIR}/thirdparty/SingleApplication)
-endif()
-
-# When supported, prefer the modern behavior for Boost package lookup and
-# avoid the developer warning about the removed FindBoost module.
+# 2. Modern Qt Standard Setup (Qt6 only, safe for Qt5)
+# This handles AUTOMOC, AUTOUIC, and AUTORCC automatically for Qt6
 if(POLICY CMP0167)
     cmake_policy(SET CMP0167 OLD)
 endif()
 
+# Put these BEFORE project() to catch the toolchain initialization
+set(VCPKG_VERBOSE OFF CACHE BOOL "")
+set(VCPKG_PRINT_POST_INSTALL_MESSAGES OFF CACHE BOOL "")
+set(CMAKE_MESSAGE_LOG_LEVEL NOTICE)
+# This silences the "package provides CMake targets" usage messages
+set(VCPKG_INSTALL_OPTIONS "--no-print-usage" CACHE STRING "")
+
 project(EKioskRoot VERSION 1.0.0 LANGUAGES CXX C)
 
 if(APPLE)
+    add_link_options("-Wl,-no_warn_duplicate_libraries")
     enable_language(OBJCXX)
 endif()
 
-# Allow overriding the public include directory via the EK_INCLUDES_DIR environment variable
-# Final fallback is ${CMAKE_SOURCE_DIR}/include to keep local builds working.
-if(DEFINED ENV{EK_INCLUDES_DIR})
-    set(EK_INCLUDES_DIR $ENV{EK_INCLUDES_DIR} CACHE PATH "Path to public include dir (overridden by EK_INCLUDES_DIR env)")
-elseif(NOT DEFINED EK_INCLUDES_DIR)
-    set(EK_INCLUDES_DIR ${CMAKE_SOURCE_DIR}/include CACHE PATH "Path to public include dir")
-endif()
-message(STATUS "Using EK includes dir: ${EK_INCLUDES_DIR}")
+# 3. Global Qt Detection
+# Finds whichever version is available (Qt6 preferred)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
+    Core Widgets Gui Network WebSockets SerialPort Sql Test
+    Quick Concurrent Xml LinguistTools QuickWidgets Qml PrintSupport
+)
 
-# Set build output directory for all configs from EK_BIN_DIR if set, else use default
+if(QT_VERSION_MAJOR EQUAL 6)
+    # This replaces the need for include(Qt6)
+    # and sets up AUTOMOC/AUTOUIC correctly.
+    set(QT_STANDARD_PROJECT_SETUP ON)
+endif()
+
+# 4. Path Configurations (Cleaned up)
+if(DEFINED ENV{EK_INCLUDES_DIR})
+    set(EK_INCLUDES_DIR $ENV{EK_INCLUDES_DIR} CACHE PATH "Path to public include dir")
+else()
+    set(EK_INCLUDES_DIR "${CMAKE_SOURCE_DIR}/include" CACHE PATH "Path to public include dir")
+endif()
+
+# Build output directories
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 if(DEFINED ENV{EK_BIN_DIR})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$ENV{EK_BIN_DIR}")
-else()
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 endif()
-foreach(_cfg IN ITEMS Debug Release RelWithDebInfo MinSizeRel)
-    string(TOUPPER "${_cfg}" _CFG_UPPER)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_CFG_UPPER} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-endforeach()
 
-# Global Qt detection for all modules/apps/tests
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
-
-# Load the actual Qt package with required components
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui Network WebSockets SerialPort Sql Quick Concurrent Xml LinguistTools QuickWidgets Qml PrintSupport)
-
-# Find Boost (installed via vcpkg) - header-only usage only
-# find_package(Boost REQUIRED)
-
-# SingleApplication setup for freestanding mode
-set(QAPPLICATION_CLASS QApplication CACHE STRING "Inheritance class for SingleApplication")
-
-# Thirdparty libraries are configured in thirdparty/CMakeLists.txt
-# This provides clean EK::* targets for all dependencies
+# 5. Thirdparty & Dependencies
+# Note: SingleApplication include path is now handled INSIDE thirdparty/CMakeLists.txt
 if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/CMakeLists.txt")
-    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty ${CMAKE_BINARY_DIR}/thirdparty)
+    add_subdirectory(thirdparty)
 endif()
 
-# Testing and coverage configuration
-include(${CMAKE_SOURCE_DIR}/cmake/EKTestingSetup.cmake)
+# 6. Boost Configuration (Multiplatform / vcpkg compatible)
+# Removed hardcoded 'arm64-osx' path
+find_package(Boost REQUIRED)
+add_library(ek_boost INTERFACE)
+target_link_libraries(ek_boost INTERFACE Boost::boost)
 
-# INI template generation helper (ek_generate_ini_template)
-include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
-
-# FR (Fiscal Register) support - deprecated, disabled by default
-option(EKIOSK_ENABLE_FR "Enable FR (Fiscal Register) support" OFF)
-if(NOT EKIOSK_ENABLE_FR)
-    message(STATUS "FR (Fiscal Register) support is disabled (deprecated)")
-endif()
-
-
-# Create an INTERFACE target `ek_common` that exports the common include dir
+# 7. Common Interface Target
 add_library(ek_common INTERFACE)
-# Use the overridable EK_INCLUDES_DIR so downstream builds can point to a different include tree
 target_include_directories(ek_common INTERFACE
     $<BUILD_INTERFACE:${EK_INCLUDES_DIR}>
     $<INSTALL_INTERFACE:include>
 )
 
-# Create an INTERFACE target for Boost includes
-add_library(ek_boost INTERFACE)
-target_include_directories(ek_boost INTERFACE ${CMAKE_SOURCE_DIR}/vcpkg_installed/arm64-osx/include)
+# 8. Feature Options
+option(EKIOSK_ENABLE_FR "Enable FR (Fiscal Register) support" OFF)
+if(NOT EKIOSK_ENABLE_FR)
+    message(STATUS "FR support is disabled (deprecated)")
+endif()
 
-# Thirdparty libraries are configured in thirdparty/CMakeLists.txt
-# Only reference subdirectories for modular apps/libraries
+# 9. Additional Logic Modules
+include(${CMAKE_SOURCE_DIR}/cmake/EKTestingSetup.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
+
+# 10. Project Subdirectories
 add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(tests)
-
-

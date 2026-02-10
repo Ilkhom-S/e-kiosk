@@ -24,7 +24,7 @@ protected:
     bool getAnswer(QByteArray &aAnswerData);
 
     /// Проверка пришедших из порта данных.
-    bool check(const QByteArray &aPacket);
+    bool check(const QByteArray &aAnswer);
 };
 
 //--------------------------------------------------------------------------------

@@ -16,13 +16,13 @@ public:
 
     void setValidator(QString name);
     void setPortName(QString portName);
-    static void setPortListInfo(QStringList port_list);
+    static void setPortListInfo(QStringList portList);
     void setPartNumber(QString partNumber);
     bool openPort();
-    bool isItYou(QStringList &com_List,
-                 QString &validator_name,
-                 QString &com_str,
-                 QString &validator_coment);
+    bool isItYou(QStringList &aComList,
+                 QString &aValidatorName,
+                 QString &aComStr,
+                 QString &aValidatorComent);
 
     void closeThis();
     bool pollState();
@@ -49,14 +49,14 @@ private:
     QStringList portList;
     QString validatorName;
 
-    bool CIsItYou(QString &validat_name);
+    bool CIsItYou(QString &aValidatorName);
 
     int cmdExec{};
 
     virtual void run();
 
 private slots:
-    void termanatedThread();
+    void terminatedThread();
 
 signals:
     void eNominal(int nominal);

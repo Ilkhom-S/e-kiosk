@@ -23,10 +23,10 @@ class Component : public QObject {
     Q_OBJECT
 
 public:
-    Component(const QString &aName,
+    Component(const QString &aId,
               const QString &aVersion,
               const TFileList &aFiles,
-              const QStringList &aPostActions,
+              const QStringList &aActions,
               const QString &aURL);
     virtual ~Component();
 

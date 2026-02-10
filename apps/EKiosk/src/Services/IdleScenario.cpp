@@ -40,7 +40,7 @@ IdleScenario::IdleScenario(IApplication *aApplication)
 //---------------------------------------------------------------------------
 IdleScenario::~IdleScenario() {
     // Показываем маскирующий экран.
-    auto watchServiceClient = TerminalService::instance(m_Application)->getClient();
+    auto *watchServiceClient = TerminalService::instance(m_Application)->getClient();
     watchServiceClient->showSplashScreen();
 }
 
@@ -81,7 +81,7 @@ void IdleScenario::start(const QVariantMap &aContext) {
     m_Active = true;
 
     // Прячем маскирующий экран.
-    auto watchServiceClient = TerminalService::instance(m_Application)->getClient();
+    auto *watchServiceClient = TerminalService::instance(m_Application)->getClient();
     watchServiceClient->hideSplashScreen();
 }
 
@@ -122,7 +122,7 @@ bool IdleScenario::canStop() {
 
 //---------------------------------------------------------------------------
 QString IdleScenario::getState() const {
-    return QString("main");
+    return {"main"};
 }
 
 //---------------------------------------------------------------------------
@@ -146,7 +146,7 @@ void IdleScenario::execCommand() {
 
 //---------------------------------------------------------------------------
 void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParameters) {
-    auto guiService = GUIService::instance(m_Application);
+    auto *guiService = GUIService::instance(m_Application);
 
     // Запускаем сервисное меню.
     if (aSignal == CGUISignals::ScreenPasswordUpdated) {
@@ -174,7 +174,7 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
     }
 
     // Проверяем наличие устройств с ошибкой.
-    auto terminalService = TerminalService::instance(m_Application);
+    auto *terminalService = TerminalService::instance(m_Application);
     auto faultyDevices = terminalService->getFaultyDevices();
     auto faultyDeviceNames = faultyDevices.keys();
 
@@ -348,7 +348,7 @@ void IdleScenario::timerEvent(QTimerEvent *aEvent) {
         m_InterfaceLockedTimer = 0;
 
         // Терминал заблокирован.
-        auto terminalService = TerminalService::instance(m_Application);
+        auto *terminalService = TerminalService::instance(m_Application);
         terminalService->setTerminalError(PPSDK::ETerminalError::InterfaceLocked, true);
     }
 }

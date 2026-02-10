@@ -11,12 +11,12 @@ void SendOtp::resendRequest() {
     emit emit_SendOtpResult("", "");
 }
 
-void SendOtp::setDataNote(const QDomNode &dom_Element) {
+void SendOtp::setDataNote(const QDomNode &domElement) {
     resultCode = "";
     otpId = "";
 
     // Парсим данные
-    parcerNote(dom_Element);
+    parseNode(domElement);
 
     if (resultCode != "") {
         // Тут отправляем сигнал с балансом
@@ -25,39 +25,38 @@ void SendOtp::setDataNote(const QDomNode &dom_Element) {
     }
 
     emit emit_SendOtpResult("", "");
-    return;
 }
 
-void SendOtp::parcerNote(const QDomNode &dom_Element) {
+void SendOtp::parseNode(const QDomNode &domElement) {
     // Необходимо отпарсить документ
-    QDomNode dom_Node = dom_Element.firstChild();
+    QDomNode domNode = domElement.firstChild();
 
-    while (!dom_Node.isNull()) {
-        if (dom_Node.isElement()) {
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
 
-            QDomElement dom_Element = dom_Node.toElement();
-            QString strTag = dom_Element.tagName();
+            QDomElement domElement = domNode.toElement();
+            QString strTag = domElement.tagName();
 
             if (strTag == "resultCode") {
-                resultCode = dom_Element.text();
+                resultCode = domElement.text();
             }
 
             if (strTag == "otp_id") {
-                otpId = dom_Element.text();
+                otpId = domElement.text();
             }
         }
 
-        parcerNote(dom_Node);
-        dom_Node = dom_Node.nextSibling();
+        parseNode(domNode);
+        domNode = domNode.nextSibling();
     }
 }
 
 void SendOtp::sendOtpRequest(QString account) {
-    QString header_xml = getHeaderRequest(Request::Type::SendOtp);
+    QString headerXml = getHeaderRequest(Request::Type::SendOtp);
 
-    QString footer_xml = getFooterRequest();
+    QString footerXml = getFooterRequest();
 
-    QString xml = QString(header_xml + "<account>%1</account>\n" + footer_xml).arg(account);
+    QString xml = QString(headerXml + "<account>%1</account>\n" + footerXml).arg(account);
 
     sendRequest(xml, 20000);
 }

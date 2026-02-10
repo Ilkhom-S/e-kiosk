@@ -11,7 +11,7 @@ using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
-EBDSCashAcceptor::EBDSCashAcceptor() {
+EBDSCashAcceptor::EBDSCashAcceptor() : m_StackerNearFull(false), m_Enabled(false) {
     // параметры порта
     m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
     m_PortParameters[EParameters::Parity].append(EParity::Even);
@@ -21,9 +21,9 @@ EBDSCashAcceptor::EBDSCashAcceptor() {
 
     // данные устройства
     m_DeviceName = "EBDS cash acceptor";
-    m_StackerNearFull = false;
+    
     m_ResetWaiting = EResetWaiting::Available;
-    m_Enabled = false;
+    
 
     // параметры протокола
     m_DeviceCodeSpecification = PDeviceCodeSpecification(new CEBDS::DeviceCodeSpecification);
@@ -37,7 +37,7 @@ QStringList EBDSCashAcceptor::getModelList() {
         result << aData.name;
     }
 
-    return QList<QString>(result.begin(), result.end());
+    return {result.begin(), result.end()};
 }
 
 //---------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ SPar EBDSCashAcceptor::getPar(const QByteArray &aData) {
               m_DeviceName + QString(": Too small answer size = %1 for nominal, need %2 minimum")
                                  .arg(aData.size())
                                  .arg(CEBDS::NominalSize));
-        return SPar();
+        return {};
     }
 
     int nominal = aData.mid(10, 3).toInt() * int(qPow(10, aData.mid(13, 3).toDouble()));

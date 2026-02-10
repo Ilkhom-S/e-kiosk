@@ -68,7 +68,7 @@ public:
     bool sendRequest(QString request, int timeOut);
     void setUrl(QString url);
     QString getHeaderRequest(int type);
-    QString getFooterRequest();
+    QString getFooterRequest() const;
     void setDbConnect(QSqlDatabase &dbName);
     void setAuthData(const QString token, const QString uuid, const QString version);
     void stopProcess();
@@ -97,9 +97,9 @@ private:
     QString token;
     QString uuid;
 
-    QString host();
+    QString host() const;
 
-    void toDebug(QString data);
+    void toDebug(QString data) const;
 
 protected:
     void run();
@@ -109,12 +109,12 @@ public slots:
     void slotQHttpAbort();
     void slotError(QNetworkReply::NetworkError error);
     void sendRequestData();
-    void timerAbortStarted();
+    void timerAbortStarted() const;
 
 signals:
     void emit_QHttpAbort();
     void emit_Loging(int status, QString title, QString text);
-    void emit_Dom_Element(const QDomNode &dom_Element);
+    void emit_Dom_Element(const QDomNode &domElement);
     void emit_ErrResponse();
     void emit_abortTimer(int msec);
     void send_req_data();

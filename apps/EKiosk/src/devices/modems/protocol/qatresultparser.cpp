@@ -19,6 +19,8 @@
 
 #include "qatresultparser.h"
 
+#include <utility>
+
 #include "qatresult.h"
 #include "qatutils.h"
 
@@ -51,14 +53,13 @@
 
 class QAtResultParserPrivate {
 public:
-    QAtResultParserPrivate(const QString &content)
-        : response(content), posn(0), linePosn(0), notification(false) {}
+    QAtResultParserPrivate(QString content) : response(std::move(content)) {}
 
     QString response;
     QString line;
-    int posn;
-    int linePosn;
-    bool notification;
+    int posn{0};
+    int linePosn{0};
+    bool notification{false};
 };
 
 /*!
@@ -303,12 +304,12 @@ QList<QAtResultParser::Node> QAtResultParser::readList() {
     \sa QAtResultParser::readList()
 */
 
-QAtResultParser::Node::Node(uint number) : _kind(Number), _number(number), _list(0) {}
+QAtResultParser::Node::Node(uint number) : _kind(Number), _number(number), _list(nullptr) {}
 
 QAtResultParser::Node::Node(uint first, uint last)
-    : _kind(Range), _number(first), _last(last), _list(0) {}
+    : _kind(Range), _number(first), _last(last), _list(nullptr) {}
 
-QAtResultParser::Node::Node(const QString &str) : _kind(String), _str(str), _list(0) {}
+QAtResultParser::Node::Node(QString str) : _kind(String), _str(std::move(str)), _list(nullptr) {}
 
 QAtResultParser::Node::Node(QList<Node> *list) : _kind(List), _list(list) {}
 
@@ -317,7 +318,7 @@ QAtResultParser::Node::Node(QList<Node> *list) : _kind(List), _list(list) {}
 */
 QAtResultParser::Node::Node(const Node &other)
     : _kind(other._kind), _number(other._number), _last(other._last), _str(other._str),
-      _list(other._list ? new QList<Node>(*other._list) : 0) {}
+      _list(other._list ? new QList<Node>(*other._list) : nullptr) {}
 
 /*!
     Destruct this node.

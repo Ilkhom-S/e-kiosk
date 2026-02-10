@@ -164,20 +164,20 @@ class BasePrinterDevices : public QThread {
 public:
     BasePrinterDevices(QObject *parent = 0);
 
-    QSerialPort *serialPort;
+    QSerialPort *serialPort{};
 
     bool Debugger;
     bool devicesCreated;
-    bool is_open;
+    bool is_open{};
 
     QString com_Name;
     QString company_name;
-    int statusDevices;
+    int statusDevices{};
     bool smallCheck;
-    int checkWidth;
+    int checkWidth{};
     bool viewLogoImg;
-    int leftMargin;
-    bool SmallBetweenString;
+    int leftMargin{};
+    bool SmallBetweenString{};
     bool counterIndicate;
 
     // Методы которые не надо перегружать
@@ -185,7 +185,7 @@ public:
     // Создаем устройство для работы с портами
     bool createDevicePort();
     bool closePort();
-    void setPortName(const QString com_Name);
+    void setPortName(const QString comName);
 
     bool isOpened();
     // Печатаем в 16-ом коде
@@ -199,12 +199,12 @@ public:
                      QByteArray &dataResponse,
                      int timeSleep);
     QByteArray encodingString(const QString &text, const QByteArray charCode);
-    void setFirm_Pattern(const QString firm_name);
+    void setFirm_Pattern(const QString firmName);
     void setCheckWidth(int width);
-    void setCheckSmall(bool smallCheck);
-    void setLeftMargin(int left_margin);
+    void setCheckSmall(bool smallChek);
+    void setLeftMargin(int leftMargin);
     QByteArray packetImage(const QString &aPixelString, uchar aWidth);
-    void setSmallBetweenString(bool between);
+    void setSmallBetweenString(bool beetwen);
 
     QByteArray asciiNull();
 };

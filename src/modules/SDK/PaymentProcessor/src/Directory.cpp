@@ -44,7 +44,7 @@ Directory::Directory(TPtree &aProperties)
                         range.to = idTag.second.get<qint64>("to");
                     } else {
                         if (idTag.first == "id") {
-                            qint64 id = idTag.second.get_value<qint64>();
+                            auto id = idTag.second.get_value<qint64>();
 
                             range.ids << id;
                             m_OverlappedIDs
@@ -78,7 +78,7 @@ Directory::Directory(TPtree &aProperties)
 }
 
 //---------------------------------------------------------------------------
-Directory::~Directory() {}
+Directory::~Directory() = default;
 
 //---------------------------------------------------------------------------
 QList<SConnectionTemplate> Directory::getConnectionTemplates() const {

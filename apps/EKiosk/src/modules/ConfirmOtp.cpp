@@ -15,7 +15,7 @@ void Confirm_Otp::setDataNote(const QDomNode &domElement) {
     resultCode = "";
 
     // Парсим данные
-    parcerNote(domElement);
+    parseNode(domElement);
 
     if (resultCode != "") {
         // Тут отправляем сигнал с балансом
@@ -24,10 +24,9 @@ void Confirm_Otp::setDataNote(const QDomNode &domElement) {
     }
 
     emit emit_Confirm_OtpResult("");
-    return;
 }
 
-void Confirm_Otp::parcerNote(const QDomNode &domElement) {
+void Confirm_Otp::parseNode(const QDomNode &domElement) {
     // Необходимо отпарсить документ
     QDomNode domNode = domElement.firstChild();
 
@@ -42,7 +41,7 @@ void Confirm_Otp::parcerNote(const QDomNode &domElement) {
             }
         }
 
-        parcerNote(domNode);
+        parseNode(domNode);
         domNode = domNode.nextSibling();
     }
 }

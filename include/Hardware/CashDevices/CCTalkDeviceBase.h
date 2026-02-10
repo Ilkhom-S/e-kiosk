@@ -46,7 +46,7 @@ protected:
     PAllModelData m_AllModelData;
 
     /// Базовый год (для парсинга дат).
-    int m_BaseYear;
+    int m_BaseYear{};
 
     /// Протокол.
     CCTalkCAProtocol m_Protocol;

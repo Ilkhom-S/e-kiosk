@@ -62,14 +62,15 @@ void EpsonEUT400::setDeviceConfiguration(const QVariantMap &aConfiguration) {
         int lineSpacing = getConfigParameter(CHardware::Printer::Settings::LineSpacing, 0).toInt();
 
         int feeding = 6;
-        if (lineSpacing >= 50)
+        if (lineSpacing >= 50) {
             feeding = 2;
-        else if (lineSpacing >= 38)
+        } else if (lineSpacing >= 38) {
             feeding = 3;
-        else if (lineSpacing >= 30)
+        } else if (lineSpacing >= 30) {
             feeding = 4;
-        else if (lineSpacing >= 25)
+        } else if (lineSpacing >= 25) {
             feeding = 5;
+}
 
         setConfigParameter(CHardware::Printer::FeedingAmount, feeding);
         setConfigParameter(CHardware::Printer::Commands::Cutting, CEpsonEUT400::Command::Cut);
@@ -103,7 +104,7 @@ bool EpsonEUT400::updateParametersOut() {
 
 //--------------------------------------------------------------------------------
 bool EpsonEUT400::updateParameters() {
-    char receiptProcessing2;
+    char receiptProcessing2 = 0;
 
     if (!getMemorySwitch(CEpsonEUT400::MemorySwitch::ReceiptProcessing2, receiptProcessing2)) {
         return false;
@@ -178,7 +179,7 @@ bool EpsonEUT400::getMemorySwitch(char aNumber, char &aValue) {
         return false;
     }
 
-    bool OK;
+    bool OK = false;
     aValue = char(answer.mid(2, 8).toInt(&OK, 2));
 
     if (!OK) {
@@ -244,8 +245,9 @@ void EpsonEUT400::processDeviceData() {
     }
 
     auto processCommand = [&](const QByteArray &aCommand) -> bool {
-        if (!m_IOPort->write(aCommand) || !getAnswer(answer, CPOSPrinter::Timeouts::Info))
+        if (!m_IOPort->write(aCommand) || !getAnswer(answer, CPOSPrinter::Timeouts::Info)) {
             return false;
+}
         answer.replace('\x00', "").replace('\x5f', "");
         return !answer.isEmpty();
     };

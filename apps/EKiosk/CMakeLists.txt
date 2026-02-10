@@ -37,6 +37,7 @@ ek_add_application(ekiosk
     EK::QZint
     PPSDK
     PPSDK
+    BasicApplication
     GUISDK
     PluginsSDK
     DriversSDK

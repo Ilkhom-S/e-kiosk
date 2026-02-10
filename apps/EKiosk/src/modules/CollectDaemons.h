@@ -94,14 +94,14 @@ public:
                            QString &trnFrom,
                            QString &trnTo);
     bool getCheckText(QString &text, bool preCheck, QString dateP, QString cid = QString());
-    bool getDataCollectList(QStringList &lst, int &count_i);
+    bool getDataCollectList(QStringList &lst, int &countI);
 
     QString getCollectionId(QString status = "new");
 
     QTimer *demonTimer;
-    QTimer *sendNewTimer;
+    QTimer *sendNewTimer{};
     int countAllRep;
-    int RealRepeet;
+    int RealRepeat;
 
     QString SMSTEXT;
 
@@ -109,7 +109,7 @@ private:
     NominalData nominalData;
 
     int getNonCollectOperationCount(const QString cid);
-    int getCollectCount(bool new_collect);
+    int getCollectCount(bool newCollect);
     bool sendCollection(QString &trnId,
                         const QString collectionId,
                         QString &collectionIdNext,
@@ -120,12 +120,12 @@ private:
     QString getDenominalXml();
     bool getDatePrevCollection(QString &date, QString collectionId);
     bool getTrnOperation(const QString collectId, const QString &cmd, QString &trn);
-    bool getMoneyOut(const QString &collectionId, int &num_Out, double &sum_Out);
+    bool getMoneyOut(const QString &collectionId, int &numOut, double &sumOut);
     bool getCollectionInfo(QString collectionId,
                            QString &collectionIdNext,
                            QString &idTrn,
                            QString &dateCreate,
-                           QString &denom_Xml);
+                           QString &denomXml);
     bool parsDenomilSlot(const QString &xmlDenom);
     bool updateMoneyOut(QString collectionId, QString collectionStatus);
     void getXmlForSend(QString &xml,
@@ -138,11 +138,11 @@ private:
                        double moneyOutSum,
                        QString trnFrom,
                        QString trnTo);
-    void parcerNote(const QDomNode &dom_Element);
+    void parseNode(const QDomNode &domElement);
 
     QString getCollectIdByDate(QString date);
 
-    int repeatCount;
+    int repeatCount{};
 
     QString cIdUpdate;
 
@@ -151,7 +151,7 @@ private:
     QString pass;
     QString requestXml;
 
-    QString getCoinTxt(int coin);
+    QString getCoinTxt(int coin) const;
 
 private slots:
     bool parserCollectIntoOperation(const QString cid);
@@ -159,8 +159,8 @@ private slots:
     void sendCollectRequest();
     void getRequestParam();
     void errResponse();
-    void setDataNote(const QDomNode &dom_Element);
+    void setDataNote(const QDomNode &domElement);
 
 signals:
-    void lockUnlockAvtorization(bool lock, int sts);
+    void lockUnlockAuthorization(bool lock, int sts);
 };

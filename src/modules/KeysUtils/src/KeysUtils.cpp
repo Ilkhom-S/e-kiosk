@@ -167,7 +167,7 @@ EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt,
                                       const QString &aPassword,
                                       SKeyPair &aPair) {
     QByteArray publicKey;
-    ulong serialNumber;
+    ulong serialNumber = 0;
 
     if (!aCrypt->exportPublicKey(aKeyNumber, publicKey, serialNumber)) {
         return EKeysUtilsError::KeyPairCreateError;

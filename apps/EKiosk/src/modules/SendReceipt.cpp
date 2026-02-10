@@ -10,23 +10,23 @@ SendReceipt::SendReceipt(QObject *parent) : SendRequest(parent) {
 void SendReceipt::resendRequest() {
     if (countAllRep < 3) {
         // Повторная отправка
-        QTimer::singleShot(20000 * countAllRep, this, SLOT(sendRequestRepeet()));
+        QTimer::singleShot(20000 * countAllRep, this, SLOT(sendRequestRepeat()));
     } else {
         emit emitSendReceiptResult("", "", "");
     }
 }
 
-void SendReceipt::sendRequestRepeet() {
+void SendReceipt::sendRequestRepeat() {
     countAllRep++;
     sendRequest(requestXml, 15000);
 }
 
-void SendReceipt::setDataNote(const QDomNode &dom_Element) {
+void SendReceipt::setDataNote(const QDomNode &domElement) {
     getData = false;
     resultCode = "";
 
     // Парсим данные
-    parcerNote(dom_Element);
+    parseNode(domElement);
 
     if (resultCode != "") {
         // Обнуляем счетчик
@@ -37,39 +37,39 @@ void SendReceipt::setDataNote(const QDomNode &dom_Element) {
     }
 }
 
-void SendReceipt::parcerNote(const QDomNode &dom_Element) {
+void SendReceipt::parseNode(const QDomNode &domElement) {
     // Необходимо отпарсить документ
-    QDomNode dom_Node = dom_Element.firstChild();
+    QDomNode domNode = domElement.firstChild();
 
-    while (!dom_Node.isNull()) {
-        if (dom_Node.isElement()) {
-            QDomElement dom_Element = dom_Node.toElement();
-            QString strTag = dom_Element.tagName();
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
+            QDomElement domElement = domNode.toElement();
+            QString strTag = domElement.tagName();
 
             if (strTag == "resultCode") {
-                resultCode = dom_Element.text();
+                resultCode = domElement.text();
             }
 
             if (strTag == "receipt") {
-                trn = dom_Element.attribute("tran_id", "");
-                status = dom_Element.attribute("resultCode", "");
+                trn = domElement.attribute("tran_id", "");
+                status = domElement.attribute("resultCode", "");
             }
         }
 
-        parcerNote(dom_Node);
-        dom_Node = dom_Node.nextSibling();
+        parseNode(domNode);
+        domNode = domNode.nextSibling();
     }
 }
 
 void SendReceipt::sendReceiptRequest(QString trn, QString notify) {
-    QString header_xml = getHeaderRequest(Request::Type::SendReceipt);
+    QString headerXml = getHeaderRequest(Request::Type::SendReceipt);
 
-    QString footer_xml = getFooterRequest();
+    QString footerXml = getFooterRequest();
 
-    QString xml = QString(header_xml +
+    QString xml = QString(headerXml +
                           "<receipts count=\"1\">"
                           "<receipt tranID=\"%1\" notify=\"%2\"/>" +
-                          "</receipts>" + footer_xml)
+                          "</receipts>" + footerXml)
                       .arg(trn)
                       .arg(notify);
 

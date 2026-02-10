@@ -16,7 +16,7 @@ public:
     QString getUserSelection() const;
     void fillModem_List(const QList<QPair<QString, QString>> &aModems);
     void fillConnectionList(const QStringList &aConnections, const QString &aCurrent);
-    void fillTemplateList(const QStringList &aConnections);
+    void fillTemplateList(const QStringList &aTemplates);
 
 signals:
     /// Пользователь выбрал создание соединения с заданными параметрами.

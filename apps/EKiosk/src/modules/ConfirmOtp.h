@@ -12,13 +12,13 @@ public:
 
 private slots:
     void resendRequest();
-    void setDataNote(const QDomNode &dom_Element);
+    void setDataNote(const QDomNode &domElement);
 
 public slots:
     void confirm_OtpRequest(QString otpId, QString otpValue);
 
 private:
-    void parcerNote(const QDomNode &dom_Element);
+    void parseNode(const QDomNode &domElement);
     QString resultCode;
 
 signals:

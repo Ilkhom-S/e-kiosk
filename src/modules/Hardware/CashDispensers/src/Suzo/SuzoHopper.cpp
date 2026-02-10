@@ -11,7 +11,7 @@ using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
-SuzoHopper::SuzoHopper() {
+SuzoHopper::SuzoHopper() : m_SingleMode(false) {
     // Параметры порта.
     m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
     m_PortParameters[EParameters::Parity].append(EParity::No);
@@ -23,7 +23,7 @@ SuzoHopper::SuzoHopper() {
     m_ProtocolTypes = getProtocolTypes();
     m_AllModelData = PAllModelData(new CCCTalk::Dispenser::CModelData());
     m_units = 1;
-    m_SingleMode = false;
+    
     m_resetIsPossible = false;
 
     setConfigParameter(CHardware::ProtocolType, CHardware::CashDevice::CCTalkTypes::CRC8);

@@ -12,14 +12,14 @@ public:
 
 private slots:
     void resendRequest();
-    void setDataNote(const QDomNode &dom_Element);
-    void sendRequestRepeet();
+    void setDataNote(const QDomNode &domElement);
+    void sendRequestRepeat();
 
 public slots:
     void sendCommandConfirm(QString trn, int cmd);
 
 private:
-    void parcerNote(const QDomNode &dom_Element);
+    void parseNode(const QDomNode &domElement);
 
     bool resultCode;
     int countAllRep;

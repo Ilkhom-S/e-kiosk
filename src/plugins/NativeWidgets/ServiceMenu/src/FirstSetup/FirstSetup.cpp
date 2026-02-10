@@ -38,7 +38,7 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
 
 //--------------------------------------------------------------------------
 FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : m_MainWidget(0), m_Environment(aFactory), m_InstancePath(aInstancePath), m_IsReady(false) {
+    : m_MainWidget(nullptr), m_Environment(aFactory), m_InstancePath(aInstancePath), m_IsReady(false) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
@@ -49,7 +49,7 @@ FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInst
         m_Environment->getLog("ServiceMenu")->write(LogLevel::Error, "Failed to get ICore");
     }
 
-    m_IsReady = core != 0;
+    m_IsReady = core != nullptr;
 
     if (m_IsReady) {
         m_MainWidget = new QGraphicsProxyWidget();
@@ -137,17 +137,17 @@ QQuickItem *FirstSetup::getWidget() const {
 //---------------------------------------------------------------------------
 QVariantMap FirstSetup::getContext() const {
     // TODO
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
 bool FirstSetup::isValid() const {
-    return m_MainWidget != 0;
+    return m_MainWidget != nullptr;
 }
 
 //---------------------------------------------------------------------------
 QString FirstSetup::getError() const {
-    return QString();
+    return {};
 }
 
 //---------------------------------------------------------------------------

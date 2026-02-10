@@ -27,7 +27,7 @@ private slots:
     void onError(QString aError);
 
 protected:
-    int m_UIUpdateTimer;
+    int m_UIUpdateTimer{};
     void timerEvent(QTimerEvent *);
 
 private:

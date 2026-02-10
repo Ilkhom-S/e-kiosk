@@ -60,7 +60,7 @@ AutoEncashmentWindow::AutoEncashmentWindow(HumoServiceBackend *aBackend, QWidget
 }
 
 //---------------------------------------------------------------------------
-AutoEncashmentWindow::~AutoEncashmentWindow() {}
+AutoEncashmentWindow::~AutoEncashmentWindow() = default;
 
 //---------------------------------------------------------------------------
 bool AutoEncashmentWindow::initialize() {
@@ -148,7 +148,7 @@ void AutoEncashmentWindow::onEncashment() {
 
 //---------------------------------------------------------------------------
 void AutoEncashmentWindow::onTestPrinter() {
-    auto paymentManager = m_Backend->getPaymentManager();
+    auto *paymentManager = m_Backend->getPaymentManager();
     bool isPrinterOK = paymentManager->canPrint(PPSDK::CReceiptType::Encashment);
 
     if (!isPrinterOK) {

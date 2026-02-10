@@ -283,7 +283,7 @@ enum Data {
     Status_12 = 8,
     // Терминал заблокирован по статусу Ошибка авторизации(Не верный номер
     // терминала, логин, пароль (150))
-    ErrorAvtorizat = 9,
+    ErrorAuthorization = 9,
     // Терминал заблокирован по статусу Не верный тип терминала(245)
     ErrorTypeTrm = 10,
     // Терминал заблокирован по статусу Нет прав на прим платежей(133)
@@ -294,7 +294,7 @@ enum Data {
     ErrorTypeUser = 13,
     // Терминал заблокирован по причине открыта админка
     ErrorOpenAdminP = 14,
-    ErrorDublicateNominal = 15,
+    ErrorDuplicateNominal = 15,
     ErrorDatabase = 16
 };
 } // namespace Lock

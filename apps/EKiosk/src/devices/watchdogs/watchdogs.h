@@ -83,10 +83,10 @@ class WatchDogs : public QThread {
 
 public:
     WatchDogs(QObject *parent = 0);
-    bool isItYou(QStringList &com_List, QString &wd_name, QString &com_str, QString &wd_coment);
+    bool isItYou(QStringList &comList, QString &wdName, QString &comStr, QString &wdComent);
     bool sendCommandToExec(WDProtocolCommands::Enum aCommand);
     bool toCommandExec(bool thread, WDProtocolCommands::Enum aCommand);
-    void setPort(const QString com_Name);
+    void setPort(const QString comName);
 
 private:
     QSerialPort *serialPort;
@@ -111,7 +111,7 @@ private:
                      int timeSleep);
 
     bool openPort();
-    bool isItYou(QString &wd_coment);
+    bool isItYou(QString &wdComent);
     bool processCommand(WDProtocolCommands::Enum aCommand,
                         const QByteArray &aCommandData,
                         QByteArray &aAnswerData);

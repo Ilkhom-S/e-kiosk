@@ -1,12 +1,16 @@
 #include "ClassAcceptor.h"
 
-QStringList acceptorList;
+namespace {
+const QStringList AcceptorList = []() -> QStringList {
+    QStringList list;
+    list << AcceptorModel::CCTalk;
+    return list;
+}();
+} // namespace
 
-ClassAcceptor::ClassAcceptor(QObject *parent) : QThread(parent) {
-    acceptorList << AcceptorModel::CCTalk;
-}
+ClassAcceptor::ClassAcceptor(QObject *parent) : QThread(parent) {}
 
-void ClassAcceptor::termanatedThread() {
+void ClassAcceptor::terminatedThread() {
     // qDebug() << "******************************************";
     // qDebug() << "Validator command terminated";
     // qDebug() << "******************************************";
@@ -60,7 +64,8 @@ void ClassAcceptor::setPartNumber(QString partNumber) {
 }
 
 void ClassAcceptor::setPortListInfo(QStringList portList) {
-    portList = portList;
+    Q_UNUSED(portList)
+    // Static method cannot access non-static member portList
 }
 
 bool ClassAcceptor::openPort() {
@@ -133,13 +138,22 @@ void ClassAcceptor::run() {
 
     case AcceptorCommands::Com_Clear:
         break;
+
+    default:
+        break;
     }
 }
 
-bool ClassAcceptor::isItYou(QStringList &comList,
-                            QString &validatorName,
-                            QString &comStr,
-                            QString &validatorComent) {
+bool ClassAcceptor::isItYou(QStringList &aComList,
+                            QString &aValidatorName,
+                            QString &aComStr,
+                            QString &aValidatorComent) {
+    // Use local references to match header parameter names
+    QStringList &comList = aComList;
+    QString &validatorName = aValidatorName;
+    QString &comStr = aComStr;
+    QString &validatorComent = aValidatorComent;
+
     if ((validatorName != "") && (comStr != "") && (comStr.contains("COM"))) {
         this->setValidator(validatorName);
         this->setPortName(comStr);
@@ -157,17 +171,17 @@ bool ClassAcceptor::isItYou(QStringList &comList,
         }
     }
 
-    for (int devCount = 0; devCount < acceptorList.count(); devCount++) {
+    for (int devCount = 0; devCount < AcceptorList.count(); devCount++) {
 
-        this->setValidator(acceptorList.at(devCount));
+        this->setValidator(AcceptorList.at(devCount));
 
-        for (int comCount = 0; comCount < comList.count(); comCount++) {
-            this->setPortName(comList.at(comCount));
+        for (int comCount = 0; comCount < aComList.count(); comCount++) {
+            this->setPortName(aComList.at(comCount));
 
             if (validatorName == AcceptorModel::CCTalk) {
                 if (CCTalkAcceptor->isItYou()) {
-                    nowValidatorName = validatorName = acceptorList.at(devCount);
-                    nowPortName = comStr = comList.at(comCount);
+                    nowValidatorName = validatorName = AcceptorList.at(devCount);
+                    nowPortName = comStr = aComList.at(comCount);
                     nowComent = validatorComent = CCTalkAcceptor->PartNumber;
                     this->v_PartNumber = CCTalkAcceptor->PartNumber;
                     this->v_SerialNumber = CCTalkAcceptor->SerialNumber;
@@ -181,8 +195,11 @@ bool ClassAcceptor::isItYou(QStringList &comList,
     return false;
 }
 
-bool ClassAcceptor::CIsItYou(QString &validatName) {
-    if (validatName == AcceptorModel::CCTalk) {
+bool ClassAcceptor::CIsItYou(QString &aValidatorName) {
+    // Use local reference to match header parameter name
+    QString &validatorName = aValidatorName;
+
+    if (validatorName == AcceptorModel::CCTalk) {
         if (CCTalkAcceptor->isItYou()) {
             this->v_PartNumber = CCTalkAcceptor->PartNumber;
             this->v_SerialNumber = CCTalkAcceptor->SerialNumber;

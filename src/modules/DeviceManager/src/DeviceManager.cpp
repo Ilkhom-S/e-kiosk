@@ -27,7 +27,7 @@ DeviceManager::DeviceManager(IPluginLoader *aPluginLoader)
 }
 
 //--------------------------------------------------------------------------------
-DeviceManager::~DeviceManager() {}
+DeviceManager::~DeviceManager() = default;
 
 //--------------------------------------------------------------------------------
 bool DeviceManager::initialize() {
@@ -92,7 +92,7 @@ IDevice *DeviceManager::acquireDevice(const QString &aInstancePath,
 
     // Создаем нужный плагин.
     IPlugin *plugin = m_PluginLoader->createPlugin(aInstancePath, configInstancePath);
-    IDevice *device = dynamic_cast<IDevice *>(plugin);
+    auto *device = dynamic_cast<IDevice *>(plugin);
 
     if (!device) {
         toLog(LogLevel::Error, QString("Failed to create device '%1'.").arg(aInstancePath));
@@ -179,7 +179,7 @@ IDevice *DeviceManager::acquireDevice(const QString &aInstancePath,
 
 //--------------------------------------------------------------------------------
 void DeviceManager::onConfigurationChanged() {
-    IDevice *device = dynamic_cast<IDevice *>(sender());
+    auto *device = dynamic_cast<IDevice *>(sender());
 
     dynamic_cast<IPlugin *>(device)->saveConfiguration();
 }
@@ -192,7 +192,7 @@ void DeviceManager::releaseDevice(IDevice *aDevice) {
     aDevice->release();
 
     // Уничтожаем instance плагина.
-    IPlugin *plugin = dynamic_cast<IPlugin *>(aDevice);
+    auto *plugin = dynamic_cast<IPlugin *>(aDevice);
 
     // #55103 - не сохраняем новую конфигурацию устройства, при выходе из клиента,
     //          т.к. иначе не сможем откатиться на старую версию EK.
@@ -224,7 +224,7 @@ TNamedDevice DeviceManager::createDevice(const QString &aDriverPath,
                                          bool aDetecting) {
     // Создаем нужный плагин.
     IPlugin *plugin = m_PluginLoader->createPlugin(aDriverPath);
-    IDevice *device = dynamic_cast<IDevice *>(plugin);
+    auto *device = dynamic_cast<IDevice *>(plugin);
 
     if (!device) {
         toLog(LogLevel::Error, QString("Failed to create device '%1'.").arg(aDriverPath));
@@ -308,7 +308,7 @@ TNamedDevice DeviceManager::findDevice(IDevice *aRequired, const QStringList &aD
     foreach (const QString &targetDevice, aDevicesToFind) {
         // Создаем нужный плагин.
         IPlugin *plugin = m_PluginLoader->createPlugin(targetDevice);
-        IDevice *device = dynamic_cast<IDevice *>(plugin);
+        auto *device = dynamic_cast<IDevice *>(plugin);
 
         if (!device) {
             toLog(LogLevel::Error, QString("Failed to create device %1 .").arg(targetDevice));
@@ -729,10 +729,12 @@ void DeviceManager::checkITInstancePath(QString &aInstancePath) {
     QStringList pathData = aInstancePath.split(".");
 
     if (pathData.size() > 4) {
-        if (!pathData[4].compare("ATOL", Qt::CaseInsensitive))
+        if (!pathData[4].compare("ATOL", Qt::CaseInsensitive)) {
             pathData[4] = pathData[4].replace("ATOL", "ATOL2", Qt::CaseInsensitive);
-        if (!pathData[4].compare("AtolOnline", Qt::CaseInsensitive))
+}
+        if (!pathData[4].compare("AtolOnline", Qt::CaseInsensitive)) {
             pathData[4] = pathData[4].replace("AtolOnline", "ATOL2Online", Qt::CaseInsensitive);
+}
 
         aInstancePath = pathData.join(".");
     }
@@ -945,7 +947,7 @@ void DeviceManager::setDeviceConfiguration(IDevice *aDevice, const QVariantMap &
         newSystem_Name = aConfig[CHardwareSDK::SystemName].toString();
 
         if (oldSystem_Name != newSystem_Name) {
-            IPlugin *plugin = dynamic_cast<IPlugin *>(system_Device);
+            auto *plugin = dynamic_cast<IPlugin *>(system_Device);
             QString driverPath =
                 plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
 
@@ -964,7 +966,7 @@ void DeviceManager::setDeviceConfiguration(IDevice *aDevice, const QVariantMap &
     foreach (IDevice *system_Device, m_DeviceDependencyMap.values(aDevice)) {
         // При изменении имени системного устройства меняем его доступность
         if (oldSystem_Name != newSystem_Name) {
-            IPlugin *plugin = dynamic_cast<IPlugin *>(system_Device);
+            auto *plugin = dynamic_cast<IPlugin *>(system_Device);
             QString driverPath =
                 plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
 
@@ -1076,11 +1078,14 @@ QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting)
 
     auto filterIndexes = [&logIndexes]() -> int {
         std::sort(logIndexes.begin(), logIndexes.end());
-        if (logIndexes.isEmpty() || logIndexes[0])
+        if (logIndexes.isEmpty() || logIndexes[0]) {
             return 0;
-        for (int i = 0; i < logIndexes.last(); ++i)
-            if (!logIndexes.contains(i))
+}
+        for (int i = 0; i < logIndexes.last(); ++i) {
+            if (!logIndexes.contains(i)) {
                 return i;
+}
+}
 
         return logIndexes.last() + 1;
     };
@@ -1088,7 +1093,7 @@ QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting)
     QVariantMap parameters = aDevice->getDeviceConfiguration();
     QString interactionType = parameters[CHardwareSDK::InteractionType].toString();
 
-    IPlugin *plugin = dynamic_cast<IPlugin *>(aDevice);
+    auto *plugin = dynamic_cast<IPlugin *>(aDevice);
     QString configPath =
         plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
 
@@ -1110,7 +1115,7 @@ QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting)
     } else {
         for (auto it = m_DevicesLogData.begin(); it != m_DevicesLogData.end(); ++it) {
             if (it->contains(aDetecting)) {
-                IPlugin *localPlugin = dynamic_cast<IPlugin *>(it.key());
+                auto *localPlugin = dynamic_cast<IPlugin *>(it.key());
 
                 if (localPlugin->getConfigurationName().startsWith(configPath)) {
                     logIndexes << it->value(aDetecting);
@@ -1149,7 +1154,7 @@ QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting)
 
 //--------------------------------------------------------------------------------
 QString DeviceManager::getDeviceLogName(IDevice *aDevice, bool aDetecting) {
-    IPlugin *plugin = dynamic_cast<IPlugin *>(aDevice);
+    auto *plugin = dynamic_cast<IPlugin *>(aDevice);
     QString configPath =
         plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
     QString result = configPath.section('.', 2, 2);
@@ -1193,7 +1198,7 @@ QString DeviceManager::getDeviceLogName(IDevice *aDevice, bool aDetecting) {
 
 //--------------------------------------------------------------------------------
 void DeviceManager::setDeviceLog(IDevice *aDevice, bool aDetecting) {
-    IPlugin *plugin = dynamic_cast<IPlugin *>(aDevice);
+    auto *plugin = dynamic_cast<IPlugin *>(aDevice);
     QString configPath =
         plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
     TParameterList parameters = m_PluginLoader->getPluginParametersDescription(configPath);

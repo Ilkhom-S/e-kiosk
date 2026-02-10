@@ -326,7 +326,7 @@ QStringList Packer::pack(const QString &aTargetName,
                   .arg(m_ToolPath)
                   .arg(zipArguments.join(" ")));
 
-        return QStringList();
+        return {};
     }
 
     m_ExitCode = m_ZipProcess.exitCode();
@@ -349,7 +349,7 @@ QStringList Packer::pack(const QString &aTargetName,
                       .arg(m_ExitCode)
                       .arg(m_Messages));
 
-            return QStringList();
+            return {};
         }
     }
 

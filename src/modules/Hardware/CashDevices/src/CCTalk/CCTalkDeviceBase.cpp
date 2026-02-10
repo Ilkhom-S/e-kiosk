@@ -25,9 +25,7 @@ template <class T> QStringList CCTalkDeviceBase<T>::getProtocolTypes() {
 template <class T> QDate CCTalkDeviceBase<T>::parseDate(const QByteArray &aData) {
     ushort data = qToBigEndian(aData.toHex().toUShort(nullptr, 16));
 
-    return {int((data >> 9) & 0x3F) + this->m_BaseYear,
-            int((data >> 5) & 0x0F),
-            int((data >> 0) & 0x1F)};
+    return {((data >> 9) & 0x3F) + this->m_BaseYear, ((data >> 5) & 0x0F), ((data >> 0) & 0x1F)};
 }
 
 //--------------------------------------------------------------------------------
@@ -177,7 +175,7 @@ template <class T> void CCTalkDeviceBase<T>::processDeviceData() {
 
     if (this->processCommand(CCCTalk::Command::Serial, &answer)) {
         this->setDeviceParameter(CDeviceData::SerialNumber,
-                                 0x10000 * uchar(answer[2]) + 0x100 * uchar(answer[1]) +
+                                 (0x10000 * uchar(answer[2])) + (0x100 * uchar(answer[1])) +
                                      uchar(answer[0]));
     }
 
@@ -189,12 +187,12 @@ template <class T> void CCTalkDeviceBase<T>::processDeviceData() {
 
     if (this->processCommand(CCCTalk::Command::SoftVersion, &answer)) {
         this->setDeviceParameter(CDeviceData::Firmware, answer);
-        double FWVersion = this->parseFWVersion(answer);
+        double fwVersion = this->parseFWVersion(answer);
 
-        if (FWVersion) {
-            this->m_FWVersion = FWVersion;
+        if (fwVersion != 0.0) {
+            this->m_FWVersion = fwVersion;
 
-            if (answer.simplified().toDouble() != FWVersion) {
+            if (answer.simplified().toDouble() != fwVersion) {
                 this->setDeviceParameter(
                     CDeviceData::Version, this->m_FWVersion, CDeviceData::Firmware);
             }

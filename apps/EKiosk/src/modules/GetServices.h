@@ -11,18 +11,18 @@ public:
     GetServices(QObject *parent = 0);
 
 public slots:
-    void parcerHash(const QDomNode &dom_Element);
-    void parcerNote(const QDomNode &dom_Element);
-    void setDataNote(const QDomNode &dom_Element);
+    void parcerHash(const QDomNode &domElement);
+    void parseNode(const QDomNode &domElement);
+    void setDataNote(const QDomNode &domElement);
     void sendGetServicesQuery();
     //        void errorResponse();
 
 private:
     QString toLogData;
-    int count_providers;
-    int index_prv;
+    int count_providers{};
+    int index_prv{};
 
-    int gbl_id_services;
+    int gbl_id_services{};
 
     QVariantMap infoMap;
     QMap<int, QString> curMap;
@@ -34,8 +34,8 @@ private:
     bool saveServicesDB();
     bool saveCategoriesDB(const QVariantMap category);
     bool saveCommissionDB(const int id,
-                          const double sum_From,
-                          const double sum_To,
+                          const double sumFrommFrom,
+                          const double sumTosumTo,
                           const int type,
                           const double value,
                           const int serviceId,
@@ -49,7 +49,7 @@ private:
     bool insertTerminalExtra(QVariantMap map);
     bool getTerminalExtra(QVariantMap &map);
     int getProviderCount();
-    bool getReqStatus;
+    bool getReqStatus{};
 
 signals:
     void emit_responseBalance(const double balance, const double overdraft, const double threshold);
@@ -57,7 +57,7 @@ signals:
     void emit_getServices(bool status);
     void emit_infoData(QVariantMap data);
     //        void emit_errorResponse();
-    void lockUnlockAvtorization(bool lock, int sts);
+    void lockUnlockAuthorization(bool lock, int sts);
     void emit_timeServer(QString dateTime);
     void emit_banners(QVariantList banners);
 };

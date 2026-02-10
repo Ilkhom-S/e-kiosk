@@ -8,8 +8,8 @@
 #include "GUI/MessageBox/MessageBox.h"
 
 KeysWizardPage::KeysWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : WizardPageBase(aBackend, aParent) {
-    m_KeysWindow = new KeysWindow(aBackend, this);
+    : WizardPageBase(aBackend, aParent), m_KeysWindow(new KeysWindow(aBackend, this)) {
+    
 
     connect(m_KeysWindow, SIGNAL(beginGenerating()), SLOT(onBeginGenerating()));
     connect(m_KeysWindow, SIGNAL(endGenerating()), SLOT(onEndGenerating()));

@@ -10,6 +10,8 @@
 #include <SDK/Plugins/IExternalInterface.h>
 #include <SDK/Plugins/PluginInitializer.h>
 
+#include <utility>
+
 #include "Backend/ServiceMenuBackend.h"
 
 namespace CAutoEncashment {
@@ -20,7 +22,7 @@ const QString PluginName = "AutoEncashment";
 namespace {
 
 /// Конструктор плагина.
-SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createPlugin(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath) {
     return new AutoEncashment(aFactory, aInstancePath);
 }
@@ -30,14 +32,14 @@ SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
 REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
                          SDK::PaymentProcessor::CComponents::GraphicsItem,
                          CAutoEncashment::PluginName),
-                &CreatePlugin,
+                &createPlugin,
                 &SDK::Plugin::PluginInitializer::emptyParameterList,
                 AutoEncashment);
 
 //--------------------------------------------------------------------------
-AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : m_MainWidget(0), m_Environment(aFactory), m_InstancePath(aInstancePath),
-      m_AutoEncashmentWindow(0), m_IsReady(false) {
+AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
+    : m_MainWidget(nullptr), m_Environment(aFactory), m_InstancePath(std::move(aInstancePath)),
+      m_AutoEncashmentWindow(nullptr), m_IsReady(false) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
@@ -48,7 +50,7 @@ AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QStrin
         m_Environment->getLog("ServiceMenu")->write(LogLevel::Error, "Failed to get ICore");
     }
 
-    m_IsReady = core != 0;
+    m_IsReady = core != nullptr;
 
     if (m_IsReady) {
         m_MainWidget = new QGraphicsProxyWidget();
@@ -139,17 +141,17 @@ QQuickItem *AutoEncashment::getWidget() const {
 //---------------------------------------------------------------------------
 QVariantMap AutoEncashment::getContext() const {
     // TODO
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
 bool AutoEncashment::isValid() const {
-    return m_MainWidget != 0;
+    return m_MainWidget != nullptr;
 }
 
 //---------------------------------------------------------------------------
 QString AutoEncashment::getError() const {
-    return QString();
+    return {};
 }
 
 //---------------------------------------------------------------------------

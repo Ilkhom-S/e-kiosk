@@ -39,7 +39,7 @@ QStringList V2eCashAcceptor::getModelList() {
         result << aData.name;
     }
 
-    return QList<QString>(result.begin(), result.end());
+    return {result.begin(), result.end()};
 }
 
 //---------------------------------------------------------------------------------

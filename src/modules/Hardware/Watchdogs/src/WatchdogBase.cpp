@@ -3,7 +3,7 @@
 #include <Hardware/Watchdogs/WatchdogBase.h>
 #include <Hardware/Watchdogs/WatchdogStatusesDescriptions.h>
 
-WatchdogBase::WatchdogBase() {
+WatchdogBase::WatchdogBase() : m_SensorDisabledValue(false) {
     m_PingTimer.moveToThread(&m_Thread);
 
     connect(&m_PingTimer, SIGNAL(timeout()), SLOT(onPing()));
@@ -11,7 +11,7 @@ WatchdogBase::WatchdogBase() {
     m_PollingInterval = 5000;
 
     m_ioMessageLogging = ELoggingType::ReadWrite;
-    m_SensorDisabledValue = false;
+    
     setConfigParameter(CHardware::Watchdog::CanRegisterKey, false);
     setConfigParameter(CHardware::Watchdog::CanWakeUpPC, false);
     m_StatusCodesSpecification =

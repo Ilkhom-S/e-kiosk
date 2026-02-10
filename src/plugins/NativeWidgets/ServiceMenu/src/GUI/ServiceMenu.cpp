@@ -161,7 +161,7 @@ QWidget *ServiceMenu::getNativeWidget() const {
 //---------------------------------------------------------------------------
 QVariantMap ServiceMenu::getContext() const {
     // TODO
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
@@ -171,7 +171,7 @@ bool ServiceMenu::isValid() const {
 
 //---------------------------------------------------------------------------
 QString ServiceMenu::getError() const {
-    return QString();
+    return {};
 }
 
 //---------------------------------------------------------------------------

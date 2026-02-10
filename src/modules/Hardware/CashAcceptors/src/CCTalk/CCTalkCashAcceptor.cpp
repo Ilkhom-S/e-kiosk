@@ -79,7 +79,7 @@ bool CCTalkCashAcceptor::loadParTable() {
             QByteArray countryCode = answer.left(2);
 
             if (parseCurrencyData(countryCode, currencyData)) {
-                bool OK;
+                bool OK = false;
                 QByteArray valueData = answer.mid(2, 4);
                 int value = valueData.toInt(&OK);
 
@@ -128,7 +128,7 @@ bool CCTalkCashAcceptor::parseCurrencyData(const QByteArray &aData,
             return false;
         }
 
-        ushort base = qToBigEndian(answer.left(2).toHex().toUShort(0, 16));
+        ushort base = qToBigEndian(answer.left(2).toHex().toUShort(nullptr, 16));
         double value = base * qPow(10, -1 * uchar(answer[2]));
         m_ScalingFactors.insert(aData, value);
     }
@@ -226,7 +226,7 @@ void CCTalkCashAcceptor::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes) {
 
     if (!aStatusCodes.contains(BillOperation::Escrow) &&
         !(m_VirtualRouting.direction && aStatusCodes.contains(BillOperation::Stacking)) &&
-        !(!m_VirtualRouting.direction && aStatusCodes.contains(Busy::Returning))) {
+        (m_VirtualRouting.direction || !aStatusCodes.contains(Busy::Returning))) {
         m_VirtualRouting.active = false;
     }
 
@@ -239,10 +239,11 @@ void CCTalkCashAcceptor::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes) {
 
     QStringList log;
     auto addLog = [&](int aStatusCode) {
-        if (aStatusCodes != oldStatusCodes)
+        if (aStatusCodes != oldStatusCodes) {
             log << QString("Changed to %1: %2")
                        .arg(getStatusTranslations(TStatusCodes() << aStatusCode, false))
                        .arg(getStatusTranslations(oldStatusCodes - aStatusCodes, false));
+}
     };
 
     addLog(routing);
@@ -250,7 +251,7 @@ void CCTalkCashAcceptor::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes) {
 
     foreach (int statusCode, aStatusCodes) {
         SStatusCodeSpecification data = m_StatusCodesSpecification->value(statusCode);
-        ECashAcceptorStatus::Enum status = ECashAcceptorStatus::Enum(data.status);
+        auto status = ECashAcceptorStatus::Enum(data.status);
         CCashAcceptor::TStatuses statuses;
         statuses[status].insert(statusCode);
 

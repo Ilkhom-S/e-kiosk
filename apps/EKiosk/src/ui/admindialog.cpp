@@ -10,22 +10,22 @@
 
 #include "ui_admindialog.h"
 
-AdminDialog::AdminDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AdminDialog) {
+AdminDialog::AdminDialog(QWidget *parent)
+    : QDialog(parent), KeyPud(new keyPud(this)), titleDataEncashment("Не инкасированные платежи"),
+      ui(new Ui::AdminDialog), Debugger(1), closeTimer(new QTimer(this)),
+      mveAnimateGB(new QMovie(this)), selectCategoryLogView(new SelectCategoryLogView(this)),
+      createDialupConnection(new CreateDialupConnection(this)),
+      adminButtons(new AdminButton(this)) {
     ui->setupUi(this);
 
-    KeyPud = new keyPud(this);
     ui->layoutWgtKeyPud->addWidget(KeyPud);
     connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
-
-    titleDataIncashment = "Не инкасированные платежи";
 
     //    connect(ui->stackedWidget,SIGNAL(currentChanged(int)),this,SLOT(steckerClicked(int)));
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(steckerClicked(int)));
 
-    Debugger = 1;
-
     // Таймер закрытия
-    closeTimer = new QTimer(this);
+
     closeTimer->setSingleShot(true);
     closeTimer->setInterval(180000);
     connect(closeTimer, SIGNAL(timeout()), this, SLOT(closeThis()));
@@ -41,7 +41,6 @@ AdminDialog::AdminDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AdminDia
     // Получение баланса
     connect(ui->btnCheckBalance, SIGNAL(clicked()), SLOT(checkBalance()));
 
-    mveAnimateGB = new QMovie(this);
     mveAnimateGB->setFileName(":/assets/images/load.gif");
 
     // Получение даты инкасации
@@ -51,18 +50,17 @@ AdminDialog::AdminDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AdminDia
             SLOT(getCollectDate(QString)));
 
     // Выбор опций просмотра логов
-    selectCategoryLogView = new SelectCategoryLogView(this);
+
     connect(selectCategoryLogView,
             SIGNAL(emit_SelectOptions(bool, bool, bool, bool, bool, bool, bool, bool, bool)),
             SLOT(SelectOptionsForSearch(bool, bool, bool, bool, bool, bool, bool, bool, bool)));
 
     // Создание нового соединения
-    createDialupConnection = new CreateDialupConnection(this);
+
     connect(createDialupConnection,
             SIGNAL(emitDialupParam(QVariantMap)),
             SLOT(getDialupParam(QVariantMap)));
 
-    adminButtons = new AdminButton(this);
     connect(adminButtons, SIGNAL(explorerCliked()), SLOT(showExplorer()));
     connect(adminButtons, SIGNAL(keyboardClicked()), SLOT(showKeyPud()));
     connect(adminButtons, SIGNAL(closeClicked()), SLOT(closeThis()));
@@ -75,15 +73,15 @@ AdminDialog::AdminDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AdminDia
     connect(ui->btnAdminTestRestartModem, SIGNAL(clicked()), SLOT(restartModem()));
     connect(ui->btnRestartAppTypeDevices, SIGNAL(clicked()), SLOT(restartApp()));
     connect(ui->btnRestartTypeDevices, SIGNAL(clicked()), SLOT(restartASO()));
-    connect(ui->btnPowerOffTypeDevices, SIGNAL(clicked()), SLOT(shutDounASO()));
+    connect(ui->btnPowerOffTypeDevices, SIGNAL(clicked()), SLOT(shutDownASO()));
     connect(ui->btnSaveChangeTypeDevices, SIGNAL(clicked()), SLOT(saveDeviceParam()));
     connect(ui->btnAdminCheckConnection, SIGNAL(clicked()), SLOT(checkConnection()));
     connect(ui->btnAdminGetDataFromModem, SIGNAL(clicked()), SLOT(getModem_DataInfo()));
-    connect(ui->btnAdminSaveTerminalAccept, SIGNAL(clicked()), SLOT(saveTrm_AutorizationData()));
+    connect(ui->btnAdminSaveTerminalAccept, SIGNAL(clicked()), SLOT(saveTrm_AuthorizationData()));
     connect(ui->btnAdminSelectLogParam, SIGNAL(clicked()), SLOT(openSelectCategory()));
     connect(ui->btnAdminUpdateLogData, SIGNAL(clicked()), SLOT(openLogInfoDate()));
     connect(ui->btnAdminNavigationUp, SIGNAL(clicked()), SLOT(go_to_up_log()));
-    connect(ui->btnAdminNavigationDown, SIGNAL(clicked()), SLOT(go_to_doun_log()));
+    connect(ui->btnAdminNavigationDown, SIGNAL(clicked()), SLOT(go_to_down_log()));
     connect(ui->btnAdminSearchKeyParam, SIGNAL(clicked()), SLOT(searchWithKeyParam()));
     connect(ui->btnAdminCreateNewConnections, SIGNAL(clicked()), SLOT(createNewConnection()));
     connect(ui->btnAdminGetActiveConnection, SIGNAL(clicked()), SLOT(getActiveRasCon()));
@@ -92,7 +90,7 @@ AdminDialog::AdminDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AdminDia
     connect(ui->btnAdminSavePrinterParam, SIGNAL(clicked()), SLOT(savePrinterParam()));
     connect(ui->btnAdminGetServicesData, SIGNAL(clicked()), SLOT(getServices()));
     connect(ui->btnAdminSaveTrmSettings2, SIGNAL(clicked()), SLOT(saveOtherSettings()));
-    connect(ui->btnAdminSaveTerminaSecret, SIGNAL(clicked()), SLOT(saveUserAutorizationData()));
+    connect(ui->btnAdminSaveTerminaSecret, SIGNAL(clicked()), SLOT(saveUserAuthorizationData()));
     connect(ui->btnAdminTestRestartModemReal, SIGNAL(clicked()), SLOT(restartModem()));
     connect(
         ui->cbxAdminNamePrinter, SIGNAL(currentIndexChanged(int)), SLOT(printerNameChanged(int)));
@@ -284,43 +282,43 @@ void AdminDialog::createNewConnection() {
     createDialupConnection->openThis();
 }
 
-void AdminDialog::SelectOptionsForSearch(bool SelectValidatorJam,
-                                         bool SelectMoneyOut,
-                                         bool SelectERROR,
-                                         bool SelectPayDaemon,
-                                         bool SelectStatusAso,
-                                         bool SelectStatusPrinter,
-                                         bool SelectStatusValidator,
-                                         bool SelectConnectionState,
-                                         bool SelectUpdater) {
+void AdminDialog::SelectOptionsForSearch(bool selectValidatorJam,
+                                         bool selectMoneyOut,
+                                         bool selectError,
+                                         bool selectPayDaemon,
+                                         bool selectStatusAso,
+                                         bool selectStatusPrinter,
+                                         bool selectStatusValidator,
+                                         bool selectConnectionState,
+                                         bool selectUpdater) {
     closeTimer->start();
 
     QString searchKey;
-    if (SelectValidatorJam) {
+    if (selectValidatorJam) {
         searchKey += "MONEY_JAM;";
     }
-    if (SelectMoneyOut) {
+    if (selectMoneyOut) {
         searchKey += "MONEY_OUT;";
     }
-    if (SelectERROR) {
+    if (selectError) {
         searchKey += "ERROR;";
     }
-    if (SelectPayDaemon) {
+    if (selectPayDaemon) {
         searchKey += "PAY_DAEMONS;";
     }
-    if (SelectStatusAso) {
+    if (selectStatusAso) {
         searchKey += "STATUS_DAEMONS;";
     }
-    if (SelectStatusPrinter) {
+    if (selectStatusPrinter) {
         searchKey += "PRINTER;";
     }
-    if (SelectStatusValidator) {
+    if (selectStatusValidator) {
         searchKey += "VALIDATOR;";
     }
-    if (SelectConnectionState) {
+    if (selectConnectionState) {
         searchKey += "CONNECTION;";
     }
-    if (SelectUpdater) {
+    if (selectUpdater) {
         searchKey += "UPDATER;";
     }
 
@@ -349,7 +347,7 @@ void AdminDialog::searchWithKeyParam() {
         QStringList searchList = searchString.split(";");
         // Делаем поиск
         for (int i = 0; i < lstLog.count(); i++) {
-            QString line = lstLog.at(i);
+            const QString &line = lstLog.at(i);
             bool add = false;
             for (int j = 0; j < searchList.count(); j++) {
                 if (line.contains(searchList.at(j))) {
@@ -389,12 +387,12 @@ void AdminDialog::getLogDataFrom_File(QStringList &logLst, QString &all) {
     logLst.clear();
     all = "";
     // дата создания
-    QString vrm_Date = ui->dEditAdminSelectDataLog->text();
+    QString vrmDate = ui->dEditAdminSelectDataLog->text();
     QByteArray ba;
-    QFile fileInfo(QString("log/%1.txt").arg(vrm_Date));
+    QFile fileInfo(QString("log/%1.txt").arg(vrmDate));
 
     if (!fileInfo.open(QIODevice::ReadOnly)) {
-        ba = QString("File Log Not Present %1").arg(vrm_Date).toLatin1();
+        ba = QString("File Log Not Present %1").arg(vrmDate).toLatin1();
     } else {
         ba.append(fileInfo.readAll());
     }
@@ -418,7 +416,7 @@ void AdminDialog::go_to_up_log() {
     scrollBar->setSliderPosition(pos);
 }
 
-void AdminDialog::go_to_doun_log() {
+void AdminDialog::go_to_down_log() {
     closeTimer->start();
     QScrollBar *scrollBar = ui->editBrowserLogView->verticalScrollBar();
     int pos = scrollBar->sliderPosition() + 500;
@@ -433,7 +431,7 @@ void AdminDialog::openSelectCategory() {
     selectCategoryLogView->show();
 }
 
-void AdminDialog::saveTrm_AutorizationData() {
+void AdminDialog::saveTrm_AuthorizationData() {
     closeTimer->start();
 
     QString login = ui->editAdminLoginTrm->text().trimmed();
@@ -466,7 +464,7 @@ void AdminDialog::authButtonSet(bool enable) {
     ui->btnAdminSaveTerminalAccept->setEnabled(enable);
 }
 
-void AdminDialog::saveUserAutorizationData() {
+void AdminDialog::saveUserAuthorizationData() {
     closeTimer->start();
 
     QString secretLogin = ui->editAdminSecretLogin->text().trimmed();
@@ -490,7 +488,7 @@ void AdminDialog::saveUserAutorizationData() {
     settings["secret_login"] = secretLogin;
     settings["secret_password"] = secretPassword;
 
-    emit emit_execToMain(AdminCommand::aCmdSaveUserAvtoriza);
+    emit emit_execToMain(AdminCommand::aCmdSaveUserAuthorization);
 }
 
 void AdminDialog::checkConnection() {
@@ -706,7 +704,7 @@ void AdminDialog::saveDeviceParam() {
     emit emit_execToMain(cmd);
 }
 
-void AdminDialog::shutDounASO() {
+void AdminDialog::shutDownASO() {
     closeTimer->start();
     // Спрашиваем хочет ли он сохранить данные
     QMessageBox messageBox1(this);
@@ -737,7 +735,7 @@ void AdminDialog::shutDounASO() {
 #endif
 
         // Надо дать команду сохранение с перезагрузкой
-        emit emit_execToMain(AdminCommand::aCmdShutDounASO);
+        emit emit_execToMain(AdminCommand::aCmdShutDownASO);
     }
 }
 
@@ -778,16 +776,16 @@ void AdminDialog::showKeyPud() {
 
 void AdminDialog::doCollectExec() {
     closeTimer->start();
-    emit emit_execToMain(AdminCommand::aCmdExecIncashmant);
+    emit emit_execToMain(AdminCommand::aCmdExecEncashment);
 }
 
 void AdminDialog::doCollectDateExec() {
     closeTimer->start();
-    QString vrm_Date = ui->cbxAdminTextDateIncashment->currentText();
+    QString vrmDate = ui->cbxAdminTextDateIncashment->currentText();
 
-    if (vrm_Date != titleDataIncashment) {
-        dateCollectParam = vrm_Date;
-        emit emit_execToMain(AdminCommand::aCmdExecDateIncash);
+    if (vrmDate != titleDataEncashment) {
+        dateCollectParam = vrmDate;
+        emit emit_execToMain(AdminCommand::aCmdExecDateEncashment);
     } else {
         QMessageBox msgBox(this);
 
@@ -809,7 +807,7 @@ void AdminDialog::closeEvent(QCloseEvent *event) {
 void AdminDialog::getCollectDate(QString date) {
     dateCollectParam = date;
 
-    emit emit_execToMain(AdminCommand::aCmdHtmlIncash);
+    emit emit_execToMain(AdminCommand::aCmdHtmlEncashment);
 }
 
 void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
@@ -832,12 +830,12 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
         // Новые платежи
         ui->lblTextAdminNumberNewPay->setText(data.value("payment_count").toString());
     } break;
-    case AdminCommand::aCmdListAllIncash: {
+    case AdminCommand::aCmdListAllEncashment: {
         // Делаем список инкассаций по датам
         ui->cbxAdminTextDateIncashment->clear();
         ui->cbxAdminTextDateIncashment->addItems(data.value("encash_list").toStringList());
     } break;
-    case AdminCommand::aCmdHtmlIncash: {
+    case AdminCommand::aCmdHtmlEncashment: {
         auto html = data.value("html").toString();
         auto cId = data.value("c_id").toString();
         auto cTrn = data.value("c_trn").toString();
@@ -974,7 +972,7 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
         ui->chbxAdminSearchModem->setChecked(data.value("search_modem").toBool());
         ui->chbxAdminSearchWD->setChecked(data.value("search_watchdog").toBool());
     } break;
-    case AdminCommand::aCmdInfrmationPanel: {
+    case AdminCommand::aCmdInformationPanel: {
         //            ui->lblAdminInformationTest->setText(data.value("message").toString());
     } break;
     case AdminCommand::aCmdSim_InfoData: {
@@ -983,7 +981,7 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
         ui->lblAdminTextUrovanSignala->setText(data.value("modem_sim_rate").toString());
         ui->lblAdminTextBalanceSim->setText(data.value("modem_sim_balance").toString());
     } break;
-    case AdminCommand::aCmdRasConnlist: {
+    case AdminCommand::aCmdRasConnectionList: {
         // Список Соединений
         // Для проверки при создание соединения
         connListInfData.clear();
@@ -1045,7 +1043,7 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
     case AdminCommand::aCmdCounterCheckVal: {
         ui->lblAdminResultCounterInfo->setText(data.value("counter_info").toString());
     } break;
-    case AdminCommand::aCmdAvtorizationTrm_P: {
+    case AdminCommand::aCmdAuthorizationTrm_P: {
         auto login = data.value("login").toString();
         auto secretLogin = data.value("secret_login").toString();
 
@@ -1135,7 +1133,7 @@ void AdminDialog::openThis() {
 }
 
 void AdminDialog::sendCharacter(QChar character) {
-    bool a_key = false;
+    bool aKey = false;
     QPointer<QWidget> w = focusWidget();
 
     if (!w) {
@@ -1147,19 +1145,19 @@ void AdminDialog::sendCharacter(QChar character) {
     QString a = QString(character);
 
     if (un == 15405) {
-        a_key = true;
+        aKey = true;
         un = Qt::Key_Backspace;
         a = "";
     }
 
     if (un == 15934) {
-        a_key = true;
+        aKey = true;
         un = Qt::Key_Tab;
         a = "";
     }
 
     if (un == 15917) {
-        a_key = true;
+        aKey = true;
         un = Qt::Key_Enter;
         a = "";
     }
@@ -1171,7 +1169,7 @@ void AdminDialog::sendCharacter(QChar character) {
         return;
     }
 
-    if (a_key) {
+    if (aKey) {
         QKeyEvent keyPress(QEvent::KeyPress, un, Qt::NoModifier, a);
         QApplication::sendEvent(w, &keyPress);
     } else {
@@ -1183,10 +1181,10 @@ void AdminDialog::sendCharacter(QChar character) {
 }
 
 void AdminDialog::printerNameChanged(int index) {
-    auto show_port_speed = index == 7;
+    auto showPortSpeed = index == 7;
 
-    ui->cbxAdminPortSpeed->setVisible(show_port_speed);
-    ui->lblAdminTitleSpeed->setVisible(show_port_speed);
+    ui->cbxAdminPortSpeed->setVisible(showPortSpeed);
+    ui->lblAdminTitleSpeed->setVisible(showPortSpeed);
 
     auto isWinprinter = index == 8;
 

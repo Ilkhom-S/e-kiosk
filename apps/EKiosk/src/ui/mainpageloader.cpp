@@ -25,20 +25,19 @@
 #endif
 #include <QtWidgets/QMessageBox>
 
-MainPageLoader::MainPageLoader(QWidget *parent) : QWidget(parent), ui(new Ui::MainPageLoader) {
+#include <algorithm>
+
+MainPageLoader::MainPageLoader(QWidget *parent)
+    : QWidget(parent), webView(new QWebEngineView(this)), ui(new Ui::MainPageLoader),
+      _lang(Lang::RU), payTimer(new QTimer(this)), goInputSum(new QTimer(this)) {
     ui->setupUi(this);
 
-    _lang = Lang::RU;
-
-    payTimer = new QTimer(this);
     payTimer->setSingleShot(true);
     connect(payTimer, SIGNAL(timeout()), this, SLOT(paymentConfirm()));
 
-    goInputSum = new QTimer(this);
     goInputSum->setSingleShot(true);
     connect(goInputSum, SIGNAL(timeout()), this, SLOT(btnGotoInputSum_Clc()));
 
-    webView = new QWebEngineView(this);
     webView->setAttribute(Qt::WA_DeleteOnClose);
     webView->setContextMenuPolicy(Qt::NoContextMenu);
 
@@ -151,9 +150,7 @@ QVariantMap MainPageLoader::serviceMaxSum() {
 }
 
 bool MainPageLoader::moneyExistInPay() const {
-    if (nominalCash > 0)
-        return true;
-    return false;
+    return nominalCash > 0;
 }
 
 void MainPageLoader::showHideReturnNominal(bool status) {
@@ -254,13 +251,13 @@ void MainPageLoader::orzuConditionsGet(int amount) {
 }
 
 bool MainPageLoader::orzuConditionIsValid(int amount, int term) {
-    for (auto c : orzuInfo["conditions"].toList()) {
+    for (const auto &c : orzuInfo["conditions"].toList()) {
         auto condition = c.toMap();
         auto minSumma = condition.value("min_summa").toInt();
         auto maxSumma = condition.value("max_summa").toInt();
-        auto term_ = condition.value("term").toInt();
+        auto term = condition.value("term").toInt();
 
-        if (amount >= minSumma && amount <= maxSumma && term == term_) {
+        if (amount >= minSumma && amount <= maxSumma && term == term) {
             orzuInfo["current_condition"] = condition;
             orzuInfo["pSum"] = amount;
             return true;
@@ -348,7 +345,7 @@ void MainPageLoader::jsonResponseSuccess(QVariantMap response, QString requestNa
 
         QStringList terms;
 
-        if (conditions.length() > 0) {
+        if (!conditions.empty()) {
             min = conditions.at(0).toMap().value("min_summa").toInt();
             max = conditions.at(0).toMap().value("max_summa").toInt();
 
@@ -357,13 +354,9 @@ void MainPageLoader::jsonResponseSuccess(QVariantMap response, QString requestNa
                 auto minSumma = c.value("min_summa").toInt();
                 auto maxSumma = c.value("max_summa").toInt();
 
-                if (minSumma < min) {
-                    min = minSumma;
-                }
+                min = std::min(minSumma, min);
 
-                if (maxSumma > max) {
-                    max = maxSumma;
-                }
+                max = std::max(maxSumma, max);
 
                 terms << c.value("term").toString();
             }
@@ -701,8 +694,9 @@ void MainPageLoader::setCheckOnlineResult(QString resultCode,
 
     // если resultCode == 1 OR no Response
     if (resultCode == "") {
-        if (message.trimmed() == "")
+        if (message.trimmed() == "") {
             message = "Отсутствует соединение с сервером";
+        }
         jsFunc = QString("resultError(\"%1\")").arg(message);
     } else if (resultCode == "1") {
         jsFunc = QString("resultError(\"%1\")").arg(message);
@@ -901,7 +895,7 @@ QVariantMap MainPageLoader::serviceInfo(int id) {
         }
     }
 
-    return QVariantMap();
+    return {};
 }
 
 QVariantMap MainPageLoader::serviceCurrent() {
@@ -943,23 +937,24 @@ QString getSmallHtmlText(QString text) {
     int lenText = text.length();
     if (lenText > 30) {
         int indexIn = text.indexOf(" ", 20);
-        if (indexIn > 0)
+        if (indexIn > 0) {
             resultText = text.replace(indexIn, 1, "<br>");
+        }
     }
 
     return resultText;
 }
 
-void MainPageLoader::inputNominal(int nominal, bool coin) {
+void MainPageLoader::inputNominal(int aNominal, bool coin) {
     if (getStepByStepPage() != PageIn::InputSum) {
         return;
     }
 
-    double _nominal = nominal;
+    double nominal = aNominal;
 
     if (coin) {
         double divider = 100;
-        _nominal = nominal / divider;
+        nominal = nominal / divider;
     }
 
     // Увеличиваем количество поступивших денег
@@ -978,17 +973,17 @@ void MainPageLoader::inputNominal(int nominal, bool coin) {
         if (coin) {
             nominalDenomination = QString("%1").arg(nominal) + "M";
         } else {
-            nominalDenomination = QString("%1").arg(_nominal);
+            nominalDenomination = QString("%1").arg(nominal);
         }
 
-        nominalCash = _nominal;
+        nominalCash = nominal;
     } else {
-        nominalCash += _nominal;
+        nominalCash += nominal;
 
         if (coin) {
             nominalDenomination += "," + QString("%1").arg(nominal) + "M";
         } else {
-            nominalDenomination += "," + QString("%1").arg(_nominal);
+            nominalDenomination += "," + QString("%1").arg(nominal);
         }
     }
 
@@ -1022,7 +1017,7 @@ void MainPageLoader::inputNominal(int nominal, bool coin) {
     // Показываем значения клиенту
     QString jsFunction = QString("insertNominal(%1, %2, %3, %4, %5)")
                              .arg(nominalCash)
-                             .arg(_nominal)
+                             .arg(nominal)
                              .arg(nominalAmount)
                              .arg(gblCmsSum)
                              .arg(gblRatioPrv);
@@ -1030,11 +1025,11 @@ void MainPageLoader::inputNominal(int nominal, bool coin) {
 }
 
 void MainPageLoader::getSum_ToFrom_MinusCommission(double amountFrom) {
-    int count_comis = commissionMap.count();
+    int countComis = commissionMap.count();
 
-    if (count_comis > 1) {
+    if (countComis > 1) {
         // Число кимиссий больше одного
-        for (int i = 1; i <= count_comis; i++) {
+        for (int i = 1; i <= countComis; i++) {
             if (amountFrom >= commissionMap[i]["sum_from"].toDouble() &&
                 amountFrom <= commissionMap[i]["sum_to"].toDouble()) {
                 nominalAmount = getMoneyToFrom_All(commissionMap[i]["type"].toInt(),
@@ -1053,8 +1048,6 @@ void MainPageLoader::getSum_ToFrom_MinusCommission(double amountFrom) {
     nominalAmount = amountFrom;
     gblRatioPrv = 0;
     gblCmsSum = 0;
-
-    return;
 }
 void MainPageLoader::clearNominalData() {
     gblNowTransaction = "";
@@ -1067,21 +1060,21 @@ void MainPageLoader::clearNominalData() {
 }
 
 double MainPageLoader::getMoneyToFrom_All(int cmsType, double from, double value) {
-    double sum_to_in = 0;
+    double sumToIn = 0;
 
     if (cmsType == 1) {
         // Статическая в сомони
-        sum_to_in = from - value;
-        gblRatioPrv = getRatioFrom_In(from, sum_to_in);
+        sumToIn = from - value;
+        gblRatioPrv = getRatioFrom_In(from, sumToIn);
     } else if (cmsType == 2) {
         double pp = (from * value) / 100;
-        sum_to_in = from - pp;
+        sumToIn = from - pp;
         gblRatioPrv = value;
     }
 
-    gblCmsSum = from - sum_to_in;
+    gblCmsSum = from - sumToIn;
 
-    return sum_to_in;
+    return sumToIn;
 }
 
 double MainPageLoader::getRatioFrom_In(double from, double to) {

@@ -3,24 +3,19 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QUuid>
 
-PayDaemons::PayDaemons(QObject *parent) : SendRequest(parent) {
+PayDaemons::PayDaemons(QObject *parent)
+    : SendRequest(parent), count_non_send(0), restatTimer(new QTimer(this)),
+      payTimer(new QTimer(this)), firstSend(true), abortPresent(false) {
 
     senderName = "PAY_DAEMONS";
 
     connect(this, SIGNAL(emit_Dom_Element(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 
-    count_non_send = 0;
-
-    restatTimer = new QTimer(this);
     restatTimer->setSingleShot(true);
     connect(restatTimer, SIGNAL(timeout()), this, SIGNAL(emit_RestartTerminal()));
 
-    payTimer = new QTimer(this);
-    firstSend = true;
     connect(payTimer, SIGNAL(timeout()), this, SLOT(sendPayRequest()));
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(getErrResponse()));
-
-    abortPresent = false;
 }
 
 void PayDaemons::startTimer(const int sec) {
@@ -41,7 +36,7 @@ void PayDaemons::getErrResponse() {
     abortPresent = true;
 }
 
-void PayDaemons::setDataNote(const QDomNode &dom_Element) {
+void PayDaemons::setDataNote(const QDomNode &domElement) {
     abortPresent = false;
 
     if (restatTimer->isActive()) {
@@ -53,7 +48,7 @@ void PayDaemons::setDataNote(const QDomNode &dom_Element) {
     gbl_balance = 999.999;
 
     // Парсим данные
-    parcerNote(dom_Element);
+    parseNode(domElement);
 
     // Делаем небольшую проверку
     if (gbl_balance != 999.999 && gbl_overdraft != 999.999) {
@@ -71,25 +66,25 @@ void PayDaemons::setDataNote(const QDomNode &dom_Element) {
     }
 }
 
-void PayDaemons::parcerNote(const QDomNode &dom_Element) {
+void PayDaemons::parseNode(const QDomNode &domElement) {
 
     // Необходимо отпарсить документ
-    QDomNode dom_Node = dom_Element.firstChild();
+    QDomNode domNode = domElement.firstChild();
 
-    while (!dom_Node.isNull()) {
-        if (dom_Node.isElement()) {
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
 
-            QDomElement dom_Element = dom_Node.toElement();
-            QString strTag = dom_Element.tagName();
+            QDomElement domElement = domNode.toElement();
+            QString strTag = domElement.tagName();
 
-            // if(Debugger) qDebug() << strTag + " " + dom_Element.text();
+            // if(Debugger) qDebug() << strTag + " " + domElement.text();
 
             // проверям респонс
             if (strTag == "resultCode") {
-                QString sts = dom_Element.text();
+                QString sts = domElement.text();
                 if (sts == "150" || sts == "151" || sts == "245" || sts == "11" || sts == "12" ||
                     sts == "133") {
-                    emit lockUnlockAvtorization(true, sts.toInt());
+                    emit lockUnlockAuthorization(true, sts.toInt());
                     return;
                 }
 
@@ -101,11 +96,11 @@ void PayDaemons::parcerNote(const QDomNode &dom_Element) {
 
             // Данные о дилере
             if (strTag == "balance") {
-                gbl_balance = dom_Element.text().toDouble();
+                gbl_balance = domElement.text().toDouble();
             }
 
             if (strTag == "overdraft") {
-                gbl_overdraft = dom_Element.text().toDouble();
+                gbl_overdraft = domElement.text().toDouble();
             }
 
             if (strTag == "status") {
@@ -115,35 +110,35 @@ void PayDaemons::parcerNote(const QDomNode &dom_Element) {
 
             // проверям респонс платежей
             if (strTag == "payment") {
-                QString strSts = dom_Element.attribute("resultCode", "");
-                QString vrm_Trn = dom_Element.attribute("trn", "");
-                QString vrm_DataConfirm = dom_Element.attribute("timeget", "");
+                QString strSts = domElement.attribute("resultCode", "");
+                QString vrmTrn = domElement.attribute("trn", "");
+                QString vrmDataConfirm = domElement.attribute("timeget", "");
 
                 // обновляем данные о платеже
-                bool update_sts = updateOperationStatus(vrm_Trn, strSts, vrm_DataConfirm);
+                bool updateSts = updateOperationStatus(vrmTrn, strSts, vrmDataConfirm);
 
-                if (!update_sts) {
+                if (!updateSts) {
                     emit emit_Loging(
                         1,
                         senderName,
-                        QString("Не могу обновить платеж с транзакцией - %1.").arg(vrm_Trn));
+                        QString("Не могу обновить платеж с транзакцией - %1.").arg(vrmTrn));
                 } else {
                     emit emit_Loging(0,
                                      senderName,
                                      QString("Платеж с транзакцией - %1: обновлен на "
                                              "статус - %2 в %3 часов.")
-                                         .arg(vrm_Trn, strSts, vrm_DataConfirm));
+                                         .arg(vrmTrn, strSts, vrmDataConfirm));
 
                     count_non_send = 0;
 
                     // Отправляем сигнал на разблокирование терминала по резулт кодам
-                    emit lockUnlockAvtorization(false, 0);
+                    emit lockUnlockAuthorization(false, 0);
                 }
             }
         }
 
-        parcerNote(dom_Node);
-        dom_Node = dom_Node.nextSibling();
+        parseNode(domNode);
+        domNode = domNode.nextSibling();
     }
 }
 
@@ -157,8 +152,8 @@ void PayDaemons::get_new_pay(QVariantMap payment) {
     auto prvId = payment.value("prv_id").toString();
     auto prvName = payment.value("prv_name").toString();
     auto trnId = payment.value("trn_id").toString();
-    auto sum_From = payment.value("sum_from").toDouble();
-    auto sum_To = payment.value("sum_to").toDouble();
+    auto sumFrom = payment.value("sum_from").toDouble();
+    auto sumTo = payment.value("sum_to").toDouble();
     auto denomination = payment.value("denomination").toString();
     auto ratioPercent = payment.value("ratio_percent").toDouble();
     auto ratioSum = payment.value("ratio_sum").toDouble();
@@ -198,8 +193,8 @@ void PayDaemons::get_new_pay(QVariantMap payment) {
             .arg(ratioSum)
             .arg(ratioPercent)
             .arg(accountMasked, account, collectionId, dateCreate, trnId)
-            .arg(sum_To)
-            .arg(sum_From)
+            .arg(sumTo)
+            .arg(sumFrom)
             .arg(denomination, prvId, prvName, notifyRoute, extra);
 
     // if(Debugger) qDebug() << strCreateNewOperation;
@@ -212,7 +207,7 @@ void PayDaemons::get_new_pay(QVariantMap payment) {
                          QString("Ошибка Базы Данных... Невозможно создать платёж (номер - %1, "
                                  "сумма - %2). Error: %3. Query: %4")
                              .arg(account)
-                             .arg(sum_From)
+                             .arg(sumFrom)
                              .arg(createNewOperation.lastError().text(), strCreateNewOperation));
         emit emit_errorDB();
         return;
@@ -224,15 +219,15 @@ void PayDaemons::get_new_pay(QVariantMap payment) {
                              " транзакцией- %3, суммой от- %4, суммой к- %5,"
                              " занесен в базу %6 числа.")
                          .arg(account, prvName, trnId)
-                         .arg(sum_From)
-                         .arg(sum_To)
+                         .arg(sumFrom)
+                         .arg(sumTo)
                          .arg(dateCreate));
 }
 
 void PayDaemons::get_update_pay(QVariantMap payment) {
     auto trnId = payment.value("trn_id").toString();
-    auto sum_From = payment.value("sum_from").toDouble();
-    auto sum_To = payment.value("sum_to").toDouble();
+    auto sumFrom = payment.value("sum_from").toDouble();
+    auto sumTo = payment.value("sum_to").toDouble();
     auto denomination = payment.value("denomination").toString();
     auto ratioPercent = payment.value("ratio_percent").toDouble();
     auto ratioSum = payment.value("ratio_sum").toDouble();
@@ -253,8 +248,8 @@ void PayDaemons::get_update_pay(QVariantMap payment) {
                                      .arg(ratioSum)
                                      .arg(ratioPercent)
                                      .arg(dateCreate)
-                                     .arg(sum_To)
-                                     .arg(sum_From)
+                                     .arg(sumTo)
+                                     .arg(sumFrom)
                                      .arg(denomination, trnId);
 
     if (!updateOperation.exec(strUpdateOperation)) {
@@ -275,17 +270,17 @@ void PayDaemons::get_update_pay(QVariantMap payment) {
                              " транзакцией- %1, суммой от- %2, суммой к- %3,"
                              " обновил параметры в базе %4 числа.")
                          .arg(trnId)
-                         .arg(sum_From)
-                         .arg(sum_To)
+                         .arg(sumFrom)
+                         .arg(sumTo)
                          .arg(dateCreate));
 }
 
-bool PayDaemons::GetOperationCount(const QString &id_trn) {
+bool PayDaemons::GetOperationCount(const QString &idTrn) {
     QSqlQuery selectNewOperationQuery(db);
 
     QString operationQuery = QString("SELECT count(*) AS count FROM terminal_operation WHERE "
                                      "operation_id = %1 LIMIT 1;")
-                                 .arg(id_trn);
+                                 .arg(idTrn);
 
     if (!selectNewOperationQuery.exec(operationQuery)) {
         // if(Debugger) qDebug() << selectNewOperationQuery.lastError();
@@ -306,13 +301,13 @@ bool PayDaemons::GetOperationCount(const QString &id_trn) {
     return false;
 }
 
-void PayDaemons::get_confirm_pay(QString tranz_id, bool print) {
+void PayDaemons::get_confirm_pay(QString tranzId, bool print) {
     // if(Debugger) qDebug() <<  "update NewOperation-->  with status
     // confirm_create";
 
     QDateTime date;
     // дата создания
-    QString vrm_DateCreate = date.currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
+    QString vrmDateCreate = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
 
     QSqlQuery updateOperation(db);
 
@@ -322,12 +317,12 @@ void PayDaemons::get_confirm_pay(QString tranz_id, bool print) {
         strUpdateOperation = QString("UPDATE terminal_operation SET"
                                      " operation_print_status = 1"
                                      " WHERE operation_id = %1")
-                                 .arg(tranz_id);
+                                 .arg(tranzId);
     } else {
         strUpdateOperation = QString("UPDATE terminal_operation SET"
                                      " operation_status = 55"
                                      " WHERE operation_id = %1 AND operation_status = 54;")
-                                 .arg(tranz_id);
+                                 .arg(tranzId);
     }
 
     if (!updateOperation.exec(strUpdateOperation)) {
@@ -340,76 +335,76 @@ void PayDaemons::get_confirm_pay(QString tranz_id, bool print) {
         emit emit_Loging(0,
                          senderName,
                          QString("К платежу с транзакцией- %1 чек был распечатан %2 числа.")
-                             .arg(tranz_id, vrm_DateCreate));
+                             .arg(tranzId, vrmDateCreate));
     } else {
         emit emit_Loging(0,
                          senderName,
                          QString("Платеж с транзакцией- %1 полностью оплачен %2 числа.")
-                             .arg(tranz_id, vrm_DateCreate));
+                             .arg(tranzId, vrmDateCreate));
 
         // моментально отправляем платеж
         this->sendPayRequest();
     }
 }
 
-void PayDaemons::get_print_id(QString tranz_id) {
+void PayDaemons::get_print_id(QString tranzId) {
     // Берём текст печати
-    QString chec = getReceiptInfo(tranz_id);
+    QString chec = getReceiptInfo(tranzId);
 
     // Сигнал на печать
     emit emit_to_print(chec);
 }
 
-QString PayDaemons::getReceiptInfo(QString tranz_id) {
+QString PayDaemons::getReceiptInfo(QString tranzId) {
     QString rec = receiptGet(tpl);
 
     // Данные о платеже
-    QString date_create;
-    QString prv_name;
+    QString dateCreate;
+    QString prvName;
     QString account;
-    QString sum_from;
-    QString sum_to;
-    QString ratio_sum;
-    QString ratio_persent;
+    QString sumFrom;
+    QString sumTo;
+    QString ratioSum;
+    QString ratioPersent;
 
     if (!getPayData(
-            tranz_id, date_create, prv_name, account, sum_from, sum_to, ratio_sum, ratio_persent)) {
-        date_create = "2018-01-01 11:11:11";
-        prv_name = "Babilon NGN";
+            tranzId, dateCreate, prvName, account, sumFrom, sumTo, ratioSum, ratioPersent)) {
+        dateCreate = "2018-01-01 11:11:11";
+        prvName = "Babilon NGN";
         account = "44-640-5544";
-        sum_from = "00";
-        sum_to = "00";
-        ratio_sum = "0";
-        ratio_persent = "0";
+        sumFrom = "00";
+        sumTo = "00";
+        ratioSum = "0";
+        ratioPersent = "0";
     }
 
-    rec = rec.arg(tranz_id,
+    rec = rec.arg(tranzId,
                   num_Trm,
-                  date_create,
+                  dateCreate,
                   kassir,
                   "",
-                  prv_name,
+                  prvName,
                   account,
-                  sum_from,
-                  sum_to,
-                  ratio_sum,
+                  sumFrom,
+                  sumTo,
+                  ratioSum,
                   phone);
 
     return rec;
 }
 
-bool PayDaemons::getPayData(QString id_trn,
-                            QString &date_create,
-                            QString &prv_name,
+bool PayDaemons::getPayData(QString idTrn,
+                            QString &dateCreate,
+                            QString &prvName,
                             QString &account,
-                            QString &sum_from,
-                            QString &sum_to,
-                            QString &ratio_sum,
-                            QString &ratio_persent) {
+                            QString &sumFrom,
+                            QString &sumTo,
+                            QString &ratioSum,
+                            QString &ratioPersent) {
     QSqlQuery selectOperation(db);
 
     QString strOperation =
-        QString("SELECT * FROM terminal_operation WHERE operation_id = '%1' LIMIT 1;").arg(id_trn);
+        QString("SELECT * FROM terminal_operation WHERE operation_id = '%1' LIMIT 1;").arg(idTrn);
 
     if (!selectOperation.exec(strOperation)) {
         return false;
@@ -418,20 +413,18 @@ bool PayDaemons::getPayData(QString id_trn,
     QSqlRecord recordOperation = selectOperation.record();
 
     if (selectOperation.next()) {
-        date_create =
+        dateCreate =
             selectOperation.value(recordOperation.indexOf("operation_date_create")).toString();
-        prv_name =
+        prvName =
             selectOperation.value(recordOperation.indexOf("operation_services_name")).toString();
         account =
             selectOperation.value(recordOperation.indexOf("operation_account_design")).toString();
-        sum_from =
-            selectOperation.value(recordOperation.indexOf("operation_money_cash")).toString();
-        sum_to =
-            selectOperation.value(recordOperation.indexOf("operation_money_amount")).toString();
+        sumFrom = selectOperation.value(recordOperation.indexOf("operation_money_cash")).toString();
+        sumTo = selectOperation.value(recordOperation.indexOf("operation_money_amount")).toString();
 
-        ratio_sum =
+        ratioSum =
             selectOperation.value(recordOperation.indexOf("operation_ratio_number")).toString();
-        ratio_persent =
+        ratioPersent =
             selectOperation.value(recordOperation.indexOf("operation_ratio_persent")).toString();
 
         return true;
@@ -441,7 +434,7 @@ bool PayDaemons::getPayData(QString id_trn,
 }
 
 void PayDaemons::sendPaymentToServer(bool withNon) {
-    bool exit_p = false;
+    bool exitP = false;
 
     // При первом запуске
     if (withNon) {
@@ -452,15 +445,15 @@ void PayDaemons::sendPaymentToServer(bool withNon) {
     }
 
     // Берем количество платежей
-    int count_o = 0;
+    int countO = 0;
     // TODO getCountPayment first send
-    bool res = getCountPayment(count_o);
+    bool res = getCountPayment(countO);
 
     if (res) {
-        bool pay_unlok_sts = false;
+        bool payUnlokSts = false;
 
         // Проверяем количество платежей
-        if (count_o > 0) {
+        if (countO > 0) {
 
             //            if(count_o == 3 && abortPresent){
             //                //Надо проверить были ли аборты
@@ -470,11 +463,11 @@ void PayDaemons::sendPaymentToServer(bool withNon) {
             //            }
 
             // Проверяем блокировать ли терминал
-            if (count_o >= 1) {
+            if (countO >= 1) {
                 count_non_send += 1;
 
                 if (count_non_send > 3) {
-                    pay_unlok_sts = true;
+                    payUnlokSts = true;
                     emit emit_Loging(1, senderName, QString("Количество платежей в системе >= 1"));
                 }
 
@@ -488,54 +481,55 @@ void PayDaemons::sendPaymentToServer(bool withNon) {
             // Выходим из процедуры
             //            withNon = false;
             firstSend = false;
-            exit_p = true;
+            exitP = true;
         }
 
         // Отправляем параметр блокировки
-        emit lockUnlockNonSend(pay_unlok_sts);
+        emit lockUnlockNonSend(payUnlokSts);
     } else {
         // Выходим из процедуры
         //        withNon = false;
         firstSend = false;
-        exit_p = true;
+        exitP = true;
     }
 
     // Выходим из процедуры
-    if (exit_p) {
+    if (exitP) {
         return;
     }
 
     QString paymentXml = "";
-    int count_pay = 0;
+    int countPay = 0;
     double allSum = 0;
 
-    if (getPaymentMap(paymentXml, count_pay, allSum)) {
+    if (getPaymentMap(paymentXml, countPay, allSum)) {
         // Если есть результат
         // Смотрим сколько платежей
-        if (count_pay > 0) {
+        if (countPay > 0) {
             // Формируем XML для отправки на сервер
 
-            QString header_xml = getHeaderRequest(Request::Type::PayAuth);
+            QString headerXml = getHeaderRequest(Request::Type::PayAuth);
 
             QString footer = getFooterRequest();
 
-            QString request = QString(header_xml +
+            QString request = QString(headerXml +
                                       "<auth count=\"%1\" toAmount=\"%2\">\n"
                                       "%3"
                                       "</auth>\n" +
                                       footer)
-                                  .arg(count_pay)
+                                  .arg(countPay)
                                   .arg(allSum)
                                   .arg(paymentXml);
 
-            if (debugger)
+            if (debugger) {
                 qDebug() << request;
+            }
             sendRequest(request, 25000);
         }
     }
 }
 
-bool PayDaemons::getPaymentMap(QString &payment, int &count_pay, double &all_sum) {
+bool PayDaemons::getPaymentMap(QString &payment, int &countPay, double &allSum) {
     QSqlQuery selectOperationForSend(db);
 
     QString strQueryOperation = QString("SELECT * FROM terminal_operation"
@@ -552,24 +546,24 @@ bool PayDaemons::getPaymentMap(QString &payment, int &count_pay, double &all_sum
 
     while (selectOperationForSend.next()) {
 
-        QString vrm_IdTrn =
+        QString vrmIdTrn =
             selectOperationForSend.value(recordOperationForSend.indexOf("operation_id")).toString();
-        QString vrm_FSum =
+        QString vrmFSum =
             selectOperationForSend.value(recordOperationForSend.indexOf("operation_money_cash"))
                 .toString();
-        double vrm_TSum =
+        double vrmTSum =
             selectOperationForSend.value(recordOperationForSend.indexOf("operation_money_amount"))
                 .toDouble();
         QString billInfo =
             selectOperationForSend.value(recordOperationForSend.indexOf("operation_money_denom"))
                 .toString();
-        QString vrm_PrvID =
+        QString vrmPrvId =
             selectOperationForSend.value(recordOperationForSend.indexOf("operation_services_id"))
                 .toString();
-        QString vrm_Account =
+        QString vrmAccount =
             selectOperationForSend.value(recordOperationForSend.indexOf("operation_account"))
                 .toString();
-        QString vrm_DateCreate =
+        QString vrmDateCreate =
             selectOperationForSend.value(recordOperationForSend.indexOf("operation_date_create"))
                 .toString();
         QString stsPrint =
@@ -578,15 +572,15 @@ bool PayDaemons::getPaymentMap(QString &payment, int &count_pay, double &all_sum
         QString collectionId =
             selectOperationForSend.value(recordOperationForSend.indexOf("operation_collect_id"))
                 .toString();
-        QString vrm_NotifyRoute =
+        QString vrmNotifyRoute =
             selectOperationForSend.value(recordOperationForSend.indexOf("notify_route")).toString();
         QString extraInfo =
             selectOperationForSend.value(recordOperationForSend.indexOf("extra_info")).toString();
 
         // Убираем лишние знаки
-        vrm_DateCreate.replace("-", "");
-        vrm_DateCreate.replace(":", "");
-        vrm_DateCreate.replace(" ", "");
+        vrmDateCreate.replace("-", "");
+        vrmDateCreate.replace(":", "");
+        vrmDateCreate.replace(" ", "");
 
         QString extra = extraInfo.isEmpty() ? "" : QString("param='%12'").arg(extraInfo);
 
@@ -594,44 +588,45 @@ bool PayDaemons::getPaymentMap(QString &payment, int &count_pay, double &all_sum
                            "account=\"%5\" receipt=\"%6\" time=\"%7\" "
                            "receipt_sts=\"%8\" bill_info=\"%9\" collection_id=\"%10\" "
                            "notify_route=\"%11\" %12/>\n")
-                       .arg(vrm_IdTrn, vrm_FSum)
-                       .arg(vrm_TSum)
-                       .arg(vrm_PrvID,
-                            vrm_Account,
-                            vrm_IdTrn,
-                            vrm_DateCreate,
+                       .arg(vrmIdTrn, vrmFSum)
+                       .arg(vrmTSum)
+                       .arg(vrmPrvId,
+                            vrmAccount,
+                            vrmIdTrn,
+                            vrmDateCreate,
                             stsPrint,
                             billInfo,
                             collectionId,
-                            vrm_NotifyRoute,
+                            vrmNotifyRoute,
                             extra);
 
-        count_pay++;
-        all_sum += vrm_TSum;
+        countPay++;
+        allSum += vrmTSum;
 
         emit emit_Loging(0,
                          senderName,
                          QString("Платеж с номером- %1 суммой на счет- %2 и "
                                  "транзакцией- %3 в PAY_REQUEST_XML сформирован.")
-                             .arg(vrm_Account)
-                             .arg(vrm_TSum)
-                             .arg(vrm_IdTrn));
+                             .arg(vrmAccount)
+                             .arg(vrmTSum)
+                             .arg(vrmIdTrn));
     }
     return true;
 }
 
-bool PayDaemons::updateOperationStatus(const QString &id_trm,
+bool PayDaemons::updateOperationStatus(const QString &idTrm,
                                        const QString &status,
                                        const QString &dateConfirm) {
     QSqlQuery updateOperation(db);
     QString strUpdateOperation;
     QString strSend = "";
-    if (dateConfirm != "0")
+    if (dateConfirm != "0") {
         strSend = ", operation_is_send = 1";
+    }
     strUpdateOperation = QString("UPDATE terminal_operation SET operation_status "
                                  "= %2, operation_date_confirm = '%3'%4 "
                                  "WHERE operation_id = %1")
-                             .arg(id_trm, status, dateConfirm, strSend);
+                             .arg(idTrm, status, dateConfirm, strSend);
 
     if (!updateOperation.exec(strUpdateOperation)) {
         // if(Debugger) qDebug() << updateOperation.lastError();
@@ -670,7 +665,7 @@ void PayDaemons::checkPayStatus54() {
 
     QSqlQuery selectOperationQuery(db);
 
-    int unconfrm_pay_count = 0;
+    int unconfrmPayCount = 0;
 
     // TODO remove after update operation_status = 3
     QString operationQuery = QString("SELECT count(*) AS count FROM terminal_operation WHERE "
@@ -686,11 +681,11 @@ void PayDaemons::checkPayStatus54() {
     QSqlRecord record = selectOperationQuery.record();
 
     if (selectOperationQuery.next()) {
-        unconfrm_pay_count = selectOperationQuery.value(record.indexOf("count")).toInt();
+        unconfrmPayCount = selectOperationQuery.value(record.indexOf("count")).toInt();
     }
 
     // есть ли платеж(и) со статусом 54
-    if (unconfrm_pay_count > 0) {
+    if (unconfrmPayCount > 0) {
         // обновим на статус 55
         confirm_Payments();
     }
@@ -719,7 +714,7 @@ QString PayDaemons::getCollectionId() {
     if (!selectQuery.exec(strQuery)) {
         // if(Debugger) qDebug() << selectOperationQuery.lastError();
         // if(Debugger) qDebug() << "Error Select new Operation";
-        return QString();
+        return {};
     }
 
     QSqlRecord record = selectQuery.record();
@@ -734,7 +729,7 @@ QString PayDaemons::getCollectionId() {
         auto dateCreate = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
         auto trnId = "1" + QDateTime::currentDateTime().toString("yyyyMMddHHmmsszzz").right(15);
         auto colId = QUuid::createUuid().toString(QUuid::WithoutBraces);
-        auto xmlDenom = "";
+        const auto *xmlDenom = "";
 
         strQuery = QString("INSERT INTO terminal_collect(collect_id, stack_id, "
                            "date_create, denom, status)"
@@ -742,7 +737,7 @@ QString PayDaemons::getCollectionId() {
                        .arg(colId, trnId, dateCreate, xmlDenom);
 
         if (!selectQuery.exec(strQuery)) {
-            return QString();
+            return {};
         }
 
         collectId = colId;

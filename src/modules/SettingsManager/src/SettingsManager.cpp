@@ -36,7 +36,7 @@ SSettingsSource::SSettingsSource(const QString &aFileName,
 SettingsManager::SettingsManager(const QString &aConfigPath) : m_ConfigPath(aConfigPath) {}
 
 //---------------------------------------------------------------------------
-SettingsManager::~SettingsManager() {}
+SettingsManager::~SettingsManager() = default;
 
 //---------------------------------------------------------------------------
 TPtree &SettingsManager::getProperties(const QString &aAdapterName) {

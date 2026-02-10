@@ -63,22 +63,20 @@ const char DateTimeFormat[] = "yyyy.MM.dd hh:mm:ss";
 struct CommandReport {
     QString filePath;
 
-    int ID;
-    SDK::PaymentProcessor::IRemoteService::EStatus status;
+    int ID{0};
+    SDK::PaymentProcessor::IRemoteService::EStatus status{
+        SDK::PaymentProcessor::IRemoteService::OK};
     QDateTime lastUpdate;
     QVariant description;
     QVariant progress;
 
-    CommandReport(const QString &aFilePath) : filePath(aFilePath) {
-        ID = 0;
-        status = SDK::PaymentProcessor::IRemoteService::OK;
-    }
+    CommandReport(const QString &aFilePath) : filePath(aFilePath) {}
 
     /// Удалить файл отчета
-    void remove() { QFile::remove(filePath); }
+    void remove() const { QFile::remove(filePath); }
 
     /// Проверка что команда ещё выполняется, а не "подвисла"
-    bool isAlive() { return lastUpdate.addSecs(60 * 10) > QDateTime::currentDateTime(); }
+    bool isAlive() const { return lastUpdate.addSecs(60 * 10) > QDateTime::currentDateTime(); }
 };
 
 //---------------------------------------------------------------------------
@@ -92,8 +90,7 @@ RemoteService::RemoteService(IApplication *aApplication)
     : ILogable(CRemoteService::LogName), m_Application(aApplication), m_Database(nullptr),
       m_LastCommand(0), m_GenerateKeyCommand(0),
       m_Settings(aApplication->getWorkingDirectory() + CRemoteService::ConfigFileName,
-                 QSettings::IniFormat),
-      m_CommandMutex() {
+                 QSettings::IniFormat) {
     // Создаем 5сек таймер отложенной проверки состояния файлов отчета
     m_CheckUpdateReportsTimer.setSingleShot(true);
     m_CheckUpdateReportsTimer.setInterval(CRemoteService::UpdateReportCheckTimeout);
@@ -101,7 +98,7 @@ RemoteService::RemoteService(IApplication *aApplication)
 }
 
 //---------------------------------------------------------------------------
-RemoteService::~RemoteService() {}
+RemoteService::~RemoteService() = default;
 
 //---------------------------------------------------------------------------
 bool RemoteService::initialize() {
@@ -132,7 +129,7 @@ bool RemoteService::initialize() {
         SDK::Plugin::IPlugin *plugin =
             PluginService::instance(m_Application)->getPluginLoader()->createPlugin(path);
         if (plugin) {
-            PPSDK::IRemoteClient *client = dynamic_cast<PPSDK::IRemoteClient *>(plugin);
+            auto *client = dynamic_cast<PPSDK::IRemoteClient *>(plugin);
             if (client) {
                 m_MonitoringClients << client;
             } else {
@@ -141,7 +138,7 @@ bool RemoteService::initialize() {
         }
     }
 
-    auto deviceService = DeviceService::instance(m_Application);
+    auto *deviceService = DeviceService::instance(m_Application);
 
     connect(
         deviceService, SIGNAL(configurationUpdated()), this, SLOT(onDeviceConfigurationUpdated()));
@@ -252,11 +249,11 @@ const QSet<QString> &RemoteService::getRequiredServices() const {
 
 //---------------------------------------------------------------------------
 QVariantMap RemoteService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
-void RemoteService::resetParameters(const QSet<QString> &) {}
+void RemoteService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 int RemoteService::increaseLastCommandID() {
@@ -451,7 +448,8 @@ int RemoteService::startUpdateCommand(UpdateCommand aCommand) {
     auto appInfo = m_Application->getAppInfo();
 
     // Сериализуем настройки прокси.
-    auto settings = SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
+    auto *settings =
+        SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
 
     QString commandParams = QString("--server \"%1\" --version \"%2\" --application %3 --conf %4 "
                                     "--id %5 --point %6 --accept-keys %7")
@@ -585,14 +583,15 @@ int RemoteService::registerGenerateKeyCommand(const QString &aLogin, const QStri
 void RemoteService::doGenerateKeyCommand(RemoteService *aService,
                                          const QString &aLogin,
                                          const QString &aPassword) {
-    auto terminalSettings = static_cast<PPSDK::TerminalSettings *>(
+    auto *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
         aService->m_Application->getCore()->getSettingsService()->getAdapter(
             PPSDK::CAdapterNames::TerminalAdapter));
-    auto cryptoService = aService->m_Application->getCore()->getCryptService();
+    auto *cryptoService = aService->m_Application->getCore()->getCryptService();
 
     QString url(terminalSettings->getKeygenURL());
-    QString SD, AP, OP;
-
+    QString SD; // NOLINT(readability-identifier-naming)
+    QString AP; // NOLINT(readability-identifier-naming)
+    QString OP; // NOLINT(readability-identifier-naming)
     int error = cryptoService->generateKey(
         CRemoteService::GeneratedKeyId, aLogin, aPassword, url, SD, AP, OP);
     if (error) {
@@ -935,7 +934,7 @@ RemoteService::UpdateCommand RemoteService::findUpdateCommand(EUpdateType aType)
         }
     }
 
-    return RemoteService::UpdateCommand();
+    return {};
 }
 
 //---------------------------------------------------------------------------
@@ -1049,8 +1048,8 @@ void RemoteService::startNextUpdateCommand() {
 }
 
 //---------------------------------------------------------------------------
-RemoteService::UpdateCommand::UpdateCommand() {
-    ID = -1;
+RemoteService::UpdateCommand::UpdateCommand() : ID(-1) {
+
     lastUpdate = QDateTime::currentDateTime();
 }
 

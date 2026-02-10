@@ -102,12 +102,12 @@ public:
     getPaymentsFields(const QList<qint64> &aIds);
 
     /// Обновление поля платежа.
-    virtual bool updatePaymentField(qint64 aPayment,
+    virtual bool updatePaymentField(qint64 aID,
                                     const PPSDK::IPayment::SParameter &aField,
                                     bool aForce = false);
 
     /// Обновление полей платежа.
-    virtual bool updatePaymentFields(qint64 aPayment,
+    virtual bool updatePaymentFields(qint64 aID,
                                      const QList<PPSDK::IPayment::SParameter> &aFields,
                                      bool aForce = false);
 

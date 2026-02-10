@@ -123,8 +123,8 @@ CLibUSB::SDeviceProperties getDevicesProperties(libusb_device *aDevice);
 
 /// Получить данные устройства по его дескриптору.
 void getDeviceDescriptorData(libusb_device *aDevice,
-                             const libusb_device_descriptor &aDescriptor,
-                             CLibUSB::SDeviceProperties &aProperties);
+                             const libusb_device_descriptor &aDeviceDescriptor,
+                             CLibUSB::SDeviceProperties &aDeviceProperties);
 
 /// Получить данные BOS (Binary Object Store).
 QVariantMap getBOSData(libusb_device_handle *aDeviceHandle);

@@ -13,10 +13,10 @@
 #include "MessageBox/MessageBox.h"
 
 KeysServiceWindow::KeysServiceWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend) {
+    : QFrame(aParent), ServiceWindowBase(aBackend), m_Window(new KeysWindow(aBackend, this)) {
     setupUi(this);
 
-    m_Window = new KeysWindow(aBackend, this);
+    
 
     connect(m_Window, SIGNAL(beginGenerating()), SLOT(onBeginGenerating()));
     connect(m_Window, SIGNAL(endGenerating()), SLOT(onEndGenerating()));

@@ -37,7 +37,7 @@ public:
     virtual bool getOperator(QString &aOperator);
 
     /// Получение качество сигнала.
-    virtual bool getSignalQuality(int &aSignalQuality);
+    virtual bool getSignalQuality(int &aQuality);
 
     /// Получение информации об устройстве
     virtual bool getInfo(QString &aInfo);
@@ -54,7 +54,7 @@ public:
 
 protected:
     /// Получить статус.
-    virtual bool getStatus(TStatusCodes &aStatusCodes);
+    virtual bool getStatus(TStatusCodes &aStatuses);
 
     /// Получить состояние регистрации в сети
     bool getNetworkAccessability(ENetworkAccessability::Enum &aNetworkAccessability);

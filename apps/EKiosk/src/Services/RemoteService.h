@@ -181,7 +181,7 @@ private:
     int checkCommandsLifetime();
 
     /// Создание новой пары ключей
-    static void doGenerateKeyCommand(RemoteService *aMonitoringService,
+    static void doGenerateKeyCommand(RemoteService *aService,
                                      const QString &aLogin,
                                      const QString &aPassword);
 

@@ -72,8 +72,7 @@ PaymentService *PaymentService::instance(IApplication *aApplication) {
 //---------------------------------------------------------------------------
 PaymentService::PaymentService(IApplication *aApplication)
     : ILogable("Payments"), m_Application(aApplication), m_Enabled(false), m_DBUtils(nullptr),
-      m_CommandIndex(0), m_PaymentLock(QRecursiveMutex()), m_OfflinePaymentID(-1),
-      m_OfflinePaymentLock(QRecursiveMutex()), m_CommandMutex(QRecursiveMutex()) {
+      m_CommandIndex(0),  m_OfflinePaymentID(-1) {
     qRegisterMetaType<EPaymentCommandResult::Enum>("EPaymentCommandResult");
 
     m_PaymentThread.setObjectName(CPaymentService::ThreadName);
@@ -116,7 +115,7 @@ bool PaymentService::initialize() {
         SDK::Plugin::IPlugin *plugin =
             PluginService::instance(m_Application)->getPluginLoader()->createPlugin(path);
 
-        SDK::PaymentProcessor::IPaymentFactory *factory =
+        auto *factory =
             dynamic_cast<SDK::PaymentProcessor::IPaymentFactory *>(plugin);
         if (factory) {
             factory->setSerializer(std::bind(&PaymentService::savePayment, this, _1));
@@ -132,7 +131,7 @@ bool PaymentService::initialize() {
     }
 
     // Ищем всех провайдеров с неподдерживаемым типом процессинга
-    auto dealerSettings = SettingsService::instance(m_Application)
+    auto *dealerSettings = SettingsService::instance(m_Application)
                               ->getAdapter<SDK::PaymentProcessor::DealerSettings>();
 
     foreach (const QString &processingType,
@@ -230,7 +229,7 @@ QVariantMap PaymentService::getParameters() const {
 }
 
 //---------------------------------------------------------------------------
-void PaymentService::resetParameters(const QSet<QString> &) {}
+void PaymentService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 void PaymentService::setPaymentActive(std::shared_ptr<SDK::PaymentProcessor::IPayment> aPayment) {
@@ -459,7 +458,7 @@ QString PaymentService::createSignature(PPSDK::IPayment *aPayment, bool aWithCRC
 #endif
 
 #ifndef _DEBUG
-    ICryptEngine *crypt =
+    auto *crypt =
         static_cast<ICryptEngine *>(CryptService::instance(m_Application)->getCryptEngine());
 
     QByteArray encodedSignature;
@@ -472,7 +471,7 @@ QString PaymentService::createSignature(PPSDK::IPayment *aPayment, bool aWithCRC
                   .arg(aPayment->getID())
                   .arg(error));
 
-        return QString();
+        return {};
     }
 
     return QString::fromUtf8(encodedSignature);
@@ -496,7 +495,7 @@ bool PaymentService::verifySignature(PPSDK::IPayment *aPayment) {
     runtimeSignatures << createSignature(aPayment, true) << createSignature(aPayment, false);
 
 #ifndef _DEBUG
-    ICryptEngine *crypt =
+    auto *crypt =
         static_cast<ICryptEngine *>(CryptService::instance(m_Application)->getCryptEngine());
 
     QString error;
@@ -544,7 +543,7 @@ std::shared_ptr<PPSDK::IPayment> PaymentService::getPayment(qint64 aID) {
     if (aID == -1) {
         toLog(LogLevel::Debug, QString("Payment %1. Payment not exist.").arg(aID));
 
-        return std::shared_ptr<PPSDK::IPayment>();
+        return {};
     }
 
     toLog(LogLevel::Normal, QString("Payment %1. Loading...").arg(aID));
@@ -564,14 +563,14 @@ std::shared_ptr<PPSDK::IPayment> PaymentService::getPayment(qint64 aID) {
             toLog(LogLevel::Normal,
                   QString("Payment %1. Failed to create payment object.").arg(aID));
 
-            return std::shared_ptr<PPSDK::IPayment>();
+            return {};
         }
 
         if (!payment->restore(parameters)) {
             toLog(LogLevel::Normal,
                   QString("Payment %1. Failed to restore payment object.").arg(aID));
 
-            return std::shared_ptr<PPSDK::IPayment>();
+            return {};
         }
 
         if (!verifySignature(payment.get())) {
@@ -585,7 +584,7 @@ std::shared_ptr<PPSDK::IPayment> PaymentService::getPayment(qint64 aID) {
         return payment;
     }
 
-    return std::shared_ptr<PPSDK::IPayment>();
+    return {};
 }
 
 //---------------------------------------------------------------------------
@@ -596,7 +595,7 @@ std::shared_ptr<PPSDK::IPayment> PaymentService::getPayment(const QString &aInit
         return getPayment(id);
     }
 
-    return std::shared_ptr<PPSDK::IPayment>();
+    return {};
 }
 
 //---------------------------------------------------------------------------
@@ -669,7 +668,7 @@ PaymentService::calculateCommission(const QList<PPSDK::IPayment::SParameter> &aP
         return m_ActivePayment->calculateCommission(aParameters);
     }
 
-    return QList<PPSDK::IPayment::SParameter>();
+    return {};
 }
 
 //---------------------------------------------------------------------------
@@ -1384,7 +1383,7 @@ QString PaymentService::getChangeSessionRef() {
             .takeFirst();
     }
 
-    return QString();
+    return {};
 }
 
 //---------------------------------------------------------------------------

@@ -80,7 +80,7 @@ bool NPSTalkCoinAcceptor::getStatus(TStatusCodes &aStatusCodes) {
                             : BillAcceptorStatusCode::Normal::Disabled);
 
     for (auto it = m_EscrowParTable.data().begin(); it != m_EscrowParTable.data().end(); ++it) {
-        uchar coinPosition = uchar(it.key());
+        auto coinPosition = uchar(it.key());
 
         if (processCommand(
                 CNPSTalk::Command::GetAcceptedCoins, QByteArray(1, coinPosition), &answer) &&
@@ -105,7 +105,7 @@ bool NPSTalkCoinAcceptor::loadParTable() {
         return false;
     }
 
-    uchar channelCount = uchar(answer[0]);
+    auto channelCount = uchar(answer[0]);
 
     for (uchar i = 1; i <= channelCount; ++i) {
         QByteArray nominalData;
@@ -139,7 +139,7 @@ bool NPSTalkCoinAcceptor::setDefaultParameters() {
         return false;
     }
 
-    uchar channelCount = uchar(answer[0]);
+    auto channelCount = uchar(answer[0]);
 
     for (uchar i = 1; i < channelCount; ++i) {
         if (!processCommand(CNPSTalk::Command::GetAcceptedCoins, QByteArray(1, i), &answer) ||

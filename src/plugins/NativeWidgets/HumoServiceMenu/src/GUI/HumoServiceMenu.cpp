@@ -162,7 +162,7 @@ QWidget *HumoServiceMenu::getNativeWidget() const {
 //---------------------------------------------------------------------------
 QVariantMap HumoServiceMenu::getContext() const {
     // TODO
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
@@ -172,7 +172,7 @@ bool HumoServiceMenu::isValid() const {
 
 //---------------------------------------------------------------------------
 QString HumoServiceMenu::getError() const {
-    return QString();
+    return {};
 }
 
 //---------------------------------------------------------------------------

@@ -20,7 +20,7 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
     : Response(aRequest, aResponseString) {
     // Добавляем параметры, прописанные в конфиге как входящие, в свойства платежа, связанного с
     // запросом.
-    const PaymentRequest *request = dynamic_cast<const PaymentRequest *>(&aRequest);
+    const auto *request = dynamic_cast<const PaymentRequest *>(&aRequest);
 
     if (request) {
         setLog(request->getPayment()->getPaymentFactory()->getLog());

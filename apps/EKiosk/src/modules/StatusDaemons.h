@@ -90,12 +90,12 @@ public:
     StatusDaemons(QObject *parent = 0);
     void startTimer(const int sec);
 
-    void sendStatusToServer(Sender::Data &a_Data);
+    void sendStatusToServer(Sender::Data &aData);
 
     bool firstSend;
 
 private:
-    void parcerNote(const QDomNode &dom_Element);
+    void parseNode(const QDomNode &domElement);
 
     double gbl_overdraft;
     double gbl_balance;
@@ -109,13 +109,13 @@ private:
 
 private slots:
     void resendRequest();
-    void r_RequestRepeet();
-    void setDataNote(const QDomNode &dom_Element);
+    void r_RequestRepeat();
+    void setDataNote(const QDomNode &domElement);
 
 signals:
     void getRequestParam();
     void emit_responseBalance(const double balance, const double overdraft, const double threshold);
-    void lockUnlockAvtorization(bool lock, int sts);
+    void lockUnlockAuthorization(bool lock, int sts);
     void emit_responseIsActive(const bool is_active);
     void emit_cmdToMain(QVariantList cmdList);
     void emit_hashToCheck(QString hash);

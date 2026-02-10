@@ -57,7 +57,7 @@ private slots:
         QVector<bool> completed(num_Threads, false);
 
         for (int i = 0; i < num_Threads; ++i) {
-            QThread *thread = new QThread;
+            auto *thread = new QThread;
             threads.append(thread);
 
             thread->start();

@@ -14,10 +14,9 @@ public:
     ClassModem(QObject *parent = 0);
 
     bool execCommand(Modem_ProtocolCommands::Enum aCommand, bool thread);
-    void setPort(QString port_name);
-    bool isItYou(QString &modem_coment);
-    bool
-    isItYou(QStringList &com_List, QString &modem_name, QString &com_str, QString &modem_coment);
+    void setPort(QString portName);
+    bool isItYou(QString &modemComent);
+    bool isItYou(QStringList &comList, QString &modemName, QString &comStr, QString &modemComent);
 
     QString nowModem_Name;
     QString nowModem_Comment;

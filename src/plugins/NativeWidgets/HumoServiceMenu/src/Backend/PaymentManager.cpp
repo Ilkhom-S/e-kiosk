@@ -47,14 +47,14 @@ const char UnprintedPaymentList[] = "[UNPRINTED_PAYMENT_LIST]";
 
 //------------------------------------------------------------------------
 PaymentManager::PaymentManager(PPSDK::ICore *aCore)
-    : m_Core(aCore), m_UseFiscalPrinter(false), m_PaymentsRegistryPrintJob(0) {
-    m_PrinterService = m_Core->getPrinterService();
+    : m_Core(aCore), m_UseFiscalPrinter(false), m_PaymentService(m_Core->getPaymentService()), m_PrinterService(m_Core->getPrinterService()), m_PaymentsRegistryPrintJob(0) {
+    
     connect(m_PrinterService,
             SIGNAL(receiptPrinted(int, bool)),
             this,
             SLOT(onReceiptPrinted(int, bool)));
 
-    m_PaymentService = m_Core->getPaymentService();
+    
     connect(m_PaymentService,
             SIGNAL(stepCompleted(qint64, int, bool)),
             this,
@@ -65,7 +65,7 @@ PaymentManager::PaymentManager(PPSDK::ICore *aCore)
 }
 
 //------------------------------------------------------------------------
-PaymentManager::~PaymentManager() {}
+PaymentManager::~PaymentManager() = default;
 
 //------------------------------------------------------------------------
 QVariantMap
@@ -99,7 +99,7 @@ QVariantMap PaymentManager::getEncashmentInfo(int aIndex) const {
         return info;
     }
 
-    return QVariantMap();
+    return {};
 }
 
 //------------------------------------------------------------------------
@@ -176,18 +176,18 @@ bool PaymentManager::printReceipt(qint64 aPaymentId, DSDK::EPrintingModes::Enum 
 bool PaymentManager::printUnprintedReceiptsRegistry(const QSet<qint64> &aPayments) {
     struct PaymentAmounts {
         QVariantList sum_Amounts;
-        double sum_AmountAll;
-        double sum_DealerFee;
-        double sum_ProcessingFee;
+        double sum_AmountAll{0.0};
+        double sum_DealerFee{0.0};
+        double sum_ProcessingFee{0.0};
         QStringList registry;
         QStringList paymentTitles;
         QVariantList paymentsVAT;
         QStringList paymentInn;
 
-        PaymentAmounts() {
-            sum_AmountAll = 0.0;
-            sum_DealerFee = 0.0;
-            sum_ProcessingFee = 0.0;
+        PaymentAmounts()  {
+            
+            
+            
         }
     };
 
@@ -204,7 +204,8 @@ bool PaymentManager::printUnprintedReceiptsRegistry(const QSet<qint64> &aPayment
     std::sort(payments.begin(), payments.end());
 
     foreach (qint64 id, payments) {
-        QString session, amountAll;
+        QString session;
+        QString amountAll;
         double amount = 0.0;
         double dealerFee = 0.0;
         double processingFee = 0.0;
@@ -215,26 +216,27 @@ bool PaymentManager::printUnprintedReceiptsRegistry(const QSet<qint64> &aPayment
         int payTool = 0;
 
         for (auto &parameter : m_PaymentService->getPaymentFields(id)) {
-            if (parameter.name == CPayment::Amount)
+            if (parameter.name == CPayment::Amount) {
                 amount = parameter.value.toDouble();
-            else if (parameter.name == CPayment::DealerFee)
+            } else if (parameter.name == CPayment::DealerFee) {
                 dealerFee = parameter.value.toDouble();
-            else if (parameter.name == CPayment::ProcessingFee)
+            } else if (parameter.name == CPayment::ProcessingFee) {
                 processingFee = parameter.value.toDouble();
-            else if (parameter.name == CPayment::AmountAll)
+            } else if (parameter.name == CPayment::AmountAll) {
                 amountAll = parameter.value.toString();
-            else if (parameter.name == CPayment::InitialSession)
+            } else if (parameter.name == CPayment::InitialSession) {
                 session = parameter.value.toString();
-            else if (parameter.name == CPayment::Provider)
+            } else if (parameter.name == CPayment::Provider) {
                 providerId = parameter.value.toLongLong();
-            else if (parameter.name == CPayment::MNPGatewayIn)
+            } else if (parameter.name == CPayment::MNPGatewayIn) {
                 gatewayIn = parameter.value.toLongLong();
-            else if (parameter.name == CPayment::MNPGatewayOut)
+            } else if (parameter.name == CPayment::MNPGatewayOut) {
                 gatewayOut = parameter.value.toLongLong();
-            else if (parameter.name == CPayment::Vat)
+            } else if (parameter.name == CPayment::Vat) {
                 vat = parameter.value.toInt();
-            else if (parameter.name == CPayment::PayTool)
+            } else if (parameter.name == CPayment::PayTool) {
                 payTool = parameter.value.toInt();
+}
         }
 
         if (!qFuzzyIsNull(amountAll.toDouble())) {

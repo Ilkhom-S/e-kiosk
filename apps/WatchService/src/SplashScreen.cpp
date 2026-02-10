@@ -62,7 +62,7 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
 
 //----------------------------------------------------------------------------
 // Деструктор экрана заставки
-SplashScreen::~SplashScreen() {}
+SplashScreen::~SplashScreen() = default;
 
 //----------------------------------------------------------------------------
 // Инициализация экрана заставки
@@ -102,7 +102,7 @@ void SplashScreen::closeEvent(QCloseEvent *aEvent) {
 bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent) {
     if (aEvent->type() == QEvent::MouseButtonPress) {
         // Проверим, что был сделан клик по некоторой области
-        QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(aEvent);
+        auto *mouseEvent = dynamic_cast<QMouseEvent *>(aEvent);
         if (mouseEvent) {
             if (m_Areas.isEmpty()) {
                 // Размеры виджета до первого показа кривые

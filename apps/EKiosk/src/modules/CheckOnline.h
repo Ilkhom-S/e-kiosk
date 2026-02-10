@@ -12,14 +12,14 @@ public:
 
 private slots:
     void resendRequest();
-    void setDataNote(const QDomNode &dom_Element);
+    void setDataNote(const QDomNode &domElement);
 
 public slots:
     void sendCheckOnlineRequest(
         QString trn, QString prvId, QString account, double amount, QVariantMap param);
 
 private:
-    void parcerNote(const QDomNode &dom_Element);
+    void parseNode(const QDomNode &domElement);
 
     bool getData;
 

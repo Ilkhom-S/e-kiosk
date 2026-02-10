@@ -18,8 +18,8 @@
 #include "GUI/ServiceTags.h"
 
 DialupWizardPage::DialupWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : WizardPageBase(aBackend, aParent) {
-    m_ConnectionWindow = new DialupConnectionWindow(this);
+    : WizardPageBase(aBackend, aParent), m_ConnectionWindow(new DialupConnectionWindow(this)) {
+    
     m_ConnectionWindow->setParent(this);
     setLayout(new QHBoxLayout(this));
     layout()->setSpacing(0);

@@ -74,7 +74,7 @@ HardwareWindow::HardwareWindow(HumoServiceBackend *aBackend, QWidget *aParent)
         m_Types[type] = QCoreApplication::translate("Hardware::Types", type.toLatin1());
 
         if (lastType != type) {
-            QListWidgetItem *item = new QListWidgetItem(m_Types[type]);
+            auto *item = new QListWidgetItem(m_Types[type]);
             item->setTextAlignment(Qt::AlignCenter);
             ui.lwTypes->addItem(item);
         }
@@ -103,7 +103,7 @@ HardwareWindow::HardwareWindow(HumoServiceBackend *aBackend, QWidget *aParent)
 }
 
 //------------------------------------------------------------------------
-HardwareWindow::~HardwareWindow() {}
+HardwareWindow::~HardwareWindow() = default;
 
 //------------------------------------------------------------------------
 bool HardwareWindow::initialize() {
@@ -264,7 +264,7 @@ void HardwareWindow::onTypeSelected() {
 
 //------------------------------------------------------------------------
 void HardwareWindow::onEdit() {
-    DeviceSlot *slot = qobject_cast<DeviceSlot *>(sender());
+    auto *slot = qobject_cast<DeviceSlot *>(sender());
     if (slot) {
         emit editSlot(slot, getEditor(slot));
     }
@@ -272,7 +272,7 @@ void HardwareWindow::onEdit() {
 
 //------------------------------------------------------------------------
 void HardwareWindow::onRemove() {
-    DeviceSlot *slot = qobject_cast<DeviceSlot *>(sender());
+    auto *slot = qobject_cast<DeviceSlot *>(sender());
     if (slot) {
         emit removeSlot(slot);
     }

@@ -68,7 +68,7 @@ MainScenario::MainScenario(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
 }
 
 //---------------------------------------------------------------------------
-MainScenario::~MainScenario() {}
+MainScenario::~MainScenario() = default;
 
 //---------------------------------------------------------------------------
 bool MainScenario::initialize(const QList<GUI::SScriptObject> & /*aScriptObjects*/) {
@@ -229,7 +229,7 @@ void MainScenario::signalTriggered(const QString &aSignal, const QVariantMap & /
 
 //---------------------------------------------------------------------------
 QString MainScenario::getState() const {
-    return QString("main");
+    return {"main"};
 }
 
 //---------------------------------------------------------------------------

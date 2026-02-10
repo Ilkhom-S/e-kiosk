@@ -199,7 +199,7 @@ bool PuloonLCDM::isConnected() {
         answer.mid(4, 4).toHex().remove(0, 1).remove(1, 1).remove(2, 1).remove(3, 1).toUpper();
     setDeviceParameter(CDeviceData::CheckSum, textCheckSum);
 
-    bool checkSum_OK;
+    bool checkSum_OK = false;
     ushort checkSum = textCheckSum.toUShort(&checkSum_OK, 16);
 
     CPuloonLCDM::Models::SData modelData;
@@ -211,7 +211,7 @@ bool PuloonLCDM::isConnected() {
     }
 
     QString textROMVersion = answer.mid(1, 2);
-    bool ROMVersionOK;
+    bool ROMVersionOK = false;
     int ROMVersion = textROMVersion.toInt(&ROMVersionOK);
     QString resultROMVersion = textROMVersion;
 

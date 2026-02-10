@@ -400,8 +400,8 @@ void ServiceController::dumpFailureReport() {
 
 //---------------------------------------------------------------------------
 QSet<SDK::PaymentProcessor::IService *> ServiceController::getServices() const {
-    return QSet<SDK::PaymentProcessor::IService *>(m_RegisteredServices.values().begin(),
-                                                   m_RegisteredServices.values().end());
+    return {m_RegisteredServices.values().begin(),
+                                                   m_RegisteredServices.values().end()};
 }
 
 //---------------------------------------------------------------------------

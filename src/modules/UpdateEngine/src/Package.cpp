@@ -25,7 +25,7 @@ public:
     ZipArchiveVerifier(ILog *aLog) : m_Log(aLog) {}
 
     virtual bool verify(NetworkTask *aTask, const QByteArray & /*aData*/) {
-        FileDownloadTask *task = dynamic_cast<FileDownloadTask *>(aTask);
+        auto *task = dynamic_cast<FileDownloadTask *>(aTask);
 
         if (task) {
             // Закрываем файл для корректной работы 7-Zip а.
@@ -74,7 +74,7 @@ QList<NetworkTask *> Package::download(const QString &aBaseURL, const TFileList 
             // break тут не нужен!
 
         default:
-            auto task = new FileDownloadTask(URL, filePath);
+            auto *task = new FileDownloadTask(URL, filePath);
             if (m_Hash.isEmpty()) {
                 task->setVerifier(new ZipArchiveVerifier(Log()));
             } else if (m_Hash.size() == CHashVerifier::MD5HashSize) {

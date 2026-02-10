@@ -7,14 +7,14 @@
 
 namespace POSPrinters {
 
-SModelData::SModelData() {}
+SModelData::SModelData() = default;
 
 //--------------------------------------------------------------------------------
 SModelData::SModelData(const QString &aName, bool aVerified, const QString &aDescription)
     : name(aName), verified(aVerified), description(aDescription) {}
 
 //--------------------------------------------------------------------------------
-ModelData::ModelData() {}
+ModelData::ModelData() = default;
 
 //--------------------------------------------------------------------------------
 void ModelData::add(char aModelId,

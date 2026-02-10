@@ -28,7 +28,7 @@ const char NotifyHandlerSignature[] = "notifyHandler(const QVariant &, const QVa
 QMLGraphicsItem::QMLGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
                                  QQmlEngine *aEngine,
                                  ILog *aLog)
-    : m_Log(aLog), m_Engine(aEngine), m_Item(0), m_Info(aInfo) {
+    : m_Log(aLog), m_Engine(aEngine), m_Item(nullptr), m_Info(aInfo) {
     QString qmlPath = QDir::toNativeSeparators(QDir::cleanPath(
         aInfo.directory + QDir::separator() + aInfo.parameters[CQMLGraphicsItem::ItemKey]));
     QQmlComponent component(
@@ -117,7 +117,7 @@ QString QMLGraphicsItem::getError() const {
 
 //---------------------------------------------------------------------------
 QString QMLGraphicsItem::translateError(const QVariant &aError) const {
-    QVariantMap e(aError.value<QVariantMap>());
+    auto e(aError.value<QVariantMap>());
 
     return QString("%1:%2 %3")
         .arg(e["fileName"].toString())

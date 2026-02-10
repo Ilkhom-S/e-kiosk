@@ -18,7 +18,7 @@ void TemplatePluginTest::testPluginLoading() {
     QVERIFY(loader.load());
     QObject *plugin = loader.instance();
     QVERIFY(plugin != nullptr);
-    SDK::Plugin::PluginFactory *factory = static_cast<SDK::Plugin::PluginFactory *>(plugin);
+    auto *factory = static_cast<SDK::Plugin::PluginFactory *>(plugin);
     QVERIFY(factory != nullptr);
     QCOMPARE(factory->getName(), QString("Template Plugin"));
     QCOMPARE(factory->getDescription(), QString("Minimal template plugin for plugin development"));
@@ -32,7 +32,7 @@ void TemplatePluginTest::testPluginCreation() {
     QVERIFY(loader.load());
     QObject *plugin = loader.instance();
     QVERIFY(plugin != nullptr);
-    SDK::Plugin::PluginFactory *factory = static_cast<SDK::Plugin::PluginFactory *>(plugin);
+    auto *factory = static_cast<SDK::Plugin::PluginFactory *>(plugin);
     QVERIFY(factory != nullptr);
 
     // Create a plugin instance
@@ -55,7 +55,7 @@ void TemplatePluginTest::testPluginFunctionality() {
     QVERIFY(loader.load());
     QObject *plugin = loader.instance();
     QVERIFY(plugin != nullptr);
-    SDK::Plugin::PluginFactory *factory = static_cast<SDK::Plugin::PluginFactory *>(plugin);
+    auto *factory = static_cast<SDK::Plugin::PluginFactory *>(plugin);
     QVERIFY(factory != nullptr);
 
     // Create a plugin instance

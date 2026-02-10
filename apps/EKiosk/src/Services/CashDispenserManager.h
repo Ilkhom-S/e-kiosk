@@ -90,7 +90,7 @@ private slots:
     void onUnitEmpty(int aUnit);
 
     /// Изменение статуса диспенсера
-    void onStatusChanged(SDK::Driver::EWarningLevel::Enum aWarningLevel,
+    void onStatusChanged(SDK::Driver::EWarningLevel::Enum aLevel,
                          const QString &aTranslation,
                          int aStatus);
 
@@ -106,8 +106,8 @@ private:
 
     /// Получить данные объекта для выдачи
     static bool getItem_Data(SDK::PaymentProcessor::TPaymentAmount aAmount,
-                             TItem_DataSet &aItem_Data,
-                             TItem_DataSetIt &aItem_DataSetIt);
+                             TItem_DataSet &aItemData,
+                             TItem_DataSetIt &aItemDataSetIt);
 
     /// Проверить сигнал о результате выдачи денег
     SDK::PaymentProcessor::SCashUnit *
@@ -120,7 +120,7 @@ private:
     bool handleSignal(QObject *aSender,
                       const QString &aSignalName,
                       int aUnit,
-                      int aItem_Count,
+                      int aItems,
                       SDK::PaymentProcessor::TPaymentAmount &aAmount);
 
     /// Установить конфигурацию кассет

@@ -34,10 +34,10 @@ ICryptEngine &instance() {
 } // namespace CCryptEngine
 
 //---------------------------------------------------------------------------
-CryptEngine::CryptEngine() : m_Mutex(), m_Initialized(false), m_Engine(CCrypt::ETypeEngine::File) {}
+CryptEngine::CryptEngine() :  m_Initialized(false), m_Engine(CCrypt::ETypeEngine::File) {}
 
 //---------------------------------------------------------------------------
-CryptEngine::~CryptEngine() {}
+CryptEngine::~CryptEngine() = default;
 
 //---------------------------------------------------------------------------
 bool CryptEngine::initialize() {
@@ -146,7 +146,8 @@ bool CryptEngine::createKeyPair(const QString &aPath,
                                 QString &aErrorDescription) {
     QMutexLocker locker(&m_Mutex);
 
-    IPRIV_KEY secretKey, publicKey;
+    IPRIV_KEY secretKey;
+    IPRIV_KEY publicKey;
 
     QString secretPath = aPath + "/" + aKeyPairName + "s.key";
     QString publicPath = aPath + "/" + aKeyPairName + "p.key";
@@ -171,7 +172,7 @@ bool CryptEngine::createKeyPair(const QString &aPath,
         return false;
     }
 
-    res = Crypt_ExportPublicKeyToFile(publicPath.toLocal8Bit(), &publicKey, 0);
+    res = Crypt_ExportPublicKeyToFile(publicPath.toLocal8Bit(), &publicKey, nullptr);
     if (res <= 0) {
         aErrorDescription = errorToString(res);
 
@@ -306,7 +307,7 @@ bool CryptEngine::replacePublicKey(int aKeyPair, const QByteArray &aPublicKey) {
 
     IPRIV_KEY key;
 
-    int result = Crypt_OpenPublicKey(m_Engine, aPublicKey.data(), aPublicKey.size(), 0, &key, 0);
+    int result = Crypt_OpenPublicKey(m_Engine, aPublicKey.data(), aPublicKey.size(), 0, &key, nullptr);
     if (result != 0) {
         return false;
     }
@@ -428,7 +429,7 @@ bool CryptEngine::loadKeyPair(int aKeyPair,
                                         aPublicKeyPath.toLocal8Bit(),
                                         aBankSerialNumber,
                                         &keyPair.second,
-                                        0);
+                                        nullptr);
 
     if (res != 0) {
         aErrorDescription = errorToString(res);
@@ -450,7 +451,7 @@ QString CryptEngine::getKeyPairSerialNumber(int aKeyPair) {
 
     TKeyPairList::iterator keyPair = m_KeyPairs.find(aKeyPair);
     if (keyPair == m_KeyPairs.end()) {
-        return QString();
+        return {};
     }
 
 #ifdef TC_USE_MD5
@@ -569,7 +570,7 @@ bool CryptEngine::verify(int aKeyPair,
         return false;
     }
 
-    const char *originalResponseData = 0;
+    const char *originalResponseData = nullptr;
     int originalResponseDataSize = 0;
 
     int res = ::Crypt_Verify(aResponseString.data(),
@@ -798,7 +799,8 @@ bool CryptEngine::setData(const QString &aName, const QByteArray &aData) {
 //---------------------------------------------------------------------------
 bool CryptEngine::getData(const QString &aName, QByteArray &aData) {
     if (getTokenStatus(CCrypt::ETypeEngine::RuToken).isOK()) {
-        int size = 0, count = 1;
+        int size = 0;
+        int count = 1;
         aData.clear();
 
         do {

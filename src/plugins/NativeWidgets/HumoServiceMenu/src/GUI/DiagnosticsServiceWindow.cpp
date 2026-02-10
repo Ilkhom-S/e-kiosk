@@ -61,7 +61,7 @@ bool DiagnosticsServiceWindow::activate() {
     QStringList configNames = m_Backend->getHardwareManager()->getConfigurations();
 
     foreach (const QString config, configNames) {
-        DeviceStatusWindow *dtw = new DeviceStatusWindow(m_Backend, config, this);
+        auto *dtw = new DeviceStatusWindow(m_Backend, config, this);
         vlTestWidgets->addWidget(dtw->getWidget());
 
         m_DeviceStatusWidget[config] = dtw;
@@ -107,7 +107,7 @@ void DiagnosticsServiceWindow::onDeviceStatusChanged(const QString &aConfigurati
 
 //------------------------------------------------------------------------
 void DiagnosticsServiceWindow::onClickedEncashmentInfo() {
-    bool state = btnInfoPanel->isChecked() == true;
+    bool state = btnInfoPanel->isChecked();
 
     state ? btnInfoPanel->setText(tr("#title_turn_off"))
           : btnInfoPanel->setText(tr("#title_turn_on"));

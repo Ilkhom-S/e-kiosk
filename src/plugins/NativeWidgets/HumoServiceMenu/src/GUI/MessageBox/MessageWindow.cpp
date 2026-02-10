@@ -7,8 +7,8 @@ MessageWindow::MessageWindow(QWidget *parent) : QDialog(parent, Qt::SplashScreen
 
     auto setPixmap = [](QPushButton *aButton, const QString &aPath) {
         QPixmap pixmap(aPath);
-        QIcon ButtonIcon(pixmap);
-        aButton->setIcon(ButtonIcon);
+        QIcon buttonIcon(pixmap);
+        aButton->setIcon(buttonIcon);
         aButton->setIconSize(pixmap.rect().size());
         aButton->setFixedSize(pixmap.rect().size());
     };
@@ -21,7 +21,7 @@ MessageWindow::MessageWindow(QWidget *parent) : QDialog(parent, Qt::SplashScreen
 }
 
 //------------------------------------------------------------------------
-MessageWindow::~MessageWindow() {}
+MessageWindow::~MessageWindow() = default;
 
 //------------------------------------------------------------------------
 void MessageWindow::setup(const QString &aText,

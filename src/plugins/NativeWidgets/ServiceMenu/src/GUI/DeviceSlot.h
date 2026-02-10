@@ -42,7 +42,7 @@ public:
 
     DeviceSlot(ServiceMenuBackend *aBackend,
                const QString &aConfigurationName,
-               bool aUserSlot = false,
+               bool aIsUserSlot = false,
                const QString &aType = QString());
 
     virtual ~DeviceSlot();

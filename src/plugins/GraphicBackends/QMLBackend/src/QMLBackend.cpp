@@ -55,10 +55,10 @@ REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
                                 QMLBackend);
 
 //------------------------------------------------------------------------------
-QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
-    m_Factory = aFactory;
-    m_InstancePath = aInstancePath;
-    m_Engine = 0;
+QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) : m_Factory(aFactory), m_Engine(0), m_InstancePath(aInstancePath) {
+    
+    
+    
 
 #ifndef Q_OS_MACOS
     QtWebEngine::initialize();
@@ -162,7 +162,7 @@ QString QMLBackend::getType() const {
 
 //------------------------------------------------------------------------------
 QList<SDK::GUI::GraphicsItem_Info> QMLBackend::getItem_List() {
-    return QList<SDK::GUI::GraphicsItem_Info>();
+    return {};
 }
 
 //------------------------------------------------------------------------------
@@ -173,7 +173,7 @@ bool QMLBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine) {
 
     foreach (auto objectName, m_Engine->getGraphicsHost()->getInterfacesName()) {
         if (SDK::PaymentProcessor::CInterfaces::ICore != objectName) {
-            auto object = m_Engine->getGraphicsHost()->getInterface<QObject>(objectName);
+            auto *object = m_Engine->getGraphicsHost()->getInterface<QObject>(objectName);
             if (object) {
                 m_QMLEngine.rootContext()->setContextProperty(objectName, object);
             }

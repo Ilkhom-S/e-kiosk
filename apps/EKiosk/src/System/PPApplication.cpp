@@ -252,7 +252,7 @@ bool PPApplication::nativeEventFilter(const QByteArray &aEventType,
 }
 
 //------------------------------------------------------------------------
-void PPApplication::exit(int aResultCode) {
+void PPApplication::exit(int aResultCode) const {
     LOG(getLog(), LogLevel::Debug, QString("Exit application with %1 code.").arg(aResultCode));
 
     qApp->exit(aResultCode);

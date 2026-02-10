@@ -10,7 +10,7 @@ using namespace SDK::Driver::IOPort::COM;
 using namespace PrinterStatusCode;
 
 //--------------------------------------------------------------------------------
-AV268::AV268() {
+AV268::AV268() : m_Overflow(false), m_Initialize(false), m_ModelType(Unknown) {
     // данные устройства
     m_DeviceName = "SysFuture AV-268";
 
@@ -24,9 +24,9 @@ AV268::AV268() {
     // данные устройства
     setConfigParameter(CHardware::Printer::Commands::Cutting, "\x1B\x69");
     m_LineSize = CAV268::LineSize;
-    m_Overflow = false;
-    m_ModelType = Unknown;
-    m_Initialize = false;
+    
+    
+    
 }
 
 //--------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ void AV268::initialize() {
 
 //--------------------------------------------------------------------------------
 bool AV268::processCommand(const QByteArray &aCommand, QByteArray *aAnswer) {
-    return m_IOPort->write(aCommand) && !(aAnswer && !getAnswer(*aAnswer));
+    return m_IOPort->write(aCommand) && (!aAnswer || getAnswer(*aAnswer));
 }
 
 //--------------------------------------------------------------------------------
@@ -113,8 +113,7 @@ bool AV268::getAnswer(QByteArray &aAnswer, bool aNeedDelay) {
 
     for (int i = 0; i < aAnswer.size(); ++i) {
         if (aAnswer.contains(ASCII::XOn) || aAnswer.contains(ASCII::XOff)) {
-            m_Overflow = aAnswer.contains(ASCII::XOff) ==
-                         true; // C4800, QBool::operator const void *() const
+            m_Overflow = aAnswer.contains(ASCII::XOff); // C4800, QBool::operator const void *() const
             aAnswer.remove(i, 1);
             --i;
         }
