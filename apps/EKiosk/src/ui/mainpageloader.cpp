@@ -150,7 +150,7 @@ QVariantMap MainPageLoader::serviceMaxSum() {
     return data;
 }
 
-bool MainPageLoader::moneyExistInPay() {
+bool MainPageLoader::moneyExistInPay() const {
     if (nominalCash > 0)
         return true;
     return false;
@@ -796,15 +796,15 @@ void MainPageLoader::confirm_OtpResult(QString resultCode) {
     webView->page()->runJavaScript(jsFunc);
 }
 
-QString MainPageLoader::getPrinterStatus() {
+QString MainPageLoader::getPrinterStatus() const {
     return printerStatus ? "1" : "0";
 }
 
-QString MainPageLoader::showPrintDialog() {
+QString MainPageLoader::showPrintDialog() const {
     return printDialogShow ? "1" : "0";
 }
 
-QString MainPageLoader::getLockReason() {
+QString MainPageLoader::getLockReason() const {
     return lockReason;
 }
 
@@ -846,7 +846,7 @@ QVariantMap MainPageLoader::homeData() {
     return data;
 }
 
-QVariantMap MainPageLoader::terminalData() {
+QVariantMap MainPageLoader::terminalData() const {
     return terminalInfo;
 }
 
@@ -889,7 +889,7 @@ QVariantList MainPageLoader::serviceList(const int categoryId) {
     return services;
 }
 
-QVariantList MainPageLoader::categoryList() {
+QVariantList MainPageLoader::categoryList() const {
     return categories;
 }
 
@@ -1248,6 +1248,6 @@ void MainPageLoader::interfaceCacheClear() {
 #endif
 }
 
-bool MainPageLoader::connectionCheck() {
+bool MainPageLoader::connectionCheck() const {
     return connectionIsUp;
 }

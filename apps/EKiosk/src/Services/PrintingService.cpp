@@ -72,7 +72,7 @@ PrintingService::PrintingService(IApplication *aApplication)
 }
 
 //---------------------------------------------------------------------------
-PrintingService::~PrintingService() {}
+PrintingService::~PrintingService() = default;
 
 //---------------------------------------------------------------------------
 QString PrintingService::getName() const {
@@ -299,7 +299,8 @@ int PrintingService::perform_Print(PrintCommand *aCommand,
             if (!getFiscalRegister()) {
                 return makeResult(
                     false, "Failed to process receipt without printer due to no fiscal register");
-            } if (!paymentPrintingCommand) {
+            }
+            if (!paymentPrintingCommand) {
                 return makeResult(
                     false, "Failed to process receipt without printer due to no printing command");
             }
@@ -464,8 +465,8 @@ void PrintingService::incrementReceiptCount(DSDK::IPrinter *aPrinter) const {
 unsigned PrintingService::getReceiptID() const {
     if (m_Random_ReceiptsID) {
         return m_Random_Generator();
-    }         return getReceiptCount() + 1;
-   
+    }
+    return getReceiptCount() + 1;
 }
 
 //---------------------------------------------------------------------------
@@ -491,8 +492,8 @@ bool PrintingService::loadTags() {
     if (key0.ap.isEmpty()) {
         toLog(LogLevel::Error, "Failed to retrieve terminal number from configs.");
         return false;
-    }         m_StaticParameters.insert(CPrintConstants::Term_Number, key0.ap);
-   
+    }
+    m_StaticParameters.insert(CPrintConstants::Term_Number, key0.ap);
 
     PPSDK::DealerSettings *dealerSettings = settingsService->getAdapter<PPSDK::DealerSettings>();
 

@@ -105,7 +105,7 @@ public:
 
     PageIn::page getStepByStepPage();
 
-    bool moneyExistInPay();
+    bool moneyExistInPay() const;
     void loadHtmlPage(PageIn::page page);
     void gotoPage(PageIn::page page);
     void loadMainPage();
@@ -226,7 +226,7 @@ public slots:
     void jsonResponseError(QString error, QString requestName);
     void jsonResponseSuccess(QVariantMap response, QString requestName);
 
-    bool connectionCheck();
+    bool connectionCheck() const;
 
     void precheck(QString idPrv, QString account, double amount);
     void orzuUserDefine(QString inn);
@@ -240,14 +240,14 @@ public slots:
     QString lang();
     QString theme();
     QVariantList precheckItems();
-    QString showPrintDialog();
-    QString getPrinterStatus();
-    QString getLockReason();
+    QString showPrintDialog() const;
+    QString getPrinterStatus() const;
+    QString getLockReason() const;
     QString paymentId();
     QVariantMap homeData();
     QVariantList favoriteServices();
     QVariantList serviceList(const int categoryId = 0);
-    QVariantList categoryList();
+    QVariantList categoryList() const;
     QVariantMap serviceInfo(int id);
     QVariantMap serviceCurrent();
     QVariantMap categoryCurrent();
@@ -256,7 +256,7 @@ public slots:
     QString getFieldData(QString key);
 
     QVariantMap orzuData();
-    QVariantMap terminalData();
+    QVariantMap terminalData() const;
 
     QString commissionProfile();
 

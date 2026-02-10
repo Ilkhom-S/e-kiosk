@@ -117,16 +117,16 @@ template <class T> bool CCTalkDeviceBase<T>::checkConnection() {
 
     if (!this->processCommand(CCCTalk::Command::DeviceTypeID, &answer)) {
         return false;
-    } else {
-        QString answerData = ProtocolUtils::clean(answer).replace(ASCII::Space, "").toLower();
-        QString data = CCCTalk::DeviceTypeIds[this->m_Address];
-        if (!answerData.contains(data)) {
-            this->toLog(
-                LogLevel::Error,
-                this->m_DeviceName +
-                    QString(": wrong device type = %1, need like %2").arg(answer.data()).arg(data));
-            return false;
-        }
+    }
+
+    QString answerData = ProtocolUtils::clean(answer).replace(ASCII::Space, "").toLower();
+    QString data = CCCTalk::DeviceTypeIds[this->m_Address];
+    if (!answerData.contains(data)) {
+        this->toLog(
+            LogLevel::Error,
+            this->m_DeviceName +
+                QString(": wrong device type = %1, need like %2").arg(answer.data()).arg(data));
+        return false;
     }
 
     QByteArray vendorID;
