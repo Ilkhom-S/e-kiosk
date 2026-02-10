@@ -23,7 +23,7 @@ char *ContextProperty = "cyberContext";
 
 //----------------------------------------------------------------------------
 WizardFrame::WizardFrame(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), m_Backend(aBackend), m_CurrentPage(0) {
+    : QWidget(aParent), m_Backend(aBackend), m_CurrentPage(nullptr) {
     setupUi(this);
     wPage->setLayout(new QGridLayout);
 
@@ -39,7 +39,7 @@ WizardFrame::WizardFrame(ServiceMenuBackend *aBackend, QWidget *aParent)
 }
 
 //----------------------------------------------------------------------------
-WizardFrame::~WizardFrame() {}
+WizardFrame::~WizardFrame() = default;
 
 //----------------------------------------------------------------------------
 void WizardFrame::initialize() {
@@ -106,16 +106,14 @@ void WizardFrame::hidePage(const QString &aContext, WizardPageBase *aPage) {
     TPageMap::iterator page = m_Pages.find(aContext);
 
     if (page != m_Pages.end()) {
-        for (QList<CacheItem::ControlItem>::iterator i = page->controls.begin();
-             i != page->controls.end();
-             ++i) {
-            switch (i->control) {
+        for (auto &control : page->controls) {
+            switch (control.control) {
             case BackButton:
-                i->enabled = btnBack->isEnabled();
+                control.enabled = btnBack->isEnabled();
                 break;
 
             case ForwardButton:
-                i->enabled = btnForward->isEnabled();
+                control.enabled = btnForward->isEnabled();
                 break;
             }
         }
@@ -259,14 +257,14 @@ void WizardFrame::onChangePage(const QString &aContext) {
 #endif
 
     if (aContext == CWizardContext::StartPage) {
-        WelcomeWizardPage *wwp = new WelcomeWizardPage(m_Backend, this);
+        auto *wwp = new WelcomeWizardPage(m_Backend, this);
 
         setPage(aContext, wwp);
         setupDecoration("", "", "");
 
         connectAllAbstractButtons(wwp);
     } else if (aContext == CWizardContext::SetupHardware) {
-        HardwareWizardPage *hwp = new HardwareWizardPage(m_Backend, this);
+        auto *hwp = new HardwareWizardPage(m_Backend, this);
 
         setPage(aContext, hwp);
         setupDecoration(
@@ -280,7 +278,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(hwp);
     } else if (aContext == CWizardContext::SetupNetwork) {
-        NetworkWizardPage *nwp = new NetworkWizardPage(m_Backend, this);
+        auto *nwp = new NetworkWizardPage(m_Backend, this);
 
         setPage(aContext, nwp);
         setupDecoration(
@@ -290,7 +288,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(nwp);
     } else if (aContext == CWizardContext::SetupDialup) {
-        DialupWizardPage *dwp = new DialupWizardPage(m_Backend, this);
+        auto *dwp = new DialupWizardPage(m_Backend, this);
 
         setPage(aContext, dwp);
         setupDecoration(stageIndex(aContext), tr("#dialup_setup_stage"), tr("#dialup_setup_howto"));
@@ -309,7 +307,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(dwp);
     } else if (aContext == CWizardContext::SetupUnmanaged) {
-        UnmanagedWizardPage *uwp = new UnmanagedWizardPage(m_Backend, this);
+        auto *uwp = new UnmanagedWizardPage(m_Backend, this);
 
         setPage(aContext, uwp);
         setupDecoration(
@@ -329,7 +327,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(uwp);
     } else if (aContext == CWizardContext::SetupToken) {
-        TokenWizardPage *rwp = new TokenWizardPage(m_Backend, this);
+        auto *rwp = new TokenWizardPage(m_Backend, this);
 
         setPage(aContext, rwp);
         setupDecoration(stageIndex(aContext), tr("#token_setup_stage"), tr("#token_setup_howto"));
@@ -340,7 +338,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(rwp);
     } else if (aContext == CWizardContext::SetupKeys) {
-        KeysWizardPage *kwp = new KeysWizardPage(m_Backend, this);
+        auto *kwp = new KeysWizardPage(m_Backend, this);
 
         setPage(aContext, kwp);
         setupDecoration(stageIndex(aContext), tr("#keys_setup_stage"), tr("#keys_setup_howto"));
@@ -362,7 +360,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
         connectAllAbstractButtons(kwp);
     } else if (aContext == CWizardContext::SaveSettings) {
-        SaveSettingsWizardPage *swp = new SaveSettingsWizardPage(m_Backend, this);
+        auto *swp = new SaveSettingsWizardPage(m_Backend, this);
 
         setPage(aContext, swp);
         setupDecoration(
@@ -376,7 +374,7 @@ void WizardFrame::onChangePage(const QString &aContext) {
 
 //----------------------------------------------------------------------------
 void WizardFrame::onExit() {
-    if (GUI::MessageBox::question(tr("#question_exit"))) {
+    if (GUI::MessageBox::question(tr("#question_exit")) != 0) {
         QVariantMap parameters;
         parameters["signal"] = "exit";
 
@@ -399,11 +397,11 @@ void WizardFrame::connectAllAbstractButtons(QWidget *aParentWidget) {
 
 //------------------------------------------------------------------------
 void WizardFrame::onAbstractButtonClicked() {
-    QAbstractButton *button = qobject_cast<QAbstractButton *>(sender());
+    auto *button = qobject_cast<QAbstractButton *>(sender());
 
     QString message(QString("Button clicked: %1").arg(button->text()));
 
-    QCheckBox *checkBox = qobject_cast<QCheckBox *>(sender());
+    auto *checkBox = qobject_cast<QCheckBox *>(sender());
     if (checkBox) {
         checkBox->isChecked() ? message += " (checked)" : message += " (unchecked)";
     }

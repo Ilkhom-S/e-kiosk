@@ -451,7 +451,7 @@ QVariantMap DeviceService::getDeviceConfiguration(const QString &aConfigName) {
     LOG(m_Log,
         LogLevel::Error,
         QString("Failed to set device configuration. No such device: %1.").arg(aConfigName));
-    return QVariantMap();
+    return {};
 }
 
 //------------------------------------------------------------------------------

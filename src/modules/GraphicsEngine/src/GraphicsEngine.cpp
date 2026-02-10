@@ -26,7 +26,7 @@ namespace CGraphicsEngine {
 const char DescriptorFileSuffix[] = "ini";
 
 const char PopupClosedReason[] = "popup_closed";
-const char SectionItem_Name[] = "graphics_item";
+const char SectionItemName[] = "graphics_item";
 const char NameKey[] = "graphics_item/name";
 const char TypeKey[] = "graphics_item/type";
 const char SectionContextName[] = "context";
@@ -117,7 +117,7 @@ GraphicsEngine::GraphicsEngine()
 }
 
 //---------------------------------------------------------------------------
-GraphicsEngine::~GraphicsEngine() {}
+GraphicsEngine::~GraphicsEngine() = default;
 
 //---------------------------------------------------------------------------
 bool GraphicsEngine::initialize(
@@ -237,13 +237,13 @@ void GraphicsEngine::stop() {
 void GraphicsEngine::reset(EWidgetType aType) {
     auto getWidgetType = [](GraphicsEngine::EWidgetType aType) -> QString {
         const QMetaObject metaObject = GraphicsEngine::staticMetaObject;
-        int enum_Index = metaObject.indexOfEnumerator("EWidgetType");
-        if (enum_Index == -1) {
+        int enumIndex = metaObject.indexOfEnumerator("EWidgetType");
+        if (enumIndex == -1) {
             return "";
         }
 
-        QMetaEnum en = metaObject.enumerator(enum_Index);
-        return QString(en.valueToKey(aType));
+        QMetaEnum en = metaObject.enumerator(enumIndex);
+        return {en.valueToKey(aType)};
     };
 
     QString widgetType = getWidgetType(aType).toLower();
@@ -270,9 +270,9 @@ void GraphicsEngine::reset(EWidgetType aType) {
 void GraphicsEngine::addContentDirectory(const QString &aDirectory) {
     m_ContentDirectories << aDirectory;
 
-    bool from_Resources = false;
+    bool fromResources = false;
     if (aDirectory.left(2) == ":/") {
-        from_Resources = true;
+        fromResources = true;
     }
 
     // Ищем в данном каталоге рекурсивно описатели графических элементов и правила сценариев
@@ -286,14 +286,14 @@ void GraphicsEngine::addContentDirectory(const QString &aDirectory) {
 
         QSettings file(entry.fileInfo().absoluteFilePath(), QSettings::IniFormat);
 
-        if (file.childGroups().contains(CGraphicsEngine::SectionItem_Name)) {
+        if (file.childGroups().contains(CGraphicsEngine::SectionItemName)) {
             SWidget widget;
 
             widget.info.name = file.value(CGraphicsEngine::NameKey).toString();
             widget.info.type = file.value(CGraphicsEngine::TypeKey).toString();
 
             // для контента из ресурсов добавляем специальный префикс
-            widget.info.directory = (from_Resources ? "qrc" : "") + entry.fileInfo().absolutePath();
+            widget.info.directory = (fromResources ? "qrc" : "") + entry.fileInfo().absolutePath();
 
             // Описатель должен содержать как минимум имя и тип
             if (widget.info.name.isEmpty() || widget.info.type.isEmpty()) {
@@ -533,8 +533,8 @@ bool GraphicsEngine::showWidget(const QString &aWidget,
     }
 
     if (!newWidget->graphics.expired() && newWidget->graphics.lock()->isValid()) {
-        if (newWidget->graphics.lock()->getWidget() &&
-            !newWidget->graphics.lock()->getWidget()->window()) {
+        if ((newWidget->graphics.lock()->getWidget() != nullptr) &&
+            (newWidget->graphics.lock()->getWidget()->window() == nullptr)) {
             newWidget->graphics.lock()->getWidget()->setParentItem(m_QuickView->contentItem());
         } else if (QWidget *w = newWidget->graphics.lock()->getNativeWidget()) {
         }
@@ -618,7 +618,7 @@ bool GraphicsEngine::showWidget(const QString &aWidget,
                   dynamic_cast<QQuickItem *>(newWidget->graphics.lock()->getWidget())),
             Q_ARG(QQuickItem *,
                   (aPopup || oldWidget == m_Widgets.end())
-                      ? 0
+                      ? nullptr
                       : dynamic_cast<QQuickItem *>(oldWidget->graphics.lock()->getWidget())),
             Q_ARG(int, level),
             Q_ARG(bool, aPopup));
@@ -769,7 +769,7 @@ bool GraphicsEngine::eventFilter(QObject *aObject, QEvent *aEvent) {
 
     switch (type) {
     case QEvent::MouseMove: {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(aEvent);
+        auto *mouseEvent = dynamic_cast<QMouseEvent *>(aEvent);
         m_DebugWidget.updateMousePos(mouseEvent->globalPosition().toPoint());
         if (mouseEvent->buttons() != Qt::LeftButton &&
             ++intruder >= CGraphicsEngine::IntruderThreshold) {
@@ -801,7 +801,7 @@ bool GraphicsEngine::eventFilter(QObject *aObject, QEvent *aEvent) {
 
     case QEvent::KeyPress: {
         if (!m_HandledKeyList.isEmpty()) {
-            auto *keyEvent = static_cast<QKeyEvent *>(aEvent);
+            auto *keyEvent = dynamic_cast<QKeyEvent *>(aEvent);
 
             QString key = QKeySequence(keyEvent->key()).toString();
             if (m_HandledKeyList.indexOf(key) != -1) {

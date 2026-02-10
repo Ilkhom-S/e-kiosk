@@ -70,7 +70,7 @@ protected slots:
     void onParameterRowChanged(QListWidgetItem *aCurrent, QListWidgetItem *aPrevious);
 
     /// Срабатывает, когда изменяется значение списка.
-    void onEnum_ValueChanged(QListWidgetItem *aItem);
+    void onEnumValueChanged(QListWidgetItem *aItem);
 
     /// Срабатывает, когда изменяется значение флага.
     void onBoolValueChanged();

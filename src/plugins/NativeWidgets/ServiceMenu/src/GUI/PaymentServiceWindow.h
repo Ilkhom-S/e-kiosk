@@ -64,11 +64,11 @@ private:
     PaymentManager *m_PaymentManager;
     QFutureWatcher<void> m_PaymentTaskWatcher;
     bool m_FiscalMode;
-    PaymentTableModel *m_Model;
-    PaymentProxyModel *m_ProxyModel;
+    PaymentTableModel *m_Model{};
+    PaymentProxyModel *m_ProxyModel{};
     QList<PaymentInfo> m_PaymentInfoList;
-    QButtonGroup *m_DateFilterButtonGroup;
-    QButtonGroup *m_PaymentsFilterButtonGroup;
+    QButtonGroup *m_DateFilterButtonGroup{};
+    QButtonGroup *m_PaymentsFilterButtonGroup{};
     QMap<int, QPointer<QCheckBox>> m_ColumnCheckboxs;
 };
 
@@ -95,7 +95,7 @@ public:
 
     enum Role { DataRole = Qt::UserRole, IDRole };
 
-    PaymentTableModel(bool aFiscalMode, PaymentManager *aPaymentMananger, QObject *aParent = 0);
+    PaymentTableModel(bool aFiscalMode, PaymentManager *aPaymentManager, QObject *aParent = 0);
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;

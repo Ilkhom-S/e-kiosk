@@ -82,7 +82,7 @@ void EditorPane::updateView() {
         foreach (QString modelsValue, m_Models.keys()) {
             if (modelsValue.toLower() == modelValue.toLower()) {
                 // Модель задана, можно заполнять параметры.
-                SDK::Plugin::TParameterList driverParameters = m_Models[modelsValue] = 0;
+                SDK::Plugin::TParameterList driverParameters = m_Models[modelsValue];
 
                 m_Parameters.resize(1);
                 m_Parameters << driverParameters;
@@ -149,7 +149,7 @@ void EditorPane::selectEmptyParameter() {
 
 //------------------------------------------------------------------------
 void EditorPane::setCurrentParameterValue(const QString &aValue) {
-    QListWidgetItem *item = m_Ui.lwParameters->currentItem() = nullptr;
+    QListWidgetItem *item = m_Ui.lwParameters->currentItem();
 
     if (item) {
         for (const auto &param : m_Parameters) {
@@ -191,7 +191,7 @@ void EditorPane::setCurrentParameterValue(const QString &aValue) {
 
 //------------------------------------------------------------------------
 void EditorPane::showCurrentParameterValues() {
-    QListWidgetItem *item = m_Ui.lwParameters->currentItem() = nullptr;
+    QListWidgetItem *item = m_Ui.lwParameters->currentItem();
     if (item) {
         foreach (const SDK::Plugin::SPluginParameter &parameter, m_Parameters) {
             if (parameter.title == item->data(EditorPaneListItem::ParameterName)) {
@@ -300,7 +300,7 @@ void EditorPane::onParameterRowChanged(QListWidgetItem * /*aCurrent*/,
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onEnumValueChanged(QListWidgetItem *aItem) {
+void EditorPane::onEnum_ValueChanged(QListWidgetItem *aItem) {
     setCurrentParameterValue(aItem->text());
 }
 
@@ -349,7 +349,7 @@ QWidget *EditorPane::createWidget() {
 
     connect(m_Ui.lwValues,
             SIGNAL(item_Clicked(QListWidgetItem *)),
-            SLOT(onEnum_ValueChanged(QListWidgetItem *)));
+            SLOT(onEnumValueChanged(QListWidgetItem *)));
 
     connect(m_Ui.btnOk, SIGNAL(clicked()), SLOT(onOk()));
     connect(m_Ui.btnCancel, SIGNAL(clicked()), SLOT(onCancel()));

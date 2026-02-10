@@ -37,12 +37,12 @@ const QString ColumnVisibility = "columnVisibility";
 
 //----------------------------------------------------------------------------
 PaymentServiceWindow::PaymentServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend), m_Backend(aBackend), m_FiscalMode(false) {
+    : QFrame(aParent), ServiceWindowBase(aBackend), m_Backend(aBackend),
+      m_PaymentManager(m_Backend->getPaymentManager()), m_FiscalMode(false),
+      m_Model(new PaymentTableModel(m_FiscalMode, m_PaymentManager, this)),
+      m_ProxyModel(new PaymentProxyModel(this)) {
     setupUi(this);
 
-    m_PaymentManager = m_Backend->getPaymentManager();
-    m_Model = new PaymentTableModel(m_FiscalMode, m_PaymentManager, this);
-    m_ProxyModel = new PaymentProxyModel(this);
     m_ProxyModel->setDynamicSortFilter(true);
     m_ProxyModel->setSourceModel(m_Model);
     tvPayments->setModel(m_ProxyModel);
@@ -64,7 +64,8 @@ PaymentServiceWindow::PaymentServiceWindow(ServiceMenuBackend *aBackend, QWidget
 
 //----------------------------------------------------------------------------
 void PaymentServiceWindow::createColumnWidgets() {
-    if (!pageFields->layout() || pageFields->layout()->count() >= m_ProxyModel->columnCount()) {
+    if ((pageFields->layout() == nullptr) ||
+        pageFields->layout()->count() >= m_ProxyModel->columnCount()) {
         return;
     }
 
@@ -78,7 +79,7 @@ void PaymentServiceWindow::createColumnWidgets() {
             continue;
         }
 
-        QCheckBox *checkBox = new QCheckBox(this);
+        auto *checkBox = new QCheckBox(this);
         QString header = m_Model->headerData(i, Qt::Horizontal).toString();
 
         checkBox->setText(header);
@@ -362,18 +363,18 @@ PaymentTableModel::PaymentTableModel(bool aFiscalMode,
 
 //----------------------------------------------------------------------------
 int PaymentTableModel::rowCount(const QModelIndex & /*parent*/) const {
-    return m_PaymentInfoList.size();
+    return static_cast<int>(m_PaymentInfoList.size());
 }
 
 //----------------------------------------------------------------------------
 int PaymentTableModel::columnCount(const QModelIndex & /*parent*/) const {
-    return columnHeaders.size();
+    return static_cast<int>(columnHeaders.size());
 }
 
 //----------------------------------------------------------------------------
 QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid()) {
-        return QVariant();
+        return {};
     }
 
     int row = index.row();
@@ -411,7 +412,7 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
         case Processed:
             return m_PaymentInfoList[row].isProcessed();
         default:
-            return QVariant();
+            return {};
         }
     }
 
@@ -444,7 +445,7 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
         case Processed:
             return m_PaymentInfoList[row].isProcessed();
         default:
-            return QVariant();
+            return {};
         }
     }
 
@@ -471,7 +472,7 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
         return QBrush(QColor(255, 172, 174));
     }
 
-    return QVariant();
+    return {};
 }
 
 //----------------------------------------------------------------------------
@@ -484,14 +485,13 @@ QVariant
 PaymentTableModel::headerData(int aSection, Qt::Orientation aOrientation, int aRole) const {
     if ((aRole == Qt::DisplayRole) && (aOrientation == Qt::Horizontal)) {
         if (aSection >= 0 && aSection < columnHeaders.size()) {
-            Column column = static_cast<Column>(aSection);
+            auto column = static_cast<Column>(aSection);
             return columnHeaders.value(column);
         }
 
         return QString();
-    } else {
-        return QVariant();
     }
+    return {};
 }
 
 //----------------------------------------------------------------------------
@@ -626,7 +626,7 @@ void PaymentTableModel::proccessPayment(const QModelIndex &index) {
 
 //----------------------------------------------------------------------------
 void PaymentTableModel::proccessNextPayment() {
-    if (m_ProcessPayments.payments.count()) {
+    if (m_ProcessPayments.payments.count() != 0) {
         auto payment = m_ProcessPayments.payments.takeFirst();
 
         if (payment.canProcess()) {
@@ -636,7 +636,7 @@ void PaymentTableModel::proccessNextPayment() {
             ++m_ProcessPayments.processed;
         }
     } else {
-        if (m_ProcessPayments.processed) {
+        if (m_ProcessPayments.processed != 0) {
             GUI::MessageBox::info(tr("#process %1 payments").arg(m_ProcessPayments.processed));
         } else {
             GUI::MessageBox::info(tr("#nothing_to_process"));
@@ -663,7 +663,7 @@ void PaymentTableModel::processAllPayments() {
 }
 
 //----------------------------------------------------------------------------
-void PaymentTableModel::onClicked(const QVariantMap &) {
+void PaymentTableModel::onClicked(const QVariantMap & /*unused*/) {
     // прерываем обработку платежей
     m_ProcessPayments.payments.clear();
 }
@@ -693,18 +693,24 @@ PaymentProxyModel::PaymentProxyModel(QObject *parent)
 
 //----------------------------------------------------------------------------
 void PaymentProxyModel::showColumn(int aColumn, bool aShow) {
-    PaymentTableModel::Column column = static_cast<PaymentTableModel::Column>(aColumn);
+    auto column = static_cast<PaymentTableModel::Column>(aColumn);
     m_Columns[column] = aShow;
     // QSettings settings;
     // settings.setValue(QString("ServiceMenu/column%1").arg(aColumn), aShow);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
 }
 
 //----------------------------------------------------------------------------
 QVariantList PaymentProxyModel::getColumnVisibility() const {
     QVariantList columns;
-    for (int i = 0; i < m_Columns.size(); i++)
-        columns << m_Columns[i];
+    for (bool mColumn : m_Columns) {
+        columns << mColumn;
+    }
     return columns;
 }
 
@@ -722,7 +728,12 @@ bool PaymentProxyModel::hiddenColumn(int aColumn) const {
 //----------------------------------------------------------------------------
 void PaymentProxyModel::disableDateFilter() {
     m_DateFilterEnabled = false;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -731,25 +742,45 @@ void PaymentProxyModel::setDateFilter(const QDateTime &aFrom, const QDateTime &a
     m_EndDateTime = aTo;
     m_DateFilterEnabled = true;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
 }
 
 //----------------------------------------------------------------------------
 void PaymentProxyModel::disablePaymentsFilter() {
     m_PaymentFilter = AllPayments;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
 }
 
 //----------------------------------------------------------------------------
 void PaymentProxyModel::enablePrintedPaymentsFilter() {
     m_PaymentFilter = PrintedPayments;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
 }
 
 //----------------------------------------------------------------------------
 void PaymentProxyModel::enableProcessedPaymentsFilter() {
     m_PaymentFilter = ProcessedPayments;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -812,7 +843,7 @@ bool PaymentProxyModel::filterAcceptsColumn(int sourceColumn,
                                             const QModelIndex &sourceParent) const {
     Q_UNUSED(sourceParent);
 
-    PaymentTableModel::Column column = static_cast<PaymentTableModel::Column>(sourceColumn);
+    auto column = static_cast<PaymentTableModel::Column>(sourceColumn);
     return m_Columns.value(column, true);
 }
 

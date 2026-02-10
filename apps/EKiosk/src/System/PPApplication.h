@@ -60,7 +60,8 @@ private slots:
 
 private:
     /// Обработка системных сообщений, отключение скринсейвера, монитора и т.п.
-    virtual bool nativeEventFilter(const QByteArray &aEventType, void *aMessage, qintptr *aResult);
+    virtual bool
+    nativeEventFilter(const QByteArray &aEventType, void *aMessage, qintptr *aResult) override;
 
 private:
     ServiceController *m_ServiceController;

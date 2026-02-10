@@ -18,7 +18,7 @@ const char LogName[] = "Interface";
 
 //---------------------------------------------------------------------------
 AudioService *AudioService::instance(IApplication *aApplication) {
-    return static_cast<AudioService *>(
+    return dynamic_cast<AudioService *>(
         aApplication->getCore()->getService(CServices::AudioService));
 }
 
@@ -31,7 +31,7 @@ AudioService::AudioService(IApplication *aApplication)
 }
 
 //---------------------------------------------------------------------------
-AudioService::~AudioService() {}
+AudioService::~AudioService() = default;
 
 //---------------------------------------------------------------------------
 bool AudioService::initialize() {
@@ -68,11 +68,11 @@ const QSet<QString> &AudioService::getRequiredServices() const {
 
 //---------------------------------------------------------------------------
 QVariantMap AudioService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
-void AudioService::resetParameters(const QSet<QString> &) {}
+void AudioService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 void AudioService::play(const QString &aFileName) {

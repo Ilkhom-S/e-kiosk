@@ -18,14 +18,10 @@ const QString CommonSkinDirectory = "skins";
 } // namespace
 
 //------------------------------------------------------------------------------
-DealerSettings::DealerSettings(ICore *aCore) {
-    ISettingsService *settingsService = aCore->getSettingsService();
-
-    m_Settings = dynamic_cast<SDK::PaymentProcessor::DealerSettings *>(
-        settingsService->getAdapter(CAdapterNames::DealerAdapter));
-
-    m_PersonalSettings = m_Settings->getPersonalSettings();
-}
+DealerSettings::DealerSettings(ICore *aCore)
+    : m_Settings(dynamic_cast<SDK::PaymentProcessor::DealerSettings *>(
+          aCore->getSettingsService()->getAdapter(CAdapterNames::DealerAdapter))),
+      m_PersonalSettings(m_Settings->getPersonalSettings()) {}
 
 //------------------------------------------------------------------------------
 bool DealerSettings::isPaymentAllowed(const QVariantMap &aParameters) const {
