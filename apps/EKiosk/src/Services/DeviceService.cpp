@@ -387,7 +387,7 @@ QStringList DeviceService::getConfigurations(bool aAllowOldConfigs) const {
         }
     }
 
-    // Обязательные устройства "присуствуют" всегда
+    // Обязательные устройства "присутствуют" всегда
     QStringList driverList = m_DeviceManager->getDriverList();
     QStringList requiredDevices;
 
@@ -515,9 +515,14 @@ void DeviceService::overwriteDeviceStatus(DSDK::IDevice *aDevice,
 void DeviceService::onDeviceStatus(DSDK::EWarningLevel::Enum aLevel,
                                    const QString &aDescription,
                                    int aStatus) {
-    LogLevel::Enum logLevel = (aLevel == DSDK::EWarningLevel::OK)      ? LogLevel::Normal
-                              : (aLevel == DSDK::EWarningLevel::Error) ? LogLevel::Error
-                                                                       : LogLevel::Warning;
+    LogLevel::Enum logLevel;
+    if (aLevel == DSDK::EWarningLevel::OK) {
+        logLevel = LogLevel::Normal;
+    } else if (aLevel == DSDK::EWarningLevel::Error) {
+        logLevel = LogLevel::Error;
+    } else {
+        logLevel = LogLevel::Warning;
+    }
     LOG(m_Log,
         logLevel,
         QString("Received statuses: %1, status %2").arg(aDescription).arg(aStatus));
