@@ -13,7 +13,7 @@ class TestCpuSpeed : public QObject {
 private slots:
     void testCpuSpeedReturnsValidValue() {
         // Test that CPUSpeed returns a reasonable value
-        unsigned speed = CPUSpeed();
+        unsigned speed = cpuSpeed();
         std::cout << "CPU Speed (valid value test): " << speed << " MHz" << std::endl;
         qDebug() << "CPU Speed (valid value test):" << speed << "MHz";
 
@@ -24,8 +24,8 @@ private slots:
 
     void testCpuSpeedIsConsistent() {
         // Test that CPUSpeed returns the same value on multiple calls
-        unsigned speed1 = CPUSpeed();
-        unsigned speed2 = CPUSpeed();
+        unsigned speed1 = cpuSpeed();
+        unsigned speed2 = cpuSpeed();
         std::cout << "CPU Speed consistency test - speed1: " << speed1 << " MHz, speed2: " << speed2
                   << " MHz" << std::endl;
         qDebug() << "CPU Speed consistency test - speed1:" << speed1 << "MHz, speed2:" << speed2
@@ -37,7 +37,7 @@ private slots:
     void testCpuSpeedAboveSlowPCTreshold() {
         // Test that CPU speed is above the slow PC threshold (1400 MHz)
         // This ensures the system is not considered "slow"
-        unsigned speed = CPUSpeed();
+        unsigned speed = cpuSpeed();
         std::cout << "CPU Speed (slow PC threshold test): " << speed << " MHz (threshold: 1400 MHz)"
                   << std::endl;
         qDebug() << "CPU Speed (slow PC threshold test):" << speed << "MHz (threshold: 1400 MHz)";

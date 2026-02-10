@@ -220,7 +220,6 @@ void AdminDialog::saveConnectionParam() {
         messageBox.setStandardButtons(QMessageBox::Ok);
         messageBox.setDefaultButton(QMessageBox::Ok);
         messageBox.setIcon(QMessageBox::Warning);
-        messageBox.setButtonText(QMessageBox::Ok, QString("OK"));
         messageBox.move(500, 200);
 
         messageBox.exec();
@@ -265,7 +264,6 @@ void AdminDialog::showMsgDialog(QString title, QString text) {
     messageBox.setStandardButtons(QMessageBox::Ok);
     messageBox.setDefaultButton(QMessageBox::Ok);
     messageBox.setIcon(QMessageBox::Information);
-    messageBox.setButtonText(QMessageBox::Ok, QString("OK"));
     messageBox.move(500, 200);
 
     messageBox.exec();
@@ -318,7 +316,7 @@ void AdminDialog::SelectOptionsForSearch(bool SelectValidatorJam,
         searchKey += "UPDATER;";
 
     if (searchKey.right(1) == ";")
-        searchKey = searchKey.left(searchKey.count() - 1);
+        searchKey = searchKey.left(searchKey.length() - 1);
 
     // Вставляем в поле поиска
     ui->editSearchKeyParam->setText(searchKey);
@@ -439,7 +437,6 @@ void AdminDialog::saveTrm_AutorizationData() {
         messageBox1.setStandardButtons(QMessageBox::Ok);
         messageBox1.setDefaultButton(QMessageBox::Ok);
         messageBox1.setIcon(QMessageBox::Warning);
-        messageBox1.setButtonText(QMessageBox::Ok, QString("OK"));
         messageBox1.move(500, 200);
 
         messageBox1.exec();
@@ -473,7 +470,6 @@ void AdminDialog::saveUserAutorizationData() {
         messageBox1.setStandardButtons(QMessageBox::Ok);
         messageBox1.setDefaultButton(QMessageBox::Ok);
         messageBox1.setIcon(QMessageBox::Warning);
-        messageBox1.setButtonText(QMessageBox::Ok, QString("OK"));
         messageBox1.move(500, 200);
 
         messageBox1.exec();
@@ -507,18 +503,30 @@ void AdminDialog::getModem_DataInfo() {
         messageBox1.setText("Перед проверкой параметров SIM карты\n"
                             "программа отключит соединение с сервером\n"
                             "вы хотите проверить параметры SIM карты?\n");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+        QPushButton *yesButton = messageBox1.addButton(QString("Да"), QMessageBox::AcceptRole);
+        QPushButton *cancelButton =
+            messageBox1.addButton(QString("Отмена"), QMessageBox::RejectRole);
+        messageBox1.setDefaultButton(yesButton);
+        messageBox1.setEscapeButton(cancelButton);
+#else
         messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
         messageBox1.setDefaultButton(QMessageBox::Yes);
         messageBox1.setEscapeButton(QMessageBox::Cancel);
-        messageBox1.setIcon(QMessageBox::Question);
         messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
         messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
+#endif
+        messageBox1.setIcon(QMessageBox::Question);
         messageBox1.move(500, 200);
 
         // Необходимо удалить данный платеж
         int rr = messageBox1.exec();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+        if (rr == QMessageBox::Accepted) {
+#else
         if (rr == QMessageBox::Yes) {
+#endif
 
             // Надо дать команду сохранение с перезагрузкой
             auto data = QVariantMap({{"message", "Начинаем проверять данные SIM карты..."}});
@@ -538,18 +546,29 @@ void AdminDialog::restartApp() {
     QMessageBox messageBox1(this);
     messageBox1.setWindowTitle("Выполнение параметров.");
     messageBox1.setText("Вы действительно хотите перезагрузить программу\n");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    QPushButton *yesButton = messageBox1.addButton(QString("Да"), QMessageBox::AcceptRole);
+    QPushButton *cancelButton = messageBox1.addButton(QString("Отмена"), QMessageBox::RejectRole);
+    messageBox1.setDefaultButton(yesButton);
+    messageBox1.setEscapeButton(cancelButton);
+#else
     messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     messageBox1.setDefaultButton(QMessageBox::Yes);
     messageBox1.setEscapeButton(QMessageBox::Cancel);
-    messageBox1.setIcon(QMessageBox::Question);
     messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
     messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
+#endif
+    messageBox1.setIcon(QMessageBox::Question);
     messageBox1.move(500, 200);
 
     // Необходимо удалить данный платеж
     int rr = messageBox1.exec();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    if (rr == QMessageBox::Accepted) {
+#else
     if (rr == QMessageBox::Yes) {
+#endif
 
         // Надо дать команду сохранение с перезагрузкой
         emit emit_execToMain(AdminCommand::aCmdRestartApp);
@@ -562,18 +581,29 @@ void AdminDialog::restartASO() {
     QMessageBox messageBox1(this);
     messageBox1.setWindowTitle("Выполнение параметров.");
     messageBox1.setText("Вы действительно хотите перезагрузить Терминал\n");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    QPushButton *yesButton = messageBox1.addButton(QString("Да"), QMessageBox::AcceptRole);
+    QPushButton *cancelButton = messageBox1.addButton(QString("Отмена"), QMessageBox::RejectRole);
+    messageBox1.setDefaultButton(yesButton);
+    messageBox1.setEscapeButton(cancelButton);
+#else
     messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     messageBox1.setDefaultButton(QMessageBox::Yes);
     messageBox1.setEscapeButton(QMessageBox::Cancel);
-    messageBox1.setIcon(QMessageBox::Question);
     messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
     messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
+#endif
+    messageBox1.setIcon(QMessageBox::Question);
     messageBox1.move(500, 200);
 
     // Необходимо удалить данный платеж
     int rr = messageBox1.exec();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    if (rr == QMessageBox::Accepted) {
+#else
     if (rr == QMessageBox::Yes) {
+#endif
 
         // Надо дать команду сохранение с перезагрузкой
         emit emit_execToMain(AdminCommand::aCmdRestartASO);
@@ -607,17 +637,29 @@ void AdminDialog::saveDeviceParam() {
         messageBox1.setWindowTitle("Сохранение параметров.");
         messageBox1.setText("Для того чтобы изменённые данные\n"
                             "вступили в силу необходимо перезагрузить программу");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+        QPushButton *yesButton = messageBox1.addButton(QString("Да"), QMessageBox::AcceptRole);
+        QPushButton *cancelButton =
+            messageBox1.addButton(QString("Отмена"), QMessageBox::RejectRole);
+        messageBox1.setDefaultButton(yesButton);
+        messageBox1.setEscapeButton(cancelButton);
+#else
         messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
         messageBox1.setDefaultButton(QMessageBox::Yes);
         messageBox1.setEscapeButton(QMessageBox::Cancel);
-        messageBox1.setIcon(QMessageBox::Question);
         messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
         messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
+#endif
+        messageBox1.setIcon(QMessageBox::Question);
         messageBox1.move(500, 200);
 
         int rr = messageBox1.exec();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+        if (rr == QMessageBox::Accepted) {
+#else
         if (rr == QMessageBox::Yes) {
+#endif
 
             // Надо дать команду сохранение с перезагрузкой
             cmd = AdminCommand::aCmdSaveDeviceParam_R;
@@ -661,18 +703,29 @@ void AdminDialog::shutDounASO() {
     QMessageBox messageBox1(this);
     messageBox1.setWindowTitle("Выполнение параметров.");
     messageBox1.setText("Вы действительно выключить терминал?\n");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    QPushButton *yesButton = messageBox1.addButton(QString("Да"), QMessageBox::AcceptRole);
+    QPushButton *cancelButton = messageBox1.addButton(QString("Отмена"), QMessageBox::RejectRole);
+    messageBox1.setDefaultButton(yesButton);
+    messageBox1.setEscapeButton(cancelButton);
+#else
     messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     messageBox1.setDefaultButton(QMessageBox::Yes);
     messageBox1.setEscapeButton(QMessageBox::Cancel);
-    messageBox1.setIcon(QMessageBox::Question);
     messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
     messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
+#endif
+    messageBox1.setIcon(QMessageBox::Question);
     messageBox1.move(500, 200);
 
     // Необходимо удалить данный платеж
     int rr = messageBox1.exec();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    if (rr == QMessageBox::Accepted) {
+#else
     if (rr == QMessageBox::Yes) {
+#endif
 
         // Надо дать команду сохранение с перезагрузкой
         emit emit_execToMain(AdminCommand::aCmdShutDounASO);

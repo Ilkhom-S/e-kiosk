@@ -31,10 +31,10 @@ function(ek_enable_static_analysis target)
 
             # Exclude third-party vendored code and vcpkg-installed artifacts from scans
             if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty")
-                list(APPEND CPPCHECK_ARGS --exclude "${CMAKE_SOURCE_DIR}/thirdparty")
+                list(APPEND CPPCHECK_ARGS -i "${CMAKE_SOURCE_DIR}/thirdparty")
             endif()
             if(EXISTS "${CMAKE_SOURCE_DIR}/vcpkg_installed")
-                list(APPEND CPPCHECK_ARGS --exclude "${CMAKE_SOURCE_DIR}/vcpkg_installed")
+                list(APPEND CPPCHECK_ARGS -i "${CMAKE_SOURCE_DIR}/vcpkg_installed")
             endif()
 
             set_target_properties(${target} PROPERTIES

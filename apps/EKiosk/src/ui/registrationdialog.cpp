@@ -134,10 +134,15 @@ void RegistrationDialog::showMsgDialog(QString title, QString text) {
     QMessageBox messageBox1(this);
     messageBox1.setWindowTitle(title);
     messageBox1.setText(text);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    QPushButton *okButton = messageBox1.addButton(QString("OK"), QMessageBox::AcceptRole);
+    messageBox1.setDefaultButton(okButton);
+#else
     messageBox1.setStandardButtons(QMessageBox::Ok);
     messageBox1.setDefaultButton(QMessageBox::Ok);
-    messageBox1.setIcon(QMessageBox::Information);
     messageBox1.setButtonText(QMessageBox::Ok, QString("OK"));
+#endif
+    messageBox1.setIcon(QMessageBox::Information);
 
     messageBox1.exec();
 
@@ -162,16 +167,27 @@ void RegistrationDialog::closeForm() {
     QMessageBox messageBox1(this);
     messageBox1.setWindowTitle("Закрыть приложение.");
     messageBox1.setText("Вы действительно хотите закрыть приложение?");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    QPushButton *yesButton = messageBox1.addButton(QString("Да"), QMessageBox::AcceptRole);
+    QPushButton *cancelButton = messageBox1.addButton(QString("Отмена"), QMessageBox::RejectRole);
+    messageBox1.setDefaultButton(yesButton);
+    messageBox1.setEscapeButton(cancelButton);
+#else
     messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     messageBox1.setDefaultButton(QMessageBox::Yes);
     messageBox1.setEscapeButton(QMessageBox::Cancel);
-    messageBox1.setIcon(QMessageBox::Question);
     messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
     messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
+#endif
+    messageBox1.setIcon(QMessageBox::Question);
 
     int rr = messageBox1.exec();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    if (rr == QMessageBox::Accepted) {
+#else
     if (rr == QMessageBox::Yes) {
+#endif
 
         // Тут надо сохранить данные.
         this->close();
@@ -389,17 +405,28 @@ void RegistrationDialog::save3BtnReg() {
     QMessageBox messageBox1(this);
     messageBox1.setWindowTitle("Сохранение данных.");
     messageBox1.setText("Вы действительно хотите сохранить данные?");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    QPushButton *yesButton = messageBox1.addButton(QString("Да"), QMessageBox::AcceptRole);
+    QPushButton *cancelButton = messageBox1.addButton(QString("Отмена"), QMessageBox::RejectRole);
+    messageBox1.setDefaultButton(yesButton);
+    messageBox1.setEscapeButton(cancelButton);
+#else
     messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     messageBox1.setDefaultButton(QMessageBox::Yes);
     messageBox1.setEscapeButton(QMessageBox::Cancel);
-    messageBox1.setIcon(QMessageBox::Question);
     messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
     messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
+#endif
+    messageBox1.setIcon(QMessageBox::Question);
 
     // Необходимо удалить данный платеж
     int rr = messageBox1.exec();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    if (rr == QMessageBox::Accepted) {
+#else
     if (rr == QMessageBox::Yes) {
+#endif
         emit emitRegistrationData(data);
     }
 }

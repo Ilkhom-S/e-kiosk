@@ -11,5 +11,5 @@ ek_add_plugin(template_plugin
     FOLDER "plugins/Template"
     SOURCES ${TEMPLATEPLUGIN_SOURCES}
     QT_MODULES Core
-    DEPENDS PluginsSDK
+    DEPENDS PluginsSDK PPSDK
 )

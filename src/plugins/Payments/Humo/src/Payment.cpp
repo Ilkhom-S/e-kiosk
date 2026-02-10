@@ -44,8 +44,8 @@ Payment::Payment(PaymentFactory *aFactory)
     : PaymentBase(aFactory, aFactory->getCore()),
       m_RequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
     m_RequestSender.setResponseCreator(
-        [this](const Request &aRequest, const QString &aResponseString) { 
-            return createResponse(aRequest, aResponseString); 
+        [this](const Request &aRequest, const QString &aResponseString) {
+            return createResponse(aRequest, aResponseString);
         });
 }
 

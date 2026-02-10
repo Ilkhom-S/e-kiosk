@@ -1232,16 +1232,27 @@ void RegistrationForm::closeConfirm() {
     messageBox.setWindowTitle(tr("Выход из программы."));
     messageBox.setText(tr("Вы действительно хотите выйти?<br/>"));
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    QPushButton *yesButton = messageBox.addButton(tr("Да"), QMessageBox::AcceptRole);
+    QPushButton *cancelButton = messageBox.addButton(tr("Отмена"), QMessageBox::RejectRole);
+    messageBox.setDefaultButton(yesButton);
+    messageBox.setEscapeButton(cancelButton);
+#else
     messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     messageBox.setDefaultButton(QMessageBox::Yes);
     messageBox.setEscapeButton(QMessageBox::Cancel);
-    messageBox.setIcon(QMessageBox::Question);
     messageBox.setButtonText(QMessageBox::Yes, tr("Да"));
     messageBox.setButtonText(QMessageBox::Cancel, tr("Отмена"));
+#endif
+    messageBox.setIcon(QMessageBox::Question);
 
     int r = messageBox.exec();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    if (r == QMessageBox::Accepted) {
+#else
     if (r == QMessageBox::Yes) {
+#endif
         closeMe();
     }
 }

@@ -23,10 +23,15 @@ void CreateDialupConnection::btnCreateNewConClc() {
         QMessageBox messageBox(this);
         messageBox.setWindowTitle("Параметры устройств.");
         messageBox.setText("В терминале нет установленных модемов\n");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+        QPushButton *okButton = messageBox.addButton(QString("OK"), QMessageBox::AcceptRole);
+        messageBox.setDefaultButton(okButton);
+#else
         messageBox.setStandardButtons(QMessageBox::Ok);
         messageBox.setDefaultButton(QMessageBox::Ok);
-        messageBox.setIcon(QMessageBox::Critical);
         messageBox.setButtonText(QMessageBox::Ok, QString("OK"));
+#endif
+        messageBox.setIcon(QMessageBox::Critical);
 
         messageBox.exec();
         return;
@@ -38,10 +43,15 @@ void CreateDialupConnection::btnCreateNewConClc() {
         QMessageBox messageBox(this);
         messageBox.setWindowTitle("Сохранение параметров.");
         messageBox.setText("Проверьте правильность ввода данных\n");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+        QPushButton *okButton = messageBox.addButton(QString("OK"), QMessageBox::AcceptRole);
+        messageBox.setDefaultButton(okButton);
+#else
         messageBox.setStandardButtons(QMessageBox::Ok);
         messageBox.setDefaultButton(QMessageBox::Ok);
-        messageBox.setIcon(QMessageBox::Warning);
         messageBox.setButtonText(QMessageBox::Ok, QString("OK"));
+#endif
+        messageBox.setIcon(QMessageBox::Warning);
 
         messageBox.exec();
         return;
@@ -52,10 +62,15 @@ void CreateDialupConnection::btnCreateNewConClc() {
             QMessageBox messageBox(this);
             messageBox.setWindowTitle("Сохранение параметров.");
             messageBox.setText("Такое соединение уже существует\n");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+            QPushButton *okButton = messageBox.addButton(QString("OK"), QMessageBox::AcceptRole);
+            messageBox.setDefaultButton(okButton);
+#else
             messageBox.setStandardButtons(QMessageBox::Ok);
             messageBox.setDefaultButton(QMessageBox::Ok);
-            messageBox.setIcon(QMessageBox::Critical);
             messageBox.setButtonText(QMessageBox::Ok, QString("OK"));
+#endif
+            messageBox.setIcon(QMessageBox::Critical);
 
             messageBox.exec();
             return;
@@ -77,16 +92,27 @@ void CreateDialupConnection::btnCreateNewConClc() {
                                 data["login"].toString(),
                                 data["password"].toString()));
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    QPushButton *yesButton = messageBox.addButton(QString("Да"), QMessageBox::AcceptRole);
+    QPushButton *cancelButton = messageBox.addButton(QString("Отмена"), QMessageBox::RejectRole);
+    messageBox.setDefaultButton(yesButton);
+    messageBox.setEscapeButton(cancelButton);
+#else
     messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     messageBox.setDefaultButton(QMessageBox::Yes);
     messageBox.setEscapeButton(QMessageBox::Cancel);
-    messageBox.setIcon(QMessageBox::Question);
     messageBox.setButtonText(QMessageBox::Yes, QString("Да"));
     messageBox.setButtonText(QMessageBox::Cancel, QString("Отмена"));
+#endif
+    messageBox.setIcon(QMessageBox::Question);
 
     int r = messageBox.exec();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    if (r == QMessageBox::Accepted) {
+#else
     if (r == QMessageBox::Yes) {
+#endif
         emit emitDialupParam(data);
         this->close();
     }

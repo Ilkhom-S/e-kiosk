@@ -135,7 +135,7 @@ void WatchService::initialize() {
             toLog(LogLevel::Normal, "Status bar disabled.");
     }*/
 
-    toLog(LogLevel::Normal, QString("CPU speed: %1 MHz.").arg(CPUSpeed()));
+    toLog(LogLevel::Normal, QString("CPU speed: %1 MHz.").arg(cpuSpeed()));
 
     // Загружаем конфигурацию
     loadConfiguration();
@@ -1069,7 +1069,7 @@ void WatchService::doReboot() {
 
 //----------------------------------------------------------------------------
 int WatchService::defaultKillTimeout() {
-    return CPUSpeed() < CWatchService::SlowPC::Threshold ? CWatchService::SlowPC::KillModuleTimeout
+    return cpuSpeed() < CWatchService::SlowPC::Threshold ? CWatchService::SlowPC::KillModuleTimeout
                                                          : CWatchService::KillModuleTimeout;
 }
 

@@ -37,10 +37,15 @@ void AvtorizationToAdminIn::checkInputData() {
         QMessageBox messageBox1(this);
         messageBox1.setWindowTitle("Диалог авторизации");
         messageBox1.setText("Введите параметры авторизации");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+        QPushButton *okButton = messageBox1.addButton(QString("OK"), QMessageBox::AcceptRole);
+        messageBox1.setDefaultButton(okButton);
+#else
         messageBox1.setStandardButtons(QMessageBox::Ok);
         messageBox1.setDefaultButton(QMessageBox::Ok);
-        messageBox1.setIcon(QMessageBox::Warning);
         messageBox1.setButtonText(QMessageBox::Ok, QString("OK"));
+#endif
+        messageBox1.setIcon(QMessageBox::Warning);
 
         messageBox1.exec();
 
@@ -58,10 +63,15 @@ void AvtorizationToAdminIn::checkInputData() {
         QMessageBox messageBox1(this);
         messageBox1.setWindowTitle("Диалог авторизации");
         messageBox1.setText("Неверно введены параметры авторизации");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+        QPushButton *okButton = messageBox1.addButton(QString("OK"), QMessageBox::AcceptRole);
+        messageBox1.setDefaultButton(okButton);
+#else
         messageBox1.setStandardButtons(QMessageBox::Ok);
         messageBox1.setDefaultButton(QMessageBox::Ok);
-        messageBox1.setIcon(QMessageBox::Critical);
         messageBox1.setButtonText(QMessageBox::Ok, QString("OK"));
+#endif
+        messageBox1.setIcon(QMessageBox::Critical);
 
         messageBox1.exec();
 

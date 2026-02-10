@@ -149,10 +149,10 @@ void PinLoader::onLoadPinList() {
 
     SDK::PaymentProcessor::Humo::RequestSender http(m_PaymentFactoryBase->getNetworkTaskManager(),
                                                     m_PaymentFactoryBase->getCryptEngine());
-    http.setResponseCreator(
-        [this](const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aResponseString) { 
-            return createResponse(aRequest, aResponseString); 
-        });
+    http.setResponseCreator([this](const SDK::PaymentProcessor::Humo::Request &aRequest,
+                                   const QString &aResponseString) {
+        return createResponse(aRequest, aResponseString);
+    });
 
     int failedCount = 0;
 

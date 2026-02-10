@@ -3,7 +3,7 @@
 #include <QTemporaryDir>
 #include <QtTest/QtTest>
 
-#include "SettingsManager.h"
+#include <SettingsManager/SettingsManager.h>
 
 class TestSettingsManager : public QObject {
     Q_OBJECT
