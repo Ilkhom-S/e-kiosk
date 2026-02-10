@@ -437,6 +437,9 @@ void Client::onCommandStatusChanged(int aID, int aStatus, QVariantMap aParameter
         // Перезапускаем загрузку компаний
         QTimer::singleShot(CClient::ContentCheckInterval, this, SLOT(download()));
     } break;
+
+    default:
+        break;
     }
 }
 

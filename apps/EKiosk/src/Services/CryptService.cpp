@@ -28,7 +28,7 @@ const char DefaultSecretKey[] = "secret.key";
 
 //---------------------------------------------------------------------------
 CryptService *CryptService::instance(IApplication *aApplication) {
-    return static_cast<CryptService *>(
+    return dynamic_cast<CryptService *>(
         aApplication->getCore()->getService(CServices::CryptService));
 }
 
@@ -49,8 +49,7 @@ bool CryptService::initialize() {
     }
 
     // Подготавливаем к работе пары ключей.
-    auto *settings =
-        SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
+    auto *settings = SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
     QList<QByteArray> passwords = crypt.getRootPassword();
 
@@ -276,8 +275,8 @@ void CryptService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 PP::SKeySettings CryptService::getKey(int aId) const {
     if (m_Keys.contains(aId)) {
         return m_Keys[aId];
-    }         return {};
-   
+    }
+    return {};
 }
 
 //---------------------------------------------------------------------------

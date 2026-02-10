@@ -13,7 +13,7 @@
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include <numeric>
 
 #include "DatabaseUtils/IHardwareDatabaseUtils.h"
@@ -300,7 +300,7 @@ CashDispenserManager::getItem_DataSet(PPSDK::TPaymentAmount aAmount) {
         if (!m_FailedDispensers.contains(dispenser)) {
             auto cashList = m_CurrencyCashList[m_Dispensers[dispenser]];
 
-            for (int i = 0; i < cashList.size(); i++) {
+            for (int i = 0; i < static_cast<int>(cashList.size()); i++) {
                 if (dispenser->isDeviceReady(i) && (cashList[i].count != 0) &&
                     (cashList[i].nominal != 0) && (cashList[i].nominal <= aAmount)) {
                     int count = (cashList[i].count > 0) ? cashList[i].count : 0;

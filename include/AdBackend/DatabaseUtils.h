@@ -6,7 +6,7 @@
 
 #include <Common/ILogable.h>
 
-#include <AdBackend/IDatabaseUtils.h>
+#include "IDatabaseUtils.h"
 
 //------------------------------------------------------------------------
 namespace Ad {

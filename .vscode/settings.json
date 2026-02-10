@@ -4,18 +4,13 @@
         "build/": true,
         "thirdparty/": false,
         "vcpkg_installed/": true,
-        "*.bak": true
+        "**/*.bak": true
     },
     "search.exclude": {
         "build/": true,
         "thirdparty/": true,
         "vcpkg_installed/": true
     },
-    "c-cpp-flylint.excludeFromWorkspacePaths": [
-        "thirdparty",
-        "build",
-        "vcpkg_installed"
-    ],
     "C_Cpp.default.compileCommands": "${workspaceFolder}/build/macos-qt6/compile_commands.json",
     "editor.formatOnSave": true,
     "[cpp]": {
@@ -23,7 +18,7 @@
     },
     "C_Cpp.default.cppStandard": "c++14",
     "C_Cpp.default.cStandard": "c11",
-    "C_Cpp.default.intelliSenseMode": "macos-clang-x64",
+    "C_Cpp.default.intelliSenseMode": "macos-clang-arm64",
     "C_Cpp.codeAnalysis.clangTidy.enabled": true,
     "C_Cpp.codeAnalysis.clangTidy.config": "",
     "C_Cpp.codeAnalysis.clangTidy.path": "/opt/homebrew/opt/llvm/bin/clang-tidy",
@@ -37,7 +32,7 @@
         "source.fixAll.clang-tidy": "explicit"
     },
     "cmake.configureOnOpen": true,
-    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.buildDirectory": "${workspaceFolder}/build/macos-qt6",
     "cmake.configureArgs": [],
     "cmake.buildArgs": [],
     "cmake.ctestArgs": [],
