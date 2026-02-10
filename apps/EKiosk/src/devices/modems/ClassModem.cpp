@@ -308,10 +308,7 @@ bool ClassModem::execCommand(Modem_ProtocolCommands::Enum aCommand, bool thread)
     if (thread) {
         this->start();
         return true;
-    } else {
-        bool respData = false;
-        respData = this->e_Data_Execute();
-        return respData;
     }
-    return false;
+
+    return this->e_Data_Execute();
 }

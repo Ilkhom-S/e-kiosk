@@ -172,26 +172,26 @@ bool GUIService::initialize() {
 
         // GUI не будет отображаться, но платежная логика продолжит работу.
         return true;
-    } else {
-        // Добавляем сценарий перепрошивки устройств
-        m_ScenarioEngine.addScenario(new FirmwareUploadScenario(m_Application));
+    }
 
-        // Добавляем основной сценарий и запускаем его.
-        GUI::Scenario *idle = new IdleScenario(m_Application);
-        m_ScenarioEngine.addScenario(idle);
+    // Добавляем сценарий перепрошивки устройств
+    m_ScenarioEngine.addScenario(new FirmwareUploadScenario(m_Application));
+
+    // Добавляем основной сценарий и запускаем его.
+    GUI::Scenario *idle = new IdleScenario(m_Application);
+    m_ScenarioEngine.addScenario(idle);
 
 #ifndef _DEBUG
-        // Запускаем проверку окна поверх всех
-        m_CheckTopmostTimer.start();
+    // Запускаем проверку окна поверх всех
+    m_CheckTopmostTimer.start();
 #endif
-        m_GraphicsEngine.start();
+    m_GraphicsEngine.start();
 
-        QVariantMap noGui;
-        noGui.insert("no_gui", m_Config.value("interface/no_gui", false).toBool());
-        if (!m_ScenarioEngine.startScenario(idle->getName(), noGui)) {
-            toLog(LogLevel::Error, "Failed to start idle scenario.");
-            return false;
-        }
+    QVariantMap noGui;
+    noGui.insert("no_gui", m_Config.value("interface/no_gui", false).toBool());
+    if (!m_ScenarioEngine.startScenario(idle->getName(), noGui)) {
+        toLog(LogLevel::Error, "Failed to start idle scenario.");
+        return false;
     }
 
     m_Disabled = m_Disabled || TerminalService::instance(m_Application)->isLocked();

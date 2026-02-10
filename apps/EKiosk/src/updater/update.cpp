@@ -473,15 +473,15 @@ void DownloadManager::openDocumentXml() {
         emit this->emit_Loging(
             1, this->senderName, QString("Не возможно отпарсить %1 файл.").arg(this->XmlName));
         return;
-    } else {
-        // Xml Файл открыт успешно
-        // if(Debugger) qDebug() << this->XmlName << " Opened OK!!!";
-        emit this->emit_Loging(
-            0, this->senderName, QString("Начинаем парсить %1 файл.").arg(this->XmlName));
-        this->ServerXmlMap.clear();
-        QDomElement domElement = doc.documentElement();
-        traverseNode(domElement);
     }
+
+    // Xml Файл открыт успешно
+    // if(Debugger) qDebug() << this->XmlName << " Opened OK!!!";
+    emit this->emit_Loging(
+        0, this->senderName, QString("Начинаем парсить %1 файл.").arg(this->XmlName));
+    this->ServerXmlMap.clear();
+    QDomElement domElement = doc.documentElement();
+    traverseNode(domElement);
 
     // Файл отпарсен успешно
     qDebug() << QString(" =====> File %1%2 CLOSED;").arg(tmpDirectory).arg(this->XmlName);

@@ -726,13 +726,13 @@ int GetServices::getProviderCount() {
 
     if (!querySql.isSelect()) {
         return 0;
-    } else {
-        QSqlRecord record = querySql.record();
+    }
 
-        if (querySql.next()) {
-            int id = querySql.value(record.indexOf("count")).toInt();
-            return id;
-        }
+    QSqlRecord record = querySql.record();
+
+    if (querySql.next()) {
+        int id = querySql.value(record.indexOf("count")).toInt();
+        return id;
     }
 
     return 0;
