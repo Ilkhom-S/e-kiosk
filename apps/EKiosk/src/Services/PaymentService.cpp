@@ -22,6 +22,7 @@
 
 #include <Crypt/ICryptEngine.h>
 #include <boost/foreach.hpp>
+#include <utility>
 
 #include "DatabaseUtils/IPaymentDatabaseUtils.h"
 #include "Services/CryptService.h"
@@ -65,14 +66,14 @@ const char ChangePaymentParam[] = "UNUSED_CHANGE";
 
 //---------------------------------------------------------------------------
 PaymentService *PaymentService::instance(IApplication *aApplication) {
-    return static_cast<PaymentService *>(
+    return dynamic_cast<PaymentService *>(
         aApplication->getCore()->getService(CServices::PaymentService));
 }
 
 //---------------------------------------------------------------------------
 PaymentService::PaymentService(IApplication *aApplication)
     : ILogable("Payments"), m_Application(aApplication), m_Enabled(false), m_DBUtils(nullptr),
-      m_CommandIndex(0),  m_OfflinePaymentID(-1) {
+      m_CommandIndex(0), m_OfflinePaymentID(-1) {
     qRegisterMetaType<EPaymentCommandResult::Enum>("EPaymentCommandResult");
 
     m_PaymentThread.setObjectName(CPaymentService::ThreadName);
@@ -115,10 +116,10 @@ bool PaymentService::initialize() {
         SDK::Plugin::IPlugin *plugin =
             PluginService::instance(m_Application)->getPluginLoader()->createPlugin(path);
 
-        auto *factory =
-            dynamic_cast<SDK::PaymentProcessor::IPaymentFactory *>(plugin);
+        auto *factory = dynamic_cast<SDK::PaymentProcessor::IPaymentFactory *>(plugin);
         if (factory) {
-            factory->setSerializer(std::bind(&PaymentService::savePayment, this, _1));
+            factory->setSerializer(
+                [this](auto &&PH1) { return savePayment(std::forward<decltype(PH1)>(PH1)); });
 
             foreach (const QString &type, factory->getSupportedPaymentTypes()) {
                 m_FactoryByType[type] = factory;
@@ -132,7 +133,7 @@ bool PaymentService::initialize() {
 
     // Ищем всех провайдеров с неподдерживаемым типом процессинга
     auto *dealerSettings = SettingsService::instance(m_Application)
-                              ->getAdapter<SDK::PaymentProcessor::DealerSettings>();
+                               ->getAdapter<SDK::PaymentProcessor::DealerSettings>();
 
     foreach (const QString &processingType,
              QSet<QString>(dealerSettings->getProviderProcessingTypes().begin(),
@@ -235,11 +236,11 @@ void PaymentService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 void PaymentService::setPaymentActive(std::shared_ptr<SDK::PaymentProcessor::IPayment> aPayment) {
     QMutexLocker lock(&m_PaymentLock);
 
-    m_ActivePayment = aPayment;
+    m_ActivePayment = std::move(aPayment);
 }
 
 //---------------------------------------------------------------------------
-bool PaymentService::isPaymentActive(std::shared_ptr<PPSDK::IPayment> aPayment) {
+bool PaymentService::isPaymentActive(const std::shared_ptr<PPSDK::IPayment> &aPayment) {
     QMutexLocker lock(&m_PaymentLock);
 
     return aPayment == m_ActivePayment;
@@ -269,7 +270,7 @@ qint64 PaymentService::createPayment(qint64 aProvider) {
 
         std::shared_ptr<PPSDK::IPayment> payment(
             factory->createPayment(provider.processor.type),
-            std::bind(&PPSDK::IPaymentFactory::releasePayment, factory, _1));
+            [factory](auto &&PH1) { factory->releasePayment(std::forward<decltype(PH1)>(PH1)); });
         if (!payment) {
             toLog(LogLevel::Error, "Failed to create payment object.");
 
@@ -324,18 +325,18 @@ bool PaymentService::savePayment(PPSDK::IPayment *aPayment) {
                 PPSDK::EEventType::PaymentUpdated, CServices::PaymentService, aPayment->getID()));
 
         return true;
-    }         QString amountAll =
-            aPayment->getParameter(PPSDK::CPayment::Parameters::AmountAll).value.toString();
-        QString msg = QString("Payment [%1] error write to database (AMOUNT_ALL=%2).")
-                          .arg(aPayment->getInitialSession())
-                          .arg(amountAll);
+    }
+    QString amountAll =
+        aPayment->getParameter(PPSDK::CPayment::Parameters::AmountAll).value.toString();
+    QString msg = QString("Payment [%1] error write to database (AMOUNT_ALL=%2).")
+                      .arg(aPayment->getInitialSession())
+                      .arg(amountAll);
 
-        // Выставить ошибочный статус устройства "терминал"
-        m_Application->getCore()->getEventService()->sendEvent(SDK::PaymentProcessor::Event(
-            SDK::PaymentProcessor::EEventType::Critical, CServices::DatabaseService, msg));
+    // Выставить ошибочный статус устройства "терминал"
+    m_Application->getCore()->getEventService()->sendEvent(SDK::PaymentProcessor::Event(
+        SDK::PaymentProcessor::EEventType::Critical, CServices::DatabaseService, msg));
 
-        return false;
-   
+    return false;
 }
 
 //---------------------------------------------------------------------------
@@ -452,14 +453,13 @@ QString PaymentService::createSignature(PPSDK::IPayment *aPayment, bool aWithCRC
     } else {
         signature =
             QString::fromUtf8(QCryptographicHash::hash(signature.toUtf8(), QCryptographicHash::Md5)
-                                   .toHex()
-                                   .toUpper());
+                                  .toHex()
+                                  .toUpper());
     }
 #endif
 
 #ifndef _DEBUG
-    auto *crypt =
-        static_cast<ICryptEngine *>(CryptService::instance(m_Application)->getCryptEngine());
+    auto *crypt = CryptService::instance(m_Application)->getCryptEngine();
 
     QByteArray encodedSignature;
 
@@ -495,8 +495,7 @@ bool PaymentService::verifySignature(PPSDK::IPayment *aPayment) {
     runtimeSignatures << createSignature(aPayment, true) << createSignature(aPayment, false);
 
 #ifndef _DEBUG
-    auto *crypt =
-        static_cast<ICryptEngine *>(CryptService::instance(m_Application)->getCryptEngine());
+    auto *crypt = CryptService::instance(m_Application)->getCryptEngine();
 
     QString error;
     QByteArray decodedSignature;
@@ -556,9 +555,9 @@ std::shared_ptr<PPSDK::IPayment> PaymentService::getPayment(qint64 aID) {
     if (!type.isNull() && m_FactoryByType.contains(type.value.toString())) {
         std::shared_ptr<PPSDK::IPayment> payment(
             m_FactoryByType[type.value.toString()]->createPayment(type.value.toString()),
-            std::bind(&PPSDK::IPaymentFactory::releasePayment,
-                      m_FactoryByType[type.value.toString()],
-                      _1));
+            [capture0 = m_FactoryByType[type.value.toString()]](auto &&PH1) {
+                capture0->releasePayment(std::forward<decltype(PH1)>(PH1));
+            });
         if (!payment) {
             toLog(LogLevel::Normal,
                   QString("Payment %1. Failed to create payment object.").arg(aID));
@@ -628,8 +627,8 @@ TPaymentParameters PaymentService::getPaymentFields(qint64 aPayment) {
         std::shared_ptr<PPSDK::IPayment> payment = getPayment(aPayment);
 
         return payment ? payment->getParameters() : QList<PPSDK::IPayment::SParameter>();
-    }         return m_DBUtils->getPaymentParameters(aPayment);
-   
+    }
+    return m_DBUtils->getPaymentParameters(aPayment);
 }
 
 //------------------------------------------------------------------------------
@@ -890,7 +889,7 @@ void PaymentService::hangupProcessing() {
 //---------------------------------------------------------------------------
 void PaymentService::doUpdatePaymentFields(
     qint64 aID,
-    std::shared_ptr<PPSDK::IPayment> aPayment,
+    const std::shared_ptr<PPSDK::IPayment> &aPayment,
     const QList<SDK::PaymentProcessor::IPayment::SParameter> &aFields,
     bool aForce) {
     if (!aPayment) {
@@ -1001,7 +1000,7 @@ void PaymentService::onPaymentThreadStarted() {
 }
 
 //---------------------------------------------------------------------------
-bool PaymentService::processPaymentInternal(std::shared_ptr<PPSDK::IPayment> aPayment) {
+bool PaymentService::processPaymentInternal(const std::shared_ptr<PPSDK::IPayment> &aPayment) {
     // Пропускаем платежи с неизрасходованной сдачей.
     if (m_ChangePayment && (m_ChangePayment->getID() == aPayment->getID())) {
         m_DBUtils->suspendPayment(aPayment->getID(), 15);
@@ -1098,7 +1097,7 @@ void PaymentService::onProcessPayments() {
 
     QList<qint64> payments = m_DBUtils->getPaymentQueue();
 
-    if (payments.size()) {
+    if (!payments.empty() != 0) {
         qint64 id = payments.takeFirst();
 
         if (m_Enabled) {
@@ -1388,15 +1387,15 @@ QString PaymentService::getChangeSessionRef() {
 
 //---------------------------------------------------------------------------
 bool PaymentService::setChangeAmount(double aChange,
-                                     std::shared_ptr<PPSDK::IPayment> aPaymentSource) {
+                                     const std::shared_ptr<PPSDK::IPayment> &aPaymentSource) {
     if (!m_ChangePayment) {
         if (m_FactoryByType.contains(CPaymentService::ChangePaymentType)) {
             m_ChangePayment = std::shared_ptr<PPSDK::IPayment>(
                 m_FactoryByType[CPaymentService::ChangePaymentType]->createPayment(
                     CPaymentService::ChangePaymentType),
-                std::bind(&PPSDK::IPaymentFactory::releasePayment,
-                          m_FactoryByType[CPaymentService::ChangePaymentType],
-                          _1));
+                [capture0 = m_FactoryByType[CPaymentService::ChangePaymentType]](auto &&PH1) {
+                    capture0->releasePayment(std::forward<decltype(PH1)>(PH1));
+                });
 
             if (m_ChangePayment) {
                 QList<PPSDK::IPayment::SParameter> parameters;
@@ -1441,7 +1440,7 @@ bool PaymentService::setChangeAmount(double aChange,
     if (aPaymentSource) {
         QMutexLocker lock(&m_PaymentLock);
 
-        QStringList param_Values(
+        QStringList paramValues(
             aPaymentSource->getParameter(PPSDK::CPayment::Parameters::InitialSession)
                 .value.toString());
 
@@ -1450,7 +1449,7 @@ bool PaymentService::setChangeAmount(double aChange,
             aPaymentSource->getParameter(PPSDK::CPayment::Parameters::ProviderFields)
                 .value.toString()
                 .split(PPSDK::CPayment::Parameters::ProviderFieldsDelimiter, Qt::SkipEmptyParts)) {
-            param_Values << aPaymentSource->getParameter(param).value.toString();
+            paramValues << aPaymentSource->getParameter(param).value.toString();
         }
 
         // Если платеж с подозрением на мошенничество, сдача тоже мошенническая
@@ -1462,7 +1461,7 @@ bool PaymentService::setChangeAmount(double aChange,
 
         m_ChangePayment->setParameter(PPSDK::IPayment::SParameter(
             PPSDK::CPayment::Parameters::OriginalPayment,
-            param_Values.join(PPSDK::CPayment::Parameters::ProviderFieldsDelimiter),
+            paramValues.join(PPSDK::CPayment::Parameters::ProviderFieldsDelimiter),
             true));
 
         m_ChangePayment->setParameter(

@@ -102,9 +102,8 @@ public:
     getPaymentsFields(const QList<qint64> &aIds);
 
     /// Обновление поля платежа.
-    virtual bool updatePaymentField(qint64 aID,
-                                    const PPSDK::IPayment::SParameter &aField,
-                                    bool aForce = false);
+    virtual bool
+    updatePaymentField(qint64 aID, const PPSDK::IPayment::SParameter &aField, bool aForce = false);
 
     /// Обновление полей платежа.
     virtual bool updatePaymentFields(qint64 aID,
@@ -167,7 +166,7 @@ public:
     /// Дополнительно: <поля> хранятся в UTF-8, <имя>:<значение>|<имя>:<значение>...
     ///                <купюры> хранятся в формате <номинал>:<количество>|<номинал>:<количество>...
     virtual PPSDK::EncashmentResult::Enum perform_Encashment(const QVariantMap &aParameters,
-                                                            PPSDK::SEncashment &aEncashment);
+                                                             PPSDK::SEncashment &aEncashment);
 
     /// Получение информации о последней инкасации
     virtual PPSDK::SEncashment getLastEncashment();
@@ -215,14 +214,14 @@ private:
     void setPaymentActive(std::shared_ptr<PPSDK::IPayment> aPayment);
 
     /// Если указанный платёж сейчас активен, возвращает true.
-    bool isPaymentActive(std::shared_ptr<PPSDK::IPayment> aPayment);
+    bool isPaymentActive(const std::shared_ptr<PPSDK::IPayment> &aPayment);
 
     /// Сохраняет сдачу.
-    bool setChangeAmount(double aChange, std::shared_ptr<PPSDK::IPayment> aPaymentSource);
+    bool setChangeAmount(double aChange, const std::shared_ptr<PPSDK::IPayment> &aPaymentSource);
 
     /// Обновляет параметры платежа.
     void doUpdatePaymentFields(qint64 aID,
-                               std::shared_ptr<PPSDK::IPayment> aPayment,
+                               const std::shared_ptr<PPSDK::IPayment> &aPayment,
                                const QList<SDK::PaymentProcessor::IPayment::SParameter> &aFields,
                                bool aForce = false);
 
@@ -248,7 +247,7 @@ private slots:
 
 private:
     /// Проведение платежа
-    bool processPaymentInternal(std::shared_ptr<PPSDK::IPayment> aPayment);
+    bool processPaymentInternal(const std::shared_ptr<PPSDK::IPayment> &aPayment);
 
 private:
     IApplication *m_Application;
