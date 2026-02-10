@@ -2,21 +2,28 @@
 
 #include <QtCore/QCryptographicHash>
 
-DownloadManager::DownloadManager() : QThread() {
-    Debugger = 1;
-
-    this->senderName = "UPDATER";
-
-    bisyNow = false;
-    abortTimer = new QTimer(this);
+DownloadManager::DownloadManager() :
+    QThread(),
+    currentDownload(nullptr),
+    nowDownloadFileSize(0),
+    nowDownloadFileId(0),
+    totalCount(0),
+    fileWrite(false),
+    countFileTag(0),
+    count_download(0),
+    Debugger(1),
+    senderName("UPDATER"),
+    bisyNow(false),
+    abortTimer(new QTimer(this)),
+    resendTimer(new QTimer(this)),
+    copyFile(new CopyFileQs()),
+    restartTimer(new QTimer(this)) {
     abortTimer->setSingleShot(true);
     connect(abortTimer, SIGNAL(timeout()), SLOT(abortReply()));
 
-    resendTimer = new QTimer(this);
     resendTimer->setSingleShot(true);
     connect(resendTimer, SIGNAL(timeout()), this, SLOT(startNextDownload()));
 
-    copyFile = new CopyFileQs();
     connect(this->copyFile,
             SIGNAL(emit_Loging(int, QString, QString)),
             this,
@@ -30,7 +37,6 @@ DownloadManager::DownloadManager() : QThread() {
     connect(this, SIGNAL(emit_reDown()), this, SLOT(reDownloadFile()));
     connect(this, SIGNAL(emit_downOneByOne()), SLOT(downloadOneByOneFile()));
 
-    restartTimer = new QTimer(this);
     restartTimer->setInterval(15000);
     connect(this->restartTimer, SIGNAL(timeout()), this, SLOT(toRestartTimer()));
 }
