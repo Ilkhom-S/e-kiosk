@@ -114,7 +114,7 @@ public:
     virtual void
     processPaymentStep(qint64 aPayment, PPSDK::EPaymentStep::Enum aStep, bool aBlocking = false);
 
-    /// Конвертация переданного платежа к типу aTargetType, поддерживаему этой фабрикой. В случае
+    /// Конвертация переданного платежа к типу aTargetType, поддерживаемую этой фабрикой. В случае
     /// ошибки возвращает false.
     virtual bool convertPayment(qint64 aPayment, const QString &aTargetType);
 
@@ -147,7 +147,7 @@ public:
     /// Сумма платежа aPayment переводится в сдачу.
     virtual void movePaymentToChange(qint64 aPayment);
 
-    /// Сбрасывает счётчик со сдачей от предыдущих плетежей.
+    /// Сбрасывает счётчик со сдачей от предыдущих платежей.
     virtual void resetChange();
 
     /// Получить сессию платежа, с которого осталась сдача

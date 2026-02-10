@@ -152,7 +152,7 @@ Response *Client::sendRequest(const QUrl &aUrl, Request &aRequest) {
     if (m_Http) {
         toLog(LogLevel::Normal, QString("> %1.").arg(aRequest.toLogString()));
 
-        RequestSender::ESendError error;
+        RequestSender::ESendError error = RequestSender::ESendError::NoError;
 
         std::unique_ptr<Response> response(
             m_Http->post(aUrl, aRequest, RequestSender::Solid, error));

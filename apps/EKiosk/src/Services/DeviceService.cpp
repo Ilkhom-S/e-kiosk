@@ -554,9 +554,12 @@ void DeviceService::statusChanged(DSDK::IDevice *aDevice, Status &aStatus) {
     QString configName = m_AcquiredDevices.key(aDevice);
     m_DeviceStatusCache[configName] = aStatus;
 
-    LogLevel::Enum logLevel = (aStatus.m_Level == DSDK::EWarningLevel::OK)      ? LogLevel::Normal
-                              : (aStatus.m_Level == DSDK::EWarningLevel::Error) ? LogLevel::Error
-                                                                                : LogLevel::Warning;
+    LogLevel::Enum logLevel = LogLevel::Warning;
+    if (aStatus.m_Level == DSDK::EWarningLevel::OK) {
+        logLevel = LogLevel::Normal;
+    } else if (aStatus.m_Level == DSDK::EWarningLevel::Error) {
+        logLevel = LogLevel::Error;
+    }
     LOG(m_Log,
         logLevel,
         QString("Send statuses: %1, status %2, device %3")
