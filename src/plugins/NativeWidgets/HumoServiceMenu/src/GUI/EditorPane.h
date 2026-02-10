@@ -91,7 +91,7 @@ protected slots:
     void onCancel();
 
 private:
-    Ui::frmEditorPane m_Ui;
+    Ui::frmEditorPane m_Ui{};
     DeviceSlot *m_Slot;
     QPointer<QWidget> m_Widget;
 
@@ -99,7 +99,7 @@ private:
 
     QVariantMap m_Values;
 
-    SDK::Plugin::TParameterList m_Parameters;
+    SDK::Plugin::TParameterList m_Parameters{};
 
     /// TODO: Список моделей устройств, временно здесь.
     QMap<QString, SDK::Plugin::TParameterList> m_Models;

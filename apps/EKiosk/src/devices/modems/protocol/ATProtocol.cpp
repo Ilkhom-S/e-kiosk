@@ -7,10 +7,10 @@
 #include "qgsmcodec.h"
 
 ATProtocol::ATProtocol(QObject *parent)
-    : QThread(parent)
+    : QThread(parent), Debugger(false)
 
 {
-    Debugger = false;
+    
 
     // Соответсвие статусам сообщения
     smsTextInit << SmsTextIndex::txtErrorValidator << SmsTextIndex::txtErrorPrinter
@@ -178,7 +178,7 @@ bool ATProtocol::unpacketData(const QByteArray &aPacket, QByteArray &aData) {
     }
 
     // находим символы CR LF, обрезаем
-    int messageLength = aPacket.size() - 2 * crlf.size() - firstCRLF;
+    int messageLength = aPacket.size() - (2 * crlf.size()) - firstCRLF;
     tempData = aPacket.mid(firstCRLF + crlf.size(), messageLength);
 
     qDebug() << "-- tempData -- " << tempData;
@@ -188,11 +188,10 @@ bool ATProtocol::unpacketData(const QByteArray &aPacket, QByteArray &aData) {
     if (message == ATErrors::OK) {
         aData = tempData;
         return true;
-    } else {
-        // отправить сообщение об ошибке в данных
+    }         // отправить сообщение об ошибке в данных
         qDebug() << "Protocol AT: message is not OK";
         return false;
-    }
+   
 }
 
 //--------------------------------------------------------------------------------
@@ -319,7 +318,7 @@ bool ATProtocol::processCommand(Modem_ProtocolCommands::Enum aCommand,
     }
 
     if (aCommand == Modem_ProtocolCommands::CmdRestart) {
-        this->msleep(10000);
+        ATProtocol::msleep(10000);
         return true;
     }
 
@@ -338,7 +337,7 @@ bool ATProtocol::processCommand(Modem_ProtocolCommands::Enum aCommand,
                 qDebug() << "sim_NumberRequest = " << sim_NumberRequest;
                 processCommand(Modem_ProtocolCommands::GetSim_Number, request, response);
                 return true;
-            } else if (aCommand == Modem_ProtocolCommands::GetBalance) {
+            } if (aCommand == Modem_ProtocolCommands::GetBalance) {
                 balanceRequest = encodeGSM7bit(balanceRequest);
                 processCommand(Modem_ProtocolCommands::GetBalance, request, response);
                 return true;
@@ -435,7 +434,7 @@ bool ATProtocol::sendCommand(QByteArray dataRequest,
 
         // Задержка после команды
         if (timeSleep != 0) {
-            this->msleep(timeSleep);
+            ATProtocol::msleep(timeSleep);
         }
         return respOk;
     }
@@ -486,7 +485,7 @@ bool ATProtocol::getAnswer(QByteArray &aData,
 
         // если необходима пауза - включаем её
         if (aPauseTime != 0) {
-            this->msleep(aPauseTime);
+            ATProtocol::msleep(aPauseTime);
         }
     }
 
@@ -832,7 +831,7 @@ bool ATProtocol::getStatusInfo(SModem_StatusInfo &aStatusInfo) {
 }
 
 QString ATProtocol::octet(QString hexString) {
-    bool ok;
+    bool ok = false;
 
     return QString("%1").arg(hexString.toULongLong(&ok, 16), 8, 2, QChar('0'));
 }
@@ -911,7 +910,7 @@ QString ATProtocol::decodeGSM7bit(QString hexString) {
         septets += octet(reverse);
     }
 
-    bool ok;
+    bool ok = false;
 
     QString decodedText = "";
 

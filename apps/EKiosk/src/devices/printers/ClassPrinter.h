@@ -48,19 +48,19 @@ public:
 
     void setPrinterModel(const QString printerModel);
     void setChekWidth(const int width);
-    void setFirm_Patern(const QString firm_name);
-    void setSmallText(bool small_i);
+    void setFirm_Patern(const QString firmName);
+    void setSmallText(bool smallI);
     void setCom_List(const QStringList list);
-    void setPortName(const QString port_name);
-    void setCounterPrinterIndicator(bool sts_indicate);
+    void setPortName(const QString portName);
+    void setCounterPrinterIndicator(bool stsIndicate);
     bool printerOpen();
     void closeThis();
-    void setLeftMargin(int left_margin);
+    void setLeftMargin(int leftMargin);
     void setSmallBeetwenString(bool beet);
-    bool isItYou(QStringList &com_List,
-                 QString &printer_name,
-                 QString &com_str,
-                 QString &printer_coment);
+    bool isItYou(QStringList &comList,
+                 QString &printerName,
+                 QString &comStr,
+                 QString &printerComent);
     void tarminateThis();
     void clearListPrinterData(QString name);
 
@@ -76,7 +76,7 @@ public:
     QString nowPrinterName;
     QString nowPortName;
     QString nowComent;
-    int status;
+    int status{};
 
     QString portSpeed;
 
@@ -96,24 +96,24 @@ signals:
     void emit_status(int status);
 
 private:
-    Custom_VKP80_PRINTER *Custom_VKP80;
-    AV268_PRINTER *AV268;
-    CitizenPPU700_PRINTER *CitizenPPU700;
-    CitizenCTS2000_PRINTER *CitizenCTS2000;
-    Phoenix_PRINTER *Phoenix;
-    TG2480_PRINTER *Custom_TG2480;
-    CitizenCBM1000_PRINTER *CitizenCBM1000;
-    KM1X_PRINTER *KM1X;
+    Custom_VKP80_PRINTER *Custom_VKP80{};
+    AV268_PRINTER *AV268{};
+    CitizenPPU700_PRINTER *CitizenPPU700{};
+    CitizenCTS2000_PRINTER *CitizenCTS2000{};
+    Phoenix_PRINTER *Phoenix{};
+    TG2480_PRINTER *Custom_TG2480{};
+    CitizenCBM1000_PRINTER *CitizenCBM1000{};
+    KM1X_PRINTER *KM1X{};
 
     QString system_Model;
-    int checkWidth;
+    int checkWidth{};
     QString firm_Name;
     QStringList com_List;
     QString portName;
     QString cmd_now;
-    int leftMargin;
-    bool smallBeetwenStr;
-    QTextBrowser *textBrowser;
+    int leftMargin{};
+    bool smallBeetwenStr{};
+    QTextBrowser *textBrowser{};
 
     virtual void run();
 

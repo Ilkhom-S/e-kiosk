@@ -7,7 +7,7 @@
 
 #include "ui_changepassword.h"
 
-ChangePassword::ChangePassword(QWidget *parent) : QDialog(parent), ui(new Ui::ChangePassword) {
+ChangePassword::ChangePassword(QWidget *parent) : QDialog(parent), ui(new Ui::ChangePassword), KeyPud(new keyPud(this)) {
     ui->setupUi(this);
 
     auto *secLoginRegValidator =
@@ -22,9 +22,9 @@ ChangePassword::ChangePassword(QWidget *parent) : QDialog(parent), ui(new Ui::Ch
         QRegularExpression(R"([\S\w\W\d\D]{1,30})"), ui->RepeatPass);
     ui->RepeatPass->setValidator(secRepeatPassRegValidator);
 
-    KeyPud = new keyPud(this);
+    
     ui->layoutWgtKeyPud->addWidget(KeyPud);
-    this->connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
+    ChangePassword::connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
 
     connect(ui->btn_ok, SIGNAL(clicked()), SLOT(btnok_clc()));
     connect(ui->btn_cancel, SIGNAL(clicked()), SLOT(btncancel_clc()));
@@ -86,8 +86,9 @@ void ChangePassword::btncancel_clc() {
 void ChangePassword::sendCharacter(QChar character) {
     QPointer<QWidget> w = focusWidget();
 
-    if (!w)
+    if (!w) {
         return;
+}
 
     int un = character.unicode();
 

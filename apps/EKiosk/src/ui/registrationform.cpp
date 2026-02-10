@@ -3,16 +3,20 @@
 #include "ui_registrationform.h"
 
 RegistrationForm::RegistrationForm(QWidget *parent)
-    : QDialog(parent), ui(new Ui::RegistrationForm) {
+    : QDialog(parent), ui(new Ui::RegistrationForm), createDialupConnection(new CreateDialupConnection(this)), KeyPud(new keyPud(this)), tplStyleEnable("border: 2px solid;"
+                     "border-color: #ff850e;"
+                     "border-radius: 8px;"), tplStyleDisable("border: 2px solid;"
+                      "border-color: #e5e5e5;"
+                      "border-radius: 8px;") {
     ui->setupUi(this);
 
     // Создание нового соединения
-    createDialupConnection = new CreateDialupConnection(this);
+    
     connect(createDialupConnection,
             SIGNAL(emitDialupParam(QVariantMap)),
             SIGNAL(emitCreateNewConnection(QVariantMap)));
 
-    KeyPud = new keyPud(this);
+    
     ui->layoutWgtKeyPud->addWidget(KeyPud);
 
     connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
@@ -79,9 +83,9 @@ RegistrationForm::RegistrationForm(QWidget *parent)
         QRegularExpression(R"([\S\w\W\d\D]{1,15})"), ui->editSecretPasswordReg);
     ui->editSecretPasswordReg->setValidator(secretPassValidator);
 
-    auto *secretPassConfirm_Validator = new QRegularExpressionValidator(
+    auto *secretPassConfirmValidator = new QRegularExpressionValidator(
         QRegularExpression(R"([\S\w\W\d\D]{1,15})"), ui->editSecretPasswordConfirmReg);
-    ui->editSecretPasswordConfirmReg->setValidator(secretPassConfirm_Validator);
+    ui->editSecretPasswordConfirmReg->setValidator(secretPassConfirmValidator);
 
     connect(ui->editLoginReg, SIGNAL(textChanged(QString)), SLOT(checkAuthInput(QString)));
     connect(ui->editOtpReg, SIGNAL(textChanged(QString)), SLOT(checkAuthInput(QString)));
@@ -100,13 +104,9 @@ RegistrationForm::RegistrationForm(QWidget *parent)
     connect(ui->tplImageTJK, SIGNAL(clicked()), SLOT(tplTJKSet()));
     connect(ui->tplImageUZB, SIGNAL(clicked()), SLOT(tplUZBSet()));
 
-    tplStyleEnable = "border: 2px solid;"
-                     "border-color: #ff850e;"
-                     "border-radius: 8px;";
+    
 
-    tplStyleDisable = "border: 2px solid;"
-                      "border-color: #e5e5e5;"
-                      "border-radius: 8px;";
+    
 
     ui->tplImageTJK->setStyleSheet(tplStyleDisable);
     ui->tplImageUZB->setStyleSheet(tplStyleDisable);
@@ -133,7 +133,7 @@ RegistrationForm::~RegistrationForm() {
     delete ui;
 }
 
-void RegistrationForm::setDB(QSqlDatabase db) {
+void RegistrationForm::setDB(const QSqlDatabase& db) {
     this->db = db;
 
     //    searchDevices->setDbName(db);
@@ -592,7 +592,7 @@ void RegistrationForm::modem_Test() {
 }
 
 void RegistrationForm::validatorSave() {
-    if (com_PortList.size() > 0) {
+    if (!com_PortList.empty()) {
         QString devName = ui->cbxValidatorName->currentText();
         QString portName = ui->cbxValidatorPort->currentText();
         QString comment = "";
@@ -602,7 +602,7 @@ void RegistrationForm::validatorSave() {
 }
 
 void RegistrationForm::coinAcceptorSave() {
-    if (com_PortList.size() > 0) {
+    if (!com_PortList.empty()) {
         QString devName = ui->cbxCoinAcceptorName->currentText();
         QString portName = ui->cbxCoinAcceptorPort->currentText();
         QString comment = "";
@@ -628,7 +628,7 @@ void RegistrationForm::printerSave() {
 }
 
 void RegistrationForm::watchdogSave() {
-    if (com_PortList.size() > 0) {
+    if (!com_PortList.empty()) {
         QString devName = "OSMP1";
         QString portName = ui->cbxWatchdogPort->currentText();
         QString comment = "";
@@ -638,7 +638,7 @@ void RegistrationForm::watchdogSave() {
 }
 
 void RegistrationForm::modem_Save() {
-    if (com_PortList.size() > 0) {
+    if (!com_PortList.empty()) {
         QString devName = "AT-Modem";
         QString portName = ui->cbxModemPort->currentText();
         QString comment = "";
@@ -721,7 +721,7 @@ void RegistrationForm::deviceSearchStart() {
 }
 
 void RegistrationForm::deviceSearchResult(
-    int device, int result, QString dev_name, QString dev_comment, QString dev_port) {
+    int device, int result, QString devName, QString devComment, QString devPort) {
     switch (device) {
     case SearchDev::search_validator: {
         switch (result) {
@@ -736,7 +736,7 @@ void RegistrationForm::deviceSearchResult(
 
             int curPos = -1;
             for (int i = 0; i < com_PortList.size(); i++) {
-                if (dev_port == com_PortList.at(i)) {
+                if (devPort == com_PortList.at(i)) {
                     curPos = i;
                     break;
                 }
@@ -749,15 +749,15 @@ void RegistrationForm::deviceSearchResult(
             //                    validator->setValidator(dev_name);
             //                    validator->setPortName(dev_port);
 
-            dev_comment = QString("(%1)").arg(dev_comment);
+            devComment = QString("(%1)").arg(devComment);
             QString vrmContent1 = tr("Купюроприемник [v1] на [v2] найден.");
             QString vrmContent2 = vrmContent1;
             //            emit emit_toLoging(TypeState::Info,
             //            LogFileName::SEARCH_DEVICE,vrmContent1.replace("[v1]",QString("%1
             //            %2").arg(dev_name).arg(dev_comment)).replace("[v2]",QString("%1").arg(dev_port)));
             ui->labelDeviceValidator->setText(
-                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
-                    .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
+                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(devName, devComment))
+                    .replace("[v2]", QString("<b>%1</b>").arg(devPort)));
         } break;
         case SearchDev::device_notfound: {
             QString vrmContentFined = tr("Купюроприемник не найден!");
@@ -779,7 +779,7 @@ void RegistrationForm::deviceSearchResult(
 
             int curPos = -1;
             for (int i = 0; i < com_PortList.size(); i++) {
-                if (dev_port == com_PortList.at(i)) {
+                if (devPort == com_PortList.at(i)) {
                     curPos = i;
                     break;
                 }
@@ -789,12 +789,12 @@ void RegistrationForm::deviceSearchResult(
                 ui->cbxCoinAcceptorPort->setCurrentIndex(curPos);
             }
 
-            dev_comment = QString("(%1)").arg(dev_comment);
+            devComment = QString("(%1)").arg(devComment);
             QString vrmContent1 = tr("Монетоприемник [v1] на [v2] найден.");
             QString vrmContent2 = vrmContent1;
             ui->labelDeviceCoinAcceptor->setText(
-                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
-                    .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
+                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(devName, devComment))
+                    .replace("[v2]", QString("<b>%1</b>").arg(devPort)));
         } break;
         case SearchDev::device_notfound: {
             QString vrmContentFined = tr("Монетоприемник не найден!");
@@ -814,7 +814,7 @@ void RegistrationForm::deviceSearchResult(
         case SearchDev::device_found: {
             int curPos = -1;
             for (int i = 0; i < com_PortList.size(); i++) {
-                if (dev_port == com_PortList.at(i)) {
+                if (devPort == com_PortList.at(i)) {
                     curPos = i;
                     break;
                 }
@@ -826,7 +826,7 @@ void RegistrationForm::deviceSearchResult(
 
             int curPosName = -1;
             for (int i = 0; i < printerList.size(); i++) {
-                if (dev_port == printerList.at(i)) {
+                if (devPort == printerList.at(i)) {
                     curPosName = i;
                     break;
                 }
@@ -836,8 +836,8 @@ void RegistrationForm::deviceSearchResult(
                 ui->cbxPrinterName->setCurrentIndex(curPosName);
             }
 
-            if (dev_comment != "" && dev_comment != " ") {
-                dev_comment = QString("(%1)").arg(dev_comment);
+            if (devComment != "" && devComment != " ") {
+                devComment = QString("(%1)").arg(devComment);
             }
             QString vrmContent1 = tr("Принтер [v1] на [v2] найден.");
             QString vrmContent2 = vrmContent1;
@@ -846,8 +846,8 @@ void RegistrationForm::deviceSearchResult(
             //                    printer->setPortName(dev_port);
 
             ui->labelDevicePrinter->setText(
-                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
-                    .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
+                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(devName, devComment))
+                    .replace("[v2]", QString("<b>%1</b>").arg(devPort)));
             //                emit emit_toLoging(TypeState::Info,
             //                LogFileName::SEARCH_DEVICE,vrmContent1.replace("[v1]",QString("%1
             //                %2").arg(dev_name).arg(dev_comment)).replace("[v2]",QString("%1").arg(dev_port)));
@@ -874,7 +874,7 @@ void RegistrationForm::deviceSearchResult(
 
             int curPos = -1;
             for (int i = 0; i < com_PortList.size(); i++) {
-                if (dev_port == com_PortList.at(i)) {
+                if (devPort == com_PortList.at(i)) {
                     curPos = i;
                     break;
                 }
@@ -885,13 +885,13 @@ void RegistrationForm::deviceSearchResult(
             }
 
             ui->lblAdminTextDeviceInfModem->setText(
-                QString("<b>%1</b> %2").arg(dev_name, dev_comment));
+                QString("<b>%1</b> %2").arg(devName, devComment));
             QString vrmContent1 = tr("Модем [v1] на [v2] найден.");
             QString vrmContent2 = vrmContent1;
 
             ui->labelDeviceModem->setText(
-                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
-                    .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
+                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(devName, devComment))
+                    .replace("[v2]", QString("<b>%1</b>").arg(devPort)));
 
             //            emit emit_toLoging(TypeState::Info,
             //            LogFileName::SEARCH_DEVICE,vrmContent1.replace("[v1]",QString("%1
@@ -918,7 +918,7 @@ void RegistrationForm::deviceSearchResult(
 
             int curPos = -1;
             for (int i = 0; i < com_PortList.size(); i++) {
-                if (dev_port == com_PortList.at(i)) {
+                if (devPort == com_PortList.at(i)) {
                     curPos = i;
                     break;
                 }
@@ -929,15 +929,15 @@ void RegistrationForm::deviceSearchResult(
             }
 
             ui->lblAdminTextDeviceInfWD->setText(
-                QString("<b>%1</b> %2").arg(dev_name, dev_comment));
+                QString("<b>%1</b> %2").arg(devName, devComment));
 
-            dev_comment = QString("(%1)").arg(dev_comment);
+            devComment = QString("(%1)").arg(devComment);
             QString vrmContent1 = tr("Сторожевой таймер [v1] на [v2] найден.");
             QString vrmContent2 = vrmContent1;
 
             ui->labelDeviceWatchDog->setText(
-                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
-                    .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
+                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(devName, devComment))
+                    .replace("[v2]", QString("<b>%1</b>").arg(devPort)));
             //                    emit emit_toLoging(TypeState::Info,
             //                    LogFileName::SEARCH_DEVICE,vrmContent1.replace("[v1]",QString("%1
             //                    %2").arg(dev_name).arg(dev_comment)).replace("[v2]",QString("%1").arg(dev_port)));

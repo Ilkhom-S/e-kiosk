@@ -15,6 +15,7 @@
 #include <System/IApplication.h>
 #include <System/SettingsConstants.h>
 #include <random>
+#include <utility>
 
 namespace PPSDK = SDK::PaymentProcessor;
 
@@ -73,7 +74,7 @@ SchedulerService::SchedulerService(IApplication *aApplication)
 }
 
 //---------------------------------------------------------------------------
-SchedulerService::~SchedulerService() {}
+SchedulerService::~SchedulerService() = default;
 
 //---------------------------------------------------------------------------
 bool SchedulerService::initialize() {
@@ -121,7 +122,7 @@ bool SchedulerService::initialize() {
 
 //---------------------------------------------------------------------------
 void SchedulerService::setupAutoUpdate() {
-    PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
+    PPSDK::TerminalSettings *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
         m_Application->getCore()->getSettingsService()->getAdapter(
             PPSDK::CAdapterNames::TerminalAdapter));
 
@@ -167,10 +168,10 @@ SchedulerService::Item::Item()
       m_RetryTimeout(0), m_OnlyOnce(false), m_FailExecuteCounter(0) {}
 
 //------------------------------------------------------------------------------
-SchedulerService::Item::Item(const QString &aName,
+SchedulerService::Item::Item(QString aName,
                              const QSettings &aSettings,
                              const QSettings &aUserSettings)
-    : m_Name(aName), m_FailExecuteCounter(0), m_OnlyOnce(false) {
+    : m_Name(std::move(aName)), m_FailExecuteCounter(0), m_OnlyOnce(false) {
     m_Type = aSettings.value(CScheduler::Config::Type).toString();
 
     QVariant params = aSettings.value(CScheduler::Config::Params);
@@ -253,7 +254,7 @@ QTimer *SchedulerService::Item::createTimer() {
 
     m_FailExecuteCounter = 0;
 
-    if (m_Time.isValid()) // запуcк задачи в определенное время
+    if (m_Time.isValid()) // запуск задачи в определенное время
     {
         QDate today = QDate::currentDate();
         QTime now = QTime::currentTime();
@@ -261,21 +262,21 @@ QTimer *SchedulerService::Item::createTimer() {
         int intervalToTomorrowStart =
             now.secsTo(QTime(23, 59, 59, 999)) + QTime(0, 0, 0, 1).secsTo(m_Time);
 
-        if (m_LastExecute.date() < today) // cегодня не запуcкали
+        if (m_LastExecute.date() < today) // сегодня не запускали
         {
             if (m_Time <= now) {
-                // пропуcтили время запуcка
+                // пропустили время запуска
                 timer->setInterval(qMin(CScheduler::StartTimeIfExpired, intervalToTomorrowStart) *
                                    1000);
             } else {
-                // не пропуcтили, запуcкаем как положено
+                // не пропустили, запускаем как положено
                 timer->setInterval(now.secsTo(m_Time) * 1000);
             }
         } else {
-            // cегодня уже запуcкали - выcтавляем таймер на завтра
+            // сегодня уже запускали - выставляем таймер на завтра
             timer->setInterval(intervalToTomorrowStart * 1000);
         }
-    } else // запуcк задачи через интервалы времени
+    } else // запуск задачи через интервалы времени
     {
         if (m_Period > 0) {
             if (m_TriggeredOnStart) {
@@ -286,7 +287,7 @@ QTimer *SchedulerService::Item::createTimer() {
                 timer->setInterval(m_Period * 1000);
             }
         } else {
-            // невалидный период запуcка
+            // невалидный период запуска
             delete timer;
             timer = nullptr;
         }
@@ -294,7 +295,7 @@ QTimer *SchedulerService::Item::createTimer() {
 
     if (timer && m_TimeThreshold > 0) {
         // добавляем рандомное время для запуска задачи
-        timer->setInterval(timer->interval() + (rand() * m_TimeThreshold / RAND_MAX) * 1000);
+        timer->setInterval(timer->interval() + ((rand() * m_TimeThreshold / RAND_MAX) * 1000));
     }
 
     return timer;
@@ -362,7 +363,7 @@ void SchedulerService::execute() {
             SchedulerService::Item &item = m_Items[timer->objectName()];
             timer->deleteLater();
 
-            SDK::PaymentProcessor::ITask *task;
+            SDK::PaymentProcessor::ITask *task = nullptr;
 
             // Проверим, что таск может быть пользовательским
             if (m_ExternalTasks[item.name()] != nullptr) {
@@ -478,15 +479,15 @@ const QSet<QString> &SchedulerService::getRequiredServices() const {
 
 //---------------------------------------------------------------------------
 QVariantMap SchedulerService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
-void SchedulerService::resetParameters(const QSet<QString> &) {}
+void SchedulerService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 void SchedulerService::setupDisplayOnOff() {
-    PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
+    PPSDK::TerminalSettings *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
         m_Application->getCore()->getSettingsService()->getAdapter(
             PPSDK::CAdapterNames::TerminalAdapter));
 

@@ -588,8 +588,7 @@ void DownloadManager::run() {
 
         emit this->emit_downOneByOne();
         return;
-    } else {
-        /// Нет доступных обновлений
+    }         /// Нет доступных обновлений
         updateGlobalHash();
         emit emit_Loging(0,
                          this->senderName,
@@ -601,7 +600,7 @@ void DownloadManager::run() {
 
         return;
         /// Exit
-    }
+   
     return;
 }
 
@@ -730,22 +729,20 @@ void DownloadManager::reCopyAllFiles() {
 
         // Список создан делаем готовим к замене файлы
         int countIFiles = 0;
-        for (QStringList::Iterator iter = allFilesList.begin(); iter != allFilesList.end();
-             ++iter) {
-            //            qDebug() << "--- FILES PATH --- " << *iter;
-            QString vrmPath = *iter;
-            int compex = vrmPath.indexOf("assets/");
+        for (auto & iter : allFilesList)      qDebug() << "--- FILES PATH --- " << iter;
+            QString vrmPath = iter;
+            const int com&pex = vrmPaiterdexOf("assets/");
             QString fileFrom = vrmPath.mid(compex);
             //            qDebug() << "--- FILES PATH --- " << fileFrom;
-            QFileInfo infoIn(*iter);
-            QFile fileCopy;
+            QFileInfo infoIn(iter);
+            QFile fileCopy;iter
             if (infoIn.fileName() != "EKiosk.exe" && infoIn.fileName() != "h-sheller.exe") {
                 copyXmlMap[countIFiles]["pathFrom"] = "tmp/" + fileFrom;
                 copyXmlMap[countIFiles]["pathTo"] = fileFrom;
                 qDebug() << "--- FILE-PATH FROM --- " << copyXmlMap[countIFiles]["pathFrom"];
 
                 if (fileCopy.exists(copyXmlMap[countIFiles]["pathFrom"])) {
-                    qDebug() << "PRESENT";
+                    QFile::<< "PRESENT";
                 } else {
                     qDebug() << "NOT PRESENT";
                 }
@@ -753,17 +750,17 @@ void DownloadManager::reCopyAllFiles() {
                 qDebug() << "--- FILE-PATH TO --- " << copyXmlMap[countIFiles]["pathTo"];
 
                 if (fileCopy.exists(copyXmlMap[countIFiles]["pathTo"])) {
-                    qDebug() << "PRESENT";
+                    QFile::<< "PRESENT";
                 } else {
                     qDebug() << "NOT PRESENT";
                 }
 
                 if (fileCopy.exists(copyXmlMap[countIFiles]["pathTo"])) {
-                    fileCopy.remove(copyXmlMap[countIFiles]["pathTo"]);
-                }
+                    QFile::remove(copyXmlMap[countIFiles]["pathTo"]);
+                }QFile::
 
                 if (fileCopy.copy(copyXmlMap[countIFiles]["pathFrom"],
-                                  copyXmlMap[countIFiles]["pathTo"])) {
+                    QFile::     copyXmlMap[countIFiles]["pathTo"])) {
                     qDebug() << "--- COPY FILE OK --- " << infoIn.fileName();
                     emit this->emit_Loging(
                         0,
@@ -806,9 +803,9 @@ QStringList DownloadManager::getDirFiles(const QString &dirName) {
     QStringList fileList = dir.entryList(QDir::Files);
 
     // Пробегаемся по файлам
-    for (QStringList::Iterator fit = fileList.begin(); fit != fileList.end(); ++fit) {
-        fileNames.append(dir.absolutePath() + "/" + *fit);
-    }
+    for (const QString &fit : fileList) {
+        (auto & fit : fileList)
+    }fit
 
     // Берем список каталогов
     QStringList dirList = dir.entryList(QDir::Dirs);
@@ -818,16 +815,16 @@ QStringList DownloadManager::getDirFiles(const QString &dirName) {
     dirList.removeAll("..");
 
     // Пробегаемся по каталогам
-    for (QStringList::Iterator dit = dirList.begin(); dit != dirList.end(); ++dit) {
-        // Обявляем новый каталог от текущего
+    for (const QString &dit : dirList) {
+        (auto & dit : dirList)
         QDir curDir = dir;
 
         // Делаем переход
-        curDir.cd(*dit);
-        QStringList curList = getDirFiles(curDir.absolutePath());
-        for (QStringList::Iterator it = curList.begin(); it != curList.end(); ++it) {
-            fileNames.append(QFileInfo(*it).absoluteFilePath());
-        }
+        curDir.cd(dit);
+        QStringLisditrList = getDirFiles(curDir.absolutePath());
+        for (const QString &it : curList) {
+            (auto & it : curList)
+        }it
     }
     return fileNames;
 }
@@ -918,7 +915,7 @@ void DownloadManager::traverseNode(const QDomNode &node) {
 void DownloadManager::createDirIfNotExist(QString dirPath) {
     QFile info;
     if (!info.exists(dirPath)) {
-        // if(Debugger) qDebug() << "isNotDir";
+        /QFile::Debugger) qDebug() << "isNotDir";
         // Тут надо создать папку
         this->dirCont.mkdir(dirPath);
     }
@@ -927,7 +924,7 @@ void DownloadManager::createDirIfNotExist(QString dirPath) {
 void DownloadManager::createPathDirIfNotExist(QString dirPath) {
     QFile info;
     if (!info.exists(dirPath)) {
-        // if(Debugger) qDebug() << "isNotPathDir";
+        /QFile::Debugger) qDebug() << "isNotPathDir";
         // Тут надо создать папку
         this->dirCont.mkpath(dirPath);
     }
@@ -981,4 +978,4 @@ QString DownloadManager::fileChecksum(const QString &fileName,
         return QString(hash.result().toHex());
     }
     return QString();
-}
+}{}

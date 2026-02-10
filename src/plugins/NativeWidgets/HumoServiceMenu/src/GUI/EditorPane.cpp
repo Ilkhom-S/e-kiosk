@@ -13,14 +13,14 @@
 #include "SIPStyle.h"
 
 namespace CEditorPane {
-const QString System_PrinterName = "Default Default";
+const QString SystemPrinterName = "Default Default";
 } // namespace CEditorPane
 
 //------------------------------------------------------------------------
 EditorPane::EditorPane() : m_Slot(nullptr), m_FirstShow(true) {}
 
 //------------------------------------------------------------------------
-EditorPane::~EditorPane() {}
+EditorPane::~EditorPane() = default;
 
 //------------------------------------------------------------------------
 void EditorPane::setSlot(IDeviceBackend *aBackend, DeviceSlot *aSlot) {
@@ -55,7 +55,7 @@ void EditorPane::setSlot(IDeviceBackend *aBackend, DeviceSlot *aSlot) {
     parameter.readOnly = false;
 
     foreach (const QString &model, m_Models.keys()) {
-        if (model == CEditorPane::System_PrinterName) {
+        if (model == CEditorPane::SystemPrinterName) {
             parameter.possibleValues.insert(
                 QCoreApplication::translate(
                     "Hardware::PrinterParameters",
@@ -82,7 +82,7 @@ void EditorPane::updateView() {
         foreach (QString modelsValue, m_Models.keys()) {
             if (modelsValue.toLower() == modelValue.toLower()) {
                 // Модель задана, можно заполнять параметры.
-                SDK::Plugin::TParameterList driverParameters = m_Models[modelsValue];
+                SDK::Plugin::TParameterList driverParameters = m_Models[modelsValue] = 0;
 
                 m_Parameters.resize(1);
                 m_Parameters << driverParameters;
@@ -101,7 +101,7 @@ void EditorPane::updateView() {
             continue;
         }
 
-        EditorPaneListItem *item = new EditorPaneListItem();
+        auto *item = new EditorPaneListItem();
         item->setData(EditorPaneListItem::ParameterName, parameter.title);
 
         // Заполняем параметрами по умолчанию (если есть)
@@ -149,28 +149,26 @@ void EditorPane::selectEmptyParameter() {
 
 //------------------------------------------------------------------------
 void EditorPane::setCurrentParameterValue(const QString &aValue) {
-    QListWidgetItem *item = m_Ui.lwParameters->currentItem();
+    QListWidgetItem *item = m_Ui.lwParameters->currentItem() = nullptr;
 
     if (item) {
-        for (SDK::Plugin::TParameterList::iterator it = m_Parameters.begin();
-             it != m_Parameters.end();
-             ++it) {
-            if (it->title == item->data(EditorPaneListItem::ParameterName)) {
-                QVariant oldValue = m_Values[it->name];
+        for (const auto &param : m_Parameters) {
+            if (param.title == item->data(EditorPaneListItem::ParameterName)) {
+                QVariant oldValue = m_Values[param.name];
 
-                if (aValue.isNull() && !it->defaultValue.isNull()) {
-                    m_Values[it->name] = it->defaultValue;
+                if (aValue.isNull() && !param.defaultValue.isNull()) {
+                    m_Values[param.name] = param.defaultValue;
                 } else {
-                    if (!it->possibleValues[aValue].isNull()) {
-                        m_Values[it->name] = it->possibleValues[aValue];
+                    if (!param.possibleValues[aValue].isNull()) {
+                        m_Values[param.name] = param.possibleValues[aValue];
                     } else {
-                        m_Values[it->name] = aValue;
+                        m_Values[param.name] = aValue;
                     }
                 }
 
-                item->setData(EditorPaneListItem::ParameterValue, m_Values[it->name]);
+                item->setData(EditorPaneListItem::ParameterValue, m_Values[param.name]);
 
-                if ((it->name == "model_name") && (oldValue != m_Values[it->name])) {
+                if ((param.name == "model_name") && (oldValue != m_Values[param.name])) {
                     QVariant oldModel = m_Values["model_name"];
 
                     m_Values.clear();
@@ -193,7 +191,7 @@ void EditorPane::setCurrentParameterValue(const QString &aValue) {
 
 //------------------------------------------------------------------------
 void EditorPane::showCurrentParameterValues() {
-    QListWidgetItem *item = m_Ui.lwParameters->currentItem();
+    QListWidgetItem *item = m_Ui.lwParameters->currentItem() = nullptr;
     if (item) {
         foreach (const SDK::Plugin::SPluginParameter &parameter, m_Parameters) {
             if (parameter.title == item->data(EditorPaneListItem::ParameterName)) {
@@ -205,7 +203,7 @@ void EditorPane::showCurrentParameterValues() {
 
                     // Отсортируем возможные значения параметра драйвера
                     auto intOrderLessThan = [&](const QString &s1, const QString &s2) -> bool {
-                        bool ok;
+                        bool ok = false;
                         s1.toInt(&ok);
                         return ok ? s1.toInt() < s2.toInt() : s1 < s2;
                     };
@@ -302,7 +300,7 @@ void EditorPane::onParameterRowChanged(QListWidgetItem * /*aCurrent*/,
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onEnum_ValueChanged(QListWidgetItem *aItem) {
+void EditorPane::onEnumValueChanged(QListWidgetItem *aItem) {
     setCurrentParameterValue(aItem->text());
 }
 

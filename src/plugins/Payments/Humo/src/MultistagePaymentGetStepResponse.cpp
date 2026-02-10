@@ -12,10 +12,10 @@ using namespace SDK::PaymentProcessor::Humo;
 //---------------------------------------------------------------------------
 MultistagePaymentGetStepResponse::MultistagePaymentGetStepResponse(const Request &aRequest,
                                                                    const QString &aResponseString)
-    : PaymentResponse(aRequest, aResponseString) {
-    m_IsOk = false;
+    : PaymentResponse(aRequest, aResponseString), m_IsOk(false) {
+    
 
-    const PaymentRequest *paymentRequest = dynamic_cast<const PaymentRequest *>(&aRequest);
+    const auto *paymentRequest = dynamic_cast<const PaymentRequest *>(&aRequest);
     if (!paymentRequest) {
         return;
     }

@@ -24,7 +24,7 @@ public:
     static QString quote(const QString &str);
     static QString quote(const QString &str, QTextCodec *codec);
     static QString decode(const QString &str, QTextCodec *codec);
-    static QTextCodec *codec(const QString &gsm_Charset);
+    static QTextCodec *codec(const QString &gsmCharset);
     static QString toHex(const QByteArray &binary);
     static QByteArray from_Hex(const QString &hex);
     static QString decodeNumber(const QString &value, uint type);

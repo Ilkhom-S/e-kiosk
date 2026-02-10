@@ -241,7 +241,7 @@ public:
     QString printer_name;
 
     bool OpenPrinterPort();
-    bool isEnabled(CMDCustom_VKP80::SStatus &s_status, int &state);
+    bool isEnabled(CMDCustom_VKP80::SStatus &sStatus, int &state);
     bool getControlInfo(char aInfoType, CMDCustom_VKP80::SControlInfo &aControlInfo);
     bool isItYou();
     void print(const QString &aCheck);
@@ -253,7 +253,7 @@ public:
 
 protected:
     bool openPort();
-    bool getStatus(int &aStatus, CMDCustom_VKP80::SStatus &s_status);
+    bool getStatus(int &aStatus, CMDCustom_VKP80::SStatus &sStatus);
     bool printCheck(const QString &aCheck);
     void sendFiscalData();
     bool initialize();

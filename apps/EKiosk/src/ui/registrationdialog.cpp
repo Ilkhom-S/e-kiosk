@@ -5,28 +5,28 @@
 #include "ui_registrationdialog.h"
 
 RegistrationDialog::RegistrationDialog(QWidget *parent)
-    : QDialog(parent), ui(new Ui::RegistrationDialog) {
+    : QDialog(parent), ui(new Ui::RegistrationDialog), KeyPud(new keyPud(this)), movie(new QMovie(this)), createDialupConnection(new CreateDialupConnection(this)) {
     ui->setupUi(this);
 
     // Установка кодировки для интерфейса
     //    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
 
-    KeyPud = new keyPud(this);
+    
     ui->layoutWgtKeyPud->addWidget(KeyPud);
 
-    this->connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
+    RegistrationDialog::connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
 
-    this->connect(ui->btnTabReg1, SIGNAL(clicked()), this, SLOT(tabToRegistration1()));
-    this->connect(ui->btnTabReg2, SIGNAL(clicked()), this, SLOT(tabToRegistration2()));
+    RegistrationDialog::connect(ui->btnTabReg1, SIGNAL(clicked()), this, SLOT(tabToRegistration1()));
+    RegistrationDialog::connect(ui->btnTabReg2, SIGNAL(clicked()), this, SLOT(tabToRegistration2()));
 
     ui->btnSaveReg1->click();
     // Надо поставить регулярные выражения
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     // Номер терминала
-    auto *Num_Trm_Reg =
+    auto *numTrmReg =
         new QRegularExpressionValidator(QRegularExpression("[1-9][0-9]{4,5}"), ui->editNumTrmReg);
-    ui->editNumTrmReg->setValidator(Num_Trm_Reg);
+    ui->editNumTrmReg->setValidator(numTrmReg);
 
     // Логин пользователя
     auto *loginRegValidator = new QRegularExpressionValidator(
@@ -63,19 +63,19 @@ RegistrationDialog::RegistrationDialog(QWidget *parent)
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    movie = new QMovie(this);
+    
 
     // Сохранить данные пользователя
-    this->connect(ui->btnSaveReg1, SIGNAL(clicked()), this, SLOT(save1BtnReg()));
+    RegistrationDialog::connect(ui->btnSaveReg1, SIGNAL(clicked()), this, SLOT(save1BtnReg()));
 
-    this->connect(ui->btnSaveReg2, SIGNAL(clicked()), this, SLOT(save2BtnReg()));
+    RegistrationDialog::connect(ui->btnSaveReg2, SIGNAL(clicked()), this, SLOT(save2BtnReg()));
 
     // Закрываем форму
     //    this->connect(ui->btnCancelReg1,SIGNAL(clicked()),this,SLOT(closeForm()));
     //    this->connect(ui->btnCancelReg2,SIGNAL(clicked()),this,SLOT(closeForm()));
 
     // Создание нового соединения
-    createDialupConnection = new CreateDialupConnection(this);
+    
     connect(createDialupConnection,
             SIGNAL(emitDialupParam(QVariantMap)),
             SIGNAL(emitCreateNewConnection(QVariantMap)));

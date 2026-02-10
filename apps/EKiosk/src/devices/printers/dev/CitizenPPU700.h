@@ -245,7 +245,7 @@ public:
     QString printer_name;
 
     bool OpenPrinterPort();
-    bool isEnabled(CMDCitizenPPU700::SStatus &s_status, int &status);
+    bool isEnabled(CMDCitizenPPU700::SStatus &sStatus, int &status);
     //        bool getControlInfo(char aInfoType, CMDCitizenPPU700::SControlInfo &
     //        aControlInfo);
     bool isItYou();
@@ -256,7 +256,7 @@ public:
 
 protected:
     bool openPort();
-    bool getStatus(int &aStatus, CMDCitizenPPU700::SStatus &s_status);
+    bool getStatus(int &aStatus, CMDCitizenPPU700::SStatus &sStatus);
     bool printCheck(const QString &aCheck);
 
     bool initialize();

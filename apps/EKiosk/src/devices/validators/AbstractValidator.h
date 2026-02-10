@@ -235,10 +235,10 @@ class BaseValidatorDevices : public QThread {
 
 public:
     BaseValidatorDevices(QObject *parent = 0);
-    QSerialPort *serialPort;
+    QSerialPort *serialPort{};
     bool devicesCreated;
-    bool is_open;
-    int statusDevices;
+    bool is_open{};
+    int statusDevices{};
     QString com_Name;
     QString part_number;
 
@@ -247,7 +247,7 @@ public:
     // Создаем устройство для работы с портами
     bool createDevicePort();
     bool closePort();
-    void setPortName(const QString com_Name);
+    void setPortName(const QString comName);
     void setPartNumber(const QString partNumber);
 
     bool isOpened();

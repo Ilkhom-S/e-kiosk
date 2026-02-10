@@ -328,15 +328,15 @@ public:
     ATProtocol(QObject *parent = 0);
     bool createDevicePort();
     bool closePort();
-    void setPortName(const QString com_Name);
+    void setPortName(const QString comName);
     bool openPort();
     bool sendSMSParam(QString text);
 
-    QSerialPort *serialPort;
+    QSerialPort *serialPort{};
 
     bool Debugger;
-    bool devicesCreated;
-    bool is_open;
+    bool devicesCreated{};
+    bool is_open{};
     QString com_Name;
     QStringList smsTextInit;
     QString balanceRequest;
@@ -344,7 +344,7 @@ public:
 
     QString regExpSim_Number;
     QString regExpBalance;
-    int position;
+    int position{};
 
     QString nowSim_Number;
     QString nowSim_Balance;
@@ -353,7 +353,7 @@ public:
     QString nowPortName;
     QString nowProviderSim;
     QString nowSignalQuality;
-    bool nowSim_Present;
+    bool nowSim_Present{};
     // protected:
     /// Маска для разбора выражения баланса
     QRegularExpression m_getBalanceRegExp;
@@ -377,7 +377,7 @@ public:
     // signals:
     //         void emit_statusSmsSend(bool sts);
 private:
-    int GetLengthSMS;
+    int GetLengthSMS{};
     // QString numberPhoneSms;
     QString textToSendSms;
 
@@ -470,7 +470,7 @@ private:
     /// Код ошибки состояния модема
     Modem_Errors::Enum m_error;
 
-    int waittimeforans;
+    int waittimeforans{};
 
     QString encodeUcs2(QString msg);
     QString decodeUcs2(QString hexString);

@@ -6,15 +6,15 @@
 #include "ui_avtorizationtoadminin.h"
 
 AvtorizationToAdminIn::AvtorizationToAdminIn(QWidget *parent)
-    : QDialog(parent), ui(new Ui::AvtorizationToAdminIn) {
+    : QDialog(parent), ui(new Ui::AvtorizationToAdminIn), KeyPud(new keyPud(this)), countCheckIn(0) {
     ui->setupUi(this);
 
-    KeyPud = new keyPud(this);
+    
     ui->layoutWgtKeyPud->addWidget(KeyPud);
 
-    this->connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
+    AvtorizationToAdminIn::connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
 
-    countCheckIn = 0;
+    
 
     connect(ui->btnEnterAdmin, SIGNAL(clicked()), SLOT(checkInputData()));
 
@@ -27,10 +27,10 @@ void AvtorizationToAdminIn::checkInputData() {
         this->close();
     }
 
-    QString vrm_Login = ui->editLoginReg->text().trimmed();
-    QString vrm_Pass = ui->editPasswordReg->text().trimmed();
+    QString vrmLogin = ui->editLoginReg->text().trimmed();
+    QString vrmPass = ui->editPasswordReg->text().trimmed();
 
-    if (vrm_Login == "" || vrm_Pass == "") {
+    if (vrmLogin == "" || vrmPass == "") {
 
         countCheckIn++;
 
@@ -52,13 +52,12 @@ void AvtorizationToAdminIn::checkInputData() {
         return;
     }
 
-    if (vrm_Login == this->loginIn && vrm_Pass == this->passIn) {
+    if (vrmLogin == this->loginIn && vrmPass == this->passIn) {
         countCheckIn = 0;
         emit this->emit_openAdminDialog();
         this->close();
         return;
-    } else {
-        countCheckIn++;
+    }         countCheckIn++;
 
         QMessageBox messageBox1(this);
         messageBox1.setWindowTitle("Диалог авторизации");
@@ -76,7 +75,7 @@ void AvtorizationToAdminIn::checkInputData() {
         messageBox1.exec();
 
         return;
-    }
+   
 }
 
 AvtorizationToAdminIn::~AvtorizationToAdminIn() {
@@ -98,8 +97,9 @@ void AvtorizationToAdminIn::setAuthParam(QString login, QString pass) {
 void AvtorizationToAdminIn::sendCharacter(QChar character) {
     QPointer<QWidget> w = focusWidget();
 
-    if (!w)
+    if (!w) {
         return;
+}
 
     int un = character.unicode();
 

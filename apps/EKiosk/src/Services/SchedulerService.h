@@ -81,7 +81,7 @@ private:
     class Item {
     public:
         Item();
-        Item(const QString &aName, const QSettings &aSettings, const QSettings &aUserSettings);
+        Item(QString aName, const QSettings &aSettings, const QSettings &aUserSettings);
 
         /// Проверка корректности конфигурации задачи.
         bool isOK() const;
