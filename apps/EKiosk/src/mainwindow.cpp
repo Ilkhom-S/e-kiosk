@@ -402,7 +402,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
     connect(mainPage, SIGNAL(validator_activate(bool)), this, SLOT(coinAcceptorInit(bool)));
     connect(
         mainPage, SIGNAL(emit_toLoging(int, QString, QString)), SLOT(toLog(int, QString, QString)));
-    connect(mainPage, SIGNAL(emit_openAvtorizationDialog()), SLOT(openAdminAuthDialog()));
+    connect(mainPage, SIGNAL(emit_openAuthorizationDialog()), SLOT(openAdminAuthDialog()));
     connect(mainPage, SIGNAL(emit_updaterLock(bool)), SLOT(updaterLock(bool)));
     connect(
         this, SIGNAL(emitStatusReturnNominal(bool)), mainPage, SLOT(showHideReturnNominal(bool)));

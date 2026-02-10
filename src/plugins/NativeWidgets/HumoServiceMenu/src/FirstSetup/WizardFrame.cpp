@@ -158,7 +158,7 @@ QString WizardFrame::stageIndex(const QString &aContext) const {
     }
     if (aContext == CWizardContext::SetupUnmanaged) {
         return "3";
-    } else if (aContext == CWizardContext::SetupToken) {
+    } if (aContext == CWizardContext::SetupToken) {
         return "4";
     } else if (aContext == CWizardContext::SetupKeys) {
         return "5";

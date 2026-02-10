@@ -926,7 +926,7 @@ QString MainPageLoader::getFieldData(QString key) {
 
 void MainPageLoader::receiptPrint(bool withSound) {
     if (withSound) {
-        playSound(Sound::sPrintChek);
+        playSound(Sound::sPrintCheck);
     }
 
     if (printerStatus) {
@@ -1171,7 +1171,7 @@ void MainPageLoader::adminOpen() {
     gotoPage(PageIn::Main);
 
     // Оповещаем о том что надо открыть админку
-    emit emit_openAvtorizationDialog();
+    emit emit_openAuthorizationDialog();
 }
 
 void MainPageLoader::langSet(QString lang) {
@@ -1217,7 +1217,7 @@ void MainPageLoader::playSoundRepeat(int page) {
             //                fileNmae = Sound::sThanks;
         } else {
             //                fileNmae = Sound::sThanksFull;
-            fileNmae = Sound::sPrintChek;
+            fileNmae = Sound::sPrintCheck;
         }
     } break;
 

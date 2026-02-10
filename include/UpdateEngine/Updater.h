@@ -56,9 +56,9 @@ public:
 
     bool bitsLoadState(QStringList *aParameters = nullptr);
 
-    static bool bitsIsComplete();
+    bool bitsIsComplete();
 
-    static void bitsCompleteAllJobs(int &aCount, int &aCountComplete, int &aCountError);
+    void bitsCompleteAllJobs(int &aCount, int &aCountComplete, int &aCountError);
 
     /// Устанавливает прокси в формате хост:порт:имя пользователя:пароль:тип.
     void setProxy(const QString &aProxy);

@@ -75,7 +75,7 @@ const QString sInputNumber = "02.wav";
 const QString sInputMoney = "03.wav";
 const QString sThanksFull = "04.wav";
 const QString sThanks = "05.wav";
-const QString sPrintChek = "06.wav";
+const QString sPrintCheck = "06.wav";
 const QString sGetCategory = "07.wav";
 } // namespace Sound
 
@@ -267,8 +267,8 @@ signals:
     void validator_activate(bool status);
     void emit_pay_new(QVariantMap payment);
     void emit_update_pay(QVariantMap payment);
-    void emit_confirm_pay(QString tranz_id, bool print);
-    void emit_print_pay(QString tranz_id);
+    void emit_confirm_pay(QString transaction_id, bool print);
+    void emit_print_pay(QString transaction_id);
     void emit_getUserInfo(QString account, QString prvId);
     void emit_checkOnline(QString trn,
                           QString prvId,
@@ -285,7 +285,7 @@ signals:
                               int timeout,
                               QVariantMap header = QVariantMap());
     void emit_toLoging(int sts, QString name, QString text);
-    void emit_openAvtorizationDialog();
+    void emit_openAuthorizationDialog();
     void emit_sendStatusValidator();
     void emit_updaterLock(bool updaterLock);
     void emit_checkStatus54();
