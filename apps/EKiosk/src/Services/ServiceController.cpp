@@ -101,7 +101,7 @@ void ServiceController::onEvent(const PP::Event &aEvent) {
 //---------------------------------------------------------------------------
 bool ServiceController::initializeServices() {
     // Создаем EventService.
-    EventService *eventService = new EventService();
+    auto eventService = new EventService();
     eventService->initialize();
 
     eventService->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));

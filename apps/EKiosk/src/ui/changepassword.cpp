@@ -10,16 +10,16 @@
 ChangePassword::ChangePassword(QWidget *parent) : QDialog(parent), ui(new Ui::ChangePassword) {
     ui->setupUi(this);
 
-    QRegularExpressionValidator *secLoginRegValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->newLogin);
+    auto secLoginRegValidator =
+        new QRegularExpressionValidator(QRegularExpression(R"([\S\w\W\d\D]{1,30})"), ui->newLogin);
     ui->newLogin->setValidator(secLoginRegValidator);
 
-    QRegularExpressionValidator *secPassRegValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->newPassword);
+    auto secPassRegValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{1,30})"), ui->newPassword);
     ui->newPassword->setValidator(secPassRegValidator);
 
-    QRegularExpressionValidator *secRepeatPassRegValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->RepeatPass);
+    auto secRepeatPassRegValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{1,30})"), ui->RepeatPass);
     ui->RepeatPass->setValidator(secRepeatPassRegValidator);
 
     KeyPud = new keyPud(this);

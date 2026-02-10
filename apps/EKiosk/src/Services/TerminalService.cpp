@@ -123,15 +123,15 @@ bool TerminalService::initialize() {
     // Проверяем параметры командной строки.
     if (m_Client->start() || m_Application->getSettings().value("common/standalone").toBool()) {
         return true;
-    } else {
-        toLog(LogLevel::Error, "Watchdog service module is not available.");
-        return false;
     }
+
+    toLog(LogLevel::Error, "Watchdog service module is not available.");
+    return false;
 }
 
 //------------------------------------------------------------------------------
 void TerminalService::finishInitialize() {
-    auto guiService = GUIService::instance(m_Application);
+    auto *guiService = GUIService::instance(m_Application);
 
     if (guiService) {
         QStringList screenList;
@@ -141,7 +141,7 @@ void TerminalService::finishInitialize() {
             resolution = guiService->getScreenSize(screenList.size());
 
             if (!resolution.isEmpty()) {
-                screenList << QString("{\"width\":%1,\"height\":%2}")
+                screenList << QString(R"({"width":%1,"height":%2})")
                                   .arg(resolution.width())
                                   .arg(resolution.height());
             }
@@ -153,7 +153,7 @@ void TerminalService::finishInitialize() {
     }
 
     // Получаем информацию о дефолтном ключе
-    PPSDK::TerminalSettings *terminalSettings =
+    auto terminalSettings =
         SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
     PPSDK::SKeySettings key = terminalSettings->getKeys().value(0);
 
@@ -213,7 +213,7 @@ bool TerminalService::isLocked() const {
 //---------------------------------------------------------------------------
 void TerminalService::setLock(bool aIsLocked) {
     // Отключаем интерфейс.
-    auto guiService = GUIService::instance(m_Application);
+    auto *guiService = GUIService::instance(m_Application);
 
     if (guiService) {
         guiService->disable(aIsLocked);
@@ -265,13 +265,13 @@ void TerminalService::writeLockStatus(bool aIsLocked) {
     // Проверка на "Уже записали статус в БД?", иначе при блокировке по ошибке БД мы зацикливаемся
     if (m_Locked.is_initialized() && m_Locked.get() == aIsLocked) {
         return;
-    } else {
-        m_Locked = aIsLocked;
-
-        m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-                                  PPSDK::CDatabaseConstants::Parameters::DisabledParam,
-                                  m_Locked.get());
     }
+
+    m_Locked = aIsLocked;
+
+    m_DbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+                              PPSDK::CDatabaseConstants::Parameters::DisabledParam,
+                              m_Locked.get());
 }
 
 //---------------------------------------------------------------------------
@@ -291,7 +291,7 @@ bool TerminalService::isDisabled() const {
 //---------------------------------------------------------------------------
 // TODO: перейти от ивентов к методам интерфейса ITerminalService.
 void TerminalService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
-    PPSDK::EEventType::Enum eventType = static_cast<PPSDK::EEventType::Enum>(aEvent.getType());
+    auto eventType = static_cast<PPSDK::EEventType::Enum>(aEvent.getType());
 
     switch (eventType) {
     // Выключить терминал.
@@ -475,7 +475,7 @@ void TerminalService::setTerminalError(PPSDK::ETerminalError::Enum aErrorType, b
 
 //---------------------------------------------------------------------------
 void TerminalService::updateGUI() {
-    auto guiService = GUIService::instance(m_Application);
+    auto *guiService = GUIService::instance(m_Application);
 
     if (guiService) {
         guiService->disable(!getFaultyDevices(true).isEmpty() || isLocked());
@@ -598,7 +598,7 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
                 m_Application->getCore()->getPaymentService()->getPaymentFields(paymentId);
 
             foreach (auto f, fields) {
-                zipArray += QString("\"%1\":\"%2\",").arg(f.name).arg(f.value.toString()).toUtf8();
+                zipArray += QString(R"("%1":"%2",)").arg(f.name).arg(f.value.toString()).toUtf8();
             }
 
             zipArray += "}}";
@@ -607,7 +607,7 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
 
             if (!qFuzzyIsNull(changeAmount) && changeAmount > 0.) {
                 zipArray +=
-                    QString(",{\"CHANGE_AMOUNT\":\"%1\"}").arg(changeAmount, 0, 'f', 2).toUtf8();
+                    QString(R"(,{"CHANGE_AMOUNT":"%1"})").arg(changeAmount, 0, 'f', 2).toUtf8();
             }
 
             zipArray += "]";
@@ -619,7 +619,7 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
             }
         }
 
-        NetworkTask *task = new NetworkTask();
+        auto *task = new NetworkTask();
         task->setUrl(url);
         task->setType(NetworkTask::Type::Post);
         task->setTimeout(60 * 1000);

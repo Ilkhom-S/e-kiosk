@@ -68,7 +68,7 @@ void ConnectionPart::setDateTimeIn(QString dt) {
         return;
     }
 
-    SYSTEMTIME *systime = new SYSTEMTIME();
+    auto systime = new SYSTEMTIME();
 
     GetLocalTime(systime);
 

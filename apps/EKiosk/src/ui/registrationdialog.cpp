@@ -24,22 +24,22 @@ RegistrationDialog::RegistrationDialog(QWidget *parent)
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     // Номер терминала
-    QRegularExpressionValidator *Num_Trm_Reg =
+    auto *Num_Trm_Reg =
         new QRegularExpressionValidator(QRegularExpression("[1-9][0-9]{4,5}"), ui->editNumTrmReg);
     ui->editNumTrmReg->setValidator(Num_Trm_Reg);
 
     // Логин пользователя
-    QRegularExpressionValidator *loginRegValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editLoginReg);
+    auto *loginRegValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{1,30})"), ui->editLoginReg);
     ui->editLoginReg->setValidator(loginRegValidator);
 
     // Пароль пользователя
-    QRegularExpressionValidator *passRegValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editPasswordReg);
+    auto *passRegValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{1,30})"), ui->editPasswordReg);
     ui->editPasswordReg->setValidator(passRegValidator);
 
-    QRegularExpressionValidator *confPassRegValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editPasswordReg);
+    auto *confPassRegValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{1,30})"), ui->editPasswordReg);
     ui->editConfirmPasswordReg->setValidator(confPassRegValidator);
 
     // Секретный номер
@@ -48,17 +48,17 @@ RegistrationDialog::RegistrationDialog(QWidget *parent)
     // ui->editSecretNum_Reg->setValidator(secretNum_Validator);
 
     // Логин пользователя
-    QRegularExpressionValidator *secLoginRegValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretLoginReg);
+    auto *secLoginRegValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{1,30})"), ui->editSecretLoginReg);
     ui->editSecretLoginReg->setValidator(secLoginRegValidator);
 
     // Пароль пользователя
-    QRegularExpressionValidator *secPassRegValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretPasswordReg);
+    auto *secPassRegValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{1,30})"), ui->editSecretPasswordReg);
     ui->editSecretPasswordReg->setValidator(secPassRegValidator);
 
-    QRegularExpressionValidator *secConfPassRegValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretConfirmPasswordReg);
+    auto *secConfPassRegValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{1,30})"), ui->editSecretConfirmPasswordReg);
     ui->editSecretConfirmPasswordReg->setValidator(secConfPassRegValidator);
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -116,7 +116,7 @@ void RegistrationDialog::tabChanged(int page) {
     case 2:
         ui->layoutWgtKeyPud_3->addWidget(KeyPud);
         break;
-    case 3:
+    default:
         break;
     }
 }
@@ -193,7 +193,13 @@ void RegistrationDialog::closeForm() {
         this->close();
 
         return;
-    } else if (rr == QMessageBox::Cancel) {
+    }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    if (rr == QMessageBox::Cancel) {
+#else
+    if (rr == QMessageBox::Cancel) {
+#endif
 
         // Тут ни чего не делаем
 
@@ -220,58 +226,58 @@ void RegistrationDialog::save1BtnReg() {
         ui->tbnAddTerminalData->setCurrentIndex(1);
 
         return;
-    } else {
-        qDebug() << "save1BtnReg - false";
-        // Что та не заполнина
-        if (!ui->editNumTrmReg->hasAcceptableInput()) {
-            ui->editNumTrmReg->setToolTip("Номер терминала состоит из 5-6 цифр.");
-            //            ui->editNumTrmReg->setPlaceholderText("Номер терминала
-            //            состоит из 5-6 цифр.");
-        } else {
-            ui->editNumTrmReg->setToolTip("Номер терминала введен верно.");
-            //            ui->editNumTrmReg->setPlaceholderText("Номер терминала
-            //            введен верно.");
-        }
-
-        if (!ui->editLoginReg->hasAcceptableInput()) {
-            ui->editLoginReg->setToolTip("Логин состоит из 1-30 цифр/букв/знаков.");
-            //            ui->editLoginReg->setPlaceholderText("Логин состоит из 1-30
-            //            цифр/букв/знаков.");
-        } else {
-            ui->editLoginReg->setToolTip("Логин введен верно.");
-            //            ui->editLoginReg->setPlaceholderText("Логин введен верно.");
-        }
-
-        if (ui->editPasswordReg->text() != ui->editConfirmPasswordReg->text()) {
-            ui->editPasswordReg->setToolTip("Пароли не совпадают.");
-            //            ui->editPasswordReg->setPlaceholderText("Пароли не
-            //            совпадают.");
-        } else {
-            ui->editPasswordReg->setToolTip("Пароли совпадают.");
-            //            ui->editPasswordReg->setPlaceholderText("Пароли
-            //            совпадают.");
-        }
-        if (ui->editPasswordReg->text() == "") {
-            ui->editPasswordReg->setToolTip("Пароль состоит из 1-30 цифр/букв/знаков.");
-            //            ui->editPasswordReg->setPlaceholderText("Пароль состоит из
-            //            1-30 цифр/букв/знаков.");
-        } else {
-            ui->editPasswordReg->setToolTip("Пароль введен верно.");
-            //            ui->editPasswordReg->setPlaceholderText("Пароль введен
-            //            верно.");
-        }
-
-        if (ui->editConfirmPasswordReg->text() == "") {
-            ui->editConfirmPasswordReg->setToolTip("Пароль состоит из 1-30 цифр/букв/знаков.");
-            //            ui->editConfirmPasswordReg->setPlaceholderText("Пароль
-            //            состоит из 1-30 цифр/букв/знаков.");
-        } else {
-            ui->editConfirmPasswordReg->setToolTip("Пароль введен верно.");
-            //            ui->editConfirmPasswordReg->setPlaceholderText("Пароль
-            //            введен верно.");
-        }
-        return;
     }
+
+    qDebug() << "save1BtnReg - false";
+    // Что та не заполнина
+    if (!ui->editNumTrmReg->hasAcceptableInput()) {
+        ui->editNumTrmReg->setToolTip("Номер терминала состоит из 5-6 цифр.");
+        //            ui->editNumTrmReg->setPlaceholderText("Номер терминала
+        //            состоит из 5-6 цифр.");
+    } else {
+        ui->editNumTrmReg->setToolTip("Номер терминала введен верно.");
+        //            ui->editNumTrmReg->setPlaceholderText("Номер терминала
+        //            введен верно.");
+    }
+
+    if (!ui->editLoginReg->hasAcceptableInput()) {
+        ui->editLoginReg->setToolTip("Логин состоит из 1-30 цифр/букв/знаков.");
+        //            ui->editLoginReg->setPlaceholderText("Логин состоит из 1-30
+        //            цифр/букв/знаков.");
+    } else {
+        ui->editLoginReg->setToolTip("Логин введен верно.");
+        //            ui->editLoginReg->setPlaceholderText("Логин введен верно.");
+    }
+
+    if (ui->editPasswordReg->text() != ui->editConfirmPasswordReg->text()) {
+        ui->editPasswordReg->setToolTip("Пароли не совпадают.");
+        //            ui->editPasswordReg->setPlaceholderText("Пароли не
+        //            совпадают.");
+    } else {
+        ui->editPasswordReg->setToolTip("Пароли совпадают.");
+        //            ui->editPasswordReg->setPlaceholderText("Пароли
+        //            совпадают.");
+    }
+    if (ui->editPasswordReg->text() == "") {
+        ui->editPasswordReg->setToolTip("Пароль состоит из 1-30 цифр/букв/знаков.");
+        //            ui->editPasswordReg->setPlaceholderText("Пароль состоит из
+        //            1-30 цифр/букв/знаков.");
+    } else {
+        ui->editPasswordReg->setToolTip("Пароль введен верно.");
+        //            ui->editPasswordReg->setPlaceholderText("Пароль введен
+        //            верно.");
+    }
+
+    if (ui->editConfirmPasswordReg->text() == "") {
+        ui->editConfirmPasswordReg->setToolTip("Пароль состоит из 1-30 цифр/букв/знаков.");
+        //            ui->editConfirmPasswordReg->setPlaceholderText("Пароль
+        //            состоит из 1-30 цифр/букв/знаков.");
+    } else {
+        ui->editConfirmPasswordReg->setToolTip("Пароль введен верно.");
+        //            ui->editConfirmPasswordReg->setPlaceholderText("Пароль
+        //            введен верно.");
+    }
+    return;
 }
 
 void RegistrationDialog::save2BtnReg() {
@@ -544,11 +550,14 @@ void RegistrationDialog::logForTest(int sts, QString log) {
     case 3:
         ui->lblAvtorizationStatusTest->setText(log);
         break;
+    default:
+        break;
     }
-    if (ui->lblAvtorizationStatusTest->text() == "")
+    if (ui->lblAvtorizationStatusTest->text() == "") {
         ui->lblAvtorizationStatusTest->setVisible(false);
-    else
+    } else {
         ui->lblAvtorizationStatusTest->setVisible(true);
+    }
 }
 
 void RegistrationDialog::LoadingAnim(bool start) {
@@ -571,8 +580,9 @@ void RegistrationDialog::LoadingAnim(bool start) {
 void RegistrationDialog::sendCharacter(QChar character) {
     QPointer<QWidget> w = focusWidget();
 
-    if (!w)
+    if (!w) {
         return;
+    }
 
     int un = character.unicode();
 

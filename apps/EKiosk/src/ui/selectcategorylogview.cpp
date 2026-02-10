@@ -26,25 +26,25 @@ void SelectCategoryLogView::deSelectAll() {
 }
 
 void SelectCategoryLogView::showLikeThis() {
-    bool SelectValidatorJam = ui->chbxSelectValidatorJam->checkState();
-    bool SelectMoneyOut = ui->chbxSelectMoneyOut->checkState();
-    bool SelectERROR = ui->chbxSelectERROR->checkState();
-    bool SelectPayDaemon = ui->chbxSelectPayDaemon->checkState();
-    bool SelectStatusAso = ui->chbxSelectStatusAso->checkState();
-    bool SelectStatusPrinter = ui->chbxSelectStatusPrinter->checkState();
-    bool SelectStatusValidator = ui->chbxSelectStatusValidator->checkState();
-    bool SelectConnectionState = ui->chbxSelectConnectionState->checkState();
-    bool SelectUpdater = ui->chbxSelectUpdater->checkState();
+    bool selectValidatorJam = ui->chbxSelectValidatorJam->checkState();
+    bool selectMoneyOut = ui->chbxSelectMoneyOut->checkState();
+    bool selectError = ui->chbxSelectERROR->checkState();
+    bool selectPayDaemon = ui->chbxSelectPayDaemon->checkState();
+    bool selectStatusAso = ui->chbxSelectStatusAso->checkState();
+    bool selectStatusPrinter = ui->chbxSelectStatusPrinter->checkState();
+    bool selectStatusValidator = ui->chbxSelectStatusValidator->checkState();
+    bool selectConnectionState = ui->chbxSelectConnectionState->checkState();
+    bool selectUpdater = ui->chbxSelectUpdater->checkState();
 
-    emit this->emit_SelectOptions(SelectValidatorJam,
-                                  SelectMoneyOut,
-                                  SelectERROR,
-                                  SelectPayDaemon,
-                                  SelectStatusAso,
-                                  SelectStatusPrinter,
-                                  SelectStatusValidator,
-                                  SelectConnectionState,
-                                  SelectUpdater);
+    emit this->emit_SelectOptions(selectValidatorJam,
+                                  selectMoneyOut,
+                                  selectError,
+                                  selectPayDaemon,
+                                  selectStatusAso,
+                                  selectStatusPrinter,
+                                  selectStatusValidator,
+                                  selectConnectionState,
+                                  selectUpdater);
 
     this->close();
 }

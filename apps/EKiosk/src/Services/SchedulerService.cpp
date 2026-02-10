@@ -232,18 +232,16 @@ bool SchedulerService::Item::execute(SDK::PaymentProcessor::ITask *aTask, ILog *
         aTask->execute();
 
         return true;
-    } else {
-        LOG(aLog,
-            LogLevel::Error,
-            QString("[%1]: Error create object '%2'.").arg(m_Name).arg(m_Type));
-
-        return false;
     }
+
+    LOG(aLog, LogLevel::Error, QString("[%1]: Error create object '%2'.").arg(m_Name).arg(m_Type));
+
+    return false;
 }
 
 //------------------------------------------------------------------------------
 QTimer *SchedulerService::Item::createTimer() {
-    QTimer *timer = new QTimer();
+    auto *timer = new QTimer();
     timer->setSingleShot(true);
 
     // если последний запуск неудачный, то проверяем нужно ли перезапустить задачу
@@ -345,10 +343,10 @@ bool SchedulerService::schedule(SchedulerService::Item &aItem) const {
         connect(timer, SIGNAL(timeout()), this, SLOT(execute()));
         timer->start();
         return true;
-    } else {
-        if (!aItem.onlyOnce()) {
-            toLog(LogLevel::Error, QString("Error of scheduling [%1].").arg(aItem.name()));
-        }
+    }
+
+    if (!aItem.onlyOnce()) {
+        toLog(LogLevel::Error, QString("Error of scheduling [%1].").arg(aItem.name()));
     }
 
     return false;
@@ -356,7 +354,7 @@ bool SchedulerService::schedule(SchedulerService::Item &aItem) const {
 
 //------------------------------------------------------------------------------
 void SchedulerService::execute() {
-    QTimer *timer = dynamic_cast<QTimer *>(sender());
+    auto *timer = dynamic_cast<QTimer *>(sender());
     if (timer) {
         timer->stop();
 
@@ -403,7 +401,7 @@ void SchedulerService::onTaskComplete(const QString &aName, bool aComplete) {
 
     if (task && task != m_ExternalTasks[aName]) {
         try {
-            QObject *taskObject = dynamic_cast<QObject *>(task);
+            auto *taskObject = dynamic_cast<QObject *>(task);
 
             if (taskObject) {
                 taskObject->deleteLater();

@@ -2,22 +2,11 @@
 
 #include <QtCore/QCryptographicHash>
 
-DownloadManager::DownloadManager() :
-    QThread(),
-    currentDownload(nullptr),
-    nowDownloadFileSize(0),
-    nowDownloadFileId(0),
-    totalCount(0),
-    fileWrite(false),
-    countFileTag(0),
-    count_download(0),
-    Debugger(1),
-    senderName("UPDATER"),
-    bisyNow(false),
-    abortTimer(new QTimer(this)),
-    resendTimer(new QTimer(this)),
-    copyFile(new CopyFileQs()),
-    restartTimer(new QTimer(this)) {
+DownloadManager::DownloadManager()
+    : QThread(), currentDownload(nullptr), nowDownloadFileSize(0), nowDownloadFileId(0),
+      totalCount(0), fileWrite(false), countFileTag(0), count_download(0), Debugger(1),
+      senderName("UPDATER"), bisyNow(false), abortTimer(new QTimer(this)),
+      resendTimer(new QTimer(this)), copyFile(new CopyFileQs()), restartTimer(new QTimer(this)) {
     abortTimer->setSingleShot(true);
     connect(abortTimer, SIGNAL(timeout()), SLOT(abortReply()));
 

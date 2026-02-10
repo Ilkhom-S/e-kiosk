@@ -296,27 +296,37 @@ void AdminDialog::SelectOptionsForSearch(bool SelectValidatorJam,
     closeTimer->start();
 
     QString searchKey;
-    if (SelectValidatorJam)
+    if (SelectValidatorJam) {
         searchKey += "MONEY_JAM;";
-    if (SelectMoneyOut)
+    }
+    if (SelectMoneyOut) {
         searchKey += "MONEY_OUT;";
-    if (SelectERROR)
+    }
+    if (SelectERROR) {
         searchKey += "ERROR;";
-    if (SelectPayDaemon)
+    }
+    if (SelectPayDaemon) {
         searchKey += "PAY_DAEMONS;";
-    if (SelectStatusAso)
+    }
+    if (SelectStatusAso) {
         searchKey += "STATUS_DAEMONS;";
-    if (SelectStatusPrinter)
+    }
+    if (SelectStatusPrinter) {
         searchKey += "PRINTER;";
-    if (SelectStatusValidator)
+    }
+    if (SelectStatusValidator) {
         searchKey += "VALIDATOR;";
-    if (SelectConnectionState)
+    }
+    if (SelectConnectionState) {
         searchKey += "CONNECTION;";
-    if (SelectUpdater)
+    }
+    if (SelectUpdater) {
         searchKey += "UPDATER;";
+    }
 
-    if (searchKey.right(1) == ";")
+    if (searchKey.right(1) == ";") {
         searchKey = searchKey.left(searchKey.length() - 1);
+    }
 
     // Вставляем в поле поиска
     ui->editSearchKeyParam->setText(searchKey);
@@ -1060,6 +1070,8 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
         auto msg = data.value("message").toString();
         ui->lblAdminServicesDataInfo->setText(msg);
     } break;
+    default:
+        break;
     }
 }
 
@@ -1084,6 +1096,8 @@ void AdminDialog::steckerClicked(int stk) {
     case AdminLisTitle::lSettingsLogInfo: {
         openLogInfoDate();
     } break;
+    default:
+        break;
     }
 
     // Тут отображаем тайтл

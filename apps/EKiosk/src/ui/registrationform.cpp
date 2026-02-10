@@ -63,24 +63,24 @@ RegistrationForm::RegistrationForm(QWidget *parent)
             SIGNAL(currentTextChanged(QString)),
             SLOT(connectionSelect(QString)));
 
-    QRegularExpressionValidator *loginRegValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{4,15}"), ui->editLoginReg);
+    auto loginRegValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{4,15})"), ui->editLoginReg);
     ui->editLoginReg->setValidator(loginRegValidator);
 
-    QRegularExpressionValidator *passRegValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{4,15}"), ui->editOtpReg);
+    auto passRegValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{4,15})"), ui->editOtpReg);
     ui->editOtpReg->setValidator(passRegValidator);
 
-    QRegularExpressionValidator *secretLoginValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,15}"), ui->editSecretLoginReg);
+    auto secretLoginValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{1,15})"), ui->editSecretLoginReg);
     ui->editSecretLoginReg->setValidator(secretLoginValidator);
 
-    QRegularExpressionValidator *secretPassValidator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,15}"), ui->editSecretPasswordReg);
+    auto secretPassValidator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{1,15})"), ui->editSecretPasswordReg);
     ui->editSecretPasswordReg->setValidator(secretPassValidator);
 
-    QRegularExpressionValidator *secretPassConfirm_Validator = new QRegularExpressionValidator(
-        QRegularExpression("[\\S\\w\\W\\d\\D]{1,15}"), ui->editSecretPasswordConfirmReg);
+    auto secretPassConfirm_Validator = new QRegularExpressionValidator(
+        QRegularExpression(R"([\S\w\W\d\D]{1,15})"), ui->editSecretPasswordConfirmReg);
     ui->editSecretPasswordConfirmReg->setValidator(secretPassConfirm_Validator);
 
     connect(ui->editLoginReg, SIGNAL(textChanged(QString)), SLOT(checkAuthInput(QString)));
@@ -158,6 +158,8 @@ void RegistrationForm::btnBackClicked() {
     case Page::EnterAuthData:
         ui->stackedWgtReg->setCurrentIndex(Page::SelectConnection);
         break;
+    default:
+        break;
     }
 
     addPageData();
@@ -213,6 +215,8 @@ void RegistrationForm::btnNextClicked() {
         //        case Page::EnterAdminAuthData:
         //            // Запуск программы
         //            break;
+    default:
+        break;
     }
 
     //    addPageData();
@@ -374,6 +378,8 @@ void RegistrationForm::addPageData() {
         //            }
         //        }
         //        break;
+    default:
+        break;
     }
 
     title = title.arg("<font color=\"red\"><b>", "</font></b>");
@@ -720,10 +726,10 @@ void RegistrationForm::deviceSearchResult(
     case SearchDev::search_validator: {
         switch (result) {
         case SearchDev::start_search: {
-            QString vrm_ContentStart = tr("Идет поиск купюроприемник ...");
-            ui->labelDeviceValidator->setText(vrm_ContentStart);
+            QString vrmContentStart = tr("Идет поиск купюроприемник ...");
+            ui->labelDeviceValidator->setText(vrmContentStart);
             //            emit emit_toLoging(TypeState::Info,
-            //            LogFileName::SEARCH_DEVICE, vrm_ContentStart);
+            //            LogFileName::SEARCH_DEVICE, vrmContentStart);
         } break;
         case SearchDev::device_found: {
             ui->btnNextReg->setEnabled(true);
@@ -744,29 +750,29 @@ void RegistrationForm::deviceSearchResult(
             //                    validator->setPortName(dev_port);
 
             dev_comment = QString("(%1)").arg(dev_comment);
-            QString vrm_Content1 = tr("Купюроприемник [v1] на [v2] найден.");
-            QString vrm_Content2 = vrm_Content1;
+            QString vrmContent1 = tr("Купюроприемник [v1] на [v2] найден.");
+            QString vrmContent2 = vrmContent1;
             //            emit emit_toLoging(TypeState::Info,
-            //            LogFileName::SEARCH_DEVICE,vrm_Content1.replace("[v1]",QString("%1
+            //            LogFileName::SEARCH_DEVICE,vrmContent1.replace("[v1]",QString("%1
             //            %2").arg(dev_name).arg(dev_comment)).replace("[v2]",QString("%1").arg(dev_port)));
             ui->labelDeviceValidator->setText(
-                vrm_Content2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
+                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
                     .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
         } break;
         case SearchDev::device_notfound: {
-            QString vrm_ContentFined = tr("Купюроприемник не найден!");
+            QString vrmContentFined = tr("Купюроприемник не найден!");
             ui->labelDeviceValidator->setText(
-                QString("<font color=\"red\">%1</font>").arg(vrm_ContentFined));
+                QString("<font color=\"red\">%1</font>").arg(vrmContentFined));
             //            emit emit_toLoging(TypeState::Error,
-            //            LogFileName::SEARCH_DEVICE, vrm_ContentFined);
+            //            LogFileName::SEARCH_DEVICE, vrmContentFined);
         } break;
         }
     } break;
     case SearchDev::search_coin_acceptor: {
         switch (result) {
         case SearchDev::start_search: {
-            QString vrm_ContentStart = tr("Идет поиск монетоприемника ...");
-            ui->labelDeviceCoinAcceptor->setText(vrm_ContentStart);
+            QString vrmContentStart = tr("Идет поиск монетоприемника ...");
+            ui->labelDeviceCoinAcceptor->setText(vrmContentStart);
         } break;
         case SearchDev::device_found: {
             ui->btnNextReg->setEnabled(true);
@@ -784,26 +790,26 @@ void RegistrationForm::deviceSearchResult(
             }
 
             dev_comment = QString("(%1)").arg(dev_comment);
-            QString vrm_Content1 = tr("Монетоприемник [v1] на [v2] найден.");
-            QString vrm_Content2 = vrm_Content1;
+            QString vrmContent1 = tr("Монетоприемник [v1] на [v2] найден.");
+            QString vrmContent2 = vrmContent1;
             ui->labelDeviceCoinAcceptor->setText(
-                vrm_Content2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
+                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
                     .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
         } break;
         case SearchDev::device_notfound: {
-            QString vrm_ContentFined = tr("Монетоприемник не найден!");
+            QString vrmContentFined = tr("Монетоприемник не найден!");
             ui->labelDeviceCoinAcceptor->setText(
-                QString("<font color=\"red\">%1</font>").arg(vrm_ContentFined));
+                QString("<font color=\"red\">%1</font>").arg(vrmContentFined));
         } break;
         }
     } break;
     case SearchDev::search_printer: {
         switch (result) {
         case SearchDev::start_search: {
-            QString vrm_ContentStart = tr("Идет поиск принтера ...");
-            ui->labelDevicePrinter->setText(vrm_ContentStart);
+            QString vrmContentStart = tr("Идет поиск принтера ...");
+            ui->labelDevicePrinter->setText(vrmContentStart);
             //            emit emit_toLoging(TypeState::Info,
-            //            LogFileName::SEARCH_DEVICE, vrm_ContentStart);
+            //            LogFileName::SEARCH_DEVICE, vrmContentStart);
         } break;
         case SearchDev::device_found: {
             int curPos = -1;
@@ -830,27 +836,28 @@ void RegistrationForm::deviceSearchResult(
                 ui->cbxPrinterName->setCurrentIndex(curPosName);
             }
 
-            if (dev_comment != "" && dev_comment != " ")
+            if (dev_comment != "" && dev_comment != " ") {
                 dev_comment = QString("(%1)").arg(dev_comment);
-            QString vrm_Content1 = tr("Принтер [v1] на [v2] найден.");
-            QString vrm_Content2 = vrm_Content1;
+            }
+            QString vrmContent1 = tr("Принтер [v1] на [v2] найден.");
+            QString vrmContent2 = vrmContent1;
 
             //                    printer->setPrinterModel(dev_name);
             //                    printer->setPortName(dev_port);
 
             ui->labelDevicePrinter->setText(
-                vrm_Content2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
+                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
                     .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
             //                emit emit_toLoging(TypeState::Info,
-            //                LogFileName::SEARCH_DEVICE,vrm_Content1.replace("[v1]",QString("%1
+            //                LogFileName::SEARCH_DEVICE,vrmContent1.replace("[v1]",QString("%1
             //                %2").arg(dev_name).arg(dev_comment)).replace("[v2]",QString("%1").arg(dev_port)));
         } break;
         case SearchDev::device_notfound: {
-            QString vrm_ContentFined = tr("Принтер не найден!");
+            QString vrmContentFined = tr("Принтер не найден!");
             ui->labelDevicePrinter->setText(
-                QString("<font color=\"red\">%1</font>").arg(vrm_ContentFined));
+                QString("<font color=\"red\">%1</font>").arg(vrmContentFined));
             //                emit emit_toLoging(TypeState::Error,
-            //                LogFileName::SEARCH_DEVICE, vrm_ContentFined);
+            //                LogFileName::SEARCH_DEVICE, vrmContentFined);
         } break;
         }
     } break;
@@ -858,10 +865,10 @@ void RegistrationForm::deviceSearchResult(
     case SearchDev::search_modem: {
         switch (result) {
         case SearchDev::start_search: {
-            QString vrm_ContentStart = tr("Идет поиск модема ...");
-            ui->labelDeviceModem->setText(vrm_ContentStart);
+            QString vrmContentStart = tr("Идет поиск модема ...");
+            ui->labelDeviceModem->setText(vrmContentStart);
             //            emit emit_toLoging(TypeState::Info,
-            //            LogFileName::SEARCH_DEVICE, vrm_ContentStart);
+            //            LogFileName::SEARCH_DEVICE, vrmContentStart);
         } break;
         case SearchDev::device_found: {
 
@@ -879,33 +886,33 @@ void RegistrationForm::deviceSearchResult(
 
             ui->lblAdminTextDeviceInfModem->setText(
                 QString("<b>%1</b> %2").arg(dev_name, dev_comment));
-            QString vrm_Content1 = tr("Модем [v1] на [v2] найден.");
-            QString vrm_Content2 = vrm_Content1;
+            QString vrmContent1 = tr("Модем [v1] на [v2] найден.");
+            QString vrmContent2 = vrmContent1;
 
             ui->labelDeviceModem->setText(
-                vrm_Content2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
+                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
                     .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
 
             //            emit emit_toLoging(TypeState::Info,
-            //            LogFileName::SEARCH_DEVICE,vrm_Content1.replace("[v1]",QString("%1
+            //            LogFileName::SEARCH_DEVICE,vrmContent1.replace("[v1]",QString("%1
             //            %2").arg(dev_name).arg(dev_comment)).replace("[v2]",QString("%1").arg(dev_port)));
         } break;
         case SearchDev::device_notfound: {
-            QString vrm_ContentFined = tr("Модем не найден! или порт занят.");
+            QString vrmContentFined = tr("Модем не найден! или порт занят.");
             ui->labelDeviceModem->setText(
-                QString("<font color=\"red\">%1</font>").arg(vrm_ContentFined));
+                QString("<font color=\"red\">%1</font>").arg(vrmContentFined));
             //            emit emit_toLoging(TypeState::Error,
-            //            LogFileName::SEARCH_DEVICE, vrm_ContentFined);
+            //            LogFileName::SEARCH_DEVICE, vrmContentFined);
         } break;
         }
     } break;
     case SearchDev::search_watchdog: {
         switch (result) {
         case SearchDev::start_search: {
-            QString vrm_ContentStart = tr("Идет поиск Сторожевого таймера ...");
-            ui->labelDeviceWatchDog->setText(vrm_ContentStart);
+            QString vrmContentStart = tr("Идет поиск Сторожевого таймера ...");
+            ui->labelDeviceWatchDog->setText(vrmContentStart);
             //            emit emit_toLoging(TypeState::Info,
-            //            LogFileName::SEARCH_DEVICE, vrm_ContentStart);
+            //            LogFileName::SEARCH_DEVICE, vrmContentStart);
         } break;
         case SearchDev::device_found: {
 
@@ -925,25 +932,27 @@ void RegistrationForm::deviceSearchResult(
                 QString("<b>%1</b> %2").arg(dev_name, dev_comment));
 
             dev_comment = QString("(%1)").arg(dev_comment);
-            QString vrm_Content1 = tr("Сторожевой таймер [v1] на [v2] найден.");
-            QString vrm_Content2 = vrm_Content1;
+            QString vrmContent1 = tr("Сторожевой таймер [v1] на [v2] найден.");
+            QString vrmContent2 = vrmContent1;
 
             ui->labelDeviceWatchDog->setText(
-                vrm_Content2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
+                vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
                     .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
             //                    emit emit_toLoging(TypeState::Info,
-            //                    LogFileName::SEARCH_DEVICE,vrm_Content1.replace("[v1]",QString("%1
+            //                    LogFileName::SEARCH_DEVICE,vrmContent1.replace("[v1]",QString("%1
             //                    %2").arg(dev_name).arg(dev_comment)).replace("[v2]",QString("%1").arg(dev_port)));
         } break;
         case SearchDev::device_notfound: {
-            QString vrm_ContentFined = tr("Сторожевой таймер не найден! или занят.");
+            QString vrmContentFined = tr("Сторожевой таймер не найден! или занят.");
             ui->labelDeviceWatchDog->setText(
-                QString("<font color=\"red\">%1</font>").arg(vrm_ContentFined));
+                QString("<font color=\"red\">%1</font>").arg(vrmContentFined));
             //                    emit emit_toLoging(TypeState::Error,
-            //                    LogFileName::SEARCH_DEVICE, vrm_ContentFined);
+            //                    LogFileName::SEARCH_DEVICE, vrmContentFined);
         } break;
         }
     } break;
+    default:
+        break;
     }
 }
 
@@ -1105,6 +1114,8 @@ bool RegistrationForm::getDeviceFrom_DB(QVariantMap &devices) {
             devices["coin_acceptor_name"] = name;
             devices["coin_acceptor_port"] = port;
         } break;
+        default:
+            break;
         }
     }
 
@@ -1178,8 +1189,9 @@ void RegistrationForm::showKeyPud() {
 void RegistrationForm::sendCharacter(QChar character) {
     QPointer<QWidget> w = focusWidget();
 
-    if (!w)
+    if (!w) {
         return;
+    }
 
     int un = character.unicode();
 
