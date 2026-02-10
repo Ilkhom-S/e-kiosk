@@ -814,6 +814,9 @@ bool GraphicsEngine::eventFilter(QObject *aObject, QEvent *aEvent) {
     case QEvent::Close:
         emit closed();
         break;
+
+    default:
+        break;
     }
 
     return QObject::eventFilter(aObject, aEvent);
