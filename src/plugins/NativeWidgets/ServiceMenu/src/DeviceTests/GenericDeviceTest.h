@@ -16,7 +16,7 @@ class IDevice;
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class GenericDeviceTest : public SDK::PaymentProcessor::IDeviceTest {
+class GenericDeviceTest : public QObject, public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
 public:
@@ -33,6 +33,10 @@ public:
     virtual bool isReady();
 
     virtual bool hasResult();
+
+signals:
+    /// Сигнал о получении результатов теста.
+    void result(const QString &aTestName, const QVariant &aTestResult);
 
 private slots:
     void onTestFinished();

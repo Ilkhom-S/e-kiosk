@@ -2,7 +2,7 @@
 
 #include "MultistagePayment.h"
 
-#include <QtXml/QDom_Document>
+#include <QtXml/QDomDocument>
 
 #include <SDK/PaymentProcessor/Payment/Parameters.h>
 #include <SDK/PaymentProcessor/Payment/Step.h>
@@ -169,7 +169,7 @@ PPSDK::TProviderFields MultistagePayment::getFieldsForStep(const QString &aStep)
 
 //---------------------------------------------------------------------------
 void loadProviderEnum_Items(PPSDK::SProviderField::TEnum_Items &aItem_List, QDomNode aNode) {
-    QDom_Element item_Element = aNode.firstChildElement("item");
+    QDomElement item_Element = aNode.firstChildElement("item");
 
     while (!item_Element.isNull()) {
         PPSDK::SProviderField::SEnum_Item item;
@@ -210,7 +210,7 @@ MultistagePayment::parseFieldsXml(const QString &aFieldsXml) const {
 
     SDK::PaymentProcessor::TProviderFields resultFields;
 
-    QDom_Document doc("mydocument");
+    QDomDocument doc("mydocument");
     if (doc.setContent(aFieldsXml)) {
         QDomNodeList fieldsList = doc.elementsByTagName("field");
 

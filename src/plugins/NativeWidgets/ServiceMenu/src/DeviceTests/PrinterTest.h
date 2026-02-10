@@ -20,7 +20,7 @@ class IPrinter;
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class PrinterTest : public SDK::PaymentProcessor::IDeviceTest {
+class PrinterTest : public QObject, public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
 public:
@@ -43,6 +43,9 @@ public:
 
 private slots:
     void onPrinted(bool aError);
+
+signals:
+    void result(const QString &aTestName, const QVariant &aTestResult);
 
 private:
     ObjectPointer<SDK::Driver::IPrinter> m_Printer;

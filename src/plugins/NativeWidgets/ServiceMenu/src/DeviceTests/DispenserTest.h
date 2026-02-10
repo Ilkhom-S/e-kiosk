@@ -20,7 +20,7 @@ class ICore;
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class DispenserTest : public SDK::PaymentProcessor::IDeviceTest {
+class DispenserTest : public QObject, public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
 public:
@@ -42,6 +42,10 @@ public:
 
     /// Возвращает true, если тест устройства возвращает результат теста
     virtual bool hasResult();
+
+signals:
+    /// Сигнал о получении результатов теста.
+    void result(const QString &aTestName, const QVariant &aTestResult);
 
 private slots:
     void onDispensed(int aCashUnit, int aCount);

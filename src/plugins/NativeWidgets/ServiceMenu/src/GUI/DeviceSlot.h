@@ -117,7 +117,7 @@ protected:
     ServiceMenuBackend *m_Backend;
     QString m_ConfigurationName;
 
-    Ui::frm_DeviceSlot ui;
+    Ui::frmDeviceSlot ui;
     QPointer<QWidget> m_Widget;
 
     ObjectPointer<SDK::Driver::IDevice> m_Device;

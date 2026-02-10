@@ -5,7 +5,7 @@
 #include <QtWidgets/QApplication>
 
 EditorPaneListItem_Delegate::EditorPaneListItem_Delegate(QObject *aParent)
-    : QStyledItem_Delegate(aParent) {}
+    : QStyledItemDelegate(aParent) {}
 
 //------------------------------------------------------------------------
 QVariant EditorPaneListItem::data(int aRole) const {

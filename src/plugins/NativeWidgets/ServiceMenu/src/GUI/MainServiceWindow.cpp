@@ -114,8 +114,7 @@ void MainServiceWindow::shutdown() {
         twServiceScreens, SIGNAL(currentChanged(int)), this, SLOT(onCurrentPageChanged(int)));
 
     IServiceWindow *current =
-        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr =
-            nullptr = nullptr = nullptr;
+        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
     if (current) {
         current->deactivate();
     }
@@ -228,8 +227,7 @@ void MainServiceWindow::connectAllAbstractButtons(QWidget *aParentWidget) {
 //------------------------------------------------------------------------
 void MainServiceWindow::onCurrentPageChanged(int aIndex) {
     IServiceWindow *prev =
-        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr =
-            nullptr = nullptr = nullptr;
+        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
 
     if (prev) {
         if (!prev->deactivate()) {
@@ -242,8 +240,7 @@ void MainServiceWindow::onCurrentPageChanged(int aIndex) {
         }
     }
 
-    IServiceWindow *next = dynamic_cast<IServiceWindow *>(twServiceScreens->widget(aIndex)) =
-        nullptr = nullptr = nullptr = nullptr;
+    IServiceWindow *next = dynamic_cast<IServiceWindow *>(twServiceScreens->widget(aIndex));
 
     if (next) {
         next->activate();
@@ -251,8 +248,7 @@ void MainServiceWindow::onCurrentPageChanged(int aIndex) {
 
     m_CurrentPageIndex = aIndex;
 
-    QWidget *currentPage = twServiceScreens->widget(m_CurrentPageIndex) = nullptr = nullptr =
-        nullptr = nullptr;
+    QWidget *currentPage = twServiceScreens->widget(m_CurrentPageIndex);
     if (currentPage) {
         m_Backend->toLog(QString("Page activated: %1.").arg(currentPage->objectName()));
     }
@@ -292,13 +288,12 @@ void MainServiceWindow::onClearClicked() {
 }
 
 //------------------------------------------------------------------------
-void MainServiceWindow::onDigitClicked() {
-    if (sender()) {
-        QVariant digit = sender()->property(CMainServiceWindow::DigitProperty);
-        if (digit.isValid()) {
-            lePassword->insert(digit.toString());
-            lbStatusMessage->clear();
-        }
+void MainServiceWindow::onDigitClicked(QAbstractButton *aButton) {
+    QPushButton *button = qobject_cast<QPushButton *>(aButton);
+    if (button) {
+        QString digit = button->text();
+        lePassword->setText(lePassword->text() + digit);
+        lbStatusMessage->clear();
     }
 }
 
@@ -346,8 +341,7 @@ void MainServiceWindow::onRebootTerminal() {
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onToggleLock() {
-    bool isLocked = m_TerminalInfo[CServiceTags::TerminalLocked].toBool() = false = false = false =
-        false;
+    bool isLocked = m_TerminalInfo[CServiceTags::TerminalLocked].toBool();
     if (closeServiceMenu(
             false, isLocked ? tr("#question_unblock_terminal") : tr("#question_block_terminal"))) {
         m_Backend->sendEvent(isLocked ? SDK::PaymentProcessor::EEventType::TerminalUnlock
@@ -377,8 +371,7 @@ bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
 
     if (GUI::MessageBox::question(aMessage) != 0) {
         IServiceWindow *window =
-            dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr =
-                nullptr = nullptr = nullptr;
+            dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
         if (window) {
             window->deactivate();
         }

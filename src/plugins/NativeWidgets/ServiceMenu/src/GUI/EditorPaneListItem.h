@@ -3,10 +3,10 @@
 #pragma once
 
 #include <QtWidgets/QListWidgetItem>
-#include <QtWidgets/QStyledItem_Delegate>
+#include <QtWidgets/QStyledItemDelegate>
 
 //------------------------------------------------------------------------
-class EditorPaneListItem_Delegate : public QStyledItem_Delegate {
+class EditorPaneListItem_Delegate : public QStyledItemDelegate {
     Q_OBJECT
 
 public:

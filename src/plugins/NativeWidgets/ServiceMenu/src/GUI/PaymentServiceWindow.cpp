@@ -6,7 +6,7 @@
 
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFuture>
-#include <QtCore/QItem_SelectionModel>
+#include <QtCore/QItemSelectionModel>
 #include <QtCore/QSettings>
 #include <QtCore/QSortFilterProxyModel>
 #include <QtCore/QTimer>
@@ -266,9 +266,9 @@ void PaymentServiceWindow::processCurrentPayment() {
 
 //----------------------------------------------------------------------------
 QModelIndex PaymentServiceWindow::getSelectedIndex() {
-    QItem_SelectionModel *selectionModel = tvPayments->selectionModel();
-    QItem_Selection itemSelection = selectionModel->selection();
-    QItem_Selection sourceSelection = m_ProxyModel->mapSelectionToSource(item_Selection);
+    QItemSelectionModel *selectionModel = tvPayments->selectionModel();
+    QItemSelection itemSelection = selectionModel->selection();
+    QItemSelection sourceSelection = m_ProxyModel->mapSelectionToSource(itemSelection);
 
     return sourceSelection.isEmpty() ? QModelIndex() : sourceSelection.indexes().first();
 }
@@ -475,8 +475,8 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
 }
 
 //----------------------------------------------------------------------------
-Qt::Item_Flags PaymentTableModel::flags(const QModelIndex & /*index*/) const {
-    return Qt::Item_IsSelectable | Qt::Item_IsEnabled;
+Qt::ItemFlags PaymentTableModel::flags(const QModelIndex & /*index*/) const {
+    return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }
 
 //----------------------------------------------------------------------------
@@ -754,7 +754,7 @@ void PaymentProxyModel::enableProcessedPaymentsFilter() {
 
 //----------------------------------------------------------------------------
 bool PaymentProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const {
-    QAbstractItem_Model *sourceModel = this->sourceModel();
+    QAbstractItemModel *sourceModel = this->sourceModel();
     QRegularExpression regExp = filterRegularExpression();
 
     QModelIndex providerFieldsIndex =

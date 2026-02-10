@@ -24,7 +24,7 @@
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
 #include <Crypt/ICryptEngine.h>
-#include <PaymentProcessor/PrintConstants.h>
+// #include <PaymentProcessor/PrintConstants.h>  // Removed - using local definitions
 #include <algorithm>
 
 #include "../GUI/PaymentInfo.h"
@@ -32,6 +32,12 @@
 
 namespace PPSDK = SDK::PaymentProcessor;
 namespace CPayment = PPSDK::CPayment::Parameters;
+
+// Local PrintConstants definitions (workaround for linking issue)
+namespace CPrintConstants {
+const char OpBrand[] = "OPERATOR_BRAND";
+const char ServiceType[] = "SERVICE_TYPE";
+} // namespace CPrintConstants
 
 //------------------------------------------------------------------------
 namespace CPaymentManager {

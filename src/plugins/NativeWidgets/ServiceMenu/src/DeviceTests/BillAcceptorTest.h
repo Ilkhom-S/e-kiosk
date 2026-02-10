@@ -21,7 +21,7 @@ const int EscrowMessageTimeout = 5 * 1000;
 } // namespace CBillAcceptorTest
 
 //------------------------------------------------------------------------------
-class BillAcceptorTest : public SDK::PaymentProcessor::IDeviceTest {
+class BillAcceptorTest : public QObject, public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
 public:
@@ -41,6 +41,10 @@ public:
 
     /// Возвращает true, если тест устройства возвращает результат теста
     virtual bool hasResult();
+
+signals:
+    /// Сигнал о получении результатов теста.
+    void result(const QString &aTestName, const QVariant &aTestResult);
 
 private slots:
     /// Показать номинал.

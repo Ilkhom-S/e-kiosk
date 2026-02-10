@@ -64,13 +64,13 @@ AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QStrin
 
         qreal newWidgetWidth =
             core->getGUIService()->getScreenSize(0).width() / m_MainWidget->scale();
-        m_MainWidget->setMinimum_Width(newWidgetWidth);
-        m_MainWidget->setMaximum_Width(newWidgetWidth);
+        m_MainWidget->setMinimumWidth(newWidgetWidth);
+        m_MainWidget->setMaximumWidth(newWidgetWidth);
 
         qreal newWidgetHeight =
             core->getGUIService()->getScreenSize(0).height() / m_MainWidget->scale();
-        m_MainWidget->setMinimum_Height(newWidgetHeight);
-        m_MainWidget->setMaximum_Height(newWidgetHeight);
+        m_MainWidget->setMinimumHeight(newWidgetHeight);
+        m_MainWidget->setMaximumHeight(newWidgetHeight);
     }
 }
 

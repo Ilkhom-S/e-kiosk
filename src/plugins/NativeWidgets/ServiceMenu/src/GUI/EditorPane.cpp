@@ -82,7 +82,7 @@ void EditorPane::updateView() {
         foreach (QString modelsValue, m_Models.keys()) {
             if (modelsValue.toLower() == modelValue.toLower()) {
                 // Модель задана, можно заполнять параметры.
-                SDK::Plugin::TParameterList driverParameters = m_Models[modelsValue] = 0 = 0 = 0;
+                SDK::Plugin::TParameterList driverParameters = m_Models[modelsValue];
 
                 m_Parameters.resize(1);
                 m_Parameters << driverParameters;
@@ -149,7 +149,7 @@ void EditorPane::selectEmptyParameter() {
 
 //------------------------------------------------------------------------
 void EditorPane::setCurrentParameterValue(const QString &aValue) {
-    QListWidgetItem *item = m_Ui.lwParameters->currentItem() = nullptr = nullptr = nullptr;
+    QListWidgetItem *item = m_Ui.lwParameters->currentItem();
 
     if (item) {
         for (SDK::Plugin::TParameterList::iterator it = m_Parameters.begin();
@@ -193,7 +193,7 @@ void EditorPane::setCurrentParameterValue(const QString &aValue) {
 
 //------------------------------------------------------------------------
 void EditorPane::showCurrentParameterValues() {
-    QListWidgetItem *item = m_Ui.lwParameters->currentItem() = nullptr = nullptr = nullptr;
+    QListWidgetItem *item = m_Ui.lwParameters->currentItem();
     if (item) {
         foreach (const SDK::Plugin::SPluginParameter &parameter, m_Parameters) {
             if (parameter.title == item->data(EditorPaneListItem::ParameterName)) {
@@ -302,7 +302,7 @@ void EditorPane::onParameterRowChanged(QListWidgetItem * /*aCurrent*/,
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onEnumValueChanged(QListWidgetItem *aItem) {
+void EditorPane::onEnum_ValueChanged(QListWidgetItem *aItem) {
     setCurrentParameterValue(aItem->text());
 }
 
@@ -370,7 +370,7 @@ QWidget *EditorPane::createWidget() {
     connect(m_Ui.leValue, SIGNAL(returnPressed()), this, SLOT(onTextValueChanged()));
     m_Ui.leValue->setStyle(new SIPStyle);
 
-    m_Ui.lwParameters->setItem_Delegate(new EditorPaneListItem_Delegate());
+    m_Ui.lwParameters->setItemDelegate(new EditorPaneListItem_Delegate());
 
     return widget.release();
 }

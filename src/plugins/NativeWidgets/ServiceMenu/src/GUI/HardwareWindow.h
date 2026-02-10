@@ -197,7 +197,7 @@ private slots:
 private:
     typedef QList<QSharedPointer<DeviceSlot>> TDeviceSlotList;
 
-    Ui::frm_HardwareWindow ui;
+    Ui::frmHardwareWindow ui;
 
     ServiceMenuBackend *m_Backend;
 

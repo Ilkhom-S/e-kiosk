@@ -60,7 +60,7 @@ QNetworkProxy UnmanagedConnectionWindow::getUserSelection() const {
     QNetworkProxy proxy;
 
     proxy.setType(static_cast<QNetworkProxy::ProxyType>(
-        (cbProxyType->item_Data(cbProxyType->currentIndex()).toInt())));
+        (cbProxyType->itemData(cbProxyType->currentIndex()).toInt())));
     proxy.setHostName(leProxyAddress->text());
     proxy.setPort(static_cast<quint16>(leProxyPort->text().toUInt()));
     proxy.setUser(leProxyUser->text());
@@ -81,7 +81,7 @@ void UnmanagedConnectionWindow::onTestConnection() {
 
 //---------------------------------------------------------------------------
 void UnmanagedConnectionWindow::onProxyTypeChanged(int aIndex) {
-    toggleProxy(cbProxyType->item_Data(aIndex).toInt() != QNetworkProxy::NoProxy);
+    toggleProxy(cbProxyType->itemData(aIndex).toInt() != QNetworkProxy::NoProxy);
     emit userSelectionChanged();
 }
 

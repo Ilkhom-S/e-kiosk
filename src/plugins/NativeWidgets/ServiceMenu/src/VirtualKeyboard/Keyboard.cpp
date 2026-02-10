@@ -51,7 +51,7 @@ Keyboard::Keyboard(SDK::Plugin::IEnvironment *aFactory, const QString &aInstance
         m_KeyboardWindow->initialize();
 
         m_MainWidget->setWidget(m_KeyboardWindow);
-        m_MainWidget->setFlag(QGraphicsItem::Item_IsFocusable, false);
+        m_MainWidget->setFlag(QGraphicsItem::ItemIsFocusable, false);
 
         m_MainWidget->setScale(qMin(1.0,
                                     qreal(qMin(core->getGUIService()->getScreenSize(0).width() /

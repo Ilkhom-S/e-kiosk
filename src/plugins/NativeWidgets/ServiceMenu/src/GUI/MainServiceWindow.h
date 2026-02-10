@@ -54,7 +54,7 @@ private slots:
     // Для обработки сигналов цифровой клавиатуры
     void onBackspaceClicked();
     void onClearClicked();
-    static void onDigitClicked();
+    void onDigitClicked(QAbstractButton *aButton);
 
     void onIdleTimeout();
     void onDateTimeRefresh();

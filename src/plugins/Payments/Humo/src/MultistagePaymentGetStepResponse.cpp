@@ -2,7 +2,7 @@
 
 #include "MultistagePaymentGetStepResponse.h"
 
-#include <QtXml/QDom_Document>
+#include <QtXml/QDomDocument>
 
 #include "MultistagePaymentGetStepRequest.h"
 #include "PaymentRequest.h"
@@ -44,7 +44,7 @@ MultistagePaymentGetStepResponse::MultistagePaymentGetStepResponse(const Request
             QString::fromLocal8Bit(QByteArray::fromPercentEncoding(fields.toString().toLatin1()))
                 .trimmed();
 
-        QDom_Document doc("mydocument");
+        QDomDocument doc("mydocument");
         auto result = doc.setContent(m_Fields);
         m_IsOk = m_Fields.isEmpty() ? true : static_cast<bool>(result);
     }
