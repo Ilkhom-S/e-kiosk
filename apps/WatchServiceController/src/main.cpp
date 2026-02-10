@@ -37,7 +37,7 @@ int main(int aArgc, char *aArgv[]) {
     QString appLogName = application.getLog()->getName();
     ILog::getInstance(CIMessageQueueClient::DefaultLog)->setDestination(appLogName);
 
-    application.getQtApplication().setQuitOnLastWindowClosed(false);
+    application.getQtApplication().setQuitOnLastWindowClosed(false); // NOLINT(readability-static-accessed-through-instance)
 #ifndef Q_OS_MACOS
     application.getQtApplication().setWindowIcon(QIcon(":/icons/controller-monogram_Template.png"));
 #endif

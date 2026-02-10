@@ -3,11 +3,7 @@
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QMessageAuthenticationCode>
 
-SendRequest::SendRequest(QObject *parent) : QThread(parent) {
-    debugger = true;
-    m_abort = true;
-
-    abortTimer = new QTimer();
+SendRequest::SendRequest(QObject *parent) : QThread(parent), debugger(true), m_abort(true), abortTimer(new QTimer()) {
     abortTimer->setSingleShot(true);
 
     connect(abortTimer, SIGNAL(timeout()), this, SLOT(slotQHttpAbort()));
@@ -311,7 +307,7 @@ void SendRequest::slotReadyRead() {
     }
 
     // Есть ошибка
-    if (statusError) {
+    if (statusError != 0) {
         if (statusError != 400) {
             emit emit_Loging(2,
                              senderName,

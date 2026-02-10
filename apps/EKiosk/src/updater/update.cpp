@@ -729,20 +729,21 @@ void DownloadManager::reCopyAllFiles() {
 
         // Список создан делаем готовим к замене файлы
         int countIFiles = 0;
-        for (auto & iter : allFilesList)      qDebug() << "--- FILES PATH --- " << iter;
+        for (auto & iter : allFilesList) {
+            qDebug() << "--- FILES PATH --- " << iter;
             QString vrmPath = iter;
-            const int com&pex = vrmPaiterdexOf("assets/");
+            const int compex = vrmPath.indexOf("assets/");
             QString fileFrom = vrmPath.mid(compex);
             //            qDebug() << "--- FILES PATH --- " << fileFrom;
             QFileInfo infoIn(iter);
-            QFile fileCopy;iter
+            QFile fileCopy(iter);
             if (infoIn.fileName() != "EKiosk.exe" && infoIn.fileName() != "h-sheller.exe") {
                 copyXmlMap[countIFiles]["pathFrom"] = "tmp/" + fileFrom;
                 copyXmlMap[countIFiles]["pathTo"] = fileFrom;
                 qDebug() << "--- FILE-PATH FROM --- " << copyXmlMap[countIFiles]["pathFrom"];
 
                 if (fileCopy.exists(copyXmlMap[countIFiles]["pathFrom"])) {
-                    QFile::<< "PRESENT";
+                    qDebug() << "PRESENT";
                 } else {
                     qDebug() << "NOT PRESENT";
                 }
@@ -750,17 +751,16 @@ void DownloadManager::reCopyAllFiles() {
                 qDebug() << "--- FILE-PATH TO --- " << copyXmlMap[countIFiles]["pathTo"];
 
                 if (fileCopy.exists(copyXmlMap[countIFiles]["pathTo"])) {
-                    QFile::<< "PRESENT";
+                    qDebug() << "PRESENT";
                 } else {
                     qDebug() << "NOT PRESENT";
                 }
 
                 if (fileCopy.exists(copyXmlMap[countIFiles]["pathTo"])) {
                     QFile::remove(copyXmlMap[countIFiles]["pathTo"]);
-                }QFile::
+                }
 
-                if (fileCopy.copy(copyXmlMap[countIFiles]["pathFrom"],
-                    QFile::     copyXmlMap[countIFiles]["pathTo"])) {
+                if (fileCopy.copy(copyXmlMap[countIFiles]["pathFrom"], copyXmlMap[countIFiles]["pathTo"])) {
                     qDebug() << "--- COPY FILE OK --- " << infoIn.fileName();
                     emit this->emit_Loging(
                         0,
@@ -804,8 +804,8 @@ QStringList DownloadManager::getDirFiles(const QString &dirName) {
 
     // Пробегаемся по файлам
     for (const QString &fit : fileList) {
-        (auto & fit : fileList)
-    }fit
+        fileNames.append(fit);
+    }
 
     // Берем список каталогов
     QStringList dirList = dir.entryList(QDir::Dirs);
@@ -816,15 +816,14 @@ QStringList DownloadManager::getDirFiles(const QString &dirName) {
 
     // Пробегаемся по каталогам
     for (const QString &dit : dirList) {
-        (auto & dit : dirList)
         QDir curDir = dir;
 
         // Делаем переход
         curDir.cd(dit);
-        QStringLisditrList = getDirFiles(curDir.absolutePath());
+        QStringList curList = getDirFiles(curDir.absolutePath());
         for (const QString &it : curList) {
-            (auto & it : curList)
-        }it
+            fileNames.append(it);
+        }
     }
     return fileNames;
 }
@@ -915,7 +914,7 @@ void DownloadManager::traverseNode(const QDomNode &node) {
 void DownloadManager::createDirIfNotExist(QString dirPath) {
     QFile info;
     if (!info.exists(dirPath)) {
-        /QFile::Debugger) qDebug() << "isNotDir";
+        if (Debugger) qDebug() << "isNotDir";
         // Тут надо создать папку
         this->dirCont.mkdir(dirPath);
     }
@@ -924,7 +923,7 @@ void DownloadManager::createDirIfNotExist(QString dirPath) {
 void DownloadManager::createPathDirIfNotExist(QString dirPath) {
     QFile info;
     if (!info.exists(dirPath)) {
-        /QFile::Debugger) qDebug() << "isNotPathDir";
+        if (Debugger) qDebug() << "isNotPathDir";
         // Тут надо создать папку
         this->dirCont.mkpath(dirPath);
     }
@@ -978,4 +977,4 @@ QString DownloadManager::fileChecksum(const QString &fileName,
         return QString(hash.result().toHex());
     }
     return QString();
-}{}
+}

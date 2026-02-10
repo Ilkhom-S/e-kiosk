@@ -11,11 +11,8 @@ namespace SDK {
 namespace PaymentProcessor {
 
 //------------------------------------------------------------------------------
-SProvider::SProcessingTraits::SRequest::SResponseField::SResponseField() {
-    required = true;
-    encoding = Text;
-    codepage = Windows1251;
-}
+SProvider::SProcessingTraits::SRequest::SResponseField::SResponseField()
+    : required(true), encoding(Text), codepage(Windows1251) {}
 
 //------------------------------------------------------------------------------
 void SProvider::SProcessingTraits::SRequest::SResponseField::setCodepage(const QString &aCodepage) {
@@ -47,8 +44,8 @@ QJsonObject enumToJson(const SProviderField::SEnum_Item &aEnumItem) {
     item["sort"] = aEnumItem.sort;
 
     QJsonArray subitems;
-    foreach (auto item, aEnumItem.subItems) {
-        subitems << enumToJson(item);
+    for (const auto &subItem : aEnumItem.subItems) {
+        subitems << enumToJson(subItem);
     }
 
     item["subItems"] = subitems;
@@ -60,7 +57,7 @@ QJsonObject enumToJson(const SProviderField::SEnum_Item &aEnumItem) {
 QString SProvider::fields2Json(const TProviderFields &aFields) {
     QJsonArray jsonFields;
 
-    foreach (auto field, aFields) {
+    for (const auto &field : aFields) {
         QJsonObject jsonField;
 
         jsonField["type"] = field.type;
@@ -89,7 +86,7 @@ QString SProvider::fields2Json(const TProviderFields &aFields) {
         if (!field.security.isEmpty()) {
             QJsonObject security;
 
-            foreach (auto subsystem, field.security.keys()) {
+            for (auto subsystem : field.security.keys()) {
                 switch (subsystem) {
                 case SProviderField::Default:
                     security["default"] = field.security.value(subsystem);
@@ -110,7 +107,7 @@ QString SProvider::fields2Json(const TProviderFields &aFields) {
         }
 
         QJsonArray enumItems;
-        foreach (auto item, field.enum_Items) {
+        for (const auto &item : field.enum_Items) {
             enumItems << enumToJson(item);
         }
         QJsonObject o;
@@ -133,7 +130,7 @@ bool json2Enum(const QJsonObject &aEnumItem, SProviderField::SEnum_Item &aItem) 
     aItem.value = aEnumItem["value"].toString();
     aItem.sort = aEnumItem["sort"].toInt();
 
-    foreach (auto jsonSubitem, aEnumItem["subItems"].toArray()) {
+    for (const auto &jsonSubitem : aEnumItem["subItems"].toArray()) {
         SProviderField::SEnum_Item subItem;
         if (json2Enum(jsonSubitem.toObject(), subItem)) {
             aItem.subItems << subItem;
@@ -151,7 +148,7 @@ TProviderFields SProvider::json2Fields(const QString &aJson) {
     QJsonArray result = QJsonDocument::fromJson(aJson.toUtf8(), &error).array();
 
     if (QJsonParseError::NoError == error.error) {
-        foreach (auto jsonFieldVariant, result) {
+        for (const auto &jsonFieldVariant : result) {
             auto jsonField = jsonFieldVariant.toObject();
 
             SProviderField field;
@@ -179,7 +176,7 @@ TProviderFields SProvider::json2Fields(const QString &aJson) {
             field.forwardButton = jsonField["forward_button"].toString();
             field.dependency = jsonField["dependency"].toString();
 
-            foreach (auto jsonItem, jsonField["enum_Items"].toObject()["values"].toArray()) {
+            for (const auto &jsonItem : jsonField["enum_Items"].toObject()["values"].toArray()) {
                 SProviderField::SEnum_Item item;
                 if (json2Enum(jsonItem.toObject(), item)) {
                     field.enum_Items << item;

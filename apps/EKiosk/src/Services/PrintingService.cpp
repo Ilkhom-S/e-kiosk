@@ -283,8 +283,9 @@ int PrintingService::perform_Print(PrintCommand *aCommand,
         PrintPayment *paymentPrintingCommand = dynamic_cast<PrintPayment *>(aCommand);
 
         auto makeResult = [&](bool result, const QString &aLog) -> bool {
-            if (aCommand)
+            if (aCommand) {
                 delete aCommand;
+            }
             toLog(result ? LogLevel::Normal : LogLevel::Error, aLog);
             emit receiptPrinted(aJobIndex, !result);
             return result;
@@ -843,12 +844,13 @@ QString PrintingService::generateLine(const QString &aString) {
 
         Qt::BrushStyle style;
 
-        if (aDense <= 0)
+        if (aDense <= 0) {
             style = Qt::SolidPattern;
-        else if (aDense >= 6)
+        } else if (aDense >= 6) {
             style = Qt::Dense7Pattern;
-        else
+        } else {
             style = static_cast<Qt::BrushStyle>(aDense + 1);
+        }
 
         QPainter painter(&image);
         painter.setBrush(style);
@@ -1415,12 +1417,14 @@ void PrintingService::updateHardwareConfiguration() {
         }
 
         QVariantMap dealerSettings;
-        if (m_StaticParameters.contains(CPrintConstants::DealerTaxSystem))
+        if (m_StaticParameters.contains(CPrintConstants::DealerTaxSystem)) {
             dealerSettings.insert(CHardwareSDK::FR::DealerTaxSystem,
                                   m_StaticParameters[CPrintConstants::DealerTaxSystem]);
-        if (m_StaticParameters.contains(CPrintConstants::DealerAgentFlag))
+        }
+        if (m_StaticParameters.contains(CPrintConstants::DealerAgentFlag)) {
             dealerSettings.insert(CHardwareSDK::FR::DealerAgentFlag,
                                   m_StaticParameters[CPrintConstants::DealerAgentFlag]);
+        }
         if (m_StaticParameters.contains(CPrintConstants::DealerVAT))
             dealerSettings.insert(CHardwareSDK::FR::DealerVAT,
                                   m_StaticParameters[CPrintConstants::DealerVAT]);

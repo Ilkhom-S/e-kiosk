@@ -380,11 +380,11 @@ bool SettingsManager::writeINI(const QString &aFileName, const TPtree &aTree) {
     iniFile.clear();
 
     static const TPtree EmptyTree;
-    foreach (const TPtree::value_type &value,
-             aTree.get_child(QFileInfo(aFileName).completeBaseName().toStdString(), EmptyTree)) {
+    const auto &sectionTree = aTree.get_child(QFileInfo(aFileName).completeBaseName().toStdString(), EmptyTree);
+    for (const TPtree::value_type &value : sectionTree) {
         iniFile.beginGroup(QString::fromStdString(value.first));
 
-        foreach (const TPtree::value_type &child, value.second) {
+        for (const TPtree::value_type &child : value.second) {
             if (!child.second.empty()) {
                 toLog(LogLevel::Error,
                       "Failed to write INI file: the tree has more then 2 level hierarchy.");
