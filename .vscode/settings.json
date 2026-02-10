@@ -3,7 +3,8 @@
     "files.exclude": {
         "build/": true,
         "thirdparty/": false,
-        "vcpkg_installed/": true
+        "vcpkg_installed/": true,
+        "*.bak": true
     },
     "search.exclude": {
         "build/": true,
