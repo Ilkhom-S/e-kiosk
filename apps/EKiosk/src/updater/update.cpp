@@ -1,5 +1,7 @@
 #include "update.h"
 
+#include <QtCore/QCryptographicHash>
+
 DownloadManager::DownloadManager() : QThread() {
     Debugger = 1;
 
@@ -976,7 +978,7 @@ QString DownloadManager::fileChecksum(const QString &fileName,
         QCryptographicHash hash(hashAlgorithm);
         while (readSize > 0 && (bytesRead = sourceFile.read(buffer, readSize)) > 0) {
             fileSize -= bytesRead;
-            hash.addData(buffer, bytesRead);
+            hash.addData(QByteArrayView(buffer, bytesRead));
             readSize = qMin(fileSize, bufferSize);
         }
 
