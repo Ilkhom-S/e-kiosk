@@ -2,6 +2,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QMetaType>
+#include <QtCore/QRandomGenerator>
 #include <QtCore/QSet>
 #include <QtCore/QString>
 
@@ -28,19 +29,19 @@ const QString TimeFormat = "hh:mm";
 const QString DateTimeFormat = "yyyy.MM.dd hh:mm:ss";
 
 const int StartTimeIfExpired =
-    10 * 60; // таймаут в cекундах для cлучая, еcли мы пропуcтили запуcк задачи
+    10 * 60; // таймаут в секундах для случая, если мы пропустили запуск задачи
 
 namespace Config {
 const QString Type = "type";
 const QString Params = "params";
-const QString Time = "time";     // конкретное время запуcка задачи
-const QString Period = "period"; // Еcли time не задано, то берётcя период запуcка в cекундах
+const QString Time = "time";     // конкретное время запуска задачи
+const QString Period = "period"; // Если time не задано, то берется период запуска в секундах
 const QString TriggeredOnStart = "triggered_on_start"; // Запускать первый раз сразу при старте
 const QString RepeatCountIfFail = "repeat_count_if_fail";
 const QString TimeThreshold =
     "time_threshold"; // максимальный порог времени, добавляемый рандомно к времени запуска задачи
 const QString RetryTimeout =
-    "retry_timeout";                  // таймаут повторного запуска в случае неуспеха в cекундах
+    "retry_timeout";                  // таймаут повторного запуска в случае неуспеха в секундах
 const QString OnlyOnce = "only_once"; // запускать задачу только один раз
 
 const QString StartupTime = "startup";     // запускать после каждого старта ПО
@@ -69,7 +70,7 @@ SchedulerService::SchedulerService(IApplication *aApplication)
 
     moveToThread(&m_Thread);
 
-    // для запуcка таймеров вcех заданий
+    // для запуска таймеров всех заданий
     connect(&m_Thread, SIGNAL(started()), this, SLOT(scheduleAll()));
 }
 
@@ -145,7 +146,7 @@ void SchedulerService::setupAutoUpdate() {
         settings.beginGroup(CScheduler::AutoUpdateTaskName);
         settings.setValue(CScheduler::Config::Type, "RunUpdater");
         settings.setValue(CScheduler::Config::Time, startTime.toString(CScheduler::TimeFormat));
-        // что бы терминалы с одинаковыми настройками не ломанулись обновляться все одновременно
+        // чтобы терминалы с одинаковыми настройками не начали обновляться все одновременно
         // (анти DDOS)
         settings.setValue(CScheduler::Config::TimeThreshold, 3600);
         settings.setValue(CScheduler::Config::RepeatCountIfFail, 2);
@@ -294,8 +295,9 @@ QTimer *SchedulerService::Item::createTimer() {
     }
 
     if (timer && m_TimeThreshold > 0) {
-        // добавляем рандомное время для запуска задачи
-        timer->setInterval(timer->interval() + ((rand() * m_TimeThreshold / RAND_MAX) * 1000));
+        // добавляем случайное время для запуска задачи
+        timer->setInterval(timer->interval() +
+                   (QRandomGenerator::global()->bounded(m_TimeThreshold + 1) * 1000));
     }
 
     return timer;
@@ -365,7 +367,7 @@ void SchedulerService::execute() {
 
             SDK::PaymentProcessor::ITask *task = nullptr;
 
-            // Проверим, что таск может быть пользовательским
+            // Проверим, что задача может быть пользовательской
             if (m_ExternalTasks[item.name()] != nullptr) {
                 task = m_ExternalTasks[item.name()];
             } else {
@@ -412,6 +414,7 @@ void SchedulerService::onTaskComplete(const QString &aName, bool aComplete) {
 
             task = nullptr;
         } catch (...) {
+            toLog(LogLevel::Error, QString("[%1]: Failed to destroy task instance.").arg(aName));
         }
     }
 
@@ -468,7 +471,7 @@ QString SchedulerService::getName() const {
 
 //---------------------------------------------------------------------------
 const QSet<QString> &SchedulerService::getRequiredServices() const {
-    // TODO Как отслеживать зависимости тасков от нужных сервисов?
+    // TODO Как отслеживать зависимости задач от нужных сервисов?
     static QSet<QString> requiredServices =
         QSet<QString>() << CServices::SettingsService << CServices::EventService
                         << CServices::TerminalService << CServices::RemoteService
