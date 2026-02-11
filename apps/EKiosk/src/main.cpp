@@ -28,12 +28,13 @@ int main(int argc, char **argv) {
     try {
         qInstallMessageHandler(PPApplication::qtMessageHandler);
 
-        // Чтобы заставить работать QPixmap в потоке, отличном от потока gui (см.
-        // qt_pixmap_thread_test() в qpixmap.cpp)
-        // TODO PORT_QT5
-        // QApplication::setGraphicsSystem("raster");
-
+        // Qt5: Use software renderer for Qt Quick to avoid GPU issues
+        // Qt6: Uses RHI (Rendering Hardware Interface) with software backend
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         qputenv("QMLSCENE_DEVICE", "softwarecontext");
+#else
+        qputenv("QSG_RHI_BACKEND", "software");
+#endif
 
         PPApplication application(Humo::Application, Humo::getVersion(), argc, argv);
 
