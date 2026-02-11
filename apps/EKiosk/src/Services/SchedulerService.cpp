@@ -297,7 +297,7 @@ QTimer *SchedulerService::Item::createTimer() {
     if (timer && m_TimeThreshold > 0) {
         // добавляем случайное время для запуска задачи
         timer->setInterval(timer->interval() +
-                   (QRandomGenerator::global()->bounded(m_TimeThreshold + 1) * 1000));
+                           (QRandomGenerator::global()->bounded(m_TimeThreshold + 1) * 1000));
     }
 
     return timer;
