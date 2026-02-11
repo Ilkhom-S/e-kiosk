@@ -861,7 +861,7 @@ bool RemoteService::restoreConfiguration() {
     bool result = false;
 
     foreach (PPSDK::IRemoteClient *client, m_MonitoringClients) {
-        if ((client->getCapabilities() & PPSDK::IRemoteClient::RestoreConfiguration) != 0u) {
+        if ((client->getCapabilities() & PPSDK::IRemoteClient::RestoreConfiguration) != 0U) {
             result = client->useCapability(PPSDK::IRemoteClient::RestoreConfiguration);
         }
     }
@@ -1057,8 +1057,8 @@ void RemoteService::startNextUpdateCommand() {
 }
 
 //---------------------------------------------------------------------------
-RemoteService::UpdateCommand::UpdateCommand() : ID(-1) {
-
+RemoteService::UpdateCommand::UpdateCommand()
+    : ID(-1), status(IRemoteService::Waiting), type(Configuration) {
     lastUpdate = QDateTime::currentDateTime();
 }
 
