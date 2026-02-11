@@ -553,7 +553,7 @@ QString maskedString(const QString &aString, bool aNeedMask) {
         int oneFourthLen = qMin(static_cast<int>(aString.size() / 4), 4);
 
         return aString.left(oneFourthLen) +
-               QString("*").repeated(aString.size() - (oneFourthLen * 2)) +
+               QString("*").repeated(aString.size() - static_cast<qsizetype>(oneFourthLen * 2)) +
                aString.right(oneFourthLen);
     }
 
@@ -591,7 +591,7 @@ QString PrintingService::convertImage2base64(const QString &aString) {
                           .arg(file.errorString()));
             }
 
-            result.replace(match.capturedStart(1), match.captured(1).length(), img);
+            result.replace(static_cast<int>(match.capturedStart(1)), static_cast<int>(match.captured(1).length()), img);
             offset = match.capturedStart(1) + img.size();
         }
     }
@@ -603,7 +603,7 @@ QString PrintingService::convertImage2base64(const QString &aString) {
 QString PrintingService::generateQR(const QString &aString) {
     QString result = aString;
 
-    auto generateQRCode = [=](const QString &aText, int aSize, int aLeftMargin) -> QString {
+    auto generateQRCode = [this, &aString](const QString &aText, int aSize, int aLeftMargin) -> QString {
         QImage image(QSize(aSize + aLeftMargin, aSize), QImage::Format_ARGB32);
         image.fill(QColor("transparent"));
 
@@ -680,10 +680,10 @@ QString PrintingService::generateQR(const QString &aString) {
 }
 
 //---------------------------------------------------------------------------
-QString PrintingService::generatePDF417(const QString &aString) {
+    QString PrintingService::generatePDF417(const QString &aString) {
     QString result = aString;
 
-    auto generatePDFCode = [=](const QString &aText, int aSize, int aLeftMargin) -> QString {
+    auto generatePDFCode = [this, &aString](const QString &aText, int aSize, int aLeftMargin) -> QString {
         int divider = aText.size() > 100 ? 2 : 3;
 
         QImage image(QSize(aSize + aLeftMargin, aSize / divider), QImage::Format_ARGB32);
@@ -761,7 +761,7 @@ QString PrintingService::generatePDF417(const QString &aString) {
 QString PrintingService::generate1D(const QString &aString) {
     QString result = aString;
 
-    auto generatePDFCode = [=](const QString &aText, int aSize, int aLeftMargin) -> QString {
+    auto generatePDFCode = [this, &aString](const QString &aText, int aSize, int aLeftMargin) -> QString {
         int divider = aText.size() > 100 ? 2 : 3;
 
         QImage image(QSize(aSize + aLeftMargin, aSize / divider), QImage::Format_ARGB32);
@@ -962,7 +962,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
 
             // %% заменяем на %
             if (tag.isEmpty()) {
-                it->replace(offset, match.captured(0).length(), "%");
+            it->replace(static_cast<int>(offset), static_cast<int>(match.captured(0).length()), "%");
                 offset += 1;
                 continue;
             }
@@ -1009,8 +1009,8 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                                      ? maskedString(staticParameter.value(), isMasked)
                                      : filter.apply(staticParameter.key(), staticParameter.value());
 
-                it->replace(offset, match.captured(0).length(), masked);
-                offset += masked.length();
+                    it->replace(static_cast<int>(offset), static_cast<int>(match.captured(0).length()), masked);
+                    offset += static_cast<int>(masked.length());
 
                 continue;
             }
