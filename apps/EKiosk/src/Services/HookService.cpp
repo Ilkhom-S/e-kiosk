@@ -91,7 +91,7 @@ QVariantMap HookService::getParameters() const {
 void HookService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
-bool HookService::invokeHook(const QString &aMetodName,
+bool HookService::invokeHook(const QString &aMethodName,
                              QGenericArgument aVal0,
                              QGenericArgument aVal1,
                              QGenericArgument aVal2,
@@ -111,7 +111,7 @@ bool HookService::invokeHook(const QString &aMetodName,
             // Всегда делаем Qt::DirectConnection независимо от того в каком процессе находится
             // объект перехватчик
             result = QMetaObject::invokeMethod(pluginObject,
-                                               aMetodName.toLatin1().data(),
+                                               aMethodName.toLatin1().data(),
                                                Qt::DirectConnection,
                                                aVal0,
                                                aVal1,

@@ -630,7 +630,7 @@ void NetworkService::onConnectionLost() {
         if (watchdogDevice) {
             toLog(LogLevel::Warning, "Resetting modem with watchdog.");
 
-            // Сбросываем питание модема.
+            // Сбрасываем питание модема.
             if (watchdogDevice->reset(SDK::Driver::LineTypes::Modem)) {
                 // Ждем, пока модем оживет после сброса питания.
                 sleep(CNetworkService::ReestablishInterval);

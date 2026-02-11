@@ -22,7 +22,7 @@ protected:
 
 public:
         /// Вызывает метод у всех hook плагинов
-        virtual bool invokeMethod(const QString & aMetodName, //Qt::ConnectionType aType,
+        virtual bool invokeMethod(const QString & aMethodName, //Qt::ConnectionType aType,
 QGenericReturnArgument aRet, QGenericArgument aVal0 = QGenericArgument( 0 ), QGenericArgument aVal1
 = QGenericArgument(), QGenericArgument aVal2 = QGenericArgument(), QGenericArgument aVal3 =
 QGenericArgument(), QGenericArgument aVal4 = QGenericArgument(), QGenericArgument aVal5 =
@@ -40,7 +40,7 @@ class HookService
     Q_OBJECT
 
 public:
-    /// Получение DatabaseServiceа.
+    /// Получение DatabaseService.
     static HookService *instance(IApplication *aApplication);
 
     HookService(IApplication *aApplication);
@@ -75,7 +75,7 @@ public:
     /// Методы интерфейса IHookService
 
     /// IHookService: Вызывает метод у всех hook плагинов
-    virtual bool invokeHook(const QString &aMetodName,
+    virtual bool invokeHook(const QString &aMethodName,
                             QGenericArgument aVal0 = QGenericArgument(0),
                             QGenericArgument aVal1 = QGenericArgument(),
                             QGenericArgument aVal2 = QGenericArgument(),

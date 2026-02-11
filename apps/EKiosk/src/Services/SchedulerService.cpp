@@ -1,4 +1,4 @@
-/* @file Менеджер запуcка задач по раcпиcанию. */
+/* @file Менеджер запуска задач по расписанию. */
 
 #include <QtCore/QDir>
 #include <QtCore/QMetaType>

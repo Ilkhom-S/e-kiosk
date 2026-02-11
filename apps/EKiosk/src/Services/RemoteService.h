@@ -118,7 +118,7 @@ protected:
     /// Добавляет в очередь команду на получение скриншота.
     virtual int registerScreenshotCommand() override;
 
-    /// Добавляет в очередь команду на перегенерацию ключей
+    /// Добавляет в очередь команду на регенерацию ключей
     virtual int registerGenerateKeyCommand(const QString &aLogin,
                                            const QString &aPassword) override;
 
@@ -154,7 +154,7 @@ protected slots:
     void onCheckQueuedRebootCommands();
 
     /// реальное выполнение команды мониторинга
-    /// aEvent реально меет тип PPSDK::EEventType::Enum
+    /// aEvent реально имеет тип PPSDK::EEventType::Enum
     void doExecuteCommand(int aComandId, int aEvent);
 
     /// Обработка команды снятия скриншота
@@ -181,9 +181,8 @@ private:
     int checkCommandsLifetime();
 
     /// Создание новой пары ключей
-    static void doGenerateKeyCommand(RemoteService *aService,
-                                     const QString &aLogin,
-                                     const QString &aPassword);
+    static void
+    doGenerateKeyCommand(RemoteService *aService, const QString &aLogin, const QString &aPassword);
 
     /// проверка разрешения на создание команды обновления
     bool allowUpdateCommand();

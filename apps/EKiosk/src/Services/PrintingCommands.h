@@ -33,7 +33,7 @@ const QStringList FFDataList = QStringList()
 class PrintingService;
 
 //---------------------------------------------------------------------------
-/// Комманда для печати чеков определенного типа.
+/// Команда для печати чеков определенного типа.
 class PrintCommand {
     Q_DECLARE_TR_FUNCTIONS(PrintCommand)
 
@@ -167,7 +167,7 @@ private:
 };
 
 //---------------------------------------------------------------------------
-/// Печать нетипизированного чека.
+/// Печать чека.
 class PrintReceipt : public PrintCommand {
 public:
     PrintReceipt(const QString &aReceiptType, PrintingService *aService)
