@@ -16,6 +16,7 @@
 
 #include <WatchServiceClient/Constants.h>
 #include <functional>
+#include <utility>
 
 #include "DatabaseUtils/IHardwareDatabaseUtils.h"
 #include "Services/CryptService.h"
@@ -63,25 +64,27 @@ const char DateTimeFormat[] = "yyyy.MM.dd hh:mm:ss";
 struct CommandReport {
     QString filePath;
 
-    int ID{0};
+    int id{0};
     SDK::PaymentProcessor::IRemoteService::EStatus status{
         SDK::PaymentProcessor::IRemoteService::OK};
     QDateTime lastUpdate;
     QVariant description;
     QVariant progress;
 
-    CommandReport(const QString &aFilePath) : filePath(aFilePath) {}
+    CommandReport(QString aFilePath) : filePath(std::move(aFilePath)) {}
 
     /// Удалить файл отчета
     void remove() const { QFile::remove(filePath); }
 
     /// Проверка что команда ещё выполняется, а не "подвисла"
-    bool isAlive() const { return lastUpdate.addSecs(60 * 10) > QDateTime::currentDateTime(); }
+    [[nodiscard]] bool isAlive() const {
+        return lastUpdate.addSecs(60 * 10) > QDateTime::currentDateTime();
+    }
 };
 
 //---------------------------------------------------------------------------
 RemoteService *RemoteService::instance(IApplication *aApplication) {
-    return static_cast<RemoteService *>(
+    return dynamic_cast<RemoteService *>(
         aApplication->getCore()->getService(CServices::RemoteService));
 }
 
@@ -333,7 +336,7 @@ int RemoteService::registerPaymentCommand(EPaymentOperation aOperation,
                                           const QVariantMap &aParameters) {
     QMutexLocker lock(&m_CommandMutex);
 
-    if (m_GenerateKeyCommand) {
+    if (m_GenerateKeyCommand != 0) {
         return 0;
     }
 
@@ -343,7 +346,7 @@ int RemoteService::registerPaymentCommand(EPaymentOperation aOperation,
             : PaymentService::instance(m_Application)
                   ->registerForcePaymentCommand(aInitialSession, aParameters);
 
-    if (!paymentCommand) {
+    if (paymentCommand == 0) {
         return 0;
     }
 
@@ -570,8 +573,8 @@ int RemoteService::registerGenerateKeyCommand(const QString &aLogin, const QStri
     if (m_GenerateKeyCommand == 0) {
         m_GenerateKeyCommand = increaseLastCommandID();
 
-        m_GenerateKeyFuture =
-            QtConcurrent::run(std::bind(doGenerateKeyCommand, this, aLogin, aPassword));
+        m_GenerateKeyFuture = QtConcurrent::run(
+            [this, aLogin, aPassword] { doGenerateKeyCommand(this, aLogin, aPassword); });
 
         return m_GenerateKeyCommand;
     }
@@ -583,9 +586,15 @@ int RemoteService::registerGenerateKeyCommand(const QString &aLogin, const QStri
 void RemoteService::doGenerateKeyCommand(RemoteService *aService,
                                          const QString &aLogin,
                                          const QString &aPassword) {
-    auto *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
+    auto *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
         aService->m_Application->getCore()->getSettingsService()->getAdapter(
             PPSDK::CAdapterNames::TerminalAdapter));
+    if (!terminalSettings) {
+        aService->toLog(LogLevel::Error, "GENKEY: Failed to get terminal settings.");
+        aService->commandStatusChanged(aService->m_GenerateKeyCommand, Error, QVariantMap());
+        return;
+    }
+
     auto *cryptoService = aService->m_Application->getCore()->getCryptService();
 
     QString url(terminalSettings->getKeygenURL());
@@ -594,21 +603,21 @@ void RemoteService::doGenerateKeyCommand(RemoteService *aService,
     QString OP; // NOLINT(readability-identifier-naming)
     int error = cryptoService->generateKey(
         CRemoteService::GeneratedKeyId, aLogin, aPassword, url, SD, AP, OP);
-    if (error) {
+    if (error != 0) {
         aService->toLog(LogLevel::Error, QString("GENKEY: Error generate key: %1.").arg(error));
     } else {
-        error = !cryptoService->saveKey();
-        if (error) {
+        error = static_cast<int>(!cryptoService->saveKey());
+        if (error != 0) {
             aService->toLog(LogLevel::Error, "GENKEY: Failed to save new key.");
         }
     }
 
     aService->commandStatusChanged(
-        aService->m_GenerateKeyCommand, error ? Error : OK, QVariantMap());
+        aService->m_GenerateKeyCommand, (error != 0) ? Error : OK, QVariantMap());
 
-    aService->m_GenerateKeyCommand = error ? 0 : aService->m_GenerateKeyCommand;
+    aService->m_GenerateKeyCommand = (error != 0) ? 0 : aService->m_GenerateKeyCommand;
 
-    if (!error) {
+    if (error == 0) {
         aService->toLog(
             LogLevel::Normal,
             QString("GENKEY: New key %1 generated. Wait for send command status to server.")
@@ -624,7 +633,7 @@ void RemoteService::doGenerateKeyCommand(RemoteService *aService,
 
 //---------------------------------------------------------------------------
 void RemoteService::commandStatusSent(int aCommandId, int aStatus) {
-    if (m_GenerateKeyCommand && aCommandId == m_GenerateKeyCommand && aStatus == OK) {
+    if ((m_GenerateKeyCommand != 0) && aCommandId == m_GenerateKeyCommand && aStatus == OK) {
         m_GenerateKeyCommand = 0;
 
         if (m_Application->getCore()->getCryptService()->replaceKeys(CRemoteService::GeneratedKeyId,
@@ -635,7 +644,7 @@ void RemoteService::commandStatusSent(int aCommandId, int aStatus) {
                                        CRemoteService::GenKeyCommandId,
                                        "");
 
-            toLog(LogLevel::Normal, "GENKEY: Sucessful swap old and new crypto key.");
+            toLog(LogLevel::Normal, "GENKEY: Successful swap old and new crypto key.");
         } else {
             toLog(LogLevel::Error,
                   "GENKEY: Error swap old and new crypto key. Terminal will be restarted.");
@@ -699,7 +708,7 @@ QList<CommandReport> getReports(const QString &aReportsPath) {
         QSettings report(r.filePath, QSettings::IniFormat);
 
         QVariant idVar = report.value("id");
-        r.ID = idVar.isValid()
+        r.id = idVar.isValid()
                    ? idVar.toInt()
                    : reportFileName
                          .mid(reportFileName.indexOf('_') + 1,
@@ -739,19 +748,19 @@ int RemoteService::checkUpdateReports() {
                 SDK::PaymentProcessor::CMonitoringService::CommandParameters::Progress, "100");
 
             // Start firmware upload?
-            if (checkFirmwareUpload(report.ID)) {
+            if (checkFirmwareUpload(report.id)) {
                 report.remove();
                 removedCount++;
 
                 parameters.insert(
                     SDK::PaymentProcessor::CMonitoringService::CommandParameters::Progress, "50");
-                emit commandStatusChanged(report.ID, Executing, parameters);
+                emit commandStatusChanged(report.id, Executing, parameters);
                 break;
             }
         }
 
         case Error: {
-            updateCommandFinish(report.ID, report.status, parameters);
+            updateCommandFinish(report.id, report.status, parameters);
 
             report.remove();
             removedCount++;
@@ -768,15 +777,15 @@ int RemoteService::checkUpdateReports() {
 
             if (report.isAlive()) {
                 // Обновляем время изменения команды
-                if (m_UpdateCommands.contains(report.ID)) {
+                if (m_UpdateCommands.contains(report.id)) {
                     QMutexLocker lock(&m_CommandMutex);
-                    m_UpdateCommands[report.ID].lastUpdate = report.lastUpdate;
+                    m_UpdateCommands[report.id].lastUpdate = report.lastUpdate;
                     saveCommandQueue();
                 }
 
-                emit commandStatusChanged(report.ID, Executing, parameters);
+                emit commandStatusChanged(report.id, Executing, parameters);
             } else {
-                updateCommandFinish(report.ID, Error, parameters);
+                updateCommandFinish(report.id, Error, parameters);
 
                 report.remove();
                 removedCount++;
@@ -852,7 +861,7 @@ bool RemoteService::restoreConfiguration() {
     bool result = false;
 
     foreach (PPSDK::IRemoteClient *client, m_MonitoringClients) {
-        if (client->getCapabilities() & PPSDK::IRemoteClient::RestoreConfiguration) {
+        if (client->getCapabilities() & PPSDK::IRemoteClient::RestoreConfiguration != 0u) {
             result = client->useCapability(PPSDK::IRemoteClient::RestoreConfiguration);
         }
     }
@@ -914,7 +923,7 @@ void RemoteService::restoreCommandQueue() {
                                 cmd.lastUpdate.toString(CRemoteService::DateTimeFormat));
         }
 
-        if (cmd.ID) {
+        if (cmd.ID != 0) {
             m_UpdateCommands.insert(cmd.ID, cmd);
         }
 

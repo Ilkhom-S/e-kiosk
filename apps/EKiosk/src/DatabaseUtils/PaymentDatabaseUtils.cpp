@@ -1451,9 +1451,10 @@ bool DatabaseUtils::suspendPayment(qint64 aPayment, int aMinutes) {
         return false;
     }
 
-    query->bindValue(
-        ":next_try_date",
-        QDateTime::currentDateTime().addSecs(aMinutes * 60).toString(CIDatabaseProxy::DateFormat));
+    query->bindValue(":next_try_date",
+                     QDateTime::currentDateTime()
+                         .addSecs(qint64(aMinutes) * 60)
+                         .toString(CIDatabaseProxy::DateFormat));
     query->bindValue(":id", aPayment);
 
     if (!query->exec()) {

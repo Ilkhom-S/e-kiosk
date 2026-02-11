@@ -363,6 +363,10 @@ void GUIService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
     case PPSDK::EEventType::StopGraphics:
         m_GraphicsEngine.stop();
         break;
+
+    default:
+        // Unhandled event type
+        break;
     }
 }
 
