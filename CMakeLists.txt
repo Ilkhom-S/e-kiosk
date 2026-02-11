@@ -76,6 +76,13 @@ if(NOT EKIOSK_ENABLE_FR)
     message(STATUS "FR support is disabled (deprecated)")
 endif()
 
+option(BUILD_DEPRECATED "Build deprecated code (for reference only)" OFF)
+if(BUILD_DEPRECATED)
+    message(STATUS "Building deprecated code")
+else()
+    message(STATUS "Skipping deprecated code (use -DBUILD_DEPRECATED=ON to include)")
+endif()
+
 # 9. Additional Logic Modules
 include(${CMAKE_SOURCE_DIR}/cmake/EKTestingSetup.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
@@ -84,3 +91,8 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
 add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(tests)
+
+# 11. Deprecated Code (optional)
+if(BUILD_DEPRECATED)
+    add_subdirectory(deprecated)
+endif()
