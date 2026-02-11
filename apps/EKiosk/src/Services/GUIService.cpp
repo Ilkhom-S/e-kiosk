@@ -449,7 +449,6 @@ void GUIService::onIntruderActivity() {
 
     switch (settings.penetrationEventLevel) {
     case PPSDK::EEventType::Critical:
-        event = settings.penetrationEventLevel;
         message += " #alarm";
 
         if (settings.blockOn(PPSDK::SCommonSettings::Penetration)) {
@@ -635,6 +634,9 @@ void GUIService::bringToFront() {
                 break;
             case QMetaType::QString:
                 topmostWindows.push_back(v.toString());
+                break;
+            default:
+                // Неподдерживаемый тип данных, пропускаем
                 break;
             }
         }
