@@ -566,9 +566,8 @@ QString PrintingService::convertImage2base64(const QString &aString) {
 
     for (int extLen = 3; extLen <= 4; extLen++) {
         // \[img\s*\].*((?:[\w]\:|\\)?((\\|/)?[a-z_\-\s0-9\.]+)+\.[a-z]{3,4})
-        QRegularExpression imgPattern = QRegularExpression(
-            QString(
-                "\\[img\\s*\\].*((?:[\\w]\\:|\\\\)?((\\\\|/)?[a-z_\\-\\s0-9\\.]+)+\\.[a-z]{%1})")
+        QRegularExpression imgPattern(
+            QStringLiteral(R"(\[img\s*\].*((?:[\w]\:|\\)?((\\|/)?[a-z_\-\s0-9\.]+)+\.[a-z]{%1}))")
                 .arg(extLen),
             QRegularExpression::CaseInsensitiveOption);
 
@@ -591,7 +590,9 @@ QString PrintingService::convertImage2base64(const QString &aString) {
                           .arg(file.errorString()));
             }
 
-            result.replace(static_cast<int>(match.capturedStart(1)), static_cast<int>(match.captured(1).length()), img);
+            result.replace(static_cast<int>(match.capturedStart(1)),
+                           static_cast<int>(match.captured(1).length()),
+                           img);
             offset = static_cast<int>(match.capturedStart(1) + img.size());
         }
     }
@@ -603,7 +604,8 @@ QString PrintingService::convertImage2base64(const QString &aString) {
 QString PrintingService::generateQR(const QString &aString) {
     QString result = aString;
 
-    auto generateQRCode = [this, &aString](const QString &aText, int aSize, int aLeftMargin) -> QString {
+    auto generateQRCode = [this,
+                           &aString](const QString &aText, int aSize, int aLeftMargin) -> QString {
         QImage image(QSize(aSize + aLeftMargin, aSize), QImage::Format_ARGB32);
         image.fill(QColor("transparent"));
 
@@ -644,7 +646,7 @@ QString PrintingService::generateQR(const QString &aString) {
     };
 
     QRegularExpression qrPattern(
-        "\\[qr(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/qr\\]",
+        QStringLiteral(R"(\[qr(\s*(\w+)\s*=\s*(\d+)\s*)?(\s*(\w+)\s*=\s*(\d+)\s*)?\](.*?)\[/qr\])"),
         QRegularExpression::CaseInsensitiveOption);
 
     ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
@@ -662,8 +664,8 @@ QString PrintingService::generateQR(const QString &aString) {
             if (match.captured(i).toLower() == "size") {
                 size = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : size;
             } else if (match.captured(i).toLower() == "left_margin") {
-                leftMargin = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt()
-                                                               : leftMargin;
+                leftMargin =
+                    match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : leftMargin;
             }
         }
 
@@ -680,10 +682,11 @@ QString PrintingService::generateQR(const QString &aString) {
 }
 
 //---------------------------------------------------------------------------
-    QString PrintingService::generatePDF417(const QString &aString) {
+QString PrintingService::generatePDF417(const QString &aString) {
     QString result = aString;
 
-    auto generatePDFCode = [this, &aString](const QString &aText, int aSize, int aLeftMargin) -> QString {
+    auto generatePDFCode = [this,
+                            &aString](const QString &aText, int aSize, int aLeftMargin) -> QString {
         int divider = aText.size() > 100 ? 2 : 3;
 
         QImage image(QSize(aSize + aLeftMargin, aSize / divider), QImage::Format_ARGB32);
@@ -722,9 +725,10 @@ QString PrintingService::generateQR(const QString &aString) {
         return "";
     };
 
-    QRegularExpression qrPattern("\\[pdf417(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*("
-                                 "\\d+)\\s*)?\\](.*)\\[/pdf417\\]",
-                                 QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression qrPattern(
+        QStringLiteral(
+            R"(\[pdf417(\s*(\w+)\s*=\s*(\d+)\s*)?(\s*(\w+)\s*=\s*(\d+)\s*)?\](.*?)\[/pdf417\])"),
+        QRegularExpression::CaseInsensitiveOption);
 
     ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
     /// compatibility // Removed
@@ -761,7 +765,8 @@ QString PrintingService::generateQR(const QString &aString) {
 QString PrintingService::generate1D(const QString &aString) {
     QString result = aString;
 
-    auto generatePDFCode = [this, &aString](const QString &aText, int aSize, int aLeftMargin) -> QString {
+    auto generatePDFCode = [this,
+                            &aString](const QString &aText, int aSize, int aLeftMargin) -> QString {
         int divider = aText.size() > 100 ? 2 : 3;
 
         QImage image(QSize(aSize + aLeftMargin, aSize / divider), QImage::Format_ARGB32);
@@ -801,7 +806,7 @@ QString PrintingService::generate1D(const QString &aString) {
     };
 
     QRegularExpression qrPattern(
-        "\\[1d(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/1d\\]",
+        QStringLiteral(R"(\[1d(\s*(\w+)\s*=\s*(\d+)\s*)?(\s*(\w+)\s*=\s*(\d+)\s*)?\](.*?)\[/1d\])"),
         QRegularExpression::CaseInsensitiveOption);
 
     ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
@@ -869,7 +874,7 @@ QString PrintingService::generateLine(const QString &aString) {
     };
 
     QRegularExpression qrPattern(
-        "\\[hr(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/hr\\]",
+        QStringLiteral(R"(\[hr(\s*(\w+)\s*=\s*(\d+)\s*)?(\s*(\w+)\s*=\s*(\d+)\s*)?\](.*?)\[/hr\])"),
         QRegularExpression::CaseInsensitiveOption);
 
     ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
@@ -962,7 +967,8 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
 
             // %% заменяем на %
             if (tag.isEmpty()) {
-            it->replace(static_cast<int>(offset), static_cast<int>(match.captured(0).length()), "%");
+                it->replace(
+                    static_cast<int>(offset), static_cast<int>(match.captured(0).length()), "%");
                 offset += 1;
                 continue;
             }
@@ -1009,8 +1015,9 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                                      ? maskedString(staticParameter.value(), isMasked)
                                      : filter.apply(staticParameter.key(), staticParameter.value());
 
-                    it->replace(static_cast<int>(offset), static_cast<int>(match.captured(0).length()), masked);
-                    offset += static_cast<int>(masked.length());
+                it->replace(
+                    static_cast<int>(offset), static_cast<int>(match.captured(0).length()), masked);
+                offset += static_cast<int>(masked.length());
 
                 continue;
             }
@@ -1270,12 +1277,12 @@ void PrintingService::saveReceipt(const QVariantMap &aParameters, const QString 
 //---------------------------------------------------------------------------
 QString replaceTags(QString aMessage) {
     aMessage.replace("[br]", "\n", Qt::CaseInsensitive);
-    aMessage.remove(
-        QRegularExpression("\\[(b|dw|dh)\\]", QRegularExpression::CaseInsensitiveOption));
-    aMessage.remove(
-        QRegularExpression("\\[/(b|dw|dh)\\]", QRegularExpression::CaseInsensitiveOption));
+    aMessage.remove(QRegularExpression(QStringLiteral(R"(\[(b|dw|dh)\])"),
+                                       QRegularExpression::CaseInsensitiveOption));
+    aMessage.remove(QRegularExpression(QStringLiteral(R"(\[/(b|dw|dh)\])"),
+                                       QRegularExpression::CaseInsensitiveOption));
 
-    aMessage.remove(QRegularExpression("\\[img.?\\].*\\[/img\\]"));
+    aMessage.remove(QRegularExpression(QStringLiteral(R"(\[img.?\\].*\[/img\])")));
 
     return aMessage;
 }
