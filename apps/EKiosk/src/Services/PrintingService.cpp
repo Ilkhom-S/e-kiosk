@@ -280,7 +280,9 @@ int PrintingService::perform_Print(PrintCommand *aCommand,
                                                   QVariantMap aParameters) -> bool {
         QVariantMap staticParameters;
         joinMap(staticParameters, m_StaticParameters);
-        QVariantMap paymentParameters = joinMap(aParameters, staticParameters);
+        // Merge staticParameters (fallback values) into aParameters (payment-specific parameters)
+        // Order is intentional: destination first, source second
+        QVariantMap paymentParameters = joinMap(aParameters, staticParameters); // NOLINT(readability-suspicious-call-argument)
 
         auto *printer = takePrinter(aCommand->getReceiptType(), false);
         auto *paymentPrintingCommand = dynamic_cast<PrintPayment *>(aCommand);
@@ -966,8 +968,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
 
             // %% заменяем на %
             if (tag.isEmpty()) {
-                it->replace(
-                    offset, static_cast<int>(match.captured(0).length()), "%");
+                it->replace(offset, static_cast<int>(match.captured(0).length()), "%");
                 offset += 1;
                 continue;
             }
@@ -1014,8 +1015,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                                      ? maskedString(staticParameter.value(), isMasked)
                                      : filter.apply(staticParameter.key(), staticParameter.value());
 
-                it->replace(
-                    offset, static_cast<int>(match.captured(0).length()), masked);
+                it->replace(offset, static_cast<int>(match.captured(0).length()), masked);
                 offset += static_cast<int>(masked.length());
 
                 continue;
