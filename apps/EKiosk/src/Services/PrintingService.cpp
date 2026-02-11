@@ -661,10 +661,10 @@ QString PrintingService::generateQR(const QString &aString) {
 
         for (int i = 2; i < 6; i += 3) {
             if (match.captured(i).toLower() == "size") {
-                size = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : size;
+                size = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : size;
             } else if (match.captured(i).toLower() == "left_margin") {
-                left_margin =
-                    match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : left_margin;
+                left_margin = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt()
+                                                                 : left_margin;
             }
         }
 
@@ -739,10 +739,10 @@ QString PrintingService::generatePDF417(const QString &aString) {
 
         for (int i = 2; i < 6; i += 3) {
             if (match.captured(i).toLower() == "size") {
-                size = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : size;
+                size = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : size;
             } else if (match.captured(i).toLower() == "left_margin") {
-                left_margin =
-                    match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : left_margin;
+                left_margin = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt()
+                                                                 : left_margin;
             }
         }
 
@@ -817,10 +817,10 @@ QString PrintingService::generate1D(const QString &aString) {
 
         for (int i = 2; i < 6; i += 3) {
             if (match.captured(i).toLower() == "size") {
-                size = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : size;
+                size = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : size;
             } else if (match.captured(i).toLower() == "left_margin") {
-                left_margin =
-                    match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : left_margin;
+                left_margin = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt()
+                                                                 : left_margin;
             }
         }
 
@@ -886,11 +886,12 @@ QString PrintingService::generateLine(const QString &aString) {
 
         for (int i = 2; i < 6; i += 3) {
             if (match.captured(i).toLower() == "size") {
-                size = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : size;
+                size = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : size;
             } else if (match.captured(i).toLower() == "height") {
-                height = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : height;
+                height =
+                    match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : height;
             } else if (match.captured(i).toLower() == "ds") {
-                dense = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : dense;
+                dense = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : dense;
             }
         }
 
