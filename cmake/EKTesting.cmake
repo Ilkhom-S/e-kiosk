@@ -20,6 +20,16 @@ function(ek_add_test TEST_NAME)
         AUTOUIC ON
         AUTORCC ON
     )
+
+    # Put test executables in a separate tests directory, not bin/
+    set_target_properties(${TEST_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests"
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/tests"
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/tests"
+        RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/tests"
+        RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/tests"
+    )
+
     # Compute test folder (default tests/<directory-name>)
     if(ARG_FOLDER)
         set(_ek_folder "${ARG_FOLDER}")
