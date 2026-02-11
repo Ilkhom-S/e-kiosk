@@ -415,7 +415,7 @@ void NetworkService::doConnect(const SDK::PaymentProcessor::SConnection &aConnec
             IConnection::create(aConnection.name,
                                 aConnection.type,
                                 &m_NetworkTaskManager,
-                                m_Application->getLog()->getInstance("Connection")));
+                                ILog::getInstance("Connection")));
 
         m_Connection->setCheckPeriod(aConnection.checkInterval);
 
