@@ -280,9 +280,10 @@ int PrintingService::perform_Print(PrintCommand *aCommand,
                                                   QVariantMap aParameters) -> bool {
         QVariantMap staticParameters;
         joinMap(staticParameters, m_StaticParameters);
-        // Merge staticParameters (fallback values) into aParameters (payment-specific parameters)
-        // Order is intentional: destination first, source second
-        QVariantMap paymentParameters = joinMap(aParameters, staticParameters); // NOLINT(readability-suspicious-call-argument)
+        // Объединяем параметры платежа со статическими параметрами (значения по умолчанию)
+        // Порядок аргументов правильный: назначение первым, источник вторым
+        QVariantMap paymentParameters =
+            joinMap(aParameters, staticParameters); // NOLINT(readability-suspicious-call-argument)
 
         auto *printer = takePrinter(aCommand->getReceiptType(), false);
         auto *paymentPrintingCommand = dynamic_cast<PrintPayment *>(aCommand);
