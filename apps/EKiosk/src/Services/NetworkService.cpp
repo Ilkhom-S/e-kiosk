@@ -44,7 +44,7 @@ const int CheckConnectionInterval = 3 * 60 * 1000;
 // Интервал между обновлениями параметров модема.
 const int UpdateStatusInterval = 12 * 60 * 60 * 1000;
 
-// Интервал ожидания переустановки соединения, после сброса модема сторожом, с.
+// Интервал ожидания переустановки соединения, после сброса модема сторожем, с.
 const int ReestablishInterval = 30;
 
 // Время, в течении которого наблюдаются постоянные сетевые ошибки, приводящее к решению об обрыве
@@ -228,7 +228,7 @@ void NetworkService::setConnection(const PP::SConnection &aConnection) {
     PP::SConnection connectionSettings = getConnection();
 
     if (connectionSettings == aConnection) {
-        toLog(LogLevel::Normal, "Already set up with an indentical connection.");
+        toLog(LogLevel::Normal, "Already set up with an identical connection.");
         return;
     }
 
@@ -468,7 +468,7 @@ void NetworkService::doConnect(const SDK::PaymentProcessor::SConnection &aConnec
         }
 
         // TODO #29565 - проверяем статус модема, и в случае ошибок выставляем ему статус OK -
-        // Connection enstablished
+        // Connection established
         if (isConnected() && getConnection().type == EConnectionTypes::Dialup) {
             auto *modem = getModem();
             if (modem) {
@@ -587,7 +587,7 @@ void NetworkService::onConnectionLost() {
 
     doDisconnect();
 
-    // Возможно, нужно перегузить терминал.
+    // Возможно, нужно перезагрузить терминал.
     if (m_Fails >= CNetworkService::FailsBeforeReboot) {
         toLog(LogLevel::Warning,
               QString("Generating system reboot event after %1 unsuccessful tries to establish "
@@ -628,14 +628,14 @@ void NetworkService::onConnectionLost() {
         }
 
         if (watchdogDevice) {
-            toLog(LogLevel::Warning, "Resetting modem with watchcdog.");
+            toLog(LogLevel::Warning, "Resetting modem with watchdog.");
 
             // Сбросываем питание модема.
             if (watchdogDevice->reset(SDK::Driver::LineTypes::Modem)) {
                 // Ждем, пока модем оживет после сброса питания.
                 sleep(CNetworkService::ReestablishInterval);
             } else {
-                toLog(LogLevel::Error, "Failed to reset modem by watchcdog.");
+                toLog(LogLevel::Error, "Failed to reset modem by watchdog.");
             }
         } else {
             toLog(LogLevel::Error, "Failed to acquire watchdog device. Modem reset failed.");
