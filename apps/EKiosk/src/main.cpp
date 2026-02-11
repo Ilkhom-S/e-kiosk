@@ -44,11 +44,17 @@ int main(int argc, char **argv) {
 
         // CatchUnhandledExceptions();
 
+#ifndef Q_OS_MACOS
+        // SingleApplication has known issues on macOS - skip instance check
         if (application.getQtApplication().isSecondary()) {
-            result = application.exec();
-        } else {
-            qDebug() << "Already running.";
+            qDebug() << "App already running.";
+            qDebug() << "Primary instance PID: " << application.getQtApplication().primaryPid();
+            qDebug() << "Primary instance user: " << application.getQtApplication().primaryUser();
+            return 0;
         }
+#endif
+
+        result = application.exec();
     } catch (std::exception &aException) {
         // TODO: нет лога, так как программа убит
         // EXCEPTION_FILTER_NO_THROW(???);

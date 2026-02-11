@@ -103,7 +103,7 @@ void MainWindow::init() {
             SIGNAL(emit_toLoging(int, QString, QString)),
             SLOT(toLog(int, QString, QString)));
 
-    // Демон для работы с инкасацией
+    // Демон для работы с инкассацией
     collectDaemons = new CollectDaemons(this);
     collectDaemons->setDbConnect(db);
     connect(collectDaemons,
