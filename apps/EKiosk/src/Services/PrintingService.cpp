@@ -65,8 +65,7 @@ PrintingService::PrintingService(IApplication *aApplication)
     : m_Application(aApplication), m_DatabaseUtils(nullptr), m_DeviceService(nullptr),
       m_PrintingMode(DSDK::EPrintingModes::None), m_ServiceOperation(false),
       m_Random_ReceiptsID(false), m_NextReceiptIndex(1),
-      m_Random_Generator(
-          static_cast<unsigned>(QDateTime::currentDateTime().currentMSecsSinceEpoch())),
+      m_Random_Generator(static_cast<unsigned>(QDateTime::currentMSecsSinceEpoch())),
       m_EnableBlankFiscalData(false), m_FiscalRegister(nullptr) {
     setLog(aApplication->getLog());
 }
@@ -695,7 +694,7 @@ QString PrintingService::generatePDF417(const QString &aString) {
         Zint::QZint zint;
 
         zint.setWidth(aSize);
-        zint.setHeight(static_cast<float>(aSize) / divider);
+        zint.setHeight(static_cast<float>(aSize) / static_cast<float>(divider));
         zint.setText(aText);
         zint.setWhitespace(0);
         zint.setBorderType(0); // Zint::QZint::NO_BORDER
@@ -738,24 +737,24 @@ QString PrintingService::generatePDF417(const QString &aString) {
     QRegularExpressionMatch match;
     while ((match = qrPattern.match(result, offset)).hasMatch()) {
         int size = 200;
-        int left_margin = 0;
+        int leftMargin = 0;
 
         for (int i = 2; i < 6; i += 3) {
             if (match.captured(i).toLower() == "size") {
                 size = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : size;
             } else if (match.captured(i).toLower() == "left_margin") {
-                left_margin = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt()
-                                                                 : left_margin;
+                leftMargin =
+                    match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : leftMargin;
             }
         }
 
         QString content = match.captured(7);
-        QString qrImage = generatePDFCode(content, size, left_margin);
+        QString qrImage = generatePDFCode(content, size, leftMargin);
 
         QString img = qrImage.isEmpty() ? "<pdf417-code>" : QString("[img]%1[/img]").arg(qrImage);
 
         result.replace(offset, match.captured(0).length(), img);
-        offset += img.size();
+        offset += static_cast<int>(img.size());
     }
 
     return result;
@@ -775,7 +774,7 @@ QString PrintingService::generate1D(const QString &aString) {
         Zint::QZint zint;
 
         zint.setWidth(aSize);
-        zint.setHeight(static_cast<float>(aSize) / divider);
+        zint.setHeight(static_cast<float>(aSize) / static_cast<float>(divider));
         zint.setText(aText);
         zint.setWhitespace(0);
         zint.setBorderType(0); // Zint::QZint::NO_BORDER
@@ -817,24 +816,24 @@ QString PrintingService::generate1D(const QString &aString) {
     QRegularExpressionMatch match;
     while ((match = qrPattern.match(result, offset)).hasMatch()) {
         int size = 200;
-        int left_margin = 0;
+        int leftMargin = 0;
 
         for (int i = 2; i < 6; i += 3) {
             if (match.captured(i).toLower() == "size") {
                 size = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : size;
             } else if (match.captured(i).toLower() == "left_margin") {
-                left_margin = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt()
-                                                                 : left_margin;
+                leftMargin =
+                    match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : leftMargin;
             }
         }
 
         QString content = match.captured(7);
-        QString qrImage = generatePDFCode(content, size, left_margin);
+        QString qrImage = generatePDFCode(content, size, leftMargin);
 
         QString img = qrImage.isEmpty() ? "<pdf417-code>" : QString("[img]%1[/img]").arg(qrImage);
 
         result.replace(offset, match.captured(0).length(), img);
-        offset += img.size();
+        offset += static_cast<int>(img.size());
     }
 
     return result;
@@ -904,7 +903,7 @@ QString PrintingService::generateLine(const QString &aString) {
         QString img = qrImage.isEmpty() ? "<hr-code>" : QString("[img]%1[/img]").arg(qrImage);
 
         result.replace(offset, match.captured(0).length(), img);
-        offset += img.size();
+        offset += static_cast<int>(img.size());
     }
 
     return result;
@@ -968,7 +967,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
             // %% заменяем на %
             if (tag.isEmpty()) {
                 it->replace(
-                    static_cast<int>(offset), static_cast<int>(match.captured(0).length()), "%");
+                    offset, static_cast<int>(match.captured(0).length()), "%");
                 offset += 1;
                 continue;
             }
@@ -1001,7 +1000,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                             : filter.apply(userParameter.key(), userParameter.value().toString());
 
                     it->replace(offset, match.captured(0).length(), masked);
-                    offset += masked.length();
+                    offset += static_cast<int>(masked.length());
                 }
 
                 continue;
@@ -1016,7 +1015,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                                      : filter.apply(staticParameter.key(), staticParameter.value());
 
                 it->replace(
-                    static_cast<int>(offset), static_cast<int>(match.captured(0).length()), masked);
+                    offset, static_cast<int>(match.captured(0).length()), masked);
                 offset += static_cast<int>(masked.length());
 
                 continue;
@@ -1059,7 +1058,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                                                 aParameters[targetParameter].toString());
 
                     it->replace(offset, match.captured(0).length(), masked);
-                    offset += masked.length();
+                    offset += static_cast<int>(masked.length());
 
                     continue;
                 }
@@ -1112,7 +1111,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                         QString replaceString = QString("%1: %2").arg(field.title).arg(masked);
 
                         it->replace(offset, match.captured(0).length(), replaceString);
-                        offset = replaceString.length();
+                        offset = static_cast<int>(replaceString.length());
 
                         ++operatorFieldIndex;
                     }
