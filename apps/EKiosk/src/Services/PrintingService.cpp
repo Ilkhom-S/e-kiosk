@@ -68,7 +68,7 @@ PrintingService::PrintingService(IApplication *aApplication)
       m_Random_Generator(
           static_cast<unsigned>(QDateTime::currentDateTime().currentMSecsSinceEpoch())),
       m_EnableBlankFiscalData(false), m_FiscalRegister(nullptr) {
-    setLog(m_Application->getLog());
+    setLog(aApplication->getLog());
 }
 
 //---------------------------------------------------------------------------
@@ -287,9 +287,7 @@ int PrintingService::perform_Print(PrintCommand *aCommand,
         auto *paymentPrintingCommand = dynamic_cast<PrintPayment *>(aCommand);
 
         auto makeResult = [&](bool result, const QString &aLog) -> bool {
-            if (aCommand) {
-                delete aCommand;
-            }
+            delete aCommand;
             toLog(result ? LogLevel::Normal : LogLevel::Error, aLog);
             emit receiptPrinted(aJobIndex, !result);
             return result;
@@ -356,7 +354,7 @@ int PrintingService::printReport(const QString &aReceiptType, const QVariantMap 
     auto *printCommand = getPrintCommand(aReceiptType);
 
     auto *balanceCommand = dynamic_cast<PrintBalance *>(printCommand);
-    if (balanceCommand && aParameters.contains(CPrintConstants::NoFiscal)) {
+    if (balanceCommand != nullptr && aParameters.contains(CPrintConstants::NoFiscal)) {
         // Включаем нефискальный режим
         balanceCommand->setFiscal(false);
     }
@@ -371,7 +369,8 @@ int PrintingService::printReport(const QString &aReceiptType, const QVariantMap 
 
 //---------------------------------------------------------------------------
 bool PrintingService::hasFiscalRegister() {
-    return m_FiscalRegister && m_FiscalRegister->hasCapability(PPSDK::ERequestType::Receipt);
+    return m_FiscalRegister != nullptr &&
+           m_FiscalRegister->hasCapability(PPSDK::ERequestType::Receipt);
 }
 
 //---------------------------------------------------------------------------
@@ -551,10 +550,10 @@ QStringList PrintingService::getReceipt(const QString &aReceiptTemplate,
 //---------------------------------------------------------------------------
 QString maskedString(const QString &aString, bool aNeedMask) {
     if (aNeedMask) {
-        int oneFourthLen = qMin(aString.size() / 4, 4);
+        int oneFourthLen = qMin(static_cast<int>(aString.size() / 4), 4);
 
         return aString.left(oneFourthLen) +
-               QString("*").repeated(aString.size() - oneFourthLen * 2) +
+               QString("*").repeated(aString.size() - (oneFourthLen * 2)) +
                aString.right(oneFourthLen);
     }
 
@@ -844,7 +843,7 @@ QString PrintingService::generateLine(const QString &aString) {
         QImage image(QSize(aSize, aHeight), QImage::Format_ARGB32);
         image.fill(QColor("transparent"));
 
-        Qt::BrushStyle style;
+        Qt::BrushStyle style = Qt::SolidPattern;
 
         if (aDense <= 0) {
             style = Qt::SolidPattern;
@@ -1119,7 +1118,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
             it->replace(match.captured(0), QString());
         }
 
-        // Предзагружаем содержимое тегов [IMG]
+        // Подзагружаем содержимое тегов [IMG]
         *it = convertImage2base64(*it);
 
         // Преобразуем [QR] теги в [IMG]
@@ -1160,7 +1159,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
 
 //---------------------------------------------------------------------------
 bool PrintingService::loadReceiptTemplate(const QFileInfo &aFileInfo) {
-    if (aFileInfo.suffix().compare("xml", Qt::CaseInsensitive)) {
+    if (aFileInfo.suffix().compare("xml", Qt::CaseInsensitive) != 0) {
         toLog(LogLevel::Error,
               QString("Bad receipt template file extension : %1").arg(aFileInfo.fileName()));
         return false;
