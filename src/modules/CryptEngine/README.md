@@ -20,6 +20,7 @@ src/modules/CryptEngine/
 ```
 
 Public headers are in: [`include/Crypt/`](../../../include/Crypt/)
+
 - `ICryptEngine.h` - Abstract interface
 - `CryptEngine.h` - Public implementation header
 
@@ -75,6 +76,7 @@ Compile-time selection in CryptEngine.cpp:
 ```
 
 Affects signature serial numbers:
+
 - **MD5**: `{serial}` (e.g., "12345")
 - **SHA256**: `{serial}-sha256` (e.g., "12345-sha256")
 
@@ -119,10 +121,12 @@ Crypt_DecryptLong(encrypted, ...);
 ## Error Handling Strategy
 
 All operations return:
+
 1. **bool** - Success/failure indicator
 2. **QString& aErrorDescription** - Human-readable error message
 
 Example:
+
 ```cpp
 QString error;
 if (!crypto.sign(0, data, signature, error)) {
@@ -132,6 +136,7 @@ if (!crypto.sign(0, data, signature, error)) {
 ```
 
 Error messages come from two sources:
+
 - **Internal validation**: "key pair not found", "mutex lock failed"
 - **libipriv errors**: Converted via `errorToString(int iprivErrorCode)`
 
@@ -148,6 +153,7 @@ const int KeySize = 2048;               // RSA key size bits
 ```
 
 Results are resized to actual size after operation:
+
 ```cpp
 aSignature.resize(bufferSize);
 int result = Crypt_SignEx(...);
@@ -159,17 +165,24 @@ aSignature.resize(result);  // Trim to actual size
 ## Platform-Specific Notes
 
 ### Windows
-- Full support including RuToken hardware tokens
+
+- **Windows 7**: Qt 5.15 LTS only, full support with file-based keys
+- **Windows 10+**: Qt 6.x recommended (Qt 5.15 also supported), full support including RuToken hardware tokens
 - Uses Windows native PKI when available
 
 ### Linux
-- Functional with file-based keys
+
+- **Qt 6.x recommended** (Qt 5.15 LTS supported)
+- Functional with file-based keys and RuToken support
 - Hardware token support requires additional pkcs11 libraries
-- Tested on Ubuntu 20.04+
+- Tested on Ubuntu 20.04+ (both Qt 5.15 and Qt 6.x)
 
 ### macOS
+
+- **Qt 6.x recommended** (Qt 5.15 supported)
 - Functional with file-based keys
 - Limited hardware token testing
+- Built with Clang/Apple Silicon and Intel support
 
 ---
 
@@ -184,12 +197,13 @@ aSignature.resize(result);  // Trim to actual size
 
 ## Dependencies
 
-- **libipriv** (v1.0.2+): Cryptographic backend
-- **Qt6::Core**: Threading, containers, string handling
-  - QMutex, QMutexLocker
-  - QByteArray, QString, QMap, QSet
-  - QFile for key I/O
-- **Optional: RuToken libraries** (for `TC_USE_TOKEN`)
+- **libipriv** (v1.0.2+): Cryptographic backend (GOST/RSA algorithms)
+- **Qt5.15+ or Qt6**: Core module for threading and data structures
+  - **Qt5 Support**: Qt 5.15 LTS (transitional for Windows 7)
+  - **Qt6 Support**: Qt 6.x recommended (Windows 10+, Linux, macOS)
+  - Used classes: QMutex, QMutexLocker, QByteArray, QString, QMap, QSet, QFile
+  - **No version-specific code**: Uses standard Qt APIs compatible with both versions
+- **Optional: RuToken libraries** (for `TC_USE_TOKEN` compile flag)
 
 ---
 
@@ -199,12 +213,14 @@ aSignature.resize(result);  // Trim to actual size
 
 ```cmake
 # Standalone library
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+
 ek_add_library(CryptEngine
     FOLDER "modules/CryptEngine"
     SOURCES
         src/CryptEngine.cpp
     DEPENDS
-        Qt6::Core
+        Qt${QT_VERSION_MAJOR}::Core
         libipriv
 )
 
@@ -217,6 +233,7 @@ target_include_directories(CryptEngine
 ### Feature Flags
 
 Pass to CMake:
+
 ```bash
 cmake ... -DTD_USE_MD5=ON        # Use MD5 instead of SHA256
 cmake ... -DTC_USE_TOKEN=ON      # Enable RuToken support
@@ -236,6 +253,7 @@ Tests in `tests/modules/CryptEngine/` cover:
 6. **Token support**: If compiled with TC_USE_TOKEN
 
 **Run tests:**
+
 ```bash
 cmake --build . --target ctest -- -R CryptEngine -V
 ```
@@ -249,7 +267,8 @@ cmake --build . --target ctest -- -R CryptEngine -V
 - [ ] Certificate chain validation
 - [ ] Key backup/restore functionality
 - [ ] Performance optimizations for bulk signing
-- [ ] Qt5 compatibility removal (when Qt 6 mandatory)
+- [ ] Qt 5.15 LTS end-of-life migration (when platform support timeline permits)
+- [ ] GOST algorithm variant support (currently RSA-primarily)
 
 ---
 

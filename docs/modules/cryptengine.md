@@ -74,11 +74,11 @@ crypto.shutdown();
 
 ## Platform support
 
-| Platform | Status          | Notes                                            |
-| -------- | --------------- | ------------------------------------------------ |
-| Windows  | ✅ Full support | Complete crypto + RuToken hardware support      |
-| Linux    | 🔬 Experimental | Functional, limited hardware token testing      |
-| macOS    | 🔬 Experimental | Functional, limited hardware token testing      |
+| Platform | Status          | Notes                                      |
+| -------- | --------------- | ------------------------------------------ |
+| Windows  | ✅ Full support | Complete crypto + RuToken hardware support |
+| Linux    | 🔬 Experimental | Functional, limited hardware token testing |
+| macOS    | 🔬 Experimental | Functional, limited hardware token testing |
 
 ---
 
@@ -309,18 +309,21 @@ crypto.shutdown();
 
 ```cmake
 find_package(libipriv REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
 
 ek_add_library(CryptEngine
     FOLDER "modules/CryptEngine"
     SOURCES ${SOURCES}
-    DEPENDS libipriv Qt6::Core
+    DEPENDS libipriv Qt${QT_VERSION_MAJOR}::Core
 )
 ```
 
 ### Dependencies
 
 - **libipriv** (v1.0.2+): Core cryptographic library (GOST/RSA)
-- **Qt6::Core**: Thread safety (QMutex, QByteArray, QString)
+- **Qt5.15+ or Qt6**: Core module for thread safety (QMutex, QByteArray, QString)
+  - Qt 5.15 LTS: Supported on Windows 7, Linux
+  - Qt 6.x: Supported on Windows 10+, Linux, macOS
 - Optional: **RuToken libraries** for hardware token support
 
 ---
@@ -330,6 +333,7 @@ ek_add_library(CryptEngine
 Unit tests are located in `tests/modules/CryptEngine/`.
 
 Tests cover:
+
 - Key pair loading and management
 - Signature creation and verification (attached and detached)
 - Encryption/decryption (standard and long data)
@@ -338,6 +342,7 @@ Tests cover:
 - Error handling and recovery
 
 **Run tests:**
+
 ```bash
 ctest -R CryptEngine -V
 ```
@@ -346,14 +351,23 @@ ctest -R CryptEngine -V
 
 ## Migration notes
 
+### Porting & Compatibility
+
 - **Ported from**: TerminalClient project
 - **Updated for**: EKiosk modular architecture
-- **Qt compatibility**: Qt 5.15+ and Qt 6.x
-- **Key changes**:
-  - Singleton instance instead of factory pattern
-  - Key pair ID-based operations (supports multiple simultaneo us key pairs)
-  - Explicit engine type parameter (file vs. hardware token)
-  - All methods return error descriptions via reference parameter
+- **Qt compatibility**: Qt 5.15 LTS and Qt 6.x
+  - Code uses version-agnostic interfaces where possible
+  - Platform-specific Qt versions:
+    - **Windows 7**: Qt 5.15 LTS only
+    - **Windows 10+, Linux, macOS**: Qt 6.x recommended (Qt 5.15 supported)
+  - No breaking API differences between versions
+
+### Key architectural changes from TerminalClient
+
+- Singleton instance instead of factory pattern
+- Key pair ID-based operations (supports multiple simultaneous key pairs)
+- Explicit engine type parameter (file vs. hardware token)
+- All methods return error descriptions via reference parameter
 
 ---
 
