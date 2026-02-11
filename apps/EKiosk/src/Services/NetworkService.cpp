@@ -411,11 +411,11 @@ void NetworkService::doConnect(const SDK::PaymentProcessor::SConnection &aConnec
                   .arg(aConnection.name)
                   .arg(m_Fails));
 
-        m_Connection = QSharedPointer<IConnection>(
-            IConnection::create(aConnection.name,
-                                aConnection.type,
-                                &m_NetworkTaskManager,
-                                ILog::getInstance("Connection")));
+        m_Connection =
+            QSharedPointer<IConnection>(IConnection::create(aConnection.name,
+                                                            aConnection.type,
+                                                            &m_NetworkTaskManager,
+                                                            ILog::getInstance("Connection")));
 
         m_Connection->setCheckPeriod(aConnection.checkInterval);
 

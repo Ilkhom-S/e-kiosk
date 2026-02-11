@@ -460,6 +460,10 @@ void GUIService::onIntruderActivity() {
     case PPSDK::EEventType::Warning:
         message += " #alarm";
         break;
+
+    default:
+        // Остальные типы событий игнорируем
+        break;
     }
 
 #ifndef _DEBUG
