@@ -34,7 +34,7 @@ ICryptEngine &instance() {
 } // namespace CCryptEngine
 
 //---------------------------------------------------------------------------
-CryptEngine::CryptEngine() :  m_Initialized(false), m_Engine(CCrypt::ETypeEngine::File) {}
+CryptEngine::CryptEngine() : m_Initialized(false), m_Engine(CCrypt::ETypeEngine::File) {}
 
 //---------------------------------------------------------------------------
 CryptEngine::~CryptEngine() = default;
@@ -307,7 +307,8 @@ bool CryptEngine::replacePublicKey(int aKeyPair, const QByteArray &aPublicKey) {
 
     IPRIV_KEY key;
 
-    int result = Crypt_OpenPublicKey(m_Engine, aPublicKey.data(), aPublicKey.size(), 0, &key, nullptr);
+    int result =
+        Crypt_OpenPublicKey(m_Engine, aPublicKey.data(), aPublicKey.size(), 0, &key, nullptr);
     if (result != 0) {
         return false;
     }
