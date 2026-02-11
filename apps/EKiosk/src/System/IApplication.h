@@ -64,16 +64,11 @@ public:
 
     //---------------------------------------------------------------------------
     // Возвращает абсолютный путь из aPath
-    virtual QString toAbsolutePath(const QString &aPath) {
-        if (QDir(aPath).isAbsolute()) {
-            return QDir::cleanPath(aPath);
-        }
-        return QDir::cleanPath(QDir::currentPath() + QDir::separator() + aPath);
-    }
+    static QString toAbsolutePath(const QString &aPath);
 
     //---------------------------------------------------------------------------
     // Возвращает текущую рабочую папку
-    virtual QString getWorkingDirectory() { return QDir::currentPath(); }
+    static QString getWorkingDirectory();
 };
 
 //---------------------------------------------------------------------------

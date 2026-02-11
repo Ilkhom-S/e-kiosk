@@ -33,7 +33,7 @@ const int DeviceInitializedTimeout = 10 * 60 * 1000;
 FirmwareUploadScenario::FirmwareUploadScenario(IApplication *aApplication)
     : Scenario(CFirmwareUploadScenario::Name, ILog::getInstance(CFirmwareUploadScenario::Name)),
       m_Application(aApplication), m_RetryCount(2), m_Device(nullptr), m_DeviceInitializedTimer(0) {
-    m_ReportBuilder = new ReportBuilder(m_Application->getWorkingDirectory());
+    m_ReportBuilder = new ReportBuilder(IApplication::getWorkingDirectory());
 }
 
 //---------------------------------------------------------------------------
@@ -75,7 +75,7 @@ void FirmwareUploadScenario::start(const QVariantMap &aContext) {
         QString::number(m_Command.ID), m_Command.configUrl.toString(), m_Command.parameters.at(2));
     m_ReportBuilder->setStatus(PPSDK::IRemoteService::Executing);
 
-    QFile firmwareFile(m_Application->getWorkingDirectory() + "/update/" +
+    QFile firmwareFile(IApplication::getWorkingDirectory() + "/update/" +
                        m_Command.parameters.at(1) + "/firmware.bin");
     if (firmwareFile.open(QIODevice::ReadOnly)) {
         m_Firmware = firmwareFile.readAll();
@@ -326,7 +326,7 @@ void FirmwareUploadScenario::cleanFirmwareArtifacts() {
     killTimer(m_DeviceInitializedTimer);
 
     if (m_Command.isValid()) {
-        QDir updateDir(m_Application->getWorkingDirectory() + "/update/" +
+        QDir updateDir(IApplication::getWorkingDirectory() + "/update/" +
                        m_Command.parameters.at(1));
 
         updateDir.remove("firmware.bin");

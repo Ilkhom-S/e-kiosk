@@ -8,7 +8,6 @@
 
 #include "connection/Connect.h"
 #include "devices/ClassDevice.h"
-#include "main.h"
 #include "modules/AuthRequest.h"
 #include "modules/CheckOnline.h"
 #include "modules/CollectDaemons.h"

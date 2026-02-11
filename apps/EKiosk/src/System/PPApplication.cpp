@@ -27,6 +27,19 @@
 namespace PP = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
+QString IApplication::toAbsolutePath(const QString &aPath) {
+    return QDir::cleanPath(QDir::fromNativeSeparators(
+        QDir::isAbsolutePath(aPath)
+            ? aPath
+            : PPApplication::getInstance()->getWorkingDirectory() + "/" + aPath));
+}
+
+//------------------------------------------------------------------------
+QString IApplication::getWorkingDirectory() {
+    return QDir::fromNativeSeparators(PPApplication::getInstance()->getWorkingDirectory());
+}
+
+//------------------------------------------------------------------------
 PPApplication::PPApplication(const QString &aName,
                              const QString &aVersion,
                              int &aArgumentCount,

@@ -484,8 +484,7 @@ bool PrintingService::loadTags() {
 
     SettingsService *settingsService = SettingsService::instance(m_Application);
 
-    auto *terminalSettings =
-        settingsService->getAdapter<PPSDK::TerminalSettings>();
+    auto *terminalSettings = settingsService->getAdapter<PPSDK::TerminalSettings>();
 
     PPSDK::SKeySettings key0 = terminalSettings->getKeys().value(0);
 
@@ -1210,7 +1209,7 @@ void PrintingService::loadReceiptTemplates() {
     // Загружаем все шаблоны чеков в папке ./receipts
     QDir receiptDirectory;
 
-    receiptDirectory.setPath(m_Application->getWorkingDirectory() + "/data/receipts");
+    receiptDirectory.setPath(IApplication::getWorkingDirectory() + "/data/receipts");
 
     // Загружаем все файлы, которые есть в каталоге.
     foreach (const QFileInfo &fileInfo, receiptDirectory.entryInfoList(QDir::Files)) {
@@ -1218,7 +1217,7 @@ void PrintingService::loadReceiptTemplates() {
     }
 
     // загружаем все шаблоны из папки пользовательских шаблонов чеков
-    receiptDirectory.setPath(m_Application->getWorkingDirectory() + "/user/receipts");
+    receiptDirectory.setPath(IApplication::getWorkingDirectory() + "/user/receipts");
 
     // Загружаем все файлы, которые есть в каталоге.
     foreach (const QFileInfo &fileInfo, receiptDirectory.entryInfoList(QDir::Files)) {
@@ -1232,7 +1231,7 @@ void PrintingService::saveReceiptContent(const QString &aReceiptName,
     // Получаем имя папки с чеками.
     QString suffix = QDate::currentDate().toString("yyyy.MM.dd");
 
-    QDir path(m_Application->getWorkingDirectory() + "/receipts/" + suffix);
+    QDir path(IApplication::getWorkingDirectory() + "/receipts/" + suffix);
 
     if (!path.exists()) {
         if (!QDir().mkpath(path.path())) {
@@ -1286,7 +1285,7 @@ QString PrintingService::loadReceipt(qint64 aPaymentId) {
     // Получаем имя папки с чеками.
     QString suffix = QDate::currentDate().toString("yyyy.MM.dd");
 
-    QDir path(m_Application->getWorkingDirectory() + "/receipts/" + suffix);
+    QDir path(IApplication::getWorkingDirectory() + "/receipts/" + suffix);
 
     if (!path.exists()) {
         toLog(LogLevel::Error, "Failed to find printed receipts folder.");
@@ -1338,7 +1337,7 @@ void PrintingService::onStatusChanged(DSDK::EWarningLevel::Enum aWarningLevel,
 //---------------------------------------------------------------------------
 void PrintingService::onFRSessionClosed(const QVariantMap &aParameters) {
     // Получаем имя папки с отчётами.
-    QDir path(m_Application->getWorkingDirectory() + "/receipts/reports");
+    QDir path(IApplication::getWorkingDirectory() + "/receipts/reports");
 
     if (!path.exists()) {
         if (!QDir().mkpath(path.path())) {
@@ -1411,8 +1410,7 @@ void PrintingService::updateHardwareConfiguration() {
 
     // Запрашиваем устройства.
     foreach (const QString &printerName, printerNames) {
-        auto *device =
-            dynamic_cast<DSDK::IPrinter *>(m_DeviceService->acquireDevice(printerName));
+        auto *device = dynamic_cast<DSDK::IPrinter *>(m_DeviceService->acquireDevice(printerName));
 
         if (!device) {
             toLog(LogLevel::Error, QString("Failed to acquire device %1 .").arg(printerName));
@@ -1431,11 +1429,11 @@ void PrintingService::updateHardwareConfiguration() {
         if (m_StaticParameters.contains(CPrintConstants::DealerVAT)) {
             dealerSettings.insert(CHardwareSDK::FR::DealerVAT,
                                   m_StaticParameters[CPrintConstants::DealerVAT]);
-}
+        }
         if (m_StaticParameters.contains(CPrintConstants::DealerSupportPhone)) {
             dealerSettings.insert(CHardwareSDK::FR::DealerSupportPhone,
                                   m_StaticParameters[CPrintConstants::DealerSupportPhone]);
-}
+        }
 
         m_PrinterDevices.append(device);
 
@@ -1549,8 +1547,7 @@ void PrintingService::setFiscalNumber(qint64 aPaymentId, const QVariantMap &aPar
 SDK::PaymentProcessor::SCurrencySettings PrintingService::getCurrencySettings() const {
     SettingsService *settingsService = SettingsService::instance(m_Application);
 
-    auto *terminalSettings =
-        settingsService->getAdapter<PPSDK::TerminalSettings>();
+    auto *terminalSettings = settingsService->getAdapter<PPSDK::TerminalSettings>();
 
     return terminalSettings->getCurrencySettings();
 }

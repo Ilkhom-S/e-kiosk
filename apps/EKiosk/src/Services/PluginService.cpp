@@ -218,7 +218,7 @@ void PluginService::verifyPlugins() {
         // Удалим путь к плагину/экземпляру
         return result.contains(m_Application->getUserPluginPath().toLower())
                    ? result.mid(m_Application->getUserPluginPath().length()) + ".u"
-                   : result.mid(QString(m_Application->getWorkingDirectory() + QDir::separator() +
+                   : result.mid(QString(IApplication::getWorkingDirectory() + QDir::separator() +
                                         (result.contains("plugins") ? "plugins" : ""))
                                     .length());
     };
@@ -234,7 +234,7 @@ void PluginService::verifyPlugins() {
 
     foreach (QString module, exeModules) {
         QString file = QString("%1%2%3.exe")
-                           .arg(m_Application->getWorkingDirectory())
+                           .arg(IApplication::getWorkingDirectory())
                            .arg(QDir::separator())
                            .arg(module);
 

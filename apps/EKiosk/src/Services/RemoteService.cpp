@@ -89,7 +89,7 @@ RemoteService *RemoteService::instance(IApplication *aApplication) {
 RemoteService::RemoteService(IApplication *aApplication)
     : ILogable(CRemoteService::LogName), m_Application(aApplication), m_Database(nullptr),
       m_LastCommand(0), m_GenerateKeyCommand(0),
-      m_Settings(aApplication->getWorkingDirectory() + CRemoteService::ConfigFileName,
+      m_Settings(IApplication::getWorkingDirectory() + CRemoteService::ConfigFileName,
                  QSettings::IniFormat) {
     // Создаем 5сек таймер отложенной проверки состояния файлов отчета
     m_CheckUpdateReportsTimer.setSingleShot(true);
@@ -181,7 +181,7 @@ void RemoteService::finishInitialize() {
         QTimer::singleShot(
             CRemoteService::CommandCheckInterval, this, SLOT(onCheckQueuedRebootCommands()));
 
-        QDir(m_Application->getWorkingDirectory()).mkpath("update");
+        QDir(IApplication::getWorkingDirectory()).mkpath("update");
 
         restartUpdateWatcher();
 
@@ -724,7 +724,7 @@ int RemoteService::checkUpdateReports() {
     int removedCount = 0;
 
     // Проверка репортов команд
-    foreach (auto report, getReports(m_Application->getWorkingDirectory() + "/update/")) {
+    foreach (auto report, getReports(IApplication::getWorkingDirectory() + "/update/")) {
         QVariantMap parameters;
 
         if (report.description.isValid()) {
@@ -944,13 +944,13 @@ void RemoteService::restartUpdateWatcher(QFileSystemWatcher *aWatcher) {
         connect(
             aWatcher, SIGNAL(directoryChanged(const QString &)), this, SLOT(onUpdateDirChanged()));
         connect(aWatcher, SIGNAL(fileChanged(const QString &)), this, SLOT(onUpdateDirChanged()));
-        aWatcher->addPath(m_Application->getWorkingDirectory() + "/update");
+        aWatcher->addPath(IApplication::getWorkingDirectory() + "/update");
     }
 
     QStringList files;
-    foreach (auto name,
-             QDir(m_Application->getWorkingDirectory() + "/update", "*.rpt")
-                 .entryInfoList(QDir::Files)) {
+    foreach (
+        auto name,
+        QDir(IApplication::getWorkingDirectory() + "/update", "*.rpt").entryInfoList(QDir::Files)) {
         files << name.filePath();
     }
 
