@@ -78,7 +78,7 @@ struct CommandReport {
 
     /// Проверка что команда ещё выполняется, а не "подвисла"
     [[nodiscard]] bool isAlive() const {
-        return lastUpdate.addSecs(60 * 10) > QDateTime::currentDateTime();
+        return lastUpdate.addSecs(qint64(60) * 10) > QDateTime::currentDateTime();
     }
 };
 
@@ -694,7 +694,7 @@ void RemoteService::onUpdateDirChanged() {
 
     restartUpdateWatcher(dynamic_cast<QFileSystemWatcher *>(sender()));
 
-    // Таймаут что бы этот обработчик, вызыванный много раз в течении короткого времени, не запускал
+    // Таймаут что бы этот обработчик, вызванный много раз в течении короткого времени, не запускал
     // долгую процедуру проверки файлов отчетов.
     m_CheckUpdateReportsTimer.start();
 }
@@ -861,7 +861,7 @@ bool RemoteService::restoreConfiguration() {
     bool result = false;
 
     foreach (PPSDK::IRemoteClient *client, m_MonitoringClients) {
-        if (client->getCapabilities() & PPSDK::IRemoteClient::RestoreConfiguration != 0u) {
+        if ((client->getCapabilities() & PPSDK::IRemoteClient::RestoreConfiguration) != 0u) {
             result = client->useCapability(PPSDK::IRemoteClient::RestoreConfiguration);
         }
     }

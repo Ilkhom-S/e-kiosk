@@ -182,10 +182,14 @@ bool System_Printer::getStatus(TStatusCodes &aStatusCodes) {
         }
 
         EWarningLevel::Enum warningLevel = getWarningLevel(statuses);
-        LogLevel::Enum logLevel =
-            (warningLevel == EWarningLevel::Error)
-                ? LogLevel::Error
-                : ((warningLevel == EWarningLevel::Warning) ? LogLevel::Warning : LogLevel::Normal);
+        LogLevel::Enum logLevel;
+        if (warningLevel == EWarningLevel::Error) {
+            logLevel = LogLevel::Error;
+        } else if (warningLevel == EWarningLevel::Warning) {
+            logLevel = LogLevel::Warning;
+        } else {
+            logLevel = LogLevel::Normal;
+        }
 
         QString log = QStringLiteral("Device codes has changed:");
 
