@@ -592,7 +592,7 @@ QString PrintingService::convertImage2base64(const QString &aString) {
             }
 
             result.replace(static_cast<int>(match.capturedStart(1)), static_cast<int>(match.captured(1).length()), img);
-            offset = match.capturedStart(1) + img.size();
+            offset = static_cast<int>(match.capturedStart(1) + img.size());
         }
     }
 
@@ -654,26 +654,26 @@ QString PrintingService::generateQR(const QString &aString) {
     int offset = 0;
     QRegularExpressionMatch match;
     while ((match = qrPattern.match(result, offset)).hasMatch()) {
-        offset = match.capturedStart();
+        offset = static_cast<int>(match.capturedStart());
         int size = 200;
-        int left_margin = 0;
+        int leftMargin = 0;
 
         for (int i = 2; i < 6; i += 3) {
             if (match.captured(i).toLower() == "size") {
                 size = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt() : size;
             } else if (match.captured(i).toLower() == "left_margin") {
-                left_margin = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt()
-                                                                 : left_margin;
+                leftMargin = match.captured(i + 1).toInt() != 0 ? match.captured(i + 1).toInt()
+                                                               : leftMargin;
             }
         }
 
         QString content = match.captured(7);
-        QString qrImage = generateQRCode(content, size, left_margin);
+        QString qrImage = generateQRCode(content, size, leftMargin);
 
         QString img = qrImage.isEmpty() ? "<qr-code>" : QString("[img]%1[/img]").arg(qrImage);
 
-        result.replace(offset, match.captured(0).length(), img);
-        offset += img.size();
+        result.replace(offset, static_cast<int>(match.captured(0).length()), img);
+        offset += static_cast<int>(img.size());
     }
 
     return result;
