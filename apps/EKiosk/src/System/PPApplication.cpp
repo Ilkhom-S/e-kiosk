@@ -48,8 +48,8 @@ PPApplication::PPApplication(const QString &aName,
             "Can't run application, because another instance already running.");
     }
 
-    getQtApplication().setStyle("plastique");
-    getQtApplication().setQuitOnLastWindowClosed(false);
+    SafeQApplication::setStyle("plastique");
+    SafeQApplication::setQuitOnLastWindowClosed(false);
 
     // Перенаправляем логи.
     QString appDest = BasicQtApplication::getLog()->getDestination();
