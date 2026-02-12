@@ -93,7 +93,7 @@ inline QString makePath(const QString &aApplication,
             registered = true;                                                                     \
         }                                                                                          \
     }                                                                                              \
-    static bool dummy_##unique_id = (register_plugin_##unique_id(), true);
+    static const bool dummy_##unique_id = (register_plugin_##unique_id(), true);
 
 #define REGISTER_PLUGIN_WITH_PARAMETERS(path, constructor, parameters, unique_id)                  \
     static void register_plugin_##unique_id() {                                                    \
@@ -103,4 +103,4 @@ inline QString makePath(const QString &aApplication,
             registered = true;                                                                     \
         }                                                                                          \
     }                                                                                              \
-    static bool dummy_##unique_id = (register_plugin_##unique_id(), true);
+    static const bool dummy_##unique_id = (register_plugin_##unique_id(), true);
