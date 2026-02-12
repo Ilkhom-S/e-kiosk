@@ -3,19 +3,26 @@
     "files.exclude": {
         "build/": true,
         "thirdparty/": false,
+        "deprecated/": true,
         "vcpkg_installed/": true,
         "**/*.bak": true
     },
     "search.exclude": {
         "build/": true,
         "thirdparty/": true,
+        "deprecated/": true,
         "vcpkg_installed/": true
+    },
+    "C_Cpp.codeAnalysis.exclude": {
+        "**/thirdparty/**": true,
+        "**/deprecated/**": true
     },
     "C_Cpp.default.compileCommands": "${workspaceFolder}/build/macos-qt6/compile_commands.json",
     "editor.formatOnSave": true,
     "[cpp]": {
         "editor.defaultFormatter": "xaver.clang-format"
     },
+    "C_Cpp.errorSquiggles": "enabled",
     "C_Cpp.default.cppStandard": "c++14",
     "C_Cpp.default.cStandard": "c11",
     "C_Cpp.default.intelliSenseMode": "macos-clang-arm64",

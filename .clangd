@@ -1,26 +1,28 @@
----
-# Exclude third-party code from static analysis
-If:
-    PathMatch: thirdparty/.*
-Diagnostics:
-    Suppress: "*"
----
-# Enable all diagnostics for our code
+# 1. Silencing the noise first
 If:
     PathMatch:
-        - src/.*
-        - apps/.*
-        - include/.*
-        - tests/.*
+        - .*/thirdparty/.*
+        - .*/build/.*
+        - .*/cmake-build.*/.*
+        - .*/deprecated/.*
 Diagnostics:
-    ClangTidy:
-        Add:
-            - modernize-*
-            - readability-*
-            - performance-*
-            - bugprone-*
-    # Relax some overly strict checks
+    Suppress: ["*"]
+
+---
+# 2. Main Project Configuration
+If:
+    PathMatch: [src/.*, apps/.*, include/.*, tests/.*]
+Diagnostics:
+    # This makes Clangd focus exclusively on your code
     UnusedIncludes: Strict
     MissingIncludes: Strict
-    FormatCodeStyle: file
+    ClangTidy:
+        Add: [modernize-*, readability-*, performance-*, bugprone-*]
+        # Qt specific: Suppress warnings for moc-generated patterns if needed
+        Remove: [readability-identifier-length]
 ---
+# 3. Global settings (for files not in above paths)
+Diagnostics:
+    ClangTidy:
+        CheckOptions:
+            modernize-use-trailing-return-type: 0
