@@ -106,10 +106,10 @@ void WatchService::initialize() {
 
     // Настраиваем защитный экран
     QString customBackground = BasicApplication::getInstance()
-                                    ->getSettings()
-                                    .value(QString(CWatchService::ExtensionsSection) + "/" +
-                                           CWatchService::UseCustomBackground)
-                                    .toString();
+                                   ->getSettings()
+                                   .value(QString(CWatchService::ExtensionsSection) + "/" +
+                                          CWatchService::UseCustomBackground)
+                                   .toString();
     if (!customBackground.isEmpty()) {
         if (!QDir::isAbsolutePath(customBackground)) {
             customBackground = QDir::cleanPath(
@@ -630,10 +630,9 @@ void WatchService::onCheckModules() {
                         QDateTime::currentDateTime()) {
                         // Пока что не превысили лимит до первого пинга...
                         continue;
-                    }                         toLog(LogLevel::Debug,
-                              QString("Module %1 has exceeded first time ping timeout.")
-                                  .arg(it.key()));
-                   
+                    }
+                    toLog(LogLevel::Debug,
+                          QString("Module %1 has exceeded first time ping timeout.").arg(it.key()));
                 }
 
                 // Проверка на отклик модуля
@@ -922,18 +921,18 @@ QString WatchService::translateError(QProcess::ProcessError aError) {
 
     case QProcess::Timedout:
         return {"The last waitFor...() function timed out. The state of QProcess is "
-                       "unchanged, and you can try "
-                       "calling waitFor...() again."};
+                "unchanged, and you can try "
+                "calling waitFor...() again."};
 
     case QProcess::WriteError:
         return {"An error occurred when attempting to write to the process. For example, "
-                       "the process may not be "
-                       "running, or it may have closed its input channel."};
+                "the process may not be "
+                "running, or it may have closed its input channel."};
 
     case QProcess::ReadError:
         return {"An error occurred when attempting to read from the process. For example, "
-                       "the process may "
-                       "not be running."};
+                "the process may "
+                "not be running."};
 
     case QProcess::UnknownError:
         return {"An unknown error occurred."};

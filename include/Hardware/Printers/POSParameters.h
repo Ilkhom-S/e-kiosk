@@ -50,11 +50,11 @@ const SParameters CommonParameters;
 
 struct SModelData {
     QString name;
-    bool verified;
+    bool verified{};
     QString description;
 
     SModelData();
-    SModelData(const QString &aName, bool aVerified, const QString &aDescription);
+    SModelData(QString aName, bool aVerified, QString aDescription);
 };
 
 typedef QMap<char, SModelData> TModelData;

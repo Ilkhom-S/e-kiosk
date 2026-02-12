@@ -116,11 +116,9 @@ bool CCTalkCoinAcceptorBase::loadParTable() {
         (max < 10)) {
         MutexLocker locker(&m_ResourceMutex);
 
-        for (TParTable::iterator it = m_EscrowParTable.data().begin();
-             it != m_EscrowParTable.data().end();
-             ++it) {
-            if (it->currency == CurrencyCodes.key(Currency::KZT)) {
-                it->nominal *= 100;
+        for (auto &it : m_EscrowParTable.data()) {
+            if (it.currency == CurrencyCodes.key(Currency::KZT)) {
+                it.nominal *= 100;
             }
         }
     }

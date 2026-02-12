@@ -9,14 +9,15 @@
 #include <SDK/PaymentProcessor/Payment/Parameters.h>
 
 #include <Crypt/ICryptEngine.h>
+#include <utility>
 
 #include "AdPayment.h"
 
 using SDK::PaymentProcessor::SProvider;
 
 //---------------------------------------------------------------------------
-AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName)
-    : m_Payment(aPayment), m_Name(aName) {
+AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, QString aName)
+    : m_Payment(aPayment), m_Name(std::move(aName)) {
     addParameter("SD", aPayment->getKeySettings().sd);
     addParameter("AP", aPayment->getKeySettings().ap);
     addParameter("OP", aPayment->getKeySettings().op);
@@ -52,8 +53,8 @@ AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName)
             QRegularExpressionMatch match = macroPattern.match(value);
             while (match.capturedStart() != -1) {
                 QString macro = match.captured(0);
-                QString param_Name = match.captured(1);
-                value.replace(macro, m_Payment->getParameter(param_Name).value.toString());
+                QString paramName = match.captured(1);
+                value.replace(macro, m_Payment->getParameter(paramName).value.toString());
                 match = macroPattern.match(value);
             }
 

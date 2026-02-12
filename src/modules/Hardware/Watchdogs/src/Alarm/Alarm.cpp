@@ -20,9 +20,9 @@ Alarm::Alarm() {
 
 //----------------------------------------------------------------------------
 bool Alarm::isConnected() {
-    CAlarm::CCommandIntervals CommandIntervals;
+    CAlarm::CCommandIntervals commandIntervals;
 
-    for (auto it = CommandIntervals.data().begin(); it != CommandIntervals.data().end(); ++it) {
+    for (auto it = commandIntervals.data().begin(); it != commandIntervals.data().end(); ++it) {
         TAnswer answer;
 
         if (!m_IOPort->write(QByteArray(1, it.key())) || !getAnswer(answer) || answer.isEmpty()) {
@@ -68,7 +68,7 @@ bool Alarm::getStatus(TStatusCodes &aStatusCodes) {
         for (auto it = CAlarm::SensorCodeSpecification.data().begin();
              it != CAlarm::SensorCodeSpecification.data().end();
              ++it) {
-            if ((state >> it.key()) & 1) {
+            if (((state >> it.key()) & 1) != 0) {
                 aStatusCodes << it.value();
             }
         }
@@ -93,8 +93,8 @@ bool Alarm::getAnswer(TAnswer &aAnswer) {
         }
     } while ((clockTimer.elapsed() < CAlarm::DefaultTimeout) && answer.isEmpty());
 
-    for (int i = 0; i < answer.size(); ++i) {
-        aAnswer << answer[i];
+    for (char i : answer) {
+        aAnswer << i;
     }
 
     return true;

@@ -44,7 +44,7 @@ public:
     void release() { m_FileList.clear(); }
 
 private:
-    QList<TStringPair> m_FileList;
+    QList<TStringPair> m_FileList{};
 };
 
 //----------------------------------------------------------------------------

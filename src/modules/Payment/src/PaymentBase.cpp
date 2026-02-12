@@ -19,6 +19,8 @@
 #include <SDK/PaymentProcessor/Payment/IPaymentFactory.h>
 #include <SDK/PaymentProcessor/Payment/Parameters.h>
 
+#include <algorithm>
+
 //------------------------------------------------------------------------------
 namespace CPayment {
 namespace Requests {
@@ -111,10 +113,8 @@ QList<PPSDK::IPayment::SParameter> PaymentBase::getParameters() const {
 
     QList<SParameter> result;
 
-    for (TParameterList::index<NameTag>::type::iterator it = m_Parameters.begin();
-         it != m_Parameters.end();
-         ++it) {
-        result << *it;
+    for (const auto &m_Parameter : m_Parameters) {
+        result << m_Parameter;
     }
 
     return result;
@@ -494,10 +494,10 @@ PaymentBase::calculateCommission(const QList<PPSDK::IPayment::SParameter> &aPara
     double maxAmount = getParameter(PPSDK::CPayment::Parameters::MaxAmount).value.toDouble();
     double maxAmountAll = getParameter(PPSDK::CPayment::Parameters::MaxAmountAll).value.toDouble();
 
-    double amountAll = 0.f;
-    double amount = 0.f;
-    double commission = 0.f;
-    double change = 0.f;
+    double amountAll = 0.F;
+    double amount = 0.F;
+    double commission = 0.F;
+    double change = 0.F;
 
     foreach (auto p, aParameters) {
         if (p.name == PPSDK::CPayment::Parameters::AmountAll) {
@@ -520,7 +520,7 @@ PaymentBase::calculateCommission(const QList<PPSDK::IPayment::SParameter> &aPara
 
     if (!qFuzzyIsNull(amountAll)) {
         PPSDK::Commission com;
-        double targetSum = 0.f;
+        double targetSum = 0.F;
 
         // Случай платежа с фиксированной суммой
         if (limits.min == limits.max) {
@@ -563,16 +563,14 @@ PaymentBase::calculateCommission(const QList<PPSDK::IPayment::SParameter> &aPara
         amount = amountAll - commission;
     }
 
-    if (amount < 0.f) {
-        amount = 0.f;
-    }
+    amount = std::max<double>(amount, 0.f);
 
     if (getMNPProviderSettings().processor.rounding) {
         amount = qRound(amount);
 
         // А если у нас сдача 0 сомони 58 дирхамов, то все в комиссию кидаем
         if (amount > amountAll) {
-            amount = 0.f;
+            amount = 0.F;
         }
 
         if (amountAll > maxAmountAll) {
@@ -605,8 +603,8 @@ PaymentBase::calculateCommission(const QList<PPSDK::IPayment::SParameter> &aPara
 
         if (dealerFee > 0) {
             return QPair<double, double>(aProcessingFee, dealerFee);
-        }             return QPair<double, double>(aFee, 0.0);
-       
+        }
+        return QPair<double, double>(aFee, 0.0);
     };
 
     result << SParameter(
@@ -661,7 +659,7 @@ bool PaymentBase::isCriticalError(int aError) const {
 }
 
 //------------------------------------------------------------------------------
-const PPSDK::SProvider PaymentBase::getProviderSettings(qint64 aProvider) const {
+PPSDK::SProvider PaymentBase::getProviderSettings(qint64 aProvider) const {
     if (aProvider == -1) {
         return m_ProviderSettings;
     }
@@ -691,7 +689,7 @@ const PPSDK::SProvider PaymentBase::getProviderSettings(qint64 aProvider) const 
 }
 
 //------------------------------------------------------------------------------
-const SDK::PaymentProcessor::SProvider PaymentBase::getMNPProviderSettings() const {
+SDK::PaymentProcessor::SProvider PaymentBase::getMNPProviderSettings() const {
     return getProviderSettings(getProvider(true));
 }
 

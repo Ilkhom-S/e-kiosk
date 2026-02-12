@@ -63,14 +63,13 @@ bool NetworkServiceWindow::initialize() {
     QVariantMap networkInfo;
     m_Backend->getNetworkManager()->getNetworkInfo(networkInfo);
 
-    auto type =
-        EConnectionTypes::Enum(networkInfo[CServiceTags::ConnectionType].toInt());
+    auto type = EConnectionTypes::Enum(networkInfo[CServiceTags::ConnectionType].toInt());
 
     // Инициализация окна с настройками модемного соединения
     m_DialupWindow = new DialupConnectionWindow(this);
     m_DialupWindow->initialize();
     m_DialupWindow->fillTemplateList(m_Backend->getNetworkManager()->getConnectionTemplates());
-    m_DialupWindow->fillModem_List(m_Backend->getNetworkManager()->getModems());
+    m_DialupWindow->fillModemList(m_Backend->getNetworkManager()->getModems());
     m_DialupWindow->fillConnectionList(m_Backend->getNetworkManager()->getRemoteConnections(),
                                        networkInfo[CServiceTags::Connection].toString());
 
@@ -182,7 +181,7 @@ void NetworkServiceWindow::onRemoveDialupConnection(const QString &aConnection) 
 }
 
 //---------------------------------------------------------------------------
-void NetworkServiceWindow::onTestUnmanagedConnection(QNetworkProxy aProxy) {
+void NetworkServiceWindow::onTestUnmanagedConnection(const QNetworkProxy &aProxy) {
     SDK::PaymentProcessor::SConnection connection;
 
     connection.name = "unmanaged connection";

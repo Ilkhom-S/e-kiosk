@@ -23,7 +23,7 @@ public:
             const TFileList &aFiles,
             const QStringList &aPostActions,
             const QString &aURL,
-            const QString &aHash,
+            QString aHash,
             int aSize);
 
     /// Выполнить действие.

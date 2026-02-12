@@ -4,14 +4,15 @@
 #include <QtCore/QRecursiveMutex>
 
 #include <Hardware/Printers/POSParameters.h>
+#include <utility>
 
 namespace POSPrinters {
 
 SModelData::SModelData() = default;
 
 //--------------------------------------------------------------------------------
-SModelData::SModelData(const QString &aName, bool aVerified, const QString &aDescription)
-    : name(aName), verified(aVerified), description(aDescription) {}
+SModelData::SModelData(QString aName, bool aVerified, QString aDescription)
+    : name(std::move(aName)), verified(aVerified), description(std::move(aDescription)) {}
 
 //--------------------------------------------------------------------------------
 ModelData::ModelData() = default;

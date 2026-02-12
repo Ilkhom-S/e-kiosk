@@ -34,7 +34,7 @@ private slots:
                                SDK::Driver::EWarningLevel::Enum aLevel);
 
 private:
-    Ui::EncashmentServiceWindow ui;
+    Ui::EncashmentServiceWindow ui{};
 
 private:
     QVariantMap m_PayloadSettings;

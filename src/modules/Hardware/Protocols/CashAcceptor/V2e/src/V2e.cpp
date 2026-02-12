@@ -176,7 +176,7 @@ bool V2eProtocol::getAnswer(QByteArray &aAnswer) {
             length = aAnswer.mid(2, 2).toHex().toUShort(nullptr, 16);
         }
     } while ((clockTimer.elapsed() < CV2e::AnswerTimeout) &&
-             ((aAnswer.size() < length) || (length == 0u)));
+             ((aAnswer.size() < length) || (length == 0U)));
 
     toLog(LogLevel::Normal, QString("V2.2E: << {%1}").arg(aAnswer.toHex().data()));
 

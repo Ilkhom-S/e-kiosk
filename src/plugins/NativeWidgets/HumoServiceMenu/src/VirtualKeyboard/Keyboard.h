@@ -13,7 +13,7 @@
 //--------------------------------------------------------------------------
 class Keyboard : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
 public:
-    Keyboard(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    Keyboard(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
     ~Keyboard();
 
 #pragma region SDK::Plugin::IPlugin interface

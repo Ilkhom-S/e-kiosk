@@ -23,8 +23,6 @@ ATModem_Base::ATModem_Base() : m_Modem_ConfigTimeout(CATGSMModem::Timeouts::Conf
 
     // Отключено - записи в лог дублируются.
     // m_IOMessageLogging = true;
-
-    
 }
 
 //--------------------------------------------------------------------------------
@@ -65,8 +63,8 @@ bool ATModem_Base::isConnected() {
               QString("Modem configuration: %1").arg(QString::fromLatin1(answer)));
     }
 
-    QString modem_Info;
-    getInfo(modem_Info);
+    QString modemInfo;
+    getInfo(modemInfo);
 
     m_IOPort->close();
 

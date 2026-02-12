@@ -12,11 +12,6 @@
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
 #include <SettingsManager/SettingsManager.h>
-#include <boost/bind/bind.hpp>
-#include <boost/bind/placeholders.hpp>
-
-using namespace boost::placeholders;
-
 #include <algorithm>
 #include <memory>
 
@@ -112,7 +107,9 @@ bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent) {
             TAreas::iterator area =
                 std::find_if(m_Areas.begin(),
                              m_Areas.end(),
-                             boost::bind(&SplashScreen::testPoint, this, _1, mouseEvent->pos()));
+                             [this, pos = mouseEvent->pos()](const TAreas::value_type &a) {
+                                 return testPoint(a, pos);
+                             });
 
             if (area != m_Areas.end()) {
                 emit clicked(area->first);

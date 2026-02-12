@@ -108,7 +108,7 @@ bool CCTalkCAProtocol::check(QByteArray &aAnswer) {
 
     auto header = uchar(aAnswer[3]);
 
-    if ((header != 0u) && (header != CCCTalk::NAK)) {
+    if ((header != 0U) && (header != CCCTalk::NAK)) {
         toLog(LogLevel::Error, QString("ccTalk: Wrong header = %1, need = 0").arg(header));
         return false;
     }

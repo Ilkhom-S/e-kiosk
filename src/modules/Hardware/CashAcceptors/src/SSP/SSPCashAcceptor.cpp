@@ -26,8 +26,7 @@ SSPCashAcceptor::SSPCashAcceptor() : m_LastConnectionOK(false), m_Enabled(false)
     m_DeviceName = CSSP::Models::Default;
     m_EscrowPosition = 1;
     m_ResetWaiting = EResetWaiting::Available;
-    
-    
+
     m_ParInStacked = true;
 
     // параметры протокола
@@ -96,7 +95,7 @@ TResult SSPCashAcceptor::execCommand(const QByteArray &aCommand,
         return result;
     }
 
-    CSSP::Result::SData resultData = CSSP::Result::Data[answer[0]];
+    const CSSP::Result::SData &resultData = CSSP::Result::Data[answer[0]];
 
     if (resultData.code != CommandResult::OK) {
         toLog(LogLevel::Error, QString("%1: %2").arg(m_DeviceName).arg(resultData.description));
@@ -292,7 +291,7 @@ bool SSPCashAcceptor::loadParTable() {
     }
 
     int channels = answer[11];
-    int size = 16 + channels * 7;
+    int size = 16 + (channels * 7);
 
     if (answer.size() < size) {
         toLog(
@@ -306,13 +305,14 @@ bool SSPCashAcceptor::loadParTable() {
     }
 
     double multiplier =
-        CSSP::NominalMultiplier * hexToBCD(answer.mid(12 + 2 * channels, 3)).toInt();
+        CSSP::NominalMultiplier * hexToBCD(answer.mid(12 + (2 * channels), 3)).toInt();
 
     for (int i = 0; i < channels; ++i) {
         int index = answer[12 + i];
-        QString currency = answer.mid(16 + 2 * channels, 3);
+        QString currency = answer.mid(16 + (2 * channels), 3);
         double nominal =
-            multiplier * revert(answer.mid(16 + 5 * channels + 4 * i, 4)).toHex().toInt(nullptr, 16);
+            multiplier *
+            revert(answer.mid(16 + (5 * channels) + (4 * i), 4)).toHex().toInt(nullptr, 16);
 
         MutexLocker locker(&m_ResourceMutex);
 

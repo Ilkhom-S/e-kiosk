@@ -113,8 +113,7 @@ void MainServiceWindow::shutdown() {
     disconnect(
         twServiceScreens, SIGNAL(currentChanged(int)), this, SLOT(onCurrentPageChanged(int)));
 
-    auto *current =
-        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
+    auto *current = dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
     if (current) {
         current->deactivate();
     }
@@ -226,8 +225,7 @@ void MainServiceWindow::connectAllAbstractButtons(QWidget *aParentWidget) {
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onCurrentPageChanged(int aIndex) {
-    auto *prev =
-        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
+    auto *prev = dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
 
     if (prev) {
         if (!prev->deactivate()) {
@@ -370,8 +368,7 @@ bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
     }
 
     if (GUI::MessageBox::question(aMessage) != 0) {
-        auto *window =
-            dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
+        auto *window = dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
         if (window) {
             window->deactivate();
         }

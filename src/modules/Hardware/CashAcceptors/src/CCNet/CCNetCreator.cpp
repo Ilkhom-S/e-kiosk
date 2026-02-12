@@ -77,7 +77,7 @@ void CCNetCreator::processDeviceData(QByteArray &aAnswer) {
         return;
     }
 
-    QString hardwareInternal = parseDeviceData(aAnswer.left(15), "[^\\d\\w]+([\\d\\w]+)$");
+    QString hardwareInternal = parseDeviceData(aAnswer.left(15), R"([^\d\w]+([\d\w]+)$)");
     setDeviceParameter(CDeviceData::InternalHardware, hardwareInternal);
 
     QString firmwareInternal = parseDeviceData(aAnswer.mid(15, 12), "ver([0-9\\,\\.]+)");
@@ -176,7 +176,7 @@ bool CCNetCreator::writeHead(const QByteArray &aBuffer) {
 //--------------------------------------------------------------------------------
 bool CCNetCreator::writeBlock(const QByteArray &aBuffer, int aIndex, bool aLast) {
     int begin = CCCNetCreator::UpdatingFirmware::HeadSize +
-                aIndex * CCCNetCreator::UpdatingFirmware::BlockSize;
+                (aIndex * CCCNetCreator::UpdatingFirmware::BlockSize);
 
     QByteArray commandData;
     commandData.append(uchar(aIndex));

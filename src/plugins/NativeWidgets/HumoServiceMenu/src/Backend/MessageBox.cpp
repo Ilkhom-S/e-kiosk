@@ -65,7 +65,7 @@ bool MessageBox::question(const QString &aText) {
 
 //------------------------------------------------------------------------
 void MessageBox::update(const QVariantMap &aParameters) {
-    return getInstance()->updatePopup(aParameters);
+    getInstance()->updatePopup(aParameters);
 }
 
 //------------------------------------------------------------------------

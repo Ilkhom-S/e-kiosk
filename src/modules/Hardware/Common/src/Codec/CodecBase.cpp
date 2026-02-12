@@ -51,7 +51,7 @@ QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const {
     QString result;
 
     for (char i : buffer) {
-        if ((i == 0) && (m_MinValueActive != 0u)) {
+        if ((i == 0) && (m_MinValueActive != 0U)) {
             break;
         }
 

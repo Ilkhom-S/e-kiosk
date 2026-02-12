@@ -17,15 +17,23 @@ Checks: >
     -cppcoreguidelines-owning-memory,
     -cppcoreguidelines-pro-type-vararg,
     -cppcoreguidelines-non-private-member-variables-in-classes,
+    -cppcoreguidelines-init-variables,
+    -cppcoreguidelines-avoid-do-while,
+    -cppcoreguidelines-macro-usage,
     -modernize-avoid-c-arrays,
     -cppcoreguidelines-avoid-c-arrays,
     -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+    -cppcoreguidelines-init-variables,
     -readability-convert-member-functions-to-static,
     -readability-magic-numbers,
     -readability-identifier-length,
     -readability-function-cognitive-complexity,
+    -readability-braces-around-statements,
+    -readability-static-accessed-through-instance,
     -bugprone-easily-swappable-parameters,
-    -modernize-concat-nested-namespaces
+    -modernize-concat-nested-namespaces,
+    -modernize-use-equals-default,
+    -modernize-use-using
 
 # Treat warnings as errors in CI
 WarningsAsErrors: ""

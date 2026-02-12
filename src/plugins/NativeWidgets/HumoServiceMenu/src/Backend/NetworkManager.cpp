@@ -17,15 +17,16 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-NetworkManager::NetworkManager(SDK::PaymentProcessor::ICore *aCore) : m_Core(aCore), m_NetworkService(m_Core->getNetworkService()), m_SelectedConnection(m_InitialConnection) {
-    
-    m_TerminalSettings = static_cast<PPSDK::TerminalSettings *>(
+NetworkManager::NetworkManager(SDK::PaymentProcessor::ICore *aCore)
+    : m_Core(aCore), m_NetworkService(m_Core->getNetworkService()),
+      m_SelectedConnection(m_InitialConnection) {
+
+    m_TerminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
-    m_Directory = static_cast<PPSDK::Directory *>(
+    m_Directory = dynamic_cast<PPSDK::Directory *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::Directory));
 
     m_InitialConnection = m_NetworkService->getConnection();
-    
 }
 
 //---------------------------------------------------------------------------

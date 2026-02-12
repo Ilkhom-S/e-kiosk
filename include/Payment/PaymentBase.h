@@ -143,10 +143,10 @@ public:
     virtual QDateTime getNextTryDate() const;
 
     /// Возвращает описание провайдера для платежа.
-    const SDK::PaymentProcessor::SProvider getProviderSettings(qint64 aProvider = -1) const;
+    SDK::PaymentProcessor::SProvider getProviderSettings(qint64 aProvider = -1) const;
 
     /// Возвращает описание провайдера для MNP платежа.
-    const SDK::PaymentProcessor::SProvider getMNPProviderSettings() const;
+    SDK::PaymentProcessor::SProvider getMNPProviderSettings() const;
 
     /// Возвращает настройки ключей для проведения платежа.
     const SDK::PaymentProcessor::SKeySettings &getKeySettings() const;

@@ -15,23 +15,24 @@
 #include <NetworkTaskManager/NetworkTaskManager.h>
 #include <Packer/Packer.h>
 #include <numeric>
+#include <utility>
 
 #include "Misc.h"
 
 class ZipArchiveVerifier : public IVerifier {
-    ILog *m_Log;
+    ILog *m_log;
 
 public:
-    ZipArchiveVerifier(ILog *aLog) : m_Log(aLog) {}
+    ZipArchiveVerifier(ILog *aLog) : m_log(aLog) {}
 
-    virtual bool verify(NetworkTask *aTask, const QByteArray & /*aData*/) {
+    bool verify(NetworkTask *aTask, const QByteArray & /*aData*/) override {
         auto *task = dynamic_cast<FileDownloadTask *>(aTask);
 
         if (task) {
             // Закрываем файл для корректной работы 7-Zip а.
             task->closeFile();
 
-            Packer zip("", m_Log);
+            Packer zip("", m_log);
             return zip.test(task->getPath());
         }
 
@@ -45,19 +46,20 @@ Package::Package(const QString &aName,
                  const TFileList &aFiles,
                  const QStringList &aPostActions,
                  const QString &aURL,
-                 const QString &aHash,
+                 QString aHash,
                  int aSize)
-    : Component(aName, aVersion, aFiles, aPostActions, aURL), m_Hash(aHash), m_Size(aSize) {}
+    : Component(aName, aVersion, aFiles, aPostActions, aURL), m_Hash(std::move(aHash)),
+      m_Size(aSize) {}
 
 //---------------------------------------------------------------------------
 QList<NetworkTask *> Package::download(const QString &aBaseURL, const TFileList &aExceptions) {
-    QString URL = getURL(getId() + ".zip", aBaseURL);
+    QString url = getURL(getId() + ".zip", aBaseURL);
     QString filePath = getTemporaryFolder() + "/" + getId() + ".zip";
 
     QList<NetworkTask *> tasks;
 
-    if (!aExceptions.contains(getFiles()) || getPostActions().size() > 0) {
-        File componentFile("", m_Hash, URL, m_Size);
+    if (!aExceptions.contains(getFiles()) || !getPostActions().empty()) {
+        File componentFile("", m_Hash, url, m_Size);
 
         switch (componentFile.verify(filePath)) {
         case File::OK: // качать не нужно
@@ -74,7 +76,7 @@ QList<NetworkTask *> Package::download(const QString &aBaseURL, const TFileList 
             // break тут не нужен!
 
         default:
-            auto *task = new FileDownloadTask(URL, filePath);
+            auto *task = new FileDownloadTask(url, filePath);
             if (m_Hash.isEmpty()) {
                 task->setVerifier(new ZipArchiveVerifier(Log()));
             } else if (m_Hash.size() == CHashVerifier::MD5HashSize) {
@@ -177,11 +179,11 @@ void Package::applyPostActions(const QString &aWorkingDir) noexcept(false) {
                                 .arg(action)
                                 .arg(runAction.exitCode())
                                 .arg(QString(runAction.readAllStandardOutput())));
-        }             Log(LogLevel::Normal,
-                QString("Process %1 run OK, output: %2.")
-                    .arg(action)
-                    .arg(QString(runAction.readAllStandardOutput())));
-       
+        }
+        Log(LogLevel::Normal,
+            QString("Process %1 run OK, output: %2.")
+                .arg(action)
+                .arg(QString(runAction.readAllStandardOutput())));
     }
 }
 

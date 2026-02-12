@@ -26,13 +26,13 @@ bool CCNetCashcodeGX::checkConnectionAbility() {
 
     TPortParameters portParameters;
     m_IOPort->getParameters(portParameters);
-    ERTSControl::Enum RTS =
+    ERTSControl::Enum rts =
         (m_IOPort->getType() == EPortTypes::COM) ? ERTSControl::Disable : ERTSControl::Enable;
 
-    portParameters[EParameters::RTS] = RTS;
+    portParameters[EParameters::RTS] = rts;
 
     m_PortParameters[EParameters::RTS].clear();
-    m_PortParameters[EParameters::RTS].append(RTS);
+    m_PortParameters[EParameters::RTS].append(rts);
 
     return m_IOPort->setParameters(portParameters);
 }

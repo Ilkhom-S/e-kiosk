@@ -11,7 +11,7 @@ const char WriteBlock[] = "\xA2";
 const char Exit[] = "\xA3";
 } // namespace UpdatingFirmware
 
-const char GetInternalVersion[] = "\x70";
-const char GetSerial[] = "\x72";
+const char GetInternalVersion[] = R"(p)";
+const char GetSerial[] = R"(r)";
 } // namespace Commands
 } // namespace CCCNetCreator

@@ -12,7 +12,7 @@ template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QStri
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList Enum_Parameters() {
+template <class T> TParameterList enumParameters() {
     return createNamedList<T>(T::getModelList(), CComponents::CoinAcceptor)
            << setProtocol(ProtocolNames::CashDevice::CCTalk)
 
@@ -28,17 +28,17 @@ template <class T> TParameterList Enum_Parameters() {
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList CCTalkParameters() {
+template <class T> TParameterList ccTalkParameters() {
     using namespace CHardware::CashDevice;
 
-    return Enum_Parameters<T>() << setProtocolType(CCTalkTypes::CRC8,
-                                                   QStringList() << CCTalkTypes::CRC8);
+    return enumParameters<T>() << setProtocolType(CCTalkTypes::CRC8,
+                                                  QStringList() << CCTalkTypes::CRC8);
 }
 
 //------------------------------------------------------------------------------
 BEGIN_REGISTER_PLUGIN
-SIMPLE_COMMON_DRIVER(CCTalkCoinAcceptorBase, CCTalkParameters)
-SIMPLE_COMMON_DRIVER(CCTalkComplexEnableCoinAcceptor, CCTalkParameters)
+SIMPLE_COMMON_DRIVER(CCTalkCoinAcceptorBase, ccTalkParameters)
+SIMPLE_COMMON_DRIVER(CCTalkComplexEnableCoinAcceptor, ccTalkParameters)
 // COMMON_COIN_ACCEPTOR_PLUGIN(NPSTalkCoinAcceptor)   // отключено из-за отсутствия возможности
 // отключения отдельных номиналов и других критичных проблем
 END_REGISTER_PLUGIN

@@ -52,7 +52,7 @@ TResult PuloonLCDM::processCommand(char aCommand,
 
     QByteArray commandData = QByteArray(1, CPuloonLCDM::CommunicationId) + aCommand + aCommandData;
     CPuloonLCDM::Commands::SData commandInfo = CPuloonLCDM::Commands::Data[aCommand];
-    int timeout = aTimeout ? aTimeout : commandInfo.timeout;
+    int timeout = (aTimeout != 0) ? aTimeout : commandInfo.timeout;
 
     TAnswerList answerList;
     TResult result = m_Protocol.processCommand(commandData, answerList, timeout);
@@ -110,7 +110,8 @@ TResult PuloonLCDM::processCommand(char aCommand,
                 toLog(LogLevel::Error,
                       QString("%1: %2").arg(m_DeviceName).arg(deviceCodeData.description));
                 return CommandResult::Answer;
-            } if (warningLevel == EWarningLevel::Warning) {
+            }
+            if (warningLevel == EWarningLevel::Warning) {
                 toLog(LogLevel::Warning,
                       QString("%1: %2").arg(m_DeviceName).arg(deviceCodeData.description));
             }
@@ -199,23 +200,23 @@ bool PuloonLCDM::isConnected() {
         answer.mid(4, 4).toHex().remove(0, 1).remove(1, 1).remove(2, 1).remove(3, 1).toUpper();
     setDeviceParameter(CDeviceData::CheckSum, textCheckSum);
 
-    bool checkSum_OK = false;
-    ushort checkSum = textCheckSum.toUShort(&checkSum_OK, 16);
+    bool checkSumOk = false;
+    ushort checkSum = textCheckSum.toUShort(&checkSumOk, 16);
 
     CPuloonLCDM::Models::SData modelData;
 
-    if (checkSum_OK) {
+    if (checkSumOk) {
         modelData = CPuloonLCDM::Models::Data[checkSum];
         m_DeviceName = modelData.name;
         m_units = modelData.units;
     }
 
     QString textROMVersion = answer.mid(1, 2);
-    bool ROMVersionOK = false;
-    int ROMVersion = textROMVersion.toInt(&ROMVersionOK);
+    bool romVersionOk = false;
+    int romVersion = textROMVersion.toInt(&romVersionOk);
     QString resultROMVersion = textROMVersion;
 
-    if (ROMVersionOK && modelData.ROMVersion && (ROMVersion == modelData.ROMVersion)) {
+    if (romVersionOk && (modelData.ROMVersion != 0) && (romVersion == modelData.ROMVersion)) {
         resultROMVersion = modelData.fullROMVersion;
     }
 
@@ -243,10 +244,10 @@ void PuloonLCDM::performDispense(int aUnit, int aItems) {
         int pack = ((i + 1) == starts) ? aItems - maxFullPackAmount : CPuloonLCDM::MaxOutputPack;
         QByteArray commandData = QString("%1").arg(pack, 2, 10, QChar(ASCII::Zero)).toLatin1();
 
-        char command =
-            aUnit ? CPuloonLCDM::Commands::LowerDispense : CPuloonLCDM::Commands::UpperDispense;
+        char command = (aUnit != 0) ? CPuloonLCDM::Commands::LowerDispense
+                                    : CPuloonLCDM::Commands::UpperDispense;
         int timeout =
-            CPuloonLCDM::MaxNoteDispensingTimeout * pack + CPuloonLCDM::MaxTimeoutEmptyUnit;
+            (CPuloonLCDM::MaxNoteDispensingTimeout * pack) + CPuloonLCDM::MaxTimeoutEmptyUnit;
         QByteArray answer;
 
         TResult result = processCommand(command, commandData, &answer, timeout);
@@ -260,7 +261,7 @@ void PuloonLCDM::performDispense(int aUnit, int aItems) {
             dispensedItems += answer.mid(2, 2).toInt();
             int rejectedItems = answer.mid(6, 2).toInt();
 
-            if (rejectedItems) {
+            if (rejectedItems != 0) {
                 toLog(LogLevel::Warning,
                       m_DeviceName + QString(": emit rejected %1 notes from %2 unit")
                                          .arg(rejectedItems)

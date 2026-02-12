@@ -121,7 +121,7 @@ bool VirtualCashAcceptor::reject() {
 
 //--------------------------------------------------------------------------------
 void VirtualCashAcceptor::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &aModifiers) {
-    if (aModifiers & Qt::ControlModifier) {
+    if (aModifiers.testFlag(Qt::ControlModifier)) {
         switch (aKey) {
         case Qt::Key_F1:
         case Qt::Key_F2:
@@ -161,7 +161,7 @@ void VirtualCashAcceptor::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &
             break;
         } // мошенство
         }
-    } else if (aModifiers & Qt::AltModifier) {
+    } else if (aModifiers.testFlag(Qt::AltModifier)) {
         switch (aKey) {
         case Qt::Key_F8: {
             m_StackedStatusCodes.insert(BillAcceptorStatusCode::MechanicFailure::JammedInStacker);

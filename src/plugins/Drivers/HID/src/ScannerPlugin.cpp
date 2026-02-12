@@ -8,7 +8,7 @@ using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
 /// Конструктор плагина.
-template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstanceName) {
+template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QString &aInstanceName) {
     return new DevicePluginBase<T>("Scanners", aEnvironment, aInstanceName);
 }
 

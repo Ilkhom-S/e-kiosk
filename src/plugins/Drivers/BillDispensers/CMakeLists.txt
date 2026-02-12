@@ -19,6 +19,8 @@ ek_add_driver_plugin(bill_dispensers
     HardwareProtocols
     HardwareCommon
     CashDispensers
+    INCLUDE_DIRS
+    ${CMAKE_SOURCE_DIR}/src/modules/Hardware
 )
 
 # Translations - merge bill dispensers and common translations

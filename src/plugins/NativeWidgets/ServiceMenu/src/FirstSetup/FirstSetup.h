@@ -15,7 +15,7 @@ class ServiceMenuBackend;
 //--------------------------------------------------------------------------
 class FirstSetup : public virtual SDK::Plugin::IPlugin, public virtual SDK::GUI::IGraphicsItem {
 public:
-    FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    FirstSetup(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
     virtual ~FirstSetup();
 
 #pragma region SDK::Plugin::IPlugin interface
@@ -78,7 +78,7 @@ private:
     QVariantMap m_Parameters;
 
     QGraphicsProxyWidget *m_MainWidget;
-    WizardFrame *m_WizardFrame;
+    WizardFrame *m_WizardFrame{};
     QSharedPointer<ServiceMenuBackend> m_Backend;
 };
 

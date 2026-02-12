@@ -22,7 +22,7 @@ const int CheckTimeout = 3 * 1000;
 //----------------------------------------------------------------------------
 WatchServiceController::WatchServiceController()
     : m_Client(createWatchServiceClient(CWatchService::Modules::WatchServiceController)),
-      m_LastCommand(Unknown), m_PreviousConnectionState(false) {
+      m_LastCommand(LastCommand::Unknown), m_PreviousConnectionState(false) {
     connect(&m_Timer, &QTimer::timeout, this, &WatchServiceController::onCheck);
 
     m_Client->subscribeOnDisconnected(this);
@@ -230,7 +230,7 @@ void WatchServiceController::onCheck() {
     bool wasConnected = m_Client->isConnected();
 
     if (!wasConnected) {
-        m_LastCommand = Unknown;
+        m_LastCommand = LastCommand::Unknown;
         m_Client->start();
     }
 
@@ -277,7 +277,7 @@ void WatchServiceController::onDisconnected() {
 
 //----------------------------------------------------------------------------
 void WatchServiceController::onCloseCommandReceived() {
-    if (m_LastCommand != Stop) {
+    if (m_LastCommand != LastCommand::Stop) {
         LOG(WatchServiceController::getLog(),
             LogLevel::Normal,
             "Close tray by command from watch service.");
@@ -296,7 +296,7 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
         LogLevel::Normal,
         QString("User say: start service. %1").arg(aArguments));
 
-    m_LastCommand = Start;
+    m_LastCommand = LastCommand::Start;
 
     if (!m_Client->isConnected()) {
         // Validate application instance
@@ -356,7 +356,7 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
 void WatchServiceController::onStopServiceClicked() {
     LOG(WatchServiceController::getLog(), LogLevel::Normal, "User say: stop service.");
 
-    m_LastCommand = Stop;
+    m_LastCommand = LastCommand::Stop;
 
     if (m_Client->isConnected()) {
         m_Client->stopService();

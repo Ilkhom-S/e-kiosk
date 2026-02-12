@@ -31,7 +31,7 @@ protected:
     void timerEvent(QTimerEvent *);
 
 private:
-    TokenWindow *m_Window;
+    TokenWindow *m_Window{};
 };
 
 //------------------------------------------------------------------------

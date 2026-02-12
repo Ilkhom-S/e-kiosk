@@ -76,7 +76,7 @@ private:
 
     QList<IServiceWindow *> m_ServiceWindowList;
     HumoServiceBackend *m_Backend;
-    QButtonGroup *digitGroup;
+    QButtonGroup *digitGroup{};
 };
 
 //------------------------------------------------------------------------

@@ -24,9 +24,6 @@ AV268::AV268() : m_Overflow(false), m_Initialize(false), m_ModelType(Unknown) {
     // данные устройства
     setConfigParameter(CHardware::Printer::Commands::Cutting, "\x1B\x69");
     m_LineSize = CAV268::LineSize;
-    
-    
-    
 }
 
 //--------------------------------------------------------------------------------
@@ -57,7 +54,7 @@ void AV268::initialize() {
 
 //--------------------------------------------------------------------------------
 bool AV268::processCommand(const QByteArray &aCommand, QByteArray *aAnswer) {
-    return m_IOPort->write(aCommand) && (!aAnswer || getAnswer(*aAnswer));
+    return m_IOPort->write(aCommand) && ((aAnswer == nullptr) || getAnswer(*aAnswer));
 }
 
 //--------------------------------------------------------------------------------
@@ -113,7 +110,8 @@ bool AV268::getAnswer(QByteArray &aAnswer, bool aNeedDelay) {
 
     for (int i = 0; i < aAnswer.size(); ++i) {
         if (aAnswer.contains(ASCII::XOn) || aAnswer.contains(ASCII::XOff)) {
-            m_Overflow = aAnswer.contains(ASCII::XOff); // C4800, QBool::operator const void *() const
+            m_Overflow =
+                aAnswer.contains(ASCII::XOff); // C4800, QBool::operator const void *() const
             aAnswer.remove(i, 1);
             --i;
         }
@@ -132,24 +130,24 @@ bool AV268::getStatus(TStatusCodes &aStatusCodes) {
 
     char status = answer[0];
 
-    if (status & CAV268::Statuses::NotConnected) {
+    if ((status & CAV268::Statuses::NotConnected) != 0) {
         toLog(LogLevel::Error, "AV268: wrong byte returned");
         return false;
     }
 
-    if (status & CAV268::Statuses::HeadOverheat) {
+    if ((status & CAV268::Statuses::HeadOverheat) != 0) {
         aStatusCodes.insert(Error::Temperature);
     }
 
-    if (status & CAV268::Statuses::NoPaper) {
+    if ((status & CAV268::Statuses::NoPaper) != 0) {
         aStatusCodes.insert(Error::PaperEnd);
     }
 
-    if (status & CAV268::Statuses::HeadDoorOpened) {
+    if ((status & CAV268::Statuses::HeadDoorOpened) != 0) {
         aStatusCodes.insert(DeviceStatusCode::Error::Mechanism_Position);
     }
 
-    if (status & CAV268::Statuses::UnknownError) {
+    if ((status & CAV268::Statuses::UnknownError) != 0) {
         aStatusCodes.insert(DeviceStatusCode::Error::Unknown);
     }
 
@@ -170,22 +168,22 @@ bool AV268::getStatus(TStatusCodes &aStatusCodes) {
             return true;
         }
 
-        char DIPSettings = answer[2];
+        char dipSettings = answer[2];
 
-        if (((DIPSettings & CAV268::DIPSwitches::HalfHeight) &&
-             (~DIPSettings & CAV268::DIPSwitches::DoubleHeight)) ||
-            (~DIPSettings & CAV268::DIPSwitches::Cutter) ||
-            (bool(DIPSettings & CAV268::DIPSwitches::Presenter) != (m_ModelType == Plus))) {
+        if ((((dipSettings & CAV268::DIPSwitches::HalfHeight) != 0) &&
+             ((~dipSettings & CAV268::DIPSwitches::DoubleHeight) != 0)) ||
+            ((~dipSettings & CAV268::DIPSwitches::Cutter) != 0) ||
+            (bool(dipSettings & CAV268::DIPSwitches::Presenter) != (m_ModelType == Plus))) {
             aStatusCodes.insert(DeviceStatusCode::Warning::WrongSwitchesConfig);
         }
 
-        int factor = (DIPSettings & CAV268::DIPSwitches::DoubleWidth) ? 2 : 1;
+        int factor = ((dipSettings & CAV268::DIPSwitches::DoubleWidth) != 0) ? 2 : 1;
         m_LineSize = CAV268::LineSize / factor;
 
         if (processCommand(CAV268::Commands::GetPresenterStatus, &answer) &&
             (answer.size() <= 10) && (answer.size() >= 2) &&
             answer.startsWith(CAV268::Answers::GetPresenterStatus)) {
-            bool isAVPlus = (DIPSettings & CAV268::DIPSwitches::Presenter) &&
+            bool isAVPlus = ((dipSettings & CAV268::DIPSwitches::Presenter) != 0) &&
                             (answer.size() == 10) &&
                             ((answer[1] == CAV268::Answers::Presenter::Enable) ||
                              (answer[1] == CAV268::Answers::Presenter::Disable));
@@ -203,15 +201,15 @@ bool AV268::getStatus(TStatusCodes &aStatusCodes) {
                 (answer[1] == CAV268::Answers::Presenter::NotAvaiable)) {
                 ushort errorCode = answer[3] | answer[2] << 8;
 
-                if (errorCode & CAV268::Statuses::PaperJam) {
+                if ((errorCode & CAV268::Statuses::PaperJam) != 0) {
                     aStatusCodes.insert(Error::PaperJam);
                 }
 
-                if (errorCode & CAV268::Statuses::Presenter) {
+                if ((errorCode & CAV268::Statuses::Presenter) != 0) {
                     aStatusCodes.insert(Error::Presenter);
                 }
 
-                if (errorCode & CAV268::Statuses::PowerSupply) {
+                if ((errorCode & CAV268::Statuses::PowerSupply) != 0) {
                     aStatusCodes.insert(DeviceStatusCode::Error::PowerSupply);
                 }
             } else {

@@ -10,11 +10,11 @@ class DialupConnectionWindow : public QWidget, protected Ui::DialupConnectionWin
 
 public:
     DialupConnectionWindow(QWidget *aParent = 0);
-    ~DialupConnectionWindow();
+    ~DialupConnectionWindow() = default;
 
     void initialize();
     QString getUserSelection() const;
-    void fillModem_List(const QList<QPair<QString, QString>> &aModems);
+    void fillModemList(const QList<QPair<QString, QString>> &aModems);
     void fillConnectionList(const QStringList &aConnections, const QString &aCurrent);
     void fillTemplateList(const QStringList &aTemplates);
 

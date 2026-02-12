@@ -23,11 +23,8 @@ class Component : public QObject {
     Q_OBJECT
 
 public:
-    Component(const QString &aId,
-              const QString &aVersion,
-              const TFileList &aFiles,
-              const QStringList &aActions,
-              const QString &aURL);
+    Component(
+        QString aId, QString aVersion, const TFileList &aFiles, QStringList aActions, QString aURL);
     virtual ~Component();
 
     /// Получение полного списка файлов.

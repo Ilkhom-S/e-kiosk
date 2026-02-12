@@ -109,7 +109,7 @@ void addDescriptorData(libusb_device_handle *aHandle, uint8_t aDescriptor, QVari
     data.fill(ASCII::NUL, CLibUSBUtils::DescriptorDataSize);
     aData.clear();
 
-    if ((aDescriptor != 0u) &&
+    if ((aDescriptor != 0U) &&
         (libusb_get_string_descriptor_ascii(
              aHandle, aDescriptor, data.data(), CLibUSBUtils::DescriptorDataSize) != 0)) {
         aData = ProtocolUtils::clean(QString((char *)data.data()));
@@ -164,7 +164,7 @@ bool getDevicesProperties(CLibUSB::TDeviceProperties &aDeviceProperties, bool aF
         return false;
     }
 
-    for (auto device : deviceList) {
+    for (auto *device : deviceList) {
         aDeviceProperties.insert(device, getDevicesProperties(device));
     }
 

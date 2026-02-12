@@ -159,7 +159,7 @@ bool CryptEngine::createKeyPair(const QString &aPath,
                             &publicKey,
                             CCryptEngine::KeySize);
 
-    if (res) {
+    if (res != 0) {
         aErrorDescription = errorToString(res);
 
         return false;
@@ -286,7 +286,7 @@ bool CryptEngine::exportPublicKeyToFile(int aKeyPair,
         return false;
     }
 
-    if (keyFile.size()) {
+    if (keyFile.size() != 0) {
         keyFile.write("\r\n");
     }
 
@@ -852,7 +852,7 @@ QString CryptEngine::errorToString(int aError) const {
     case CRYPT_ERR_ENG_NOT_READY:
         return QString("provider is not ready (%1)").arg(aError);
     case CRYPT_ERR_NOT_SUPPORT:
-        return QString("function is not suppoerted (%1)").arg(aError);
+        return QString("function is not supported (%1)").arg(aError);
     case CRYPT_ERR_FILE_NOT_FOUND:
         return QString("file not found (%1)").arg(aError);
     case CRYPT_ERR_CANT_READ_FILE:
@@ -866,7 +866,7 @@ QString CryptEngine::errorToString(int aError) const {
     case CRYPT_ERR_VERIFY:
         return QString("failed to verify document (%1)").arg(aError);
     case CRYPT_ERR_CREATE_FILE:
-        return QString("failed to create faile (%1)").arg(aError);
+        return QString("failed to create file (%1)").arg(aError);
     case CRYPT_ERR_CANT_WRITE_FILE:
         return QString("failed to write file (%1)").arg(aError);
     case CRYPT_ERR_INVALID_KEYCARD:

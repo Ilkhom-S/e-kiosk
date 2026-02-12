@@ -5,7 +5,7 @@
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QRegularExpression>
 
-#include <math.h>
+#include <cmath>
 
 #include "SwecoinPrinterData.h"
 
@@ -64,11 +64,11 @@ bool SwecoinPrinter::isConnected() {
         }
 
         answer.append(data);
-    } while ((length && (answer.size() < length) &&
+    } while (((length != 0) && (answer.size() < length) &&
               (clockTimer.elapsed() < CSwecoinPrinter::MaxReadIdTimeout)) ||
-             (!length && (clockTimer.elapsed() < CSwecoinPrinter::MinReadIdTimeout)));
+             ((length == 0) && (clockTimer.elapsed() < CSwecoinPrinter::MinReadIdTimeout)));
 
-    if (!length || (answer.size() < length)) {
+    if ((length == 0) || (answer.size() < length)) {
         return false;
     }
 
@@ -133,7 +133,7 @@ bool SwecoinPrinter::getStatus(TStatusCodes &aStatusCodes) {
         return false;
     }
 
-    if (answer[0]) {
+    if (answer[0] != 0) {
         aStatusCodes.insert(PrinterStatusCode::Warning::PaperNearEnd);
     }
 
@@ -142,7 +142,7 @@ bool SwecoinPrinter::getStatus(TStatusCodes &aStatusCodes) {
         return false;
     }
 
-    if (answer[1] & CSwecoinPrinter::PaperInPresenterMask) {
+    if ((answer[1] & CSwecoinPrinter::PaperInPresenterMask) != 0) {
         aStatusCodes.insert(PrinterStatusCode::OK::PaperInPresenter);
     }
 

@@ -98,7 +98,7 @@ private slots:
         QCOMPARE(stack1.first(), stack2.first());
     }
 
-    void testDumpCallstackFrom_DifferentThreads() {
+    void testDumpCallstackFromDifferentThreads() {
         QStringList mainThreadStack;
         QStringList workerThreadStack;
 

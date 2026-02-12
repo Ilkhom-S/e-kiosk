@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QThread>
 
@@ -17,6 +18,9 @@ signals:
 
     /// Сигнал инициализации.
     void initialized();
+
+public:
+    ~IDeviceWorkingThread() override = default;
 
 public slots:
     /// Инициализация.

@@ -21,9 +21,8 @@ EBDSCashAcceptor::EBDSCashAcceptor() : m_StackerNearFull(false), m_Enabled(false
 
     // данные устройства
     m_DeviceName = "EBDS cash acceptor";
-    
+
     m_ResetWaiting = EResetWaiting::Available;
-    
 
     // параметры протокола
     m_DeviceCodeSpecification = PDeviceCodeSpecification(new CEBDS::DeviceCodeSpecification);
@@ -201,7 +200,7 @@ bool EBDSCashAcceptor::applyParTable() {
     for (auto it = m_EscrowParTable.data().begin(); it != m_EscrowParTable.data().end(); ++it) {
         if (it->enabled && !it->inhibit) {
             int id = it.key() - 1;
-            int index = 3 + id / 7;
+            int index = 3 + (id / 7);
             commandData[index] = commandData[index] | (1 << (id % 7));
         }
     }
@@ -274,7 +273,7 @@ bool EBDSCashAcceptor::setLastPar(const QByteArray &aAnswer) {
     SDK::Driver::SPar par = getPar(aAnswer);
     m_EscrowPars = TPars() << par;
 
-    return m_EscrowParTable.data().values().contains(par) && (par.nominal) &&
+    return m_EscrowParTable.data().values().contains(par) && ((par.nominal) != 0.0) &&
            (par.currencyId != Currency::NoCurrency);
 }
 

@@ -53,7 +53,8 @@ bool PrimexNP2511::isConnected() {
 
 //--------------------------------------------------------------------------------
 bool PrimexNP2511::backFeed(int aCount) {
-    return !aCount || m_IOPort->write(QByteArray(CPrimexNP2511::Commands::BackFeed) + char(aCount));
+    return (aCount == 0) ||
+           m_IOPort->write(QByteArray(CPrimexNP2511::Commands::BackFeed) + char(aCount));
 }
 
 //--------------------------------------------------------------------------------
@@ -110,7 +111,7 @@ bool PrimexNP2511::getStatus(TStatusCodes &aStatusCodes) {
     }
 
     for (int i = 0; i < 8; ++i) {
-        if (answer[0] & (1 << i)) {
+        if ((answer[0] & (1 << i)) != 0) {
             aStatusCodes.insert(CPrimexNP2511::Statuses[i]);
         }
     }
@@ -141,7 +142,7 @@ bool PrimexNP2511::processDeviceData(const CPrimexNP2511::TDeviceParametersIt &a
     if (answer[0] != ASCII::Full) {
         toLog(LogLevel::Error,
               errorLog + QString("first byte = %1 is wrong, need %2")
-                             .arg(ProtocolUtils::toHexLog(char(answer[0])))
+                             .arg(ProtocolUtils::toHexLog(answer[0]))
                              .arg(ProtocolUtils::toHexLog(ASCII::Full)));
         return false;
     }
@@ -149,7 +150,7 @@ bool PrimexNP2511::processDeviceData(const CPrimexNP2511::TDeviceParametersIt &a
     if (answer[1] != aIt.key()) {
         toLog(LogLevel::Error,
               QString("second byte = %1 is wrong, need %2 = command")
-                  .arg(ProtocolUtils::toHexLog(char(answer[1])))
+                  .arg(ProtocolUtils::toHexLog(answer[1]))
                   .arg(ProtocolUtils::toHexLog(aIt.key())));
         return false;
     }

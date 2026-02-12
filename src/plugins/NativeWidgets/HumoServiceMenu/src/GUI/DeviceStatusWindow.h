@@ -32,7 +32,7 @@ protected:
     virtual QWidget *createWidget();
 
 private:
-    Ui::DeviceStatusWindow ui;
+    Ui::DeviceStatusWindow ui{};
 };
 
 //------------------------------------------------------------------------------

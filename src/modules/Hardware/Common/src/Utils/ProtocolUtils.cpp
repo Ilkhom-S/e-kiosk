@@ -78,9 +78,9 @@ ProtocolUtils::TBufferList ProtocolUtils::getBufferListFrom_Strings(QStringList 
     aDataList.removeAll("");
     QRegularExpression regex(CProtocolUtils::LogRexExp);
 
-    for (int i = 0; i < aDataList.size(); ++i) {
+    for (const auto &i : aDataList) {
 
-        QRegularExpressionMatch match = regex.match(aDataList[i]);
+        QRegularExpressionMatch match = regex.match(i);
         if (match.hasMatch() && (match.capturedTexts()[1].size() > 4)) {
             QString lineData = match.capturedTexts()[1];
             result << ProtocolUtils::getBufferFrom_String(lineData);

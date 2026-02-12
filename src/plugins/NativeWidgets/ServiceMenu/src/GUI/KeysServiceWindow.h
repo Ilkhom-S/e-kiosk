@@ -25,7 +25,7 @@ private slots:
     void onError(QString aError);
 
 private:
-    KeysWindow *m_Window;
+    KeysWindow *m_Window{};
 };
 
 //------------------------------------------------------------------------

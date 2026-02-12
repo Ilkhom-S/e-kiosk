@@ -4,7 +4,7 @@
 
 namespace CICTBase {
 namespace Answers {
-const char Identification[] = "\x5E\x3E\x5E";
+const char Identification[] = R"(^>^)";
 } // namespace Answers
 
 namespace States {

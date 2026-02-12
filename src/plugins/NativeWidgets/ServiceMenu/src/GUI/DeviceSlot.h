@@ -41,9 +41,9 @@ public:
     };
 
     DeviceSlot(ServiceMenuBackend *aBackend,
-               const QString &aConfigurationName,
+               QString aConfigurationName,
                bool aIsUserSlot = false,
-               const QString &aType = QString());
+               QString aType = QString());
 
     virtual ~DeviceSlot();
 
@@ -117,7 +117,7 @@ protected:
     ServiceMenuBackend *m_Backend;
     QString m_ConfigurationName;
 
-    Ui::frmDeviceSlot ui;
+    Ui::frmDeviceSlot ui{};
     QPointer<QWidget> m_Widget;
 
     ObjectPointer<SDK::Driver::IDevice> m_Device;

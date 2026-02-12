@@ -94,7 +94,7 @@ void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagL
                 pos = -1;
             } else {
                 pos = begin;
-}
+            }
         } else if (begin != -1) {
             // 3. Используем match.captured(n) вместо capturedTexts() для производительности
             QString tagName = match.captured(1);
@@ -113,8 +113,8 @@ void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagL
                     // Логика закрытия тега (совместима с C++14)
                     if (!aTagLexemes.isEmpty()) {
                         if (!aTagLexemes.last().tags.contains(tagType)) {
-                            for (int i = 0; i < aTagLexemes.size(); ++i) {
-                                aTagLexemes[i].tags.insert(tagType);
+                            for (auto &aTagLexeme : aTagLexemes) {
+                                aTagLexeme.tags.insert(tagType);
                             }
                         }
                     }

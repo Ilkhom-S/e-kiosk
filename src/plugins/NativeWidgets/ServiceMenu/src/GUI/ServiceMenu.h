@@ -15,7 +15,7 @@
 //--------------------------------------------------------------------------
 class ServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
 public:
-    ServiceMenu(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    ServiceMenu(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
     ~ServiceMenu();
 
 #pragma region SDK::Plugin::IPlugin interface

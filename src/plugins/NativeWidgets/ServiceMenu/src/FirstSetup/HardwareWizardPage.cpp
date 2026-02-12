@@ -3,6 +3,7 @@
 #include "HardwareWizardPage.h"
 
 #include <QtCore/QTimer>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QStackedLayout>
 
 #include <SDK/Drivers/Components.h>
@@ -15,28 +16,27 @@
 #include "GUI/MessageBox/MessageBox.h"
 
 HardwareWizardPage::HardwareWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : WizardPageBase(aBackend, aParent), m_EditorWindow(new QWidget(this)),
-      m_HardwareWindow(new HardwareWindow(aBackend, this)),  autoyout = new QStackedLayout(this);
+    : WizardPageBase(aBackend, aParent), m_HardwareWindow(new HardwareWindow(aBackend, this)),
+      m_EditorWindow(new QWidget(this)) {
+    auto *layout = new QStackedLayout(this);
 
-    QLayout(layout);
+    setLayout(layout);
 
-    QLayout->setSpacing(0);
-    QLayout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->setContentsMargins(0, 0, 0, 0);
 
     // Создаём окно со списком устройств
-
-    HardwareWindow->setSlotCreationMode(HardwareWindow::OpenEditorAfterCreation);
+    m_HardwareWindow->setSlotCreationMode(HardwareWindow::OpenEditorAfterCreation);
 
     // Создаём место для редактора устройств
-
-    auto *editorLauto; QHBoxLayout(m_EditorWindow);
+    auto *editorLayout = new QHBoxLayout(m_EditorWindow);
 
     m_EditorWindow->setLayout(editorLayout);
 
     m_EditorWindow->layout()->setSpacing(0);
     m_EditorWindow->layout()->setContentsMargins(0, 0, 0, 0);
 
-    QLayout->addWidget(m_HardwareWindow);
+    layout->addWidget(m_HardwareWindow);
     layout->addWidget(m_EditorWindow);
 
     layout->setCurrentWidget(m_HardwareWindow);
@@ -73,7 +73,7 @@ bool HardwareWizardPage::activate() {
 
 //------------------------------------------------------------------------
 bool HardwareWizardPage::deactivate() {
-    auto *layout = qobjeautoedLayout *>(this->layout());
+    auto *layout = qobject_cast<QStackedLayout *>(this->layout());
     if (layout) {
         layout->setCurrentWidget(m_HardwareWindow);
     }
@@ -109,7 +109,7 @@ void HardwareWizardPage::onDetectionFinished() {
 void HardwareWizardPage::onEditSlot(DeviceSlot *aSlot, EditorPane *aPane) {
     connect(aPane, SIGNAL(finished()), SLOT(onEditFinished()));
 
-    auto *layout = qobject_cast<QSauto>(this->layout());
+    auto *layout = qobject_cast<QStackedLayout *>(this->layout());
     if (layout) {
         layout->setCurrentWidget(m_EditorWindow);
         m_EditorWindow->layout()->addWidget(aPane->getWidget());
@@ -129,11 +129,12 @@ void HardwareWizardPage::onRemoveSlot(DeviceSlot *aSlot) {
 
 //----------------------------------------------------------------------------
 void HardwareWizardPage::onEditFinished() {
-    auto *layout = qobject_cast<QStackedLayoautoyout());
+    auto *layout = qobject_cast<QStackedLayout *>(this->layout());
     if (layout) {
         layout->setCurrentWidget(m_HardwareWindow);
 
-        auto *editor = qobject_cast<EditorPane *>(sender()auto if (editor) {
+        auto *editor = qobject_cast<EditorPane *>(sender());
+        if (editor) {
             m_EditorWindow->layout()->removeWidget(editor->getWidget());
             QString deviceType(editor->getSlot()->getType());
 

@@ -26,7 +26,7 @@ const char Type[] = "web";
 const QString KeysDir = "keys";
 
 /// Pem-файл
-const QString Pem_File = "local.pem";
+const QString PemFile = "local.pem";
 
 /// Key-файл
 const QString KeyFile = "local.key";
@@ -36,12 +36,12 @@ const QString KeyFile = "local.key";
 namespace {
 
 /// Конструктор экземпляра плагина.
-SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createPlugin(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath) {
     return new WebEngineBackend(aFactory, aInstancePath);
 }
 
-QVector<SDK::Plugin::SPluginParameter> Enum_Parameters() {
+QVector<SDK::Plugin::SPluginParameter> enumParameters() {
     return QVector<SDK::Plugin::SPluginParameter>(1) << SDK::Plugin::SPluginParameter(
                SDK::Plugin::Parameters::Debug,
                SDK::Plugin::SPluginParameter::Bool,
@@ -59,12 +59,12 @@ REGISTER_PLUGIN_WITH_PARAMETERS(
                           SDK::PaymentProcessor::CComponents::GraphicsBackend,
                           CWebEngineBackend::PluginName),
     &CreatePlugin,
-    &Enum_Parameters);
+    &enumParameters);
 
 //------------------------------------------------------------------------------
 WebEngineBackend::WebEngineBackend(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath)
-    : m_Factory(aFactory), m_InstancePath(aInstancePath), m_Engine(0), m_CoreProxy(0) {}
+    : m_Factory(aFactory), m_InstancePath(aInstancePath), m_Engine(nullptr), m_CoreProxy(nullptr) {}
 
 //------------------------------------------------------------------------------
 WebEngineBackend::~WebEngineBackend() {

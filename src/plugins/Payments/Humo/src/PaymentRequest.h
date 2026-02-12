@@ -13,7 +13,7 @@ class Payment;
 //---------------------------------------------------------------------------
 class PaymentRequest : public Request {
 public:
-    PaymentRequest(Payment *aPayment, const QString &aName);
+    PaymentRequest(Payment *aPayment, QString aName);
 
     /// Добавляет в запрос дополнительные параметры из описания оператора для указанного шага.
     void addProviderParameters(const QString &aStep);

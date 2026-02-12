@@ -238,7 +238,7 @@ template <class T> void DispenserBase<T>::dispense(int aUnit, int aItems) {
 
         return;
     }
-    if (!this->m_unitData[aUnit]) {
+    if (this->m_unitData[aUnit] == 0) {
         this->emitDispensed(aUnit, 0, " due to unit is empty already");
 
         return;

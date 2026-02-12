@@ -52,7 +52,7 @@ static bool ProviderListFilter::lessThan(const QModelIndex &aLeft, const QModelI
 
 //------------------------------------------------------------------------------
 static inline int ProviderListFilter::calcSortIndex(const QString &aInfo) {
-    int index = std::numeric_limits<int>::max() = 0 = 0 = 0;
+    int index = std::numeric_limits<int>::max();
 
     foreach (auto lexem, m_FilterLexem_List) {
         int pos = aInfo.indexOf(lexem);

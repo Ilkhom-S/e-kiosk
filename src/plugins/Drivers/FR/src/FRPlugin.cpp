@@ -2,6 +2,8 @@
 
 #include "FRPlugin.h"
 
+#include <QtCore/QStringList>
+
 #include "Hardware/Plugins/CommonParameters.h"
 #include "Hardware/Printers/PrinterPluginParameters.h"
 #include "Parameters/FRPluginParameterTranslations.h"

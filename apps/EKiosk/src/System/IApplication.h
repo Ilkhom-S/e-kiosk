@@ -6,6 +6,8 @@
 #include <QtCore/QSettings>
 #include <QtGui/QImage>
 
+#include <Common/BasicApplication.h>
+
 #include <SDK/PaymentProcessor/Core/ICore.h>
 
 class IServiceManager;
@@ -70,5 +72,25 @@ public:
     // Возвращает текущую рабочую папку
     static QString getWorkingDirectory();
 };
+
+//---------------------------------------------------------------------------
+inline QString IApplication::toAbsolutePath(const QString &aPath) {
+    const QString normalized = QDir::fromNativeSeparators(aPath);
+    if (QDir::isAbsolutePath(normalized)) {
+        return QDir::cleanPath(normalized);
+    }
+
+    return QDir::cleanPath(getWorkingDirectory() + "/" + normalized);
+}
+
+//---------------------------------------------------------------------------
+inline QString IApplication::getWorkingDirectory() {
+    BasicApplication *application = BasicApplication::getInstance();
+    if (application) {
+        return QDir::fromNativeSeparators(application->getWorkingDirectory());
+    }
+
+    return QDir::fromNativeSeparators(QDir::currentPath());
+}
 
 //---------------------------------------------------------------------------

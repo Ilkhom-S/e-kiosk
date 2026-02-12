@@ -26,7 +26,7 @@ private slots:
 protected:
     HumoServiceBackend *m_Backend;
     QList<QWidget *> m_Widgets;
-    QSignalMapper *m_SignalMapper;
+    QSignalMapper *m_SignalMapper{};
 };
 
 //------------------------------------------------------------------------

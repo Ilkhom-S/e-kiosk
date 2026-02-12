@@ -10,7 +10,7 @@ class QMLBackendTest : public QObject {
     Q_OBJECT
 
 public:
-    QMLBackendTest() : m_testBase("D:/plugins/Debug/qml_backendd.dll") {}
+    QMLBackendTest() : m_testBase("D:/plugins/Debug/qml_backend.dll") {}
 
 private slots:
     // Basic plugin build verification

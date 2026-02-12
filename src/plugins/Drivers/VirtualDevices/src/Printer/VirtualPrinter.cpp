@@ -20,7 +20,7 @@ bool VirtualPrinter::isDeviceReady(bool aOnline) {
 
     MutexLocker locker(&m_ExternalMutex);
 
-    return m_StatusCollection.isEmpty(SDK::Driver::EWarningLevel::Error);
+    return m_StatusCollection.isEmpty(SDK::Driver::EWarningLevel::Error) != 0;
 }
 
 //--------------------------------------------------------------------------------
@@ -34,12 +34,12 @@ bool VirtualPrinter::print(const QStringList &aReceipt) {
     makeLexemeReceipt(aReceipt, lexemeReceipt);
     QStringList receipt;
 
-    for (int i = 0; i < lexemeReceipt.size(); ++i) {
+    for (auto &i : lexemeReceipt) {
         QString line;
 
-        for (int j = 0; j < lexemeReceipt[i].size(); ++j) {
-            for (int k = 0; k < lexemeReceipt[i][j].size(); ++k) {
-                line += lexemeReceipt[i][j][k].data;
+        for (auto &j : i) {
+            for (int k = 0; k < j.size(); ++k) {
+                line += j[k].data;
             }
         }
 

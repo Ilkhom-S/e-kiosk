@@ -19,7 +19,7 @@
 
 DialupWizardPage::DialupWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
     : WizardPageBase(aBackend, aParent), m_ConnectionWindow(new DialupConnectionWindow(this)) {
-    
+
     m_ConnectionWindow->setParent(this);
     setLayout(new QHBoxLayout(this));
     layout()->setSpacing(0);
@@ -46,7 +46,7 @@ DialupWizardPage::DialupWizardPage(ServiceMenuBackend *aBackend, QWidget *aParen
 bool DialupWizardPage::initialize() {
     m_ConnectionWindow->initialize();
     m_ConnectionWindow->fillTemplateList(m_Backend->getNetworkManager()->getConnectionTemplates());
-    m_ConnectionWindow->fillModem_List(m_Backend->getNetworkManager()->getModems());
+    m_ConnectionWindow->fillModemList(m_Backend->getNetworkManager()->getModems());
 
     QVariantMap networkInfo;
     m_Backend->getNetworkManager()->getNetworkInfo(networkInfo);

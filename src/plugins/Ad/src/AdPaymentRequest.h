@@ -15,7 +15,7 @@ class AdPaymentRequest : public Request {
 public:
     //---------------------------------------------------------------------------
     // Конструктор запроса оплаты
-    AdPaymentRequest(AdPayment *aPayment, const QString &aName);
+    AdPaymentRequest(AdPayment *aPayment, QString aName);
 
     //---------------------------------------------------------------------------
     // Добавляет в запрос дополнительные параметры из описания оператора для указанного шага

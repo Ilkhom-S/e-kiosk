@@ -52,7 +52,7 @@ void VirtualDispenser::performDispense(int aUnit, int aItems) {
     if (!m_StatusCodes.contains(DispenserStatusCode::Error::Jammed)) {
         dispensedItems = qMin(aItems, m_unitData[aUnit]);
 
-        if (m_JammedItem && (dispensedItems >= m_JammedItem)) {
+        if ((m_JammedItem != 0) && (dispensedItems >= m_JammedItem)) {
             m_StatusCodes.insert(DispenserStatusCode::Error::Jammed);
             dispensedItems = m_JammedItem - 1;
         }
@@ -62,7 +62,7 @@ void VirtualDispenser::performDispense(int aUnit, int aItems) {
 
     SleepHelper::msleep(CVirtualDispenser::Item_DispenseDelay * dispensedItems);
 
-    if (m_unitData[aUnit]) {
+    if (m_unitData[aUnit] != 0) {
         m_unitData[aUnit]--;
         toLog(LogLevel::Warning,
               QString("%1: Send rejected 1 item from %2 unit").arg(m_DeviceName).arg(aUnit));
@@ -70,7 +70,7 @@ void VirtualDispenser::performDispense(int aUnit, int aItems) {
         emit rejected(aUnit, 1);
     }
 
-    if (!m_unitData[aUnit]) {
+    if (m_unitData[aUnit] == 0) {
         toLog(LogLevel::Warning, QString("%1: Send emptied unit %2").arg(m_DeviceName).arg(aUnit));
 
         emit unitEmpty(aUnit);
@@ -98,7 +98,7 @@ void VirtualDispenser::checkUnitStatus(TStatusCodes &aStatusCodes, int aUnit) {
 
 //--------------------------------------------------------------------------------
 void VirtualDispenser::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &aModifiers) {
-    if (aModifiers & Qt::AltModifier) {
+    if (aModifiers.testFlag(Qt::AltModifier)) {
         switch (aKey) {
         case Qt::Key_F1: {
             changeStatusCode(DispenserStatusCode::Error::Unit0Opened);
@@ -130,7 +130,7 @@ void VirtualDispenser::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &aMo
             break;
         }
         }
-    } else if (aModifiers & Qt::ShiftModifier) {
+    } else if (aModifiers.testFlag(Qt::ShiftModifier)) {
         switch (aKey) {
         case Qt::Key_F1: {
             changeStatusCode(DispenserStatusCode::Warning::Unit0Empty);

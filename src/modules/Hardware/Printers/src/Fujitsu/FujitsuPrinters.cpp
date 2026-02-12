@@ -84,7 +84,7 @@ bool FujitsuPrinter::getStatus(TStatusCodes &aStatusCodes) {
     }
 
     for (int i = 0; i < 8; ++i) {
-        if ((answer[0] & (1 << i)) == (i != 7)) {
+        if ((answer[0] & (1 << i)) == static_cast<int>(i != 7)) {
             aStatusCodes.insert(CFujitsu::Statuses[i]);
         }
     }

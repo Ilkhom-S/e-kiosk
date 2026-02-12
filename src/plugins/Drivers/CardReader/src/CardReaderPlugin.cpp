@@ -1,11 +1,10 @@
 /* @file Плагин с драйверами кардридеров. */
 
-#include "Hardware/Plugins/CommonParameters.h"
+#include <Hardware/Plugins/CommonParameters.h>
 
 #ifdef Q_OS_WIN32
 #include <Hardware/CardReaders/CreatorReader.h>
-
-#include "../../../../modules/Hardware/Cardreaders/src/IDTech/IDTechReader.h"
+#include <Hardware/Cardreaders/src/IDTech/IDTechReader.h>
 #endif
 
 #ifdef Q_OS_WIN32
@@ -28,12 +27,12 @@ template <class T> TParameterList enumParameters() {
 //------------------------------------------------------------------------------
 BEGIN_REGISTER_PLUGIN
 #ifdef Q_OS_WIN32
-SIMPLE_COMMON_DRIVER(MifareReader, Enum_Parameters)
+SIMPLE_COMMON_DRIVER(MifareReader, enumParameters)
 #endif
 #ifdef Q_OS_WIN32
-SIMPLE_COMMON_DRIVER(CreatorReader, Enum_Parameters)
+SIMPLE_COMMON_DRIVER(CreatorReader, enumParameters)
 #endif
-// SIMPLE_COMMON_DRIVER(IDTechReader, Enum_Parameters)
+// SIMPLE_COMMON_DRIVER(IDTechReader, enumParameters)
 END_REGISTER_PLUGIN
 
 //------------------------------------------------------------------------------

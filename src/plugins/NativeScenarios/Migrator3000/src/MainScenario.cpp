@@ -278,7 +278,7 @@ void MainScenario::finishDeviceDetection() {
     // todo check validator/printer config settings
     QStringList configurations = m_DeviceService->getConfigurations();
 
-    auto isDeviceOK = [this](const QString &aDeviceType) -> bool {
+    auto isDeviceOK = [this, &configurations](const QString &aDeviceType) -> bool {
         namespace DSDK = SDK::Driver;
 
         foreach (QString config, configurations) {

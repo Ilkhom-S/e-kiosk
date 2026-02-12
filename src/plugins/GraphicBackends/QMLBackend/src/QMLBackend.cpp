@@ -6,6 +6,8 @@
 #include <QtQml/QQmlContext>
 #include <QtQuick/QQuickItem>
 
+#include <utility>
+
 #ifndef Q_OS_MACOS
 #include <QtWebEngine/QtWebEngine>
 #endif
@@ -29,12 +31,12 @@ const char TypesExportNamespace[] = "Types";
 namespace {
 
 /// Конструктор экземпляра плагина.
-SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createPlugin(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath) {
     return new QMLBackend(aFactory, aInstancePath);
 }
 
-QVector<SDK::Plugin::SPluginParameter> Enum_Parameters() {
+QVector<SDK::Plugin::SPluginParameter> enumParameters() {
     return QVector<SDK::Plugin::SPluginParameter>(1) << SDK::Plugin::SPluginParameter(
                SDK::Plugin::Parameters::Debug,
                SDK::Plugin::SPluginParameter::Bool,
@@ -50,15 +52,13 @@ QVector<SDK::Plugin::SPluginParameter> Enum_Parameters() {
 REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
                                          SDK::PaymentProcessor::CComponents::GraphicsBackend,
                                          CQMLBackend::PluginName),
-                                &CreatePlugin,
-                                &Enum_Parameters,
+                                &createPlugin,
+                                &enumParameters,
                                 QMLBackend);
 
 //------------------------------------------------------------------------------
-QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) : m_Factory(aFactory), m_Engine(0), m_InstancePath(aInstancePath) {
-    
-    
-    
+QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
+    : m_Factory(aFactory), m_Engine(nullptr), m_InstancePath(std::move(aInstancePath)) {
 
 #ifndef Q_OS_MACOS
     QtWebEngine::initialize();

@@ -461,10 +461,11 @@ bool StarPrinter::updateMemorySwitches(const CSTAR::TMemorySwitches &aMemorySwit
         }
     }
 
-    return !std::count_if(
-        m_MemorySwitches.begin(),
-        m_MemorySwitches.end(),
-        [&](const CSTAR::SMemorySwitch &aMemorySwitch) -> bool { return !aMemorySwitch.valid; });
+    return std::count_if(m_MemorySwitches.begin(),
+                         m_MemorySwitches.end(),
+                         [&](const CSTAR::SMemorySwitch &aMemorySwitch) -> bool {
+                             return !aMemorySwitch.valid;
+                         }) == 0;
 }
 
 //--------------------------------------------------------------------------------
@@ -700,14 +701,14 @@ bool StarPrinter::getStatus(TStatusCodes &aStatusCodes) {
 
     for (int i = 2; i < answer.size(); ++i) {
         for (auto it = CSTAR::ASBStatus[i - 1].begin(); it != CSTAR::ASBStatus[i - 1].end(); ++it) {
-            if (answer[i] & (1 << it.key())) {
+            if ((answer[i] & (1 << it.key())) != 0) {
                 aStatusCodes.insert(it.value());
             }
         }
     }
 
     if ((CSTAR::Models::Data[m_DeviceName].ejector || (m_DeviceName == CSTAR::Models::Unknown)) &&
-        (answer.size() >= 9) && (answer[8] & CSTAR::PresenterStatusMask)) {
+        (answer.size() >= 9) && ((answer[8] & CSTAR::PresenterStatusMask) != 0)) {
         aStatusCodes.insert(PrinterStatusCode::OK::PaperInPresenter);
     } else {
         m_NeedPaperTakeOut = false;
@@ -729,10 +730,8 @@ bool StarPrinter::waitEjectorState(bool aBusy) {
                !statusCodes.contains(DeviceStatusCode::Error::NotAvailable) &&
                (aBusy == statusCodes.contains(PrinterStatusCode::OK::PaperInPresenter));
     };
-    bool result =
-        PollingExpector().wait<void>(std::bind(&StarPrinter::doPoll, this, std::ref(statusCodes)),
-                                     condition,
-                                     CSTAR::EjectorWaiting);
+    bool result = PollingExpector().wait<void>(
+        [this, &statusCodes] { doPoll(statusCodes); }, condition, CSTAR::EjectorWaiting);
 
     if (!aBusy && !result) {
         m_NeedPaperTakeOut = true;
@@ -781,7 +780,7 @@ bool StarPrinter::printImage(const QImage &aImage, const Tags::TTypes & /*aTags*
             char mask = 1 << (7 - (j % 8));
 
             for (int k = 0; k < CSTAR::ImageHeight; ++k) {
-                if (lineData[k][j / 8] & mask) {
+                if ((lineData[k][j / 8] & mask) != 0) {
                     char dataMask = 1 << (7 - (k % 8));
                     data[k / 8] = data[k / 8] | dataMask;
                 }

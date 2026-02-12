@@ -16,8 +16,6 @@ TokenServiceWindow::TokenServiceWindow(HumoServiceBackend *aBackend, QWidget *aP
     : QFrame(aParent), ServiceWindowBase(aBackend), m_Window(new TokenWindow(aBackend, this)) {
     setupUi(this);
 
-    
-
     connect(m_Window, SIGNAL(beginFormat()), SLOT(onBeginFormat()));
     connect(m_Window, SIGNAL(endFormat()), SLOT(onEndFormat()));
     connect(m_Window, SIGNAL(error(QString)), SLOT(onError(QString)));
@@ -60,7 +58,7 @@ bool TokenServiceWindow::shutdown() {
 
 //------------------------------------------------------------------------
 void TokenServiceWindow::onBeginFormat() {
-    if (GUI::MessageBox::question(tr("#question_format_token_warning"))) {
+    if (GUI::MessageBox::question(tr("#question_format_token_warning")) != 0) {
         GUI::MessageBox::hide();
         GUI::MessageBox::wait(tr("#format_token"));
 

@@ -203,8 +203,7 @@ bool V2eCashAcceptor::reject() {
 bool V2eCashAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
     CCashAcceptor::TStatuses lastStatuses = this->m_StatusHistory.lastValue().statuses;
 
-    if (aEnabled && (lastStatuses.size() > 0) &&
-        !processCommand(CV2e::Commands::Uninhibited)) {
+    if (aEnabled && (!lastStatuses.empty()) && !processCommand(CV2e::Commands::Uninhibited)) {
         toLog(LogLevel::Error, this->m_DeviceName + ": Failed to exit from Inhibit mode");
         return false;
     }

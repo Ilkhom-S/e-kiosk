@@ -1,8 +1,8 @@
 /* @file Плагин c драйверами диспенсеров. */
 
-#include "../../../../modules/Hardware/CashDispensers/src/Puloon/PuloonCashDispenser.h"
-#include "../../../../modules/Hardware/CashDispensers/src/Suzo/SuzoHopper.h"
-#include "Hardware/Plugins/CommonParameters.h"
+#include <CashDispensers/src/Puloon/PuloonCashDispenser.h>
+#include <CashDispensers/src/Suzo/SuzoHopper.h>
+#include <Hardware/Plugins/CommonParameters.h>
 
 using namespace SDK::Plugin;
 
@@ -23,7 +23,7 @@ template <class T> TParameterList defaultParameters(const QString &aDefaultName)
 }
 
 #define COMMON_DISPENSER_PLUGIN(aClassName, aDefaultName)                                          \
-    COMMON_DRIVER(aClassName, std::bind(&defaultParameters<aClassName>, aDefaultName))
+    COMMON_DRIVER(aClassName, []() { return defaultParameters<aClassName>(aDefaultName); })
 
 // Регистрация плагинов.
 BEGIN_REGISTER_PLUGIN

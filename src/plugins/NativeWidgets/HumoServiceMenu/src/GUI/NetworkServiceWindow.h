@@ -31,7 +31,7 @@ private slots:
     void onCreateDialupConnection(const QString &aConnection, const QString &aNetworkDevice);
     void onTestDialupConnection(const QString &aConnection);
     void onRemoveDialupConnection(const QString &aConnection);
-    void onTestUnmanagedConnection(QNetworkProxy aProxy);
+    void onTestUnmanagedConnection(const QNetworkProxy &aProxy);
     void onTestFinished();
 
 private:

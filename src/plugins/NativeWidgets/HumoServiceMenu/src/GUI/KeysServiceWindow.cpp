@@ -16,8 +16,6 @@ KeysServiceWindow::KeysServiceWindow(HumoServiceBackend *aBackend, QWidget *aPar
     : QFrame(aParent), ServiceWindowBase(aBackend), m_Window(new KeysWindow(aBackend, this)) {
     setupUi(this);
 
-    
-
     connect(m_Window, SIGNAL(beginGenerating()), SLOT(onBeginGenerating()));
     connect(m_Window, SIGNAL(endGenerating()), SLOT(onEndGenerating()));
     connect(m_Window, SIGNAL(error(QString)), SLOT(onError(QString)));
@@ -59,7 +57,7 @@ bool KeysServiceWindow::shutdown() {
 
 //------------------------------------------------------------------------
 void KeysServiceWindow::onBeginGenerating() {
-    if (GUI::MessageBox::question(tr("#question_generate_keys_warning"))) {
+    if (GUI::MessageBox::question(tr("#question_generate_keys_warning")) != 0) {
         GUI::MessageBox::hide();
         GUI::MessageBox::wait(tr("#creating_keys"));
 
@@ -76,12 +74,12 @@ void KeysServiceWindow::onEndGenerating() {
     generateResult += tr("#ap") + " " + m_Backend->getKeysManager()->getAP() + "\n";
     generateResult += tr("#op") + " " + m_Backend->getKeysManager()->getOP();
 
-    if (GUI::MessageBox::question(tr("#question_save_and_register_keys") + generateResult)) {
+    if (GUI::MessageBox::question(tr("#question_save_and_register_keys") + generateResult) != 0) {
         if (m_Window->save()) {
             m_Backend->saveConfiguration();
 
             if (m_Backend->getKeysManager()->isDefaultKeyOP(m_Backend->getKeysManager()->getOP())) {
-                if (GUI::MessageBox::question(tr("#question_need_new_config"))) {
+                if (GUI::MessageBox::question(tr("#question_need_new_config")) != 0) {
                     m_Backend->needUpdateConfigs();
                 }
             }

@@ -11,6 +11,8 @@
 #include <SDK/Plugins/PluginFactory.h>
 #include <SDK/Plugins/PluginInitializer.h>
 
+#include <utility>
+
 namespace CNativeBackend {
 /// Тип данного графического движка.
 const char Type[] = "native";
@@ -22,12 +24,12 @@ const char Item[] = "item";
 namespace {
 
 /// Конструктор экземпляра плагина.
-SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createPlugin(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath) {
     return new NativeBackend(aFactory, aInstancePath);
 }
 
-QVector<SDK::Plugin::SPluginParameter> Enum_Parameters() {
+QVector<SDK::Plugin::SPluginParameter> enumParameters() {
     return QVector<SDK::Plugin::SPluginParameter>(1) << SDK::Plugin::SPluginParameter(
                SDK::Plugin::Parameters::Debug,
                SDK::Plugin::SPluginParameter::Bool,
@@ -43,13 +45,14 @@ QVector<SDK::Plugin::SPluginParameter> Enum_Parameters() {
 REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
                                          SDK::PaymentProcessor::CComponents::GraphicsBackend,
                                          CNativeBackend::PluginName),
-                                &CreatePlugin,
-                                &Enum_Parameters,
+                                &createPlugin,
+                                &enumParameters,
                                 NativeBackend);
 
 //------------------------------------------------------------------------------
-NativeBackend::NativeBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : m_Factory(aFactory), m_InstancePath(aInstancePath), m_Engine(nullptr), m_Core(nullptr) {}
+NativeBackend::NativeBackend(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
+    : m_Factory(aFactory), m_InstancePath(std::move(aInstancePath)), m_Engine(nullptr),
+      m_Core(nullptr) {}
 
 //------------------------------------------------------------------------------
 NativeBackend::~NativeBackend() = default;
@@ -132,12 +135,12 @@ QList<SDK::GUI::GraphicsItem_Info> NativeBackend::getItem_List() {
             QRegularExpression("PaymentProcessor\\.GraphicsItem\\..*"));
 
         foreach (const QString &item, items) {
-            SDK::GUI::GraphicsItem_Info item_Info;
-            item_Info.name = item.split(".").last(); // Последняя секция - имя айтема
-            item_Info.type = CNativeBackend::Type;
-            item_Info.directory = "PaymentProcessor.GraphicsItem.";
+            SDK::GUI::GraphicsItem_Info itemInfo;
+            itemInfo.name = item.split(".").last(); // Последняя секция - имя айтема
+            itemInfo.type = CNativeBackend::Type;
+            itemInfo.directory = "PaymentProcessor.GraphicsItem.";
 
-            m_Item_List[item_Info.name] = item_Info;
+            m_Item_List[itemInfo.name] = itemInfo;
         }
     }
 

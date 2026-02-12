@@ -25,7 +25,7 @@ public:
 
 private slots:
     void onUserSelectionChanged();
-    void onTestConnection(QNetworkProxy aProxy);
+    void onTestConnection(const QNetworkProxy &aProxy);
     void onTestFinished();
 
 private:

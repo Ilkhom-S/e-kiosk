@@ -57,8 +57,10 @@ NetworkService::NetworkService(ICore *aCore)
         m_TaskManager = m_NetworkService->getNetworkTaskManager();
         m_RequestSender = QSharedPointer<PPSDK::Humo::RequestSender>(new PPSDK::Humo::RequestSender(
             m_TaskManager, m_Core->getCryptService()->getCryptEngine()));
-        m_RequestSender->setResponseCreator(std::bind(
-            &NetworkService::createResponse, this, std::placeholders::_1, std::placeholders::_2));
+        m_RequestSender->setResponseCreator([this](auto &&pH1, auto &&pH2) {
+            return createResponse(std::forward<decltype(pH1)>(pH1),
+                                  std::forward<decltype(pH2)>(pH2));
+        });
 
         connect(&m_ResponseWatcher, SIGNAL(finished()), SLOT(onResponseFinished()));
         connect(&m_ResponseSendReceiptWatcher,
@@ -68,17 +70,17 @@ NetworkService::NetworkService(ICore *aCore)
 
     m_Core->getEventService()->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
 
-    m_SD = static_cast<PPSDK::TerminalSettings *>(
+    m_SD = dynamic_cast<PPSDK::TerminalSettings *>(
                m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
                ->getKeys()[0]
                .sd;
 
-    m_AP = static_cast<PPSDK::TerminalSettings *>(
+    m_AP = dynamic_cast<PPSDK::TerminalSettings *>(
                m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
                ->getKeys()[0]
                .ap;
 
-    m_OP = static_cast<PPSDK::TerminalSettings *>(
+    m_OP = dynamic_cast<PPSDK::TerminalSettings *>(
                m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
                ->getKeys()[0]
                .op;
@@ -258,7 +260,7 @@ void NetworkService::sendReceipt(const QString &aEmail, const QString &aContact)
 
     params.insert("PAYER_EMAIL_MESSAGE", message.toLocal8Bit().toPercentEncoding());
 
-    PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
+    PPSDK::TerminalSettings *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
     auto *request = new Request(params);

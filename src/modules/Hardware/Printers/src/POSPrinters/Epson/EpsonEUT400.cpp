@@ -34,7 +34,7 @@ EpsonEUT400::EpsonEUT400() {
     m_Parameters.errors[4][1].insert('\x40', PrinterStatusCode::Error::PaperEnd);
 
     // теги
-    m_Parameters.tagEngine.appendCommon(Tags::Type::DoubleWidth, "\x1B\x21", "\x20");
+    m_Parameters.tagEngine.appendCommon(Tags::Type::DoubleWidth, "\x1B\x21", R"( )");
     m_Parameters.tagEngine.appendCommon(Tags::Type::DoubleHeight, "\x1B\x21", "\x10");
 
     // параметры моделей
@@ -70,7 +70,7 @@ void EpsonEUT400::setDeviceConfiguration(const QVariantMap &aConfiguration) {
             feeding = 4;
         } else if (lineSpacing >= 25) {
             feeding = 5;
-}
+        }
 
         setConfigParameter(CHardware::Printer::FeedingAmount, feeding);
         setConfigParameter(CHardware::Printer::Commands::Cutting, CEpsonEUT400::Command::Cut);
@@ -179,10 +179,10 @@ bool EpsonEUT400::getMemorySwitch(char aNumber, char &aValue) {
         return false;
     }
 
-    bool OK = false;
-    aValue = char(answer.mid(2, 8).toInt(&OK, 2));
+    bool ok = false;
+    aValue = char(answer.mid(2, 8).toInt(&ok, 2));
 
-    if (!OK) {
+    if (!ok) {
         toLog(LogLevel::Error,
               QString("%1: Failed to parse answer for memory switch %2")
                   .arg(m_DeviceName)
@@ -247,7 +247,7 @@ void EpsonEUT400::processDeviceData() {
     auto processCommand = [&](const QByteArray &aCommand) -> bool {
         if (!m_IOPort->write(aCommand) || !getAnswer(answer, CPOSPrinter::Timeouts::Info)) {
             return false;
-}
+        }
         answer.replace('\x00', "").replace('\x5f', "");
         return !answer.isEmpty();
     };

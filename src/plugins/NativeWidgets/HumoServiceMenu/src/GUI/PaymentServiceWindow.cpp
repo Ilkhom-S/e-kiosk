@@ -219,7 +219,7 @@ void PaymentServiceWindow::onUpdatePayments(const QString &aMessage) {
     QVariantMap result;
 
     if (m_PaymentManager->getPaymentsInfo(result)) {
-        lbLastReceivedPayment->setText(result[CServiceTags::LastPaymentDate].toString());
+        lbLastRecievedPayment->setText(result[CServiceTags::LastPaymentDate].toString());
         lbLastProcessedPayment->setText(result[CServiceTags::LastProcessedPaymentDate].toString());
         lbSuccessfulPaymentCount->setText(result[CServiceTags::SuccessfulPaymentCount].toString());
         lbFailedPaymentCount->setText(result[CServiceTags::FailedPaymentCount].toString());

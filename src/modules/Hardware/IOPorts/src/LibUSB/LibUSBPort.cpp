@@ -353,7 +353,7 @@ CLibUSB::TDeviceProperties LibUSBPort::getDevicesProperties(bool aForce) {
 
     for (auto it = properties.begin(); it != properties.end();) {
         QString deviceProduct = it->deviceData.value(DeviceUSBData::Product).toString().toLower();
-        bool needErase = (it->VID == 0u) || (it->PID == 0u) || deviceProduct.contains("mouse");
+        bool needErase = (it->VID == 0U) || (it->PID == 0U) || deviceProduct.contains("mouse");
         it = needErase ? properties.erase(it) : std::next(it);
     }
 

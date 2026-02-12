@@ -16,7 +16,7 @@ class WatchServiceController : public QObject {
     Q_OBJECT
 
     // Последняя команда выполненная пользователем
-    enum LastCommand { Unknown, Start, Stop };
+    enum class LastCommand { Unknown, Start, Stop };
 
 public:
     WatchServiceController();

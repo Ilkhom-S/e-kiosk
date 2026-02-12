@@ -10,6 +10,8 @@
 #include <SDK/Drivers/IDevice.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
+#include <utility>
+
 #include "Backend/HardwareManager.h"
 #include "Backend/ServiceMenuBackend.h"
 #include "DeviceTests/BillAcceptorTest.h"
@@ -21,11 +23,11 @@
 #include "MessageBox/MessageBox.h"
 
 DeviceSlot::DeviceSlot(ServiceMenuBackend *aBackend,
-                       const QString &aConfigurationName,
+                       QString aConfigurationName,
                        bool aIsUserSlot,
-                       const QString &aType)
-    : m_Backend(aBackend), m_ConfigurationName(aConfigurationName), m_IsUserSlot(aIsUserSlot),
-      m_Type(aType) {
+                       QString aType)
+    : m_Backend(aBackend), m_ConfigurationName(std::move(aConfigurationName)),
+      m_IsUserSlot(aIsUserSlot), m_Type(std::move(aType)) {
     updateConfigurationName(m_ConfigurationName);
     QTimer::singleShot(0, this, SLOT(onRepaint()));
 }

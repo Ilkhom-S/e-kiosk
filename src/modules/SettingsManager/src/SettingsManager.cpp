@@ -15,25 +15,23 @@
 #include <SettingsManager/SettingsManager.h>
 #include <boost/foreach.hpp>
 #include <fstream>
+#include <utility>
 #include <vector>
 
 SSettingsSource::SSettingsSource() : readOnly(true) {}
 
 //---------------------------------------------------------------------------
-SSettingsSource::SSettingsSource(const QString &aFileName,
-                                 const QString &aAdapterName,
-                                 bool aReadOnly)
-    : configFileName(aFileName), adapterName(aAdapterName), readOnly(aReadOnly) {}
+SSettingsSource::SSettingsSource(QString aFileName, QString aAdapterName, bool aReadOnly)
+    : configFileName(std::move(aFileName)), adapterName(std::move(aAdapterName)),
+      readOnly(aReadOnly) {}
 
 //---------------------------------------------------------------------------
-SSettingsSource::SSettingsSource(const QString &aFileName,
-                                 const QString &aAdapterName,
-                                 const char *aSymlinkName)
-    : configFileName(aFileName), adapterName(aAdapterName),
+SSettingsSource::SSettingsSource(QString aFileName, QString aAdapterName, const char *aSymlinkName)
+    : configFileName(std::move(aFileName)), adapterName(std::move(aAdapterName)),
       symlinkName(QString::fromLatin1(aSymlinkName)), readOnly(true) {}
 
 //---------------------------------------------------------------------------
-SettingsManager::SettingsManager(const QString &aConfigPath) : m_ConfigPath(aConfigPath) {}
+SettingsManager::SettingsManager(QString aConfigPath) : m_ConfigPath(std::move(aConfigPath)) {}
 
 //---------------------------------------------------------------------------
 SettingsManager::~SettingsManager() = default;
@@ -77,9 +75,9 @@ bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources
 
         if (source.isSymlink()) {
             newBranch.put(source.symlinkName.toStdString(), path.filePath().toStdWString());
-        } else if (!path.suffix().compare("xml", Qt::CaseInsensitive)) {
+        } else if (path.suffix().compare("xml", Qt::CaseInsensitive) == 0) {
             readXML(path.filePath(), newBranch);
-        } else if (!path.suffix().compare("ini", Qt::CaseInsensitive)) {
+        } else if (path.suffix().compare("ini", Qt::CaseInsensitive) == 0) {
             readINI(path.filePath(), newBranch);
         } else {
             toLog(LogLevel::Error,
@@ -157,7 +155,7 @@ bool SettingsManager::saveSettings() {
         // Здесь храним оригинальную конфигурацию
         TPtree originalBranch;
 
-        if (!path.suffix().compare("xml", Qt::CaseInsensitive)) {
+        if (path.suffix().compare("xml", Qt::CaseInsensitive) == 0) {
             readXML(path.filePath(), originalBranch);
 
             if (originalBranch != branchToSave) {
@@ -168,7 +166,7 @@ bool SettingsManager::saveSettings() {
                     continue;
                 }
             }
-        } else if (!path.suffix().compare("ini", Qt::CaseInsensitive)) {
+        } else if (path.suffix().compare("ini", Qt::CaseInsensitive) == 0) {
             readINI(path.filePath(), originalBranch);
 
             if (originalBranch != branchToSave) {
@@ -380,7 +378,8 @@ bool SettingsManager::writeINI(const QString &aFileName, const TPtree &aTree) {
     iniFile.clear();
 
     static const TPtree EmptyTree;
-    const auto &sectionTree = aTree.get_child(QFileInfo(aFileName).completeBaseName().toStdString(), EmptyTree);
+    const auto &sectionTree =
+        aTree.get_child(QFileInfo(aFileName).completeBaseName().toStdString(), EmptyTree);
     for (const TPtree::value_type &value : sectionTree) {
         iniFile.beginGroup(QString::fromStdString(value.first));
 

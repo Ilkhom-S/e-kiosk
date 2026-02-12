@@ -23,7 +23,7 @@ public:
     virtual void closeEvent(QCloseEvent *aEvent);
 
 private:
-    Ui::SplashScreenClass ui;
+    Ui::SplashScreenClass ui{};
 };
 
 //----------------------------------------------------------------------------

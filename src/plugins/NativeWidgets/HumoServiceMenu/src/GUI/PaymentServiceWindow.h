@@ -64,8 +64,8 @@ private:
     PaymentManager *m_PaymentManager;
     QFutureWatcher<void> m_PaymentTaskWatcher;
     bool m_FiscalMode;
-    PaymentTableModel *m_Model;
-    PaymentProxyModel *m_ProxyModel;
+    PaymentTableModel *m_Model{};
+    PaymentProxyModel *m_ProxyModel{};
     QList<PaymentInfo> m_PaymentInfoList;
     QButtonGroup *m_DateFilterButtonGroup{};
     QButtonGroup *m_PaymentsFilterButtonGroup{};

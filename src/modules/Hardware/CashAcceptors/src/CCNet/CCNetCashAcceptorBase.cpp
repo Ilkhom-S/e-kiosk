@@ -4,6 +4,8 @@
 
 #include <QtCore/qmath.h>
 
+#include <utility>
+
 #include "CCNetCashAcceptorConstants.h"
 #include "FirmwareVersions.h"
 #include "IntelHex.h"
@@ -91,9 +93,8 @@ bool CCNetCashAcceptorBase::waitNotBusyPowerUp() {
 
     auto poll = [&]() -> bool { return getStatus(std::ref(statusCodes)); };
 
-    if (!PollingExpector().wait<bool>(poll,
-                                      std::bind(&CCNetCashAcceptorBase::isNotBusyPowerUp, this),
-                                      CCCNet::NotBusyPowerUpWaiting)) {
+    if (!PollingExpector().wait<bool>(
+            poll, [this] { return isNotBusyPowerUp(); }, CCCNet::NotBusyPowerUpWaiting)) {
         toLog(LogLevel::Error,
               m_DeviceName + ": Failed to wait not busy and power-up status from the cash acceptor "
                              "after reset command");
@@ -235,8 +236,8 @@ SBaseModelData CCNetCashAcceptorBase::getModelData(const QByteArray &aAnswer) {
     QString firmwareVersion = aAnswer.left(15).simplified();
     QStringList answerData = firmwareVersion.split(ASCII::Dash);
 
-    for (int i = 0; i < answerData.size(); ++i) {
-        answerData[i] = answerData[i].simplified();
+    for (auto &i : answerData) {
+        i = i.simplified();
     }
 
     // определяем модель
@@ -297,7 +298,8 @@ bool CCNetCashAcceptorBase::isConnected() {
                     CCCNet::TFirmwareVersionSet versions =
                         aSpecification[m_DeviceName][m_CurrencyCode][m_Updatable];
 
-                    if (std::find_if(versions.begin(), versions.end(), aCheck) != versions.end()) {
+                    if (std::find_if(versions.begin(), versions.end(), std::move(aCheck)) !=
+                        versions.end()) {
                         m_OldFirmware = true;
                     }
                 }
@@ -518,7 +520,7 @@ bool CCNetCashAcceptorBase::perform_UpdateFirmware(const QByteArray &aBuffer) {
         return false;
     }
 
-    CCCNet::UpdatingFirmware::Answers::SData answerData =
+    const CCCNet::UpdatingFirmware::Answers::SData &answerData =
         CCCNet::UpdatingFirmware::Answers::Specification[answer[0]];
 
     if (!result || (answerData.warningLevel == EWarningLevel::Error)) {
@@ -603,7 +605,7 @@ bool CCNetCashAcceptorBase::processBlockUpdating(uint aAddress,
         aIndex--;
     }
 
-    CCCNet::UpdatingFirmware::Answers::SData answerData =
+    const CCCNet::UpdatingFirmware::Answers::SData &answerData =
         CCCNet::UpdatingFirmware::Answers::Specification[answer[0]];
 
     if ((empty && (aRepeat == CCCNet::WriteFirmwareDataMaxRepeats)) ||
@@ -696,8 +698,8 @@ void CCNetCashAcceptorBase::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes)
                                                  << DeviceStatusCode::OK::Initialization
                                                  << BillAcceptorStatusCode::Busy::Returning;
 
-        for (int i = 0; i < replaceableHistory.size(); ++i) {
-            if (aStatusCodes.contains(replaceableHistory[i])) {
+        for (int i : replaceableHistory) {
+            if (aStatusCodes.contains(i)) {
                 foreach (const TStatusCodesHistory &history, baseHistoryList) {
                     TStatusCodesHistory extraHistory =
                         TStatusCodesHistory()
@@ -705,7 +707,7 @@ void CCNetCashAcceptorBase::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes)
 
                     if (isStatusCollectionConformed(history) ||
                         isStatusCollectionConformed(extraHistory)) {
-                        aStatusCodes.remove(replaceableHistory[i]);
+                        aStatusCodes.remove(i);
                         aStatusCodes.insert(
                             BillAcceptorStatusCode::MechanicFailure::StickInExitChannel);
                     }

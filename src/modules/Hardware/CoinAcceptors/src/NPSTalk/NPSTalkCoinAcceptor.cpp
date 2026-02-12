@@ -75,7 +75,7 @@ bool NPSTalkCoinAcceptor::getStatus(TStatusCodes &aStatusCodes) {
         return false;
     }
 
-    aStatusCodes.insert((!answer.isEmpty() && answer[0])
+    aStatusCodes.insert((!answer.isEmpty() && (answer[0] != 0))
                             ? BillAcceptorStatusCode::Normal::Enabled
                             : BillAcceptorStatusCode::Normal::Disabled);
 

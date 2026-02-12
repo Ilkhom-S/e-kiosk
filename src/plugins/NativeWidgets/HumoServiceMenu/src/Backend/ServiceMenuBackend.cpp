@@ -39,7 +39,7 @@ ServiceMenuBackend::ServiceMenuBackend(SDK::Plugin::IEnvironment *aFactory, ILog
 
     GUI::MessageBox::initialize();
 
-    m_TerminalSettings = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
+    m_TerminalSettings = dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(
         m_Core->getSettingsService()->getAdapter(
             SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
 
@@ -231,7 +231,7 @@ void ServiceMenuBackend::printDispenserDiffState() {
             toLog(QString("Diff: %1").arg(afterUnit.amount() - beforeUnit.amount()));
         }
 
-        QtConcurrent::run([=]() {
+        QtConcurrent::run([this, parameters]() {
             m_Core->getPrinterService()->printReceipt(QString(""),
                                                       parameters,
                                                       QString("dispenser_diff"),
@@ -326,7 +326,7 @@ bool ServiceMenuBackend::isAuthorizationEnabled() const {
 //------------------------------------------------------------------------
 QList<QWidget *> ServiceMenuBackend::getExternalWidgets(bool aReset) {
     QStringList plugins = m_Factory->getPluginLoader()->getPluginList(
-        QRegularExpression("PaymentProcessor\\.GraphicsItem\\..*\\ServiceMenuWidget"));
+        QRegularExpression(R"(PaymentProcessor\.GraphicsItem\..*\ServiceMenuWidget)"));
 
     if (m_WidgetPluginList.isEmpty()) {
         foreach (const QString &widget, plugins) {
@@ -338,13 +338,13 @@ QList<QWidget *> ServiceMenuBackend::getExternalWidgets(bool aReset) {
     QList<QWidget *> widgetList;
 
     foreach (SDK::Plugin::IPlugin *plugin, m_WidgetPluginList) {
-        auto *item_Object = dynamic_cast<SDK::GUI::IGraphicsItem *>(plugin);
-        if (item_Object) {
+        auto *itemObject = dynamic_cast<SDK::GUI::IGraphicsItem *>(plugin);
+        if (itemObject) {
             if (aReset) {
-                item_Object->reset(QVariantMap());
+                itemObject->reset(QVariantMap());
             }
 
-            widgetList << item_Object->getNativeWidget();
+            widgetList << itemObject->getNativeWidget();
         }
     }
 

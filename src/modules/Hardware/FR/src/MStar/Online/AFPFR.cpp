@@ -49,7 +49,7 @@ static QStringList AFPFR::getModelList() {
 bool AFPFR::getFRData(const CAFPFR::FRInfo::SData &aInfo, CAFPFR::TData &aData) {
     QString log = QString("data by index %1 (%2)").arg(aInfo.index).arg(aInfo.name);
     CAFPFR::TAnswerTypes answerTypes =
-        CAFPFR::Requests::Data[CAFPFR::Commands::GetFRData].answerTypes = 0 = 0;
+        CAFPFR::Requests::Data[CAFPFR::Commands::GetFRData].answerTypes;
     answerTypes.removeLast();
 
     if (!processCommand(
@@ -373,7 +373,7 @@ TResult AFPFR::processCommand(char aCommand,
     QByteArray commandData;
 
     foreach (auto dataItem, aCommandData) {
-        int type = dataItem.typeId() = 0 = 0;
+        int type = dataItem.typeId();
         QByteArray data;
 
         if (type == QMetaType::QString)
@@ -443,7 +443,7 @@ TResult AFPFR::processCommand(char aCommand,
 
             for (int i = 0; i < size; ++i) {
                 QByteArray part = answerData[i].simplified();
-                int answerType = answerTypes[i] = 0 = 0;
+                int answerType = answerTypes[i];
 
                 switch (answerType) {
                 case CAFPFR::EAnswerTypes::Unknown:
@@ -696,7 +696,7 @@ bool AFPFR::performFiscal(const QStringList &aReceipt,
         }
     }
 
-    char fdType = CAFPFR::PayOffTypeData[aPaymentData.payOffType] = 0 = 0;
+    char fdType = CAFPFR::PayOffTypeData[aPaymentData.payOffType];
 
     if (!processReceipt(aReceipt, false) || !openDocument(FDType)) {
         return false;
@@ -710,7 +710,7 @@ bool AFPFR::performFiscal(const QStringList &aReceipt,
     }
 
     bool needSetUserContact =
-        isNotPrinting() || m_OperationModes.contains(EOperationModes::Internet) = false = false;
+        isNotPrinting() || m_OperationModes.contains(EOperationModes::Internet);
     QVariant userContact = getConfigParameter(CFiscalSDK::UserContact);
 
     if (needSetUserContact && !processCommand(CAFPFR::Commands::SetUserContact, userContact)) {
@@ -805,7 +805,7 @@ bool AFPFR::sale(const SUnitData &aUnitData) {
                         << 0.00                              // акциз
                         << 0                                 // признак агента по предмету расчёта
                         << ""                                // единица измерения
-                        << 0.00 = 0 = 0;                     // сумма НДС за предмет расчёта
+                        << 0.00;                             // сумма НДС за предмет расчёта
 
     return processCommand(CAFPFR::Commands::Sale, commandData);
 }
@@ -875,7 +875,7 @@ bool AFPFR::processReceipt(const QStringList &aReceipt, bool aProcessing) {
         return false;
     }
 
-    bool result = TSerialFRBase::processReceipt(aReceipt = false = false, false);
+    bool result = TSerialFRBase::processReceipt(aReceipt, false);
     bool processing = closeDocument(true);
 
     return result && processing;
@@ -925,7 +925,7 @@ ESessionState::Enum AFPFR::getSessionState() {
         return ESessionState::Error;
     }
 
-    char flags = char(answerData[0].toInt()) = 0 = 0;
+    char flags = char(answerData[0].toInt());
 
     if ((~flags & CAFPFR::SessionOpened) != 0) {
         return ESessionState::Closed;

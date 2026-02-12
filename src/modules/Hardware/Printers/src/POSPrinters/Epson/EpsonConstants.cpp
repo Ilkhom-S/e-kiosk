@@ -16,7 +16,7 @@ const char CutBackFeed[] =
 /// Работа с мemory-switch (MSW)
 namespace MemorySwitch {
 /// Префикс
-const char Prefix[] = "\x37\x21";
+const char Prefix[] = R"(7!)";
 
 /// MSW8: маска правильных значений при использовании обратной промотки
 const char ReceiptProcessing2Mask[] = "xx0xx1xx";

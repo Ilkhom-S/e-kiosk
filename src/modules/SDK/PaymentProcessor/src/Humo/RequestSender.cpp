@@ -40,12 +40,35 @@ RequestSender::RequestSender(NetworkTaskManager *aNetwork, ICryptEngine *aCryptE
     m_OnlySecureConnection = false;
 #endif // _DEBUG || DEBUG_INFO
 
-    setResponseCreator(std::bind(&RequestSender::defaultResponseCreator, this, _1, _2));
-    setRequestEncoder(std::bind(&RequestSender::defaultRequestEncoder, this, _1, _2));
-    setResponseDecoder(std::bind(&RequestSender::defaultResponseDecoder, this, _1, _2));
-    setRequestSigner(std::bind(&RequestSender::defaultRequestSigner, this, _1, _2, _3, _4));
-    setResponseVerifier(std::bind(&RequestSender::defaultResponseVerifier, this, _1, _2, _3, _4));
-    setRequestModifier(std::bind(&RequestSender::defaultRequestModifier, this, _1, _2, _3));
+    setResponseCreator([this](auto &&pH1, auto &&pH2) {
+        return defaultResponseCreator(std::forward<decltype(pH1)>(pH1),
+                                      std::forward<decltype(pH2)>(pH2));
+    });
+    setRequestEncoder([this](auto &&pH1, auto &&pH2) {
+        return defaultRequestEncoder(std::forward<decltype(pH1)>(pH1),
+                                     std::forward<decltype(pH2)>(pH2));
+    });
+    setResponseDecoder([this](auto &&pH1, auto &&pH2) {
+        return defaultResponseDecoder(std::forward<decltype(pH1)>(pH1),
+                                      std::forward<decltype(pH2)>(pH2));
+    });
+    setRequestSigner([this](auto &&pH1, auto &&pH2, auto &&pH3, auto &&pH4) {
+        return defaultRequestSigner(std::forward<decltype(pH1)>(pH1),
+                                    std::forward<decltype(pH2)>(pH2),
+                                    std::forward<decltype(pH3)>(pH3),
+                                    std::forward<decltype(pH4)>(pH4));
+    });
+    setResponseVerifier([this](auto &&pH1, auto &&pH2, auto &&pH3, auto &&pH4) {
+        return defaultResponseVerifier(std::forward<decltype(pH1)>(pH1),
+                                       std::forward<decltype(pH2)>(pH2),
+                                       std::forward<decltype(pH3)>(pH3),
+                                       std::forward<decltype(pH4)>(pH4));
+    });
+    setRequestModifier([this](auto &&pH1, auto &&pH2, auto &&pH3) {
+        return defaultRequestModifier(std::forward<decltype(pH1)>(pH1),
+                                      std::forward<decltype(pH2)>(pH2),
+                                      std::forward<decltype(pH3)>(pH3));
+    });
 }
 
 //---------------------------------------------------------------------------
@@ -158,7 +181,7 @@ Response *RequestSender::request(NetworkTask::Type aType,
     if (aSignatureType == Solid) {
         signedRequest = "inputmessage=" + signedRequest;
 
-        auto rawParameters = aRequest.getParameters(true);
+        const auto &rawParameters = aRequest.getParameters(true);
         foreach (auto name, rawParameters.keys()) {
             signedRequest += ("\n" + name + "=" + rawParameters.value(name).toString()).toUtf8();
         }
@@ -292,8 +315,8 @@ bool RequestSender::defaultRequestSigner(const QByteArray &aRequest,
             aSignedRequest = aSignedRequest.toPercentEncoding();
 
             return true;
-        }             return false;
-       
+        }
+        return false;
     }
 
     case Detached: {
@@ -302,8 +325,8 @@ bool RequestSender::defaultRequestSigner(const QByteArray &aRequest,
             aSignature = aSignature.toPercentEncoding();
 
             return true;
-        }             return false;
-       
+        }
+        return false;
     }
 
     default:
@@ -326,8 +349,8 @@ bool RequestSender::defaultResponseVerifier(const QByteArray &aSignedResponse,
             aResponse = aSignedResponse;
 
             return true;
-        }             return false;
-       
+        }
+        return false;
     }
 
     default:

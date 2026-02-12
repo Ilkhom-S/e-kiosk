@@ -39,7 +39,7 @@ private:
     virtual void showEvent(QShowEvent *aEvent);
 
 private:
-    Ui::InputBox ui;
+    Ui::InputBox ui{};
     ValidatorFunction m_Validator;
 };
 

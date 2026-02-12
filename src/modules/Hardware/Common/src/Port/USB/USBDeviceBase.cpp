@@ -147,7 +147,6 @@ template <class T> bool USBDeviceBase<T>::setPDOName(const QString &aPDOName) {
 }
 
 //--------------------------------------------------------------------------------
-#include <QtSerialPort/QSerialPortInfo>
 
 template <class T> void USBDeviceBase<T>::initializeUSBPort() {
     // 1. Получаем список всех доступных последовательных портов в системе.
@@ -212,7 +211,8 @@ template <class T> bool USBDeviceBase<T>::checkConnectionAbility() {
 template <class T> bool USBDeviceBase<T>::checkPort() {
     if (this->m_IOPort->isExist()) {
         return true;
-    } if (!this->m_IOPort->deviceConnected()) {
+    }
+    if (!this->m_IOPort->deviceConnected()) {
         return false;
     }
 

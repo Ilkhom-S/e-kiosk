@@ -40,7 +40,7 @@ bool EncashmentWindow::activate() {
     connect(m_Backend->getPaymentManager(),
             SIGNAL(receiptPrinted(qint64, bool)),
             this,
-            SLOT(onPeceiptPrinted(qint64, bool)));
+            SLOT(onReceiptPrinted(qint64, bool)));
     return true;
 }
 
@@ -51,7 +51,7 @@ bool EncashmentWindow::deactivate() {
     disconnect(m_Backend->getPaymentManager(),
                SIGNAL(receiptPrinted(qint64, bool)),
                this,
-               SLOT(onPeceiptPrinted(qint64, bool)));
+               SLOT(onReceiptPrinted(qint64, bool)));
 
     return true;
 }
@@ -64,7 +64,7 @@ void EncashmentWindow::doEncashment() {
 
     safeDelete(m_InputBox);
 
-    if (GUI::MessageBox::question(text)) {
+    if (GUI::MessageBox::question(text) != 0) {
         // Если баланс не пустой и нужно ввести номер кассеты
         if (paymentManager->getBalanceInfo()[CServiceTags::CashAmount].toDouble() > 0.0 &&
             dynamic_cast<PPSDK::UserSettings *>(
@@ -153,7 +153,7 @@ void EncashmentWindow::onPrintZReport() {
             canPrintFullZReport ? tr("#print_full_zreport") : tr("#full_zreport_print_failed");
 
         if (canPrintFullZReport) {
-            fullZReport = GUI::MessageBox::question(msg);
+            fullZReport = (GUI::MessageBox::question(msg) != 0);
         } else {
             GUI::MessageBox::warning(msg);
         }
@@ -180,7 +180,7 @@ void EncashmentWindow::onPrintZReport() {
 
 //------------------------------------------------------------------------
 void EncashmentWindow::onReceiptPrinted(qint64 aJobIndex, bool aErrorHappened) {
-    if (m_LastPrintJob && m_LastPrintJob == aJobIndex) {
+    if ((m_LastPrintJob != 0) && m_LastPrintJob == aJobIndex) {
         m_Backend->toLog(LogLevel::Debug,
                          QString("JOB id=%1 ALREADY COMPLETE. SKIP SLOT.").arg(aJobIndex));
         GUI::MessageBox::hide();

@@ -11,7 +11,7 @@ WatchdogBase::WatchdogBase() : m_SensorDisabledValue(false) {
     m_PollingInterval = 5000;
 
     m_ioMessageLogging = ELoggingType::ReadWrite;
-    
+
     setConfigParameter(CHardware::Watchdog::CanRegisterKey, false);
     setConfigParameter(CHardware::Watchdog::CanWakeUpPC, false);
     m_StatusCodesSpecification =
@@ -34,7 +34,7 @@ bool WatchdogBase::release() {
 
 //-----------------------------------------------------------------------------
 void WatchdogBase::setPingEnable(bool aEnabled) {
-    if (checkConnectionAbility() && m_PingTimer.interval()) {
+    if (checkConnectionAbility() && (m_PingTimer.interval() != 0)) {
         toLog(LogLevel::Normal, aEnabled ? "Ping is enabled." : "Pinging is disabled.");
 
         QMetaObject::invokeMethod(&m_PingTimer, aEnabled ? "start" : "stop", Qt::QueuedConnection);
@@ -47,7 +47,7 @@ void WatchdogBase::cleanStatusCodes(TStatusCodes &aStatusCodes) {
 
     for (auto it = CWatchdogs::SensorData.data().begin(); it != CWatchdogs::SensorData.data().end();
          ++it) {
-        QString sensor = it.key();
+        const QString &sensor = it.key();
         QString sensorValue = getConfigParameter(sensor, CHardwareSDK::Values::Auto).toString();
 
         if (containsConfigParameter(sensor) && (sensorValue == CHardwareSDK::Values::Auto)) {

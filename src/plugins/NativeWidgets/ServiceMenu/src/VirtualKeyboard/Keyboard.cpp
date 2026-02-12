@@ -11,6 +11,8 @@
 #include <SDK/Plugins/IExternalInterface.h>
 #include <SDK/Plugins/PluginInitializer.h>
 
+#include <utility>
+
 #include "KeyboardWindow.h"
 
 namespace CKeyboard {
@@ -21,7 +23,7 @@ const QString PluginName = "VirtualKeyboard";
 namespace {
 
 /// Конструктор плагина.
-SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createPlugin(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath) {
     return new Keyboard(aFactory, aInstancePath);
 }
@@ -31,14 +33,14 @@ SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
 REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
                          SDK::PaymentProcessor::CComponents::GraphicsItem,
                          CKeyboard::PluginName),
-                &CreatePlugin,
+                &createPlugin,
                 &SDK::Plugin::PluginInitializer::emptyParameterList,
                 VirtualKeyboard);
 
 //--------------------------------------------------------------------------
-Keyboard::Keyboard(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : m_MainWidget(nullptr), m_Environment(aFactory), m_InstancePath(aInstancePath), m_KeyboardWindow(nullptr),
-      m_IsReady(false) {
+Keyboard::Keyboard(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
+    : m_MainWidget(nullptr), m_Environment(aFactory), m_InstancePath(std::move(aInstancePath)),
+      m_KeyboardWindow(nullptr), m_IsReady(false) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 

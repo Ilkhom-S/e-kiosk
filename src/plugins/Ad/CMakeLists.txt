@@ -39,6 +39,7 @@ ek_add_plugin(ad
     SOURCES ${AD_SOURCES} ${AD_VERSION_RC}
     QT_MODULES Core Sql Network Qml
     DEPENDS
+    BasicApplication
     SysUtils
     PaymentBase
     NetworkTaskManager

@@ -35,8 +35,8 @@ void Platix::onPing() {
 ushort Platix::calcCRC(const QByteArray &aData) {
     ushort sum = 0;
 
-    for (int i = 0; i < aData.size(); ++i) {
-        sum += uchar(CPlatix::Sync - aData[i]);
+    for (char i : aData) {
+        sum += uchar(CPlatix::Sync - i);
     }
 
     return 256 - sum;
@@ -68,13 +68,13 @@ bool Platix::check(const QByteArray &aAnswer) {
     }
 
     ushort answerCRC = calcCRC(aAnswer.left(length - 1));
-    ushort CRC = aAnswer[length - 1];
+    ushort crc = aAnswer[length - 1];
 
-    if (answerCRC != CRC) {
+    if (answerCRC != crc) {
         toLog(LogLevel::Error,
               QString("Platix: Invalid CRC = %1, need %2")
                   .arg(ProtocolUtils::toHexLog(answerCRC))
-                  .arg(ProtocolUtils::toHexLog(CRC)));
+                  .arg(ProtocolUtils::toHexLog(crc)));
         return false;
     }
 
@@ -87,8 +87,8 @@ bool Platix::processCommand(char aCommand) {
     request.append(CPlatix::Sync);
     request.append(CPlatix::CommandSize);
     request.append(aCommand);
-    QString CRC = QString("%1").arg(calcCRC(request), 4, 16, QChar(ASCII::Zero));
-    request.append(ProtocolUtils::getBufferFrom_String(CRC));
+    QString crc = QString("%1").arg(calcCRC(request), 4, 16, QChar(ASCII::Zero));
+    request.append(ProtocolUtils::getBufferFrom_String(crc));
 
     if (!m_IOPort->write(request)) {
         return false;

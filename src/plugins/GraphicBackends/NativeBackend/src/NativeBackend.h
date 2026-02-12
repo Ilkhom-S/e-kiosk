@@ -20,7 +20,7 @@ class NativeBackend : public QObject,
     Q_OBJECT
 
 public:
-    NativeBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    NativeBackend(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
     ~NativeBackend();
 
 #pragma region SDK::Plugin::IPlugin interface
@@ -55,7 +55,8 @@ public:
     virtual void shutdown();
 
     /// Создаёт (или возвращает из кэша) графический элемент по описанию.
-    virtual std::weak_ptr<SDK::GUI::IGraphicsItem> getItem(const SDK::GUI::GraphicsItem_Info &aInfo);
+    virtual std::weak_ptr<SDK::GUI::IGraphicsItem>
+    getItem(const SDK::GUI::GraphicsItem_Info &aInfo);
 
     /// Удаляет графический элемент по описанию
     virtual bool removeItem(const SDK::GUI::GraphicsItem_Info &aInfo);

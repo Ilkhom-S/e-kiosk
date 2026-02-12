@@ -67,7 +67,8 @@ void NativeBackendTest::testPluginCreation() {
     QStringList pluginList = factory->getPluginList();
     QVERIFY(!pluginList.isEmpty());
 
-    QString pluginPath = pluginList.first(); // Should be "Application.GraphicsBackend.Native"
+    const QString &pluginPath =
+        pluginList.first(); // Should be "Application.GraphicsBackend.Native"
 
     SDK::Plugin::IPlugin *plugin = factory->createPlugin(pluginPath, pluginPath);
     QVERIFY(plugin != nullptr);
@@ -91,7 +92,7 @@ void NativeBackendTest::testPluginInitialization() {
     // Get the registered plugin path
     QStringList pluginList = factory->getPluginList();
     QVERIFY(!pluginList.isEmpty());
-    QString pluginPath = pluginList.first();
+    const QString &pluginPath = pluginList.first();
 
     SDK::Plugin::IPlugin *plugin = factory->createPlugin(pluginPath, pluginPath);
     QVERIFY(plugin != nullptr);
@@ -122,7 +123,7 @@ void NativeBackendTest::testPluginLifecycle() {
     // Get the registered plugin path
     QStringList pluginList = factory->getPluginList();
     QVERIFY(!pluginList.isEmpty());
-    QString pluginPath = pluginList.first();
+    const QString &pluginPath = pluginList.first();
 
     SDK::Plugin::IPlugin *plugin = factory->createPlugin(pluginPath, pluginPath);
     QVERIFY(plugin != nullptr);

@@ -21,7 +21,7 @@ class QMLBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI:
     Q_OBJECT
 
 public:
-    QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    QMLBackend(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
 
 #pragma region SDK::Plugin::IPlugin interface
 
@@ -55,7 +55,8 @@ public:
     virtual void shutdown();
 
     /// Создаёт (или возвращает из кэша) графический элемент по описанию.
-    virtual std::weak_ptr<SDK::GUI::IGraphicsItem> getItem(const SDK::GUI::GraphicsItem_Info &aInfo);
+    virtual std::weak_ptr<SDK::GUI::IGraphicsItem>
+    getItem(const SDK::GUI::GraphicsItem_Info &aInfo);
 
     /// Удаляет графический элемент по описанию
     virtual bool removeItem(const SDK::GUI::GraphicsItem_Info &aInfo);
@@ -79,7 +80,7 @@ private:
 
     SDK::Plugin::IEnvironment *m_Factory;
     SDK::GUI::IGraphicsEngine *m_Engine;
-    SDK::PaymentProcessor::ICore *m_Core;
+    SDK::PaymentProcessor::ICore *m_Core{};
 
     QQmlEngine m_QMLEngine;
     TGraphicItemsCache m_CachedItems;

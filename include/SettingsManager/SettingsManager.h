@@ -26,10 +26,8 @@ struct SSettingsSource {
     bool readOnly;
 
     SSettingsSource();
-    explicit SSettingsSource(const QString &aFileName, const QString &aAdapterName, bool aReadOnly);
-    explicit SSettingsSource(const QString &aFileName,
-                             const QString &aAdapterName,
-                             const char *aSymlinkName);
+    explicit SSettingsSource(QString aFileName, QString aAdapterName, bool aReadOnly);
+    explicit SSettingsSource(QString aFileName, QString aAdapterName, const char *aSymlinkName);
 
     bool isSymlink() const { return !symlinkName.isEmpty(); }
 
@@ -40,7 +38,7 @@ struct SSettingsSource {
 //---------------------------------------------------------------------------
 class SettingsManager : public ILogable {
 public:
-    explicit SettingsManager(const QString &aConfigPath);
+    explicit SettingsManager(QString aConfigPath);
     ~SettingsManager() override;
 
     /// Загружает все указанные конфиги.

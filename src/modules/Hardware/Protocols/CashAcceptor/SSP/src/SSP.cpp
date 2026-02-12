@@ -181,7 +181,7 @@ bool SSPProtocol::getAnswer(QByteArray &aAnswer, int aTimeout) {
             length = aAnswer[2];
         }
     } while ((clockTimer.elapsed() < aTimeout) &&
-             ((aAnswer.size() < (length + 5)) || (length == 0u)));
+             ((aAnswer.size() < (length + 5)) || (length == 0U)));
 
     return true;
 }

@@ -50,7 +50,7 @@ private slots:
                                SDK::Driver::EWarningLevel::Enum aLevel);
 
 private:
-    Ui::AutoEncashmentWindow ui;
+    Ui::AutoEncashmentWindow ui{};
 
 private:
     QTimer m_DateTimeTimer;

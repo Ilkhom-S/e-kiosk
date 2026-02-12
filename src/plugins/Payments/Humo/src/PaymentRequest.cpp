@@ -8,6 +8,7 @@
 #include <SDK/PaymentProcessor/Payment/Security.h>
 
 #include <Crypt/ICryptEngine.h>
+#include <utility>
 
 #if QT_VERSION < 0x050000
 #include <Qt5Port/qt5port.h>
@@ -20,8 +21,8 @@ using SDK::PaymentProcessor::SProvider;
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-PaymentRequest::PaymentRequest(Payment *aPayment, const QString &aName)
-    : m_Payment(aPayment), m_Name(aName) {
+PaymentRequest::PaymentRequest(Payment *aPayment, QString aName)
+    : m_Payment(aPayment), m_Name(std::move(aName)) {
     addParameter("SD", aPayment->getKeySettings().sd);
     addParameter("AP", aPayment->getKeySettings().ap);
     addParameter("OP", aPayment->getKeySettings().op);

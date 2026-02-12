@@ -65,7 +65,7 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer,
     aOutBuffer.clear();
 
     // Is there something to do?
-    if (aInBuffer.length()) {
+    if (aInBuffer.length() != 0) {
         // Declare vars
         int flush = 0;
 
@@ -252,7 +252,7 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer,
 
         } while (ret != Z_STREAM_END);
 
-        if (strlen(reinterpret_cast<const char *>(header.name))) {
+        if (strlen(reinterpret_cast<const char *>(header.name)) != 0U) {
             aFileName = QString::fromLatin1(reinterpret_cast<const char *>(header.name));
         }
 
@@ -294,7 +294,7 @@ QStringList Packer::pack(const QString &aTargetName,
         zipArguments << aSourceDir + QDir::separator() + mask;
     }
 
-    if (aMaxPartSize) {
+    if (aMaxPartSize != 0) {
         zipArguments << QString("-v%1b").arg(aMaxPartSize);
     }
 

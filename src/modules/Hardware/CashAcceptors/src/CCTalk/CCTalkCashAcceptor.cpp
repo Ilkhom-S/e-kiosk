@@ -79,11 +79,11 @@ bool CCTalkCashAcceptor::loadParTable() {
             QByteArray countryCode = answer.left(2);
 
             if (parseCurrencyData(countryCode, currencyData)) {
-                bool OK = false;
+                bool ok = false;
                 QByteArray valueData = answer.mid(2, 4);
-                int value = valueData.toInt(&OK);
+                int value = valueData.toInt(&ok);
 
-                if (OK) {
+                if (ok) {
                     double nominal = value * m_ScalingFactors[countryCode];
                     int countryCodeId = currencyData.code;
 
@@ -143,7 +143,7 @@ bool CCTalkCashAcceptor::getBufferedStatuses(QByteArray &aAnswer) {
 
 //---------------------------------------------------------------------------
 void CCTalkCashAcceptor::parseCreditData(uchar aCredit, uchar aError, TStatusCodes &aStatusCodes) {
-    if (!aError) {
+    if (aError == 0U) {
         aStatusCodes.insert(BillAcceptorStatusCode::BillOperation::Stacked);
         m_Codes.insert(CCCTalk::StackedDeviceCode);
     } else {
@@ -206,7 +206,8 @@ bool CCTalkCashAcceptor::route(bool aDirection) {
     if (data == CCCTalk::RoutingErrors::EmptyEscrow) {
         toLog(LogLevel::Error, log + ", due to no bill in escrow");
         return false;
-    } if (data == CCCTalk::RoutingErrors::Unknown) {
+    }
+    if (data == CCCTalk::RoutingErrors::Unknown) {
         toLog(LogLevel::Error, log + ", due to an error");
         return false;
     }
@@ -243,7 +244,7 @@ void CCTalkCashAcceptor::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes) {
             log << QString("Changed to %1: %2")
                        .arg(getStatusTranslations(TStatusCodes() << aStatusCode, false))
                        .arg(getStatusTranslations(oldStatusCodes - aStatusCodes, false));
-}
+        }
     };
 
     addLog(routing);

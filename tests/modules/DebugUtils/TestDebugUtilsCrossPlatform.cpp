@@ -18,7 +18,7 @@ private slots:
         qDebug() << "Build ABI:" << QSysInfo::buildAbi();
     }
 
-    void testPlatform_Detection() {
+    void testPlatformDetection() {
         // Test that the module correctly detects the platform
         QStringList stack;
         DumpCallstack(stack, nullptr);
@@ -95,7 +95,7 @@ private slots:
         }
     }
 
-    void testExceptionHandlerPlatform_Compatibility() {
+    void testExceptionHandlerPlatformCompatibility() {
         // Test that exception handler functions work on current platform
 #ifdef Q_OS_WIN
         qDebug() << "Testing Windows exception handler compatibility";
@@ -138,7 +138,7 @@ private slots:
         }
     }
 
-    void testStackTraceFrom_SignalHandler() {
+    void testStackTraceFromSignalHandler() {
         // Test that stack traces work even in signal handler context (simulated)
         QStringList normalStack;
         DumpCallstack(normalStack, nullptr);
@@ -189,10 +189,10 @@ private slots:
 
     void testMultipleRapidCalls() {
         // Test rapid successive calls to ensure no state corruption
-        const int num_Calls = 50;
-        QVector<QStringList> stacks(num_Calls);
+        const int numCalls = 50;
+        QVector<QStringList> stacks(numCalls);
 
-        for (int i = 0; i < num_Calls; ++i) {
+        for (int i = 0; i < numCalls; ++i) {
             DumpCallstack(stacks[i], nullptr);
             QVERIFY(stacks[i].size() > 0);
 
@@ -202,7 +202,7 @@ private slots:
 
         // All stacks should be similar in size (same call depth)
         int firstSize = stacks[0].size();
-        for (int i = 1; i < num_Calls; ++i) {
+        for (int i = 1; i < numCalls; ++i) {
             QVERIFY(qAbs(stacks[i].size() - firstSize) <= 2); // Allow small variations
         }
     }

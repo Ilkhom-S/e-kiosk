@@ -6,7 +6,7 @@
 
 #include "WatchServiceClient.h"
 
-static int __test_watch_service_client_startup = []() {
+static const int test_watch_service_client_startup = []() {
     qDebug() << "TestWatchServiceClient: startup";
     return 0;
 }();

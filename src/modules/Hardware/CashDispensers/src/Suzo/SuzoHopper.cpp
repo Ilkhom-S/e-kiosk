@@ -23,7 +23,7 @@ SuzoHopper::SuzoHopper() : m_SingleMode(false) {
     m_ProtocolTypes = getProtocolTypes();
     m_AllModelData = PAllModelData(new CCCTalk::Dispenser::CModelData());
     m_units = 1;
-    
+
     m_resetIsPossible = false;
 
     setConfigParameter(CHardware::ProtocolType, CHardware::CashDevice::CCTalkTypes::CRC8);
@@ -54,7 +54,7 @@ TResult SuzoHopper::execCommand(const QByteArray &aCommand,
     int index = 0;
 
     do {
-        if (index) {
+        if (index != 0) {
             SleepHelper::msleep(CSuzo::Pause::CommandIteration);
         }
 
@@ -187,13 +187,13 @@ void SuzoHopper::performDispense(int aUnit, int aItems) {
 
     CSuzo::SStatus status;
 
-    while (getDispensingStatus(status) && status.remains) {
+    while (getDispensingStatus(status) && (status.remains != 0)) {
         SleepHelper::msleep(CSuzo::Pause::Dispensing);
     }
 
     emitDispensed(0, status.paid);
 
-    if (status.unpaid) {
+    if (status.unpaid != 0) {
         toLog(LogLevel::Error,
               m_DeviceName + QString(": Cannot pay out %1 coins").arg(status.unpaid));
 

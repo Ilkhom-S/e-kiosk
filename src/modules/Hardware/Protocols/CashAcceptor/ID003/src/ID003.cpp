@@ -127,7 +127,7 @@ bool ID003Protocol::getAnswer(QByteArray &aAnswerData) {
             length = aAnswerData[1];
         }
     } while ((clockTimer.elapsed() < CID003::AnswerTimeout) &&
-             ((aAnswerData.size() < length) || (length == 0u)));
+             ((aAnswerData.size() < length) || (length == 0U)));
 
     toLog(LogLevel::Normal, QString("ID003: << {%1}").arg(aAnswerData.toHex().data()));
 

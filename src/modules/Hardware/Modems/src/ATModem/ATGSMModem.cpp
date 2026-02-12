@@ -180,7 +180,7 @@ void ATGSMModem::getSIMData(const QByteArray &aCommand) {
     QByteArray answer;
     processCommand(aCommand, answer);
 
-    CATGSMModem::SSIMRequestInfo simRequestInfo = CATGSMModem::SIMRequestInfo[aCommand];
+    const CATGSMModem::SSIMRequestInfo &simRequestInfo = CATGSMModem::SIMRequestInfo[aCommand];
 
     // 1. Так как regexpData уже QString, передаем её напрямую в конструктор.
     QRegularExpression regExp(simRequestInfo.regexpData);
@@ -295,7 +295,7 @@ bool ATGSMModem::getSiemensCellList(QString &aValue) {
                  << QString::number(items[i + 2].toInt(nullptr, 16)).trimmed()
                  << items[i + 6].trimmed();
 
-            QString channelKey = items[i + 5];
+            const QString &channelKey = items[i + 5];
             cellList.push_back(channelKey);
             cellsData[channelKey] = info;
 
@@ -565,7 +565,7 @@ bool ATGSMModem::getCUSDMessage(const QByteArray &aBuffer, QString &aMessage) {
         if (hexRegex.match(messageContent).hasMatch()) {
             QByteArray hexBuffer;
             for (QChar aChar : messageContent) {
-                hexBuffer.append(static_cast<char>(aChar.toLatin1()));
+                hexBuffer.append(aChar.toLatin1());
 
                 if (hexBuffer.size() == 4) {
                     // Явное приведение к ushort для QChar конструктора

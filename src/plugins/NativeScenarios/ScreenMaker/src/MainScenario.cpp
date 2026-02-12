@@ -22,7 +22,7 @@
 
 namespace {
 /// Конструктор плагина.
-SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createPlugin(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath) {
     return new ScreenMaker::MainScenarioPlugin(aFactory, aInstancePath);
 }
@@ -31,7 +31,7 @@ SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
 REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
                          PPSDK::CComponents::ScenarioFactory,
                          CScenarioPlugin::PluginName),
-                &CreatePlugin,
+                &createPlugin,
                 &SDK::Plugin::PluginInitializer::emptyParameterList,
                 ScreenMakerMainScenario);
 
@@ -41,7 +41,7 @@ namespace ScreenMaker {
 MainScenario::MainScenario(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
     : Scenario(CScenarioPlugin::PluginName, aLog), m_Core(aCore), m_DrawAreaWindow(nullptr) {
     QString path =
-        static_cast<SDK::PaymentProcessor::TerminalSettings *>(
+        dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(
             m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
             ->getAppEnvironment()
             .userDataPath +

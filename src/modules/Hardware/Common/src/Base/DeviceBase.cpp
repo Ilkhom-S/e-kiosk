@@ -37,21 +37,17 @@ using namespace SDK::Driver;
 template <class T>
 DeviceBase<T>::DeviceBase()
     : m_BadAnswerCounter(0), m_MaxBadAnswers(0), m_ModelCompatibility(true),
-      m_ForceStatusBufferEnabled(false), m_AutoDetectable(true), m_Connected(false), m_InitializeRepeatCount(1), m_LastWarningLevel(static_cast<EWarningLevel::Enum>(-1)), m_NeedReboot(false), m_OldFirmware(false) {
+      m_ForceStatusBufferEnabled(false), m_AutoDetectable(true), m_Connected(false),
+      m_InitializeRepeatCount(1), m_LastWarningLevel(static_cast<EWarningLevel::Enum>(-1)),
+      m_NeedReboot(false), m_OldFirmware(false) {
     this->moveToThread(&this->m_Thread);
 
     this->m_DeviceName = CDevice::DefaultName;
 
     this->m_PostPollingAction = true, this->m_Verified = true;
 
-    
-    
     this->m_Initialized = ERequestStatus::Fail;
     this->m_Version = Humo::getVersion();
-    
-    
-    
-    
 
     this->m_StatusCodesSpecification =
         DeviceStatusCode::PSpecifications(new DeviceStatusCode::CSpecifications());
@@ -680,10 +676,11 @@ void DeviceBase<T>::emitStatusCodes(TStatusCollection &aStatusCollection, int aE
 //--------------------------------------------------------------------------------
 template <class T>
 EWarningLevel::Enum DeviceBase<T>::getWarningLevel(const TStatusCollection &aStatusCollection) {
-    return (!aStatusCollection[EWarningLevel::Error].empty() != 0)
+    return (static_cast<int>(!aStatusCollection[EWarningLevel::Error].empty()) != 0)
                ? EWarningLevel::Error
-               : ((!aStatusCollection[EWarningLevel::Warning].empty() != 0) ? EWarningLevel::Warning
-                                                                            : EWarningLevel::OK);
+               : ((static_cast<int>(!aStatusCollection[EWarningLevel::Warning].empty()) != 0)
+                      ? EWarningLevel::Warning
+                      : EWarningLevel::OK);
 }
 
 //--------------------------------------------------------------------------------

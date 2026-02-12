@@ -21,16 +21,12 @@ static const char JammedItem[] =
 namespace VDPPT = VirtualDevicesPluginParameterTranslations;
 
 //--------------------------------------------------------------------------------------
-template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstanceName) {
+template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QString &aInstanceName) {
     return new DevicePluginBase<T>("Virtual device", aEnvironment, aInstanceName);
 }
 
-template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QString &aInstanceName) {
-    return CreatePlugin<T>(aEnvironment, aInstanceName);
-}
-
 //--------------------------------------------------------------------------------------
-TParameterList CAParameters() {
+TParameterList caParameters() {
     return modifyPriority(createNamedList<VirtualCashAcceptor>("Virtual cash acceptor"),
                           EDetectingPriority::Fallback)
            // Количество зачисляемых одновременно купюр.
@@ -81,7 +77,7 @@ TParameterList dispenserParameters() {
 
 //------------------------------------------------------------------------------
 BEGIN_REGISTER_PLUGIN
-COMMON_DRIVER(VirtualCashAcceptor, &CAParameters)
+COMMON_DRIVER(VirtualCashAcceptor, &caParameters)
 COMMON_DRIVER(VirtualDispenser, &dispenserParameters)
 END_REGISTER_PLUGIN
 

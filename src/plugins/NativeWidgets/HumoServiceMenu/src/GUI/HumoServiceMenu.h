@@ -15,7 +15,7 @@
 //--------------------------------------------------------------------------
 class HumoServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
 public:
-    HumoServiceMenu(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    HumoServiceMenu(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
     ~HumoServiceMenu();
 
 #pragma region SDK::Plugin::IPlugin interface

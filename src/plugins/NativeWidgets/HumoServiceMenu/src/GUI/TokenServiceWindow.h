@@ -27,11 +27,11 @@ private slots:
     void onError(QString aError);
 
 protected:
-    int m_UIUpdateTimer;
+    int m_UIUpdateTimer{};
     void timerEvent(QTimerEvent *);
 
 private:
-    TokenWindow *m_Window;
+    TokenWindow *m_Window{};
 };
 
 //------------------------------------------------------------------------

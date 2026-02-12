@@ -49,13 +49,14 @@ public:
 #pragma region SDK::GUI::IGraphicsBackend interface
 
     /// Инициализируем
-    virtual bool initialize(SDK::GUI::IGraphicsEngine *aContainer);
+    virtual bool initialize(SDK::GUI::IGraphicsEngine *aEngine);
 
     /// Очищаем ресурсы
     virtual void shutdown();
 
     /// Создаёт (или возвращает из кэша) графический элемент по описанию.
-    virtual std::weak_ptr<SDK::GUI::IGraphicsItem> getItem(const SDK::GUI::GraphicsItem_Info &aInfo);
+    virtual std::weak_ptr<SDK::GUI::IGraphicsItem>
+    getItem(const SDK::GUI::GraphicsItem_Info &aInfo);
 
     /// Удаляет графический элемент по описанию
     virtual bool removeItem(const SDK::GUI::GraphicsItem_Info &aInfo);
@@ -70,9 +71,9 @@ public:
 
 private:
     QString m_InstancePath;
-    QMultiMap<QString, std::shared_ptr<WebGraphicsItem>> m_Items;
+    QMultiMap<QString, std::shared_ptr<WebGraphicsItem>> m_Items{};
 
-    QVariantMap m_Parameters;
+    QVariantMap m_Parameters{};
     SDK::Plugin::IEnvironment *m_Factory;
     SDK::GUI::IGraphicsEngine *m_Engine;
 

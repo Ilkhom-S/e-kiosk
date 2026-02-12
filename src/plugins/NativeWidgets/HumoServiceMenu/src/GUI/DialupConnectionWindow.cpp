@@ -23,7 +23,6 @@ DialupConnectionWindow::DialupConnectionWindow(QWidget *aParent) : QWidget(aPare
 }
 
 //---------------------------------------------------------------------------
-DialupConnectionWindow::~DialupConnectionWindow() = default;
 
 //---------------------------------------------------------------------------
 void DialupConnectionWindow::initialize() {
@@ -36,7 +35,7 @@ QString DialupConnectionWindow::getUserSelection() const {
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::fillModem_List(const QList<QPair<QString, QString>> &aModems) {
+void DialupConnectionWindow::fillModemList(const QList<QPair<QString, QString>> &aModems) {
     lwModems->clear();
     foreach (auto modem, aModems) {
         auto *item = new QListWidgetItem();

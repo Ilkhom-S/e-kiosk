@@ -78,7 +78,7 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
                                   .arg(request->getPayment()->getID())
                                   .arg(field.name));
 
-                        if (!getError() || getError() == ELocalError::NetworkError) {
+                        if ((getError() == 0) || getError() == ELocalError::NetworkError) {
                             // Добавляем ошибку, если другой нет
                             addParameter(CResponse::Parameters::Error,
                                          QString::number(ELocalError::AbsentExpectedParam));

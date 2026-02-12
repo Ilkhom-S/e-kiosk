@@ -99,10 +99,10 @@ bool OSMP25::reset(const QString &aLine) {
 
 //---------------------------------------------------------------------------
 bool OSMP25::getStatus(TStatusCodes &aStatusCodes) {
-    QTime PCWakingUpTime = getConfigParameter(CHardware::Watchdog::PCWakingUpTime).toTime();
+    QTime pcWakingUpTime = getConfigParameter(CHardware::Watchdog::PCWakingUpTime).toTime();
 
-    if (!PCWakingUpTime.isNull() && (PCWakingUpTime != m_PCWakingUpTime)) {
-        int secsTo = PCWakingUpTime.secsTo(QTime::currentTime());
+    if (!pcWakingUpTime.isNull() && (pcWakingUpTime != m_PCWakingUpTime)) {
+        int secsTo = pcWakingUpTime.secsTo(QTime::currentTime());
 
         if (secsTo < 0) {
             secsTo += 24 * 60 * 60;
@@ -111,7 +111,8 @@ bool OSMP25::getStatus(TStatusCodes &aStatusCodes) {
         int intervals = qRound(double(secsTo) / COSMP25::PCWakingUpInterval);
 
         if ((secsTo < COSMP25::PCWakingUpInterval) ||
-            (std::abs(COSMP25::PCWakingUpInterval * intervals - secsTo) < COSMP25::PCWakingUpLag)) {
+            (std::abs((COSMP25::PCWakingUpInterval * intervals) - secsTo) <
+             COSMP25::PCWakingUpLag)) {
             QByteArray answer;
             bool resetPCWakingUpTimeResult = true;
             bool needResetPCWakeUpTime = !m_PCWakingUpTime.isNull();
@@ -122,7 +123,7 @@ bool OSMP25::getStatus(TStatusCodes &aStatusCodes) {
                     resetPCWakingUpTimeResult = false;
                     toLog(LogLevel::Error, m_DeviceName + ": Cannot get wake up timeout");
                 } else {
-                    needResetPCWakeUpTime = answer[0];
+                    needResetPCWakeUpTime = (answer[0] != 0);
                 }
             }
 
@@ -137,11 +138,11 @@ bool OSMP25::getStatus(TStatusCodes &aStatusCodes) {
                       QString("%1: Set wake up timeout to %2 hours -> %3")
                           .arg(m_DeviceName)
                           .arg(intervals / 2.0)
-                          .arg(PCWakingUpTime.toString(COSMP25::TimeLogFormat)));
+                          .arg(pcWakingUpTime.toString(COSMP25::TimeLogFormat)));
 
                 if (processCommand(COSMP25::Commands::PCWakeUpTime,
                                    QByteArray(1, uchar(intervals)))) {
-                    m_PCWakingUpTime = PCWakingUpTime;
+                    m_PCWakingUpTime = pcWakingUpTime;
                 }
             }
         }

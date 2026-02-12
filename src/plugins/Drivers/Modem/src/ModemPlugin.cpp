@@ -6,11 +6,11 @@
 using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
-TParameterList Enum_Parameters() {
+TParameterList enumParameters() {
     return createNamedList<ATGSMModem>("GSM AT compatible modem");
 }
 
 // Регистрация плагина.
-REGISTER_DRIVER("Modem", ATGSMModem, &Enum_Parameters);
+REGISTER_DRIVER("Modem", ATGSMModem, &enumParameters);
 
 //-----------------------------------------------------------------------------

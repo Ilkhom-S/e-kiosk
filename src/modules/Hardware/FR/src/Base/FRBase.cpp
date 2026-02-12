@@ -261,8 +261,7 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
                                    SFiscalFieldData(data.translationPF, data.isMoney()));
         }
 
-        setConfigParameter(CHardwareSDK::FR::FiscalFieldData,
-                           QVariant::fromValue(fiscalFieldData));
+        setConfigParameter(CHardwareSDK::FR::FiscalFieldData, QVariant::fromValue(fiscalFieldData));
 
         m_FFEngine.setConfigParameter(CFiscalSDK::SerialFSNumber,
                                       getDeviceParameter(CDeviceData::FS::SerialNumber));
@@ -1528,7 +1527,7 @@ template <class T> void FRBase<T>::addFiscalFieldsOnPayment(const SPaymentData &
                     aPaymentData.fiscalParameters.value(CPrintConstants::BankName));
 
     QString agentOperation = QString::fromUtf8(aPaymentData.back() ? CFR::AgentOperation::Payout
-                                                                    : CFR::AgentOperation::Payment);
+                                                                   : CFR::AgentOperation::Payment);
     m_FFEngine.setConfigParameter(CFiscalSDK::AgentOperation, agentOperation);
 
     bool isBankAgent = CFR::isBankAgent(aPaymentData.agentFlag);

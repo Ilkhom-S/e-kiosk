@@ -149,7 +149,7 @@ void CCTalkAcceptorBase<T>::parseBufferedStatuses(const QByteArray &aAnswer,
                                                   TStatusCodes &aStatusCodes) {
     int size = aAnswer[0];
 
-    if (!size || (size == this->m_EventIndex)) {
+    if ((size == 0) || (size == this->m_EventIndex)) {
         if (canApplySimpleStatusCodes(aStatusCodes)) {
             aStatusCodes.insert(m_Enabled ? BillAcceptorStatusCode::Normal::Enabled
                                           : BillAcceptorStatusCode::Normal::Disabled);
@@ -161,12 +161,12 @@ void CCTalkAcceptorBase<T>::parseBufferedStatuses(const QByteArray &aAnswer,
     }
 
     for (int i = 0; i < (size - this->m_EventIndex); ++i) {
-        uchar credit = aAnswer[2 * i + 1];
-        uchar error = aAnswer[2 * i + 2];
+        uchar credit = aAnswer[(2 * i) + 1];
+        uchar error = aAnswer[(2 * i) + 2];
 
-        if (credit) {
+        if (credit != 0U) {
             parseCreditData(credit, error, aStatusCodes);
-        } else if (error) {
+        } else if (error != 0U) {
             this->m_Codes.insert(error);
 
             if (error == this->m_ModelData.error) {

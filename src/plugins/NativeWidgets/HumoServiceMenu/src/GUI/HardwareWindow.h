@@ -141,10 +141,10 @@ public slots:
     /// Поиск устройств.
     void detectDevices();
 
-    /// Прерывает поиск устройтсв.
+    /// Прерывает поиск устройств.
     void abortDetection();
 
-    /// Поиск устройст закончен
+    /// Поиск устройств закончен
     void onDetectionFinished();
 
 private slots:
@@ -197,7 +197,7 @@ private slots:
 private:
     typedef QList<QSharedPointer<DeviceSlot>> TDeviceSlotList;
 
-    Ui::frmHardwareWindow ui;
+    Ui::frmHardwareWindow ui{};
 
     HumoServiceBackend *m_Backend;
 
@@ -207,7 +207,7 @@ private:
     EditorPane m_Editor;
 
     TDeviceSlotList m_Slots;
-    TDeviceList m_DeviceList;
+    TDeviceList m_DeviceList{};
 
     QFutureWatcher<void> m_ApplyingWatcher;
 

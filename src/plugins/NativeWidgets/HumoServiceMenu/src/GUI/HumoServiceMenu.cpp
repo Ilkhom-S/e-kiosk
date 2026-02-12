@@ -13,6 +13,8 @@
 #include <SDK/Plugins/IPluginLoader.h>
 #include <SDK/Plugins/PluginInitializer.h>
 
+#include <utility>
+
 #include "Backend/HumoServiceBackend.h"
 #include "MessageBox/MessageBox.h"
 
@@ -26,17 +28,17 @@ namespace PPSDK = SDK::PaymentProcessor;
 namespace {
 
 /// Конструктор плагина.
-SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createPlugin(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath) {
     return new HumoServiceMenu(aFactory, aInstancePath);
 }
 
 } // namespace
 
-typedef QMap<int, bool> map_type;
+using map_type = QMap<int, bool>;
 Q_DECLARE_METATYPE(map_type)
 
-static SDK::Plugin::TParameterList EnumerateParameters() {
+static SDK::Plugin::TParameterList enumerateParameters() {
     return SDK::Plugin::TParameterList()
            << SDK::Plugin::SPluginParameter("columnVisibility",
                                             SDK::Plugin::SPluginParameter::MultiSet,
@@ -58,14 +60,14 @@ static SDK::Plugin::TParameterList EnumerateParameters() {
 REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
                                          SDK::PaymentProcessor::CComponents::GraphicsItem,
                                          CHumoServiceMenu::PluginName),
-                                &CreatePlugin,
-                                &EnumerateParameters,
+                                &createPlugin,
+                                &enumerateParameters,
                                 HumoServiceMenu);
 
 //--------------------------------------------------------------------------
-HumoServiceMenu::HumoServiceMenu(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : m_Environment(aFactory), m_InstancePath(aInstancePath), m_MainHumoServiceMenuWindow(nullptr),
-      m_IsReady(true) {
+HumoServiceMenu::HumoServiceMenu(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
+    : m_Environment(aFactory), m_InstancePath(std::move(aInstancePath)),
+      m_MainHumoServiceMenuWindow(nullptr), m_IsReady(true) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 

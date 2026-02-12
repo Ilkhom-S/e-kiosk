@@ -55,8 +55,8 @@ bool GeBe::getStatus(TStatusCodes &aStatusCodes) {
         return false;
     }
 
-    for (int i = 0; i < answer.size(); ++i) {
-        aStatusCodes.insert(CGeBE::Statuses[answer[i]]);
+    for (char i : answer) {
+        aStatusCodes.insert(CGeBE::Statuses[i]);
     }
 
     return true;

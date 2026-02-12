@@ -103,7 +103,7 @@ void UnmanagedWizardPage::onUserSelectionChanged() {
 }
 
 //---------------------------------------------------------------------------
-void UnmanagedWizardPage::onTestConnection(QNetworkProxy aProxy) {
+void UnmanagedWizardPage::onTestConnection(const QNetworkProxy &aProxy) {
     SDK::PaymentProcessor::SConnection connection;
 
     connection.name = "unmanaged connection";

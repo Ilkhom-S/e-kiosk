@@ -50,8 +50,8 @@ private slots:
 
 private:
     HardwareWindow *m_Window;
-    bool m_Shown;
-    bool m_Finish;
+    bool m_Shown{};
+    bool m_Finish{};
 };
 
 //------------------------------------------------------------------------

@@ -50,13 +50,13 @@ private slots:
 
     void testConcurrentDumpCallstack() {
         // Test that multiple threads can dump stacks concurrently
-        const int num_Threads = 5;
+        const int numThreads = 5;
         const int callsPerThread = 20;
 
         QVector<QThread *> threads;
-        QVector<bool> completed(num_Threads, false);
+        QVector<bool> completed(numThreads, false);
 
-        for (int i = 0; i < num_Threads; ++i) {
+        for (int i = 0; i < numThreads; ++i) {
             auto *thread = new QThread;
             threads.append(thread);
 

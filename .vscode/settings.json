@@ -13,16 +13,21 @@
         "deprecated/": true,
         "vcpkg_installed/": true
     },
-    "C_Cpp.codeAnalysis.exclude": {
-        "**/thirdparty/**": true,
-        "**/deprecated/**": true
-    },
+
+    // Toggle this path when switching Qt5/Qt6 builds.
+    // Qt6 (macOS): ${workspaceFolder}/build/macos-qt6/compile_commands.json
+    // Qt5 (Win7):  ${workspaceFolder}/build/win7-qt5/compile_commands.json
     "C_Cpp.default.compileCommands": "${workspaceFolder}/build/macos-qt6/compile_commands.json",
+
+    // Optional quick references (no effect on IntelliSense)
+    "ekiosk.compileCommands.qt6": "${workspaceFolder}/build/macos-qt6/compile_commands.json",
+    "ekiosk.compileCommands.qt5": "${workspaceFolder}/build/win7-qt5/compile_commands.json",
     "editor.formatOnSave": true,
     "[cpp]": {
         "editor.defaultFormatter": "xaver.clang-format"
     },
     "C_Cpp.errorSquiggles": "enabled",
+    // Default to Qt5/Win7-compatible standards; compile_commands.json overrides per build.
     "C_Cpp.default.cppStandard": "c++14",
     "C_Cpp.default.cStandard": "c11",
     "C_Cpp.default.intelliSenseMode": "macos-clang-arm64",
@@ -58,6 +63,33 @@
     "svg.preview.background": "dark-transparent",
     "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
         "cppcoreguidelines-pro-bounds-array-to-pointer-decay",
-        "readability-convert-member-functions-to-static"
-    ]
+        "cppcoreguidelines-init-variables",
+        "cppcoreguidelines-avoid-do-while",
+        "modernize-use-default-member-init",
+        "readability-convert-member-functions-to-static",
+        "readability-identifier-naming",
+        "cppcoreguidelines-special-member-functions",
+        "hicpp-special-member-functions",
+        "modernize-use-default-member-init",
+        "cppcoreguidelines-avoid-const-or-ref-data-members",
+        "misc-non-private-member-variables-in-classes",
+        "readability-redundant-access-specifiers",
+        "cppcoreguidelines-avoid-non-const-global-variables",
+        "modernize-use-equals-default",
+        "cppcoreguidelines-macro-usage",
+        "modernize-use-using",
+        "readability-braces-around-statements",
+        "readability-static-accessed-through-instance"
+    ],
+    "C_Cpp.codeAnalysis.exclude": {
+        "**/thirdparty/**": true,
+        "**/deprecated/**": true,
+        "**/vcpkg_installed/**": true,
+        "**/build/**": true,
+        "**/tests/plugins/common/MockObjects.h": true,
+        "**/*_autogen/**": true,
+        "**/moc_*.cpp": true,
+        "**/ui_*.h": true,
+        "**/qrc_*.cpp": true
+    }
 }

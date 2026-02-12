@@ -55,10 +55,10 @@ Directory::Directory(TPtree &aProperties)
                     }
                 }
 
-                if (range.ids.size()) {
+                if (static_cast<int>(!range.ids.empty()) != 0) {
                     // Диапазон виртуальный, если есть хоть один ID
                     m_OverlappedRanges << range;
-                } else if (range.cids.size()) {
+                } else if (static_cast<int>(!range.cids.empty()) != 0) {
                     m_Ranges << range;
                 } else {
                     toLog(LogLevel::Error,

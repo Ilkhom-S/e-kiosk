@@ -74,7 +74,7 @@ bool CitizenPPU231::getStatus(TStatusCodes &aStatusCodes) {
     }
 
     for (int i = 0; i < 8; ++i) {
-        if (answer[0] & (1 << i)) {
+        if ((answer[0] & (1 << i)) != 0) {
             aStatusCodes.insert(CCitizenPPU231::Statuses[i]);
         }
     }

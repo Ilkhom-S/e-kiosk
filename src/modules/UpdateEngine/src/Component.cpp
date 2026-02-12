@@ -9,15 +9,14 @@
 
 #include <Common/Exception.h>
 
+#include <utility>
+
 #include "Misc.h"
 
-Component::Component(const QString &aId,
-                     const QString &aVersion,
-                     const TFileList &aFiles,
-                     const QStringList &aActions,
-                     const QString &aURL)
-    : m_PostActions(aActions), m_URL(aURL), m_Id(aId), m_Version(aVersion), m_SkipExisting(false),
-      m_Optional(false) {
+Component::Component(
+    QString aId, QString aVersion, const TFileList &aFiles, QStringList aActions, QString aURL)
+    : m_PostActions(std::move(aActions)), m_URL(std::move(aURL)), m_Id(std::move(aId)),
+      m_Version(std::move(aVersion)), m_SkipExisting(false), m_Optional(false) {
     QRegularExpression removeFirstSlash("^/+");
 
     // Удяляем слэши в начали пути.
