@@ -135,13 +135,15 @@ if(EXISTS "${THIRD_PARTY_DIR}/zint")
 
     add_subdirectory(zint)
 
-    # Exclude zint-qt GUI application from default build (we only need QZint library)
+    # Exclude zint-qt GUI application from default build AND installation
     if(TARGET zint-qt)
         set_target_properties(zint-qt PROPERTIES
             EXCLUDE_FROM_ALL TRUE
             EXCLUDE_FROM_DEFAULT_BUILD TRUE
         )
-        message(STATUS "[thirdparty] Excluding zint-qt GUI application from default build")
+        # Remove zint-qt from installation by setting empty install component
+        install(TARGETS zint-qt EXCLUDE_FROM_ALL)
+        message(STATUS "[thirdparty] Excluding zint-qt GUI application from default build and install")
     endif()
 
     if(TARGET QZint AND NOT TARGET EK::QZint)
