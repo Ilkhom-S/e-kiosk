@@ -16,9 +16,9 @@ const int ControlRegister = 0x37A;
 //--------------------------------------------------------------------------------
 /// Параметры LPT-порта.
 namespace ELPTPortParameters {
-enum Enum {
-    int portNumber; /// Номер порта.
-};
+// Note: Port number is typically specified as a configuration parameter, not an enum value.
+// If specific port numbers need to be defined, they should be added as constants here.
+const int DefaultPortNumber = 0; /// Номер порта по умолчанию.
 } // namespace ELPTPortParameters
 
 } // namespace Driver
