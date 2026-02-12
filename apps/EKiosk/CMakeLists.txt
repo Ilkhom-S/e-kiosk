@@ -7,10 +7,18 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Sql PrintSup
 # Use EKiosk CMake helpers
 include(${CMAKE_SOURCE_DIR}/cmake/EKApplication.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/EKAssets.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/EKStaticAnalysis.cmake)
 
 # Генерация ini-файлов для всех конфигураций через хелпер
 ek_generate_ini_for_all_configs(ekiosk "${CMAKE_SOURCE_DIR}/runtimes/common/data/ekiosk/ekiosk.ini.in")
+
+# Copy runtime assets to output directory
+ek_copy_assets(ekiosk
+    SOURCE_DIR "${CMAKE_SOURCE_DIR}/runtimes/common/assets"
+    OUTPUT_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+    DIRS data user
+)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.h)
@@ -76,6 +84,9 @@ endif()
 
 # Make ekiosk depend on ini file generation (only built when ekiosk is built)
 add_dependencies(ekiosk ekiosk_ini)
+
+# Link assets (images, sounds, styles) to be copied when ekiosk is built
+ek_link_app_assets(ekiosk)
 
 # Link common include INTERFACE target so `include/` headers are available
 target_link_libraries(ekiosk PUBLIC ek_common)
