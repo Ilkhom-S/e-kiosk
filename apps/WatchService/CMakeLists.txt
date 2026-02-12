@@ -60,14 +60,11 @@ if(APPLE)
     set_target_properties(watchdog PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_ICON_FILE AppIcon
+        MACOSX_BUNDLE_ICON_FILE watchdog-app-icon.icns
     )
     target_sources(watchdog PRIVATE src/icons/watchdog-app-icon.icns)
-
-    # Copy icon to bundle Resources
-    add_custom_command(TARGET watchdog POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:watchdog>/Contents/Resources
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/watchdog-app-icon.icns $<TARGET_BUNDLE_DIR:watchdog>/Contents/Resources/AppIcon.icns
+    set_source_files_properties(src/icons/watchdog-app-icon.icns PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources
     )
 endif()
 

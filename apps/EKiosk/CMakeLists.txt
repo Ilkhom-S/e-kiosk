@@ -66,12 +66,11 @@ if(APPLE)
     set_target_properties(ekiosk PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_ICON_FILE AppIcon
+        MACOSX_BUNDLE_ICON_FILE ekiosk-app-icon.icns
     )
-    # Copy icon to bundle Resources
-    add_custom_command(TARGET ekiosk POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:ekiosk>/Contents/Resources
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/ekiosk-app-icon.icns $<TARGET_BUNDLE_DIR:ekiosk>/Contents/Resources/AppIcon.icns
+    target_sources(ekiosk PRIVATE src/icons/ekiosk-app-icon.icns)
+    set_source_files_properties(src/icons/ekiosk-app-icon.icns PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources
     )
 endif()
 

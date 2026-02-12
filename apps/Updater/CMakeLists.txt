@@ -51,10 +51,9 @@ if(APPLE)
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_ICON_FILE updater-app-icon.icns
     )
-    # Copy icon to bundle Resources
-    add_custom_command(TARGET updater POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:updater>/Contents/Resources
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/updater-app-icon.icns $<TARGET_BUNDLE_DIR:updater>/Contents/Resources/AppIcon.icns
+    target_sources(updater PRIVATE src/icons/updater-app-icon.icns)
+    set_source_files_properties(src/icons/updater-app-icon.icns PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources
     )
 endif()
 
