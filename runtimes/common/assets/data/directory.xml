@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<directory>
+  <connections>
+    <connection name="TajikTel GPRS" init_string='AT+CGDCONT=1,"IP","internet.tajtel.com.tj"' phone="*99***1#" login="" password="">
+      <balance number="*100#" regexp="(-?\d+([\.,]\d+)?)"/>
+      <sim_number number="*111#" regexp="(\d{7,12})"/>
+    </connection>
+    <connection name="TajikTel Beeline" init_string='AT+CGDCONT=1,"IP","internet"' phone="*99***1#" login="" password="">
+      <balance number="*100#" regexp="(-?\d+([\.,]\d+)?)"/>
+    </connection>
+    <connection name="TCell GPRS" init_string='AT+CGDCONT=1,"IP","gprs.tcell.tj"' phone="*99***1#" login="tcell" password="tcell">
+      <balance number="*150#" regexp="(-?\d+([\.,]\d+)?)"/>
+      <sim_number number="*101#" regexp="(\d{7,12})"/>
+    </connection>
+    <connection name="TCell Internet" init_string='AT+CGDCONT=1,"IP","internet.tcell.tj"' phone="*99***1#" login="" password="">
+      <balance number="*150#" regexp="(-?\d+([\.,]\d+)?)"/>
+    </connection>
+    <connection name="Babilon Mobile GPRS" init_string='AT+CGDCONT=1,"IP","gprs.babilon.tj"' phone="*99***1#" login="babilon" password="babilon">
+      <balance number="*133#" regexp="(-?\d+([\.,]\d+)?)"/>
+      <sim_number number="*121#" regexp="(\d{7,12})"/>
+    </connection>
+    <connection name="Babilon Internet" init_string='AT+CGDCONT=1,"IP","internet.babilon.tj"' phone="*99***1#" login="" password="">
+      <balance number="*133#" regexp="(-?\d+([\.,]\d+)?)"/>
+    </connection>
+    <connection name="Mobi GPRS" init_string='AT+CGDCONT=1,"IP","gprs.mobi.tj"' phone="*99***1#" login="mobi" password="mobi">
+      <balance number="*110#" regexp="(-?\d+([\.,]\d+)?)"/>
+      <sim_number number="*444#" regexp="(\d{7,12})"/>
+    </connection>
+    <connection name="Mobi Internet" init_string='AT+CGDCONT=1,"IP","internet.mobi.tj"' phone="*99***1#" login="" password="">
+      <balance number="*110#" regexp="(-?\d+([\.,]\d+)?)"/>
+    </connection>
+  </connections>
+</directory>
