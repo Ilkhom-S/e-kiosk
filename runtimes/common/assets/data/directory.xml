@@ -1,42 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <directory>
     <connections>
-        <!-- Tcell - Largest operator with widest 4G/LTE coverage in cities and 2G/3G in rural areas -->
-        <connection name="Tcell 4G/LTE" init_string='AT+CGDCONT=1,"IP","internet.tcell.tj"'
+        <!-- Tcell - Largest operator with 4G/LTE cities and 2G/3G rural coverage -->
+        <connection name="Tcell" init_string='AT+CGDCONT=1,"IP","internet.tcell.tj"'
             phone="" login="" password="">
-        </connection>
-        <connection name="Tcell GPRS" init_string='AT+CGDCONT=1,"IP","gprs.tcell.tj"'
-            phone="" login="" password="">
+            <balance number="*150#" regexp="(-?\d+([\.,]\d+)?)" />
+            <sim_number number="*101#" regexp="(\d{7,12})" />
         </connection>
 
         <!-- Babilon Mobile - Strong 3G/4G coverage with high-speed data services -->
-        <connection name="Babilon Mobile 4G" init_string='AT+CGDCONT=1,"IP","internet.babilon.tj"'
+        <connection name="Babilon Mobile" init_string='AT+CGDCONT=1,"IP","internet.babilon.tj"'
             phone="" login="" password="">
-        </connection>
-        <connection name="Babilon Mobile GPRS" init_string='AT+CGDCONT=1,"IP","gprs.babilon.tj"'
-            phone="" login="" password="">
+            <balance number="*133#" regexp="(-?\d+([\.,]\d+)?)" />
+            <sim_number number="*121#" regexp="(\d{7,12})" />
         </connection>
 
         <!-- MegaFon Tajikistan - Strong coverage in Dushanbe and major cities -->
         <connection name="MegaFon Tajikistan" init_string='AT+CGDCONT=1,"IP","internet.megafon.tj"'
             phone="" login="" password="">
-        </connection>
-        <connection name="MegaFon GPRS" init_string='AT+CGDCONT=1,"IP","gprs.megafon.tj"'
-            phone="" login="" password="">
+            <balance number="*100#" regexp="(-?\d+([\.,]\d+)?)" />
         </connection>
 
         <!-- ZET-Mobile (formerly Beeline) - Competitive prepaid data packages -->
-        <connection name="ZET-Mobile Internet"
-            init_string='AT+CGDCONT=1,"IP","internet.zetmobile.tj"'
+        <connection name="ZET-Mobile" init_string='AT+CGDCONT=1,"IP","internet.zetmobile.tj"'
             phone="" login="" password="">
-        </connection>
-        <connection name="ZET-Mobile GPRS" init_string='AT+CGDCONT=1,"IP","gprs.zetmobile.tj"'
-            phone="" login="" password="">
+            <balance number="*100#" regexp="(-?\d+([\.,]\d+)?)" />
         </connection>
 
-        <!-- O Mobile - Uses Tcell infrastructure for coverage -->
+        <!-- O Mobile - Newer operator using Tcell infrastructure -->
         <connection name="O Mobile" init_string='AT+CGDCONT=1,"IP","internet.omobile.tj"'
             phone="" login="" password="">
+            <balance number="*150#" regexp="(-?\d+([\.,]\d+)?)" />
         </connection>
     </connections>
 </directory>
