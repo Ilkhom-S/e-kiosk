@@ -1,1 +1,21 @@
+; Конфигурация контроллера сервисов WatchService (controller)
+; Шаблон конфигурационного файла для приложения controller
+; Переменные CMake (например, @WORKING_DIRECTORY@) заменяются при генерации
+
+[application]
+; Рабочий каталог приложения
+working_directory=@WORKING_DIRECTORY@
+
+; Путь к логам
+log_path=@LOG_PATH@
+
+[watchservice]
+; Интервал проверки состояния сервисов (мс)
+check_interval=5000
+
+; Таймаут запуска сервиса (мс)
+start_timeout=30000
+
+; Максимальное количество попыток перезапуска
+max_restart_attempts=3
 

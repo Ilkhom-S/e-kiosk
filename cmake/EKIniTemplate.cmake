@@ -1,12 +1,41 @@
 # Macro: ek_generate_ini_for_all_configs(NAME TEMPLATE)
-# Generates ini files for all configs (Debug, Release, etc.) in the correct output directory, matching the executable name.
+# Generates ini files for the app in the correct output directory alongside the executable.
+# For multi-config generators (Visual Studio), generates per-config INI files.
+# For single-config generators (Unix Makefiles, Ninja), generates one INI to bin folder.
 macro(ek_generate_ini_for_all_configs NAME TEMPLATE)
-    set(_ekiosk_configs Debug Release RelWithDebInfo MinSizeRel)
-    foreach(_cfg ${_ekiosk_configs})
-        string(TOUPPER "${_cfg}" _CFG_UPPER)
-        set(_ini_output_dir "${CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_CFG_UPPER}}")
+    # Check if using multi-config generator (Visual Studio, Xcode)
+    get_property(_is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+
+    if(_is_multi_config)
+        # Multi-config generator: generate per-config INI files
+        set(_ekiosk_configs Debug Release RelWithDebInfo MinSizeRel)
+        foreach(_cfg ${_ekiosk_configs})
+            string(TOUPPER "${_cfg}" _CFG_UPPER)
+            # Try config-specific runtime directory first
+            set(_ini_output_dir "${CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_CFG_UPPER}}")
+            if(NOT _ini_output_dir)
+                # Fall back to base runtime directory with config subdirectory
+                if(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+                    set(_ini_output_dir "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${_cfg}")
+                else()
+                    set(_ini_output_dir "${CMAKE_CURRENT_BINARY_DIR}/${_cfg}")
+                endif()
+            endif()
+            set(WORKING_DIRECTORY "${_ini_output_dir}")
+            set(LOG_PATH "${_ini_output_dir}/logs")
+            ek_generate_ini_template(
+                ${NAME}
+                "${TEMPLATE}"
+                "${_ini_output_dir}"
+                WORKING_DIRECTORY "${WORKING_DIRECTORY}"
+                LOG_PATH "${LOG_PATH}"
+            )
+        endforeach()
+    else()
+        # Single-config generator: generate one INI file to bin folder
+        set(_ini_output_dir "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
         if(NOT _ini_output_dir)
-            set(_ini_output_dir "${CMAKE_CURRENT_BINARY_DIR}/${_cfg}")
+            set(_ini_output_dir "${CMAKE_BINARY_DIR}/bin")
         endif()
         set(WORKING_DIRECTORY "${_ini_output_dir}")
         set(LOG_PATH "${_ini_output_dir}/logs")
@@ -17,7 +46,7 @@ macro(ek_generate_ini_for_all_configs NAME TEMPLATE)
             WORKING_DIRECTORY "${WORKING_DIRECTORY}"
             LOG_PATH "${LOG_PATH}"
         )
-    endforeach()
+    endif()
 endmacro()
 # EKiosk CMake helper: ek_generate_ini_template
 #
