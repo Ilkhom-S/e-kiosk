@@ -196,11 +196,12 @@ void IntegratedDrivers::filterDriverList(QStringList &aDriverList) const {
 uint qHash(const IntegratedDrivers::TPaths &aPaths) {
     uint result = 0;
     int index = 0;
+    constexpr int bits = sizeof(uint) * 8;
 
     foreach (auto path, aPaths) {
         uint hash = qHash(path);
-        int n = index++;
-        result ^= (hash << n) | (hash >> ((sizeof(hash) * 8) - n));
+        int n = (index++) % bits; // Prevent shift overflow by wrapping around
+        result ^= (hash << n) | (hash >> (bits - n));
     }
 
     return result;
