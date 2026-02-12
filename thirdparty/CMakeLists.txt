@@ -135,11 +135,27 @@ if(EXISTS "${THIRD_PARTY_DIR}/zint")
 
     add_subdirectory(zint)
 
+    # Exclude zint-qt GUI application from default build (we only need QZint library)
+    if(TARGET zint-qt)
+        set_target_properties(zint-qt PROPERTIES
+            EXCLUDE_FROM_ALL TRUE
+            EXCLUDE_FROM_DEFAULT_BUILD TRUE
+        )
+        message(STATUS "[thirdparty] Excluding zint-qt GUI application from default build")
+    endif()
+
     if(TARGET QZint AND NOT TARGET EK::QZint)
         add_library(EK::QZint ALIAS QZint)
     endif()
     if(TARGET zint-static AND NOT TARGET EK::zint)
         add_library(EK::zint ALIAS zint-static)
+    endif()
+
+    # Apply thirdparty folder organization
+    ek_setup_thirdparty_target(QZint)
+    ek_setup_thirdparty_target(zint-static)
+    if(TARGET zint-qt)
+        ek_setup_thirdparty_target(zint-qt)
     endif()
 endif()
 
