@@ -68,6 +68,9 @@ if(APPLE)
     )
 endif()
 
+# Make watchdog depend on ini file generation (only built when watchdog is built)
+add_dependencies(watchdog watchdog_ini)
+
 # Link SingleApplication for single-instance app support (Qt5/Qt6 compatible)
 # Uses itay-grudev/SingleApplication: https://github.com/itay-grudev/SingleApplication
 if(TARGET SingleApplication::SingleApplication)

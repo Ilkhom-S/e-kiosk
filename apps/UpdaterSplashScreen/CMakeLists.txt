@@ -34,3 +34,6 @@ endif()
 # Генерация updatersplash.ini для всех конфигураций
 include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
 ek_generate_ini_for_all_configs(updatersplash "${CMAKE_SOURCE_DIR}/runtimes/common/data/updatersplash/updatersplash.ini.in")
+
+# Make updatersplash depend on ini file generation (only built when updatersplash is built)
+add_dependencies(updatersplash updatersplash_ini)

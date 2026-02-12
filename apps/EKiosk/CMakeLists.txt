@@ -74,6 +74,9 @@ if(APPLE)
     )
 endif()
 
+# Make ekiosk depend on ini file generation (only built when ekiosk is built)
+add_dependencies(ekiosk ekiosk_ini)
+
 # Link common include INTERFACE target so `include/` headers are available
 target_link_libraries(ekiosk PUBLIC ek_common)
 

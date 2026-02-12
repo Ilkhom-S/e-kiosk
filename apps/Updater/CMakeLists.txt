@@ -61,6 +61,9 @@ if(WIN32)
     target_link_libraries(updater PRIVATE Advapi32 User32)
 endif()
 
+# Make updater depend on ini file generation (only built when updater is built)
+add_dependencies(updater updater_ini)
+
 # Translations
 file(GLOB TS_FILES src/locale/updater_*.ts)
 if(TS_FILES)

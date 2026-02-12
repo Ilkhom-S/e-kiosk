@@ -55,6 +55,9 @@ if(APPLE)
     set_source_files_properties(src/WatchServiceController.cpp PROPERTIES LANGUAGE OBJCXX)
 endif()
 
+# Make controller depend on ini file generation (only built when controller is built)
+add_dependencies(controller controller_ini)
+
 # Optional single-instance support via project SingleApplication wrapper (EK::SingleApplication)
 if(TARGET EK::SingleApplication)
     target_link_libraries(controller PUBLIC EK::SingleApplication)
