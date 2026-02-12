@@ -226,8 +226,9 @@ void CashDispenserManager::onUnitsDefined() {
         int units = dispenser->units();
 
         if (units != 0) {
-            int currentUnits =
-                m_CurrencyCashList.contains(configPath) ? static_cast<int>(m_CurrencyCashList[configPath].size()) : 0;
+            int currentUnits = m_CurrencyCashList.contains(configPath)
+                                   ? static_cast<int>(m_CurrencyCashList[configPath].size())
+                                   : 0;
 
             if (currentUnits < units) {
                 PPSDK::TCashUnitList cashUnitList = PPSDK::TCashUnitList(

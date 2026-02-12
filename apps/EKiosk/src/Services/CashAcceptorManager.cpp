@@ -89,7 +89,7 @@ bool CashAcceptorManager::initialize(IPaymentDatabaseUtils *aDatabase) {
         return false;
     }
 
-    // Передаем ид валюты - параметр, необходимый для инициации купюроприёмников.
+    // Передаем ид валюты - параметр, необходимый для инициации купюроприемников.
     QVariantMap params;
     params[CHardwareSDK::CashAcceptor::SystemCurrencyId] = settings->getCurrencySettings().id;
     m_DeviceService->setInitParameters(DSDK::CComponents::BillAcceptor, params);
