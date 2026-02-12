@@ -1,5 +1,7 @@
 /* @file Обработчик исключений, которые не ловятся связкой try ... catch. */
 
+#include "UnhandledException.h"
+
 #include <QtCore/QtGlobal>
 
 #include <Common/ILog.h>

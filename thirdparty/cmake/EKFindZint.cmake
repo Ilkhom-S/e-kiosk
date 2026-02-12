@@ -88,7 +88,7 @@ if(NOT TARGET EK::QZint)
         ${ZINT_DIR}/backend/tif.c
         ${ZINT_DIR}/backend/vector.c
     )
-    
+
     # PNG support is optional - only include if libpng is available
     find_package(PNG QUIET)
     if(PNG_FOUND)
@@ -113,7 +113,7 @@ if(NOT TARGET EK::QZint)
         $<BUILD_INTERFACE:${ZINT_DIR}/backend>
         $<INSTALL_INTERFACE:include>
     )
-    
+
     # Link libpng if available
     if(ZINT_HAS_PNG)
         target_link_libraries(zint-static PRIVATE PNG::PNG)
