@@ -118,44 +118,26 @@ if(EXISTS "${THIRD_PARTY_DIR}/libusb")
 endif()
 
 # =============================================================================
-# Zint - Barcode generator (Qt 5/6 Toggle)
+# Zint - Barcode generator (Custom build - backend + Qt wrapper only)
 # =============================================================================
 if(EXISTS "${THIRD_PARTY_DIR}/zint")
     message(STATUS "[thirdparty] Configuring Zint")
-    set(ZINT_SHARED OFF CACHE BOOL "" FORCE)
-    set(ZINT_STATIC ON CACHE BOOL "" FORCE)
-    set(ZINT_FRONTEND OFF CACHE BOOL "" FORCE)
-    set(ZINT_USE_QT ON CACHE BOOL "" FORCE)
-
-    if(QT_VERSION_MAJOR EQUAL 6)
-        set(ZINT_QT6 ON CACHE BOOL "" FORCE)
-    else()
-        set(ZINT_QT6 OFF CACHE BOOL "" FORCE)
-    endif()
-
-    add_subdirectory(zint EXCLUDE_FROM_ALL)
-
-    # Exclude zint-qt GUI application from default build (we only need QZint library)
-    if(TARGET zint-qt)
-        set_target_properties(zint-qt PROPERTIES
-            EXCLUDE_FROM_ALL TRUE
-            EXCLUDE_FROM_DEFAULT_BUILD TRUE
-        )
-        message(STATUS "[thirdparty] Excluding zint-qt GUI application from default build")
-    endif()
-
-    if(TARGET QZint AND NOT TARGET EK::QZint)
-        add_library(EK::QZint ALIAS QZint)
-    endif()
-    if(TARGET zint-static AND NOT TARGET EK::zint)
-        add_library(EK::zint ALIAS zint-static)
-    endif()
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/EKFindZint.cmake)
 
     # Apply thirdparty folder organization
-    ek_setup_thirdparty_target(QZint)
-    ek_setup_thirdparty_target(zint-static)
-    if(TARGET zint-qt)
-        ek_setup_thirdparty_target(zint-qt)
+    if(TARGET QZint)
+        set_target_properties(QZint PROPERTIES
+            FOLDER "thirdparty"
+            CXX_CLANG_TIDY ""
+            C_CLANG_TIDY ""
+        )
+    endif()
+    if(TARGET zint-static)
+        set_target_properties(zint-static PROPERTIES
+            FOLDER "thirdparty"
+            CXX_CLANG_TIDY ""
+            C_CLANG_TIDY ""
+        )
     endif()
 endif()
 
