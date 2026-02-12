@@ -158,7 +158,7 @@ test-results/
 test_output/
 *.test
 *.xml
-!runtimes/common/assets/data/directory.xml
+!runtimes/**/*.xml
 test-*.xml
 qtest-*.xml
 
