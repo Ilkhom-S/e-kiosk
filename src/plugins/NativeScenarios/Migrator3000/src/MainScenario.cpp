@@ -53,12 +53,12 @@ MainScenario::MainScenario(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
       m_NetworkService(aCore->getNetworkService()), m_TerminalService(aCore->getTerminalService()),
       m_SettingsService(aCore->getSettingsService()), m_CryptService(aCore->getCryptService()),
       m_DeviceService(aCore->getDeviceService()), m_MonitoringComandId(-1) {
-    m_TerminalSettings = static_cast<PPSDK::TerminalSettings *>(
+    m_TerminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
     Q_ASSERT(m_TerminalSettings);
 
-    m_ScriptingCore = static_cast<SDK::PaymentProcessor::Scripting::Core *>(
+    m_ScriptingCore = dynamic_cast<SDK::PaymentProcessor::Scripting::Core *>(
         dynamic_cast<SDK::GUI::IGraphicsHost *>(m_Core->getGUIService())
             ->getInterface<QObject>(SDK::PaymentProcessor::Scripting::CProxyNames::Core));
 

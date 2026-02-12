@@ -216,7 +216,7 @@ bool V2eCashAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
         if (aEnabled && it->enabled && !it->inhibit) {
             int id = it.key() - 1;
             int index = id / 8;
-            commandData[index] = commandData[index] | (1 << id % 8);
+            commandData[index] = static_cast<char>(commandData[index] | (1 << (id % 8)));
         }
     }
 
@@ -237,10 +237,10 @@ bool V2eCashAcceptor::loadParTable() {
         return false;
     }
 
-    int nominalCount = answer.size() / CV2e::NominalSize;
+    int nominalCount = static_cast<int>(answer.size() / CV2e::NominalSize);
 
     for (int i = 0; i < nominalCount; ++i) {
-        QByteArray parData = answer.mid(1 + i * CV2e::NominalSize, CV2e::NominalSize);
+        QByteArray parData = answer.mid(1 + (i * CV2e::NominalSize), CV2e::NominalSize);
         int nominal = uchar(parData[4]) * int(qPow(10, double(uchar(parData[5]))));
         QString currency = QString(parData.mid(1, 3));
 

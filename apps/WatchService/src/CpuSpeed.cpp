@@ -74,7 +74,7 @@ unsigned cpuSpeed() {
         host_cpu_load_info_data_t cpuinfo;
         mach_msg_type_number_t count = HOST_CPU_LOAD_INFO_COUNT;
 
-        if (host_statistics(mach_host_self(), HOST_CPU_LOAD_INFO, (host_info_t)&cpuinfo, &count) ==
+        if (host_statistics(mach_host_self(), HOST_CPU_LOAD_INFO, reinterpret_cast<host_info_t>(&cpuinfo), &count) ==
             KERN_SUCCESS) {
             // Calculate CPU utilization as a percentage
             // cpuinfo.cpu_ticks[CPU_STATE_IDLE] gives idle time

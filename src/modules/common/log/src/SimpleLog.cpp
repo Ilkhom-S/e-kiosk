@@ -37,12 +37,11 @@ SimpleLog::SimpleLog(const QString &aName, LogType::Enum aType, LogLevel::Enum a
 //---------------------------------------------------------------------------
 SimpleLog::~SimpleLog() {
     if (m_InitOk) {
-        // write log footer
-        adjustPadding(-99);
-
-        // Пишем в лог footer только если уже была инициализация
-        safeWrite(LogLevel::Normal,
-                  QString("%1 LOG [%2] STOP.").arg(QString("*").repeated(32)).arg(getName()));
+        // Note: Do NOT call virtual methods during destruction.
+        // adjustPadding(), safeWrite(), and getName() are virtual methods
+        // and calling them in the destructor causes undefined behavior.
+        // The derived class may have already been destroyed at this point.
+        // Logging footer is skipped to maintain safe destruction semantics.
     }
 }
 
