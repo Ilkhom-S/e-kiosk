@@ -31,8 +31,9 @@
 #include "ScenarioPlugin.h"
 
 namespace {
-/// Конструктор плагина.
-namespace {
+//---------------------------------------------------------------------------
+// Конструктор плагина.
+//---------------------------------------------------------------------------
 SDK::Plugin::IPlugin *createPlugin(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath) {
     return new Migrator3000::MainScenarioPlugin(aFactory, aInstancePath);
