@@ -24,14 +24,27 @@
                 "${workspaceFolder}/thirdparty",
                 "${workspaceFolder}/**",
                 "/Users/ilkhom/Qt/6.10.1/macos/include",
-                "/Users/ilkhom/Qt/6.10.1/macos/include/QtCore"
+                "/Users/ilkhom/Qt/6.10.1/macos/include/QtCore",
+                "/Users/ilkhom/Qt/6.10.1/macos/include/QtGui",
+                "/Users/ilkhom/Qt/6.10.1/macos/include/QtWidgets",
+                "/Users/ilkhom/Qt/6.10.1/macos/include/QtNetwork",
+                "/Users/ilkhom/Qt/6.10.1/macos/include/QtSql",
+                "/Users/ilkhom/Qt/6.10.1/macos/include/QtConcurrent",
+                "/Users/ilkhom/Qt/6.10.1/macos/lib/cmake/Qt6Core/../../../include"
             ],
-            "defines": [],
+            "defines": ["QT_CORE_LIB"],
             "compilerPath": "/usr/bin/clang++",
             "cStandard": "c11",
-            "cppStandard": "c++14",
+            "cppStandard": "c++17",
             "intelliSenseMode": "macos-clang-arm64",
-            "compileCommands": "${workspaceFolder}/build/macos-qt6/compile_commands.json"
+            "compileCommands": "${workspaceFolder}/compile_commands.json",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}",
+                    "/Users/ilkhom/Qt/6.10.1/macos/include"
+                ],
+                "limitSymbolsToIncludedHeaders": false
+            }
         }
     ],
     "version": 4
