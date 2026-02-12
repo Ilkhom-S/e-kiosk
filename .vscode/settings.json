@@ -5,7 +5,9 @@
         "thirdparty/": false,
         "deprecated/": true,
         "vcpkg_installed/": true,
-        "**/*.bak": true
+        "**/*.bak": true,
+        // Exclude FR module on macOS (EKIOSK_ENABLE_FR=OFF - not compiled)
+        "src/modules/Hardware/FR/": true
     },
     "search.exclude": {
         "build/": true,
@@ -64,6 +66,10 @@
     "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
         "cppcoreguidelines-pro-bounds-array-to-pointer-decay",
         "cppcoreguidelines-init-variables",
+        "cppcoreguidelines-pro-type-member-init",
+        "bugprone-macro-parentheses",
+        "bugprone-switch-missing-default-case",
+        "bugprone-branch-clone",
         "cppcoreguidelines-avoid-do-while",
         "modernize-use-default-member-init",
         "readability-convert-member-functions-to-static",
@@ -78,8 +84,11 @@
         "modernize-use-equals-default",
         "cppcoreguidelines-macro-usage",
         "modernize-use-using",
+        "modernize-avoid-bind",
+        "modernize-return-braced-init-list",
         "readability-braces-around-statements",
-        "readability-static-accessed-through-instance"
+        "readability-static-accessed-through-instance",
+        "bugprone-suspicious-include"
     ],
     "C_Cpp.codeAnalysis.exclude": {
         "**/thirdparty/**": true,

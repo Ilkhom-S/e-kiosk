@@ -1,4 +1,6 @@
-/* @file Окно настройки железа. */
+/**
+ * @file Окно настройки железа.
+ */
 
 #include "HardwareWizardPage.h"
 

@@ -1,4 +1,6 @@
-/* @file Плагин с драйверами сканеров. */
+/**
+ * @file Плагин с драйверами сканеров.
+ */
 
 #include "Hardware/Plugins/CommonParameters.h"
 #include "Hardware/Scanners/ScannerDevices.h"

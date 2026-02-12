@@ -138,7 +138,7 @@ protected:
     /// Получить данные об ФР.
     bool getFRData(const CAFPFR::FRInfo::SData &aInfo, CAFPFR::TData &aData);
 
-    /// Включить/выключить режим непечати документов.
+    /// Включить/выключить режим не печати документов.
     virtual bool setNotPrintDocument(bool aEnabled, bool aZReport = false);
 
     /// Данные модели.

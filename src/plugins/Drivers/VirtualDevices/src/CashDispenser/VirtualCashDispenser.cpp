@@ -60,7 +60,10 @@ void VirtualDispenser::performDispense(int aUnit, int aItems) {
         m_unitData[aUnit] -= dispensedItems;
     }
 
-    SleepHelper::msleep(CVirtualDispenser::Item_DispenseDelay * dispensedItems);
+    const unsigned long delayMs =
+        static_cast<unsigned long>(CVirtualDispenser::Item_DispenseDelay) *
+        static_cast<unsigned long>(dispensedItems);
+    SleepHelper::msleep(delayMs);
 
     if (m_unitData[aUnit] != 0) {
         m_unitData[aUnit]--;
@@ -129,6 +132,8 @@ void VirtualDispenser::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &aMo
             changeStatusCode(DeviceStatusCode::Error::NotAvailable);
             break;
         }
+        default:
+            break;
         }
     } else if (aModifiers.testFlag(Qt::ShiftModifier)) {
         switch (aKey) {
@@ -148,6 +153,8 @@ void VirtualDispenser::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &aMo
             changeStatusCode(DispenserStatusCode::Warning::Unit3Empty);
             break;
         }
+        default:
+            break;
         }
     }
 }

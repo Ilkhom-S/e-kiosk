@@ -28,8 +28,8 @@ void ProcessEnumerator::enumerate() {
     }
 
     auto *pids = new pid_t[pidCount];
-    pidCount =
-        static_cast<int>(proc_listallpids(pids, static_cast<size_t>(pidCount) * sizeof(pid_t)));
+    const int bufferSize = pidCount * static_cast<int>(sizeof(pid_t));
+    pidCount = proc_listallpids(pids, bufferSize);
 
     for (int i = 0; i < pidCount; ++i) {
         pid_t pid = pids[i];

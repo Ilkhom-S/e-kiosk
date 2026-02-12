@@ -10,7 +10,7 @@ class Migrator3000ScenarioTest : public QObject {
     Q_OBJECT
 
 public:
-    Migrator3000ScenarioTest() : m_testBase("D:/plugins/Debug/migrator3000_scenariod.dll") {}
+    Migrator3000ScenarioTest() : m_testBase("D:/plugins/Debug/migrator3000_scenario.dll") {}
 
 private slots:
     // Basic plugin build verification
@@ -32,7 +32,7 @@ private:
 
 void Migrator3000ScenarioTest::testPluginExists() {
     // Test that the Migrator3000 plugin DLL was built successfully
-    QString pluginPath = "D:/plugins/Debug/migrator3000_scenariod.dll";
+    QString pluginPath = "D:/plugins/Debug/migrator3000_scenario.dll";
     QVERIFY(QFile::exists(pluginPath));
 
     // Verify it's not empty (basic corruption check)

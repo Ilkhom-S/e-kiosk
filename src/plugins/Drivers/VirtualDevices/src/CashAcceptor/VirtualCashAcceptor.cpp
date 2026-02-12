@@ -28,7 +28,7 @@ void VirtualCashAcceptor::setDeviceConfiguration(const QVariantMap &aConfigurati
 
     m_NotesPerEscrow =
         aConfiguration.value(CHardware::VirtualCashAcceptor::NotesPerEscrow, m_NotesPerEscrow)
-            .toUInt();
+            .toInt();
 }
 
 //--------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ void VirtualCashAcceptor::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &
         case Qt::Key_F7: {
             blinkStatusCode(BillAcceptorStatusCode::Reject::Unknown);
             break;
-        } // режект
+        } // reject
         case Qt::Key_F8: {
             changeStatusCode(BillAcceptorStatusCode::MechanicFailure::JammedInValidator);
             break;
@@ -159,7 +159,9 @@ void VirtualCashAcceptor::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &
         case '*': {
             blinkStatusCode(BillAcceptorStatusCode::Warning::Cheated);
             break;
-        } // мошенство
+        } // мошенничество
+        default:
+            break;
         }
     } else if (aModifiers.testFlag(Qt::AltModifier)) {
         switch (aKey) {
@@ -179,6 +181,8 @@ void VirtualCashAcceptor::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &
             m_StackedStatusCodes.insert(BillAcceptorStatusCode::MechanicFailure::StackerFull);
             break;
         } // Стекер полон
+        default:
+            break;
         }
     }
 }

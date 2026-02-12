@@ -1,4 +1,6 @@
-/* @file Реализация плагина. */
+/**
+ * @file Реализация плагина.
+ */
 
 #include "UcsChargeProvider.h"
 
@@ -120,11 +122,12 @@ bool UcsChargeProvider::isReady() const {
 
 //------------------------------------------------------------------------------
 bool UcsChargeProvider::subscribe(const char *aSignal, QObject *aReceiver, const char *aSlot) {
-    return QObject::connect(this,
-                            aSignal,
-                            aReceiver,
-                            aSlot,
-                            Qt::ConnectionType(Qt::UniqueConnection | Qt::QueuedConnection));
+    return static_cast<bool>(
+        QObject::connect(this,
+                         aSignal,
+                         aReceiver,
+                         aSlot,
+                         Qt::ConnectionType(Qt::UniqueConnection | Qt::QueuedConnection)));
 }
 
 //------------------------------------------------------------------------------

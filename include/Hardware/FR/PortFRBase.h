@@ -45,7 +45,7 @@ protected:
     template <class T2>
     QByteArray perform_Status(TStatusCodes &aStatusCodes, T2 aCommand, int aIndex = -1);
 
-    /// Сформировать массив байтов для печаит из массива строк.
+    /// Сформировать массив байтов для печати из массива строк.
     typedef QList<QByteArray> TReceiptBuffer;
     void makeReceipt(const QStringList &aReceipt, QStringList &aBuffer);
     void makeReceipt(const QStringList &aReceipt, TReceiptBuffer &aBuffer);

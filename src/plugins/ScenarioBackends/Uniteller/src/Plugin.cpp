@@ -1,4 +1,6 @@
-/* @file Плагин виртуального драйвера Uniteller. */
+/**
+ * @file Плагин виртуального драйвера Uniteller.
+ */
 
 // Plugin SDK
 #include <SDK/Drivers/Components.h>

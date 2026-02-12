@@ -102,7 +102,7 @@ bool NetworkServiceWindow::initialize() {
 
     swContainer->addWidget(m_UnmanagedWindow);
 
-    // Контролы переключения типа соединения
+    // Контроль переключения типа соединения
     if (type == EConnectionTypes::Unmanaged) {
         rbUnmanagedLink->click();
     } else if (type == EConnectionTypes::Dialup) {

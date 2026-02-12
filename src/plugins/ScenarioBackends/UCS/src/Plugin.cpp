@@ -1,4 +1,6 @@
-/* @file Плагин виртуального драйвера UCS. */
+/**
+ * @file Плагин виртуального драйвера UCS.
+ */
 
 // Plugin SDK
 #include <SDK/Drivers/Components.h>

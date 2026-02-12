@@ -242,7 +242,7 @@ QDateTime AFPFR::getDateTime() {
         return QDateTime(answerData[0].toDate(), answerData[1].toTime());
     }
 
-    return QDateTime();
+    return {};
 }
 
 //--------------------------------------------------------------------------------
@@ -630,6 +630,8 @@ bool AFPFR::processAnswer(char aCommand, char aError) {
 
         break;
     }
+    default:
+        break;
     }
 
     return false;

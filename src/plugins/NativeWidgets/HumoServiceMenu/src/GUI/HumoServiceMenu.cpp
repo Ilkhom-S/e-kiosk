@@ -1,4 +1,6 @@
-/* @file Виджет HumoService */
+/**
+ * @file Виджет HumoService
+ */
 
 #include "HumoServiceMenu.h"
 

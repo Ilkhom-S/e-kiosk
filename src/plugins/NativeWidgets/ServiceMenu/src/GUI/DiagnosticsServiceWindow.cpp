@@ -1,4 +1,6 @@
-/* @file Окно диагностики. */
+/**
+ * @file Окно диагностики.
+ */
 
 #include "DiagnosticsServiceWindow.h"
 

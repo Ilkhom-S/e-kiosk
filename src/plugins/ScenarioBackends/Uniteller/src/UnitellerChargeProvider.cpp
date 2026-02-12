@@ -1,4 +1,6 @@
-/* @file Реализация плагина. */
+/**
+ * @file Реализация плагина.
+ */
 
 #include <QtCore/QPointer>
 
@@ -120,11 +122,12 @@ bool UnitellerChargeProvider::isReady() const {
 bool UnitellerChargeProvider::subscribe(const char *aSignal,
                                         QObject *aReceiver,
                                         const char *aSlot) {
-    return QObject::connect(this,
-                            aSignal,
-                            aReceiver,
-                            aSlot,
-                            Qt::ConnectionType(Qt::UniqueConnection | Qt::QueuedConnection));
+    return static_cast<bool>(
+        QObject::connect(this,
+                         aSignal,
+                         aReceiver,
+                         aSlot,
+                         Qt::ConnectionType(Qt::UniqueConnection | Qt::QueuedConnection)));
 }
 
 //------------------------------------------------------------------------------
@@ -149,7 +152,7 @@ bool UnitellerChargeProvider::enable(PPSDK::TPaymentAmount aMaxAmount) {
 
     QString initialSession =
         m_Core->getPaymentService()
-            ->getPaymentField(paymentId,
+            ->getPaymentField(static_cast<qint64>(paymentId),
                               SDK::PaymentProcessor::CPayment::Parameters::InitialSession)
             .value.toString();
 

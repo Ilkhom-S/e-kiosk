@@ -105,6 +105,8 @@ void NetworkService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
     case SDK::PaymentProcessor::EEventType::ConnectionLost:
         emit connectionStatus();
         break;
+    default:
+        break;
     }
 }
 

@@ -1,4 +1,6 @@
-/* @file Реализация плагина WebEngineBackend. */
+/**
+ * @file Реализация плагина WebEngineBackend.
+ */
 
 #include "WebEngineBackend.h"
 

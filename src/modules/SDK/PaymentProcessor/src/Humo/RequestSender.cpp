@@ -217,7 +217,8 @@ Response *RequestSender::request(NetworkTask::Type aType,
     // Проверим на запакованные данные
     if (task->getResponseHeader()["Content-Type"] == "application/x-gzip") {
         signedResponseData =
-            qUncompress((const uchar *)signedResponseData.data(), signedResponseData.size());
+            qUncompress(reinterpret_cast<const uchar *>(signedResponseData.constData()),
+                        signedResponseData.size());
     }
 
     QByteArray encodedResponseData;

@@ -258,7 +258,8 @@ bool PaymentManager::printUnprintedReceiptsRegistry(const QSet<qint64> &aPayment
             QVariantMap receiptParameters;
             receiptParameters[CPaymentManager::UnprintedPaymentList] = amounts[payTool].registry;
             receiptParameters[CPayment::AmountAll] = amounts[payTool].sumAmountAll;
-            receiptParameters[QString("[%1]").arg(CPayment::Amount)] = amounts[payTool].sumAmounts;
+            receiptParameters[QString("[%1]").arg(QString(CPayment::Amount))] =
+                amounts[payTool].sumAmounts;
             receiptParameters["[AMOUNT_TITLE]"] = amounts[payTool].paymentTitles;
             receiptParameters["[AMOUNT_VAT]"] = amounts[payTool].paymentsVAT;
             receiptParameters["[OPERATOR_INN]"] = amounts[payTool].paymentInn;
@@ -409,11 +410,10 @@ bool PaymentManager::printBalance() const {
 //------------------------------------------------------------------------
 int PaymentManager::printZReport(bool aFullZReport) {
     if (m_Encashment.balance.notPrintedPayments.isEmpty() || !m_UseFiscalPrinter) {
-        return m_PrinterService->printReport(aFullZReport ? PPSDK::CReceiptType::ZReportFull
-                                                          : PPSDK::CReceiptType::ZReport,
-                                             QVariantMap())
-                   ? 1
-                   : 0;
+        bool success = m_PrinterService->printReport(aFullZReport ? PPSDK::CReceiptType::ZReportFull
+                                                                  : PPSDK::CReceiptType::ZReport,
+                                                     QVariantMap()) != 0;
+        return success ? 1 : 0;
     }
     int result = 0;
     if (m_PaymentsRegistryPrintJob == 0) {
@@ -562,7 +562,7 @@ int PaymentManager::getEncashmentsHistoryCount() {
                                           }),
                            m_EncashmentList.end());
 
-    return m_EncashmentList.size();
+    return static_cast<int>(m_EncashmentList.size());
 }
 
 //------------------------------------------------------------------------

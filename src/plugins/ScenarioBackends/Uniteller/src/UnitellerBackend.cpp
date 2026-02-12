@@ -1,4 +1,6 @@
-/* @file Плагин сценария для оплаты картами */
+/**
+ * @file Плагин сценария для оплаты картами
+ */
 
 #include "UnitellerBackend.h"
 
@@ -87,12 +89,12 @@ void UnitellerCore::onDeviceEvent(Uniteller::DeviceEvent::Enum aEvent,
 
         case Uniteller::KeyCode::Numeric:
             m_CountPINNumbers = qMin(4, m_CountPINNumbers + 1);
-            emit onEnterPin(m_CountPINNumbers ? QString("*").repeated(m_CountPINNumbers) : "");
+            emit onEnterPin(m_CountPINNumbers > 0 ? QString("*").repeated(m_CountPINNumbers) : "");
             break;
 
         case Uniteller::KeyCode::Clear:
             m_CountPINNumbers = qMax(0, m_CountPINNumbers - 1);
-            emit onEnterPin(m_CountPINNumbers ? QString("*").repeated(m_CountPINNumbers) : "");
+            emit onEnterPin(m_CountPINNumbers > 0 ? QString("*").repeated(m_CountPINNumbers) : "");
             break;
 
         case Uniteller::KeyCode::Cancel:
