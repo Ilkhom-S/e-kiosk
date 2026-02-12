@@ -1,0 +1,26 @@
+---
+# Exclude third-party code from static analysis
+If:
+    PathMatch: thirdparty/.*
+Diagnostics:
+    Suppress: "*"
+---
+# Enable all diagnostics for our code
+If:
+    PathMatch:
+        - src/.*
+        - apps/.*
+        - include/.*
+        - tests/.*
+Diagnostics:
+    ClangTidy:
+        Add:
+            - modernize-*
+            - readability-*
+            - performance-*
+            - bugprone-*
+    # Relax some overly strict checks
+    UnusedIncludes: Strict
+    MissingIncludes: Strict
+    FormatCodeStyle: file
+---

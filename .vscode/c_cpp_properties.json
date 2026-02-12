@@ -5,8 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/include",
                 "${workspaceFolder}/src",
-                "${workspaceFolder}/thirdparty",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/apps"
             ],
             "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
             "windowsSdkVersion": "10.0.26100.0",
@@ -21,8 +20,7 @@
             "includePath": [
                 "${workspaceFolder}/include",
                 "${workspaceFolder}/src",
-                "${workspaceFolder}/thirdparty",
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/apps",
                 "/Users/ilkhom/Qt/6.10.1/macos/include",
                 "/Users/ilkhom/Qt/6.10.1/macos/include/QtCore",
                 "/Users/ilkhom/Qt/6.10.1/macos/include/QtGui",
@@ -35,15 +33,17 @@
             "defines": ["QT_CORE_LIB"],
             "compilerPath": "/usr/bin/clang++",
             "cStandard": "c11",
-            "cppStandard": "c++17",
+            "cppStandard": "c++14",
             "intelliSenseMode": "macos-clang-arm64",
             "compileCommands": "${workspaceFolder}/compile_commands.json",
             "browse": {
                 "path": [
-                    "${workspaceFolder}",
+                    "${workspaceFolder}/include",
+                    "${workspaceFolder}/src",
+                    "${workspaceFolder}/apps",
                     "/Users/ilkhom/Qt/6.10.1/macos/include"
                 ],
-                "limitSymbolsToIncludedHeaders": false
+                "limitSymbolsToIncludedHeaders": true
             }
         }
     ],

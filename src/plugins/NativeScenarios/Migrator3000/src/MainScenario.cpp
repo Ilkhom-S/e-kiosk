@@ -32,7 +32,8 @@
 
 namespace {
 /// Конструктор плагина.
-SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
+namespace {
+SDK::Plugin::IPlugin *createPlugin(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath) {
     return new Migrator3000::MainScenarioPlugin(aFactory, aInstancePath);
 }
@@ -41,7 +42,7 @@ SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
 REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
                          PPSDK::CComponents::ScenarioFactory,
                          CScenarioPlugin::PluginName),
-                &CreatePlugin,
+                &createPlugin,
                 &SDK::Plugin::PluginInitializer::emptyParameterList,
                 Migrator3000MainScenario);
 
@@ -276,7 +277,7 @@ void MainScenario::finishDeviceDetection() {
     // todo check validator/printer config settings
     QStringList configurations = m_DeviceService->getConfigurations();
 
-    auto isDeviceOK = [=](const QString &aDeviceType) -> bool {
+    auto isDeviceOK = [this](const QString &aDeviceType) -> bool {
         namespace DSDK = SDK::Driver;
 
         foreach (QString config, configurations) {

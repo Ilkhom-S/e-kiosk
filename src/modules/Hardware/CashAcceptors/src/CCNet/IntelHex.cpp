@@ -46,8 +46,9 @@ bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &
         return false;
     }
 
-    uchar crc = static_cast<uchar>(data[data.size() - 1]);
-    uchar recordCRC = static_cast<uchar>(ASCII::NUL - std::accumulate(data.begin(), data.end() - 1, static_cast<int>(ASCII::NUL)));
+    auto crc = static_cast<uchar>(data[data.size() - 1]);
+    auto recordCRC = static_cast<uchar>(
+        ASCII::NUL - std::accumulate(data.begin(), data.end() - 1, static_cast<int>(ASCII::NUL)));
 
     if (crc != recordCRC) {
         aErrorDescription = QString("Invalid CRC %1, need %2").arg(recordCRC).arg(crc);
@@ -103,14 +104,15 @@ bool IntelHex::parseRecords(const QStringList &aRecords,
                     messageLog;
                 return false;
             }
-            if (recordDataSize > 0 && aBlockSize % recordDataSize) {
+            if (recordDataSize > 0 && (aBlockSize % recordDataSize) != 0) {
                 aErrorDescription +=
                     QString("Block size = %1 is not divisible by record data size = %2")
                         .arg(aBlockSize)
                         .arg(recordDataSize) +
                     messageLog;
                 return false;
-            } if (!aAddressedBlockList.isEmpty()) {
+            }
+            if (!aAddressedBlockList.isEmpty()) {
                 qsizetype prevRecordSize = aAddressedBlockList.last().second.size();
 
                 if ((prevRecordSize != aBlockSize) && (prevRecordSize != recordDataSize)) {

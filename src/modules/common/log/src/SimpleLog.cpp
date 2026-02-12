@@ -230,16 +230,7 @@ bool SimpleLog::init() {
                         QDir::toNativeSeparators(QDir::cleanPath(iniDirPath + "/" + directory));
                 }
             } else {
-                // For macOS app bundles, default to the directory containing the .app bundle
-#ifdef __APPLE__
-                if (exePath.contains(".app/Contents/MacOS/")) {
-                    workingDirectory = iniDirPath; // This is already the bin directory
-                } else {
-                    workingDirectory = iniDirPath;
-                }
-#else
-                workingDirectory = iniDirPath;
-#endif
+                workingDirectory = iniDirPath; // File and console use same directory
             }
         }
 #endif
