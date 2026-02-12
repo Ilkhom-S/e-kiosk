@@ -392,7 +392,7 @@ bool PrintBalance::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
         QString("%1_balance").arg(QTime::currentTime().toString("hhmmsszzz")), receipt);
 
     if (!aPrinter) {
-        return QVariantMap();
+        return false;
     }
 
     auto *fr = dynamic_cast<DSDK::IFiscalPrinter *>(aPrinter);

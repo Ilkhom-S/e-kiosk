@@ -139,6 +139,9 @@ void IdleScenario::execCommand() {
             ->sendEvent(PPSDK::EEventType::StartScenario, parameters);
         break;
     }
+    case Command::None:
+        // No command to execute
+        break;
     }
 
     m_Command = Command::None;

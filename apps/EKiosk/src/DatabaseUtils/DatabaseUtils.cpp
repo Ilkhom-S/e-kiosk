@@ -63,7 +63,7 @@ bool DatabaseUtils::initialize() {
             // после этого скрипта databasePatch() = 5
         }
 
-        for (auto &patch : CDatabaseUtils::Patches) {
+        for (const auto &patch : CDatabaseUtils::Patches) {
             if (databasePatch() < patch.version) {
                 LOG(m_Log,
                     LogLevel::Normal,
