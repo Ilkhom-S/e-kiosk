@@ -201,7 +201,13 @@ uint qHash(const IntegratedDrivers::TPaths &aPaths) {
     foreach (auto path, aPaths) {
         uint hash = qHash(path);
         int n = (index++) % bits; // Prevent shift overflow by wrapping around
-        result ^= (hash << n) | (hash >> (bits - n));
+        // When n = 0, (bits - n) = 32 which causes undefined behavior for 32-bit shift
+        // So we skip rotation for n = 0
+        if (n == 0) {
+            result ^= hash;
+        } else {
+            result ^= (hash << n) | (hash >> (bits - n));
+        }
     }
 
     return result;
