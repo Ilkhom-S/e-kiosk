@@ -153,36 +153,39 @@ DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParame
         result.fiscalParameters[ffData] = aParameters[ffData];
     }
 
-#if 0
-	//TODO - решить как на верхнем уровне в интерфейсе мы будем давать возможность
-	//       вводить телефон/email для отправки чека ПЕРЕД печатью этого чека.
-	//       Отключено по жалобе дилеров 1 sms = 2руб в счете от ОФД
-	//       #60325
-	QVariantMap upperKeyParameters = toUpperCaseKeys(aParameters);
-	QRegularExpression phoneRegexp("^9\\d{9}$");
+    // TODO: решить как на верхнем уровне в интерфейсе мы будем давать возможность
+    //       вводить телефон/email для отправки чека ПЕРЕД печатью этого чека.
+    //       Отключено по жалобе дилеров 1 sms = 2руб в счете от ОФД
+    //       #60325
+    // Removed dead code block - can be restored from git history if needed
+    /*
+    QVariantMap upperKeyParameters = toUpperCaseKeys(aParameters);
+    QRegularExpression phoneRegexp("^9\\d{9}$");
 
-	foreach (auto fieldName, QStringList() << "100" << "PHONE" << "CONTACT" << "101" << "102" << "103" << "104")
-	{
-		if (upperKeyParameters.contains(fieldName) && phoneRegexp.match(upperKeyParameters.value(fieldName).hasMatch().toString()))
-		{
-			result.fiscalParameters[CHardwareSDK::FR::UserPhone] = "7" + upperKeyParameters.value(fieldName).toString();
-			break;
-		}
-	}
+    foreach (auto fieldName, QStringList() << "100" << "PHONE" << "CONTACT" << "101" << "102" <<
+    "103" << "104")
+    {
+        if (upperKeyParameters.contains(fieldName) &&
+    phoneRegexp.match(upperKeyParameters.value(fieldName).hasMatch().toString()))
+        {
+            result.fiscalParameters[CHardwareSDK::FR::UserPhone] = "7" +
+    upperKeyParameters.value(fieldName).toString(); break;
+        }
+    }
 
-	foreach (auto fieldName, QStringList() << "PAYER_EMAIL")
-	{
-		if (upperKeyParameters.contains(fieldName))
-		{
-			QString email = upperKeyParameters.value(fieldName).toString();
-			if (!email.isEmpty() && email.contains("@") && email.contains("."))
-			{
-				result.fiscalParameters[CHardwareSDK::FR::UserMail] = upperKeyParameters.value(fieldName).toString();
-				break;
-			}
-		}
-	}
-#endif
+    foreach (auto fieldName, QStringList() << "PAYER_EMAIL")
+    {
+        if (upperKeyParameters.contains(fieldName))
+        {
+            QString email = upperKeyParameters.value(fieldName).toString();
+            if (!email.isEmpty() && email.contains("@") && email.contains("."))
+            {
+                result.fiscalParameters[CHardwareSDK::FR::UserMail] =
+    upperKeyParameters.value(fieldName).toString(); break;
+            }
+        }
+    }
+    */
 
     return result;
 }
@@ -387,6 +390,11 @@ bool PrintBalance::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
 
     m_Service->saveReceiptContent(
         QString("%1_balance").arg(QTime::currentTime().toString("hhmmsszzz")), receipt);
+
+    if (!aPrinter) {
+        return QVariantMap();
+    }
+
     auto *fr = dynamic_cast<DSDK::IFiscalPrinter *>(aPrinter);
 
     return m_FiscalMode && fr && fr->isFiscalReady(false, m_FiscalCommand)

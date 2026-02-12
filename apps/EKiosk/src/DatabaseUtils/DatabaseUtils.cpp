@@ -23,7 +23,7 @@ const QString DatabasePatchParam = "db_patch";
 const QString DatabaseUpdateParam = "db_update";
 
 // Список патчей базы
-struct {
+const struct {
     int version;
     QString script;
 } Patches[] = {
@@ -63,13 +63,13 @@ bool DatabaseUtils::initialize() {
             // после этого скрипта databasePatch() = 5
         }
 
-        for (auto &patche : CDatabaseUtils::Patches) {
-            if (databasePatch() < patche.version) {
+        for (auto &patch : CDatabaseUtils::Patches) {
+            if (databasePatch() < patch.version) {
                 LOG(m_Log,
                     LogLevel::Normal,
-                    QString("Patch database to version %1.").arg(patche.version));
+                    QString("Patch database to version %1.").arg(patch.version));
 
-                updateDatabase(patche.script);
+                updateDatabase(patch.script);
             }
         }
     } catch (...) {

@@ -46,7 +46,7 @@ PPApplication::PPApplication(const QString &aName,
                              char **aArguments)
     : BasicQtApplication<SafeQApplication>(aName, aVersion, aArgumentCount, aArguments),
       m_Protection("PaymentProcessorProtection") {
-    CatchUnhandledExceptions();
+    catchUnhandledExceptions();
 
     // Производим проверку на наличие еще одной запущенной копии приложения.
     m_Protection.attach();

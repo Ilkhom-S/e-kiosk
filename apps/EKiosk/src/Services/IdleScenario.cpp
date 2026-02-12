@@ -287,7 +287,7 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
             ->sendEvent(SDK::PaymentProcessor::Event(
                 SDK::PaymentProcessor::EEventType::OK, getName(), "OK"));
 
-        if (m_InterfaceLockedTimer) {
+        if (m_InterfaceLockedTimer != 0) {
             killTimer(m_InterfaceLockedTimer);
             m_InterfaceLockedTimer = 0;
 
