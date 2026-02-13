@@ -417,6 +417,12 @@ void NetworkService::doConnect(const SDK::PaymentProcessor::SConnection &aConnec
                                                             &m_NetworkTaskManager,
                                                             ILog::getInstance("Connection")));
 
+        if (!m_Connection) {
+            toLog(LogLevel::Error,
+                  QString("Failed to create connection object for '%1'.").arg(aConnection.name));
+            return;
+        }
+
         m_Connection->setCheckPeriod(aConnection.checkInterval);
 
         // Всегда читаем список серверов для проверки соединения из конфигов.

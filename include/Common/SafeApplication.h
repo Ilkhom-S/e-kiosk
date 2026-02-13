@@ -15,7 +15,7 @@ public:
     /// Конструктор.
     SafeQApplication(int &aArgc,
                      char **aArgv,
-                     bool allowSecondary = false,
+                     bool allowSecondary = true,
                      SingleApplication::Options options = SingleApplication::Mode::User,
                      int timeout = 1000,
                      const QString &userData = {})
