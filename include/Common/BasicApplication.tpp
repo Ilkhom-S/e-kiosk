@@ -47,14 +47,6 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName,
     searchPaths << QDir(getWorkingDirectory())
                        .absoluteFilePath("locale"); // locale subdirectory in working dir
 
-    // On macOS, also check app bundle locations
-#ifdef Q_OS_MACOS
-    QString appDir = m_QtApplication.applicationDirPath();
-    searchPaths << QDir(appDir).absoluteFilePath(
-        "../Resources/locale");                             // Contents/Resources/locale
-    searchPaths << QDir(appDir).absoluteFilePath("locale"); // Contents/MacOS/locale (fallback)
-#endif
-
     // Lambda to check if locale file exists
     auto localeFileExists = [&](const QString &localeCode) -> QString {
         for (const QString &searchPath : searchPaths) {
