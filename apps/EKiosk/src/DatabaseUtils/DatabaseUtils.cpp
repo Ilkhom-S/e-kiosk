@@ -23,10 +23,13 @@ const QString DatabasePatchParam = "db_patch";
 const QString DatabaseUpdateParam = "db_update";
 
 /// Миграционные патчи базы данных.
-/// empty_db.sql (v12) содержит полную схему со всеми объединенными Qt4→Qt5/Qt6 миграциями.
 ///
-/// Для добавления новой миграции в будущем:
-/// 1. Создайте файл scripts/db_patch_13.sql (или выше) с SQL инструкциями для миграции
+/// ВАЖНО: empty_db.sql содержит полную консолидированную схему (версия 12).
+/// Это чистый старт - все предыдущие патчи (v6-v11) и базовая схема (v5) объединены в один файл.
+/// НЕ ищите файлы db_patch_6.sql ... db_patch_12.sql - они архивированы в scripts/deprecated/
+///
+/// Будущие миграции начинаются с версии 13:
+/// 1. Создайте файл scripts/db_patch_13.sql с SQL инструкциями для миграции
 /// 2. Добавьте запись в массив ниже:
 ///    {13, ":/scripts/db_patch_13.sql"},
 /// 3. Добавьте ресурс в Database.qrc (<file>scripts/db_patch_13.sql</file>)
@@ -35,8 +38,8 @@ const struct {
     int version;
     QString script;
 } Patches[] = {
-    // Все патчи версий 6-12 объединены в empty_db.sql для чистого старта
-    // Новые миграции добавляются сюда для автоматического применения
+    // Массив для будущих миграций (начиная с версии 13)
+    // Все патчи версий 6-12 консолидированы в empty_db.sql
 };
 
 } // namespace CDatabaseUtils
@@ -60,21 +63,21 @@ bool DatabaseUtils::initialize() {
             throw std::runtime_error("Cannot start database transaction.");
         }
 
-        // Проверяем, созданы ли таблицы. Если нет, применяем полную схему.
-        // empty_db.sql содержит полную схему версии 12 (все миграции Qt4→Qt5/Qt6 объединены)
+        // Проверяем, созданы ли таблицы. Если нет, применяем полную консолидированную схему.
+        // empty_db.sql содержит полную схему v12 (чистый старт, все старые патчи объединены)
         if (databaseTableCount() == 0) {
             LOG(m_Log,
                 LogLevel::Normal,
-                "Creating database schema from empty_db.sql (version 12).");
+                "Creating database schema from empty_db.sql (consolidated schema, version 12).");
             updateDatabase(CDatabaseUtils::EmptyDatabaseScript);
         }
 
-        // Применяем дополнительные патчи (если они добавлены в Patches[])
+        // Применяем дополнительные патчи (если они добавлены в Patches[] для версий 13+)
         for (const auto &patch : CDatabaseUtils::Patches) {
             if (databasePatch() < patch.version) {
                 LOG(m_Log,
                     LogLevel::Normal,
-                    QString("Applying database patch to version %1.").arg(patch.version));
+                    QString("Applying database migration to version %1.").arg(patch.version));
                 updateDatabase(patch.script);
             }
         }
