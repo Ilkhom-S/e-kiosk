@@ -23,7 +23,7 @@ ek_copy_assets(ekiosk
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.h)
 file(GLOB_RECURSE UI_FILES src/*.ui)
-file(GLOB RESOURCE_FILES src/*.qrc)
+file(GLOB_RECURSE RESOURCE_FILES src/*.qrc)
 file(GLOB RC_FILES src/*.rc)
 
 # Exclude Windows-only connection files on non-Windows platforms

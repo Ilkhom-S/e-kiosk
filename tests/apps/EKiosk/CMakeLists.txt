@@ -25,4 +25,18 @@ if(WIN32)
     )
 endif()
 
+# Database resource validation test
+# Verifies that Database.qrc resources are properly compiled
+# Helps diagnose Qt4→Qt5/Qt6 migration issues with resource compilation
+#
+# NOTE: This test needs access to Database.qrc resources, so it compiles
+# the Database.qrc file directly rather than linking to ekiosk
+ek_add_test(ekiosk_database_validation
+    SOURCES
+    database_validation_test.cpp
+    ${CMAKE_SOURCE_DIR}/apps/EKiosk/src/DatabaseUtils/Database.qrc
+    FOLDER "tests/apps/EKiosk"
+    QT_MODULES Test Core
+)
+
 add_subdirectory(Example)
