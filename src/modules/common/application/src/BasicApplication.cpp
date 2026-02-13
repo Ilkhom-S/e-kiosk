@@ -231,6 +231,12 @@ QString BasicApplication::getWorkingDirectory() const {
 }
 
 //---------------------------------------------------------------------------
+// Возвращает текущий язык приложения (en, ru, tg, uz и т.д.).
+QString BasicApplication::getLanguage() const {
+    return m_Language;
+}
+
+//---------------------------------------------------------------------------
 // Возвращает настройки приложения
 QSettings &BasicApplication::getSettings() const {
     return *m_Settings;

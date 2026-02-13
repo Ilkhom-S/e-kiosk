@@ -48,6 +48,9 @@ public:
     /// Возвращает рабочий каталог приложения (может быть задан в .ini файле).
     virtual QString getWorkingDirectory() const;
 
+    /// Возвращает текущий язык приложения (en, ru, tg, uz и т.д.).
+    virtual QString getLanguage() const;
+
     /// Возвращает настройки приложения
     virtual QSettings &getSettings() const;
 
@@ -73,6 +76,10 @@ protected:
     // Singleton instance pointer
     static BasicApplication *m_Instance;
 
+    // Protected members accessible to derived classes and templates
+    QString m_Language;                   // initialized in constructor (in template)
+    QScopedPointer<QSettings> m_Settings; // initialized in constructor
+
 private:
     // Internal helpers
     void detectTestMode();
@@ -80,7 +87,6 @@ private:
     QString m_Name;
     QString m_Version;
     QString m_WorkingDirectory;
-    QScopedPointer<QSettings> m_Settings; // initialized in constructor
     int m_ArgumentCount;
     char **m_Arguments;
     ILog *m_Log = nullptr; // initialized in constructor
