@@ -13,7 +13,7 @@ The EKiosk database uses SQLite with a versioning system to track and apply sche
 
 ## File Structure
 
-```
+```text
 DatabaseUtils/
 ├── DatabaseUtils.cpp               # Database initialization and query execution
 ├── DatabaseUtils.h                 # Database interface
@@ -33,7 +33,7 @@ DatabaseUtils/
 4. All tables, indexes, and constraints created at once
 5. `device_param` table initialized with `db_patch` version
 
-```
+```text
 [Fresh Start] → empty_db.sql → Ready to use
 ```
 
@@ -45,7 +45,7 @@ DatabaseUtils/
    - If `currentVersion < migrationVersion`, apply migration
 4. Continues until database reaches latest version
 
-```
+```text
 [Old Version 1] → db_patch_2.sql → db_patch_3.sql → [Current Version 3]
 ```
 
