@@ -19,7 +19,7 @@
 #include "ServiceTags.h"
 
 DiagnosticsServiceWindow::DiagnosticsServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend), {
+    : QFrame(aParent), ServiceWindowBase(aBackend), m_SpacerItem(nullptr) {
     setupUi(this);
 
     connect(
