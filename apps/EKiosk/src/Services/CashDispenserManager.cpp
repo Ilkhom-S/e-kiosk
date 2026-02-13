@@ -214,8 +214,8 @@ void CashDispenserManager::onUnitsDefined() {
     if (dispenser) {
         dispensers << dispenser;
     } else {
-        dispensers =
-            QSet<DSDK::IDispenser *>(m_Dispensers.keys().begin(), m_Dispensers.keys().end());
+        const auto dispenserKeys = m_Dispensers.keys();
+        dispensers = QSet<DSDK::IDispenser *>(dispenserKeys.cbegin(), dispenserKeys.cend());
     }
 
     /// Проверяем и обновляем список доступных купюр

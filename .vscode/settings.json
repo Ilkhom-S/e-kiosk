@@ -100,5 +100,26 @@
         "**/moc_*.cpp": true,
         "**/ui_*.h": true,
         "**/qrc_*.cpp": true
-    }
+    },
+    "sqltools.useNodeRuntime": true,
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "192.168.28.81",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "192.168.28.81_postgres",
+            "group": "Payvand",
+            "database": "helpdesk",
+            "username": "postgres"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "E-Kiosk",
+            "group": "Humo",
+            "database": "${workspaceFolder:e-kiosk}/build/macos-qt6/bin/user/data.db"
+        }
+    ]
 }

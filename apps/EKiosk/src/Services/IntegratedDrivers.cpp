@@ -72,8 +72,8 @@ void IntegratedDrivers::initialize(DeviceManager *aDeviceManager) {
         QStringList pathParts = paths.begin()->split(".").mid(0, 3);
         QString pathPart = pathParts.join(".") + ".";
 
-        foreach (const TPaths &localPaths,
-                 QSet<TPaths>(pathsByModel.values().begin(), pathsByModel.values().end())) {
+        const auto values = pathsByModel.values();
+        foreach (const TPaths &localPaths, QSet<TPaths>(values.cbegin(), values.cend())) {
             m_Data.insert(pathPart + QString::number(index++),
                           SData(localPaths, pathsByModel.keys(localPaths)));
         }

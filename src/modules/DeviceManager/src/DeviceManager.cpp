@@ -567,8 +567,9 @@ QStringList DeviceManager::detect(const QString & /*aDeviceType*/) {
     QVector<IDevice *> requiredList;
 
     // Для каждого ресурса берем список системных имен, связанных с ресурсом.
+    const auto rdSystemNames = m_RDSystem_Names.keys();
     foreach (const QString &requiredDevice,
-             QStringSet(m_RDSystem_Names.keys().begin(), m_RDSystem_Names.keys().end())) {
+             QStringSet(rdSystemNames.cbegin(), rdSystemNames.cend())) {
         QStringList devicesToFind = m_RequiredResources.keys(requiredDevice);
 
         if (devicesToFind.isEmpty() || requiredDevice.contains(CInteractionTypes::TCP)) {
@@ -731,10 +732,10 @@ void DeviceManager::checkITInstancePath(QString &aInstancePath) {
     if (pathData.size() > 4) {
         if (!pathData[4].compare("ATOL", Qt::CaseInsensitive)) {
             pathData[4] = pathData[4].replace("ATOL", "ATOL2", Qt::CaseInsensitive);
-}
+        }
         if (!pathData[4].compare("AtolOnline", Qt::CaseInsensitive)) {
             pathData[4] = pathData[4].replace("AtolOnline", "ATOL2Online", Qt::CaseInsensitive);
-}
+        }
 
         aInstancePath = pathData.join(".");
     }
@@ -1080,12 +1081,12 @@ QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting)
         std::sort(logIndexes.begin(), logIndexes.end());
         if (logIndexes.isEmpty() || logIndexes[0]) {
             return 0;
-}
+        }
         for (int i = 0; i < logIndexes.last(); ++i) {
             if (!logIndexes.contains(i)) {
                 return i;
-}
-}
+            }
+        }
 
         return logIndexes.last() + 1;
     };

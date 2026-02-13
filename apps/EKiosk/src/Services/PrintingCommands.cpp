@@ -214,8 +214,9 @@ bool PrintFiscalCommand::getFiscalInfo(QVariantMap &aParameters,
     QStringList parameterNames = fr->getParameterNames();
 
     // Если в параметрах платежа ещё нет информации о фискальном номере
-    bool ok = !QSet<QString>(parameterNames.begin(), parameterNames.end())
-                   .intersect(QSet<QString>(aParameters.keys().begin(), aParameters.keys().end()))
+    const auto parameterKeysSet = aParameters.keys();
+    bool ok = !QSet<QString>(parameterNames.cbegin(), parameterNames.cend())
+                   .intersect(QSet<QString>(parameterKeysSet.cbegin(), parameterKeysSet.cend()))
                    .isEmpty();
     SDK::Driver::SPaymentData fiscalPaymentData;
 

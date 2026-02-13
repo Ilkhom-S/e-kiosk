@@ -161,12 +161,22 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
 
     m_Directories << aDirectory;
 
+    // Debug: Log which directory is being scanned
+    m_Kernel->getLog()->write(LogLevel::Debug,
+                              QString("Scanning plugin directory: %1").arg(aDirectory));
+
     QStringList fileNameFilter;
 #ifdef Q_OS_WIN
     fileNameFilter << "*.dll";
+#elif defined(Q_OS_MAC)
+    fileNameFilter << "*.dylib";
 #else
     fileNameFilter << "*.so";
 #endif
+
+    // Debug: Log what file filter is used
+    m_Kernel->getLog()->write(LogLevel::Debug,
+                              QString("Plugin file filter: %1").arg(fileNameFilter.join(", ")));
 
     QDirIterator dirEntry(aDirectory, fileNameFilter, QDir::Files, QDirIterator::Subdirectories);
 
@@ -174,19 +184,21 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
     while (dirEntry.hasNext()) {
         dirEntry.next();
 
+        m_Kernel->getLog()->write(LogLevel::Debug,
+                                  QString("Found plugin file: %1").arg(dirEntry.filePath()));
+
 #ifdef Q_OS_WIN
         // Windows: Set DLL search path for dependent libraries
         SetDllDirectoryW(dirEntry.fileInfo().absolutePath().toStdWString().data());
 #else
         // Unix/Linux/macOS: Add plugin directory to library search path
-        // Note: On Unix systems, Qt plugin loading is more robust and usually
-        // doesn't require explicit path manipulation for dependent libraries
+        // Note: On macOS, use DYLD_LIBRARY_PATH instead of LD_LIBRARY_PATH
         QString pluginDir = dirEntry.fileInfo().absolutePath();
-        QString currentLdPath = qgetenv("LD_LIBRARY_PATH");
+        QString currentLibPath = qgetenv("DYLD_LIBRARY_PATH");
 
-        if (!currentLdPath.contains(pluginDir)) {
-            QString newLdPath = pluginDir + ":" + currentLdPath;
-            qputenv("LD_LIBRARY_PATH", newLdPath.toUtf8());
+        if (!currentLibPath.contains(pluginDir)) {
+            QString newLibPath = pluginDir + ":" + currentLibPath;
+            qputenv("DYLD_LIBRARY_PATH", newLibPath.toUtf8());
         }
 #endif
 

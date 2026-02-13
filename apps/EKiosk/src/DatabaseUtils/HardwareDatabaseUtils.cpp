@@ -53,6 +53,11 @@ QVariant DatabaseUtils::getDeviceParam(const QString &aDeviceConfigName,
 bool DatabaseUtils::setDeviceParam(const QString &aDeviceConfigName,
                                    const QString &aParamName,
                                    const QVariant &aParamValue) {
+    // Don't insert NULL values - database constraint requires NOT NULL
+    if (aParamValue.isNull()) {
+        return true; // Silent success for null values
+    }
+
     if (!hasDevice(aDeviceConfigName)) {
         if (!addDevice(aDeviceConfigName)) {
             return false;

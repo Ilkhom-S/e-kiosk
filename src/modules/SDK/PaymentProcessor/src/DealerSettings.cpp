@@ -704,7 +704,8 @@ QList<qint64> DealerSettings::getProviders(const QString &aProcessingType) {
 
 //---------------------------------------------------------------------------
 QStringList DealerSettings::getProviderProcessingTypes() {
-    return {m_ProvidersProcessingIndex.keys().begin(), m_ProvidersProcessingIndex.keys().end()};
+    const auto keys = m_ProvidersProcessingIndex.keys();
+    return {keys.cbegin(), keys.cend()};
 }
 
 //---------------------------------------------------------------------------

@@ -122,15 +122,6 @@ bool TerminalService::initialize() {
     // Проверяем параметры командной строки.
     bool standaloneMode = m_Application->getSettings().value("common/standalone").toBool();
 
-    if (!m_Client) {
-        if (!standaloneMode) {
-            toLog(LogLevel::Error, "Failed to create WatchService client.");
-            return false;
-        }
-        toLog(LogLevel::Warning, "WatchService client not available, running in standalone mode.");
-        return true;
-    }
-
     if (m_Client->start() || standaloneMode) {
         return true;
     }
@@ -260,9 +251,8 @@ void TerminalService::writeLockStatus(bool aIsLocked) {
         }
 
         // Сбрасываем "плохие" статусы при разблокировке
-        TStatusCodes statuses = QSet<int>(
-            m_DeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).begin(),
-            m_DeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).end());
+        const auto values = m_DeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal);
+        TStatusCodes statuses = QSet<int>(values.cbegin(), values.cend());
 
         foreach (auto status, statuses) {
             if (TerminalStatusCode::Specification[status].warningLevel >=
@@ -382,9 +372,8 @@ QPair<SDK::Driver::EWarningLevel::Enum, QString> TerminalService::getTerminalSta
         }
     }
 
-    TStatusCodes statuses =
-        QSet<int>(m_DeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).begin(),
-                  m_DeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).end());
+    const auto values = m_DeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal);
+    TStatusCodes statuses = QSet<int>(values.cbegin(), values.cend());
 
     if (statuses.isEmpty()) {
         statuses << DeviceStatusCode::OK::OK;

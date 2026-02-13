@@ -404,7 +404,8 @@ void ServiceController::dumpFailureReport() {
 
 //---------------------------------------------------------------------------
 QSet<SDK::PaymentProcessor::IService *> ServiceController::getServices() const {
-    return {m_RegisteredServices.values().begin(), m_RegisteredServices.values().end()};
+    const auto services = m_RegisteredServices.values();
+    return {services.cbegin(), services.cend()};
 }
 
 //---------------------------------------------------------------------------

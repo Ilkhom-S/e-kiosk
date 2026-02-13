@@ -6,3 +6,4 @@ interface_path=interface/modern
 ad_path=ad
 configuration=terminal_ru
 locale=ru
+standalone=true

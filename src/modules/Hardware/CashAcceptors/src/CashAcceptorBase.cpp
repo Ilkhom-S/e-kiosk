@@ -807,7 +807,8 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
     } else {
         this->saveStatuses(statuses, ECashAcceptorStatus::OK, CCashAcceptor::Set::NormalStatuses);
 
-        if (!QSet<ECashAcceptorStatus::Enum>(lastStatuses.keys().begin(), lastStatuses.keys().end())
+        const auto lastStatusesKeys = lastStatuses.keys();
+        if (!QSet<ECashAcceptorStatus::Enum>(lastStatusesKeys.cbegin(), lastStatusesKeys.cend())
                  .intersect(CCashAcceptor::Set::NormalStatuses)
                  .isEmpty()) {
             foreach (ECashAcceptorStatus::Enum status, CCashAcceptor::Set::NormalStatuses) {
@@ -920,11 +921,12 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
     // 4.3. Если надо - эмитим статус
     if (emitSignal) {
         this->emitStatuses(lastStatusHistory, CCashAcceptor::Set::GeneralStatuses);
-    } else if ((lastStatusHistory == beforeLastStatusSpec) ||
-               QSet<ECashAcceptorStatus::Enum>(lastStatusHistory.statuses.keys().begin(),
-                                               lastStatusHistory.statuses.keys().end())
-                   .intersect(CCashAcceptor::Set::MainStatuses)
-                   .isEmpty()) {
+    } else if ((lastStatusHistory == beforeLastStatusSpec) || ([&]() {
+                   const auto keys = lastStatusHistory.statuses.keys();
+                   return QSet<ECashAcceptorStatus::Enum>(keys.cbegin(), keys.cend())
+                       .intersect(CCashAcceptor::Set::MainStatuses)
+                       .isEmpty();
+               }())) {
         this->m_StatusHistory.removeLast();
     }
 
@@ -943,8 +945,9 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
         this->m_Ready = false;
     } else {
         CCashAcceptor::TStatuses statusBuffer = this->m_StatusHistory.lastValue().statuses;
+        const auto statusBufferKeys = statusBuffer.keys();
         CCashAcceptor::TStatusSet statusSet =
-            QSet<ECashAcceptorStatus::Enum>(statusBuffer.keys().begin(), statusBuffer.keys().end());
+            QSet<ECashAcceptorStatus::Enum>(statusBufferKeys.cbegin(), statusBufferKeys.cend());
 
         this->m_Ready = (this->m_Initialized == ERequestStatus::Success) && !statusSet.isEmpty() &&
                         statusSet.intersect(CCashAcceptor::Set::ErrorStatuses).isEmpty() &&

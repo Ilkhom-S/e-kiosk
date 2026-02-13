@@ -135,11 +135,11 @@ bool PaymentService::initialize() {
     auto *dealerSettings = SettingsService::instance(m_Application)
                                ->getAdapter<SDK::PaymentProcessor::DealerSettings>();
 
+    const auto providerTypes = dealerSettings->getProviderProcessingTypes();
+    const auto factoryKeys = m_FactoryByType.keys();
     foreach (const QString &processingType,
-             QSet<QString>(dealerSettings->getProviderProcessingTypes().begin(),
-                           dealerSettings->getProviderProcessingTypes().end())
-                 .subtract(
-                     QSet<QString>(m_FactoryByType.keys().begin(), m_FactoryByType.keys().end()))) {
+             QSet<QString>(providerTypes.cbegin(), providerTypes.cend())
+                 .subtract(QSet<QString>(factoryKeys.cbegin(), factoryKeys.cend()))) {
         // И удаляем их
         foreach (qint64 providerId, dealerSettings->getProviders(processingType)) {
             toLog(LogLevel::Error,

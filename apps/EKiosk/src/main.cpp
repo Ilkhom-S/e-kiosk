@@ -29,11 +29,11 @@ int main(int argc, char **argv) {
         qInstallMessageHandler(PPApplication::qtMessageHandler);
 
         // Qt5: Use software renderer for Qt Quick to avoid GPU issues
-        // Qt6: Uses RHI (Rendering Hardware Interface) with software backend
+        // Qt6: Uses RHI (Rendering Hardware Interface) with Metal backend on macOS
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         qputenv("QMLSCENE_DEVICE", "softwarecontext");
 #else
-        qputenv("QSG_RHI_BACKEND", "software");
+        qputenv("QSG_RHI_BACKEND", "metal");
 #endif
 
         PPApplication application(Humo::Application, Humo::getVersion(), argc, argv);
