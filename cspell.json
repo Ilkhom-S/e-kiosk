@@ -298,6 +298,7 @@
         "UPDATEENGINE",
         "USBHID",
         "USBPDO",
+        "VARCHAR",
         "VDPPT",
         "VIRTUALDEVICES",
         "VIUDS",

@@ -1,4 +1,4 @@
-/\* @file Database Management
+# Database Management
 
 ## Overview
 
@@ -352,8 +352,8 @@ SQL scripts are compiled into the binary via Qt Resource System:
 
 - Implementation: [DatabaseUtils.cpp](DatabaseUtils.cpp)
 - Resource Configuration: [Database.qrc](Database.qrc)
-- SQLite Documentation: https://www.sqlite.org/docs.html
-- SQLite Pragma Statements: https://www.sqlite.org/pragma.html
+- SQLite Documentation: <https://www.sqlite.org/docs.html>
+- SQLite Pragma Statements: <https://www.sqlite.org/pragma.html>
 
 ## TODO
 
@@ -369,5 +369,3 @@ Future enhancements for the database system:
   - Automatic backup before applying patches
   - Rollback capability if migration SQL execution fails
   - Maintain migration history/audit log
-*/
-
