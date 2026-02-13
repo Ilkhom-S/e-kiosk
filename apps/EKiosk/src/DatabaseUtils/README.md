@@ -354,17 +354,20 @@ SQL scripts are compiled into the binary via Qt Resource System:
 - Resource Configuration: [Database.qrc](Database.qrc)
 - SQLite Documentation: https://www.sqlite.org/docs.html
 - SQLite Pragma Statements: https://www.sqlite.org/pragma.html
-  \
-  **Build Requirements**:
 
-- CMakeLists.txt must include: `qt_add_resources(ekiosk Database.qrc)`
-- Scripts must be listed in Database.qrc
-- CMake runs Qt moc compiler to generate qrc_Database.cpp
+## TODO
 
-## References
+Future enhancements for the database system:
 
-- Implementation: [DatabaseUtils.cpp](DatabaseUtils.cpp)
-- Resource Configuration: [Database.qrc](Database.qrc)
-- SQLite Documentation: <https://www.sqlite.org/docs.html>
-- SQLite Pragma Statements: <https://www.sqlite.org/pragma.html>
-  \*/
+- [ ] **Database Encryption**: Implement password-based encryption for SQLite database file
+  - Use SQLite encryption extension (e.g., SQLCipher)
+  - Add password configuration to initialization
+  - Secure credential storage for database key
+
+- [ ] **Migration Rollback Mechanism**: Implement safe migration rollback on patch failure
+  - Add transaction checkpoints before migration
+  - Automatic backup before applying patches
+  - Rollback capability if migration SQL execution fails
+  - Maintain migration history/audit log
+*/
+
