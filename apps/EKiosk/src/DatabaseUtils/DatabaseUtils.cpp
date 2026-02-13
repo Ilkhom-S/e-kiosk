@@ -22,20 +22,6 @@ const QString EmptyDatabaseScript = ":/scripts/empty_db.sql";
 const QString DatabasePatchParam = "db_patch";
 const QString DatabaseUpdateParam = "db_update";
 
-// Список патчей базы
-const struct {
-    int version;
-    QString script;
-} Patches[] = {
-    {6, ":/scripts/db_patch_6.sql"},
-    {7, ":/scripts/db_patch_7.sql"},
-    {8, ":/scripts/db_patch_8.sql"},
-    {9, ":/scripts/db_patch_9.sql"},
-    {10, ":/scripts/db_patch_10.sql"},
-    {11, ":/scripts/db_patch_11.sql"},
-    {12, ":/scripts/db_patch_12.sql"},
-};
-
 } // namespace CDatabaseUtils
 
 //---------------------------------------------------------------------------
@@ -57,20 +43,11 @@ bool DatabaseUtils::initialize() {
             throw std::runtime_error("Cannot start database transaction.");
         }
 
-        // Проверяем, созданы ли таблицы.
+        // Проверяем, созданы ли таблицы. Если нет, применяем полную схему.
+        // empty_db.sql содержит полную схему версии 12 (все миграции Qt4→Qt5/Qt6 объединены)
         if (databaseTableCount() == 0) {
+            LOG(m_Log, LogLevel::Normal, "Creating database schema from empty_db.sql (version 12).");
             updateDatabase(CDatabaseUtils::EmptyDatabaseScript);
-            // после этого скрипта databasePatch() = 5
-        }
-
-        for (const auto &patch : CDatabaseUtils::Patches) {
-            if (databasePatch() < patch.version) {
-                LOG(m_Log,
-                    LogLevel::Normal,
-                    QString("Patch database to version %1.").arg(patch.version));
-
-                updateDatabase(patch.script);
-            }
         }
     } catch (...) {
         EXCEPTION_FILTER(m_Log);
