@@ -78,5 +78,12 @@ if(TS_FILES)
     )
     if(TARGET WatchServiceControllerTranslations_translations)
         add_dependencies(controller WatchServiceControllerTranslations_translations)
+        # Copy translation files to bin/locale for cross-platform compatibility
+        add_custom_command(TARGET controller POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_BINARY_DIR}/locale
+            ${CMAKE_BINARY_DIR}/bin/locale
+            COMMENT "Copying translation files to bin/locale for cross-platform compatibility"
+        )
     endif()
 endif()

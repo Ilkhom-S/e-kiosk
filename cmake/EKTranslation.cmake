@@ -101,18 +101,6 @@ function(ek_add_translations TARGET_NAME)
     endforeach()
     add_custom_target(${TARGET_NAME}_translations ALL DEPENDS ${_qm_files})
 
-    # Copy compiled .qm files to CMAKE_BINARY_DIR/bin/locale for development/testing
-    # This allows apps to find translations in the build directory without installation
-    if(DEFINED CMAKE_BINARY_DIR)
-        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/locale)
-        add_custom_command(TARGET ${TARGET_NAME}_translations POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${ARG_OUTPUT_DIR}
-            ${CMAKE_BINARY_DIR}/bin/locale
-            COMMENT "Copying translations to ${CMAKE_BINARY_DIR}/bin/locale"
-        )
-    endif()
-
     # Set folder for translation targets in IDE project outlines
     if(ARG_FOLDER)
         set(_ek_folder "${ARG_FOLDER}")
