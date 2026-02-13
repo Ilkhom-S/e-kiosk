@@ -120,7 +120,18 @@ bool TerminalService::initialize() {
                               ISysUtils::getOSVersionInfo());
 
     // Проверяем параметры командной строки.
-    if (m_Client->start() || m_Application->getSettings().value("common/standalone").toBool()) {
+    bool standaloneMode = m_Application->getSettings().value("common/standalone").toBool();
+
+    if (!m_Client) {
+        if (!standaloneMode) {
+            toLog(LogLevel::Error, "Failed to create WatchService client.");
+            return false;
+        }
+        toLog(LogLevel::Warning, "WatchService client not available, running in standalone mode.");
+        return true;
+    }
+
+    if (m_Client->start() || standaloneMode) {
         return true;
     }
 
