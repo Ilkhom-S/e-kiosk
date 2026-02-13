@@ -119,12 +119,5 @@ if(TS_FILES)
     )
     if(TARGET EKioskTranslations_translations)
         add_dependencies(ekiosk EKioskTranslations_translations)
-        # Copy translation files to bin/locale directory
-        add_custom_command(TARGET ekiosk POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_BINARY_DIR}/locale
-            ${CMAKE_BINARY_DIR}/bin/locale
-            COMMENT "Copying translation files to bin/locale directory"
-        )
     endif()
 endif()
