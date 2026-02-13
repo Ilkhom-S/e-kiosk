@@ -61,9 +61,7 @@ bool DatabaseUtils::initialize() {
 
         // Проверяем, созданы ли таблицы. Если нет, применяем схему из empty_db.sql
         if (databaseTableCount() == 0) {
-            LOG(m_Log,
-                LogLevel::Normal,
-                "Creating database schema from empty_db.sql.");
+            LOG(m_Log, LogLevel::Normal, "Creating database schema from empty_db.sql.");
             updateDatabase(CDatabaseUtils::EmptyDatabaseScript);
         }
 
