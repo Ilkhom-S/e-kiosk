@@ -22,6 +22,23 @@ const QString EmptyDatabaseScript = ":/scripts/empty_db.sql";
 const QString DatabasePatchParam = "db_patch";
 const QString DatabaseUpdateParam = "db_update";
 
+/// Миграционные патчи базы данных.
+/// empty_db.sql (v12) содержит полную схему со всеми объединенными Qt4→Qt5/Qt6 миграциями.
+///
+/// Для добавления новой миграции в будущем:
+/// 1. Создайте файл scripts/db_patch_13.sql (или выше) с SQL инструкциями для миграции
+/// 2. Добавьте запись в массив ниже:
+///    {13, ":/scripts/db_patch_13.sql"},
+/// 3. Добавьте ресурс в Database.qrc (<file>scripts/db_patch_13.sql</file>)
+/// 4. Патч будет автоматически применен при обновлении базы (цикл ниже в initialize())
+const struct {
+    int version;
+    QString script;
+} Patches[] = {
+    // Все патчи версий 6-12 объединены в empty_db.sql для чистого старта
+    // Новые миграции добавляются сюда для автоматического применения
+};
+
 } // namespace CDatabaseUtils
 
 //---------------------------------------------------------------------------
@@ -46,8 +63,20 @@ bool DatabaseUtils::initialize() {
         // Проверяем, созданы ли таблицы. Если нет, применяем полную схему.
         // empty_db.sql содержит полную схему версии 12 (все миграции Qt4→Qt5/Qt6 объединены)
         if (databaseTableCount() == 0) {
-            LOG(m_Log, LogLevel::Normal, "Creating database schema from empty_db.sql (version 12).");
+            LOG(m_Log,
+                LogLevel::Normal,
+                "Creating database schema from empty_db.sql (version 12).");
             updateDatabase(CDatabaseUtils::EmptyDatabaseScript);
+        }
+
+        // Применяем дополнительные патчи (если они добавлены в Patches[])
+        for (const auto &patch : CDatabaseUtils::Patches) {
+            if (databasePatch() < patch.version) {
+                LOG(m_Log,
+                    LogLevel::Normal,
+                    QString("Applying database patch to version %1.").arg(patch.version));
+                updateDatabase(patch.script);
+            }
         }
     } catch (...) {
         EXCEPTION_FILTER(m_Log);
@@ -74,11 +103,7 @@ bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName) {
 
     QString resSQL = ftemp.readAll();
 
-    // Удалим комментарии ("-- some comment") и ("/* many \n comment */").
     QRegularExpression rx(R"((\/\*.*\*\/|\-\-.*\n))");
-    ////////rx.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
-    /// compatibility // Removed for
-    /// Qt5/6 compatibility // Removed for Qt5/6 compatibility
     resSQL.replace(rx, "");
 
     // Удалим перевод строк с сохранением возможности писать ("CREATE\nTABLE")
