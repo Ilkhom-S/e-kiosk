@@ -1,232 +1,370 @@
-/\* @file Database Scripts README
+/\* @file Database Management
 
 ## Overview
 
-The EKiosk database uses SQLite with a versioning system to track and apply schema changes.
+The EKiosk database uses SQLite with a versioning system to track and apply schema changes through database migrations.
 
-### Current Version: 12 (Consolidated)
+## Architecture
 
-After Q t4→Qt5/Qt6 migration, all patches (6-12) have been consolidated into `empty_db.sql`.
+- **Base Schema**: `empty_db.sql` - Complete database schema for fresh installations
+- **Versioning**: Tracked via `device_param` table (`name='db_patch'`, `value=version`)
+- **Migrations**: Future patches stored in `scripts/` folder (e.g., `db_patch_1.sql`, `db_patch_2.sql`)
+- **Resource System**: All SQL scripts compiled into the binary via Qt Resource System (Database.qrc)
 
 ## File Structure
 
 ```
-scripts/
-├── empty_db.sql                    # Full schema at version 12 (fresh start)
-├── db_patch_6.sql                  # Historical: Unique index on device.name
-├── db_patch_7.sql                  # Historical: Add external column
-├── db_patch_8.sql                  # Historical: Create dispensed_note table
-├── db_patch_9.sql                  # Historical: Add payment_note date index
-├── db_patch_10.sql                 # Historical: Table structure improvements
-├── db_patch_11.sql                 # Historical: Add encashment_param table
-├── db_patch_12.sql                 # Historical: Cleanup old tables
-└── MIGRATION_GUIDE.md              # Guide for writing future patches
+DatabaseUtils/
+├── DatabaseUtils.cpp               # Database initialization and query execution
+├── DatabaseUtils.h                 # Database interface
+├── Database.qrc                    # Qt resource file (embeds SQL scripts)
+├── scripts/
+│   └── empty_db.sql               # Complete base schema
+└── README.md                       # This file
 ```
 
-## How It Works
+## How the Database System Works
 
 ### Fresh Installation
 
-1. Database file doesn't exist
+1. Application starts, checks if database file exists
 2. `DatabaseUtils::initialize()` detects 0 tables
-3. Applies `empty_db.sql` → Full schema at version 12
-4. No patches needed
+3. Applies `empty_db.sql` - complete schema in one script
+4. All tables, indexes, and constraints created at once
+5. `device_param` table initialized with `db_patch` version
 
 ```
-Database Lifecycle:
-[Fresh Start] → empty_db.sql → Version 12
-
-[Old Qt4 DB] → empty_db.sql → patches 6-12 → Version 12
-              (v5 initial)    (if needed)
+[Fresh Start] → empty_db.sql → Ready to use
 ```
 
-### Upgrade from Old Version (Qt4 Legacy)
+### Upgrade with Migrations
 
-1. Existing database has version < 5
-2. \`DatabaseUtils::initialize()\` checks patch version
-3. Applies patches 6-12 sequentially
-4. Reaches version 12
+1. Existing database with version < latest
+2. `DatabaseUtils::initialize()` detects tables and reads current version
+3. For each registered migration in `Patches[]` array:
+   - If `currentVersion < migrationVersion`, apply migration
+4. Continues until database reaches latest version
+
+```
+[Old Version 1] → db_patch_2.sql → db_patch_3.sql → [Current Version 3]
+```
+
+### Code Flow (DatabaseUtils.cpp)
 
 ```cpp
-// Code in DatabaseUtils.cpp:
-if (!m_Database.isConnected()) throw error;
-if (databaseTableCount() == 0) {
-    updateDatabase(empty_db.sql);     // New: v12, Upgrade: v5 → v6
-}
-for (each patch) {
-    if (databasePatch() < patch.version) {
-        updateDatabase(patch.script);  // Only if needed
+bool DatabaseUtils::initialize() {
+    // 1. Check if tables exist
+    if (databaseTableCount() == 0) {
+        // Fresh start: apply base schema
+        updateDatabase(empty_db.sql);     // Creates v0 or v1
+    }
+
+    // 2. Apply any registered migrations
+    for (const auto &patch : CDatabaseUtils::Patches) {
+        if (databasePatch() < patch.version) {
+            // Only apply if not already applied
+            updateDatabase(patch.script);
+        }
     }
 }
 ```
 
-## Schema Consolidation History
+## Database Schema Overview
 
-### Before (Qt4 Migration)
+### Core Tables
 
-- empty_db.sql: Basic schema at version 5
-- 7 patches: Gradual updates (6 → 12) applied sequentially
+#### `device`
 
-**Problem**: New installations needed to apply 7 patches
+- `id`: INTEGER PRIMARY KEY
+- `name`: VARCHAR(255) UNIQUE
+- `type`: INTEGER (device type identifier)
+- Device information and configuration
 
-### After (Fresh Start)
+#### `device_param`
 
-- empty_db.sql: Complete schema at version 12 (patches 6-12 merged)
-- Patches: Kept for backward compatibility (upgrade path only)
+- `id`: INTEGER PRIMARY KEY
+- `name`: VARCHAR(100) - parameter name
+- `value`: TEXT - parameter value
+- `fk_device_id`: INTEGER FOREIGN KEY
+- Key-value parameters per device (including `db_patch` version)
 
-**Benefit**: New installations are complete from start, no patches needed
+#### `payment`
 
-## Key Changes in Consolidated Schema (empty_db.sql v12)
+- `id`: INTEGER PRIMARY KEY
+- `amount`: DECIMAL(10,2)
+- `nominal`: DECIMAL(10,2)
+- `currency`: VARCHAR(10)
+- Payment records and history
 
-1. **Patch 6**: Added UNIQUE index on device.name
-2. **Patch 7**: Added `external` column to payment_param
-3. **Patch 8**: Created `dispensed_note` table, added `dispenser_report` column
-4. **Patch 9**: Added index on payment_note.date
-5. **Patch 10**: Changed payment_note.nominal to DECIMAL(10,2)
-6. **Patch 11**: Created `encashment_param` table
-7. **Patch 12**: Cleanup and version finalization
+#### `payment_note`
 
-## Future Database Changes
+- `id`: INTEGER PRIMARY KEY
+- `date`: DATETIME
+- `fk_payment_id`: INTEGER FOREIGN KEY
+- Payment notes with timestamp index
 
-For schema changes after consolidation:
+#### `dispensed_note`
 
-1. **New versions**: db_patch_13.sql, db_patch_14.sql, etc.
-2. **Location**: Same scripts/ folder
-3. **Format**: See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
-4. **Resource**: Add to Database.qrc as:
-   ```xml
-   <file>scripts/db_patch_13.sql</file>
-   ```
-5. **Code**: Update Patches[] array in DatabaseUtils.cpp:
-   ```cpp
-   {13, ":/scripts/db_patch_13.sql"},
-   // etc.
-   ```
+- `id`: INTEGER PRIMARY KEY
+- `fk_payment_id`: INTEGER FOREIGN KEY
+- Dispensed item records
 
-## Database Versioning Table
+#### `encashment_param`
 
-| Version | Source                      | Status      | Notes                   |
-| ------- | --------------------------- | ----------- | ----------------------- |
-| ≤5      | Legacy Qt4                  | Deprecated  | Pre-migration schema    |
-| 6       | db_patch_6.sql              | Historical  | Unique device index     |
-| 7       | db_patch_7.sql              | Historical  | payment_param.external  |
-| 8       | db_patch_8.sql              | Historical  | dispensed_note table    |
-| 9       | db_patch_9.sql              | Historical  | payment_note.date index |
-| 10      | db_patch_10.sql             | Historical  | DECIMAL precision       |
-| 11      | db_patch_11.sql             | Historical  | encashment_param table  |
-| 12      | empty_db.sql (consolidated) | **Current** | Complete schema         |
+- `id`: INTEGER PRIMARY KEY
+- `fk_device_id`: INTEGER FOREIGN KEY
+- Encashment (cash removal) parameters
+
+See `empty_db.sql` for complete schema definition.
+
+## How to Add a Database Migration
+
+### Step 1: Create Migration File
+
+Name: `db_patch_N.sql` (where N is the next version number)
+Location: `apps/EKiosk/src/DatabaseUtils/scripts/`
+
+### Step 2: Write SQL Migration
+
+```sql
+--
+-- Migration N: Description of what this migration does
+-- Affected tables: table1, table2
+-- Backward compatibility notes if any
+--
+
+-- Your SQL statements
+ALTER TABLE `payment` ADD COLUMN `new_field` VARCHAR(255);
+CREATE INDEX IF NOT EXISTS `i__payment__new_field` ON `payment` (`new_field`);
+
+-- IMPORTANT: Update version at the end
+UPDATE `device_param` SET `value` = N WHERE `name` = 'db_patch';
+```
+
+### Step 3: Register Migration in Database.qrc
+
+Edit `Database.qrc` and add your patch file:
+
+```xml
+<qresource prefix="/scripts">
+    <file>empty_db.sql</file>
+    <file>db_patch_1.sql</file>     <!-- Add new patches in order -->
+    <file>db_patch_2.sql</file>
+</qresource>
+```
+
+### Step 4: Register in DatabaseUtils.cpp
+
+Edit `DatabaseUtils.cpp` and update the `Patches[]` array:
+
+```cpp
+const struct {
+    int version;
+    QString script;
+} Patches[] = {
+    {1, ":/scripts/db_patch_1.sql"},
+    {2, ":/scripts/db_patch_2.sql"},
+    // Add new patches here in order
+};
+```
+
+The migration loop will apply them automatically when `databasePatch() < patch.version`.
+
+### Step 5: Test Your Migration
+
+**Fresh Install Test** (should include patch changes):
+
+```bash
+rm build/macos-qt6/bin/user/data.db
+cmake --build build/macos-qt6 --target ekiosk
+# Verify database structure includes new migration changes
+sqlite3 build/macos-qt6/bin/user/data.db ".schema"
+```
+
+**Upgrade Test** (if you have old databases):
+
+```bash
+# Keep old database at version 1
+# Run app - should apply patch 2
+sqlite3 build/macos-qt6/bin/user/data.db \
+  "SELECT value FROM device_param WHERE name='db_patch';"
+# Should show: 2
+```
+
+## Migration Best Practices
+
+### Schema Design
+
+- Use UNIQUE constraints where appropriate (e.g., device names)
+- Add indexes for foreign keys and frequently queried columns
+- Use PRAGMA foreign_keys = ON for referential integrity
+- Use DECIMAL(10,2) for currency/amount fields
+
+### Naming Conventions
+
+- **Tables**: snake_case (e.g., `payment_note`, `dispensed_note`)
+- **Columns**: snake_case (e.g., `fk_device_id`, `created_date`)
+- **Indexes**: `i__tablename__column` (e.g., `i__payment__date`)
+- **Constraints**: descriptive names (e.g., `unique_device_name`)
+
+### Data Migration
+
+- Always use INSERT INTO ... SELECT for copying data (not manual values)
+- For renaming columns:
+  1. Create new table with correct schema
+  2. Copy data: `INSERT INTO new_table SELECT ... FROM old_table`
+  3. Drop old table and rename: `ALTER TABLE new_table RENAME TO old_table`
+- Use `IF NOT EXISTS` and `IF EXISTS` for idempotency
+
+### Version Control
+
+- Each migration is independent and atomic
+- Migrations must be idempotent (safe to run twice)
+- Use `INSERT OR REPLACE` / `ON CONFLICT` for safe updates
+- This allows recovery by reapplying migrations
+
+### Example: Complete Migration
+
+```sql
+--
+-- Migration 1: Add payment notes tracking
+-- Affected tables: payment_note (new table)
+--
+
+CREATE TABLE IF NOT EXISTS `payment_note` (
+  `id`                INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  `payment_id`        INTEGER NOT NULL,
+  `value`             TEXT,
+  `date`              DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`)
+);
+
+CREATE INDEX IF NOT EXISTS `i__payment_note__date` ON `payment_note` (`date`);
+CREATE INDEX IF NOT EXISTS `i__payment_note__payment_id` ON `payment_note` (`payment_id`);
+
+UPDATE `device_param` SET `value` = 1 WHERE `name` = 'db_patch';
+```
 
 ## Testing Database Migrations
 
-### Test Fresh Installation
+### Inspect Database Structure
 
 ```bash
-# Remove old database
-rm build/macos-qt6/bin/user/data.db
+# Connect to database
+sqlite3 build/macos-qt6/bin/user/data.db
 
-# Run ekiosk - should create v12 from empty_db.sql
-./build/macos-qt6/bin/ekiosk.app/Contents/MacOS/ekiosk
+# Show all tables
+.tables
 
-# Verify version
-sqlite3 build/macos-qt6/bin/user/data.db \
-  "SELECT value FROM device_param WHERE name = 'db_patch';"
-# Output should be: 12
+# Show schema for a table
+.schema payment
+
+# Show all indexes
+SELECT name FROM sqlite_master WHERE type='index' ORDER BY name;
+
+# Show table structure details
+PRAGMA table_info(payment);
+
+# Show current version
+SELECT value FROM device_param WHERE name='db_patch';
 ```
 
-### Test Upgrade (Simulate Old DB)
+### Verify Migrations Applied
 
 ```bash
-# Create old-version database
-sqlite3 build/macos-qt6/bin/user/data.db < scripts/empty_db_v5.sql
-
-# Run ekiosk - should apply patches to reach v12
-./build/macos-qt6/bin/ekiosk.app/Contents/MacOS/ekiosk
-
-# Verify version
+# Check version
 sqlite3 build/macos-qt6/bin/user/data.db \
-  "SELECT value FROM device_param WHERE name = 'db_patch';"
-# Output should be: 12
+  "SELECT value FROM device_param WHERE name='db_patch';"
+
+# Check for specific table (after adding it with a migration)
+sqlite3 build/macos-qt6/bin/user/data.db \
+  "SELECT name FROM sqlite_master WHERE type='table' AND name='new_table';"
 ```
-
-## Database Resource Compilation
-
-The scripts are compiled into the binary via Qt Resource System:
-
-**File**: `Database.qrc`
-
-```xml
-<RCC>
-    <qresource prefix="/">
-        <file>scripts/empty_db.sql</file>
-        <file>scripts/db_patch_6.sql</file>
-        ...
-        <file>scripts/db_patch_12.sql</file>
-    </qresource>
-</RCC>
-```
-
-**Build Process**:
-
-1. CMakeLists.txt with `file(GLOB_RECURSE RESOURCE_FILES src/*.qrc)` finds Database.qrc
-2. Qt moc compiler generates qrc_Database.cpp
-3. Scripts become embedded resources: `:/scripts/empty_db.sql`, etc.
-4. Code accesses via `QFile(":/scripts/empty_db.sql")`
 
 ## Troubleshooting
 
-### Database Patch Not Applied?
+### Migration Not Applied?
 
-1. Check version:
+1. **Check version**:
+
    ```bash
    sqlite3 data.db "SELECT value FROM device_param WHERE name='db_patch';"
    ```
-2. Check logs for SQL errors
-3. Verify Database.qrc was compiled and scripts found
-4. Rebuild: `cmake --build . --target ekiosk`
 
-### Schema Mismatch?
+   - Should show the latest migration version
 
-1. Inspect schema:
+2. **Check for SQL errors**: Look in application logs for SQL execution errors
+
+3. **Verify Database.qrc**: Ensure patch file is listed and compiled
+
    ```bash
-   sqlite3 data.db ".schema" | less
-   sqlite3 data.db "SELECT sql FROM sqlite_master WHERE type='table';"
+   # Rebuild to ensure resources are compiled
+   cmake --build build/macos-qt6 --target ekiosk
    ```
-2. Compare with empty_db.sql / patches
-3. Restore backup and retry upgrade
 
-### Adding Debug Info?
+4. **Check Patches[] array**: Verify migration is registered in DatabaseUtils.cpp
 
-Edit DatabaseUtils.cpp lines 60-75 to log applied patches:
+### Schema Issues?
 
-```cpp
-LOG(m_Log, LogLevel::Normal,
-    QString("Applied patch version %1: %2").arg(patch.version).arg(patch.script));
+```bash
+# Inspect current schema
+sqlite3 data.db ".schema" | less
+
+# Get specific table info
+sqlite3 data.db "PRAGMA table_info(table_name);"
+
+# Check indexes
+sqlite3 data.db ".indexes table_name"
 ```
+
+### Database Locked/Corrupted?
+
+```bash
+# Backup current database
+cp build/macos-qt6/bin/user/data.db build/macos-qt6/bin/user/data.db.backup
+
+# Check integrity
+sqlite3 build/macos-qt6/bin/user/data.db "PRAGMA integrity_check;"
+
+# Vacuum to optimize
+sqlite3 build/macos-qt6/bin/user/data.db "VACUUM;"
+```
+
+## Resource System & Compilation
+
+SQL scripts are compiled into the binary via Qt Resource System:
+
+**File**: `Database.qrc`
+
+- Lists all SQL script files
+- Qt moc compiler processes this file during build
+- Scripts become embedded resources: `:/scripts/empty_db.sql`, `:/scripts/db_patch_1.sql`, etc.
+
+**Code Access**: `QFile(":/scripts/db_patch_1.sql")` loads from embedded resources
+
+**Build Requirements**:
+
+- CMakeLists.txt must include: `qt_add_resources(ekiosk Database.qrc)`
+- Scripts must be listed in Database.qrc
+- CMake runs Qt moc compiler to generate qrc_Database.cpp
 
 ## References
 
 - Implementation: [DatabaseUtils.cpp](DatabaseUtils.cpp)
-- Migration Guide: [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
-- Resource System: [Database.qrc](Database.qrc)
-- SQLite Docs: https://www.sqlite.org/docs.html
+- Resource Configuration: [Database.qrc](Database.qrc)
+- SQLite Documentation: https://www.sqlite.org/docs.html
+- SQLite Pragma Statements: https://www.sqlite.org/pragma.html
   \
+  **Build Requirements**:
 
-2. Compare with empty_db.sql / patches
-3. Restore backup and retry upgrade
-
-### Adding Debug Info?
-
-Edit DatabaseUtils.cpp lines 60-75 to log applied patches:
-
-```cpp
-LOG(m_Log, LogLevel::Normal,
-    QString("Applied patch version %1: %2").arg(patch.version).arg(patch.script));
-```
+- CMakeLists.txt must include: `qt_add_resources(ekiosk Database.qrc)`
+- Scripts must be listed in Database.qrc
+- CMake runs Qt moc compiler to generate qrc_Database.cpp
 
 ## References
 
 - Implementation: [DatabaseUtils.cpp](DatabaseUtils.cpp)
-- Migration Guide: [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
-- Resource System: [Database.qrc](Database.qrc)
-- SQLite Docs: <https://www.sqlite.org/docs.html>
+- Resource Configuration: [Database.qrc](Database.qrc)
+- SQLite Documentation: <https://www.sqlite.org/docs.html>
+- SQLite Pragma Statements: <https://www.sqlite.org/pragma.html>
   \*/
