@@ -280,7 +280,7 @@ EKiosk follows the industry-standard C++ project structure for clear public API 
 
 **Folder Layout (for headers moved to public):**
 
-```
+```text
 include/ModuleName/
   Header.h           ← PUBLIC HEADER (full interface definition)
 
@@ -483,7 +483,7 @@ EKiosk uses a modular plugin system based on Qt plugins with custom factory inte
 
 ### Directory Layout
 
-```
+```text
 src/plugins/
 ├── CategoryName/                    # Plugin category (e.g., GraphicBackends, Payments)
 │   └── PluginName/                  # Individual plugin
@@ -635,7 +635,7 @@ All plugins must have comprehensive tests using the mock kernel infrastructure. 
 
 ### Test Structure
 
-```
+```text
 tests/plugins/
 ├── common/                          # Shared testing utilities
 │   ├── MockObjects.h/.cpp           # Mock implementations
@@ -981,15 +981,15 @@ When creating or updating markdown files (README.md, documentation in docs/), al
 
 2. **Fenced Code Blocks Must Have Language Identifiers (MD040)**
    - All fenced code blocks must specify a language identifier
-   - Never use empty opening fence: `` ``` ``
+   - Never use empty opening fence: ` ``` `
    - ✅ Correct examples:
-     - `` ```cpp `` for C++ code
-     - `` ```bash `` for shell commands
-     - `` ```sql `` for SQL statements
-     - `` ```xml `` for XML/QRC files
-     - `` ```text `` for plain text, diagrams, file trees
-     - `` ```json `` for JSON data
-   - ❌ Wrong: `` ``` `` (no language identifier)
+     - ` ```cpp ` for C++ code
+     - ` ```bash ` for shell commands
+     - ` ```sql ` for SQL statements
+     - ` ```xml ` for XML/QRC files
+     - ` ```text ` for plain text, diagrams, file trees
+     - ` ```json ` for JSON data
+   - ❌ Wrong: ` ``` ` (no language identifier)
 
 3. **Common Language Identifiers to Use**
    - `cpp` - C++ code examples
@@ -1002,7 +1002,7 @@ When creating or updating markdown files (README.md, documentation in docs/), al
 
 **Example of correct markdown:**
 
-```text
+````text
 # Database Management
 
 ## Overview
@@ -1028,7 +1028,8 @@ Shell commands:
 ```bash
 cmake --build build
 ```
-```
+
+````
 
 Always validate markdown with linters before committing documentation changes.
 
