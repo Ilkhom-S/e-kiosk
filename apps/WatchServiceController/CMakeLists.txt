@@ -73,6 +73,7 @@ if(TS_FILES)
     ek_add_translations(WatchServiceControllerTranslations
         SOURCES ${TS_FILES}
         OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        PREFIX controller
         INSTALL
     )
     if(TARGET WatchServiceControllerTranslations_translations)

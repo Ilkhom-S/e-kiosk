@@ -114,6 +114,7 @@ if(TS_FILES)
     ek_add_translations(EKioskTranslations
         SOURCES ${TS_FILES}
         OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        PREFIX ekiosk
         INSTALL
     )
     if(TARGET EKioskTranslations_translations)

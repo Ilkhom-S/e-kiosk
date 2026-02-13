@@ -4,7 +4,7 @@ option(EK_ENABLE_TRANSLATIONS "Enable building translations (Qt LinguistTools or
 
 function(ek_add_translations TARGET_NAME)
     set(options INSTALL)
-    set(oneValueArgs OUTPUT_DIR TS_DIR INSTALL_DIR FOLDER)
+    set(oneValueArgs OUTPUT_DIR TS_DIR INSTALL_DIR FOLDER PREFIX)
     set(multiValueArgs SOURCES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -16,6 +16,12 @@ function(ek_add_translations TARGET_NAME)
     # Set default output directory if not specified
     if(NOT ARG_OUTPUT_DIR)
         set(ARG_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale)
+    endif()
+
+    # Set default PREFIX to TARGET_NAME if not specified
+    # PREFIX is used for .qm output filename, allowing separation from CMake target name
+    if(NOT ARG_PREFIX)
+        set(ARG_PREFIX ${TARGET_NAME})
     endif()
 
     # First try to use CMake's Qt package detection for LinguistTools
@@ -63,7 +69,7 @@ function(ek_add_translations TARGET_NAME)
     # For each language, collect all .ts files and create merged .qm
     foreach(_language ${_ts_groups})
         set(_ts_files_for_lang)
-        set(_qm_file "${ARG_OUTPUT_DIR}/${TARGET_NAME}_${_language}.qm")
+        set(_qm_file "${ARG_OUTPUT_DIR}/${ARG_PREFIX}_${_language}.qm")
 
         # Collect all .ts files for this language
         foreach(_ts_file ${ARG_SOURCES})
@@ -79,7 +85,7 @@ function(ek_add_translations TARGET_NAME)
                 OUTPUT ${_qm_file}
                 COMMAND Qt${QT_VERSION_MAJOR}::lrelease ${_ts_files_for_lang} -qm ${_qm_file}
                 DEPENDS ${_ts_files_for_lang}
-                COMMENT "Compiling merged translation ${TARGET_NAME}_${_language}.qm"
+                COMMENT "Compiling merged translation ${ARG_PREFIX}_${_language}.qm"
                 VERBATIM
             )
         else()
@@ -87,7 +93,7 @@ function(ek_add_translations TARGET_NAME)
                 OUTPUT ${_qm_file}
                 COMMAND ${_lrelease_exec} ${_ts_files_for_lang} -qm ${_qm_file}
                 DEPENDS ${_ts_files_for_lang}
-                COMMENT "Compiling merged translation ${TARGET_NAME}_${_language}.qm (using external lrelease)"
+                COMMENT "Compiling merged translation ${ARG_PREFIX}_${_language}.qm (using external lrelease)"
                 VERBATIM
             )
         endif()

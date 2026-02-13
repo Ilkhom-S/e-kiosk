@@ -72,6 +72,7 @@ if(TS_FILES)
     ek_add_translations(UpdaterTranslations
         SOURCES ${TS_FILES}
         OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        PREFIX updater
         INSTALL
     )
     if(TARGET UpdaterTranslations_translations)

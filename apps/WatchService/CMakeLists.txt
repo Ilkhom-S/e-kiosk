@@ -87,6 +87,7 @@ if(TS_FILES)
     ek_add_translations(WatchServiceTranslations
         SOURCES ${TS_FILES}
         OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        PREFIX watchdog
         INSTALL
     )
     if(TARGET WatchServiceTranslations_translations)
