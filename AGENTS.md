@@ -968,6 +968,70 @@ Always include a **Platform Compatibility** section for every module, specifying
 - Any change that breaks, restructures, or introduces new features **must** be reflected in the relevant docs (architecture, build-guide, coding-standards, migration-todo, etc).
 - Keep documentation up to date and link between related docs for easy navigation.
 
+### Markdown Best Practices
+
+**IMPORTANT: Markdown Linting Requirements**
+
+When creating or updating markdown files (README.md, documentation in docs/), always follow these rules to avoid linting warnings:
+
+1. **First Line Must Be H1 Heading (MD041)**
+   - The first line of every markdown file must be a top-level heading
+   - ✅ Correct: `# Title`
+   - ❌ Wrong: `/* @file Title */` or starting with text
+
+2. **Fenced Code Blocks Must Have Language Identifiers (MD040)**
+   - All fenced code blocks must specify a language identifier
+   - Never use empty opening fence: `` ``` ``
+   - ✅ Correct examples:
+     - `` ```cpp `` for C++ code
+     - `` ```bash `` for shell commands
+     - `` ```sql `` for SQL statements
+     - `` ```xml `` for XML/QRC files
+     - `` ```text `` for plain text, diagrams, file trees
+     - `` ```json `` for JSON data
+   - ❌ Wrong: `` ``` `` (no language identifier)
+
+3. **Common Language Identifiers to Use**
+   - `cpp` - C++ code examples
+   - `bash` or `shell` - Terminal commands
+   - `sql` - Database queries and schema
+   - `xml` - Configuration files, QRC resources
+   - `cmake` - CMakeLists.txt snippets
+   - `text` - Directory trees, ASCII diagrams, plain output
+   - `json` or `yaml` - Configuration data
+
+**Example of correct markdown:**
+
+```text
+# Database Management
+
+## Overview
+
+File structure:
+
+```text
+src/
+├── DatabaseUtils.cpp
+└── scripts/
+```
+
+C++ example:
+
+```cpp
+bool initialize() {
+    // Implementation
+}
+```
+
+Shell commands:
+
+```bash
+cmake --build build
+```
+```
+
+Always validate markdown with linters before committing documentation changes.
+
 ## Migration Plan
 
 - Move all code from `src/` to `apps/kiosk/` as a first step.
