@@ -264,20 +264,20 @@ Rectangle {
     }
     Loader {
         sourceComponent: adminTouchAreaComponent
-        x: root.width - item.width
+        x: root.width - (root.width * root.zonePercent)
         y: 0
         onLoaded: item.areaNumber = 2
     }
     Loader {
         sourceComponent: adminTouchAreaComponent
         x: 0
-        y: root.height - item.height
+        y: root.height - (root.height * root.zonePercent)
         onLoaded: item.areaNumber = 3
     }
     Loader {
         sourceComponent: adminTouchAreaComponent
-        x: root.width - item.width
-        y: root.height - item.height
+        x: root.width - (root.width * root.zonePercent)
+        y: root.height - (root.height * root.zonePercent)
         onLoaded: item.areaNumber = 4
     }
     Loader {
