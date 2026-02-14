@@ -49,7 +49,7 @@ if (humoPlugin && humoPlugin->isReady()) {
         }
     }
 }
-```
+```text
 
 ---
 
@@ -166,7 +166,7 @@ HumoPaymentsPluginImpl::HumoPaymentsPluginImpl(SDK::Plugin::IEnvironment *aEnvir
 // Get logger for this plugin
 ILog *log = mEnvironment->getLog("HumoPaymentsPlugin");
 LOG(log, LogLevel::Normal, "HumoPaymentsPlugin initialized");
-```
+```text
 
 ### Core Services
 
@@ -183,7 +183,7 @@ auto networkService = core->getNetworkService();
 
 // Access security service
 auto securityService = core->getSecurityService();
-```
+```text
 
 ### Plugin-Specific Services
 
@@ -206,7 +206,7 @@ if (cardReaderService) {
     QVariantMap cardInfo = cardReaderService->readCard();
     bool pinValid = cardReaderService->validatePin("1234");
 }
-```
+```text
 
 ### Service Availability
 
@@ -237,7 +237,7 @@ try {
     LOG(mEnvironment->getLog("HumoPaymentsPlugin"), LogLevel::Error,
         QString("HumoPayments service not available: %1").arg(e.what()));
 }
-```
+```text
 
 ---
 
@@ -263,7 +263,7 @@ humoPlugin->setConfiguration(config);
 
 // Save configuration permanently
 humoPlugin->saveConfiguration();
-```
+```text
 
 ### Configuration Options Reference
 
@@ -300,7 +300,7 @@ offlineMode=false
 debugMode=false
 logLevel=normal
 logFile=/var/log/ekiosk/humo_payments.log
-```
+```text
 
 ### Configuration Management API
 
@@ -321,7 +321,7 @@ bool isValid = humoPlugin->validateConfiguration();
 QString dealerId = config["dealerId"].toString();
 int timeout = config["timeout"].toInt();
 bool offlineMode = config["offlineMode"].toBool();
-```
+```text
 
 ---
 
@@ -344,7 +344,7 @@ humoPlugin->reset(QVariantMap());
 bool isReady = humoPlugin->isReady();
 QString error = humoPlugin->getError();
 QVariantMap context = humoPlugin->getContext();
-```
+```text
 
 ### Dealer Payment API
 
@@ -368,7 +368,7 @@ if (dealerPayment) {
         // Handle successful dealer payment
     }
 }
-```
+```text
 
 ### Multi-stage Payment API
 
@@ -403,7 +403,7 @@ if (multistagePayment) {
         QVariantMap finalResult = multistagePayment->getFinalResult();
     }
 }
-```
+```text
 
 ### PIN Management API
 
@@ -427,7 +427,7 @@ if (pinPayment) {
         // Handle PIN operation result
     }
 }
-```
+```text
 
 ### Card Operations API
 
@@ -452,7 +452,7 @@ if (cardReader) {
     historyParams["limit"] = 10;
     QVariantList transactions = cardReader->getTransactionHistory(historyParams);
 }
-```
+```text
 
 ---
 
@@ -520,7 +520,7 @@ ek_add_plugin(humo_payments
     INSTALL_DIR
         plugins
 )
-```
+```text
 
 ### Build Process
 
@@ -537,7 +537,7 @@ cmake --build build/win-msvc-qt5-x64 --target humo_payments --verbose
 # Clean and rebuild
 cmake --build build/win-msvc-qt5-x64 --target clean
 cmake --build build/win-msvc-qt5-x64 --target humo_payments
-```
+```text
 
 ### Plugin Loading Sequence
 
@@ -566,7 +566,7 @@ graph TD
     PaymentBase --> PaymentProcessor
     NetworkTaskManager --> NetworkService
     SysUtils --> CoreUtilities
-```
+```text
 
 ### Integration with EKiosk Services
 
@@ -595,7 +595,7 @@ bool HumoPaymentsPluginImpl::initialize() {
 
     return true;
 }
-```
+```text
 
 ---
 
@@ -615,7 +615,7 @@ tests/plugins/Payments/Humo/
 ├── test_pin_operations/             # Test PIN operation data
 ├── test_configs/                    # Test configuration files
 └── CMakeLists.txt                   # Test build configuration
-```
+```text
 
 ### Test Coverage Matrix
 
@@ -709,7 +709,7 @@ void HumoPaymentsPluginTest::testMultistagePaymentProcessing() {
     // Clean up
     mPaymentFactory->releasePayment(payment);
 }
-```
+```text
 
 ### Test Execution
 
@@ -728,7 +728,7 @@ valgrind --leak-check=full cmake --build build/linux-gcc-qt5-x64 --target humo_p
 
 # Generate test coverage report
 cmake --build build/linux-gcc-qt5-x64 --target coverage
-```
+```text
 
 ### Test Data Management
 
@@ -763,7 +763,7 @@ void cleanupTestData() {
         }
     }
 }
-```
+```text
 
 ---
 
@@ -825,7 +825,7 @@ add_dependencies(humo_payments
     NetworkTaskManager
     SysUtils
 )
-```
+```text
 
 ---
 
@@ -861,7 +861,7 @@ check_plugin_config humo_payments
 
 # Test card reader connectivity
 test_card_reader_connection
-```
+```text
 
 **Resolution Matrix**:
 
@@ -898,7 +898,7 @@ QVariantMap readerStatus = cardReaderService->getStatus();
 
 // Verify dealer configuration
 bool dealerValid = paymentFactory->validateDealer("dealer_id");
-```
+```text
 
 **Common Solutions**:
 
@@ -924,7 +924,7 @@ if (!dealerValid) {
         bool updated = paymentFactory->updateDealerInfo("dealer_id", dealerData);
     }
 }
-```
+```text
 
 #### PIN Management Failures
 
@@ -959,7 +959,7 @@ if (validation["valid"].toBool()) {
         // Handle specific PIN error
     }
 }
-```
+```text
 
 **PIN Recovery**:
 
@@ -974,7 +974,7 @@ if (retriesLeft == 0) {
 
 // Reset PIN retry counter
 bool resetSuccess = pinPayment->resetPinRetries("card_number");
-```
+```text
 
 #### Network Connectivity Issues
 
@@ -1000,7 +1000,7 @@ curl -I https://humo-server.example.com/status
 
 # SSL certificate validation
 openssl s_client -connect humo-server.example.com:443
-```
+```text
 
 **Network Recovery**:
 
@@ -1022,7 +1022,7 @@ if (!networkAvailable) {
 QVariantMap sslConfig;
 sslConfig["ignoreSslErrors"] = true; // Use with caution
 bool sslBypassed = paymentFactory->configureSSL(sslConfig);
-```
+```text
 
 ### Advanced Debugging Techniques
 
@@ -1043,7 +1043,7 @@ timer.start();
 // Execute payment
 qint64 elapsed = timer.elapsed();
 qDebug() << "Payment took" << elapsed << "milliseconds";
-```
+```text
 
 **Logging Configuration**:
 
@@ -1059,7 +1059,7 @@ humoPlugin->setConfiguration(loggingConfig);
 
 // Log analysis
 analyze_humo_logs /var/log/ekiosk/humo_payments.log
-```
+```text
 
 **Hardware Diagnostics**:
 
@@ -1077,7 +1077,7 @@ bool balanceTest = cardReaderService->testBalanceInquiry();
 
 // Hardware reset
 bool resetSuccess = cardReaderService->resetHardware();
-```
+```text
 
 ---
 
@@ -1131,7 +1131,7 @@ bool resetSuccess = cardReaderService->resetHardware();
 3. Verify dependencies
 4. Test functionality
 5. Deploy to production
-```
+```text
 
 **From Legacy Systems**:
 
@@ -1148,7 +1148,7 @@ bool resetSuccess = cardReaderService->resetHardware();
 4. Test migration in staging
 5. Gradual production rollout
 6. Monitor and optimize
-```
+```text
 
 ### Breaking Changes History
 
@@ -1323,7 +1323,7 @@ enableFallback=true
 
 ; Fallback processing mode
 fallbackMode=manual
-```
+```text
 
 ### Configuration Management API
 
@@ -1384,7 +1384,7 @@ configManager.onConfigurationChanged([](const QVariantMap& newConfig) {
 });
 
 configManager.startMonitoring();
-```
+```text
 
 ---
 
@@ -1540,7 +1540,7 @@ configManager.startMonitoring();
 [What actually happens]
 
 ### Error Messages
-```
+```text
 
 [Copy error messages here]
 
@@ -1561,8 +1561,6 @@ configManager.startMonitoring();
 ### Additional Information
 
 [Any other relevant information]
-
-````
 
 ---
 
@@ -1620,7 +1618,7 @@ generate_license_report --output humo_payments_licenses.txt
 
 # Check third-party licenses
 check_third_party_licenses humo_payments
-```
+```text
 
 ---
 
