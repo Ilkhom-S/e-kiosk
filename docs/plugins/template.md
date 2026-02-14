@@ -349,7 +349,7 @@ cmake --build build/[build_dir] --target plugin_name --verbose
 
 ### Test Framework Architecture
 
-```text
+```
 tests/plugins/PluginName/
 ├── plugin_test.cpp          # Main test suite
 ├── mock_services.h/.cpp     # Mock service implementations

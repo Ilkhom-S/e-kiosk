@@ -465,7 +465,7 @@ bool WebKitBackend::initialize() {
 
 The WebKitBackend plugin includes comprehensive testing using the EKiosk mock kernel infrastructure:
 
-```text
+```
 tests/plugins/GraphicBackends/WebKitBackend/
 ├── webkit_backend_test.cpp      # Main test suite
 ├── mock_web_backend.h/.cpp      # Mock web backend

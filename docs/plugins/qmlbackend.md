@@ -422,7 +422,7 @@ bool QMLBackend::initialize() {
 
 The QMLBackend plugin includes comprehensive testing using the EKiosk mock kernel infrastructure:
 
-```text
+```
 tests/plugins/GraphicBackends/QMLBackend/
 ├── qml_backend_test.cpp          # Main test suite
 ├── mock_graphics_backend.h/.cpp  # Mock graphics backend

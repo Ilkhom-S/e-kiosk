@@ -19,7 +19,7 @@ registered in the service through a factory function.
 
 ## Architecture
 
-```text
+```
 ┌─────────────────────────────────────────────────────────┐
 │              SchedulerService                           │
 │  ┌──────────────────────────────────────────────────┐  │

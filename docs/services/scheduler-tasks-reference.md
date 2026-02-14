@@ -197,7 +197,7 @@ params=client
 
 ### Parameters Format
 
-```text
+```
 <component_list>
 ```
 
@@ -266,7 +266,7 @@ params=<from_energySave_setting>
 
 ### Parameters Format
 
-```text
+```
 <start_time>;<end_time>;<action_type>
 ```
 
@@ -316,14 +316,14 @@ params=01:00;05:00;shutdown
 
 #### Normal range (no midnight crossover)
 
-```text
+```
 start=08:00, end=18:00
 Active: 08:00 → 18:00
 ```
 
 #### Overnight range (midnight crossover)
 
-```text
+```
 start=22:00, end=06:00
 Active: 22:00 → 23:59 + 00:00 → 06:00
 ```
@@ -470,7 +470,7 @@ params=services
 
 ## Task Dependencies
 
-```text
+```
 startup:
   └─> TimeSync (synchronize time first)
 

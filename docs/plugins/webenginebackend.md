@@ -488,7 +488,7 @@ bool WebEngineBackend::initialize() {
 
 The WebEngineBackend plugin includes comprehensive testing using the EKiosk mock kernel infrastructure:
 
-```text
+```
 tests/plugins/GraphicBackends/WebEngineBackend/
 ├── webengine_backend_test.cpp      # Main test suite
 ├── mock_web_backend.h/.cpp         # Mock web backend

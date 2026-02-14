@@ -25,7 +25,7 @@ class ServiceController : public ICore, public IExternalInterface {
 
 RTTI's `dynamic_cast` cannot determine the relationship between the two interfaces:
 
-```text
+```
 Scenario: Convert IExternalInterface* → ICore*
 
 1. PluginService has: ICore* pointer
@@ -199,7 +199,7 @@ cmake --build build/macos-qt6 --target ekiosk
 
 Should show:
 
-```text
+```
 PaymentFactoryBase (Humo): POST reinterpret_cast - m_Core = 0x7bb04e900  ✅
 PaymentFactoryBase (Humo): crypt service = 0x7bb0052c8                  ✅
 PaymentFactoryBase (Humo): network service = 0x7bad48790                ✅

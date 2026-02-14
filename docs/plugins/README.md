@@ -67,7 +67,7 @@ Plugins should specify supported platforms and any limitations:
 
 ### Directory Layout
 
-```text
+```
 src/plugins/
 ├── CategoryName/                    # Plugin category (e.g., GraphicBackends, Payments)
 │   └── PluginName/                  # Individual plugin
@@ -271,7 +271,7 @@ All plugins must have comprehensive tests using the mock kernel infrastructure. 
 
 ### Test Structure
 
-```text
+```
 tests/plugins/
 ├── common/                          # Shared testing utilities
 │   ├── MockObjects.h/.cpp           # Mock implementations

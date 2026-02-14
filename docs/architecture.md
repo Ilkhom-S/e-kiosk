@@ -120,7 +120,7 @@ public:
 
 ## Directory Structure (2026)
 
-```text
+```
 ekiosk/
 ├── apps/                    # Executable applications
 │   ├── EKiosk/              # Main EKiosk application

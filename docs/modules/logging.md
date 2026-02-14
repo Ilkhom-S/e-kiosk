@@ -42,7 +42,7 @@ logger->write(LogLevel::Info, "Application started");
 
 No global config file; configure loggers at runtime with `ILog` API. Log files are written to:
 
-```text
+```
 <applicationDir>/logs/YYYY.MM.DD <destination>.log
 ```
 
@@ -73,7 +73,7 @@ Logs from previous days are automatically archived into 7zip files named `YYYY.M
 
 Each log entry follows the format:
 
-```text
+```
 hh.mm.ss.zzz [L] Message
 ```
 
@@ -135,7 +135,7 @@ Common subsystem log names used in EKiosk:
 
 Each application start and stop is marked in the main log with entries like:
 
-```text
+```
 02:45:14.670 [I] ******************************** LOG [EKiosk] STOP.
 02:45:18.585 [I] ******************************** LOG [EKiosk] STARTED. EKiosk 4.0.0 build 202601131240.
 ```

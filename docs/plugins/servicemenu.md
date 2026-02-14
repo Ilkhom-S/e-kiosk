@@ -447,7 +447,7 @@ The ServiceMenu plugin includes comprehensive tests using the EKiosk testing fra
 
 ### Test Structure
 
-```text
+```
 tests/plugins/
 ├── NativeWidgets/
 │   └── ServiceMenu/

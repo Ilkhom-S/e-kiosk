@@ -22,7 +22,7 @@ This plugin is essential for implementing advertisement-based revenue models in 
 
 ## Quick start 🔧
 
-```cpp
+````cpp
 // Access Ad plugin through the plugin system
 #include <SDK/Plugins/IPlugin.h>
 #include <SDK/Plugins/IEnvironment.h>
@@ -49,7 +49,7 @@ if (adPlugin && adPlugin->isReady()) {
         }
     }
 }
-```text
+```
 
 ---
 
@@ -157,7 +157,7 @@ AdPluginImpl::AdPluginImpl(SDK::Plugin::IEnvironment *aEnvironment, const QStrin
 // Get logger for this plugin
 ILog *log = mEnvironment->getLog("AdPlugin");
 LOG(log, LogLevel::Normal, "AdPlugin initialized");
-```text
+```
 
 ### Core Services
 
@@ -171,7 +171,7 @@ auto databaseService = core->getDatabaseService();
 
 // Access network service
 auto networkService = core->getNetworkService();
-```text
+```
 
 ### Plugin-Specific Services
 
@@ -197,7 +197,7 @@ if (paymentFactory) {
     payment->setParameters(paymentData);
     bool paymentSuccess = payment->process();
 }
-```text
+```
 
 ### Service Availability
 
@@ -225,7 +225,7 @@ try {
     LOG(mEnvironment->getLog("AdPlugin"), LogLevel::Error,
         QString("AdService not available: %1").arg(e.what()));
 }
-```text
+```
 
 ---
 
@@ -252,7 +252,7 @@ adPlugin->setConfiguration(config);
 
 // Save configuration permanently
 adPlugin->saveConfiguration();
-```text
+```
 
 ### Configuration Options Reference
 
@@ -293,7 +293,7 @@ statisticsEnabled=true
 debugMode=false
 logLevel=normal
 logFile=/var/log/ekiosk/ad_plugin.log
-```text
+```
 
 ### Configuration Management API
 
@@ -313,7 +313,7 @@ bool isValid = adPlugin->validateConfiguration();
 // Get specific configuration values
 int displayInterval = config["displayInterval"].toInt();
 QString contentPath = config["contentPath"].toString();
-```text
+```
 
 ---
 
@@ -336,7 +336,7 @@ adPlugin->reset(QVariantMap());
 bool isReady = adPlugin->isReady();
 QString error = adPlugin->getError();
 QVariantMap context = adPlugin->getContext();
-```text
+```
 
 ### Campaign Management API
 
@@ -366,7 +366,7 @@ bool updated = adService->updateCampaign("summer_sale_2024", updateData);
 QVariantMap campaignInfo = adService->getCampaign("summer_sale_2024");
 QList<QVariantMap> activeCampaigns = adService->getActiveCampaigns();
 QList<QVariantMap> allCampaigns = adService->getAllCampaigns();
-```text
+```
 
 ### Content Management API
 
@@ -394,7 +394,7 @@ bool displayed = adService->displaySponsoredAd("banner_summer", displayParams);
 bool contentAdded = adService->addContent("new_banner", contentData);
 bool contentRemoved = adService->removeContent("old_banner");
 QList<QString> availableContent = adService->listAvailableContent();
-```text
+```
 
 ### Payment Processing API
 
@@ -435,7 +435,7 @@ if (payment) {
 QVariantMap paymentStatus = payment->getStatus();
 bool canRefund = payment->canRefund();
 bool refundSuccess = payment->refund();
-```text
+```
 
 ### Statistics & Reporting API
 
@@ -467,7 +467,7 @@ bool allStatsReset = adService->resetAllStatistics();
 QByteArray csvData = adService->exportStatistics("csv");
 QByteArray jsonData = adService->exportStatistics("json");
 bool exportSuccess = adService->exportStatisticsToFile("report.csv", "csv");
-```text
+```
 
 ### Remote Content Management API
 
@@ -497,7 +497,7 @@ connect(adService, &AdService::contentUpdated,
         this, &MyClass::handleContentUpdate);
 connect(adService, &AdService::updateFailed,
         this, &MyClass::handleUpdateFailure);
-```text
+```
 
 ---
 
@@ -567,7 +567,7 @@ ek_add_plugin(ad_plugin
     INSTALL_DIR
         plugins
 )
-```text
+```
 
 ### Build Process
 
@@ -584,7 +584,7 @@ cmake --build build/win-msvc-qt5-x64 --target ad_plugin --verbose
 # Clean and rebuild
 cmake --build build/win-msvc-qt5-x64 --target clean
 cmake --build build/win-msvc-qt5-x64 --target ad_plugin
-```text
+```
 
 ### Plugin Loading Sequence
 
@@ -613,7 +613,7 @@ graph TD
     PaymentBase --> PaymentProcessor
     NetworkTaskManager --> NetworkService
     SysUtils --> CoreUtilities
-```text
+```
 
 ### Integration with EKiosk Services
 
@@ -642,7 +642,7 @@ bool AdPluginImpl::initialize() {
 
     return true;
 }
-```text
+```
 
 ---
 
@@ -652,7 +652,7 @@ bool AdPluginImpl::initialize() {
 
 The Ad Plugin includes a comprehensive testing framework using the EKiosk mock kernel infrastructure:
 
-```text
+```
 tests/plugins/Ad/
 ├── ad_plugin_test.cpp          # Main test suite
 ├── mock_ad_service.h/.cpp      # Mock AdService implementation
@@ -661,7 +661,7 @@ tests/plugins/Ad/
 ├── test_content/               # Test advertisement content
 ├── test_configs/               # Test configuration files
 └── CMakeLists.txt              # Test build configuration
-```text
+```
 
 ### Test Coverage Matrix
 
@@ -779,7 +779,7 @@ void AdPluginTest::testPaymentProcessing() {
     // Clean up
     mPaymentFactory->releasePayment(payment);
 }
-```text
+```
 
 ### Test Execution
 
@@ -798,7 +798,7 @@ valgrind --leak-check=full cmake --build build/linux-gcc-qt5-x64 --target ad_plu
 
 # Generate test coverage report
 cmake --build build/linux-gcc-qt5-x64 --target coverage
-```text
+```
 
 ### Test Data Management
 
@@ -846,7 +846,7 @@ void cleanupTestData() {
         }
     }
 }
-```text
+```
 
 ---
 
@@ -907,7 +907,7 @@ add_dependencies(ad_plugin
     NetworkTaskManager
     SysUtils
 )
-```text
+```
 
 ---
 
@@ -940,7 +940,7 @@ validate_plugin_metadata ad_plugin
 
 # Check configuration file syntax
 check_plugin_config ad_plugin
-```text
+```
 
 **Resolution Matrix**:
 
@@ -977,7 +977,7 @@ QVariantMap contentStatus = adService->checkContentAvailability("content_id");
 
 // Verify database integrity
 bool dbOk = adService->verifyDatabaseIntegrity();
-```text
+```
 
 **Common Solutions**:
 
@@ -1003,7 +1003,7 @@ if (!dbOk) {
         bool restored = adService->restoreFromBackup();
     }
 }
-```text
+```
 
 #### Payment Processing Failures
 
@@ -1038,7 +1038,7 @@ if (validation["valid"].toBool()) {
         // Handle specific error
     }
 }
-```text
+```
 
 **Payment Recovery**:
 
@@ -1056,7 +1056,7 @@ for (const auto& failedPayment : failedPayments) {
 
 // Retry payments
 bool retrySuccess = paymentFactory->retryFailedPayments();
-```text
+```
 
 #### Remote Update Issues
 
@@ -1082,7 +1082,7 @@ curl -I https://ad-server.example.com/status
 
 # Content validation
 validate_ad_content downloaded_content.json
-```text
+```
 
 **Update Recovery**:
 
@@ -1101,7 +1101,7 @@ bool partialSuccess = adService->partialUpdate(partialUpdate);
 
 // Content repair
 bool contentRepaired = adService->repairUpdatedContent();
-```text
+```
 
 ### Advanced Debugging Techniques
 
@@ -1118,7 +1118,7 @@ ms_print massif.out.*
 
 # I/O profiling
 strace -p $(pidof ekiosk) -e trace=file
-```text
+```
 
 **Logging Configuration**:
 
@@ -1134,7 +1134,7 @@ adPlugin->setConfiguration(loggingConfig);
 
 // Log analysis
 analyze_ad_logs /var/log/ekiosk/ad_plugin.log
-```text
+```
 
 **Memory Analysis**:
 
@@ -1151,7 +1151,7 @@ connect(adService, &AdService::memoryUsageUpdated,
 
 // Force garbage collection
 adService->forceGarbageCollection();
-```text
+```
 
 ---
 
@@ -1205,7 +1205,7 @@ adService->forceGarbageCollection();
 3. Verify dependencies
 4. Test functionality
 5. Deploy to production
-```text
+```
 
 **From Legacy Systems**:
 
@@ -1222,7 +1222,7 @@ adService->forceGarbageCollection();
 4. Test migration in staging
 5. Gradual production rollout
 6. Monitor and optimize
-```text
+```
 
 ### Breaking Changes History
 
@@ -1388,7 +1388,7 @@ enableFallback=true
 
 ; Fallback content ID
 fallbackContent=default_banner
-```text
+```
 
 ### Configuration Management API
 
@@ -1449,7 +1449,7 @@ configManager.onConfigurationChanged([](const QVariantMap& newConfig) {
 });
 
 configManager.startMonitoring();
-```text
+```
 
 ---
 
@@ -1605,16 +1605,17 @@ configManager.startMonitoring();
 [What actually happens]
 
 ### Error Messages
-```text
+```
 
 [Copy error messages here]
 
 ````
 
 ### Configuration
+
 ```ini
 [Relevant configuration sections]
-````
+```
 
 ### Environment
 
@@ -1657,7 +1658,7 @@ void showLicenseInformation() {
         "Copyright © " + QDate::currentDate().year() + " EKiosk Technologies"
     );
 }
-````
+```
 
 ### Third-Party Licenses
 
@@ -1672,7 +1673,7 @@ The Ad Plugin includes the following third-party components:
 
 ### License Verification
 
-```bash
+````bash
 # Verify license compliance
 check_license_compliance ad_plugin
 
@@ -1681,7 +1682,7 @@ generate_license_report --output ad_plugin_licenses.txt
 
 # Check third-party licenses
 check_third_party_licenses ad_plugin
-```text
+```
 
 ---
 
@@ -1759,3 +1760,4 @@ Special thanks to:
 - Community contributors
 - Open source contributors
 - Documentation reviewers
+````
