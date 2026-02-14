@@ -12,6 +12,7 @@
 // Plugin SDK
 #include <Common/ILog.h>
 
+#include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/Plugins/IKernel.h>
 #include <SDK/Plugins/IPluginLoader.h>
 
@@ -147,6 +148,33 @@ private:
     QStringList m_RegisteredPlugins;
 };
 
+class MockCore : public SDK::PaymentProcessor::ICore, public SDK::Plugin::IExternalInterface {
+public:
+    SDK::PaymentProcessor::IRemoteService *getRemoteService() const override { return nullptr; }
+    SDK::PaymentProcessor::IPaymentService *getPaymentService() const override { return nullptr; }
+    SDK::PaymentProcessor::IFundsService *getFundsService() const override { return nullptr; }
+    SDK::PaymentProcessor::IPrinterService *getPrinterService() const override { return nullptr; }
+    SDK::PaymentProcessor::IHIDService *getHIDService() const override { return nullptr; }
+    SDK::PaymentProcessor::INetworkService *getNetworkService() const override { return nullptr; }
+    SDK::PaymentProcessor::IEventService *getEventService() const override { return nullptr; }
+    SDK::PaymentProcessor::IGUIService *getGUIService() const override { return nullptr; }
+    SDK::PaymentProcessor::IDeviceService *getDeviceService() const override { return nullptr; }
+    SDK::PaymentProcessor::ICryptService *getCryptService() const override { return nullptr; }
+    SDK::PaymentProcessor::ISettingsService *getSettingsService() const override { return nullptr; }
+    SDK::PaymentProcessor::IDatabaseService *getDatabaseService() const override { return nullptr; }
+    SDK::PaymentProcessor::ITerminalService *getTerminalService() const override { return nullptr; }
+    SDK::PaymentProcessor::ISchedulerService *getSchedulerService() const override {
+        return nullptr;
+    }
+    QSet<SDK::PaymentProcessor::IService *> getServices() const override { return {}; }
+    SDK::PaymentProcessor::IService *getService(const QString &) const override { return nullptr; }
+    QVariantMap &getUserProperties() override { return m_UserProperties; }
+    bool canShutdown() override { return true; }
+
+private:
+    QVariantMap m_UserProperties;
+};
+
 // Mock kernel for plugin testing
 class MockKernel : public SDK::Plugin::IKernel {
 public:
@@ -184,7 +212,11 @@ public:
     }
 
     virtual SDK::Plugin::IExternalInterface *getInterface(const QString &aInterface) override {
-        return nullptr; // Not implemented for basic testing
+        if (aInterface == SDK::PaymentProcessor::CInterfaces::ICore) {
+            return &m_Core;
+        }
+
+        return nullptr;
     }
 
     virtual SDK::Plugin::IPluginLoader *getPluginLoader() const override { return m_PluginLoader; }
@@ -199,4 +231,5 @@ public:
 private:
     MockPluginLoader *m_PluginLoader;
     QMap<QString, QVariantMap> m_Configurations;
+    MockCore m_Core;
 };

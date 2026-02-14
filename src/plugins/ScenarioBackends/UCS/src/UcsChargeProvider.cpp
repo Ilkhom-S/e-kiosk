@@ -67,9 +67,10 @@ REGISTER_PLUGIN_WITH_PARAMETERS(
 UcsChargeProvider::UcsChargeProvider(SDK::Plugin::IEnvironment *aFactory,
                                      const QString &aInstancePath)
     : ILogable(aFactory->getLog(Ucs::LogName)), m_Factory(aFactory), m_InstancePath(aInstancePath),
-      m_Core(dynamic_cast<SDK::PaymentProcessor::ICore *>(
-          aFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore))),
-      m_Api(Ucs::API::getInstance(m_Core, aFactory->getLog(Ucs::LogName))) {
+      void *voidPtr = reinterpret_cast<void *>(
+          aFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+m_Core(reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr)),
+    m_Api(Ucs::API::getInstance(m_Core, aFactory->getLog(Ucs::LogName))) {
     qRegisterMetaType<SDK::PaymentProcessor::SNote>("SDK::PaymentProcessor::SNote");
 
     m_DealerSettings = dynamic_cast<PPSDK::DealerSettings *>(

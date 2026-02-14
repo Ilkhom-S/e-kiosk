@@ -24,8 +24,9 @@
 HumoServiceBackend::HumoServiceBackend(SDK::Plugin::IEnvironment *aFactory, ILog *aLog)
     : m_Factory(aFactory), m_Log(aLog), m_TerminalSettings(nullptr), m_AutoEncashmentEnabled(false),
       m_AuthorizationEnabled(false) {
-    m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+    void *voidPtr = reinterpret_cast<void *>(
         m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    m_Core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
 
     if (m_Core) {
         m_TerminalSettings = dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(

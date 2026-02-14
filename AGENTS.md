@@ -110,6 +110,55 @@ foreach (const Item &item, QSet<Item>(items.cbegin(), items.cend())) { }
 
 👉 **See full documentation:** [docs/qt6-iterator-safety.md](docs/qt6-iterator-safety.md)
 
+## **⚠️ Multiple Inheritance & RTTI Casting Issues**
+
+### **Critical Issue: Non-Virtual Multiple Inheritance with `dynamic_cast`**
+
+**UNSAFE PATTERN** ❌ (Causes EXC_BAD_ACCESS null pointer crash):
+
+```cpp
+// WRONG - Non-virtual multiple inheritance
+class ServiceController : public ICore, public IExternalInterface {
+    // Two separate inheritance chains → RTTI can't bridge them
+};
+
+// Plugin code tries:
+ICore *core = dynamic_cast<ICore*>(externalInterface);
+// Result: Returns nullptr (even though same object!)
+// Plugin dereferences: → CRASH
+```
+
+**Why it fails:**
+
+- `dynamic_cast` uses RTTI to validate pointer type relationship
+- `ICore` and `IExternalInterface` are in separate, unrelated inheritance chains
+- RTTI cannot determine they're the same object → returns nullptr
+- Explicit interface request doesn't help (`dynamic_cast` validates what you _have_, not what you _asked_ for)
+
+**SAFE PATTERN** ✅:
+
+```cpp
+// RIGHT - Use reinterpret_cast with void* intermediate
+void *voidPtr = reinterpret_cast<void *>(externalInterface);
+ICore *core = reinterpret_cast<ICore *>(voidPtr);
+
+// Why this is safe:
+// - Object type is known and controlled (always ServiceController)
+// - Both interfaces present in class definition
+// - Pointer conversion is deterministic (compile-time layout)
+// - Works across Qt4, Qt5, Qt6, all platforms (Windows 7 to Qt6)
+```
+
+**Applies to (all fixed):**
+
+- `PluginService::getInterface()` - Core interface provider
+- `PaymentFactoryBase` - Humo, Ad plugins
+- `ScenarioBackends` - Uniteller, UCS
+- `NativeWidgets` - HumoServiceMenu, AutoEncashment, etc.
+- `NativeScenarios` - ScreenMaker, Migrator3000
+
+👉 **See full documentation:** [docs/multiple-inheritance-rtti-casting.md](docs/multiple-inheritance-rtti-casting.md)
+
 ## **✅ Response Format**
 
 - ✅ Task completed

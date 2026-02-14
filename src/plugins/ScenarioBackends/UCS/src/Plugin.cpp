@@ -19,8 +19,9 @@ using namespace SDK::Plugin;
 static IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
     auto plugin = new DevicePluginBase<UcsDevice>(Ucs::ModelName, aEnvironment, aInstancePath);
 
-    plugin->setCore(dynamic_cast<SDK::PaymentProcessor::ICore *>(
-        aEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore)));
+    void *voidPtr = reinterpret_cast<void *>(
+        aEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    plugin->setCore(reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr));
     plugin->setLog(aEnvironment->getLog(Ucs::LogName));
 
     return plugin;

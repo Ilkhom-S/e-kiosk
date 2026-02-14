@@ -43,8 +43,9 @@ AdSourcePlugin::AdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, QString aIns
     : m_Factory(aFactory), m_InstancePath(std::move(aInstancePath)) {
     m_Client = getAdClientInstance(aFactory);
 
-    m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+    void *voidPtr = reinterpret_cast<void *>(
         m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    m_Core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
 }
 
 //------------------------------------------------------------------------------

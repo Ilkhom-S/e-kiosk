@@ -42,8 +42,9 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
 AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
     : m_MainWidget(nullptr), m_Environment(aFactory), m_InstancePath(std::move(aInstancePath)),
       m_AutoEncashmentWindow(nullptr), m_IsReady(false) {
-    SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+    void *voidPtr = reinterpret_cast<void *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    SDK::PaymentProcessor::ICore *core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
 
     if (core) {
         m_Backend = QSharedPointer<HumoServiceBackend>(new HumoServiceBackend(

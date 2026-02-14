@@ -71,8 +71,9 @@ public:
 
     /// Создает класс c заданным именем.
     virtual PPSDK::Scripting::IBackendScenarioObject *create(const QString &aClassName) const {
-        PPSDK::ICore *core =
-            dynamic_cast<PPSDK::ICore *>(m_Environment->getInterface(PPSDK::CInterfaces::ICore));
+        void *voidPtr =
+            reinterpret_cast<void *>(m_Environment->getInterface(PPSDK::CInterfaces::ICore));
+        PPSDK::ICore *core = reinterpret_cast<PPSDK::ICore *>(voidPtr);
         return Ucs::API::getInstance(core, m_Environment->getLog(PluginName)).data();
     }
 

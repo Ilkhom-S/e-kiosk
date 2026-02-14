@@ -8,6 +8,7 @@
 #include <SDK/PaymentProcessor/Core/INetworkService.h>
 #include <SDK/Plugins/IExternalInterface.h>
 
+#include <iostream>
 #include <utility>
 
 namespace CPaymentFactory {
@@ -19,10 +20,38 @@ PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, QStr
     : m_Initialized(false), m_Factory(aFactory), m_InstancePath(std::move(aInstancePath)),
       m_Core(nullptr), m_CryptEngine(nullptr) {
     try {
-        m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
-            m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
-        m_CryptEngine = m_Core->getCryptService()->getCryptEngine();
-        m_Network = m_Core->getNetworkService()->getNetworkTaskManager();
+        if (!aFactory) {
+            throw SDK::PaymentProcessor::ServiceIsNotImplemented(
+                "IEnvironment (aFactory) is nullptr");
+        }
+
+        auto *coreInterface = aFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore);
+
+        if (!coreInterface) {
+            throw SDK::PaymentProcessor::ServiceIsNotImplemented("ICore interface not available");
+        }
+
+        // IExternalInterface* and ICore* are in separate inheritance hierarchies.
+        // Use void* as intermediate for safe pointer reinterpretation.
+        void *voidPtr = reinterpret_cast<void *>(coreInterface);
+        m_Core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
+
+        if (!m_Core) {
+            throw SDK::PaymentProcessor::ServiceIsNotImplemented(
+                "ICore interface conversion failed");
+        }
+
+        auto *cryptService = m_Core->getCryptService();
+        if (!cryptService) {
+            throw SDK::PaymentProcessor::ServiceIsNotImplemented("CryptService not available");
+        }
+        m_CryptEngine = cryptService->getCryptEngine();
+
+        auto *networkService = m_Core->getNetworkService();
+        if (!networkService) {
+            throw SDK::PaymentProcessor::ServiceIsNotImplemented("NetworkService not available");
+        }
+        m_Network = networkService->getNetworkTaskManager();
 
         m_Initialized = true;
     } catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &e) {
@@ -31,6 +60,17 @@ PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, QStr
         LOG(getLog(),
             LogLevel::Error,
             QString("Failed to initialize payment factory: %1.").arg(e.what()));
+    } catch (const std::exception &e) {
+        m_Initialized = false;
+
+        LOG(getLog(),
+            LogLevel::Error,
+            QString("Failed to initialize payment factory: %1.").arg(e.what()));
+    } catch (...) {
+        m_Initialized = false;
+        std::cerr << "ERROR: PaymentFactoryBase unknown exception!\n";
+
+        LOG(getLog(), LogLevel::Error, "Failed to initialize payment factory: unknown exception");
     }
 }
 

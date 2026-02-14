@@ -36,8 +36,9 @@ namespace PPSDK = SDK::PaymentProcessor;
 ServiceMenuBackend::ServiceMenuBackend(SDK::Plugin::IEnvironment *aFactory, ILog *aLog)
     : m_Factory(aFactory), m_Log(aLog), m_AutoEncashmentEnabled(false),
       m_AuthorizationEnabled(true) {
-    m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+    void *voidPtr = reinterpret_cast<void *>(
         m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    m_Core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
 
     GUI::MessageBox::initialize();
 
@@ -196,14 +197,14 @@ void ServiceMenuBackend::printDispenserDiffState() {
             PPSDK::SCashUnit afterUnit;
 
             const auto &beforeList = m_CashUnitsState.values();
-            if (beforeList.size()) {
+            if (!beforeList.empty()) {
                 if (beforeList.first().size() > i) {
                     beforeUnit = beforeList.first()[i];
                 }
             }
 
             const auto &afterList = curCashUnitsState.values();
-            if (afterList.size()) {
+            if (!afterList.empty()) {
                 if (afterList.first().size() > i) {
                     afterUnit = afterList.first()[i];
                 }

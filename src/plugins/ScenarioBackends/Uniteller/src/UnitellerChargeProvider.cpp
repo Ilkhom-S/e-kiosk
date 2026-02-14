@@ -67,10 +67,11 @@ UnitellerChargeProvider::UnitellerChargeProvider(SDK::Plugin::IEnvironment *aFac
                                                  const QString &aInstancePath)
     : ILogable(aFactory->getLog(Uniteller::LogName)), m_Factory(aFactory),
       m_InstancePath(aInstancePath),
-      m_Core(dynamic_cast<SDK::PaymentProcessor::ICore *>(
-          aFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore))),
-      m_Api(Uniteller::API::getInstance(aFactory->getLog(Uniteller::LogName), m_Core)),
-      m_MaxAmount(0.0) {
+      void *voidPtr = reinterpret_cast<void *>(
+          aFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+m_Core(reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr)),
+    m_Api(Uniteller::API::getInstance(aFactory->getLog(Uniteller::LogName), m_Core)),
+    m_MaxAmount(0.0) {
     qRegisterMetaType<SDK::PaymentProcessor::SNote>("SDK::PaymentProcessor::SNote");
 
     m_DealerSettings = dynamic_cast<PPSDK::DealerSettings *>(

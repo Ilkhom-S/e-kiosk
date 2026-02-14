@@ -43,8 +43,9 @@ UnitellerBackendPlugin::UnitellerBackendPlugin(SDK::Plugin::IEnvironment *aFacto
 //---------------------------------------------------------------------------
 PPSDK::Scripting::IBackendScenarioObject *
 UnitellerBackendPlugin::create(const QString &aClassName) const {
-    PPSDK::ICore *core =
-        dynamic_cast<PPSDK::ICore *>(m_Environment->getInterface(PPSDK::CInterfaces::ICore));
+    void *voidPtr =
+        reinterpret_cast<void *>(m_Environment->getInterface(PPSDK::CInterfaces::ICore));
+    PPSDK::ICore *core = reinterpret_cast<PPSDK::ICore *>(voidPtr);
 
     return new UnitellerCore(
         core,

@@ -5,6 +5,8 @@
 #include <QtCore/QRecursiveMutex>
 #include <QtCore/QTranslator>
 
+#include <iostream>
+
 #ifdef Q_OS_WIN
 #define NOMINMAX
 #include <windows.h>
@@ -161,7 +163,6 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
 
     m_Directories << aDirectory;
 
-    // Debug: Log which directory is being scanned
     m_Kernel->getLog()->write(LogLevel::Debug,
                               QString("Scanning plugin directory: %1").arg(aDirectory));
 
@@ -282,7 +283,9 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
     // No explicit reset needed as it's an environment variable
 #endif
 
-    return m_Plugins.count();
+    // Qt6: QMap::count() возвращает qsizetype (long long), явное приведение к int безопасно,
+    // т.к. количество плагинов не превысит INT_MAX
+    return static_cast<int>(m_Plugins.count());
 }
 
 //------------------------------------------------------------------------------

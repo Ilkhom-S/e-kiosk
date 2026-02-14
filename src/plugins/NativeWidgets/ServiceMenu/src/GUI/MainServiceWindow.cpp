@@ -183,12 +183,12 @@ bool MainServiceWindow::applyAccessRights() {
     if (!m_Backend->hasAnyPassword() || rights.contains(ServiceMenuBackend::SetupHardware) ||
         rights.contains(ServiceMenuBackend::SetupNetwork) ||
         rights.contains(ServiceMenuBackend::SetupKeys) ||
-        rights.contains(ServiceMenuBackend::Encash)) // а инкасатор может настраивать диспенсер
+        rights.contains(ServiceMenuBackend::Encash)) // а инкассатор может настраивать диспенсер
     {
         addServiceWindow(new SetupServiceWindow(m_Backend, this), tr("#title_setup"));
     }
 
-    if (twServiceScreens->count()) {
+    if (twServiceScreens->count() != 0) {
         twServiceScreens->setCurrentIndex(0);
         m_CurrentPageIndex = 0;
     }
@@ -258,7 +258,7 @@ void MainServiceWindow::onCurrentPageChanged(int aIndex) {
 void MainServiceWindow::onAbstractButtonClicked() {
     auto *button = qobject_cast<QAbstractButton *>(sender());
 
-    // Кнопки цифровой клавиатуры не логируем
+    // Кнопки цифровой клавиатуры не логгируем
     if (wNumericPad->isAncestorOf(button)) {
         return;
     }

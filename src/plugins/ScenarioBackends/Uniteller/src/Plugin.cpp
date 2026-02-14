@@ -20,8 +20,9 @@ static IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstanc
     auto plugin =
         new DevicePluginBase<UnitellerDevice>(Uniteller::ModelName, aEnvironment, aInstancePath);
 
-    plugin->setCore(dynamic_cast<SDK::PaymentProcessor::ICore *>(
-        aEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore)));
+    void *voidPtr = reinterpret_cast<void *>(
+        aEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    plugin->setCore(reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr));
     plugin->setLog(aEnvironment->getLog(Uniteller::LogName));
 
     return plugin;

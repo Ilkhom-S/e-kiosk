@@ -20,10 +20,33 @@ PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, QStr
     : m_Initialized(false), m_Factory(aFactory), m_InstancePath(std::move(aInstancePath)),
       m_Core(nullptr), m_CryptEngine(nullptr) {
     try {
-        m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+        LOG(getLog(),
+            LogLevel::Debug,
+            QString("PaymentFactoryBase: requesting ICore interface..."));
+
+        void *voidPtr = reinterpret_cast<void *>(
             m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
-        m_CryptEngine = m_Core->getCryptService()->getCryptEngine();
-        m_Network = m_Core->getNetworkService()->getNetworkTaskManager();
+        m_Core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
+
+        LOG(getLog(),
+            LogLevel::Debug,
+            QString("PaymentFactoryBase: m_Core = 0x%1").arg(qlonglong(m_Core), 0, 16));
+
+        if (!m_Core) {
+            throw SDK::PaymentProcessor::ServiceIsNotImplemented("ICore interface not available");
+        }
+
+        auto *cryptService = m_Core->getCryptService();
+        if (!cryptService) {
+            throw SDK::PaymentProcessor::ServiceIsNotImplemented("CryptService not available");
+        }
+        m_CryptEngine = cryptService->getCryptEngine();
+
+        auto *networkService = m_Core->getNetworkService();
+        if (!networkService) {
+            throw SDK::PaymentProcessor::ServiceIsNotImplemented("NetworkService not available");
+        }
+        m_Network = networkService->getNetworkTaskManager();
 
         m_Initialized = true;
     } catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &e) {

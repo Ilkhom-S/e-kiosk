@@ -14,6 +14,8 @@
 #include <SDK/Plugins/PluginInitializer.h>
 #include <SDK/Plugins/PluginLoader.h>
 
+#include <iostream>
+
 namespace SDK {
 namespace Plugin {
 
@@ -36,6 +38,8 @@ PluginFactory::PluginFactory() : m_Kernel(nullptr), m_Initialized(false) {}
 //------------------------------------------------------------------------------
 PluginFactory::~PluginFactory() {
     if (m_Initialized) {
+        // Вызов виртуального метода в деструкторе намеренный.
+        // Виртуальная диспетчеризация здесь не используется, вызывается только базовая версия.
         shutdown();
     }
 }
@@ -398,6 +402,9 @@ void PluginFactory::translateParameters() {
 
 //------------------------------------------------------------------------------
 IExternalInterface *PluginFactory::getInterface(const QString &aInterface) {
+    if (!m_Kernel) {
+        return nullptr;
+    }
     return m_Kernel->getInterface(aInterface);
 }
 

@@ -6,6 +6,8 @@
 #include <QtCore/QDirIterator>
 #include <QtCore/QFileInfo>
 
+#include <iostream>
+
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
@@ -198,10 +200,28 @@ bool PluginService::savePluginConfiguration(const QString & /*aInstancePath*/,
 
 //------------------------------------------------------------------------------
 SDK::Plugin::IExternalInterface *PluginService::getInterface(const QString &aInterface) {
+    toLog(LogLevel::Debug, QString("getInterface called for: %1").arg(aInterface));
+
     if (aInterface == SDK::PaymentProcessor::CInterfaces::ICore) {
-        return dynamic_cast<SDK::Plugin::IExternalInterface *>(m_Application->getCore());
+        if (!m_Application) {
+            toLog(LogLevel::Error, "m_Application is null");
+            return nullptr;
+        }
+
+        auto *core = m_Application->getCore();
+        if (!core) {
+            toLog(LogLevel::Error, "getCore() returned nullptr");
+            return nullptr;
+        }
+
+        // ServiceController inherits from both ICore and IExternalInterface in separate
+        // hierarchies. Use reinterpret_cast to convert between them (safe because we know the
+        // object type).
+        auto *result = reinterpret_cast<SDK::Plugin::IExternalInterface *>(core);
+        return result;
     }
 
+    toLog(LogLevel::Warning, QString("Interface not supported: %1").arg(aInterface));
     throw SDK::PaymentProcessor::ServiceIsNotImplemented(aInterface);
 }
 

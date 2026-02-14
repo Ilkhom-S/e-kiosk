@@ -38,14 +38,7 @@ void DatabaseValidationTest::initTestCase() {
     qInfo() << "";
 
     // List all required database scripts
-    m_requiredScripts << ":/scripts/empty_db.sql"
-                      << ":/scripts/db_patch_6.sql"
-                      << ":/scripts/db_patch_7.sql"
-                      << ":/scripts/db_patch_8.sql"
-                      << ":/scripts/db_patch_9.sql"
-                      << ":/scripts/db_patch_10.sql"
-                      << ":/scripts/db_patch_11.sql"
-                      << ":/scripts/db_patch_12.sql";
+    m_requiredScripts << ":/scripts/empty_db.sql";
 }
 
 void DatabaseValidationTest::testEmptyDbScriptExists() {

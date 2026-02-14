@@ -44,8 +44,8 @@ QSharedPointer<Ad::Client> getAdClientInstance(SDK::Plugin::IEnvironment *aFacto
     static QSharedPointer<Ad::Client> client;
 
     if (client.isNull()) {
-        PPSDK::ICore *core =
-            dynamic_cast<PPSDK::ICore *>(aFactory->getInterface(PPSDK::CInterfaces::ICore));
+        void *voidPtr = reinterpret_cast<void *>(aFactory->getInterface(PPSDK::CInterfaces::ICore));
+        PPSDK::ICore *core = reinterpret_cast<PPSDK::ICore *>(voidPtr);
 
         client = QSharedPointer<Ad::Client>(
             new Ad::Client(core, aFactory->getLog(Ad::CClient::LogName), 0));
@@ -61,8 +61,9 @@ AdRemotePlugin::AdRemotePlugin(SDK::Plugin::IEnvironment *aFactory, QString aIns
       m_InstancePath(std::move(aInstancePath)) {
     m_Client = getAdClientInstance(aFactory);
 
-    m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+    void *voidPtr2 = reinterpret_cast<void *>(
         m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    m_Core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr2);
 
     connect(m_Client.data(), SIGNAL(contentUpdated()), this, SLOT(needRestart()));
     connect(m_Client.data(), SIGNAL(contentExpired()), this, SLOT(needRestart()));
