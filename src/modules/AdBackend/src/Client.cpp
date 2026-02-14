@@ -17,6 +17,7 @@
 #include <AdBackend/Client.h>
 #include <AdBackend/DatabaseUtils.h>
 #include <AdBackend/IDatabaseUtils.h>
+#include <cstdio>
 
 namespace Ad {
 extern const char DefaultChannelPostfix[] = "_default";
@@ -67,8 +68,29 @@ Client::Client(SDK::PaymentProcessor::ICore *aCore, ILog *aLog, int aKeyPair)
     m_Thread.setObjectName(CClient::ThreadName);
     moveToThread(&m_Thread);
 
-    auto *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
-        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
+    if (!m_Core) {
+        m_ContentPath = QString();
+        return;
+    }
+
+    auto *settingsService = m_Core->getSettingsService();
+    if (!settingsService) {
+        m_ContentPath = QString();
+        return;
+    }
+
+    // ВАЖНО: Используем reinterpret_cast вместо dynamic_cast для обхода проблемы с множественным
+    // наследованием. dynamic_cast может вернуть nullptr при множественном наследовании, даже если
+    // объект корректен.
+    void *voidPtr = reinterpret_cast<void *>(
+        settingsService->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
+    auto *terminalSettings = reinterpret_cast<PPSDK::TerminalSettings *>(voidPtr);
+
+    if (!terminalSettings) {
+        m_ContentPath = QString();
+        return;
+    }
+
     m_ContentPath = terminalSettings->getAppEnvironment().adPath;
 
     QDir dir;

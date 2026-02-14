@@ -1,126 +1,137 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Include Reflow (current file)",
-      "type": "shell",
-      "command": "python3 ./.scripts/include_reflow.py --apply \"${file}\"",
-      "windows": {
-        "command": "python ./.scripts/include_reflow.py --apply \"${file}\""
-      },
-      "problemMatcher": [],
-      "group": "none",
-      "presentation": {
-        "reveal": "silent"
-      }
-    },
-    {
-      "label": "Include Reflow (all tracked)",
-      "type": "shell",
-      "command": "python3 ./.scripts/include_reflow.py --apply $(git ls-files '*.cpp' '*.cc' '*.cxx' '*.h' '*.hpp')",
-      "windows": {
-        "command": "python ./.scripts/include_reflow.py --apply $(git ls-files '*.cpp' '*.cc' '*.cxx' '*.h' '*.hpp')"
-      },
-      "problemMatcher": [],
-      "group": "none",
-      "presentation": {
-        "reveal": "always"
-      }
-    },
-
-    {
-      "args": ["--build", "${workspaceFolder}/build/macos-qt6"],
-      "command": "cmake",
-      "group": {
-        "isDefault": true,
-        "kind": "build"
-      },
-      "label": "build",
-      "presentation": {
-        "echo": true,
-        "focus": false,
-        "panel": "shared",
-        "reveal": "silent"
-      },
-      "problemMatcher": "$gcc",
-      "type": "shell"
-    },
-    {
-      "args": [
-        "-S",
-        "${workspaceFolder}",
-        "-B",
-        "${workspaceFolder}/build/macos-qt6",
-        "-DCMAKE_PREFIX_PATH=/usr/local/opt/qt6",
-        "-DCMAKE_BUILD_TYPE=Debug"
-      ],
-      "command": "cmake",
-      "group": "build",
-      "label": "configure",
-      "presentation": {
-        "echo": true,
-        "focus": false,
-        "panel": "shared",
-        "reveal": "silent"
-      },
-      "type": "shell"
-    },
-    {
-      "args": [
-        "--build",
-        "${workspaceFolder}/build/macos-qt6",
-        "--target",
-        "controller"
-      ],
-      "command": "cmake",
-      "group": "build",
-      "label": "build-controller",
-      "presentation": {
-        "echo": true,
-        "focus": false,
-        "panel": "shared",
-        "reveal": "silent"
-      },
-      "problemMatcher": "$gcc",
-      "type": "shell"
-    },
-    {
-      "args": [
-        "--build",
-        "${workspaceFolder}/build/macos-qt6",
-        "--target",
-        "ekiosk"
-      ],
-      "command": "cmake",
-      "group": "build",
-      "label": "build-ekiosk",
-      "presentation": {
-        "echo": true,
-        "focus": false,
-        "panel": "shared",
-        "reveal": "silent"
-      },
-      "problemMatcher": "$gcc",
-      "type": "shell"
-    },
-    {
-      "args": [
-        "--build",
-        "${workspaceFolder}/build/macos-qt6",
-        "--target",
-        "watchdog"
-      ],
-      "command": "cmake",
-      "group": "build",
-      "label": "build-watchdog",
-      "presentation": {
-        "echo": true,
-        "focus": false,
-        "panel": "shared",
-        "reveal": "silent"
-      },
-      "problemMatcher": "$gcc",
-      "type": "shell"
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Include Reflow (current file)",
+			"type": "shell",
+			"command": "python3 ./.scripts/include_reflow.py --apply \"${file}\"",
+			"windows": {
+				"command": "python ./.scripts/include_reflow.py --apply \"${file}\""
+			},
+			"problemMatcher": [],
+			"group": "none",
+			"presentation": {
+				"reveal": "silent"
+			}
+		},
+		{
+			"label": "Include Reflow (all tracked)",
+			"type": "shell",
+			"command": "python3 ./.scripts/include_reflow.py --apply $(git ls-files '*.cpp' '*.cc' '*.cxx' '*.h' '*.hpp')",
+			"windows": {
+				"command": "python ./.scripts/include_reflow.py --apply $(git ls-files '*.cpp' '*.cc' '*.cxx' '*.h' '*.hpp')"
+			},
+			"problemMatcher": [],
+			"group": "none",
+			"presentation": {
+				"reveal": "always"
+			}
+		},
+		{
+			"args": [
+				"--build",
+				"${workspaceFolder}/build/macos-qt6"
+			],
+			"command": "cmake",
+			"group": {
+				"isDefault": true,
+				"kind": "build"
+			},
+			"label": "build",
+			"presentation": {
+				"echo": true,
+				"focus": false,
+				"panel": "shared",
+				"reveal": "silent"
+			},
+			"problemMatcher": "$gcc",
+			"type": "shell"
+		},
+		{
+			"args": [
+				"-S",
+				"${workspaceFolder}",
+				"-B",
+				"${workspaceFolder}/build/macos-qt6",
+				"-DCMAKE_PREFIX_PATH=/usr/local/opt/qt6",
+				"-DCMAKE_BUILD_TYPE=Debug"
+			],
+			"command": "cmake",
+			"group": "build",
+			"label": "configure",
+			"presentation": {
+				"echo": true,
+				"focus": false,
+				"panel": "shared",
+				"reveal": "silent"
+			},
+			"type": "shell"
+		},
+		{
+			"args": [
+				"--build",
+				"${workspaceFolder}/build/macos-qt6",
+				"--target",
+				"controller"
+			],
+			"command": "cmake",
+			"group": "build",
+			"label": "build-controller",
+			"presentation": {
+				"echo": true,
+				"focus": false,
+				"panel": "shared",
+				"reveal": "silent"
+			},
+			"problemMatcher": "$gcc",
+			"type": "shell"
+		},
+		{
+			"args": [
+				"--build",
+				"${workspaceFolder}/build/macos-qt6",
+				"--target",
+				"ekiosk"
+			],
+			"command": "cmake",
+			"group": "build",
+			"label": "build-ekiosk",
+			"presentation": {
+				"echo": true,
+				"focus": false,
+				"panel": "shared",
+				"reveal": "silent"
+			},
+			"problemMatcher": "$gcc",
+			"type": "shell"
+		},
+		{
+			"args": [
+				"--build",
+				"${workspaceFolder}/build/macos-qt6",
+				"--target",
+				"watchdog"
+			],
+			"command": "cmake",
+			"group": "build",
+			"label": "build-watchdog",
+			"presentation": {
+				"echo": true,
+				"focus": false,
+				"panel": "shared",
+				"reveal": "silent"
+			},
+			"problemMatcher": "$gcc",
+			"type": "shell"
+		},
+		{
+			"label": "Force full rebuild ekiosk",
+			"type": "shell",
+			"command": "cd ${workspaceFolder}/build/macos-qt6 && rm -f lib/libscreen_maker_scenarios*.dylib bin/ekiosk.app/Contents/MacOS/ekiosk && ninja ekiosk",
+			"isBackground": false,
+			"problemMatcher": [
+				"$gcc"
+			]
+		}
+	]
 }

@@ -40,21 +40,40 @@ namespace ScreenMaker {
 //---------------------------------------------------------------------------
 MainScenario::MainScenario(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
     : Scenario(CScenarioPlugin::PluginName, aLog), m_Core(aCore), m_DrawAreaWindow(nullptr) {
-    QString path =
-        dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(
-            m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
-            ->getAppEnvironment()
-            .userDataPath +
-        QDir::separator() + "interface.ini";
-
     int displayIndex = 0;
 
-    QSettings settings(path, QSettings::IniFormat);
-    foreach (QString key, settings.allKeys()) {
-        if (key == "interface/display") {
-            displayIndex = settings.value(key).toInt();
-            break;
+    // ВАЖНО: Пытаемся получить display index из конфигурации, но это - некритичная операция.
+    // Если adapter недоступен, используем default displayIndex=0.
+    try {
+        SDK::PaymentProcessor::ISettingsAdapter *adapter =
+            m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter);
+
+        if (adapter) {
+            auto *terminalSettings =
+                reinterpret_cast<SDK::PaymentProcessor::TerminalSettings *>(adapter);
+            if (terminalSettings) {
+                QString path = terminalSettings->getAppEnvironment().userDataPath +
+                               QDir::separator() + "interface.ini";
+
+                if (!path.isEmpty()) {
+                    QSettings settings(path, QSettings::IniFormat);
+                    foreach (QString key, settings.allKeys()) {
+                        if (key == "interface/display") {
+                            displayIndex = settings.value(key).toInt();
+                            break;
+                        }
+                    }
+                }
+            }
         }
+    } catch (std::exception &) {
+        // Ignore any errors - use default displayIndex
+        toLog(LogLevel::Warning,
+              "ScreenMaker: Exception while reading display settings, using default");
+    } catch (...) {
+        // Ignore any errors - use default displayIndex
+        toLog(LogLevel::Warning,
+              "ScreenMaker: Unknown error while reading display settings, using default");
     }
 
     QRect rect = m_Core->getGUIService()->getScreenSize(displayIndex);

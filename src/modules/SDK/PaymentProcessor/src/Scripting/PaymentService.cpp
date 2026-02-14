@@ -252,20 +252,33 @@ QVariant Provider::getFields() {
 //------------------------------------------------------------------------------
 PaymentService::PaymentService(ICore *aCore)
     : m_Core(aCore), m_PaymentService(m_Core->getPaymentService()),
-      m_ProviderWithExternalLimits(-1), m_ForcePayOffline(false) {
+      m_ProviderWithExternalLimits(-1), m_ForcePayOffline(false), m_Directory(nullptr),
+      m_DealerSettings(nullptr) {
     connect(m_PaymentService,
             SIGNAL(stepCompleted(qint64, int, bool)),
             SLOT(onStepCompleted(qint64, int, bool)));
     connect(m_PaymentService, SIGNAL(amountUpdated(qint64)), SIGNAL(amountUpdated(qint64)));
     connect(m_PaymentService, SIGNAL(changeUpdated(double)), SIGNAL(changeUpdated(double)));
 
-    m_Directory = dynamic_cast<PPSDK::Directory *>(
-        aCore->getSettingsService()->getAdapter(CAdapterNames::Directory));
-    m_DealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
+    // Используем reinterpret_cast вместо dynamic_cast для обхода проблемы с множественным
+    // наследованием
+    void *dirPtr =
+        reinterpret_cast<void *>(aCore->getSettingsService()->getAdapter(CAdapterNames::Directory));
+    m_Directory = reinterpret_cast<PPSDK::Directory *>(dirPtr);
+
+    void *dealerPtr = reinterpret_cast<void *>(
         aCore->getSettingsService()->getAdapter(CAdapterNames::DealerAdapter));
-    m_CommonSettings = dynamic_cast<PPSDK::TerminalSettings *>(
-                           aCore->getSettingsService()->getAdapter(CAdapterNames::TerminalAdapter))
-                           ->getCommonSettings();
+    m_DealerSettings = reinterpret_cast<PPSDK::DealerSettings *>(dealerPtr);
+
+    void *terminalPtr = reinterpret_cast<void *>(
+        aCore->getSettingsService()->getAdapter(CAdapterNames::TerminalAdapter));
+    auto *terminalSettings = reinterpret_cast<PPSDK::TerminalSettings *>(terminalPtr);
+
+    if (terminalSettings) {
+        m_CommonSettings = terminalSettings->getCommonSettings();
+    } else {
+        qCritical() << "PaymentService::PaymentService - TerminalSettings adapter is NULL!";
+    }
 }
 
 //------------------------------------------------------------------------------

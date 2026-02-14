@@ -114,11 +114,7 @@ BasicApplication::BasicApplication(const QString &aName,
     }
 
     // Initialize logger
-#ifdef QT_DEBUG
-    m_Log = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::Console);
-#else
     m_Log = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::File);
-#endif
     if (m_Log) {
         m_Log->setDestination(aName.isEmpty() ? "basic_app" : aName.toLower());
         m_Log->setLevel(LogLevel::Normal); // Default to Normal level

@@ -55,7 +55,7 @@ public:
     static const int Type = QEvent::User + 1;
 
     ScenarioEvent(QString aSignal) : QEvent(QEvent::Type(Type)), m_signal(std::move(aSignal)) {}
-    [[nodiscard]] QString getSignal() const { return m_signal; }
+    QString getSignal() const { return m_signal; }
 
 private:
     QString m_signal;

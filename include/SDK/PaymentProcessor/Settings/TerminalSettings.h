@@ -122,7 +122,7 @@ struct SCommonSettings {
         }
     }
 
-    [[nodiscard]] bool blockOn(BlockReason aReason) const { return _blockOn.contains(aReason); }
+    bool blockOn(BlockReason aReason) const { return _blockOn.contains(aReason); }
 };
 
 //----------------------------------------------------------------------------
@@ -138,9 +138,7 @@ struct SMonitoringSettings {
 
     SMonitoringSettings() = default;
 
-    [[nodiscard]] bool isBlockByAccountBalance() const {
-        return restLimit > 0 && restUrl.isValid();
-    }
+    bool isBlockByAccountBalance() const { return restLimit > 0 && restUrl.isValid(); }
 };
 
 //----------------------------------------------------------------------------
@@ -177,25 +175,25 @@ public:
     void initialize();
 
     /// Проверка настроек.
-    [[nodiscard]] bool isValid() const override;
+    bool isValid() const override;
 
     /// Получить имя адаптера.
     static QString getAdapterName();
 
     /// Получить настройки соединения.
-    [[nodiscard]] SConnection getConnection() const;
+    SConnection getConnection() const;
 
     /// Сохранить настройки соединения.
     void setConnection(const SConnection &aConnection);
 
     /// Получить список хостов для проверки соединения.
-    [[nodiscard]] QList<IConnection::CheckUrl> getCheckHosts() const;
+    QList<IConnection::CheckUrl> getCheckHosts() const;
 
     /// Получить настройки БД.
-    [[nodiscard]] SDatabaseSettings getDatabaseSettings() const;
+    SDatabaseSettings getDatabaseSettings() const;
 
     /// Получить список устройств.
-    [[nodiscard]] QStringList getDeviceList() const;
+    QStringList getDeviceList() const;
 
     /// Получить имя конфигурации принтера, настроенного для печати заданного типа чеков.
     QString getPrinterForReceipt(const QString &aReceiptType);
@@ -204,59 +202,59 @@ public:
     void setDeviceList(const QStringList &aHardware);
 
     /// Мониторинг.
-    [[nodiscard]] SMonitoringSettings getMonitoringSettings() const;
+    SMonitoringSettings getMonitoringSettings() const;
 
     /// Ключи.
-    [[nodiscard]] QMap<int, SKeySettings> getKeys() const;
+    QMap<int, SKeySettings> getKeys() const;
     void setKey(const SKeySettings &aKey, bool aReplaceIfExists = true);
     void cleanKeys();
 
     /// Валюта.
-    [[nodiscard]] SCurrencySettings getCurrencySettings() const;
+    SCurrencySettings getCurrencySettings() const;
 
     /// URL для генерации ключей.
-    [[nodiscard]] QString getKeygenURL() const;
+    QString getKeygenURL() const;
 
     /// URL для генерации письма с электронной копией чека
-    [[nodiscard]] QString getReceiptMailURL() const;
+    QString getReceiptMailURL() const;
 
     /// URL для отправки feedback в Хумо
-    [[nodiscard]] QString getFeedbackURL() const;
+    QString getFeedbackURL() const;
 
     /// Возвращает мапу из типов процессинга и разрешенных ChargeProvider для каждого
     /// соответственно.
-    [[nodiscard]] QVariantMap getChargeProviderAccess() const;
+    QVariantMap getChargeProviderAccess() const;
 
     /// Общие настройки.
-    [[nodiscard]] virtual SCommonSettings getCommonSettings() const;
+    virtual SCommonSettings getCommonSettings() const;
 
     /// Пароли для доступа к сервисному меню.
-    [[nodiscard]] SServiceMenuPasswords getServiceMenuPasswords() const;
+    SServiceMenuPasswords getServiceMenuPasswords() const;
 
     /// Обобщенные настройки для сервисного меню.
-    [[nodiscard]] SServiceMenuSettings getServiceMenuSettings() const;
+    SServiceMenuSettings getServiceMenuSettings() const;
 
     /// Пути к данным.
-    [[nodiscard]] SAppEnvironment getAppEnvironment() const;
+    SAppEnvironment getAppEnvironment() const;
     void setAppEnvironment(const SAppEnvironment &aEnv);
 
     /// Максимальный размер log файлов
-    [[nodiscard]] int getLogsMaxSize() const;
+    int getLogsMaxSize() const;
 
     /// Updater urls
-    [[nodiscard]] QStringList getUpdaterUrls() const;
+    QStringList getUpdaterUrls() const;
 
     /// Реклама.
-    [[nodiscard]] QString getAdProfile() const;
+    QString getAdProfile() const;
 
     /// возвращает валидное время если необходимо проверять обновление ПО терминала
-    [[nodiscard]] QTime autoUpdate() const;
+    QTime autoUpdate() const;
 
     /// возвращает диапазон времени с какого по какое мы держим монитор в выключенном состоянии
-    [[nodiscard]] QString energySave() const;
+    QString energySave() const;
 
     /// Получить список критичных ошибок процессинга
-    [[nodiscard]] const QSet<int> &getCriticalErrors() const;
+    const QSet<int> &getCriticalErrors() const;
 
 private:
     Q_DISABLE_COPY(TerminalSettings)

@@ -69,12 +69,10 @@ public:
     ~DevicePluginBase() override = default;
 
     /// Возвращает название плагина.
-    [[nodiscard]] QString getPluginName() const override { return m_pluginName; }
+    QString getPluginName() const override { return m_pluginName; }
 
     /// Возвращает параметры плагина.
-    [[nodiscard]] QVariantMap getConfiguration() const override {
-        return T::getDeviceConfiguration();
-    }
+    QVariantMap getConfiguration() const override { return T::getDeviceConfiguration(); }
 
     /// Настраивает плагин.
     void setConfiguration(const QVariantMap &aParameters) override {
@@ -88,10 +86,10 @@ public:
     }
 
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
-    [[nodiscard]] QString getConfigurationName() const override { return m_instanceName; }
+    QString getConfigurationName() const override { return m_instanceName; }
 
     /// Проверяет успешно ли инициализировался плагин при создании.
-    [[nodiscard]] bool isReady() const override { return true; }
+    bool isReady() const override { return true; }
 
 private:
     QString m_pluginName;

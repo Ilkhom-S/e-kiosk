@@ -50,8 +50,16 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------------
 AdRequest::AdRequest(SDK::PaymentProcessor::ICore *aCore) {
-    PPSDK::TerminalSettings *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
+    // Используем reinterpret_cast вместо dynamic_cast для обхода проблемы с множественным
+    // наследованием
+    void *voidPtr = reinterpret_cast<void *>(
         aCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
+    auto *terminalSettings = reinterpret_cast<PPSDK::TerminalSettings *>(voidPtr);
+
+    if (!terminalSettings) {
+        qCritical() << "[AdRequest] TerminalSettings adapter is NULL!";
+        return;
+    }
 
     addParameter("SD", terminalSettings->getKeys()[0].sd);
     addParameter("AP", terminalSettings->getKeys()[0].ap);

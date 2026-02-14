@@ -14,6 +14,7 @@
 
 #include <SettingsManager/SettingsManager.h>
 #include <SysUtils/ISysUtils.h>
+#include <cstdio>
 
 #include "Services/EventService.h"
 #include "Services/ServiceNames.h"
@@ -127,6 +128,7 @@ bool SettingsService::initialize() {
     userSettings->setLog(m_Application->getLog());
 
     m_SettingsAdapters.insert(AdapterNames::TerminalAdapter, terminalSettings);
+
     m_SettingsAdapters.insert(AdapterNames::DealerAdapter, dealerSettings);
     m_SettingsAdapters.insert(AdapterNames::UserAdapter, userSettings);
     m_SettingsAdapters.insert(AdapterNames::Directory, directory);
@@ -187,7 +189,11 @@ SettingsManager *SettingsService::getSettingsManager() const {
 
 //---------------------------------------------------------------------------
 SDK::PaymentProcessor::ISettingsAdapter *SettingsService::getAdapter(const QString &aAdapterName) {
-    return m_SettingsAdapters.contains(aAdapterName) ? m_SettingsAdapters[aAdapterName] : 0;
+    if (m_SettingsAdapters.contains(aAdapterName)) {
+        return m_SettingsAdapters[aAdapterName];
+    } else {
+        return nullptr;
+    }
 }
 
 //---------------------------------------------------------------------------

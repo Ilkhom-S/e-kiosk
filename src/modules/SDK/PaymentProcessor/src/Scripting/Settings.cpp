@@ -18,10 +18,17 @@ const QString CommonSkinDirectory = "skins";
 } // namespace
 
 //------------------------------------------------------------------------------
-DealerSettings::DealerSettings(ICore *aCore)
-    : m_Settings(dynamic_cast<SDK::PaymentProcessor::DealerSettings *>(
-          aCore->getSettingsService()->getAdapter(CAdapterNames::DealerAdapter))),
-      m_PersonalSettings(m_Settings->getPersonalSettings()) {}
+DealerSettings::DealerSettings(ICore *aCore) : m_Settings(nullptr) {
+    // Используем reinterpret_cast вместо dynamic_cast для обхода проблемы с множественным
+    // наследованием
+    void *voidPtr = reinterpret_cast<void *>(
+        aCore->getSettingsService()->getAdapter(CAdapterNames::DealerAdapter));
+    m_Settings = reinterpret_cast<SDK::PaymentProcessor::DealerSettings *>(voidPtr);
+
+    if (m_Settings) {
+        m_PersonalSettings = m_Settings->getPersonalSettings();
+    }
+}
 
 //------------------------------------------------------------------------------
 bool DealerSettings::isPaymentAllowed(const QVariantMap &aParameters) const {
@@ -49,8 +56,15 @@ DealerSettings::getCommissions(qint64 aProvider, const QVariantMap &aParameters,
 //------------------------------------------------------------------------------
 TerminalSettings::TerminalSettings(ICore *aCore) : m_GuiService(aCore->getGUIService()) {
     ISettingsService *settingsService = aCore->getSettingsService();
-    m_TerminalSettings = dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(
-        settingsService->getAdapter(CAdapterNames::TerminalAdapter));
+    // Используем reinterpret_cast вместо dynamic_cast для обхода проблемы с множественным
+    // наследованием
+    void *voidPtr =
+        reinterpret_cast<void *>(settingsService->getAdapter(CAdapterNames::TerminalAdapter));
+    m_TerminalSettings = reinterpret_cast<SDK::PaymentProcessor::TerminalSettings *>(voidPtr);
+
+    if (!m_TerminalSettings) {
+        qCritical() << "TerminalSettings::TerminalSettings - adapter is NULL!";
+    }
 }
 
 //------------------------------------------------------------------------------

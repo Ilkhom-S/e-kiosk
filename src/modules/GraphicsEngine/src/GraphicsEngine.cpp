@@ -435,9 +435,6 @@ void GraphicsEngine::notify(const QString &aEvent, const QVariantMap &aParameter
         m_TopWidget->graphics.lock()->notify(aEvent, aParameters);
     }
 
-    toLog(LogLevel::Debug,
-          QString("NOTIFY '%1'. Parameters: %2").arg(w->info.name).arg(formatParams(aParameters)));
-
     if (w != m_Widgets.end()) {
         toLog(LogLevel::Debug,
               QString("NOTIFY '%1'. Parameters: %2")
