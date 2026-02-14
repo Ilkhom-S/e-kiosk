@@ -10,7 +10,7 @@
 #else
 #include "JSScenario5.h"
 #endif
-#include "ScenarioEngine.h"
+#include <ScenarioEngine/ScenarioEngine.h>
 
 namespace GUI {
 

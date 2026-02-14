@@ -85,10 +85,12 @@ private:
 JSScenario::JSScenario(const QString &aName, QString aPath, QString aBasePath, ILog *aLog)
     : Scenario(aName, aLog), m_Path(std::move(aPath)), m_BasePath(std::move(aBasePath)),
       m_IsPaused(true), m_DefaultTimeout(0) {
-    connect(
-        &m_EnterSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onEnterState(const QString &)));
-    connect(
-        &m_ExitSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onExitState(const QString &)));
+    connect(&m_EnterSignalMapper,
+            SIGNAL(mappedString(const QString &)),
+            SLOT(onEnterState(const QString &)));
+    connect(&m_ExitSignalMapper,
+            SIGNAL(mappedString(const QString &)),
+            SLOT(onExitState(const QString &)));
     connect(&m_TimeoutTimer, SIGNAL(timeout()), SLOT(onTimeout()));
 }
 
