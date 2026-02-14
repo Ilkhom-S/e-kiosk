@@ -8,7 +8,7 @@
 
 ## **📂 Project Structure**
 
-```
+```text
 apps/           → Executables
 src/            → Shared libs/modules
 include/        → Public headers

@@ -14,7 +14,7 @@ Fixed **EXC_BAD_ACCESS crash on Qt6 macOS** caused by `dynamic_cast` failure bet
 
 ### The Crash Scenario
 
-```
+```text
 User loads Humo payment plugin on Qt6 macOS
 ↓
 PaymentFactoryBase requests ICore interface
@@ -204,7 +204,7 @@ return result;
 
 ### Before Fix
 
-```
+```text
 PaymentFactoryBase (Humo): POST dynamic_cast - m_Core = 0x0  ❌
 ERROR: PaymentFactoryBase - dynamic_cast to ICore failed!  ❌
 EXC_BAD_ACCESS on m_Core dereference
@@ -212,7 +212,7 @@ EXC_BAD_ACCESS on m_Core dereference
 
 ### After Fix
 
-```
+```text
 PaymentFactoryBase (Humo): POST reinterpret_cast - m_Core = 0x7bb04e900  ✅
 PaymentFactoryBase (Humo): crypt service = 0x7bb0052c8                  ✅
 PaymentFactoryBase (Humo): network service = 0x7bad48790                ✅
@@ -316,7 +316,7 @@ Benefits:
 
 ---
 
-## Summary
+## Fix Summary
 
 | Aspect              | Details                                          |
 | ------------------- | ------------------------------------------------ |
