@@ -81,7 +81,7 @@ Use developer Russian, not literary Russian. Follow this principle:
 // Используем reinterpret_cast для конвертирования между ними (safe, так как object type известен)
 ```
 
-**Pattern**: 
+**Pattern**:
 
 1. **Direct Russian for common technical terms**: "иерархий" (hierarchies), "тип объекта" (object type), "безопасно" (safely/guaranteed), "расширение" (extension), "путь" (path)
 2. **Keep English for concepts without clear Russian dev meaning**: `segment`, `attach/detach`, `reinterpret_cast`, `handler`, `payload`

@@ -53,9 +53,9 @@ QVariant DatabaseUtils::getDeviceParam(const QString &aDeviceConfigName,
 bool DatabaseUtils::setDeviceParam(const QString &aDeviceConfigName,
                                    const QString &aParamName,
                                    const QVariant &aParamValue) {
-    // Don't insert NULL values - database constraint requires NOT NULL
+    // Не вставляем NULL значения - ограничение БД требует NOT NULL.
     if (aParamValue.isNull()) {
-        return true; // Silent success for null values
+        return true; // Успешно пропускаем null значения
     }
 
     if (!hasDevice(aDeviceConfigName)) {
@@ -136,7 +136,7 @@ bool DatabaseUtils::addDeviceStatus(const QString &aDeviceConfigName,
 
     QMutexLocker lock(&m_AccessMutex);
 
-    // Смотрим последний статус у этого девайса. Если совпадает с нынешним - то не пишем его.
+    // Проверяем последний статус устройства. Если совпадает с текущим - не пишем его.
     QString queryMessage =
         QString("SELECT `level`, `description` FROM `device_status` WHERE `fk_device_id` = (SELECT "
                 "`id` FROM `device` WHERE `name` = :config_name)");

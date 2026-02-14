@@ -215,7 +215,8 @@ SDK::Plugin::IExternalInterface *PluginService::getInterface(const QString &aInt
         }
 
         // ServiceController наследует ICore и IExternalInterface из разных иерархий.
-        // Используем reinterpret_cast для конвертирования между ними (безопасно, так как тип объекта известен).
+        // Используем reinterpret_cast для конвертирования между ними (безопасно, так как тип
+        // объекта известен).
         auto *result = reinterpret_cast<SDK::Plugin::IExternalInterface *>(core);
         return result;
     }
