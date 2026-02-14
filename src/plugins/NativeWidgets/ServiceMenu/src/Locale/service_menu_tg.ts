@@ -1794,7 +1794,7 @@
         <message>
             <location filename="../FirstSetup/FirstSetup.cpp" line="68" />
             <source>#cyberplat_copyright</source>
-            <translation>ООО &quot;КиберПлат&quot;, тел. техподдержки: +7 (495) 967-02-20</translation>
+            <translation>ООО &quot;Хумо&quot;, тел. техподдержки: +7 (495) 967-02-20</translation>
         </message>
         <message>
             <source>#password_not_set</source>
@@ -2259,7 +2259,7 @@
         <message>
             <location filename="../FirstSetup/WizardFrame.cpp" line="391" />
             <source>#keys_setup_howto</source>
-            <translation>Для связи с серверами Киберплат аппарат должен иметь уникальные ключи,
+            <translation>Для связи с серверами Ҳумо аппарат должен иметь уникальные ключи,
                 которые заверяются в кабинете дилера. Это необходимо для безопасной передачи
                 платёжной информации. Введите имя пользователя и пароль, полученные в кабинете
                 дилера, и нажмите &quot;Сгенерировать ключи&quot;.

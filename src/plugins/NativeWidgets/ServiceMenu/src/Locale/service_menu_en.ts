@@ -1795,7 +1795,7 @@
         <message>
             <location filename="../FirstSetup/FirstSetup.cpp" line="68" />
             <source>#cyberplat_copyright</source>
-            <translation>CyberPlat LLC, technical support service: +7 (495) 967-02-20</translation>
+            <translation>Humo LLC, technical support service: +7 (495) 967-02-20</translation>
         </message>
         <message>
             <source>#password_not_set</source>
@@ -1889,7 +1889,8 @@
             <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="65" />
             <source>#saved_successfully</source>
             <translation>Congratulations, the terminal is set up!
-                Click on the button &quot;Finish&quot; and in a while the terminal software will download
+                Click on the button &quot;Finish&quot; and in a while the terminal software will
+                download
                 the required configuration files from Humo server (this may take a while). Once all
                 required files are retrieved, the terminal will be ready to process payments.
                 NOTE: make sure to confirm generated keys on the dealer&apos;s office web site!</translation>

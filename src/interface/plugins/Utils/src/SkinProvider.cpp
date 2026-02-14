@@ -75,7 +75,7 @@ QImage SkinProvider::requestImage(const QString &aId, QSize *aSize, const QSize 
             }
         }
 
-        // Сперва логотипы киберплата, затем пользователские
+        // Сперва логотипы Humo, затем пользовательские
         QImage logo(m_LogoPath + QDir::separator() + id + ".png");
         if (logo.isNull()) {
             logo = QImage(m_UserLogoPath + QDir::separator() + id + ".png");
