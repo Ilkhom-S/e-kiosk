@@ -53,9 +53,9 @@ QVariant DatabaseUtils::getDeviceParam(const QString &aDeviceConfigName,
 bool DatabaseUtils::setDeviceParam(const QString &aDeviceConfigName,
                                    const QString &aParamName,
                                    const QVariant &aParamValue) {
-    // Не вставляем NULL значения - ограничение БД требует NOT NULL.
-    if (aParamValue.isNull()) {
-        return true; // Успешно пропускаем null значения
+    // Не вставляем NULL или невалидные значения - ограничение БД требует NOT NULL.
+    if (!aParamValue.isValid() || aParamValue.isNull()) {
+        return true; // Успешно пропускаем null/invalid значения
     }
 
     if (!hasDevice(aDeviceConfigName)) {
