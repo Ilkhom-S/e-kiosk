@@ -45,7 +45,7 @@ QSharedPointer<Ad::Client> getAdClientInstance(SDK::Plugin::IEnvironment *aFacto
 
     if (client.isNull()) {
         void *voidPtr = reinterpret_cast<void *>(aFactory->getInterface(PPSDK::CInterfaces::ICore));
-        PPSDK::ICore *core = reinterpret_cast<PPSDK::ICore *>(voidPtr);
+        auto *core = reinterpret_cast<PPSDK::ICore *>(voidPtr);
 
         client = QSharedPointer<Ad::Client>(
             new Ad::Client(core, aFactory->getLog(Ad::CClient::LogName), 0));

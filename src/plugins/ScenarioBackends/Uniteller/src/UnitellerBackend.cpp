@@ -45,7 +45,7 @@ PPSDK::Scripting::IBackendScenarioObject *
 UnitellerBackendPlugin::create(const QString &aClassName) const {
     void *voidPtr =
         reinterpret_cast<void *>(m_Environment->getInterface(PPSDK::CInterfaces::ICore));
-    PPSDK::ICore *core = reinterpret_cast<PPSDK::ICore *>(voidPtr);
+    auto *core = reinterpret_cast<PPSDK::ICore *>(voidPtr);
 
     return new UnitellerCore(
         core,
@@ -130,14 +130,12 @@ void UnitellerCore::onPrintReceipt(const QStringList &aLines) {
     QVariantMap parameters;
     parameters["EMV_DATA"] = aLines.join("[br]");
 
-    SDK::PaymentProcessor::Scripting::Core *scriptingCore =
-        static_cast<SDK::PaymentProcessor::Scripting::Core *>(
-            dynamic_cast<SDK::GUI::IGraphicsHost *>(m_Core->getGUIService())
-                ->getInterface<QObject>(SDK::PaymentProcessor::Scripting::CProxyNames::Core));
+    auto *scriptingCore = static_cast<SDK::PaymentProcessor::Scripting::Core *>(
+        dynamic_cast<SDK::GUI::IGraphicsHost *>(m_Core->getGUIService())
+            ->getInterface<QObject>(SDK::PaymentProcessor::Scripting::CProxyNames::Core));
 
-    SDK::PaymentProcessor::Scripting::PrinterService *ps =
-        static_cast<SDK::PaymentProcessor::Scripting::PrinterService *>(
-            scriptingCore->property("printer").value<QObject *>());
+    auto *ps = static_cast<SDK::PaymentProcessor::Scripting::PrinterService *>(
+        scriptingCore->property("printer").value<QObject *>());
 
     ps->printReceipt("", parameters, "emv", DSDK::EPrintingModes::Continuous);
 }

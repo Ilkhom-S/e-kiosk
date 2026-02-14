@@ -52,7 +52,7 @@ bool PluginService::initialize() {
     m_PluginLoader->addDirectory(m_Application->getUserPluginPath());
 
 #ifndef _DEBUG
-    // Запустим фоновую проверку плагинов на наличие цифровой подписи
+    // Запускаем background verification для проверки digital signature плагинов.
     m_PluginVerifierSynchronizer.addFuture(QtConcurrent::run([this]() {
         verifyPlugins();
         return;
@@ -77,7 +77,7 @@ constexpr int KSystemMetricShuttingDown = 0x2000;
 
 //------------------------------------------------------------------------------
 bool PluginService::shutdown() {
-    // Не выгружаем библиотеки на выходе из ПО в процессе перезагрузки системы. #48972
+    // Не выгружаем libraries на выходе из ПО в процессе перезагрузки системы. #48972
 #ifdef Q_OS_WIN
     if (GetSystemMetrics(KSystemMetricShuttingDown) == 0) {
 #endif
@@ -175,26 +175,26 @@ QString PluginService::getPluginDirectory() const {
 
 //------------------------------------------------------------------------------
 bool PluginService::canConfigurePlugin(const QString & /*aInstancePath*/) const {
-    // Не используется.
+    // Not implemented.
     return false;
 }
 
 //------------------------------------------------------------------------------
 QVariantMap PluginService::getPluginConfiguration(const QString & /*aInstancePath*/) const {
-    // Не используется.
+    // Not implemented.
     return {};
 }
 
 //------------------------------------------------------------------------------
 bool PluginService::canSavePluginConfiguration(const QString & /*aInstancePath*/) const {
-    // Не используется.
+    // Not implemented.
     return false;
 }
 
 //------------------------------------------------------------------------------
 bool PluginService::savePluginConfiguration(const QString & /*aInstancePath*/,
                                             const QVariantMap & /*aParameters*/) {
-    // Не используется.
+    // Not implemented.
     return false;
 }
 
@@ -214,9 +214,9 @@ SDK::Plugin::IExternalInterface *PluginService::getInterface(const QString &aInt
             return nullptr;
         }
 
-        // ServiceController inherits from both ICore and IExternalInterface in separate
-        // hierarchies. Use reinterpret_cast to convert between them (safe because we know the
-        // object type).
+        // ServiceController наследует ICore и IExternalInterface из разных hierarchies.
+        // Используем reinterpret_cast для конвертации между ними (safe, так как object type
+        // известен).
         auto *result = reinterpret_cast<SDK::Plugin::IExternalInterface *>(core);
         return result;
     }
@@ -232,10 +232,10 @@ void PluginService::verifyPlugins() {
     m_UnsignedPlugins.clear();
 
     auto shortPath = [=](const QString &aFullPath) -> QString {
-        // Удалим расширение
+        // Удаляем extension.
         QString result = aFullPath.left(aFullPath.length() - 4).toLower();
 
-        // Удалим путь к плагину/экземпляру
+        // Удаляем path к plugin/instance.
         return result.contains(m_Application->getUserPluginPath().toLower())
                    ? result.mid(m_Application->getUserPluginPath().length()) + ".u"
                    : result.mid(QString(IApplication::getWorkingDirectory() + QDir::separator() +
@@ -245,7 +245,7 @@ void PluginService::verifyPlugins() {
 
     QStringList modules = m_PluginLoader->getPluginPathList(QRegularExpression(".*"));
 
-    // Добавим проверку исполняемых файлов
+    // Добавляем проверку executable файлов.
 
     QStringList exeModules = QStringList() << CWatchService::Modules::WatchService
                                            << CWatchService::Modules::PaymentProcessor

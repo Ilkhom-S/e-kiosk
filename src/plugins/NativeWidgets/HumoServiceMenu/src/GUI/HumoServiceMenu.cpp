@@ -72,7 +72,7 @@ HumoServiceMenu::HumoServiceMenu(SDK::Plugin::IEnvironment *aFactory, QString aI
       m_MainHumoServiceMenuWindow(nullptr), m_IsReady(true) {
     void *voidPtr = reinterpret_cast<void *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
-    SDK::PaymentProcessor::ICore *core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
+    auto *core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
 
     if (core) {
         m_Backend = QSharedPointer<HumoServiceBackend>(new HumoServiceBackend(

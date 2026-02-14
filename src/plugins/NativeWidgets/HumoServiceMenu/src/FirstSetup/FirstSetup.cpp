@@ -46,7 +46,7 @@ FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, QString aInstancePat
       m_IsReady(false) {
     void *voidPtr = reinterpret_cast<void *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
-    SDK::PaymentProcessor::ICore *core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
+    auto *core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
 
     if (core) {
         m_Backend = QSharedPointer<HumoServiceBackend>(
