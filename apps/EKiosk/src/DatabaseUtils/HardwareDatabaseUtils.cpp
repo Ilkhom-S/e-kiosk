@@ -58,6 +58,11 @@ bool DatabaseUtils::setDeviceParam(const QString &aDeviceConfigName,
         return true; // Успешно пропускаем null/invalid значения
     }
 
+    // Также проверяем пустые строки (QString("") != QString() но может вызвать ошибку БД)
+    if (aParamValue.type() == QVariant::String && aParamValue.toString().isEmpty()) {
+        return true; // Пропускаем пустые строки
+    }
+
     if (!hasDevice(aDeviceConfigName)) {
         if (!addDevice(aDeviceConfigName)) {
             return false;
