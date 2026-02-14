@@ -42,6 +42,8 @@ const char Base[] = "Base";
 const char SPARK[] = "SPARK";
 const char ATOL[] = "ATOL";
 const char Custom_KZT[] = "CP866 (Kazakhstan)";
+const char Custom_TJK[] = "CP866 (Tajikistan)";
+const char Custom_UZB[] = "CP866 (Uzbekistan)";
 } // namespace Codepages
 
 /// Константы порта.

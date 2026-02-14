@@ -3,12 +3,12 @@
 //------------------------------------------------------------------------------
 // Инициализация сценария.
 function initialize(scenarioName) {
-  // Состояния
-  ScenarioEngine.addState('main', { initial: true });
-  ScenarioEngine.addState('done', { final: true });
+    // Состояния
+    ScenarioEngine.addState("main", { initial: true });
+    ScenarioEngine.addState("done", { final: true });
 
-  // Переходы между состояниями
-  ScenarioEngine.addTransition('main', 'done', 'close');
+    // Переходы между состояниями
+    ScenarioEngine.addTransition("main", "done", "close");
 }
 
 //-----------------------------------------------------------------------------
@@ -20,16 +20,16 @@ function onStop() {}
 
 // Можно ли остановить.
 function canStop() {
-  return false;
+    return false;
 }
 
 //-----------------------------------------------------------------------------
 // Обработчик входа в состояние main.
 function mainEnterHandler(aParam) {
-  if (aParam.signal == 'resume') {
-    // Если сценарий уже выполняется, просто закроем его.
-    Core.postEvent(EventType.UpdateScenario, 'close');
-  } else {
-    Core.graphics.show('AutoEncashment', { reset: true });
-  }
+    if (aParam.signal == "resume") {
+        // Если сценарий уже выполняется, просто закроем его.
+        Core.postEvent(EventType.UpdateScenario, "close");
+    } else {
+        Core.graphics.show("AutoEncashment", { reset: true });
+    }
 }

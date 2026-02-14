@@ -1918,6 +1918,11 @@
         </message>
         <message>
             <location filename="../GUI/CountryLocale.h" line="15" />
+            <source>TAJIKISTAN</source>
+            <translation>ТАДЖИКИСТАН</translation>
+        </message>
+        <message>
+            <location filename="../GUI/CountryLocale.h" line="16" />
             <source>UZBEKISTAN</source>
             <translation>УЗБЕКИСТАН</translation>
         </message>

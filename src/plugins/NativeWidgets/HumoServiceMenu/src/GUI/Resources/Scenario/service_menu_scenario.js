@@ -3,12 +3,12 @@
 //------------------------------------------------------------------------------
 // Инициализация сценария.
 function initialize(scenarioName) {
-  // Состояния
-  ScenarioEngine.addState('main', { initial: true });
-  ScenarioEngine.addState('done', { final: true });
+    // Состояния
+    ScenarioEngine.addState("main", { initial: true });
+    ScenarioEngine.addState("done", { final: true });
 
-  // Переходы между состояниями
-  ScenarioEngine.addTransition('main', 'done', 'close');
+    // Переходы между состояниями
+    ScenarioEngine.addTransition("main", "done", "close");
 }
 
 //------------------------------------------------------------------------------
@@ -20,13 +20,13 @@ function onStop(aParams) {}
 
 // Можно ли остановить.
 function canStop() {
-  Core.graphics.notify(EventType.TryStopScenario, {});
+    Core.graphics.notify(EventType.TryStopScenario, {});
 
-  return false;
+    return false;
 }
 
 //------------------------------------------------------------------------------
 // Обработчик входа в состояние main.
 function mainEnterHandler() {
-  Core.graphics.show('ServiceMenu', { reset: true });
+    Core.graphics.show("ServiceMenu", { reset: true });
 }

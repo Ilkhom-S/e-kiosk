@@ -10,6 +10,7 @@ extern const char Austria[];
 extern const char Russia[];
 extern const char Ukraine[];
 extern const char Kazakhstan[];
+extern const char Tajikistan[];
 extern const char Uzbekistan[];
 
 //------------------------------------------------------------------------
