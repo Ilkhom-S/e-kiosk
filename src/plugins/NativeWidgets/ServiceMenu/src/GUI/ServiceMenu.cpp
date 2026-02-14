@@ -68,8 +68,9 @@ REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
 ServiceMenu::ServiceMenu(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
     : m_Environment(aFactory), m_InstancePath(std::move(aInstancePath)),
       m_MainServiceWindow(nullptr), m_IsReady(true) {
-    SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
+    void *voidPtr = reinterpret_cast<void *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    SDK::PaymentProcessor::ICore *core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
 
     if (core) {
         m_Backend = QSharedPointer<ServiceMenuBackend>(new ServiceMenuBackend(
