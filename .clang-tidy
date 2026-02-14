@@ -39,7 +39,8 @@ Checks: >
     -modernize-use-equals-default,
     -modernize-use-using,
     -modernize-avoid-bind,
-    -modernize-return-braced-init-list    -modernize-use-nodiscard,
+    -modernize-return-braced-init-list,
+    -modernize-use-nodiscard,
 # Treat warnings as errors in CI
 WarningsAsErrors: ""
 
