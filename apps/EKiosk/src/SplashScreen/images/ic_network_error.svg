@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+    <!-- Top Arc: Solid White -->
+    <path fill="#FFFFFF"
+        d="M128,40C78.3,40,32.3,58.4,0,88.7l22.4,26.4c27.1-25.5,63.1-41.1,105.6-41.1s78.5,15.6,105.6,41.1L256,88.7C223.7,58.4,177.7,40,128,40z" />
+
+    <!-- Middle Arc: Solid White -->
+    <path fill="#FFFFFF"
+        d="M128,100c-33.1,0-63.7,12.3-85.3,32.5l22.4,26.4c16.3-15.3,38.5-24.9,62.9-24.9s46.6,9.6,62.9,24.9l22.4-26.4C191.7,112.3,161.1,100,128,100z" />
+
+    <!-- Core Signal Dot: Humo Orange (The Brand Soul) -->
+    <circle cx="128" cy="190" r="30" fill="#FA5300" />
+
+    <!-- Inner Depth: Midnight Black Cut-out -->
+    <circle cx="128" cy="190" r="12" fill="#1C1C1E" />
+</svg>

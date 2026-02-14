@@ -19,6 +19,8 @@ set(VCPKG_INSTALL_OPTIONS "--no-print-usage" CACHE STRING "")
 
 project(EKioskRoot VERSION 1.0.0 LANGUAGES CXX C)
 
+add_compile_definitions($<$<CONFIG:Debug>:_DEBUG>)
+
 if(APPLE)
     add_link_options("-Wl,-no_warn_duplicate_libraries")
     enable_language(OBJCXX)

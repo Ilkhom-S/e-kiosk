@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="130" viewBox="0 0 130 130">
+    <g fill-rule="evenodd" clip-rule="evenodd">
+        <!-- Solid Shackle: Humo Orange (Locked State) -->
+        <path fill="#FA5300"
+            d="M35,60V45c0-16.6,13.4-30,30-30s30,13.4,30,30v15h-15V45c0-8.3-6.7-15-15-15s-15,6.7-15,15v15H35z" />
+
+        <!-- Main Lock Body: Solid White for Sunlight Contrast -->
+        <rect x="20" y="60" width="90" height="60" rx="10" fill="#FFFFFF" />
+
+        <!-- Keyhole Detail: Midnight Black Cut-out -->
+        <circle cx="65" cy="88" r="9" fill="#1C1C1E" />
+        <path fill="#1C1C1E" d="M61,88h8l2,18h-12z" />
+    </g>
+</svg>

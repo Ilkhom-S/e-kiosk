@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+    <g>
+        <!-- Token Main Body: Solid White for maximum sunlight contrast -->
+        <rect x="78" y="20" width="100" height="150" rx="15" fill="#FFFFFF" />
+
+        <!-- USB Connector: Humo Orange (The Brand Interface) -->
+        <rect x="100" y="170" width="56" height="66" rx="4" fill="#FA5300" />
+
+        <!-- Internal Security Chip: Midnight Black Cut-out -->
+        <rect x="105" y="55" width="46" height="60" rx="6" fill="#1C1C1E" />
+
+        <!-- Chip Detail: Humo Orange (The Digital "Soul") -->
+        <circle cx="128" cy="85" r="10" fill="#FA5300" />
+
+        <!-- Connector Detail: Midnight Black Cut-outs -->
+        <rect x="110" y="185" width="12" height="18" rx="2" fill="#1C1C1E" />
+        <rect x="134" y="185" width="12" height="18" rx="2" fill="#1C1C1E" />
+    </g>
+</svg>

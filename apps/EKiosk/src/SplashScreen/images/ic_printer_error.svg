@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+    <g>
+        <!-- Main Printer Chassis: Solid White -->
+        <path fill="#FFFFFF"
+            d="M216.4,52.1h-21V18.4H60.6v33.7h-21C24.9,52.1,10,61.1,10,80.9v65.2c0,20,14.9,32.5,29.6,32.5c0,0,16,0,21,0v59h2.6H69h118h4.2h4.2v-59c5.4,0,21,0,21,0c14.7,0,29.6-11.9,29.6-28.2V80.9C246,62.1,231.1,52.1,216.4,52.1z" />
+
+        <!-- Internal Receipt/Paper Area: Midnight Black -->
+        <rect x="69" y="136.4" width="118" height="92.7" fill="#1C1C1E" />
+
+        <!-- Top Paper Roll/Cover Detail: Midnight Black -->
+        <rect x="69" y="26.9" width="118" height="25.2" fill="#1C1C1E" />
+
+        <!-- Status Indicator: Humo Orange -->
+        <rect x="203.3" y="77.5" width="9" height="8.4" fill="#FA5300" />
+
+        <!-- Receipt Lines/Text: Humo Orange -->
+        <path fill="#FA5300" d="M77.4,153.3h101.1v8.4H77.4V153.3z" />
+        <path fill="#FA5300" d="M77.4,178.6h101.1v8.4H77.4V178.6z" />
+        <path fill="#FA5300" d="M77.4,203.9h101.1v8.4H77.4V203.9z" />
+    </g>
+</svg>

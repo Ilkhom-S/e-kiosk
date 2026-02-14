@@ -1,3 +1,4 @@
+<!DOCTYPE RCC>
 <RCC>
     <qresource prefix="/GraphicsItems">
         <file>splash_screen.ini</file>
@@ -12,8 +13,19 @@
         <file>images/ic_printer_error.png</file>
         <file>images/ic_update.png</file>
         <file>images/ic_validator_error.png</file>
-        <file>images/logo_cyberplat_big.png</file>
         <file>images/waiting.gif</file>
         <file>images/ic_token_error.png</file>
+        <file>images/humo-logo-light.svg</file>
+        <file>images/humo-logo.svg</file>
+        <file>images/ic_balance_error.svg</file>
+        <file>images/ic_blocked.svg</file>
+        <file>images/ic_config.svg</file>
+        <file>images/ic_crypt.svg</file>
+        <file>images/ic_printer_error.svg</file>
+        <file>images/ic_network_error.svg</file>
+        <file>images/ic_token_error.svg</file>
+        <file>images/ic_update.svg</file>
+        <file>images/ic_card_error.svg</file>
+        <file>images/ic_validator_error.svg</file>
     </qresource>
 </RCC>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+    <g>
+        <!-- Main Validator Chassis: Solid White for maximum contrast -->
+        <rect x="50" y="30" width="156" height="196" rx="15" fill="#FFFFFF" />
+
+        <!-- The "Bezel" / Money Entry: Humo Orange (The Brand Interface) -->
+        <rect x="40" y="60" width="176" height="45" rx="8" fill="#FA5300" />
+
+        <!-- Entry Slot: Midnight Black Cut-out -->
+        <rect x="65" y="75" width="126" height="15" rx="4" fill="#1C1C1E" />
+
+        <!-- Stacker/Cassette Indicator: Midnight Black Cut-out -->
+        <rect x="85" y="130" width="86" height="60" rx="6" fill="#1C1C1E" />
+
+        <!-- Internal Banknote Detail: Solid White (Layered Depth) -->
+        <rect x="100" y="145" width="56" height="30" rx="2" fill="#FFFFFF" opacity="0.8" />
+
+        <!-- Status LED: Humo Orange (Active Brand Detail) -->
+        <circle cx="185" cy="48" r="10" fill="#FA5300" />
+    </g>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="130" viewBox="0 0 130 130">
+    <!-- Main Card Body: Solid White for maximum sunlight contrast -->
+    <rect x="15" y="35" width="100" height="65" rx="8" fill="#FFFFFF" />
+
+    <!-- Magnetic Stripe: Midnight Black (Cut-out for "Rich" Depth) -->
+    <rect x="15" y="48" width="100" height="15" fill="#1C1C1E" />
+
+    <!-- EMV Security Chip: Humo Orange (The "Brand/Security" Heart) -->
+    <rect x="28" y="70" width="22" height="18" rx="3" fill="#FA5300" />
+
+    <!-- Chip Details: Midnight Black (Stitched Look) -->
+    <path d="M34,70 V88 M44,70 V88 M28,79 H50" stroke="#1C1C1E" stroke-width="2" />
+
+    <!-- Signature Line: Midnight Black (Subtle Detail) -->
+    <rect x="60" y="75" width="40" height="8" rx="1" fill="#1C1C1E" opacity="0.6" />
+</svg>

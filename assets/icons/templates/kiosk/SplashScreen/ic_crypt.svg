@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="130" viewBox="0 0 130 130">
+    <!-- Key Head: Humo Orange (The Brand/Security Soul) -->
+    <circle cx="35" cy="65" r="28" fill="#FA5300" />
+    <!-- Internal Cut-out: Midnight Black for "Rich" Depth -->
+    <circle cx="35" cy="65" r="12" fill="#1C1C1E" />
+
+    <!-- Key Shaft: Solid White for Sunlight Contrast -->
+    <rect x="60" y="58" width="60" height="14" rx="4" fill="#FFFFFF" />
+
+    <!-- Key Teeth: Solid White (High-Weight) -->
+    <rect x="85" y="72" width="12" height="15" rx="2" fill="#FFFFFF" />
+    <rect x="105" y="72" width="12" height="15" rx="2" fill="#FFFFFF" />
+</svg>

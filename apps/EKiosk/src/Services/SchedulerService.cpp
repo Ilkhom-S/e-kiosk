@@ -82,7 +82,7 @@ SchedulerService::SchedulerService(IApplication *aApplication)
     registerTaskType<LogArchiver>("LogArchiver");
     registerTaskType<LogRotate>("LogRotate");
     registerTaskType<RunUpdater>("RunUpdater");
-    registerTaskType<TimeSync>("TimeSync");
+    // registerTaskType<TimeSync>("TimeSync");
     registerTaskType<OnOffDisplay>("OnOffDisplay");
     registerTaskType<UpdateRemoteContent>("UpdateRemoteContent");
 
