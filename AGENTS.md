@@ -54,7 +54,9 @@ tests/          → Mirror src/ structure
 
 #### **Russian Technical Comments Style**
 
-Use developer Russian, not literary Russian. Follow these patterns:
+Use developer Russian, not literary Russian. Follow this principle:
+
+**Use Russian when technical term exists & gives same meaning to developers. Use English/transliteration only when Russian equivalent doesn't express the exact technical meaning.**
 
 **CORRECT** ✅:
 
@@ -62,6 +64,8 @@ Use developer Russian, not literary Russian. Follow these patterns:
 // Пытаемся создать shared memory segment
 // Если segment уже существует, create() вернет false
 // attach/detach, чтобы очистить segment от мертвого процесса
+// ServiceController наследует ICore и IExternalInterface из разных иерархий
+// Используем reinterpret_cast для конвертирования между ними (безопасно, так как тип объекта известен)
 // У плагина нет параметров
 // Блокируем скринсейвер
 // Парсим параметры командной строки
@@ -73,13 +77,17 @@ Use developer Russian, not literary Russian. Follow these patterns:
 // Попытаемся произвести инициализацию сегмента общей памяти
 // Убедимся в наличии осиротелого состояния
 // Предотвращаем осирочение памяти
+// ServiceController наследует ICore и IExternalInterface из разных hierarchies
+// Используем reinterpret_cast для конвертирования между ними (safe, так как object type известен)
 ```
 
-**Pattern**: Direct imperative verbs + English technical terms + practical language:
+**Pattern**: 
 
-- Use English tech terms as-is: `segment`, `attach/detach`, `payload`, `handler`, etc.
-- Direct actions: "Пытаемся", "Проверяем", "Создаем", "Отсоединяемся"
-- Practical descriptions: "мертвый segment", "остаток от краша", not flowery language
+1. **Direct Russian for common technical terms**: "иерархий" (hierarchies), "тип объекта" (object type), "безопасно" (safely/guaranteed), "расширение" (extension), "путь" (path)
+2. **Keep English for concepts without clear Russian dev meaning**: `segment`, `attach/detach`, `reinterpret_cast`, `handler`, `payload`
+3. **Use transliterated Russian or English verbs when Russian doesn't fit**: "парсим" (parse), "мап" (map), "логгер" (logger)
+4. **Direct action verbs**: "Пытаемся", "Проверяем", "Создаем", "Отсоединяемся"
+5. **Practical, not flowery language**: "мертвый segment", "остаток от краша", "тип объекта известен"
 
 ### **CMake**
 
