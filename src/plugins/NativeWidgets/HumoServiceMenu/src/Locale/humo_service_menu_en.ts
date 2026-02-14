@@ -1889,10 +1889,9 @@
             <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="65" />
             <source>#saved_successfully</source>
             <translation>Congratulations, the terminal is set up!
-                Click on the button &quot;Finish&quot; and in a while the terminal software will
-                have configuration
-                files downloaded. Once all required files are retrieved, the terminal will be ready
-                to process payments.
+                Click on the button &quot;Finish&quot; and in a while the terminal software will download
+                the required configuration files from Humo server (this may take a while). Once all
+                required files are retrieved, the terminal will be ready to process payments.
                 NOTE: make sure to confirm generated keys on the dealer&apos;s office web site!</translation>
         </message>
     </context>
