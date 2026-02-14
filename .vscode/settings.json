@@ -57,6 +57,10 @@
         },
         "miDebuggerPath": "/Users/ilkhom/.vscode/extensions/ms-vscode.cpptools-1.30.3-darwin-arm64/debugAdapters/lldb-mi/bin/lldb-mi"
     },
+    "terminal.integrated.env.osx": {
+        "QML_IMPORT_PATH": "/Users/ilkhom/Qt/6.10.1/macos/qml",
+        "QML2_IMPORT_PATH": "/Users/ilkhom/Qt/6.10.1/macos/qml"
+    },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "chat.tools.terminal.autoApprove": {
         "clang++": true
