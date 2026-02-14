@@ -52,7 +52,7 @@ bool PluginService::initialize() {
     m_PluginLoader->addDirectory(m_Application->getUserPluginPath());
 
 #ifndef _DEBUG
-    // Запускаем background verification для проверки digital signature плагинов.
+    // Запускаем фоновую проверку плагинов на наличие цифровой подписи.
     m_PluginVerifierSynchronizer.addFuture(QtConcurrent::run([this]() {
         verifyPlugins();
         return;
@@ -77,7 +77,7 @@ constexpr int KSystemMetricShuttingDown = 0x2000;
 
 //------------------------------------------------------------------------------
 bool PluginService::shutdown() {
-    // Не выгружаем libraries на выходе из ПО в процессе перезагрузки системы. #48972
+    // Не выгружаем библиотеки на выходе из ПО в процессе перезагрузки системы. #48972
 #ifdef Q_OS_WIN
     if (GetSystemMetrics(KSystemMetricShuttingDown) == 0) {
 #endif
@@ -214,8 +214,8 @@ SDK::Plugin::IExternalInterface *PluginService::getInterface(const QString &aInt
             return nullptr;
         }
 
-        // ServiceController наследует ICore и IExternalInterface из разных hierarchies.
-        // Используем reinterpret_cast для конвертации между ними (safe, так как object type
+        // ServiceController наследует ICore и IExternalInterface из разных иерархий.
+        // Используем reinterpret_cast для конвертирования между ними (safe, так как object type
         // известен).
         auto *result = reinterpret_cast<SDK::Plugin::IExternalInterface *>(core);
         return result;
@@ -232,10 +232,10 @@ void PluginService::verifyPlugins() {
     m_UnsignedPlugins.clear();
 
     auto shortPath = [=](const QString &aFullPath) -> QString {
-        // Удаляем extension.
+        // Удаляем расширение.
         QString result = aFullPath.left(aFullPath.length() - 4).toLower();
 
-        // Удаляем path к plugin/instance.
+        // Удаляем путь к плагину/экземпляру.
         return result.contains(m_Application->getUserPluginPath().toLower())
                    ? result.mid(m_Application->getUserPluginPath().length()) + ".u"
                    : result.mid(QString(IApplication::getWorkingDirectory() + QDir::separator() +
@@ -245,7 +245,7 @@ void PluginService::verifyPlugins() {
 
     QStringList modules = m_PluginLoader->getPluginPathList(QRegularExpression(".*"));
 
-    // Добавляем проверку executable файлов.
+    // Добавим проверку исполняемых файлов.
 
     QStringList exeModules = QStringList() << CWatchService::Modules::WatchService
                                            << CWatchService::Modules::PaymentProcessor
