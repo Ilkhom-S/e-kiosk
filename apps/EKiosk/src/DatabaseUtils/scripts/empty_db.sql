@@ -1,3 +1,4 @@
+-- sqlite
 CREATE TABLE IF NOT EXISTS `device` (
   `id`        INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   `name`      TEXT NOT NULL UNIQUE,
