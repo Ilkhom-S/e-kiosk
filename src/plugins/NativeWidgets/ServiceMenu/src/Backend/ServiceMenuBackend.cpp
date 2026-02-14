@@ -318,19 +318,29 @@ void ServiceMenuBackend::needUpdateConfigs() {
 
 //------------------------------------------------------------------------
 bool ServiceMenuBackend::hasAnyPassword() const {
-    SDK::PaymentProcessor::SServiceMenuPasswords serviceMenuSettings =
-        m_TerminalSettings->getServiceMenuPasswords();
-    bool admin =
-        serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Service]
-            .isEmpty();
-    bool tech =
-        serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Technician]
-            .isEmpty();
-    bool encash =
-        serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Collection]
-            .isEmpty();
+    if (!m_TerminalSettings) {
+        m_Log->write(LogLevel::Error, "ServiceMenuBackend: m_TerminalSettings is null");
+        return false;
+    }
 
-    return !(admin && tech && encash);
+    try {
+        SDK::PaymentProcessor::SServiceMenuPasswords serviceMenuSettings =
+            m_TerminalSettings->getServiceMenuPasswords();
+        bool admin =
+            serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Service]
+                .isEmpty();
+        bool tech =
+            serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Technician]
+                .isEmpty();
+        bool encash =
+            serviceMenuSettings.passwords[SDK::PaymentProcessor::CServiceMenuPasswords::Collection]
+                .isEmpty();
+
+        return !(admin && tech && encash);
+    } catch (const std::exception &e) {
+        m_Log->write(LogLevel::Error, QString("hasAnyPassword: %1").arg(e.what()));
+        return false;
+    }
 }
 
 //---------------------------------------------------------------------------

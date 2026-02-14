@@ -562,21 +562,26 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
 SServiceMenuPasswords TerminalSettings::getServiceMenuPasswords() const {
     SServiceMenuPasswords passwords;
 
-    passwords.phone = m_properties.get("config.service_menu.phone", QString());
-    passwords.operatorId = m_properties.get("config.service_menu.operator", -1);
+    try {
+        passwords.phone = m_properties.get("config.service_menu.phone", QString());
+        passwords.operatorId = m_properties.get("config.service_menu.operator", -1);
 
-    std::array<QString, 4> passwordTypes = {CServiceMenuPasswords::Service,
-                                            CServiceMenuPasswords::Screen,
-                                            CServiceMenuPasswords::Collection,
-                                            CServiceMenuPasswords::Technician};
+        std::array<QString, 4> passwordTypes = {CServiceMenuPasswords::Service,
+                                                CServiceMenuPasswords::Screen,
+                                                CServiceMenuPasswords::Collection,
+                                                CServiceMenuPasswords::Technician};
 
-    for (const auto &passwordType : passwordTypes) {
-        try {
-            passwords.passwords[passwordType] = m_properties.get<QString>(
-                (QString("config.service_menu.") + passwordType).toStdString());
-        } catch (std::exception &e) {
-            toLog(LogLevel::Error, QString("Error %1.").arg(e.what()));
+        for (const auto &passwordType : passwordTypes) {
+            try {
+                passwords.passwords[passwordType] = m_properties.get<QString>(
+                    (QString("config.service_menu.") + passwordType).toStdString());
+            } catch (std::exception &e) {
+                toLog(LogLevel::Error,
+                      QString("Error loading password %1: %2.").arg(passwordType).arg(e.what()));
+            }
         }
+    } catch (std::exception &e) {
+        toLog(LogLevel::Error, QString("Error reading service menu settings: %1.").arg(e.what()));
     }
 
     return passwords;
