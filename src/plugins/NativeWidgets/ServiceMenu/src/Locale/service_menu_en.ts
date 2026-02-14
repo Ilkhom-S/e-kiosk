@@ -1917,6 +1917,11 @@ NOTE: make sure to confirm generated keys on the dealer&apos;s office web site!<
         <source>UZBEKISTAN</source>
         <translation>UZBEKISTAN</translation>
     </message>
+    <message>
+        <location filename="../GUI/CountryLocale.h" line="16"/>
+        <source>TAJIKISTAN</source>
+        <translation>TAJIKISTAN</translation>
+    </message>
 </context>
 <context>
     <name>SetupServiceWindow</name>

@@ -1914,6 +1914,11 @@
         <source>UZBEKISTAN</source>
         <translation>УЗБЕКИСТАН</translation>
     </message>
+    <message>
+        <location filename="../GUI/CountryLocale.h" line="16"/>
+        <source>TAJIKISTAN</source>
+        <translation>ТАДЖИКИСТАН</translation>
+    </message>
 </context>
 <context>
     <name>SetupServiceWindow</name>
