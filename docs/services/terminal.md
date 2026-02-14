@@ -152,4 +152,3 @@ The `ETerminalError::Enum` defines terminal error conditions:
 - Implementation: [TerminalService.h](../../apps/EKiosk/src/Services/TerminalService.h)
 - Implementation: [TerminalService.cpp](../../apps/EKiosk/src/Services/TerminalService.cpp)
 - Error constants: [HookConstants.h](../../include/SDK/PaymentProcessor/Core/HookConstants.h)
-

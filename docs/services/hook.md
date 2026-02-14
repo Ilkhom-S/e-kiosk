@@ -74,6 +74,7 @@ hooks and their signatures is NOT public API.
 ## Future Plans
 
 The commented-out interface in the code suggests future plans for:
+
 - Proper IHookService interface exposure
 - Named hook registration
 - Return value handling

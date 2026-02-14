@@ -160,7 +160,7 @@ int updateId = remoteService->registerUpdateCommand(
     "all"
 );
 
-// Register advertisement content update  
+// Register advertisement content update
 int adUpdateId = remoteService->registerUpdateCommand(
     IRemoteService::AdUpdate,
     QUrl("https://server.com/ad/meta"),
@@ -201,13 +201,13 @@ void handleRemoteCommand(int commandId) {
     try {
         // Perform command operation
         bool success = executeRemoteCommand(commandId);
-        
+
         int statusCode = success ? IRemoteService::OK : IRemoteService::Error;
         remoteService->commandStatusSent(commandId, statusCode);
-        
+
         LOG(log, LogLevel::Info, QString("Command %1 status sent: %2")
             .arg(commandId).arg(statusCode));
-            
+
     } catch (const std::exception& e) {
         remoteService->commandStatusSent(commandId, IRemoteService::Error);
         LOG(log, LogLevel::Error, QString("Command %1 failed: %2")
@@ -268,6 +268,5 @@ try {
 - [Settings Service](settings.md) - Configuration management
 
 ## File Reference
-
 
 - Implementation: [IRemoteService.h](../../include/SDK/PaymentProcessor/Core/IRemoteService.h)

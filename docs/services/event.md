@@ -128,6 +128,7 @@ namespace EEventType {
 ## Design Pattern
 
 Events follow the observer pattern:
+
 1. Component calls `subscribe()` to register Qt slot
 2. Event Service maintains list of subscribers
 3. When `sendEvent()` is called, Service invokes all registered slots
