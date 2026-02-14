@@ -339,6 +339,9 @@ Rectangle {
     Timer {
         id: screenActivityTimer
         interval: 5000 // 5 seconds to complete the sequence
-        onTriggered: onScreenActivityTimeout()
+        onTriggered: {
+            global.clickSequence = "";
+            Core.log.normal("Admin sequence reset due to timeout.");
+        }
     }
 }
