@@ -71,7 +71,8 @@ AdRemotePlugin::AdRemotePlugin(SDK::Plugin::IEnvironment *aFactory, QString aIns
 
 //------------------------------------------------------------------------------
 AdRemotePlugin::~AdRemotePlugin() {
-    disable();
+    // Явно указываем класс, чтобы избежать virtual dispatch в деструкторе
+    AdRemotePlugin::disable();
 }
 
 //------------------------------------------------------------------------------
