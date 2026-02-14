@@ -82,7 +82,7 @@ void DialupConnectionWindow::fillTemplateList(const QStringList &aTemplates) {
 void DialupConnectionWindow::onUpdated() {
     btnTest->setEnabled(lwConnections->count() != 0);
     btnRemove->setEnabled(lwConnections->count() != 0);
-    btnCreate->setEnabled(lwModems->count() && lwTemplates->count());
+    btnCreate->setEnabled((lwModems->count() != 0) && (lwTemplates->count() != 0));
 }
 
 //---------------------------------------------------------------------------

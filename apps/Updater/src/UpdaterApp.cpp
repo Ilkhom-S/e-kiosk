@@ -188,7 +188,8 @@ void UpdaterApp::run() {
     bool woBITS = getArgument(Opt::WithoutBITS).compare("true", Qt::CaseInsensitive) == 0;
 
     // Отключение BITS через updater.ini
-    woBITS = settings.value("bits/ignore", woBITS).toBool();
+    Q_UNUSED(woBITS);
+    Q_UNUSED(settings);
 
     // Создаем файл с отчетом.
     m_ReportBuilder.open(cmdId, server, md5);

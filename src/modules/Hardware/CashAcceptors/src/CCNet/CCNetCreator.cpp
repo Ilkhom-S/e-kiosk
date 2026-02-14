@@ -152,7 +152,7 @@ bool CCNetCreator::writeHead(const QByteArray &aBuffer) {
     QByteArray commandData;
 
     for (int i = 0; i < 4; ++i) {
-        commandData.append(uchar(size >> (i * 8)));
+        commandData.append(static_cast<char>((size >> (i * 8)) & 0xFF));
     }
 
     commandData.append(aBuffer.left(CCCNetCreator::UpdatingFirmware::HeadSize));
@@ -179,7 +179,7 @@ bool CCNetCreator::writeBlock(const QByteArray &aBuffer, int aIndex, bool aLast)
                 (aIndex * CCCNetCreator::UpdatingFirmware::BlockSize);
 
     QByteArray commandData;
-    commandData.append(uchar(aIndex));
+    commandData.append(static_cast<char>(aIndex & 0xFF));
     commandData.append(aBuffer.mid(begin, CCCNetCreator::UpdatingFirmware::BlockSize));
 
     QByteArray answer;

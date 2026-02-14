@@ -64,7 +64,7 @@ BasicApplication::BasicApplication(const QString &aName,
 #ifdef Q_OS_MAC
     if (basePath.contains(".app/Contents/MacOS")) {
         // Убираем .app/Contents/MacOS из пути, чтобы получить директорию с .app
-        int appBundleIndex = basePath.indexOf(".app/Contents/MacOS");
+        qsizetype appBundleIndex = basePath.indexOf(".app/Contents/MacOS");
         if (appBundleIndex != -1) {
             QString appPath = basePath.left(appBundleIndex + 4); // +4 для ".app"
             // Получаем родительскую директорию .app

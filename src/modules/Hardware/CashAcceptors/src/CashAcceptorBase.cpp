@@ -140,9 +140,8 @@ bool CashAcceptorBase<T>::isEnabled(const CCashAcceptor::TStatuses &aStatuses) c
     if (!std::accumulate(lastStatuses.begin(),
                          lastStatuses.end(),
                          0,
-                         [](int aStatusAmount, const TStatusCodes &aStatusCodes) -> int {
-                             return aStatusAmount + aStatusCodes.size();
-                         })) {
+                         [](qsizetype aStatusAmount, const TStatusCodes &aStatusCodes)
+                             -> qsizetype { return aStatusAmount + aStatusCodes.size(); })) {
         this->toLog(
             LogLevel::Normal,
             QString("No actual last statuses, it is impossible to know the device is turned on"));
@@ -181,9 +180,8 @@ bool CashAcceptorBase<T>::isDisabled(const CCashAcceptor::TStatuses &aStatuses) 
     if (!std::accumulate(lastStatuses.begin(),
                          lastStatuses.end(),
                          0,
-                         [](int aStatusAmount, const TStatusCodes &aStatusCodes) -> int {
-                             return aStatusAmount + aStatusCodes.size();
-                         })) {
+                         [](qsizetype aStatusAmount, const TStatusCodes &aStatusCodes)
+                             -> qsizetype { return aStatusAmount + aStatusCodes.size(); })) {
         this->toLog(
             LogLevel::Normal,
             QString("No actual last statuses, it is impossible to know the device is turned off"));
@@ -370,7 +368,7 @@ template <class T> void CashAcceptorBase<T>::employParList() {
         if (std::find_if(this->m_EscrowParTable.data().begin(),
                          this->m_EscrowParTable.data().end(),
                          [&](const SPar &aPar) -> bool {
-                             bool result = aPar.nominal && !aPar.enabled;
+                             bool result = (aPar.nominal != 0.0) && !aPar.enabled;
                              return result;
                          }) != this->m_EscrowParTable.data().end()) {
             QString log = this->m_DeviceName + ": Nominal(s) disabled:";

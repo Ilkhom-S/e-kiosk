@@ -188,7 +188,7 @@ void DatabaseUtils::removeUnknownDevice(const QStringList &aCurrentDevicesList) 
             result << QString("'%1'").arg(c);
         }
 
-        result << QString("'%1'").arg(PPSDK::CDatabaseConstants::Devices::Terminal);
+        result << QString("'%1'").arg(QString(PPSDK::CDatabaseConstants::Devices::Terminal));
 
         return result.join(",");
     };
