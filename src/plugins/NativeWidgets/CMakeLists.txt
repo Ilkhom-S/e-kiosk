@@ -1,4 +1,4 @@
 # NativeWidgets plugins
 
-# add_subdirectory(ServiceMenu)
-add_subdirectory(HumoServiceMenu)
+add_subdirectory(ServiceMenu)
+# add_subdirectory(HumoServiceMenu)
