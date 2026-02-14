@@ -75,7 +75,6 @@
         "readability-identifier-naming",
         "cppcoreguidelines-special-member-functions",
         "hicpp-special-member-functions",
-        "modernize-use-default-member-init",
         "cppcoreguidelines-avoid-const-or-ref-data-members",
         "misc-non-private-member-variables-in-classes",
         "readability-redundant-access-specifiers",
