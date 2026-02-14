@@ -44,11 +44,12 @@ PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, QStr
         m_Network = networkService->getNetworkTaskManager();
 
         m_Initialized = true;
-    } catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &) {
+    } catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &e) {
         m_Initialized = false;
-        // Логирование в конструкторе не используем - виртуальный вызов getLog() приведет
-        // к обходу virtual dispatch. Ошибка будет обнаружена при вызове isReady() или других
-        // методов.
+        // Логирование в catch блоке безопасно - объект уже инициализирован
+        LOG(getLog(),
+            LogLevel::Error,
+            QString("Failed to initialize payment factory: %1.").arg(e.what()));
     }
 }
 
