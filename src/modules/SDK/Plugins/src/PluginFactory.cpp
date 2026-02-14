@@ -38,9 +38,8 @@ PluginFactory::PluginFactory() : m_Kernel(nullptr), m_Initialized(false) {}
 //------------------------------------------------------------------------------
 PluginFactory::~PluginFactory() {
     if (m_Initialized) {
-        // Вызов виртуального метода в деструкторе намеренный.
-        // Виртуальная диспетчеризация здесь не используется, вызывается только базовая версия.
-        shutdown();
+        // Явно указываем класс, чтобы избежать virtual dispatch в деструкторе
+        PluginFactory::shutdown();
     }
 }
 
@@ -123,7 +122,8 @@ void PluginFactory::shutdown() {
         // Don't log during Qt shutdown to avoid crashes in test framework
         if (QCoreApplication::instance() != nullptr) {
             m_Kernel->getLog()->write(
-                LogLevel::Normal, QString("Shutting down plugin library \"%1\".").arg(getName()));
+                LogLevel::Normal,
+                QString("Shutting down plugin library \"%1\".").arg(PluginFactory::getName()));
         }
 
         foreach (IPlugin *plugin, m_CreatedPlugins.keys()) {
