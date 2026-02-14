@@ -182,8 +182,8 @@ QStringList TerminalSettings::getDeviceList() const {
     QStringList deviceList;
 
     static TPtree emptyTreeDeviceList;
-    BOOST_FOREACH (const TPtree::value_type &value,
-                   m_properties.get_child("terminal.hardware", emptyTreeDeviceList)) {
+    const auto &deviceTree = m_properties.get_child("terminal.hardware", emptyTreeDeviceList);
+    BOOST_FOREACH (const TPtree::value_type &value, deviceTree) {
         deviceList.append(value.second.get_value<QString>());
     }
 
@@ -237,7 +237,8 @@ QMap<int, SKeySettings> TerminalSettings::getKeys() const {
     QMap<int, SKeySettings> keys;
 
     static TPtree emptyTreeKeys;
-    BOOST_FOREACH (const TPtree::value_type &value, m_properties.get_child("keys", emptyTreeKeys)) {
+    const auto &keysTree = m_properties.get_child("keys", emptyTreeKeys);
+    BOOST_FOREACH (const TPtree::value_type &value, keysTree) {
         try {
             if (value.first == "<xmlattr>") {
                 continue;
@@ -287,7 +288,8 @@ void TerminalSettings::setKey(const SKeySettings &aKey, bool aReplaceIfExists) {
     };
 
     static TPtree emptyTreeSetKey;
-    BOOST_FOREACH (TPtree::value_type &value, m_properties.get_child("keys", emptyTreeSetKey)) {
+    auto &keysSetTree = m_properties.get_child("keys", emptyTreeSetKey);
+    BOOST_FOREACH (TPtree::value_type &value, keysSetTree) {
         try {
             if (value.first == "<xmlattr>") {
                 continue;
@@ -395,8 +397,9 @@ QVariantMap TerminalSettings::getChargeProviderAccess() const {
     QVariantMap result;
 
     static TPtree emptyTreeChargeAccess;
-    BOOST_FOREACH (const TPtree::value_type &value,
-                   m_properties.get_child("system.charge_access", emptyTreeChargeAccess)) {
+    const auto &chargeAccessTree =
+        m_properties.get_child("system.charge_access", emptyTreeChargeAccess);
+    BOOST_FOREACH (const TPtree::value_type &value, chargeAccessTree) {
         result.insert(QString::fromStdString(value.first),
                       value.second.get_value<QString>().split(","));
     }
@@ -536,8 +539,9 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
         m_properties.get("config.terminal.block_cheated_payment", settings.blockCheatedPayment);
 
     static TPtree emptyTreeBlockByNote;
-    BOOST_FOREACH (const TPtree::value_type &notes,
-                   m_properties.get_child("config.terminal.block_by_note", emptyTreeBlockByNote)) {
+    const auto &blockByNoteTree =
+        m_properties.get_child("config.terminal.block_by_note", emptyTreeBlockByNote);
+    BOOST_FOREACH (const TPtree::value_type &notes, blockByNoteTree) {
         BOOST_FOREACH (const TPtree::value_type &note, notes.second) {
             if (note.first == "<xmlattr>") {
                 updateBlockNotes(note.second.get<int>("nominal"),
