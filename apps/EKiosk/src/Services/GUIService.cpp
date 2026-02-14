@@ -117,6 +117,9 @@ bool GUIService::initialize() {
     loadNativeScenarios();
     loadAdSources();
 
+    // Rescan :/Scenario after plugins are loaded to pick up plugin-embedded scenarios
+    m_ScenarioEngine.addDirectory(":/Scenario");
+
     QVariantMap unitedSettings;
 
     auto parseIni = [&](const QString &aIniFile) {
