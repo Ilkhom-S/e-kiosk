@@ -46,6 +46,41 @@ tests/          → Mirror src/ structure
 /* @file Russian description */ // Required file header
 ```
 
+### **Comments Language Consistency**
+
+- **File headers & Russian code comments**: Russian (required for code internal to modules)
+- **TODO/DEPRECATED tags & architectural comments**: English (e.g., "TODO: DEPRECATED - this is a workaround...")
+- **Rationale**: Architectural decisions and deprecation notices are often read cross-team; code comments stay Russian to match existing codebase
+
+#### **Russian Technical Comments Style**
+
+Use developer Russian, not literary Russian. Follow these patterns:
+
+**CORRECT** ✅:
+
+```cpp
+// Пытаемся создать shared memory segment
+// Если segment уже существует, create() вернет false
+// attach/detach, чтобы очистить segment от мертвого процесса
+// У плагина нет параметров
+// Блокируем скринсейвер
+// Парсим параметры командной строки
+```
+
+**WRONG** ❌:
+
+```cpp
+// Попытаемся произвести инициализацию сегмента общей памяти
+// Убедимся в наличии осиротелого состояния
+// Предотвращаем осирочение памяти
+```
+
+**Pattern**: Direct imperative verbs + English technical terms + practical language:
+
+- Use English tech terms as-is: `segment`, `attach/detach`, `payload`, `handler`, etc.
+- Direct actions: "Пытаемся", "Проверяем", "Создаем", "Отсоединяемся"
+- Practical descriptions: "мертвый segment", "остаток от краша", not flowery language
+
 ### **CMake**
 
 ```cmake

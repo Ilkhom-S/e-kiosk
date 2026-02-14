@@ -35,17 +35,36 @@ PPApplication::PPApplication(const QString &aName,
       m_Protection("PaymentProcessorProtection") {
     catchUnhandledExceptions();
 
-    // Производим проверку на наличие еще одной запущенной копии приложения.
-    m_Protection.attach();
+    // TODO: DEPRECATED - This QSharedMemory-based single-instance protection is a temporary
+    // workaround for macOS until SingleApplication (thirdparty/SingleApplication) is fixed to work
+    // correctly on macOS. Once SingleApplication is verified working, replace this entire block
+    // with SingleApplication logic. See: https://github.com/itay-grudev/SingleApplication
+    // Проверяем, не запущен ли уже другой экземпляр приложения.
+    try {
+        // Пытаемся создать shared memory segment. Если segment уже существует, create() вернет
+        // false.
+        if (!m_Protection.create(1)) {
+            // Segment существует. Может быть другой экземпляр или остаток от краша.
+            // Пытаемся attach/detach, чтобы очистить segment от процесса, который уже закончился.
+            m_Protection.attach();
+            m_Protection.detach();
 
-    if (!m_Protection.create(1)) {
+            // Пытаемся создать снова. Если успешно - это был мертвый segment;
+            // если нет - значит кто-то другой его занимает.
+            if (!m_Protection.create(1)) {
+                m_Protection.detach();
+
+                ILog::getInstance(aName)->write(LogLevel::Warning,
+                                                "Another instance of application was terminated.");
+
+                throw std::runtime_error(
+                    "Can't run application, because another instance already running.");
+            }
+        }
+    } catch (...) {
+        // Отсоединяемся от shared memory даже при ошибке, чтобы не оставить мертвый segment.
         m_Protection.detach();
-
-        ILog::getInstance(aName)->write(LogLevel::Warning,
-                                        "Another instance of application was terminated.");
-
-        throw std::runtime_error(
-            "Can't run application, because another instance already running.");
+        throw;
     }
 
     SafeQApplication::setStyle("plastique");
