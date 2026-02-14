@@ -256,15 +256,20 @@ template <class T> void CashAcceptorBase<T>::logEnabledPars() {
              it != this->m_EscrowParTable.data().end();
              ++it) {
             if (!it.value().inhibit && it.value().enabled && (it.value().nominal != 0.0)) {
-                log +=
-                    QString("\nnominal %1: currency %2(\"%3\")%4")
-                        .arg(it->nominal, 5)
-                        .arg(it->currencyId)
-                        .arg(it->currency)
-                        .arg(onlyBillAcceptor ? ""
-                                              : ((it->cashReceiver == ECashReceiver::BillAcceptor)
-                                                     ? " in bill acceptor"
-                                                     : " in coin acceptor"));
+                QString deviceLocation;
+                if (onlyBillAcceptor) {
+                    deviceLocation = "";
+                } else {
+                    deviceLocation = (it->cashReceiver == ECashReceiver::BillAcceptor)
+                                         ? " in bill acceptor"
+                                         : " in coin acceptor";
+                }
+
+                log += QString("\nnominal %1: currency %2(\"%3\")%4")
+                           .arg(it->nominal, 5)
+                           .arg(it->currencyId)
+                           .arg(it->currency)
+                           .arg(deviceLocation);
             }
         }
 
@@ -375,15 +380,20 @@ template <class T> void CashAcceptorBase<T>::employParList() {
 
             for (auto &it : this->m_EscrowParTable.data()) {
                 if ((it.nominal != 0.0) && !it.enabled) {
-                    log +=
-                        QString("\nnominal %1: currency %2(\"%3\")%4")
-                            .arg(it.nominal, 5)
-                            .arg(it.currencyId)
-                            .arg(it.currency)
-                            .arg(!complexDevice ? ""
-                                                : ((it.cashReceiver == ECashReceiver::BillAcceptor)
-                                                       ? " in bill acceptor"
-                                                       : " in coin acceptor"));
+                    QString deviceLocation;
+                    if (!complexDevice) {
+                        deviceLocation = "";
+                    } else {
+                        deviceLocation = (it.cashReceiver == ECashReceiver::BillAcceptor)
+                                             ? " in bill acceptor"
+                                             : " in coin acceptor";
+                    }
+
+                    log += QString("\nnominal %1: currency %2(\"%3\")%4")
+                               .arg(it.nominal, 5)
+                               .arg(it.currencyId)
+                               .arg(it.currency)
+                               .arg(deviceLocation);
                 }
             }
 
@@ -495,15 +505,20 @@ template <class T> ECurrencyError::Enum CashAcceptorBase<T>::processParTable() {
     for (auto it = this->m_EscrowParTable.data().begin(); it != this->m_EscrowParTable.data().end();
          ++it) {
         if (!it.value().inhibit) {
+            QString deviceLocation;
+            if (this->m_DeviceType != CHardware::Types::DualCashAcceptor) {
+                deviceLocation = "";
+            } else {
+                deviceLocation = (it->cashReceiver == ECashReceiver::BillAcceptor)
+                                     ? " in bill acceptor"
+                                     : " in coin acceptor";
+            }
+
             log += QString("\nnominal %1: currency %2(\"%3\")%4%5")
                        .arg(it->nominal, 5)
                        .arg(it->currencyId)
                        .arg(it->currency)
-                       .arg((this->m_DeviceType != CHardware::Types::DualCashAcceptor)
-                                ? ""
-                                : ((it->cashReceiver == ECashReceiver::BillAcceptor)
-                                       ? " in bill acceptor"
-                                       : " in coin acceptor"))
+                       .arg(deviceLocation)
                        .arg(it->inhibit ? ", inhibited" : "");
         }
     }
@@ -871,11 +886,14 @@ void CashAcceptorBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollec
 
         for (int i = 0; i < this->m_StatusHistory.size(); ++i) {
             CCashAcceptor::SStatusSpecification statusSpecification = this->m_StatusHistory[i];
-            QString warningLevel =
-                (statusSpecification.warningLevel == EWarningLevel::Error)
-                    ? "Error"
-                    : ((statusSpecification.warningLevel == EWarningLevel::Warning) ? "Warning"
-                                                                                    : "OK");
+            QString warningLevel;
+            if (statusSpecification.warningLevel == EWarningLevel::Error) {
+                warningLevel = "Error";
+            } else if (statusSpecification.warningLevel == EWarningLevel::Warning) {
+                warningLevel = "Warning";
+            } else {
+                warningLevel = "OK";
+            }
 
             QString statusLog;
 
