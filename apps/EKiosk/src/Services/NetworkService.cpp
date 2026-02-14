@@ -265,19 +265,34 @@ void NetworkService::doTestConnection(bool *aResult) {
         doConnect(getConnection());
     }
 
+    // Проверяем, что m_Connection успешно создано
+    if (!m_Connection) {
+        toLog(LogLevel::Error, "Connection object not initialized.");
+        if (aResult) {
+            *aResult = false;
+        }
+        return;
+    }
+
     toLog(LogLevel::Normal, QString("Testing connection '%1'...").arg(m_Connection->getName()));
 
     try {
-        *aResult = m_Connection->isConnected() && m_Connection->checkConnection();
+        if (aResult) {
+            *aResult = m_Connection->isConnected() && m_Connection->checkConnection();
+        }
     } catch (const NetworkError &e) {
         toLog(LogLevel::Error, e.getMessage());
 
         if (e.getSeverity() == ESeverity::Critical) {
             toLog(LogLevel::Fatal, "Generating reboot event due to critical error.");
-            m_EventService->sendEvent(PP::Event(PP::EEventType::Reboot));
+            if (m_EventService) {
+                m_EventService->sendEvent(PP::Event(PP::EEventType::Reboot));
+            }
         }
 
-        *aResult = false;
+        if (aResult) {
+            *aResult = false;
+        }
 
         QMutexLocker lock(&m_ErrorMutex);
         m_LastConnectionError = e.getMessage();
