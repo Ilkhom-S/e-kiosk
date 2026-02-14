@@ -1794,7 +1794,7 @@
         <message>
             <location filename="../FirstSetup/FirstSetup.cpp" line="68" />
             <source>#cyberplat_copyright</source>
-            <translation>ООО &quot;Хумо&quot;, тел. техподдержки: +7 (495) 967-02-20</translation>
+            <translation>ООО &quot;Хумо&quot;, тел. техподдержки: +992 88 777 55 44</translation>
         </message>
         <message>
             <source>#password_not_set</source>
