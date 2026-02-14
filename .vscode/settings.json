@@ -22,8 +22,6 @@
     "C_Cpp.default.compileCommands": "${workspaceFolder}/build/macos-qt6/compile_commands.json",
 
     // Optional quick references (no effect on IntelliSense)
-    "ekiosk.compileCommands.qt6": "${workspaceFolder}/build/macos-qt6/compile_commands.json",
-    "ekiosk.compileCommands.qt5": "${workspaceFolder}/build/win7-qt5/compile_commands.json",
     "editor.formatOnSave": true,
     "[cpp]": {
         "editor.defaultFormatter": "xaver.clang-format"
@@ -37,7 +35,8 @@
     "C_Cpp.codeAnalysis.clangTidy.config": "",
     "C_Cpp.codeAnalysis.clangTidy.path": "/opt/homebrew/opt/llvm/bin/clang-tidy",
     "C_Cpp.codeAnalysis.clangTidy.args": [
-        "--extra-arg=-isysroot/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+        "--extra-arg=-isysroot/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-p=${workspaceFolder}/build/macos-qt6"
     ],
     "C_Cpp.formatting": "clangFormat",
     "C_Cpp.clang_format_style": "file",
