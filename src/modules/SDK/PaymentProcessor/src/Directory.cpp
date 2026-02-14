@@ -30,7 +30,9 @@ Directory::Directory(TPtree &aProperties)
     TPtree empty;
     SRange range;
 
-    BOOST_FOREACH (const TPtree::value_type &record, m_Properties.get_child("numcapacity", empty)) {
+    static TPtree emptyNumCapacityTree;
+    const auto &numCapacityTree = m_Properties.get_child("numcapacity", emptyNumCapacityTree);
+    BOOST_FOREACH (const TPtree::value_type &record, numCapacityTree) {
         if (record.first == "<xmlattr>") {
             m_RangesTimestamp = QDateTime::fromString(record.second.get_value<QString>("stamp"));
         } else {
@@ -85,8 +87,10 @@ QList<SConnectionTemplate> Directory::getConnectionTemplates() const {
     QList<SConnectionTemplate> templates;
     TPtree empty;
 
-    BOOST_FOREACH (const TPtree::value_type &record,
-                   m_Properties.get_child("directory.connections", empty)) {
+    static TPtree emptyConnectionsTree;
+    const auto &connectionsTree =
+        m_Properties.get_child("directory.connections", emptyConnectionsTree);
+    BOOST_FOREACH (const TPtree::value_type &record, connectionsTree) {
         try {
             SConnectionTemplate connection;
 
