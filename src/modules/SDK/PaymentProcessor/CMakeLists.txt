@@ -22,6 +22,6 @@ ek_add_library(PPSDK
     SOURCES ${PPSDK_SOURCES} ${PPSDK_INTERFACE_HEADERS}
     QT_MODULES Core Widgets Qml
     INCLUDE_DIRS ${EK_INCLUDES_DIR}
-    DEPENDS ek_boost ek_common
+    DEPENDS ek_boost ek_common NetworkTaskManager
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )

@@ -17,7 +17,7 @@
 #include "WizardContext.h"
 
 namespace CWizardFrame {
-char *ContextProperty = "humoContext";
+const char *ContextProperty = "humoContext";
 } // namespace CWizardFrame
 
 //----------------------------------------------------------------------------

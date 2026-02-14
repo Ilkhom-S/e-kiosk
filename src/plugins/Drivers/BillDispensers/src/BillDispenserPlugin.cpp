@@ -1,8 +1,8 @@
 /* @file Плагин c драйверами диспенсеров. */
 
-#include <Hardware/CashDispensers/src/Puloon/PuloonCashDispenser.h>
-#include <Hardware/CashDispensers/src/Suzo/SuzoHopper.h>
-#include <Hardware/Plugins/CommonParameters.h>
+#include <CashDispensers/src/Puloon/PuloonCashDispenser.h>
+#include <CashDispensers/src/Suzo/SuzoHopper.h>
+#include <Plugins/CommonParameters.h>
 
 using namespace SDK::Plugin;
 

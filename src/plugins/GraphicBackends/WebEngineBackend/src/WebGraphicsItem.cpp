@@ -2,14 +2,14 @@
 
 #include "WebGraphicsItem.h"
 
+#include <QAction>
+#include <QGraphicsRectItem>
+#include <QWebEnginePage>
+#include <QWebEngineSettings>
 #include <QtCore/QFile>
 #include <QtCore/QMetaEnum>
 #include <QtCore/QSettings>
 #include <QtCore/QTextStream>
-#include <QtWebEngineWidgets/QWebEnginePage>
-#include <QtWebEngineWidgets/QWebEngineSettings>
-#include <QtWidgets/QAction>
-#include <QtWidgets/QGraphicsRectItem>
 
 #include "WebPageLogger.h"
 

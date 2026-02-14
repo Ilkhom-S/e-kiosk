@@ -44,7 +44,7 @@
         border-radius: 5px;
         }</string>
     </property>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QWidget" name="layoutWidgetRow0">
       <property name="geometry">
         <rect>
           <x>9</x>
@@ -517,7 +517,7 @@
         </item>
       </layout>
     </widget>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QWidget" name="layoutWidgetRow2">
       <property name="geometry">
         <rect>
           <x>10</x>
@@ -968,7 +968,7 @@
         </item>
       </layout>
     </widget>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QWidget" name="layoutWidgetRow3">
       <property name="geometry">
         <rect>
           <x>10</x>
@@ -1478,7 +1478,7 @@
         </size>
       </property>
     </widget>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QWidget" name="layoutWidgetRow1">
       <property name="geometry">
         <rect>
           <x>11</x>
@@ -1923,7 +1923,7 @@
         </item>
       </layout>
     </widget>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QWidget" name="layoutWidgetRow4">
       <property name="geometry">
         <rect>
           <x>9</x>

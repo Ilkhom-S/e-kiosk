@@ -1,13 +1,26 @@
 {
     // Exclude build output, third-party, and vcpkg folders from search and IntelliSense
     "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/flutter/ephemeral": true,
+        "**/Flutter/ephemeral": true,
+        "**/.symlinks": true,
+        "**/.plugin_symlinks": true,
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true,
         "build/": true,
         "thirdparty/": false,
         "deprecated/": true,
         "vcpkg_installed/": true,
         "**/*.bak": true,
-        // Exclude FR module on macOS (EKIOSK_ENABLE_FR=OFF - not compiled)
-        "src/modules/Hardware/FR/": true
+        "src/modules/Hardware/FR/": true,
+        "**/node_modules": true
     },
     "search.exclude": {
         "build/": true,

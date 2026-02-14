@@ -234,13 +234,14 @@ void ServiceMenuBackend::printDispenserDiffState() {
             toLog(QString("Diff: %1").arg(afterUnit.amount() - beforeUnit.amount()));
         }
 
-        QtConcurrent::run([this, parameters]() {
+        auto future = QtConcurrent::run([this, parameters]() {
             m_Core->getPrinterService()->printReceipt(QString(""),
                                                       parameters,
                                                       QString("dispenser_diff"),
                                                       DSDK::EPrintingModes::None,
                                                       true);
         });
+        Q_UNUSED(future);
     } else {
         toLog("Dispenser cash units state are not changed.");
     }

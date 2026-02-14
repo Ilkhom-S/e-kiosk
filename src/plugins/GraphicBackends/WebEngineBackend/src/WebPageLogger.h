@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include <QWebEnginePage>
 #include <QtCore/QString>
 #include <QtCore/QVariantMap>
-#include <QtWebEngineWidgets/QWebEnginePage>
 
 #include <Common/ILog.h>
 
@@ -13,11 +13,9 @@
 class WebPageLogger : public QWebEnginePage {
     Q_OBJECT
 public:
-    WebPageLogger::WebPageLogger(QObject *aParent,
-                                 SDK::PaymentProcessor::Scripting::Core *aCoreProxy,
-                                 ILog *aLog)
+    WebPageLogger(QObject *aParent, SDK::PaymentProcessor::Scripting::Core *aCoreProxy, ILog *aLog)
         : QWebEnginePage(aParent), m_CoreProxy(aCoreProxy), m_Log(aLog) {}
-    ~WebPageLogger() {}
+    ~WebPageLogger() = default;
 
 protected:
     virtual void javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level,

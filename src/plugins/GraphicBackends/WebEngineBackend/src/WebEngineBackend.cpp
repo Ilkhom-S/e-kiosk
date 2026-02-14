@@ -4,13 +4,13 @@
 
 #include "WebEngineBackend.h"
 
+#include <QWebEnginePage>
+#include <QWebEngineSettings>
+#include <QWebEngineView>
 #include <QtCore/QDir>
 #include <QtCore/QMetaEnum>
 #include <QtNetwork/QSslConfiguration>
 #include <QtNetwork/QSslKey>
-#include <QtWebEngineWidgets/QWebEnginePage>
-#include <QtWebEngineWidgets/QWebEngineSettings>
-#include <QtWebEngineWidgets/QWebEngineView>
 
 #include <SDK/PaymentProcessor/Components.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
@@ -56,12 +56,12 @@ QVector<SDK::Plugin::SPluginParameter> enumParameters() {
 } // namespace
 
 /// Регистрация плагина в фабрике.
-REGISTER_PLUGIN_WITH_PARAMETERS(
-    SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
-                          SDK::PaymentProcessor::CComponents::GraphicsBackend,
-                          CWebEngineBackend::PluginName),
-    &CreatePlugin,
-    &enumParameters);
+REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
+                                         SDK::PaymentProcessor::CComponents::GraphicsBackend,
+                                         CWebEngineBackend::PluginName),
+                                &createPlugin,
+                                &enumParameters,
+                                WebEngineBackend);
 
 //------------------------------------------------------------------------------
 WebEngineBackend::WebEngineBackend(SDK::Plugin::IEnvironment *aFactory,
@@ -107,7 +107,7 @@ bool WebEngineBackend::isReady() const {
 //------------------------------------------------------------------------------
 std::weak_ptr<SDK::GUI::IGraphicsItem>
 WebEngineBackend::getItem(const SDK::GUI::GraphicsItem_Info &aInfo) {
-    QMap<QString, std::shared_ptr<WebGraphicsItem>>::iterator it = m_Items.find(aInfo.name);
+    QMultiMap<QString, std::shared_ptr<WebGraphicsItem>>::iterator it = m_Items.find(aInfo.name);
 
     if (it != m_Items.end() && it.value()->getContext() == aInfo.context) {
         return it.value();
@@ -156,7 +156,7 @@ bool WebEngineBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine) {
 
     // Импорт ssl сертификата
     QFile pem(m_Factory->getKernelDataDirectory() + QDir::separator() + CWebEngineBackend::KeysDir +
-              QDir::separator() + CWebEngineBackend::Pem_File);
+              QDir::separator() + CWebEngineBackend::PemFile);
     if (pem.open(QIODevice::ReadOnly)) {
         QSslConfiguration conf = QSslConfiguration::defaultConfiguration();
 

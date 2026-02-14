@@ -2,8 +2,8 @@
 
 #pragma once
 
+#include <QWebEngineView>
 #include <QtCore/QSharedPointer>
-#include <QtWebEngineWidgets/QWebEngineView>
 
 #include <Common/ILog.h>
 
@@ -37,40 +37,40 @@ public:
 
     /// Вызывается перед отображением виджета.
     /// Инициализирует WebEngine виджет и загружает начальную страницу.
-    virtual void show();
+    virtual void show() override;
 
     /// Вызывается для сброса/настройки виджета.
     /// @param aParameters Параметры конфигурации (URL, размеры, настройки отладки)
-    virtual void reset(const QVariantMap &aParameters);
+    virtual void reset(const QVariantMap &aParameters) override;
 
     /// Вызывается перед сокрытием виджета.
     /// Останавливает загрузку и скрывает WebEngine виджет.
-    virtual void hide();
+    virtual void hide() override;
 
     /// Посылает уведомление виджету.
     /// @param aReason Тип уведомления (например, "payment_success")
     /// @param aParameters Дополнительные параметры уведомления
-    virtual void notify(const QString &aReason, const QVariantMap &aParameters);
+    virtual void notify(const QString &aReason, const QVariantMap &aParameters) override;
 
     /// Проверяет готов ли виджет к использованию.
     /// @return true если виджет инициализирован и готов к работе
-    virtual bool isValid() const;
+    virtual bool isValid() const override;
 
     /// Возвращает описание ошибки если виджет не готов.
     /// @return Строка с описанием ошибки или пустая строка
-    virtual QString getError() const;
+    virtual QString getError() const override;
 
     /// Возвращает QML виджет для интеграции с Qt Quick.
     /// @return Указатель на QQuickItem или nullptr для виджет-based реализации
-    virtual QQuickItem *getWidget() const;
+    virtual QQuickItem *getWidget() const override;
 
     /// Возвращает нативный QWidget для интеграции с Qt Widgets.
     /// @return Указатель на QWidget с WebEngine представлением
-    virtual QWidget *getNativeWidget() const;
+    virtual QWidget *getNativeWidget() const override;
 
     /// Возвращает контекст виджета для сохранения состояния.
     /// @return QVariantMap с текущими параметрами и состоянием
-    virtual QVariantMap getContext() const;
+    virtual QVariantMap getContext() const override;
 
 signals:
     /// Сигналы для проброса в JavaScript обработчики.
