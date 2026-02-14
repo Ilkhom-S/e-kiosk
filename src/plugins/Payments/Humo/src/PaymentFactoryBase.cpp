@@ -31,8 +31,9 @@ PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, QStr
             throw SDK::PaymentProcessor::ServiceIsNotImplemented("ICore interface not available");
         }
 
-        // IExternalInterface* and ICore* are in separate inheritance hierarchies.
-        // Use void* as intermediate for safe pointer reinterpretation.
+        // IExternalInterface и ICore находятся в разных иерархиях наследования.
+        // Используем reinterpret_cast с промежуточным void* для безопасного преобразования
+        // (безопасно, так как тип объекта известен).
         void *voidPtr = reinterpret_cast<void *>(coreInterface);
         m_Core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
 
@@ -56,20 +57,20 @@ PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, QStr
         m_Initialized = true;
     } catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &e) {
         m_Initialized = false;
-
+        // Логирование в catch блоке безопасно - объект уже инициализирован
         LOG(getLog(),
             LogLevel::Error,
             QString("Failed to initialize payment factory: %1.").arg(e.what()));
     } catch (const std::exception &e) {
         m_Initialized = false;
-
+        // Логирование в catch блоке безопасно - объект уже инициализирован
         LOG(getLog(),
             LogLevel::Error,
             QString("Failed to initialize payment factory: %1.").arg(e.what()));
     } catch (...) {
         m_Initialized = false;
         std::cerr << "ERROR: PaymentFactoryBase unknown exception!\n";
-
+        // Логирование в catch блоке безопасно - объект уже инициализирован
         LOG(getLog(), LogLevel::Error, "Failed to initialize payment factory: unknown exception");
     }
 }
