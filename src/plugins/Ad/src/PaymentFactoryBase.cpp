@@ -20,17 +20,12 @@ PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, QStr
     : m_Initialized(false), m_Factory(aFactory), m_InstancePath(std::move(aInstancePath)),
       m_Core(nullptr), m_CryptEngine(nullptr) {
     try {
-        LOG(getLog(),
-            LogLevel::Debug,
-            QString("PaymentFactoryBase: requesting ICore interface..."));
-
+        // Запрашиваем ICore через интерфейс фабрики.
+        // Используем reinterpret_cast с промежуточным void* для безопасного преобразования
+        // между разными иерархиями наследования (безопасно, так как тип объекта известен).
         void *voidPtr = reinterpret_cast<void *>(
             m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
         m_Core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
-
-        LOG(getLog(),
-            LogLevel::Debug,
-            QString("PaymentFactoryBase: m_Core = 0x%1").arg(qlonglong(m_Core), 0, 16));
 
         if (!m_Core) {
             throw SDK::PaymentProcessor::ServiceIsNotImplemented("ICore interface not available");
@@ -49,12 +44,11 @@ PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, QStr
         m_Network = networkService->getNetworkTaskManager();
 
         m_Initialized = true;
-    } catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &e) {
+    } catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &) {
         m_Initialized = false;
-
-        LOG(getLog(),
-            LogLevel::Error,
-            QString("Failed to initialize payment factory: %1.").arg(e.what()));
+        // Логирование в конструкторе не используем - виртуальный вызов getLog() приведет
+        // к обходу virtual dispatch. Ошибка будет обнаружена при вызове isReady() или других
+        // методов.
     }
 }
 
