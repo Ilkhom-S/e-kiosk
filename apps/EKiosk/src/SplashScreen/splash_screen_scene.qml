@@ -10,6 +10,11 @@ import Core.Types 1.0
 
 Rectangle {
     id: root
+    // --- MASTER CONTROLS ---
+    property bool showAdminNumbers: true  // Toggle ONLY the big numbers
+    property bool showAdminFlash: true    // Toggle the orange background flash
+    property real zonePercent: 0.40       // Reduced slightly to 40% to prevent "ghost" double-taps
+
     width: Core.graphics.width
     height: Core.graphics.height
     // Deep Midnight Black absorbs glare and provides a "Rich" premium feel
@@ -52,17 +57,43 @@ Rectangle {
             Repeater {
                 model: statusModel
                 delegate: Rectangle {
+                    id: statusBox
                     width: statusRow.iconWidth
-                    height: width // Keep it square
+                    height: width
                     color: "#1C1C1E"
-                    radius: width * 0.22 // Scale radius with size
+                    radius: width * 0.22
                     border.color: "#FA5300"
                     border.width: width > 120 ? 5 : 3
 
-                    // Add a tiny inner margin so the SVG doesn't touch the border
+                    // --- 2026 CHROME POLISH ---
+                    // Smooth pop-in when error occurs
+                    scale: 0.0
+                    Component.onCompleted: NumberAnimation {
+                        target: statusBox
+                        property: "scale"
+                        to: 1.0
+                        duration: 400
+                        easing.type: Easing.OutBack
+                    }
+
+                    // Breathing Pulse Animation (Indicates System is Active)
+                    SequentialAnimation on border.color {
+                        loops: Animation.Infinite
+                        ColorAnimation {
+                            to: "#FF8A50"
+                            duration: 1500
+                            easing.type: Easing.InOutQuad
+                        }
+                        ColorAnimation {
+                            to: "#FA5300"
+                            duration: 1500
+                            easing.type: Easing.InOutQuad
+                        }
+                    }
+
                     Item {
                         anchors.fill: parent
-                        anchors.margins: parent.width * 0.15
+                        anchors.margins: parent.width * 0.18 // Slightly more padding for "Charming" look
                         Image {
                             anchors.fill: parent
                             sourceSize.width: width
@@ -70,6 +101,8 @@ Rectangle {
                             fillMode: Image.PreserveAspectFit
                             source: model.image ? "qrc:/GraphicsItems/images/" + model.image : ""
                             smooth: true
+                            // Anti-aliasing for Windows 7 / Qt 5
+                            mipmap: true
                         }
                     }
                 }
@@ -170,18 +203,55 @@ Rectangle {
     //                     5
     //                   3   4
 
-    // --- HIDDEN ADMIN ZONES (1-5) ---
+    // --- HIDDEN ADMIN ZONES (1-5) WITH VISUAL FEEDBACK ---
     Component {
         id: adminTouchAreaComponent
         MouseArea {
+            id: touchArea
             property int areaNumber: 0
-            width: root.width / 3
-            height: root.height / 3
-            onClicked: selectArea(areaNumber)
+            width: root.width * root.zonePercent
+            height: root.height * root.zonePercent
+
+            onPressed: {
+                if (typeof screenActivityTimer !== "undefined")
+                    screenActivityTimer.restart();
+                selectArea(areaNumber);
+            }
+
+            // 1. THE FLASH LAYER (Always active or toggled via showAdminFlash)
             Rectangle {
                 anchors.fill: parent
+                color: "#FA5300"
+                // Only show if global flash is on AND area is pressed
+                opacity: (root.showAdminFlash && parent.pressed) ? 0.15 : 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 100
+                    }
+                }
+            }
+
+            // 2. THE NUMBER LAYER (Independent Toggle)
+            Text {
+                anchors.centerIn: parent
+                text: areaNumber
                 color: "#FFFFFF"
-                opacity: parent.pressed ? 0.08 : 0
+                opacity: (root.showAdminNumbers && touchArea.pressed) ? 1.0 : 0
+                font {
+                    pixelSize: 160
+                    weight: Font.Black
+                    family: "Segoe UI, Arial"
+                }
+                style: Text.Outline
+                styleColor: "#40000000"
+
+                // Optional: Smooth fade for the number
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 100
+                    }
+                }
             }
         }
     }
@@ -211,9 +281,9 @@ Rectangle {
         onLoaded: item.areaNumber = 4
     }
     Loader {
+        // Center Zone: The "Master" trigger
         sourceComponent: adminTouchAreaComponent
-        x: (root.width - item.width) / 2
-        y: (root.height - item.height) / 2
+        anchors.centerIn: parent
         onLoaded: item.areaNumber = 5
     }
 
@@ -268,7 +338,7 @@ Rectangle {
 
     Timer {
         id: screenActivityTimer
-        interval: 5000
+        interval: 5000 // 5 seconds to complete the sequence
         onTriggered: onScreenActivityTimeout()
     }
 }
