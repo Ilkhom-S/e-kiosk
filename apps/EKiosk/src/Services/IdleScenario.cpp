@@ -155,7 +155,8 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
     if (aSignal == CGUISignals::ScreenPasswordUpdated) {
         QString sequence = aParameters.value("password").toString();
 
-        // DEBUG ONLY: Backdoor password для тестирования (TODO: удалить в production)
+#ifdef _DEBUG
+        // DEBUG ONLY: Backdoor password для тестирования
         if (sequence == "5555") {
             QVariantMap parameters;
             parameters["name"] = "service_menu";
@@ -163,6 +164,7 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
                 ->sendEvent(PPSDK::EEventType::StartScenario, parameters);
             return;
         }
+#endif
 
         auto password = SettingsService::instance(m_Application)
                             ->getAdapter<PPSDK::TerminalSettings>()
