@@ -156,6 +156,7 @@ QStringList CashAcceptorManager::getPaymentMethods() {
     // Или должно быть соответствующее разрешение
     if (!m_DeviceList.isEmpty() &&
         (chargeAccess.isEmpty() || checkMethod(CCashAcceptor::CashPaymentMethod))) {
+        // Добавляем способ оплаты наличными, если доступны устройства и настройки его разрешают.
         result.insert(CCashAcceptor::CashPaymentMethod);
     }
 
@@ -181,7 +182,7 @@ void CashAcceptorManager::updateHardwareConfiguration() {
         if (device) {
             m_DeviceList.append(device);
 
-            // Подписываемся на статус.
+            // Подписываемся на сигнал изменения статуса.
             device->subscribe(
                 SDK::Driver::IDevice::StatusSignal,
                 this,
@@ -223,7 +224,7 @@ bool CashAcceptorManager::enable(qint64 aPayment,
         aPaymentMethod.isEmpty() ? CCashAcceptor::CashPaymentMethod : aPaymentMethod;
 
     if (method == CCashAcceptor::CashPaymentMethod) {
-        // Взять валидатор, который поддерживает нужный набор номиналов.
+        // Берем валидатор, который поддерживает нужный набор номиналов.
         foreach (DSDK::ICashAcceptor *acceptor, m_DeviceList) {
             if (!acceptor->isDeviceReady()) {
                 toLog(LogLevel::Warning,
@@ -235,7 +236,7 @@ bool CashAcceptorManager::enable(qint64 aPayment,
             }
 
             if (acceptor->setEnable(true)) {
-                // Подписываемся на эскроу и стекед.
+                // Подписываемся на сигналы эскроу и стекеда.
                 if (m_DisableAmountOverflow) {
                     acceptor->subscribe(SDK::Driver::ICashAcceptor::EscrowSignal,
                                         this,
@@ -260,7 +261,7 @@ bool CashAcceptorManager::enable(qint64 aPayment,
         }
     }
 
-    // Готовы принимать "деньги" от остальных поставщиков
+    // Готовы принимать средства от остальных поставщиков.
     foreach (PPSDK::IChargeProvider *provider, m_ChargeProviders) {
         if (provider->getMethod() == method && provider->enable(aMaxAmount)) {
             m_PaymentData->chargeProviders.insert(provider);
@@ -307,7 +308,7 @@ bool CashAcceptorManager::disable(qint64 aPayment) {
     if (m_PaymentData->chargeSourceEmpty()) {
         toLog(LogLevel::Debug, "All cash acceptors were disabled already.");
 
-        // Отключение устройств уже было произведено.
+        // Устройства уже отключены.
         emit disabled(aPayment);
     }
 
@@ -454,7 +455,7 @@ void CashAcceptorManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel,
                                           int aStatus) {
     if (aLevel == DSDK::EWarningLevel::Error) {
         if (m_PaymentData) {
-            // Прервать прием денег.
+            // Прерываем прием средств.
             disable(m_PaymentData->paymentId);
 
             emit error(m_PaymentData->paymentId, aTranslation);
@@ -462,7 +463,7 @@ void CashAcceptorManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel,
     } else {
         auto *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
 
-        // Нормальные статусы.
+        // Обработка различных статусов устройства.
         if (aStatus == DSDK::ECashAcceptorStatus::Rejected) {
             // TODO: не обрабатывать непринятые купюры по запрещенным номиналам.
             incrementRejectCount();
@@ -474,11 +475,11 @@ void CashAcceptorManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel,
             // Принят сигнал об отключении купюроприемника.
             toLog(LogLevel::Debug, acceptor->getName() + " is disabled.");
 
-            // Отписываемся от эскроу и стекеда.
+            // Отписываемся от сигналов эскроу и стекеда.
             acceptor->unsubscribe(SDK::Driver::ICashAcceptor::EscrowSignal, this);
             acceptor->unsubscribe(SDK::Driver::ICashAcceptor::StackedSignal, this);
 
-            // Удаляем купюроприемник из списка включенных.
+            // Удаляем купюроприемник из списка активных.
             if (m_PaymentData) {
                 toLog(LogLevel::Debug,
                       QString("Payment %2. %1 was removed.")
@@ -487,7 +488,7 @@ void CashAcceptorManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel,
 
                 m_PaymentData->validators.remove(acceptor);
 
-                // Если список пуст, сообщаем об окончании приема средств.
+                // Если все источники средств отключены - завершаем прием платежа.
                 if (m_PaymentData->chargeSourceEmpty()) {
                     toLog(LogLevel::Debug, "All cash acceptors are disabled.");
 
