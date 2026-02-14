@@ -64,9 +64,9 @@ REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
                                 WebEngineBackend);
 
 //------------------------------------------------------------------------------
-WebEngineBackend::WebEngineBackend(SDK::Plugin::IEnvironment *aFactory,
-                                   const QString &aInstancePath)
-    : m_Factory(aFactory), m_InstancePath(aInstancePath), m_Engine(nullptr), m_CoreProxy(nullptr) {}
+WebEngineBackend::WebEngineBackend(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
+    : m_Factory(aFactory), m_InstancePath(std::move(aInstancePath)), m_Engine(nullptr),
+      m_CoreProxy(nullptr) {}
 
 //------------------------------------------------------------------------------
 WebEngineBackend::~WebEngineBackend() {
@@ -150,7 +150,7 @@ QList<SDK::GUI::GraphicsItem_Info> WebEngineBackend::getItem_List() {
 //------------------------------------------------------------------------------
 bool WebEngineBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine) {
     m_Engine = aEngine;
-    m_CoreProxy = static_cast<SDK::PaymentProcessor::Scripting::Core *>(
+    m_CoreProxy = dynamic_cast<SDK::PaymentProcessor::Scripting::Core *>(
         m_Engine->getGraphicsHost()->getInterface<QObject>(
             SDK::PaymentProcessor::Scripting::CProxyNames::Core));
 

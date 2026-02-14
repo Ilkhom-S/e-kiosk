@@ -43,7 +43,7 @@ LogArchiver::LogArchiver(const QString &aName, const QString &aLogName, const QS
 
     if (app) {
         PPSDK::ICore *core = app->getCore();
-        PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
+        PPSDK::TerminalSettings *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
             core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
         m_MaxSize = terminalSettings->getLogsMaxSize();
@@ -98,7 +98,7 @@ bool LogArchiver::cancel() {
 
 //---------------------------------------------------------------------------
 bool LogArchiver::subscribeOnComplete(QObject *aReceiver, const char *aSlot) {
-    return connect(this, SIGNAL(finished(const QString &, bool)), aReceiver, aSlot);
+    return connect(this, SIGNAL(finished(const QString &, bool)), aReceiver, aSlot) != nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -130,7 +130,7 @@ void LogArchiver::packLogs(QDate aDate) {
 
     if (!m_Packer.pack(logArchiveFileName(aDate), m_KernelPath, toCompress, archiveWildcards)
              .isEmpty()) {
-        if (!m_Packer.exitCode()) {
+        if (m_Packer.exitCode() == 0) {
             toLog(LogLevel::Normal,
                   QString("Result code: %1; Output: %2")
                       .arg(m_Packer.exitCode())
@@ -248,14 +248,14 @@ void LogArchiver::checkArchiveSize() {
         return summ;
     };
 
-    while (!files.isEmpty() && fileSizeSumm(files) > m_MaxSize * CLogArchiver::BytesInMB &&
+    while (!files.isEmpty() && fileSizeSumm(files) > qint64(m_MaxSize) * CLogArchiver::BytesInMB &&
            !m_Canceled) {
         removeFile(files.takeFirst());
     }
 
     toLog(LogLevel::Normal,
           QString("Logs archive size is %1 Mb")
-              .arg(fileSizeSumm(files) / double(CLogArchiver::BytesInMB), 0, 'f', 2));
+              .arg(double(fileSizeSumm(files)) / CLogArchiver::BytesInMB, 0, 'f', 2));
 }
 
 //---------------------------------------------------------------------------

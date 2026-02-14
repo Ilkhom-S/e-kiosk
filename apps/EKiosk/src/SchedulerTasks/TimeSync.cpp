@@ -195,7 +195,7 @@ void TimeSync::timeOffsetReceived(qint64 aLocalTimeOffset) {
         if (qAbs(aLocalTimeOffset / 1000) > CTimeSync::DesyncLimit) {
             toLog(LogLevel::Normal,
                   QString("Required time synchronization. Offset %1 sec.")
-                      .arg(aLocalTimeOffset / 1000., 0, 'f', 3));
+                      .arg(double(aLocalTimeOffset) / 1000., 0, 'f', 3));
 
             try {
                 ISysUtils::setSystem_Time(QDateTime::currentDateTime().addMSecs(aLocalTimeOffset));
@@ -211,7 +211,7 @@ void TimeSync::timeOffsetReceived(qint64 aLocalTimeOffset) {
         } else {
             toLog(LogLevel::Normal,
                   QString("Time synchronization is not required.  Offset %1 sec.")
-                      .arg(aLocalTimeOffset / 1000., 0, 'f', 3));
+                      .arg(double(aLocalTimeOffset) / 1000., 0, 'f', 3));
         }
     }
 }

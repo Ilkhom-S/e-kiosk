@@ -50,7 +50,7 @@ WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItem_Info &aInfo,
 
     // Добавляем горячую клавишу F5 для обновления страницы
     QKeySequence keysRefresh(QKeySequence::Refresh);
-    QAction *actionRefresh = new QAction(this);
+    auto *actionRefresh = new QAction(this);
     actionRefresh->setShortcut(keysRefresh);
     m_WebView->addAction(actionRefresh);
     connect(actionRefresh, &QAction::triggered, this, &WebGraphicsItem::onLoadFinished);
@@ -157,7 +157,7 @@ void WebGraphicsItem::onLoadFinished(bool aOk) {
                         if (it != params.begin()) {
                             paramsJson += ",";
                         }
-                        paramsJson += QString("\"%1\":\"%2\"").arg(it.key(), it.value().toString());
+                        paramsJson += QString(R"("%1":"%2")").arg(it.key(), it.value().toString());
                     }
                     paramsJson += "}";
                     m_WebView->page()->runJavaScript(
@@ -174,7 +174,7 @@ void WebGraphicsItem::onLoadFinished(bool aOk) {
                         if (it != params.begin()) {
                             paramsJson += ",";
                         }
-                        paramsJson += QString("\"%1\":\"%2\"").arg(it.key(), it.value().toString());
+                        paramsJson += QString(R"("%1":"%2")").arg(it.key(), it.value().toString());
                     }
                     paramsJson += "}";
                     m_WebView->page()->runJavaScript(

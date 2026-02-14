@@ -77,7 +77,7 @@ struct CommandReport {
     void remove() const { QFile::remove(filePath); }
 
     /// Проверка что команда ещё выполняется, а не "подвисла"
-    bool isAlive() const {
+    [[nodiscard]] bool isAlive() const {
         return lastUpdate.addSecs(qint64(60) * 10) > QDateTime::currentDateTime();
     }
 };

@@ -25,10 +25,10 @@ RunUpdater::~RunUpdater() {}
 //---------------------------------------------------------------------------
 void RunUpdater::execute() {
     // Получаем доступ к приложению и настройкам терминала
-    IApplication *app = dynamic_cast<IApplication *>(BasicApplication::getInstance());
+    auto *app = dynamic_cast<IApplication *>(BasicApplication::getInstance());
 
     PPSDK::ICore *core = app->getCore();
-    PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
+    PPSDK::TerminalSettings *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
         core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
     auto urls = terminalSettings->getUpdaterUrls();
@@ -61,7 +61,9 @@ void RunUpdater::execute() {
 
 //---------------------------------------------------------------------------
 bool RunUpdater::subscribeOnComplete(QObject *aReceiver, const char *aSlot) {
-    return connect(this, SIGNAL(finished(const QString &, bool)), aReceiver, aSlot);
+    bool result =
+        connect(this, SIGNAL(finished(const QString &, bool)), aReceiver, aSlot) != nullptr;
+    return result;
 }
 
 //---------------------------------------------------------------------------

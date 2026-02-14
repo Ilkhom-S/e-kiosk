@@ -20,7 +20,7 @@ class WebEngineBackend : public QObject,
     Q_OBJECT
 
 public:
-    WebEngineBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    WebEngineBackend(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
     ~WebEngineBackend();
 
 #pragma region SDK::Plugin::IPlugin interface
