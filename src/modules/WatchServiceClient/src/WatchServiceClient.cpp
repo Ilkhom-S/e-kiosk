@@ -41,7 +41,8 @@ WatchServiceClient::WatchServiceClient(QString aName, PingThread aThread)
 
 //---------------------------------------------------------------------------
 WatchServiceClient::~WatchServiceClient() {
-    stop();
+    // Явно указываем класс, чтобы избежать virtual dispatch в деструкторе
+    WatchServiceClient::stop();
 }
 
 //---------------------------------------------------------------------------
