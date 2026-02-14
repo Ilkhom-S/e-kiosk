@@ -42,9 +42,13 @@ ServiceMenuBackend::ServiceMenuBackend(SDK::Plugin::IEnvironment *aFactory, ILog
 
     GUI::MessageBox::initialize();
 
-    m_TerminalSettings = dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(
-        m_Core->getSettingsService()->getAdapter(
-            SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
+    if (m_Core && m_Core->getSettingsService()) {
+        m_TerminalSettings = dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(
+            m_Core->getSettingsService()->getAdapter(
+                SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
+    } else {
+        m_Log->write(LogLevel::Error, "ServiceMenuBackend: Failed to get ICore or SettingsService");
+    }
 
     connect(&m_HeartbeatTimer, SIGNAL(timeout()), this, SLOT(sendHeartbeat()));
 }
@@ -117,27 +121,69 @@ SDK::PaymentProcessor::ICore *ServiceMenuBackend::getCore() const {
 //------------------------------------------------------------------------
 void ServiceMenuBackend::getTerminalInfo(QVariantMap &aTerminalInfo) {
     aTerminalInfo.clear();
-    aTerminalInfo[CServiceTags::TerminalNumber] = m_TerminalSettings->getKeys()[0].ap;
+
+    if (!m_TerminalSettings) {
+        m_Log->write(LogLevel::Error, "ServiceMenuBackend: m_TerminalSettings is null");
+        return;
+    }
+
+    // Store result of getKeys() in a local variable to avoid accessing temporary
+    const auto &keys = m_TerminalSettings->getKeys();
+    if (!keys.empty()) {
+        // Access the first key (smallest ID in the QMap)
+        aTerminalInfo[CServiceTags::TerminalNumber] = keys.first().ap;
+    } else {
+        m_Log->write(LogLevel::Warning, "ServiceMenuBackend: No keys available");
+    }
+
     aTerminalInfo[CServiceTags::SoftwareVersion] = m_TerminalSettings->getAppEnvironment().version;
 
+    if (!m_Core) {
+        m_Log->write(LogLevel::Error, "ServiceMenuBackend: m_Core is null");
+        return;
+    }
+
     // TODO Исправить на константу
-    aTerminalInfo[CServiceTags::TerminalLocked] =
-        dynamic_cast<SDK::PaymentProcessor::ITerminalService *>(
-            m_Core->getService("TerminalService"))
-            ->isLocked();
+    auto *terminalService = dynamic_cast<SDK::PaymentProcessor::ITerminalService *>(
+        m_Core->getService("TerminalService"));
+    if (terminalService) {
+        aTerminalInfo[CServiceTags::TerminalLocked] = terminalService->isLocked();
+    }
 }
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType) {
+    if (!m_Core) {
+        m_Log->write(LogLevel::Error, "ServiceMenuBackend: m_Core is null");
+        return;
+    }
+
+    auto *eventService = m_Core->getEventService();
+    if (!eventService) {
+        m_Log->write(LogLevel::Error, "ServiceMenuBackend: EventService is null");
+        return;
+    }
+
     SDK::PaymentProcessor::Event e(aEventType, "");
-    m_Core->getEventService()->sendEvent(e);
+    eventService->sendEvent(e);
 }
 
 //------------------------------------------------------------------------
 void ServiceMenuBackend::sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType,
                                    const QVariantMap &aParameters) {
+    if (!m_Core) {
+        m_Log->write(LogLevel::Error, "ServiceMenuBackend: m_Core is null");
+        return;
+    }
+
+    auto *eventService = m_Core->getEventService();
+    if (!eventService) {
+        m_Log->write(LogLevel::Error, "ServiceMenuBackend: EventService is null");
+        return;
+    }
+
     SDK::PaymentProcessor::Event e(aEventType, "", QVariant::fromValue(aParameters));
-    m_Core->getEventService()->sendEvent(e);
+    eventService->sendEvent(e);
 }
 
 //------------------------------------------------------------------------
