@@ -19,11 +19,9 @@ QString getPluginPath() {
     const QString baseDir = QDir(appDir).filePath("../../../../bin/plugins");
     const QString cleanBase = QDir::cleanPath(baseDir);
 
-    const QStringList candidates = {QDir(cleanBase).filePath("libhumo_paymentsd.dylib"),
-                                    QDir(cleanBase).filePath("libhumo_payments.dylib"),
-                                    QDir(cleanBase).filePath("libhumo_paymentsd.so"),
+    const QStringList candidates = {QDir(cleanBase).filePath("libhumo_payments.dylib"),
                                     QDir(cleanBase).filePath("libhumo_payments.so"),
-                                    QDir(cleanBase).filePath("humo_paymentsd.dll"),
+                                    QDir(cleanBase).filePath("humo_payments.dll"),
                                     QDir(cleanBase).filePath("humo_payments.dll")};
 
     for (const QString &path : candidates) {
@@ -71,7 +69,7 @@ void HumoPaymentsPluginTest::testPluginCreation() {
     const QStringList plugins = factory->getPluginList();
     QVERIFY(!plugins.isEmpty());
 
-    const QString instancePath = plugins.first();
+    const QString &instancePath = plugins.first();
     SDK::Plugin::IPlugin *plugin = factory->createPlugin(instancePath, instancePath);
     QVERIFY(plugin != nullptr);
 

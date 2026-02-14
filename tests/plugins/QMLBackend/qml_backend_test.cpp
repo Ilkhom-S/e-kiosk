@@ -26,7 +26,7 @@ private:
 
 void QMLBackendTest::testPluginExists() {
     // Test that the QML Backend plugin DLL was built successfully
-    QString pluginPath = "D:/plugins/Debug/qml_backendd.dll";
+    QString pluginPath = "D:/plugins/Debug/qml_backend.dll";
     QVERIFY(QFile::exists(pluginPath));
     qDebug() << "QML Backend plugin DLL exists at:" << pluginPath;
 
