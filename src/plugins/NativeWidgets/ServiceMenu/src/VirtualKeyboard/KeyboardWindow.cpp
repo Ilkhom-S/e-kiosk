@@ -174,7 +174,7 @@ void KeyboardWindow::initialize() {
 void KeyboardWindow::shutdown() {}
 
 //---------------------------------------------------------------------------
-void KeyboardWindow::onButtonClicked() const {
+void KeyboardWindow::onButtonClicked() {
     if (sender()->objectName() == "KEY_ENTER") {
         hide();
     }
