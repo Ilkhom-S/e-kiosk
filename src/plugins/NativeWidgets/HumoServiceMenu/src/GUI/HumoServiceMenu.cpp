@@ -89,7 +89,8 @@ HumoServiceMenu::HumoServiceMenu(SDK::Plugin::IEnvironment *aFactory, QString aI
 //--------------------------------------------------------------------------
 HumoServiceMenu::~HumoServiceMenu() {
     if (m_MainHumoServiceMenuWindow) {
-        saveConfiguration();
+        // Явно указываем класс, чтобы избежать virtual dispatch в деструкторе
+        HumoServiceMenu::saveConfiguration();
     }
 }
 
