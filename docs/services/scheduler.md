@@ -1,845 +1,627 @@
-# Scheduler Service
+# Scheduler Service (Current Implementation)
 
-The Scheduler Service manages task scheduling, job execution, and time-based operations for the EKiosk system.
+The Scheduler Service manages automatic task execution on schedule in the
+EKiosk system.
 
 ## Overview
 
-The Scheduler Service (`ISchedulerService`) handles:
+SchedulerService uses a task type registration approach with INI file
+configuration. Each task is a class inheriting the `ITask` interface and
+registered in the service through a factory function.
 
-- Scheduled task execution
-- Cron-like job scheduling
-- One-time and recurring tasks
-- Task prioritization and queuing
-- Time zone handling
-- Task dependencies and workflows
-- Scheduled maintenance operations
-- Report generation scheduling
+### Key Features
 
-## Interface
+- **INI Configuration**: Task schedules stored in `scheduler.ini`
+- **Factory Registration**: Task types registered via `registerTaskType<>()`
+- **Timer-based Execution**: Tasks launched by QTimer in separate threads
+- **Automatic Retries**: Support for restarting on failure
+- **Special Modes**: `startup`, `first_run` for one-time execution
+
+## Architecture
+
+```text
+┌─────────────────────────────────────────────────────────┐
+│              SchedulerService                           │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  Task Registry (Factory Map)                     │  │
+│  │  "LogArchiver"      → LogArchiver::create()      │  │
+│  │  "LogRotate"        → LogRotate::create()        │  │
+│  │  "RunUpdater"       → RunUpdater::create()       │  │
+│  │  "TimeSync"         → TimeSync::create()         │  │
+│  │  "OnOffDisplay"     → OnOffDisplay::create()     │  │
+│  │  "UpdateRemoteContent" → UpdateRemoteContent...  │  │
+│  └──────────────────────────────────────────────────┘  │
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  Task Items (from scheduler.ini)                 │  │
+│  │  ┌──────────────┐  ┌──────────────┐             │  │
+│  │  │ log_rotate   │  │ archive_logs │             │  │
+│  │  │ time=00:01   │  │ time=00:45   │   ...       │  │
+│  │  │ QTimer       │  │ QTimer       │             │  │
+│  │  └──────────────┘  └──────────────┘             │  │
+│  └──────────────────────────────────────────────────┘  │
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  Execution Engine                                 │  │
+│  │  - Creates task instance from factory            │  │
+│  │  - Executes in separate thread                   │  │
+│  │  - Monitors completion signals                   │  │
+│  │  - Handles retries on failure                    │  │
+│  └──────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Configuration Files
+
+### 1. `data/scheduler.ini` - Task Configuration
+
+Main configuration file defining all scheduled tasks.
+
+```ini
+[log_rotate]
+type=LogRotate
+time=00:01
+params=
+
+[archive_logs]
+type=LogArchiver
+time=00:45
+params=
+
+[time_sync]
+type=TimeSync
+time=startup
+params=
+
+[update_ad]
+type=UpdateRemoteContent
+period=3600
+params=ad
+
+[update_logo]
+type=UpdateRemoteContent
+period=86400
+params=logo
+
+[update_to_last_version]
+type=RunUpdater
+time=first_run
+params=client
+
+[on_off_display]
+type=OnOffDisplay
+time=00:00
+period=60
+params=22:00;06:00;saver
+```
+
+#### Task Section Parameters
+
+- **`type`** (required) - Task class name (must be registered)
+- **`time`** - Launch time in `HH:MM` format or:
+  - `startup` - Execute once at application startup
+  - `first_run` - Execute once on first run (saved in user config)
+- **`period`** - Re-launch interval in seconds (if `time` not specified)
+- **`params`** - Parameter string passed to task constructor
+- **`repeat_count_if_fail`** - Number of retries on error (default: 0)
+- **`time_threshold`** - Random launch delay in seconds (randomization
+  +0...N seconds)
+
+### 2. `user/scheduler_config.ini` - Execution State
+
+File for storing information about last task executions (managed automatically).
+
+```ini
+[log_rotate]
+last_execute=2026.02.14 00:01:05
+
+[archive_logs]
+last_execute=2026.02.14 00:45:12
+
+[time_sync]
+last_execute=2026.02.14 09:23:45
+```
+
+#### Automatic Parameters
+
+- **`last_execute`** - Last execution time in `YYYY.MM.DD HH:MM:SS` format
+
+## Task Type Registration
+
+All available task types are registered in the `SchedulerService` constructor:
 
 ```cpp
-class ISchedulerService : public QObject {
+SchedulerService::SchedulerService(IApplication *aApplication)
+    : QObject(nullptr), ILogable("SchedulerService"), mApplication(aApplication) {
+
+    // Register task types
+    registerTaskType<LogArchiver>("LogArchiver");
+    registerTaskType<LogRotate>("LogRotate");
+    registerTaskType<RunUpdater>("RunUpdater");
+    registerTaskType<TimeSync>("TimeSync");
+    registerTaskType<OnOffDisplay>("OnOffDisplay");
+    registerTaskType<UpdateRemoteContent>("UpdateRemoteContent");
+}
+```
+
+### Registration Mechanism
+
+```cpp
+template<typename T>
+void registerTaskType(const QString &aTypeName) {
+    mTaskFactories[aTypeName] = [](const QString &aName,
+                                   const QString &aLogName,
+                                   const QString &aParams) -> ITask* {
+        return new T(aName, aLogName, aParams);
+    };
+}
+```
+
+When loading a task from an INI file:
+
+1. Read `type` parameter from section
+2. Find factory function in `mTaskFactories[type]`
+3. Call factory with parameters: `name`, `logName`, `params`
+4. Create task instance
+
+## Built-in Tasks
+
+Detailed documentation for all 6 built-in scheduler tasks is available
+in [Scheduler Tasks Reference](scheduler-tasks-reference.md).
+
+**Quick Reference Table**:
+
+| Task                    | Class                 | Default Schedule     | Purpose                                 |
+| ----------------------- | --------------------- | -------------------- | --------------------------------------- |
+| **LogRotate**           | `LogRotate`           | `00:01` daily        | Close and rotate log files              |
+| **LogArchiver**         | `LogArchiver`         | `00:45` daily        | Archive old logs to compressed files    |
+| **TimeSync**            | `TimeSync`            | `startup`            | Synchronize system time with NTP/HTTP   |
+| **RunUpdater**          | `RunUpdater`          | `first_run`          | Register update commands for components |
+| **OnOffDisplay**        | `OnOffDisplay`        | `00:00` + 60s period | Manage power saving modes               |
+| **UpdateRemoteContent** | `UpdateRemoteContent` | 3600s period         | Update remote service content           |
+
+For access to configuration, execution flow, parameters, return values,
+and schedule recommendations, see the
+[complete task reference guide](scheduler-tasks-reference.md).
+
+## Creating a New Task
+
+### Step 1: Create Task Class
+
+```cpp
+/* @file Example task implementation. */
+
+#pragma once
+
+#include <SDK/PaymentProcessor/Core/ITask.h>
+#include <Common/ILogable.h>
+
+class MyCustomTask : public QObject,
+                     public SDK::PaymentProcessor::ITask,
+                     public ILogable {
     Q_OBJECT
 
 public:
-    enum TaskStatus { Pending, Running, Completed, Failed, Cancelled };
-    enum TaskPriority { Low = 0, Normal = 50, High = 100, Critical = 200 };
-    enum RecurrenceType { None, Daily, Weekly, Monthly, Custom };
-
-    struct ScheduledTask {
-        QString id;
-        QString name;
-        QString description;
-        TaskPriority priority;
-        RecurrenceType recurrence;
-        QDateTime nextRun;
-        QDateTime lastRun;
-        TaskStatus status;
-        QVariantMap parameters;
-        QString cronExpression;  // For custom recurrence
-        int maxRetries;
-        int retryCount;
-        QDateTime created;
-        QDateTime updated;
-    };
-
-    using TaskFunction = std::function<void(const QVariantMap &parameters)>;
-
-    /// Schedule a task for execution
-    virtual QString scheduleTask(const QString &name, const QDateTime &executeAt,
-                                TaskFunction task, const QVariantMap &parameters = {},
-                                TaskPriority priority = Normal) = 0;
-
-    /// Schedule a recurring task
-    virtual QString scheduleRecurringTask(const QString &name, RecurrenceType recurrence,
-                                         const QTime &executeTime, TaskFunction task,
-                                         const QVariantMap &parameters = {},
-                                         TaskPriority priority = Normal) = 0;
-
-    /// Schedule task with cron expression
-    virtual QString scheduleCronTask(const QString &name, const QString &cronExpression,
-                                    TaskFunction task, const QVariantMap &parameters = {},
-                                    TaskPriority priority = Normal) = 0;
-
-    /// Cancel a scheduled task
-    virtual bool cancelTask(const QString &taskId) = 0;
-
-    /// Get task status
-    virtual TaskStatus getTaskStatus(const QString &taskId) const = 0;
-
-    /// Get scheduled task information
-    virtual ScheduledTask getTaskInfo(const QString &taskId) const = 0;
-
-    /// Get all scheduled tasks
-    virtual QList<ScheduledTask> getAllTasks() const = 0;
-
-    /// Execute task immediately
-    virtual bool executeTaskNow(const QString &taskId) = 0;
-
-    /// Update task schedule
-    virtual bool updateTaskSchedule(const QString &taskId, const QDateTime &newExecuteAt) = 0;
-
-    // ... additional methods for task management
-};
-```
-
-## Task Scheduling
-
-### One-time Tasks
-
-```cpp
-// Get scheduler service from core
-auto schedulerService = core->getSchedulerService();
-
-if (!schedulerService) {
-    LOG(log, LogLevel::Error, "Scheduler service not available");
-    return;
-}
-
-// Schedule a one-time task
-QDateTime executeAt = QDateTime::currentDateTime().addSecs(3600); // 1 hour from now
-
-QString taskId = schedulerService->scheduleTask(
-    "send_report",
-    executeAt,
-    [this](const QVariantMap &params) {
-        sendScheduledReport(params);
-    },
-    QVariantMap{{"reportType", "daily"}, {"recipient", "admin@company.com"}},
-    ISchedulerService::Normal
-);
-
-if (!taskId.isEmpty()) {
-    LOG(log, LogLevel::Info, QString("Task scheduled with ID: %1").arg(taskId));
-} else {
-    LOG(log, LogLevel::Error, "Failed to schedule task");
-}
-```
-
-### Recurring Tasks
-
-```cpp
-// Schedule daily maintenance task
-QString maintenanceTaskId = schedulerService->scheduleRecurringTask(
-    "daily_maintenance",
-    ISchedulerService::Daily,
-    QTime(2, 0), // 2:00 AM
-    [this](const QVariantMap &params) {
-        performDailyMaintenance(params);
-    },
-    QVariantMap{{"cleanupLogs", true}, {"updateStats", true}},
-    ISchedulerService::High
-);
-
-LOG(log, LogLevel::Info, QString("Daily maintenance task scheduled: %1").arg(maintenanceTaskId));
-
-// Schedule weekly report task
-QString weeklyReportId = schedulerService->scheduleRecurringTask(
-    "weekly_report",
-    ISchedulerService::Weekly,
-    QTime(9, 0), // 9:00 AM every Monday
-    [this](const QVariantMap &params) {
-        generateWeeklyReport(params);
-    },
-    QVariantMap{{"reportPeriod", "week"}, {"includeCharts", true}},
-    ISchedulerService::Normal
-);
-```
-
-### Cron-based Tasks
-
-```cpp
-// Schedule task with cron expression (every weekday at 6 AM)
-QString cronTaskId = schedulerService->scheduleCronTask(
-    "backup_database",
-    "0 6 * * 1-5", // At 06:00 on every day-of-week from Monday through Friday
-    [this](const QVariantMap &params) {
-        performDatabaseBackup(params);
-    },
-    QVariantMap{{"backupType", "full"}, {"compression", true}},
-    ISchedulerService::High
-);
-
-LOG(log, LogLevel::Info, QString("Cron task scheduled: %1").arg(cronTaskId));
-
-// Schedule monthly cleanup (first day of month at 3 AM)
-QString monthlyCleanupId = schedulerService->scheduleCronTask(
-    "monthly_cleanup",
-    "0 3 1 * *", // At 03:00 on day-of-month 1
-    [this](const QVariantMap &params) {
-        performMonthlyCleanup(params);
-    },
-    QVariantMap{{"archiveOldData", true}, {"compressLogs", true}},
-    ISchedulerService::Normal
-);
-```
-
-## Task Management
-
-### Task Monitoring
-
-```cpp
-void monitorScheduledTasks() {
-    QList<ISchedulerService::ScheduledTask> tasks = schedulerService->getAllTasks();
-
-    foreach (const auto &task, tasks) {
-        QString statusStr;
-
-        switch (task.status) {
-            case ISchedulerService::Pending:
-                statusStr = "Pending";
-                break;
-            case ISchedulerService::Running:
-                statusStr = "Running";
-                break;
-            case ISchedulerService::Completed:
-                statusStr = "Completed";
-                break;
-            case ISchedulerService::Failed:
-                statusStr = "Failed";
-                break;
-            case ISchedulerService::Cancelled:
-                statusStr = "Cancelled";
-                break;
-        }
-
-        LOG(log, LogLevel::Info, QString("Task: %1 - Status: %2 - Next Run: %3")
-            .arg(task.name, statusStr, task.nextRun.toString()));
-
-        // Check for failed tasks
-        if (task.status == ISchedulerService::Failed && task.retryCount < task.maxRetries) {
-            LOG(log, LogLevel::Warning, QString("Task %1 failed, retry %2/%3")
-                .arg(task.name).arg(task.retryCount).arg(task.maxRetries));
-        }
-    }
-}
-```
-
-### Task Control
-
-```cpp
-void manageTask(const QString &taskId) {
-    // Get task information
-    ISchedulerService::ScheduledTask task = schedulerService->getTaskInfo(taskId);
-
-    if (task.id.isEmpty()) {
-        LOG(log, LogLevel::Error, QString("Task not found: %1").arg(taskId));
-        return;
-    }
-
-    // Check task status
-    ISchedulerService::TaskStatus status = schedulerService->getTaskStatus(taskId);
-
-    switch (status) {
-        case ISchedulerService::Running:
-            LOG(log, LogLevel::Info, QString("Task is currently running: %1").arg(task.name));
-            break;
-
-        case ISchedulerService::Failed:
-            // Retry failed task
-            bool executed = schedulerService->executeTaskNow(taskId);
-            if (executed) {
-                LOG(log, LogLevel::Info, QString("Retrying failed task: %1").arg(task.name));
-            }
-            break;
-
-        case ISchedulerService::Pending:
-            // Update schedule if needed
-            QDateTime newTime = calculateNewScheduleTime(task);
-            schedulerService->updateTaskSchedule(taskId, newTime);
-            break;
-
-        default:
-            break;
-    }
-}
-
-void cancelTask(const QString &taskId) {
-    bool cancelled = schedulerService->cancelTask(taskId);
-
-    if (cancelled) {
-        LOG(log, LogLevel::Info, QString("Task cancelled: %1").arg(taskId));
-    } else {
-        LOG(log, LogLevel::Error, QString("Failed to cancel task: %1").arg(taskId));
-    }
-}
-```
-
-## Task Implementation
-
-### Report Generation Task
-
-```cpp
-void sendScheduledReport(const QVariantMap &params) {
-    try {
-        QString reportType = params.value("reportType").toString();
-        QString recipient = params.value("recipient").toString();
-
-        // Generate report based on type
-        QVariantMap reportData;
-
-        if (reportType == "daily") {
-            reportData = generateDailyReport();
-        } else if (reportType == "weekly") {
-            reportData = generateWeeklyReport();
-        } else if (reportType == "monthly") {
-            reportData = generateMonthlyReport();
-        }
-
-        // Send report
-        bool sent = sendReportEmail(recipient, reportType, reportData);
-
-        if (sent) {
-            LOG(log, LogLevel::Info, QString("Scheduled %1 report sent to %2").arg(reportType, recipient));
-        } else {
-            throw std::runtime_error("Failed to send report email");
-        }
-
-    } catch (const std::exception &e) {
-        LOG(log, LogLevel::Error, QString("Report generation failed: %1").arg(e.what()));
-        throw; // Re-throw to mark task as failed
-    }
-}
-
-QVariantMap generateDailyReport() {
-    return QVariantMap{
-        {"date", QDate::currentDate()},
-        {"transactions", getTransactionCount()},
-        {"revenue", getDailyRevenue()},
-        {"errors", getErrorCount()},
-        {"uptime", getSystemUptime()}
-    };
-}
-```
-
-### Maintenance Task
-
-```cpp
-void performDailyMaintenance(const QVariantMap &params) {
-    LOG(log, LogLevel::Info, "Starting daily maintenance");
-
-    try {
-        bool cleanupLogs = params.value("cleanupLogs", false).toBool();
-        bool updateStats = params.value("updateStats", false).toBool();
-
-        // Clean up old log files
-        if (cleanupLogs) {
-            int deletedLogs = cleanupOldLogFiles();
-            LOG(log, LogLevel::Info, QString("Cleaned up %1 old log files").arg(deletedLogs));
-        }
-
-        // Update system statistics
-        if (updateStats) {
-            updateSystemStatistics();
-            LOG(log, LogLevel::Info, "System statistics updated");
-        }
-
-        // Perform database maintenance
-        performDatabaseMaintenance();
-
-        // Clean up temporary files
-        cleanupTempFiles();
-
-        // Send maintenance report
-        sendMaintenanceReport();
-
-        LOG(log, LogLevel::Info, "Daily maintenance completed successfully");
-
-    } catch (const std::exception &e) {
-        LOG(log, LogLevel::Error, QString("Daily maintenance failed: %1").arg(e.what()));
-        throw;
-    }
-}
-
-void performDatabaseMaintenance() {
-    // Vacuum database
-    executeDatabaseQuery("VACUUM");
-
-    // Reindex tables
-    executeDatabaseQuery("REINDEX DATABASE ekiosk");
-
-    // Update statistics
-    executeDatabaseQuery("ANALYZE");
-
-    LOG(log, LogLevel::Info, "Database maintenance completed");
-}
-```
-
-### Backup Task
-
-```cpp
-void performDatabaseBackup(const QVariantMap &params) {
-    LOG(log, LogLevel::Info, "Starting database backup");
-
-    try {
-        QString backupType = params.value("backupType", "incremental").toString();
-        bool compression = params.value("compression", true).toBool();
-
-        // Generate backup filename
-        QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss");
-        QString backupFile = QString("backup_%1_%2.db").arg(backupType, timestamp);
-
-        if (compression) {
-            backupFile += ".gz";
-        }
-
-        // Perform backup
-        bool success = createDatabaseBackup(backupFile, backupType, compression);
-
-        if (!success) {
-            throw std::runtime_error("Database backup failed");
-        }
-
-        // Verify backup
-        if (!verifyBackup(backupFile)) {
-            throw std::runtime_error("Backup verification failed");
-        }
-
-        // Upload to remote storage
-        uploadBackupToRemote(backupFile);
-
-        // Clean up old backups
-        cleanupOldBackups();
-
-        LOG(log, LogLevel::Info, QString("Database backup completed: %1").arg(backupFile));
-
-    } catch (const std::exception &e) {
-        LOG(log, LogLevel::Error, QString("Database backup failed: %1").arg(e.what()));
-        throw;
-    }
-}
-```
-
-## Usage in Plugins
-
-Scheduler Service is commonly used in automation and maintenance plugins:
-
-```cpp
-class AutomationPlugin : public SDK::Plugin::IPlugin {
-public:
-    bool initialize(SDK::Plugin::IKernel *kernel) override {
-        mCore = dynamic_cast<SDK::PaymentProcessor::ICore*>(
-            kernel->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
-
-        if (mCore) {
-            mSchedulerService = mCore->getSchedulerService();
-            mDatabaseService = mCore->getDatabaseService();
-            mEventService = mCore->getEventService();
-            mLog = kernel->getLog("Automation");
-        }
-
-        return true;
-    }
-
-    bool start() override {
-        // Schedule automated tasks
-        scheduleAutomatedTasks();
-        return true;
-    }
-
-    void scheduleAutomatedTasks() {
-        // Schedule daily report generation
-        scheduleDailyReports();
-
-        // Schedule maintenance tasks
-        scheduleMaintenanceTasks();
-
-        // Schedule backup tasks
-        scheduleBackupTasks();
-
-        // Schedule cleanup tasks
-        scheduleCleanupTasks();
-
-        LOG(mLog, LogLevel::Info, "Automated tasks scheduled");
-    }
-
-    void scheduleDailyReports() {
-        // Daily sales report at 6 AM
-        QString salesReportId = mSchedulerService->scheduleRecurringTask(
-            "daily_sales_report",
-            ISchedulerService::Daily,
-            QTime(6, 0),
-            [this](const QVariantMap &params) { generateSalesReport(params); },
-            QVariantMap{{"reportType", "sales"}, {"includeDetails", true}},
-            ISchedulerService::Normal
-        );
-
-        // Daily system health report at 7 AM
-        QString healthReportId = mSchedulerService->scheduleRecurringTask(
-            "daily_health_report",
-            ISchedulerService::Daily,
-            QTime(7, 0),
-            [this](const QVariantMap &params) { generateHealthReport(params); },
-            QVariantMap{{"checkServices", true}, {"includeLogs", false}},
-            ISchedulerService::Normal
-        );
-
-        LOG(mLog, LogLevel::Info, QString("Daily reports scheduled: %1, %2").arg(salesReportId, healthReportId));
-    }
-
-    void scheduleMaintenanceTasks() {
-        // Database maintenance at 2 AM daily
-        QString dbMaintenanceId = mSchedulerService->scheduleRecurringTask(
-            "database_maintenance",
-            ISchedulerService::Daily,
-            QTime(2, 0),
-            [this](const QVariantMap &params) { performDatabaseMaintenance(params); },
-            QVariantMap{{"vacuum", true}, {"reindex", true}, {"analyze", true}},
-            ISchedulerService::High
-        );
-
-        // System cleanup at 3 AM daily
-        QString cleanupId = mSchedulerService->scheduleRecurringTask(
-            "system_cleanup",
-            ISchedulerService::Daily,
-            QTime(3, 0),
-            [this](const QVariantMap &params) { performSystemCleanup(params); },
-            QVariantMap{{"tempFiles", true}, {"oldLogs", true}, {"cache", true}},
-            ISchedulerService::Normal
-        );
-
-        LOG(mLog, LogLevel::Info, QString("Maintenance tasks scheduled: %1, %2").arg(dbMaintenanceId, cleanupId));
-    }
-
-    void scheduleBackupTasks() {
-        // Full backup every Sunday at 1 AM
-        QString fullBackupId = mSchedulerService->scheduleCronTask(
-            "full_backup",
-            "0 1 * * 0", // Every Sunday at 1 AM
-            [this](const QVariantMap &params) { performFullBackup(params); },
-            QVariantMap{{"type", "full"}, {"verify", true}, {"compress", true}},
-            ISchedulerService::Critical
-        );
-
-        // Incremental backup daily at 11 PM
-        QString incrementalBackupId = mSchedulerService->scheduleRecurringTask(
-            "incremental_backup",
-            ISchedulerService::Daily,
-            QTime(23, 0),
-            [this](const QVariantMap &params) { performIncrementalBackup(params); },
-            QVariantMap{{"type", "incremental"}, {"verify", true}, {"compress", true}},
-            ISchedulerService::High
-        );
-
-        LOG(mLog, LogLevel::Info, QString("Backup tasks scheduled: %1, %2").arg(fullBackupId, incrementalBackupId));
-    }
-
-    void scheduleCleanupTasks() {
-        // Monthly archive cleanup (first day of month at 4 AM)
-        QString archiveCleanupId = mSchedulerService->scheduleCronTask(
-            "monthly_archive_cleanup",
-            "0 4 1 * *",
-            [this](const QVariantMap &params) { performArchiveCleanup(params); },
-            QVariantMap{{"olderThanMonths", 12}, {"compress", true}},
-            ISchedulerService::Normal
-        );
-
-        LOG(mLog, LogLevel::Info, QString("Cleanup tasks scheduled: %1").arg(archiveCleanupId));
-    }
-
-    void generateSalesReport(const QVariantMap &params) {
-        try {
-            QString reportType = params.value("reportType").toString();
-            bool includeDetails = params.value("includeDetails", false).toBool();
-
-            // Collect sales data
-            QVariantMap salesData = collectSalesData();
-
-            // Generate report
-            QString reportContent = formatSalesReport(salesData, includeDetails);
-
-            // Save report
-            QString reportFile = saveReport(reportContent, "sales");
-
-            // Send report via email
-            sendReportEmail(reportFile, "Daily Sales Report");
-
-            LOG(mLog, LogLevel::Info, "Daily sales report generated and sent");
-
-        } catch (const std::exception &e) {
-            LOG(mLog, LogLevel::Error, QString("Sales report generation failed: %1").arg(e.what()));
-            throw;
-        }
-    }
-
-    void generateHealthReport(const QVariantMap &params) {
-        try {
-            bool checkServices = params.value("checkServices", false).toBool();
-            bool includeLogs = params.value("includeLogs", false).toBool();
-
-            // Collect system health data
-            QVariantMap healthData = collectSystemHealth();
-
-            // Check services if requested
-            if (checkServices) {
-                healthData["services"] = checkServiceStatuses();
-            }
-
-            // Include logs if requested
-            if (includeLogs) {
-                healthData["recentLogs"] = collectRecentLogs();
-            }
-
-            // Generate report
-            QString reportContent = formatHealthReport(healthData);
-
-            // Save and send report
-            QString reportFile = saveReport(reportContent, "health");
-            sendReportEmail(reportFile, "Daily Health Report");
-
-            LOG(mLog, LogLevel::Info, "Daily health report generated and sent");
-
-        } catch (const std::exception &e) {
-            LOG(mLog, LogLevel::Error, QString("Health report generation failed: %1").arg(e.what()));
-            throw;
-        }
-    }
-
-    void performDatabaseMaintenance(const QVariantMap &params) {
-        LOG(mLog, LogLevel::Info, "Starting database maintenance");
-
-        try {
-            bool vacuum = params.value("vacuum", false).toBool();
-            bool reindex = params.value("reindex", false).toBool();
-            bool analyze = params.value("analyze", false).toBool();
-
-            if (vacuum) {
-                mDatabaseService->executeQuery("VACUUM");
-                LOG(mLog, LogLevel::Info, "Database vacuum completed");
-            }
-
-            if (reindex) {
-                mDatabaseService->executeQuery("REINDEX DATABASE ekiosk");
-                LOG(mLog, LogLevel::Info, "Database reindex completed");
-            }
-
-            if (analyze) {
-                mDatabaseService->executeQuery("ANALYZE");
-                LOG(mLog, LogLevel::Info, "Database analyze completed");
-            }
-
-            LOG(mLog, LogLevel::Info, "Database maintenance completed successfully");
-
-        } catch (const std::exception &e) {
-            LOG(mLog, LogLevel::Error, QString("Database maintenance failed: %1").arg(e.what()));
-            throw;
-        }
-    }
-
-    void performSystemCleanup(const QVariantMap &params) {
-        LOG(mLog, LogLevel::Info, "Starting system cleanup");
-
-        try {
-            bool tempFiles = params.value("tempFiles", false).toBool();
-            bool oldLogs = params.value("oldLogs", false).toBool();
-            bool cache = params.value("cache", false).toBool();
-
-            int cleanedItems = 0;
-
-            if (tempFiles) {
-                cleanedItems += cleanupTempFiles();
-            }
-
-            if (oldLogs) {
-                cleanedItems += cleanupOldLogFiles();
-            }
-
-            if (cache) {
-                cleanedItems += cleanupCacheFiles();
-            }
-
-            LOG(mLog, LogLevel::Info, QString("System cleanup completed: %1 items removed").arg(cleanedItems));
-
-        } catch (const std::exception &e) {
-            LOG(mLog, LogLevel::Error, QString("System cleanup failed: %1").arg(e.what()));
-            throw;
-        }
-    }
-
-    void performFullBackup(const QVariantMap &params) {
-        LOG(mLog, LogLevel::Info, "Starting full backup");
-
-        try {
-            bool verify = params.value("verify", false).toBool();
-            bool compress = params.value("compress", false).toBool();
-
-            QString backupFile = createFullBackup(compress);
-
-            if (verify) {
-                verifyBackup(backupFile);
-            }
-
-            uploadBackupToRemote(backupFile);
-
-            LOG(mLog, LogLevel::Info, QString("Full backup completed: %1").arg(backupFile));
-
-        } catch (const std::exception &e) {
-            LOG(mLog, LogLevel::Error, QString("Full backup failed: %1").arg(e.what()));
-            throw;
-        }
-    }
-
-    void performIncrementalBackup(const QVariantMap &params) {
-        LOG(mLog, LogLevel::Info, "Starting incremental backup");
-
-        try {
-            bool verify = params.value("verify", false).toBool();
-            bool compress = params.value("compress", false).toBool();
-
-            QString backupFile = createIncrementalBackup(compress);
-
-            if (verify) {
-                verifyBackup(backupFile);
-            }
-
-            uploadBackupToRemote(backupFile);
-
-            LOG(mLog, LogLevel::Info, QString("Incremental backup completed: %1").arg(backupFile));
-
-        } catch (const std::exception &e) {
-            LOG(mLog, LogLevel::Error, QString("Incremental backup failed: %1").arg(e.what()));
-            throw;
-        }
-    }
-
-    void performArchiveCleanup(const QVariantMap &params) {
-        LOG(mLog, LogLevel::Info, "Starting archive cleanup");
-
-        try {
-            int olderThanMonths = params.value("olderThanMonths", 12).toInt();
-            bool compress = params.value("compress", false).toBool();
-
-            QDate cutoffDate = QDate::currentDate().addMonths(-olderThanMonths);
-
-            int archivedItems = archiveOldData(cutoffDate, compress);
-
-            LOG(mLog, LogLevel::Info, QString("Archive cleanup completed: %1 items archived").arg(archivedItems));
-
-        } catch (const std::exception &e) {
-            LOG(mLog, LogLevel::Error, QString("Archive cleanup failed: %1").arg(e.what()));
-            throw;
-        }
-    }
-
-    void monitorTaskStatuses() {
-        // Check task statuses periodically
-        QList<ISchedulerService::ScheduledTask> tasks = mSchedulerService->getAllTasks();
-
-        foreach (const auto &task, tasks) {
-            if (task.status == ISchedulerService::Failed) {
-                LOG(mLog, LogLevel::Warning, QString("Task failed: %1 (attempts: %2/%3)")
-                    .arg(task.name).arg(task.retryCount).arg(task.maxRetries));
-
-                // Handle failed tasks
-                handleFailedTask(task);
-            }
-        }
-    }
-
-    void handleFailedTask(const ISchedulerService::ScheduledTask &task) {
-        // Send notification about failed task
-        QVariantMap notification = {
-            {"type", "task_failed"},
-            {"taskId", task.id},
-            {"taskName", task.name},
-            {"failureTime", task.lastRun},
-            {"retryCount", task.retryCount}
-        };
-
-        mEventService->publish("task.failed", notification);
-
-        // Attempt retry if retries remaining
-        if (task.retryCount < task.maxRetries) {
-            bool executed = mSchedulerService->executeTaskNow(task.id);
-            if (executed) {
-                LOG(mLog, LogLevel::Info, QString("Retrying failed task: %1").arg(task.name));
-            }
-        }
-    }
+    /// Task constructor
+    MyCustomTask(const QString &aName,
+                 const QString &aLogName,
+                 const QString &aParams);
+    virtual ~MyCustomTask();
+
+    /// Execute task
+    virtual void execute();
+
+    /// Stop task execution
+    virtual bool cancel();
+
+    /// Subscribe to task completion signal
+    virtual bool subscribeOnComplete(QObject *aReceiver, const char *aSlot);
+
+signals:
+    /// Task completion signal
+    void finished(const QString &aName, bool aComplete);
 
 private:
-    ISchedulerService *mSchedulerService;
-    IDatabaseService *mDatabaseService;
-    IEventService *mEventService;
-    ILog *mLog;
+    QString m_Params;  /// Parameters from configuration
+    bool m_Canceled;   /// Cancellation flag
 };
+```
+
+### Step 2: Implement Task
+
+```cpp
+/* @file Example task implementation. */
+
+#include "MyCustomTask.h"
+#include <Common/BasicApplication.h>
+#include <System/IApplication.h>
+
+MyCustomTask::MyCustomTask(const QString &aName,
+                           const QString &aLogName,
+                           const QString &aParams)
+    : ITask(aName, aLogName, aParams)
+    , ILogable(aLogName)
+    , m_Params(aParams)
+    , m_Canceled(false) {
+
+    toLog(LogLevel::Normal, QString("Task initialized with params: %1").arg(m_Params));
+}
+
+MyCustomTask::~MyCustomTask() {}
+
+void MyCustomTask::execute() {
+    toLog(LogLevel::Normal, "Executing custom task");
+
+    try {
+        // Get access to application and services
+        auto *app = dynamic_cast<IApplication*>(BasicApplication::getInstance());
+        if (!app) {
+            throw std::runtime_error("Application not available");
+        }
+
+        // Execute task logic
+        bool success = performTaskLogic();
+
+        // Signal completion
+        emit finished(m_Name, success);
+
+    } catch (const std::exception &e) {
+        toLog(LogLevel::Error, QString("Task failed: %1").arg(e.what()));
+        emit finished(m_Name, false);
+    }
+}
+
+bool MyCustomTask::cancel() {
+    m_Canceled = true;
+    toLog(LogLevel::Warning, "Task cancelled");
+    return true;
+}
+
+bool MyCustomTask::subscribeOnComplete(QObject *aReceiver, const char *aSlot) {
+    return connect(this, SIGNAL(finished(const QString&, bool)),
+                   aReceiver, aSlot) != nullptr;
+}
+```
+
+### Step 3: Register in SchedulerService
+
+Add to `SchedulerService.cpp` constructor:
+
+```cpp
+#include "../SchedulerTasks/MyCustomTask.h"
+
+SchedulerService::SchedulerService(IApplication *aApplication)
+    : /* ... */ {
+
+    // Existing registrations
+    registerTaskType<LogArchiver>("LogArchiver");
+    registerTaskType<LogRotate>("LogRotate");
+    // ...
+
+    // New task
+    registerTaskType<MyCustomTask>("MyCustomTask");
+}
+```
+
+### Step 4: Add Configuration
+
+In `data/scheduler.ini` file:
+
+```ini
+[my_custom_task]
+type=MyCustomTask
+time=03:00
+params=example_parameter
+repeat_count_if_fail=3
+time_threshold=60
+```
+
+## Scheduling Modes
+
+### 1. Time-based Launch
+
+```ini
+[daily_task]
+type=TaskType
+time=02:30         # Every day at 02:30
+params=
+```
+
+### 2. Periodic Launch
+
+```ini
+[periodic_task]
+type=TaskType
+period=3600        # Every 3600 seconds (1 hour)
+params=
+```
+
+### 3. Application Startup Launch
+
+```ini
+[startup_task]
+type=TaskType
+time=startup       # Once at startup
+params=
+```
+
+### 4. First Run Launch
+
+```ini
+[first_run_task]
+type=TaskType
+time=first_run     # Once at first start (saved in user config)
+params=
+```
+
+### 5. Combined Mode (time + period)
+
+```ini
+[combined_task]
+type=TaskType
+time=00:00         # First launch at 00:00
+period=60          # Then every 60 seconds
+params=
+```
+
+### 6. Launch Time Randomization
+
+```ini
+[randomized_task]
+type=TaskType
+time=03:00
+time_threshold=300 # Launch in range 03:00:00 - 03:05:00
+params=
 ```
 
 ## Error Handling
 
+### Automatic Retries
+
+```ini
+[retry_task]
+type=TaskType
+time=02:00
+repeat_count_if_fail=5  # Retry up to 5 times on error
+params=
+```
+
+**Mechanism**:
+
+1. Task returns `finished(name, false)` on error
+2. SchedulerService receives signal and checks `repeat_count_if_fail`
+3. If retries not exhausted, task is launched again after 1 minute
+4. Retry counter increments with each attempt
+
+### Error Logging
+
 ```cpp
-try {
-    // Validate task parameters
-    if (taskName.isEmpty()) {
-        throw std::invalid_argument("Task name cannot be empty");
+void MyTask::execute() {
+    try {
+        // Task execution
+        performWork();
+        emit finished(m_Name, true);
+
+    } catch (const std::exception &e) {
+        // Error logging
+        toLog(LogLevel::Error, QString("Task execution failed: %1").arg(e.what()));
+        emit finished(m_Name, false);  // Signals error
     }
-
-    if (!executeAt.isValid()) {
-        throw std::invalid_argument("Execution time is invalid");
-    }
-
-    // Check scheduler service availability
-    if (!schedulerService) {
-        throw std::runtime_error("Scheduler service not available");
-    }
-
-    // Schedule task
-    QString taskId = schedulerService->scheduleTask(taskName, executeAt, taskFunction);
-
-    if (taskId.isEmpty()) {
-        throw std::runtime_error("Failed to schedule task");
-    }
-
-} catch (const std::invalid_argument &e) {
-    LOG(log, LogLevel::Error, QString("Invalid task scheduling: %1").arg(e.what()));
-
-} catch (const std::runtime_error &e) {
-    LOG(log, LogLevel::Error, QString("Scheduler service error: %1").arg(e.what()));
-
-    // Handle error - retry scheduling, use alternative method, etc.
-    handleSchedulingError(taskName, executeAt);
-
-} catch (const std::exception &e) {
-    LOG(log, LogLevel::Error, QString("Unexpected scheduler error: %1").arg(e.what()));
 }
 ```
 
-## Cron Expression Reference
+## Monitoring Task Execution
 
-Common cron expressions:
+### Status Check via Logs
 
-- `"0 9 * * *"` - Daily at 9:00 AM
-- `"0 */2 * * *"` - Every 2 hours
-- `"0 9 * * 1-5"` - Weekdays at 9:00 AM
-- `"0 0 * * 0"` - Every Sunday at midnight
-- `"0 0 1 * *"` - First day of every month
-- `"*/15 * * * *"` - Every 15 minutes
+All tasks log their actions:
 
-## Performance Considerations
+```txt
+2026.02.14 00:01:05 [INFO] [SchedulerService] Starting task: log_rotate
+2026.02.14 00:01:06 [INFO] [LogRotate] Log rotation completed
+2026.02.14 00:01:06 [INFO] [SchedulerService] Task completed: log_rotate (success)
 
-- Limit concurrent task execution
-- Use appropriate task priorities
-- Implement task timeout mechanisms
-- Monitor system resources during task execution
-- Use background execution for long-running tasks
+2026.02.14 00:45:12 [INFO] [SchedulerService] Starting task: archive_logs
+2026.02.14 00:45:45 [INFO] [LogArchiver] Packed logs for date: 2026.02.13
+2026.02.14 00:47:23 [INFO] [LogArchiver] Archive size check: 245 MB / 500 MB
+2026.02.14 00:47:23 [INFO] [SchedulerService] Task completed: archive_logs (success)
+```
 
-## Security Considerations
+### Last Execution Time Check
 
-- Validate task parameters and execution context
-- Implement task execution permissions
-- Audit scheduled task creation and execution
-- Secure task storage and configuration
-- Implement task execution limits
+File `user/scheduler_config.ini` stores timestamps:
+
+```ini
+[log_rotate]
+last_execute=2026.02.14 00:01:06
+
+[archive_logs]
+last_execute=2026.02.14 00:47:23
+```
+
+## Best Practices
+
+### 1. Separation of Concerns
+
+- Each task should have **one clearly defined function**
+- Avoid creating "universal" tasks
+
+### 2. Error Handling
+
+```cpp
+void MyTask::execute() {
+    try {
+        // ALWAYS emit finished signal
+        bool success = doWork();
+        emit finished(m_Name, success);
+
+    } catch (...) {
+        // NEVER swallow exceptions without signaling
+        toLog(LogLevel::Error, "Task failed");
+        emit finished(m_Name, false);
+    }
+}
+```
+
+### 3. Logging
+
+- Log execution start
+- Log key steps
+- Log result (success/error)
+- Use appropriate levels (`Normal`, `Warning`, `Error`)
+
+### 4. Cancellation Handling
+
+```cpp
+bool MyTask::cancel() {
+    m_Canceled = true;
+
+    // Abort long running operations
+    if (m_LongRunningOperation) {
+        m_LongRunningOperation->cancel();
+    }
+
+    return true;
+}
+
+void MyTask::execute() {
+    for (int i = 0; i < 1000 && !m_Canceled; ++i) {
+        // Check cancellation flag in loops
+        processItem(i);
+    }
+
+    emit finished(m_Name, !m_Canceled);
+}
+```
+
+### 5. Execution Time Scheduling
+
+- **Logs**: 00:01 (rotation), 00:45 (archiving) - minimal load
+- **Updates**: During off-hours or with low priority
+- **Time sync**: At startup or after connection loss
+- **Power saving**: Check every minute or less frequently
+
+### 6. Avoid Blocking Operations
+
+```cpp
+// BAD: Blocking operation in execute()
+void MyTask::execute() {
+    QThread::sleep(300);  // Blocks scheduler thread!
+    emit finished(m_Name, true);
+}
+
+// GOOD: Asynchronous operation
+void MyTask::execute() {
+    auto *worker = new QThread();
+    auto *task = new AsyncWorker();
+    task->moveToThread(worker);
+
+    connect(worker, &QThread::started, task, &AsyncWorker::process);
+    connect(task, &AsyncWorker::finished, this, [this]() {
+        emit finished(m_Name, true);
+    });
+
+    worker->start();
+}
+```
+
+## Performance
+
+### Multithreaded Execution
+
+SchedulerService executes tasks in **separate threads** via `QThread`:
+
+```cpp
+// Internal SchedulerService implementation
+QThread *thread = new QThread();
+task->moveToThread(thread);
+
+connect thread->started() → task->execute()
+connect task->finished() → cleanup
+
+thread->start();  // Does not block main thread
+```
+
+### Limitations
+
+- **One task of same type at a time**: If task is still running, next launch
+  is postponed
+- **No prioritization**: Tasks execute in timer trigger order
+- **No queue**: Missed tasks are not queued
 
 ## Dependencies
 
-- Settings Service (for scheduler configuration)
-- Database Service (for task persistence)
-- Event Service (for task event notifications)
-- Log Service (for task execution logging)
+SchedulerService depends on:
+
+- **SettingsService** - Reading `TerminalSettings`
+- **EventService** - Sending events (e.g., Shutdown)
+- **LogService** - Execution logging
+- **Core Services** - Access to other services via `IApplication`
+
+## Debugging
+
+### Enable Detailed Logging
+
+In `application.ini`:
+
+```ini
+[logs]
+SchedulerService=debug
+```
+
+### Manual Task Launch
+
+For testing, you can temporarily modify `scheduler.ini`:
+
+```ini
+[test_task]
+type=MyCustomTask
+time=startup      # Will execute immediately on startup
+params=test_mode
+```
+
+### Simulate First Run
+
+Delete task section from `user/scheduler_config.ini`:
+
+```bash
+# Delete [my_task] section from file
+# Task with time=first_run will execute again
+```
 
 ## See Also
 
-- [Settings Service](settings.md) - Scheduler configuration
-- [Database Service](database.md) - Task persistence
-- [Event Service](event.md) - Task event notifications
+- [Settings Service](settings.md) - Schedule configuration
+- [Log Service](../modules/logging.md) - Task logging
+- [Remote Service](remote.md) - Content updates
+
+## Migration from Old API
+
+If you have code using old callback-based API (from previous documentation),
+you need to:
+
+1. Create task class inheriting from `ITask`
+2. Move callback logic to `execute()` method
+3. Register task type in `SchedulerService`
+4. Add configuration to `scheduler.ini`
+
+**Was** (old non-existent API):
+
+```cpp
+schedulerService->scheduleTask("my_task", time, [](){ doWork(); });
+```
+
+**Became** (current implementation):
+
+```cpp
+// 1. Create MyTask.h / MyTask.cpp
+class MyTask : public ITask { /*...*/ };
+
+// 2. Register
+registerTaskType<MyTask>("MyTask");
+
+// 3. Add to scheduler.ini
+[my_task]
+type=MyTask
+time=02:00
+```
