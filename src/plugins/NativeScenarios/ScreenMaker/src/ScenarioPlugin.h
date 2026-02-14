@@ -70,7 +70,7 @@ public:
     /// Создает класс c заданным именем.
     virtual GUI::Scenario *create(const QString &aClassName) const {
         void *voidPtr = reinterpret_cast<void *>(
-            aEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+            m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
         PPSDK::ICore *core = reinterpret_cast<PPSDK::ICore *>(voidPtr);
         return new MainScenario(core, m_Environment->getLog(aClassName));
     }

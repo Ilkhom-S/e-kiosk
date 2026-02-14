@@ -151,12 +151,12 @@ void DiagnosticsServiceWindow::updateInfoPanel() {
     QVariantMap cashInfo = m_Backend->getPaymentManager()->getBalanceInfo();
     lbLastEncashmentDate->setText(cashInfo[CServiceTags::LastEncashmentDate].toString());
 
-    bool isRoleTechician = m_Backend->getUserRole() == CServiceTags::UserRole::RoleTechnician;
-    lbAmount->setText(isRoleTechician ? "-/-" : cashInfo[CServiceTags::CashAmount].toString());
+    bool isRoleTechnician = m_Backend->getUserRole() == CServiceTags::UserRole::RoleTechnician;
+    lbAmount->setText(isRoleTechnician ? "-/-" : cashInfo[CServiceTags::CashAmount].toString());
     lbNotesCount->setText(
-        isRoleTechician ? "-/-" : QString::number(cashInfo[CServiceTags::NoteCount].toInt()));
+        isRoleTechnician ? "-/-" : QString::number(cashInfo[CServiceTags::NoteCount].toInt()));
     lbCoinsCount->setText(
-        isRoleTechician ? "-/-" : QString::number(cashInfo[CServiceTags::CoinCount].toInt()));
+        isRoleTechnician ? "-/-" : QString::number(cashInfo[CServiceTags::CoinCount].toInt()));
 }
 
 //---------------------------------------------------------------------------
