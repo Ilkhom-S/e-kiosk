@@ -64,124 +64,124 @@ REGISTER_PLUGIN_WITH_PARAMETERS(
     &EnumerateParameters);
 
 //------------------------------------------------------------------------------
-UcsChargeProvider::UcsChargeProvider(SDK::Plugin::IEnvironment *aFactory,
-                                     const QString &aInstancePath)
+
     : ILogable(aFactory->getLog(Ucs::LogName)), m_Factory(aFactory), m_InstancePath(aInstancePath),
       void *voidPtr = reinterpret_cast<void *>(
           aFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
-m_Core(reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr)),
-    m_Api(Ucs::API::getInstance(m_Core, aFactory->getLog(Ucs::LogName))) {
-    qRegisterMetaType<SDK::PaymentProcessor::SNote>("SDK::PaymentProcessor::SNote");
+    m_Core(reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr)),
+        m_Api(Ucs::API::getInstance(m_Core, aFactory->getLog(Ucs::LogName))) {
+        qRegisterMetaType<SDK::PaymentProcessor::SNote>("SDK::PaymentProcessor::SNote");
 
-    m_DealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
-        m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
+        m_DealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
+            m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
 
-    connect(m_Api.data(),
-            SIGNAL(saleComplete(double, int, const QString &, const QString &)),
-            SLOT(onSaleComplete(double, int, const QString &, const QString &)));
+        connect(m_Api.data(),
+                SIGNAL(saleComplete(double, int, const QString &, const QString &)),
+                SLOT(onSaleComplete(double, int, const QString &, const QString &)));
 
-    connect(m_Api.data(), SIGNAL(encashmentComplete()), SLOT(onEncashmentComplete()));
+        connect(m_Api.data(), SIGNAL(encashmentComplete()), SLOT(onEncashmentComplete()));
 
-    m_Core->getEventService()->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
-}
-
-//------------------------------------------------------------------------------
-UcsChargeProvider::~UcsChargeProvider() {}
-
-//------------------------------------------------------------------------------
-QString UcsChargeProvider::getPluginName() const {
-    return CUcsChargeProvider::PluginName;
-}
-
-//------------------------------------------------------------------------------
-QVariantMap UcsChargeProvider::getConfiguration() const {
-    return m_Parameters;
-}
-
-//------------------------------------------------------------------------------
-void UcsChargeProvider::setConfiguration(const QVariantMap &aParameters) {
-    m_Parameters = aParameters;
-
-    m_Api->setupRuntime(aParameters.value(Param_RuntimePath).toString());
-}
-
-//------------------------------------------------------------------------------
-QString UcsChargeProvider::getConfigurationName() const {
-    return m_InstancePath;
-}
-
-//------------------------------------------------------------------------------
-bool UcsChargeProvider::saveConfiguration() {
-    // У плагина нет параметров
-    return true;
-}
-
-//------------------------------------------------------------------------------
-bool UcsChargeProvider::isReady() const {
-    return true;
-}
-
-//------------------------------------------------------------------------------
-bool UcsChargeProvider::subscribe(const char *aSignal, QObject *aReceiver, const char *aSlot) {
-    return static_cast<bool>(
-        QObject::connect(this,
-                         aSignal,
-                         aReceiver,
-                         aSlot,
-                         Qt::ConnectionType(Qt::UniqueConnection | Qt::QueuedConnection)));
-}
-
-//------------------------------------------------------------------------------
-bool UcsChargeProvider::unsubscribe(const char *aSignal, QObject *aReceiver) {
-    return QObject::disconnect(aSignal, aReceiver);
-}
-
-//------------------------------------------------------------------------------
-QString UcsChargeProvider::getMethod() {
-    return m_Api->isReady() ? "card_ucs" : QString();
-}
-
-//------------------------------------------------------------------------------
-bool UcsChargeProvider::enable(PPSDK::TPaymentAmount aMaxAmount) {
-    return m_Api->enable(aMaxAmount);
-}
-
-//------------------------------------------------------------------------------
-bool UcsChargeProvider::disable() {
-    // Чистим ресурсы по команде сценария, т.к. нужны дополнительные движения с API
-    // m_Api->disable();
-    return true;
-}
-
-//------------------------------------------------------------------------------
-void UcsChargeProvider::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
-    if (aEvent.getType() == PPSDK::EEventType::ProcessEncashment) {
-        m_Api->encashment(false);
+        m_Core->getEventService()->subscribe(this,
+                                             SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
     }
-}
 
-//------------------------------------------------------------------------------
-void UcsChargeProvider::onEncashmentComplete() {
-    // TODO - напечатать все чеки отложенных инкассаций
-    // m_Core->getPrinterService()->pri
-}
+    //------------------------------------------------------------------------------
+    UcsChargeProvider::~UcsChargeProvider() {}
 
-//------------------------------------------------------------------------------
-void UcsChargeProvider::onSaleComplete(double aAmount,
-                                       int aCurrency,
-                                       const QString &aRRN,
-                                       const QString &aConfirmationCode) {
-    toLog(LogLevel::Normal,
-          QString("Sale complete: %1 RRN:%2 confirmation:%3.")
-              .arg(aAmount, 0, 'f', 2)
-              .arg(aRRN)
-              .arg(aConfirmationCode));
+    //------------------------------------------------------------------------------
+    QString UcsChargeProvider::getPluginName() const {
+        return CUcsChargeProvider::PluginName;
+    }
 
-    m_Core->getPaymentService()->updatePaymentField(
-        m_Core->getPaymentService()->getActivePayment(),
-        PPSDK::IPayment::SParameter("PAY_TOOL", 2, true, false, true));
+    //------------------------------------------------------------------------------
+    QVariantMap UcsChargeProvider::getConfiguration() const {
+        return m_Parameters;
+    }
 
-    emit stacked(PPSDK::SNote(PPSDK::EAmountType::BankCard, aAmount, aCurrency, aRRN));
-}
+    //------------------------------------------------------------------------------
+    void UcsChargeProvider::setConfiguration(const QVariantMap &aParameters) {
+        m_Parameters = aParameters;
 
-//------------------------------------------------------------------------------
+        m_Api->setupRuntime(aParameters.value(Param_RuntimePath).toString());
+    }
+
+    //------------------------------------------------------------------------------
+    QString UcsChargeProvider::getConfigurationName() const {
+        return m_InstancePath;
+    }
+
+    //------------------------------------------------------------------------------
+    bool UcsChargeProvider::saveConfiguration() {
+        // У плагина нет параметров
+        return true;
+    }
+
+    //------------------------------------------------------------------------------
+    bool UcsChargeProvider::isReady() const {
+        return true;
+    }
+
+    //------------------------------------------------------------------------------
+    bool UcsChargeProvider::subscribe(const char *aSignal, QObject *aReceiver, const char *aSlot) {
+        return static_cast<bool>(
+            QObject::connect(this,
+                             aSignal,
+                             aReceiver,
+                             aSlot,
+                             Qt::ConnectionType(Qt::UniqueConnection | Qt::QueuedConnection)));
+    }
+
+    //------------------------------------------------------------------------------
+    bool UcsChargeProvider::unsubscribe(const char *aSignal, QObject *aReceiver) {
+        return QObject::disconnect(aSignal, aReceiver);
+    }
+
+    //------------------------------------------------------------------------------
+    QString UcsChargeProvider::getMethod() {
+        return m_Api->isReady() ? "card_ucs" : QString();
+    }
+
+    //------------------------------------------------------------------------------
+    bool UcsChargeProvider::enable(PPSDK::TPaymentAmount aMaxAmount) {
+        return m_Api->enable(aMaxAmount);
+    }
+
+    //------------------------------------------------------------------------------
+    bool UcsChargeProvider::disable() {
+        // Чистим ресурсы по команде сценария, т.к. нужны дополнительные движения с API
+        // m_Api->disable();
+        return true;
+    }
+
+    //------------------------------------------------------------------------------
+    void UcsChargeProvider::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
+        if (aEvent.getType() == PPSDK::EEventType::ProcessEncashment) {
+            m_Api->encashment(false);
+        }
+    }
+
+    //------------------------------------------------------------------------------
+    void UcsChargeProvider::onEncashmentComplete() {
+        // TODO - напечатать все чеки отложенных инкассаций
+        // m_Core->getPrinterService()->pri
+    }
+
+    //------------------------------------------------------------------------------
+    void UcsChargeProvider::onSaleComplete(double aAmount,
+                                           int aCurrency,
+                                           const QString &aRRN,
+                                           const QString &aConfirmationCode) {
+        toLog(LogLevel::Normal,
+              QString("Sale complete: %1 RRN:%2 confirmation:%3.")
+                  .arg(aAmount, 0, 'f', 2)
+                  .arg(aRRN)
+                  .arg(aConfirmationCode));
+
+        m_Core->getPaymentService()->updatePaymentField(
+            m_Core->getPaymentService()->getActivePayment(),
+            PPSDK::IPayment::SParameter("PAY_TOOL", 2, true, false, true));
+
+        emit stacked(PPSDK::SNote(PPSDK::EAmountType::BankCard, aAmount, aCurrency, aRRN));
+    }
+
+    //------------------------------------------------------------------------------

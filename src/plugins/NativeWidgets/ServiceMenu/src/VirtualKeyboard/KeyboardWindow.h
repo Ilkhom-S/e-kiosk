@@ -41,7 +41,7 @@ public:
     void shutdown();
 
 private slots:
-    void onButtonClicked();
+    void onButtonClicked() const;
     void onShiftClicked() {
         m_Shifted = ui.KEY_SHIFT->isChecked();
         updateKeys();

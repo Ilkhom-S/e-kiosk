@@ -43,6 +43,7 @@ ek_add_application(ekiosk
     QT_MODULES Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets WebEngineWidgets Core5Compat
     LIBRARIES
     EK::QZint
+    EK::qntp
     PPSDK
     PPSDK
     BasicApplication

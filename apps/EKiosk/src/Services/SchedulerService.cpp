@@ -18,6 +18,14 @@
 #include <random>
 #include <utility>
 
+// SchedulerTasks
+#include "../SchedulerTasks/LogArchiver.h"
+#include "../SchedulerTasks/LogRotate.h"
+#include "../SchedulerTasks/OnOffDisplay.h"
+#include "../SchedulerTasks/RunUpdater.h"
+#include "../SchedulerTasks/TimeSync.h"
+#include "../SchedulerTasks/UpdateRemoteContent.h"
+
 namespace PPSDK = SDK::PaymentProcessor;
 
 namespace CScheduler {
@@ -69,6 +77,14 @@ SchedulerService::SchedulerService(IApplication *aApplication)
     m_Thread.setObjectName(CScheduler::ThreadName);
 
     moveToThread(&m_Thread);
+
+    // Регистрация типов задач
+    registerTaskType<LogArchiver>("LogArchiver");
+    registerTaskType<LogRotate>("LogRotate");
+    registerTaskType<RunUpdater>("RunUpdater");
+    registerTaskType<TimeSync>("TimeSync");
+    registerTaskType<OnOffDisplay>("OnOffDisplay");
+    registerTaskType<UpdateRemoteContent>("UpdateRemoteContent");
 
     // для запуска таймеров всех заданий
     connect(&m_Thread, SIGNAL(started()), this, SLOT(scheduleAll()));

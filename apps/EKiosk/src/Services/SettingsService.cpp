@@ -191,9 +191,9 @@ SettingsManager *SettingsService::getSettingsManager() const {
 SDK::PaymentProcessor::ISettingsAdapter *SettingsService::getAdapter(const QString &aAdapterName) {
     if (m_SettingsAdapters.contains(aAdapterName)) {
         return m_SettingsAdapters[aAdapterName];
-    } else {
-        return nullptr;
     }
+
+    return nullptr;
 }
 
 //---------------------------------------------------------------------------

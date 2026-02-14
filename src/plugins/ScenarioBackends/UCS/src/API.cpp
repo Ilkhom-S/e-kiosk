@@ -823,10 +823,10 @@ API::TResponse API::send(const QByteArray &aRequest, bool aWaitOperationComplete
 
     QByteArray responseBuffer(CUcs::ReceiveBufferSize, 0);
     int result = m_EftpDo(m_PySelf,
-                          aRequest.isEmpty() ? 0 : (char *)aRequest.data(),
+                          aRequest.isEmpty() ? nullptr : (char *)aRequest.data(),
                           responseBuffer.data(),
-                          NULL,
-                          NULL);
+                          nullptr,
+                          nullptr);
 
     toLog(LogLevel::Debug,
           QString("RESPONSE: [%1, %2]")
@@ -836,7 +836,7 @@ API::TResponse API::send(const QByteArray &aRequest, bool aWaitOperationComplete
     if (aWaitOperationComplete && result == 0) {
         do {
             QByteArray responseBuffer2(CUcs::ReceiveBufferSize, 0);
-            result = m_EftpDo(m_PySelf, 0, responseBuffer2.data(), NULL, NULL);
+            result = m_EftpDo(m_PySelf, nullptr, responseBuffer2.data(), nullptr, nullptr);
 
             toLog(LogLevel::Debug,
                   QString("RESPONSE (loop): [%1, %2]")

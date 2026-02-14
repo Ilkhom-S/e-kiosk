@@ -20,7 +20,7 @@ signals:
     void initialized();
 
 public:
-    ~IDeviceWorkingThread() override = default;
+    virtual ~IDeviceWorkingThread() override = default;
 
 public slots:
     /// Инициализация.
