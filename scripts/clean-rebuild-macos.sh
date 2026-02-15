@@ -57,18 +57,18 @@ echo "Building all targets..."
 cmake --build "$BUILD_DIR" -j8 || {
     echo "Warning: Some targets failed to build (possibly tests)"
     echo "Checking if main targets succeeded..."
-    
+
     # Check critical binaries
     if [ ! -f "$BUILD_DIR/bin/ekiosk.app/Contents/MacOS/ekiosk" ]; then
         echo "Error: ekiosk failed to build"
         exit 1
     fi
-    
+
     if [ ! -f "$BUILD_DIR/bin/plugins/libhumo_paymentsd.dylib" ]; then
         echo "Error: Payment plugins failed to build"
         exit 1
     fi
-    
+
     echo "Main targets built successfully despite test failures"
 }
 
