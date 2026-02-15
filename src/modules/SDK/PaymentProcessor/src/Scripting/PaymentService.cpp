@@ -177,7 +177,8 @@ QString Provider::xmlFields2Json(const QString &aXmlFields) {
                             const SProviderField::SEnum_Item &b) { return a.sort < b.sort; });
     };
 
-    BOOST_FOREACH (const auto &fieldIt, ptFields.get_child("add_fields", emptyTree)) {
+    const auto &addFieldsTree = ptFields.get_child("add_fields", emptyTree);
+    BOOST_FOREACH (const auto &fieldIt, addFieldsTree) {
         try {
             SProviderField field;
 

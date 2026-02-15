@@ -24,14 +24,17 @@ public:
     /// Возвращает версию ядра.
     virtual QString getVersion() const = 0;
 
+    /// Возвращает текущий язык приложения (en, ru, tg, uz и т.д.).
+    virtual QString getLanguage() const = 0;
+
     /// Возвращает рабочую папку ядра.
     virtual QString getDirectory() const = 0;
 
-    /// Возвращает каталог для хранения данных/конфигураций приложения.
-    virtual QString getDataDirectory() const = 0;
-
     /// Возвращает каталог для хранения лог-файлов приложения.
     virtual QString getLogsDirectory() const = 0;
+
+    /// Возвращает каталог для хранения данных/конфигураций приложения.
+    virtual QString getDataDirectory() const = 0;
 
     /// Методы управления конфигурациями плагинов, хранимых приложением.
     /// Сообщает имеется ли для данной пары плагин-объект конфигурация.

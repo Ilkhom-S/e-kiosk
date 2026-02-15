@@ -109,7 +109,9 @@ void MainScenario::start(const QVariantMap &aContext) {
     try {
         read_xml(terminalConfig.toStdString(), pt);
 
-        BOOST_FOREACH (ptree::value_type const &v, pt.get_child("terminal")) {
+        static ptree emptyTerminalTree;
+        const auto &terminalTree = pt.get_child("terminal", emptyTerminalTree);
+        BOOST_FOREACH (ptree::value_type const &v, terminalTree) {
             if (v.first == "connection") {
                 connection.type = QString::fromStdString(
                                       v.second.get<std::string>("<xmlattr>.type", "")) == "local"

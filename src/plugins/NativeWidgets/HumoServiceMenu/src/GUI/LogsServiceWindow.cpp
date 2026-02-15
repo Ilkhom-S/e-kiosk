@@ -32,12 +32,15 @@ LogsServiceWindow::LogsServiceWindow(HumoServiceBackend *aBackend, QWidget *aPar
 
     lvLog->setModel(&m_Model);
 
-    QString logPath(QString("%1/../logs")
-                        .arg(static_cast<SDK::PaymentProcessor::TerminalSettings *>(
-                                 m_Backend->getCore()->getSettingsService()->getAdapter(
-                                     SDK::PaymentProcessor::CAdapterNames::TerminalAdapter))
-                                 ->getAppEnvironment()
-                                 .userDataPath));
+    // Используем reinterpret_cast через void* для корректной работы с multiple inheritance
+    // См. docs/multiple-inheritance-rtti-casting.md
+    void *terminalSettingsPtr =
+        reinterpret_cast<void *>(m_Backend->getCore()->getSettingsService()->getAdapter(
+            SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
+    SDK::PaymentProcessor::TerminalSettings *terminalSettings =
+        reinterpret_cast<SDK::PaymentProcessor::TerminalSettings *>(terminalSettingsPtr);
+
+    QString logPath(QString("%1/../logs").arg(terminalSettings->getAppEnvironment().userDataPath));
 
     QDir logDir(logPath, "*.log", QDir::Name, QDir::Files);
     foreach (QFileInfo fileInfo, logDir.entryInfoList()) {

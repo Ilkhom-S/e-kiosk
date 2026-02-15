@@ -14,6 +14,8 @@
 #include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
 #include <SDK/PaymentProcessor/Settings/Range.h>
 
+#include <boost/property_tree/ptree.hpp>
+
 namespace SDK {
 namespace PaymentProcessor {
 
@@ -43,7 +45,7 @@ private:
     void operator=(const Directory &);
 
 private:
-    TPtree &m_Properties;
+    TPtree m_Properties;
 
     QVector<SRange> m_Ranges;
     QVector<SRange> m_OverlappedRanges;

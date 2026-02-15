@@ -27,7 +27,6 @@ QString Directory::getAdapterName() {
 Directory::Directory(TPtree &aProperties)
     : m_Properties(aProperties.get_child(CAdapterNames::Directory, aProperties)) {
     m_Ranges.reserve(20000);
-    TPtree empty;
     SRange range;
 
     static TPtree emptyNumCapacityTree;
@@ -85,28 +84,31 @@ Directory::~Directory() = default;
 //---------------------------------------------------------------------------
 QList<SConnectionTemplate> Directory::getConnectionTemplates() const {
     QList<SConnectionTemplate> templates;
-    TPtree empty;
 
-    static TPtree emptyConnectionsTree;
-    const auto &connectionsTree =
-        m_Properties.get_child("directory.connections", emptyConnectionsTree);
-    BOOST_FOREACH (const TPtree::value_type &record, connectionsTree) {
-        try {
-            SConnectionTemplate connection;
+    try {
+        static TPtree emptyConnectionsTree;
+        const auto &connectionsTree =
+            m_Properties.get_child("directory.connections", emptyConnectionsTree);
+        BOOST_FOREACH (const TPtree::value_type &record, connectionsTree) {
+            try {
+                SConnectionTemplate connection;
 
-            connection.name = record.second.get<QString>("<xmlattr>.name");
-            connection.phone = record.second.get<QString>("<xmlattr>.phone");
-            connection.login = record.second.get<QString>("<xmlattr>.login");
-            connection.password = record.second.get<QString>("<xmlattr>.password");
-            connection.initString = record.second.get<QString>("<xmlattr>.init_string");
-            connection.balanceNumber = record.second.get("balance.<xmlattr>.number", QString());
-            connection.regExp = record.second.get("balance.<xmlattr>.regexp", QString());
+                connection.name = record.second.get<QString>("<xmlattr>.name");
+                connection.phone = record.second.get<QString>("<xmlattr>.phone");
+                connection.login = record.second.get<QString>("<xmlattr>.login");
+                connection.password = record.second.get<QString>("<xmlattr>.password");
+                connection.initString = record.second.get<QString>("<xmlattr>.init_string");
+                connection.balanceNumber = record.second.get("balance.<xmlattr>.number", QString());
+                connection.regExp = record.second.get("balance.<xmlattr>.regexp", QString());
 
-            templates.append(connection);
-        } catch (std::exception &e) {
-            toLog(LogLevel::Error,
-                  QString("Skipping broken connection template: %1.").arg(e.what()));
+                templates.append(connection);
+            } catch (std::exception &e) {
+                toLog(LogLevel::Error,
+                      QString("Skipping broken connection template: %1.").arg(e.what()));
+            }
         }
+    } catch (std::exception &e) {
+        toLog(LogLevel::Error, QString("Failed to read connection templates: %1.").arg(e.what()));
     }
 
     return templates;

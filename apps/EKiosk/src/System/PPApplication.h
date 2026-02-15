@@ -46,6 +46,7 @@ public:
     virtual QString getUserDataPath() const override;
     virtual QString getPluginPath() const override;
     virtual QString getUserPluginPath() const override;
+    virtual QString getLanguage() const override;
 
     static void
     qtMessageHandler(QtMsgType aType, const QMessageLogContext &aContext, const QString &aMessage);

@@ -229,6 +229,11 @@ QString PPApplication::getUserPluginPath() const {
 }
 
 //------------------------------------------------------------------------
+QString PPApplication::getLanguage() const {
+    return BasicQtApplication::getLanguage();
+}
+
+//------------------------------------------------------------------------
 bool PPApplication::nativeEventFilter(const QByteArray &aEventType,
                                       void *aMessage,
                                       qintptr *aResult) {

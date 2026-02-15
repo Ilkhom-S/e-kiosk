@@ -60,8 +60,11 @@ PaymentManager::PaymentManager(PPSDK::ICore *aCore)
             this,
             SIGNAL(paymentChanged(qint64)));
 
-    m_DealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
+    // Используем reinterpret_cast через void* для корректной работы с multiple inheritance
+    // См. docs/multiple-inheritance-rtti-casting.md
+    void *dealerSettingsPtr = reinterpret_cast<void *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
+    m_DealerSettings = reinterpret_cast<PPSDK::DealerSettings *>(dealerSettingsPtr);
 }
 
 //------------------------------------------------------------------------
@@ -143,8 +146,12 @@ bool PaymentManager::printReceipt(qint64 aPaymentId, DSDK::EPrintingModes::Enum 
         m_PaymentService->getPaymentFields(aPaymentId);
     qint64 providerId =
         PPSDK::IPayment::parameterByName(CPayment::Provider, paymentParams).value.toLongLong();
-    PPSDK::DealerSettings *dealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
+    // Используем reinterpret_cast через void* для корректной работы с multiple inheritance
+    // См. docs/multiple-inheritance-rtti-casting.md
+    void *dealerSettingsPtr = reinterpret_cast<void *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
+    PPSDK::DealerSettings *dealerSettings =
+        reinterpret_cast<PPSDK::DealerSettings *>(dealerSettingsPtr);
     PPSDK::SProvider provider = dealerSettings->getProvider(providerId);
 
     QString receiptTemplate =
@@ -342,8 +349,12 @@ bool PaymentManager::printEncashment(int aIndex /*= -1*/) {
     }
 
     if (m_UseFiscalPrinter && aIndex < 0) {
-        PPSDK::TerminalSettings *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
+        // Используем reinterpret_cast через void* для корректной работы с multiple inheritance
+        // См. docs/multiple-inheritance-rtti-casting.md
+        void *terminalSettingsPtr = reinterpret_cast<void *>(
             m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
+        PPSDK::TerminalSettings *terminalSettings =
+            reinterpret_cast<PPSDK::TerminalSettings *>(terminalSettingsPtr);
 
         if (terminalSettings->getCommonSettings().printFailedReceipts) {
             // Перед отчётом печатаем все не напечатанные чеки

@@ -21,10 +21,42 @@ NetworkManager::NetworkManager(SDK::PaymentProcessor::ICore *aCore)
     : m_Core(aCore), m_NetworkService(m_Core->getNetworkService()),
       m_SelectedConnection(m_InitialConnection) {
 
-    m_TerminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
+    // Используем reinterpret_cast через void* для корректной работы с multiple inheritance
+    // См. docs/multiple-inheritance-rtti-casting.md
+    void *terminalSettingsPtr = reinterpret_cast<void *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
-    m_Directory = dynamic_cast<PPSDK::Directory *>(
+    m_TerminalSettings = reinterpret_cast<PPSDK::TerminalSettings *>(terminalSettingsPtr);
+
+    void *directoryPtr = reinterpret_cast<void *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::Directory));
+    m_Directory = reinterpret_cast<PPSDK::Directory *>(directoryPtr);
+
+    if (!m_Directory) {
+        qCritical() << "NetworkManager: Failed to get Directory adapter from SettingsService";
+    } else {
+        // Валидация: проверяем что можем вызвать метод
+        try {
+            (void)m_Directory->isValid();
+        } catch (...) {
+            qCritical()
+                << "NetworkManager: Directory pointer is invalid (caught exception on isValid())";
+            m_Directory = nullptr;
+        }
+    }
+
+    if (!m_TerminalSettings) {
+        qCritical()
+            << "NetworkManager: Failed to get TerminalSettings adapter from SettingsService";
+    } else {
+        // Валидация: проверяем что можем вызвать метод
+        try {
+            (void)m_TerminalSettings->isValid();
+        } catch (...) {
+            qCritical() << "NetworkManager: TerminalSettings pointer is invalid (caught exception "
+                           "on isValid())";
+            m_TerminalSettings = nullptr;
+        }
+    }
 
     m_InitialConnection = m_NetworkService->getConnection();
 }
@@ -66,7 +98,10 @@ SDK::PaymentProcessor::SConnection NetworkManager::getConnection() const {
 void NetworkManager::setConnection(const SDK::PaymentProcessor::SConnection &aConnection) {
     m_SelectedConnection = aConnection;
     m_NetworkService->setConnection(aConnection);
-    m_TerminalSettings->setConnection(aConnection);
+
+    if (m_TerminalSettings) {
+        m_TerminalSettings->setConnection(aConnection);
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -128,6 +163,10 @@ QStringList NetworkManager::getLocalConnections() const {
 QStringList NetworkManager::getConnectionTemplates() const {
     QStringList nameList;
 
+    if (!m_Directory) {
+        return nameList;
+    }
+
     foreach (SDK::PaymentProcessor::SConnectionTemplate dialupTemplate,
              m_Directory->getConnectionTemplates()) {
         nameList << dialupTemplate.name;
@@ -139,6 +178,10 @@ QStringList NetworkManager::getConnectionTemplates() const {
 //---------------------------------------------------------------------------
 bool NetworkManager::createDialupConnection(const SDK::PaymentProcessor::SConnection &aConnection,
                                             const QString &aNetworkDevice) {
+    if (!m_Directory) {
+        return false;
+    }
+
     foreach (PPSDK::SConnectionTemplate connection, m_Directory->getConnectionTemplates()) {
         if (connection.name == aConnection.name) {
             try {
@@ -162,6 +205,10 @@ bool NetworkManager::createDialupConnection(const SDK::PaymentProcessor::SConnec
 //---------------------------------------------------------------------------
 bool NetworkManager::removeDialupConnection(const SDK::PaymentProcessor::SConnection &aConnection) {
     m_NetworkService->closeConnection();
+
+    if (!m_Directory) {
+        return false;
+    }
 
     foreach (PPSDK::SConnectionTemplate connection, m_Directory->getConnectionTemplates()) {
         if (connection.name == aConnection.name) {

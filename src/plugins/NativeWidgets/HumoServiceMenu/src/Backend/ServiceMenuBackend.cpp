@@ -42,9 +42,12 @@ ServiceMenuBackend::ServiceMenuBackend(SDK::Plugin::IEnvironment *aFactory, ILog
 
     GUI::MessageBox::initialize();
 
-    m_TerminalSettings = dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(
-        m_Core->getSettingsService()->getAdapter(
-            SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
+    // Используем reinterpret_cast через void* для корректной работы с multiple inheritance
+    // См. docs/multiple-inheritance-rtti-casting.md
+    void *terminalSettingsPtr = reinterpret_cast<void *>(m_Core->getSettingsService()->getAdapter(
+        SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
+    m_TerminalSettings =
+        reinterpret_cast<SDK::PaymentProcessor::TerminalSettings *>(terminalSettingsPtr);
 
     connect(&m_HeartbeatTimer, SIGNAL(timeout()), this, SLOT(sendHeartbeat()));
 }

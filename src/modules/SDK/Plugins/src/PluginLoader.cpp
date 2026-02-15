@@ -2,6 +2,7 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDirIterator>
+#include <QtCore/QFile>
 #include <QtCore/QRecursiveMutex>
 #include <QtCore/QTranslator>
 
@@ -227,16 +228,37 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
                                       QString("%1_*.qm").arg(dirEntry.fileInfo().baseName()));
 
                     if (translations.count() != 0) {
-                        QString translation =
-                            translations.entryInfoList().first().absoluteFilePath();
+                        // Получаем текущий язык приложения
+                        QString currentLanguage = m_Kernel->getLanguage();
+                        QString pluginBaseName = dirEntry.fileInfo().baseName();
+
+                        // Ищем файл перевода для текущего языка
+                        QString targetTranslation =
+                            QString("%1_%2.qm").arg(pluginBaseName, currentLanguage);
+                        QString translationPath = QDir(dirEntry.fileInfo().absolutePath())
+                                                      .absoluteFilePath(targetTranslation);
+
+                        // Если файл для текущего языка не найден, пробуем английский
+                        if (!QFile::exists(translationPath) && currentLanguage != "en") {
+                            targetTranslation = QString("%1_en.qm").arg(pluginBaseName);
+                            translationPath = QDir(dirEntry.fileInfo().absolutePath())
+                                                  .absoluteFilePath(targetTranslation);
+
+                            if (!QFile::exists(translationPath)) {
+                                // Если и английский не найден, берем первый доступный
+                                translationPath =
+                                    translations.entryInfoList().first().absoluteFilePath();
+                            }
+                        }
+
                         std::unique_ptr<QTranslator> translator(new QTranslator(qApp));
 
-                        if (translator->load(translation)) {
+                        if (translator->load(translationPath)) {
                             qApp->installTranslator(translator.release());
 
                             m_Kernel->getLog()->write(LogLevel::Normal,
                                                       QString("Translation %1 for %2 loaded.")
-                                                          .arg(translation)
+                                                          .arg(translationPath)
                                                           .arg(factory->getName()));
                         }
                     }

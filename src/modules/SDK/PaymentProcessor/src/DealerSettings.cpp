@@ -223,7 +223,8 @@ bool DealerSettings::loadProviders() {
     QElapsedTimer elapsed;
     elapsed.start();
 
-    BOOST_FOREACH (const TPtree::value_type &operators, m_Properties.get_child("", emptyTree)) {
+    const auto &providersTree = m_Properties.get_child("", emptyTree);
+    BOOST_FOREACH (const TPtree::value_type &operators, providersTree) {
         if (operators.first != "operators") {
             continue;
         }
@@ -285,7 +286,8 @@ bool DealerSettings::loadProvidersFrom_Buffer(const std::string &aBuffer, SProvi
         return false;
     }
 
-    BOOST_FOREACH (const auto &value, operators.get_child("", emptyTree)) {
+    const auto &operatorsTree = operators.get_child("", emptyTree);
+    BOOST_FOREACH (const auto &value, operatorsTree) {
         try {
             double operatorsVersion = value.second.get<double>("<xmlattr>.version", 0);
             aProvider.id = value.second.get<qint64>("<xmlattr>.id");
@@ -408,7 +410,9 @@ bool DealerSettings::loadProvidersFrom_Buffer(const std::string &aBuffer, SProvi
                     .requests[requestIt->second.get<QString>("<xmlattr>.name").toUpper()] = request;
             }
 
-            BOOST_FOREACH (const auto &fieldIt, value.second.get_child("fields")) {
+            static TPtreeOperators emptyFieldsTree;
+            const auto &fieldsTree = value.second.get_child("fields", emptyFieldsTree);
+            BOOST_FOREACH (const auto &fieldIt, fieldsTree) {
                 SProviderField field;
 
                 auto attr = fieldIt.second.get_child("<xmlattr>");
@@ -458,7 +462,10 @@ bool DealerSettings::loadProvidersFrom_Buffer(const std::string &aBuffer, SProvi
                         throw std::runtime_error("empty security@hideMask attribute");
                     }
 
-                    BOOST_FOREACH (auto subSystem, security.get_child("", emptyTree)) {
+                    static TPtreeOperators emptySecuritySubsystemTree;
+                    const auto &securitySubsystemTree =
+                        security.get_child("", emptySecuritySubsystemTree);
+                    BOOST_FOREACH (auto subSystem, securitySubsystemTree) {
                         if (subSystem.first == "printer") {
                             field.security.insert(
                                 SProviderField::SecuritySubsystem::Printer,
@@ -484,7 +491,9 @@ bool DealerSettings::loadProvidersFrom_Buffer(const std::string &aBuffer, SProvi
                 [](const SProviderField &a, const SProviderField &b) { return a.sort < b.sort; });
 
             // Типы и параметры чеков
-            BOOST_FOREACH (const auto &receiptIt, value.second.get_child("receipts", emptyTree)) {
+            static TPtreeOperators emptyReceiptsTree;
+            const auto &receiptsTree = value.second.get_child("receipts", emptyReceiptsTree);
+            BOOST_FOREACH (const auto &receiptIt, receiptsTree) {
                 if (receiptIt.first == "parameter") {
                     aProvider.receiptParameters.insert(
                         receiptIt.second.get<QString>("<xmlattr>.name"),
@@ -551,7 +560,9 @@ bool DealerSettings::loadCommissions() {
     try {
         toLog(LogLevel::Normal, "Loading customers.");
 
-        BOOST_FOREACH (const TPtree::value_type &value, m_Properties.get_child("customers")) {
+        static TPtree emptyCustomersTree;
+        const auto &customersTree = m_Properties.get_child("customers", emptyCustomersTree);
+        BOOST_FOREACH (const TPtree::value_type &value, customersTree) {
             if (value.first == "<xmlattr>") {
                 continue;
             }

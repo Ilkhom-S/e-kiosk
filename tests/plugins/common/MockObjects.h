@@ -189,6 +189,8 @@ public:
 
     virtual QString getVersion() const override { return "1.0.0-test"; }
 
+    virtual QString getLanguage() const override { return "en"; }
+
     virtual QString getDirectory() const override { return QDir::currentPath(); }
 
     virtual QString getDataDirectory() const override { return QDir::currentPath() + "/data"; }

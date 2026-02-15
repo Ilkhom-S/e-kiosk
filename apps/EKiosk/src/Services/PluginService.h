@@ -72,6 +72,9 @@ public:
     /// Возвращает версию ядра.
     virtual QString getVersion() const;
 
+    /// Возвращает текущий язык приложения.
+    virtual QString getLanguage() const;
+
     /// Возвращает рабочую папку ядра.
     virtual QString getDirectory() const;
 
@@ -123,6 +126,12 @@ private:
 
     QMap<QString, QString> m_SignedPlugins;
     QStringList m_UnsignedPlugins;
+
+    /// Кешированный путь к логам (избегаем создания temporary QString через DLL boundary)
+    QString m_LogsDirectory;
+
+    /// Кешированный путь к данным (избегаем создания temporary QString через DLL boundary)
+    QString m_DataDirectory;
 };
 
 //------------------------------------------------------------------------------

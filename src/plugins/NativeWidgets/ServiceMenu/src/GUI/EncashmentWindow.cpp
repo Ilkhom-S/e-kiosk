@@ -66,11 +66,16 @@ void EncashmentWindow::doEncashment() {
 
     if (GUI::MessageBox::question(text) != 0) {
         // Если баланс не пустой и нужно ввести номер кассеты
+        // Используем reinterpret_cast через void* для корректной работы с multiple inheritance
+        // См. docs/multiple-inheritance-rtti-casting.md
+        void *userSettingsPtr =
+            reinterpret_cast<void *>(m_Backend->getCore()->getSettingsService()->getAdapter(
+                PPSDK::CAdapterNames::UserAdapter));
+        PPSDK::UserSettings *userSettings =
+            reinterpret_cast<PPSDK::UserSettings *>(userSettingsPtr);
+
         if (paymentManager->getBalanceInfo()[CServiceTags::CashAmount].toDouble() > 0.0 &&
-            dynamic_cast<PPSDK::UserSettings *>(
-                m_Backend->getCore()->getSettingsService()->getAdapter(
-                    PPSDK::CAdapterNames::UserAdapter))
-                ->useStackerID()) {
+            userSettings->useStackerID()) {
             InputBox::ValidatorFunction validator = [](const QString &aText) -> bool {
                 return !aText.trimmed().isEmpty();
             };

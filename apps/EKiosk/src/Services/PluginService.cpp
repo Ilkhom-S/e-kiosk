@@ -39,7 +39,11 @@ PluginService *PluginService::instance(IApplication *aApplication) {
 
 //------------------------------------------------------------------------------
 PluginService::PluginService(IApplication *aApplication)
-    : ILogable("Plugins"), m_Application(aApplication), m_PluginLoader(nullptr) {}
+    : ILogable("Plugins"), m_Application(aApplication), m_PluginLoader(nullptr) {
+    // Кешируем пути при создании, чтобы избежать QString concatenation через DLL boundary
+    m_LogsDirectory = IApplication::getWorkingDirectory() + "/logs";
+    m_DataDirectory = m_Application->getUserDataPath();
+}
 
 //------------------------------------------------------------------------------
 PluginService::~PluginService() = default;
@@ -154,18 +158,23 @@ QString PluginService::getVersion() const {
 }
 
 //------------------------------------------------------------------------------
+QString PluginService::getLanguage() const {
+    return m_Application->getLanguage();
+}
+
+//------------------------------------------------------------------------------
 QString PluginService::getDirectory() const {
     return IApplication::getWorkingDirectory();
 }
 
 //------------------------------------------------------------------------------
 QString PluginService::getDataDirectory() const {
-    return m_Application->getUserDataPath();
+    return m_DataDirectory;
 }
 
 //------------------------------------------------------------------------------
 QString PluginService::getLogsDirectory() const {
-    return IApplication::getWorkingDirectory() + "/logs";
+    return m_LogsDirectory;
 }
 
 //------------------------------------------------------------------------------

@@ -17,8 +17,11 @@ namespace PPSDK = SDK::PaymentProcessor;
 KeysManager::KeysManager(SDK::PaymentProcessor::ICore *aCore)
     : m_Core(aCore), m_CryptService(m_Core->getCryptService()), m_IsGenerated(false) {
 
-    m_TerminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
+    // Используем reinterpret_cast через void* для корректной работы с multiple inheritance
+    // См. docs/multiple-inheritance-rtti-casting.md
+    void *terminalSettingsPtr = reinterpret_cast<void *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
+    m_TerminalSettings = reinterpret_cast<PPSDK::TerminalSettings *>(terminalSettingsPtr);
 }
 
 //------------------------------------------------------------------------

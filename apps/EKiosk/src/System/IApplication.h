@@ -65,6 +65,10 @@ public:
     virtual QString getUserPluginPath() const = 0;
 
     //---------------------------------------------------------------------------
+    // Возвращает текущий язык приложения (en, ru, tg, uz и т.д.)
+    virtual QString getLanguage() const = 0;
+
+    //---------------------------------------------------------------------------
     // Возвращает абсолютный путь из aPath
     static QString toAbsolutePath(const QString &aPath);
 

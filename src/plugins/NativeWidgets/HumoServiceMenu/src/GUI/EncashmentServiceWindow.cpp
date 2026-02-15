@@ -39,9 +39,12 @@ EncashmentServiceWindow::EncashmentServiceWindow(HumoServiceBackend *aBackend, Q
     ui.btnPayload->setVisible(false);
 
     /// Найдем файл настроек для диспенсеров
-    PPSDK::TerminalSettings *s = static_cast<PPSDK::TerminalSettings *>(
-        m_Backend->getCore()->getSettingsService()->getAdapter(
+    // Используем reinterpret_cast через void* для корректной работы с multiple inheritance
+    // См. docs/multiple-inheritance-rtti-casting.md
+    void *terminalSettingsPtr =
+        reinterpret_cast<void *>(m_Backend->getCore()->getSettingsService()->getAdapter(
             SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
+    PPSDK::TerminalSettings *s = reinterpret_cast<PPSDK::TerminalSettings *>(terminalSettingsPtr);
 
     m_PayloadSettingsPath =
         QString("%1/%2")

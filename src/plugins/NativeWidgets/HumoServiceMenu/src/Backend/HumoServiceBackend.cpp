@@ -29,9 +29,13 @@ HumoServiceBackend::HumoServiceBackend(SDK::Plugin::IEnvironment *aFactory, ILog
     m_Core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
 
     if (m_Core) {
-        m_TerminalSettings = dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(
-            m_Core->getSettingsService()->getAdapter(
+        // Используем reinterpret_cast через void* для корректной работы с multiple inheritance
+        // См. docs/multiple-inheritance-rtti-casting.md
+        void *terminalSettingsPtr =
+            reinterpret_cast<void *>(m_Core->getSettingsService()->getAdapter(
                 SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
+        m_TerminalSettings =
+            reinterpret_cast<SDK::PaymentProcessor::TerminalSettings *>(terminalSettingsPtr);
     }
 
     // Initialize managers
