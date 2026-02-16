@@ -41,7 +41,7 @@ ek_add_application(watchdog
     ${WATCHSERVICE_RESOURCES}
     ${WATCHSERVICE_RC_FILES}
     ${WS_VERSION_RC}
-    QT_MODULES Gui Widgets
+    QT_MODULES Gui Widgets Concurrent
     DEPENDS
     Log
     SysUtils

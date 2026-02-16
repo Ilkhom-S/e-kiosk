@@ -231,26 +231,39 @@ private:
 
     TModules m_Modules;
 
-#if 0 // #40592 Пока выключаем данную опцию
 private slots:
-	/// Остановка всех запрещённых процессов
-	void checkForbiddenModules();
+    /// Остановка всех запрещённых процессов
+    void checkForbiddenModules();
 
-	/// Запустить процессы, остановленные при старте ТК
-	void startTerminatedModules();
+    /// TODO: DEPRECATED - restart logic disabled; keep for compatibility.
+    void startTerminatedModules();
 
 private:
-	/// Флаг - признак выключения модулей при старте ТК
-	bool m_ShutdownForbiddenModules;
+    /// Флаг - признак выключения модулей при старте ТК
+    bool m_ShutdownForbiddenModules;
 
-	/// Список процессов подлежащих остановке во время работы ТК
-	QStringList m_ForbiddenModules;
+    /// Включен ли контроль запрещенных процессов
+    bool m_TabooEnabled;
 
-	/// Список процессов остановленных при старте
-	QStringList m_TerminatedModules;
-	int m_CheckForbiddenTimeout;
-	QSharedPointer<QTimer> m_CheckForbiddenTimer;
-#endif
+    /// Глобальный режим log-only (не убивать процессы)
+    bool m_TabooLogOnly;
+
+    /// Признак активной фоновой проверки
+    bool m_TabooCheckInProgress;
+
+    /// Для Windows: log-only для explorer.exe
+    bool m_TabooLogOnlyExplorer;
+
+    /// Список процессов подлежащих остановке во время работы ТК
+    QStringList m_ForbiddenModules;
+
+    /// Список процессов, которые только логируем (не убиваем)
+    QStringList m_TabooLogOnlyApplications;
+
+    /// Список процессов остановленных при старте
+    QStringList m_TerminatedModules;
+    int m_CheckForbiddenTimeout;
+    QSharedPointer<QTimer> m_CheckForbiddenTimer;
 
 private:
     /// Параметры при перезапуске

@@ -8,3 +8,6 @@ file={WS_DIR}/updater.exe
 ; Windows-specific taboo applications that should not be monitored/killed
 applications=explorer.exe,taskmgr.exe,processhacker.exe,iexplore.exe,browser.exe,chrome.exe,firefox.exe,opera.exe
 check_timeout=60000
+; log_only=true
+; log_only_explorer=true
+; log_only_applications=explorer.exe

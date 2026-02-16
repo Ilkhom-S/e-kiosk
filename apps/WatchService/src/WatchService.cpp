@@ -2,18 +2,22 @@
 
 #include "WatchService.h"
 
+#include <QtConcurrent/QtConcurrent>
 #include <QtCore/QAbstractEventDispatcher>
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
+#include <QtCore/QFutureWatcher>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QSettings>
+#include <QtCore/QVector>
 #include <QtGui/QSessionManager>
 
 #include <Common/BasicApplication.h>
 
 #include <SysUtils/ISysUtils.h>
 #include <WatchServiceClient/Constants.h>
+#include <algorithm>
 #include <boost/optional.hpp>
 
 #include "CpuSpeed.h"
@@ -23,9 +27,7 @@ const char Normal[] = "normal";
 const char Exclusive[] = "exclusive";
 } // namespace CStartMode
 
-#if 0 // #40592 Пока выключаем данную опцию
 #include "processenumerator.h"
-#endif
 
 // (No STL includes needed)
 
@@ -39,6 +41,17 @@ const int ReInitializeTimeout = 7 * 1000;
 const int ReInitializeFailMaxCount = 85;
 const int ContinueExecutionExitCode = 54321;
 } // namespace CWatchService
+
+namespace {
+struct ForbiddenProcessResult {
+    QString matchName;
+    QString path;
+    ProcessEnumerator::PID pid;
+    bool logOnly;
+    bool killed;
+    quint32 error;
+};
+} // namespace
 
 //----------------------------------------------------------------------------
 SModule::SModule()
@@ -84,7 +97,9 @@ int SModule::getFirstPingTimeout() const {
 WatchService::WatchService()
     : ILogable(BasicApplication::getInstance()->getLog()->getName()),
       m_SplashScreen(getLog()->getName()), m_CloseAction(ECloseAction::None),
-      m_ScreenProtectionEnabled(true), m_FirstRun(true), m_InitializeFailedCounter(0) {
+      m_ScreenProtectionEnabled(true), m_FirstRun(true), m_TabooEnabled(false),
+      m_TabooLogOnly(true), m_TabooCheckInProgress(false), m_TabooLogOnlyExplorer(true),
+      m_CheckForbiddenTimeout(30000), m_InitializeFailedCounter(0) {
     // Use new Qt5/6 compatible signal/slot syntax
     connect(this, &WatchService::screenUnprotected, &m_SplashScreen, &SplashScreen::showFullScreen);
     connect(this, &WatchService::screenProtected, &m_SplashScreen, &SplashScreen::hide);
@@ -195,16 +210,18 @@ void WatchService::initialize() {
         // Сбрасываем
         m_RestartParameters.clear();
 
-#if 0 // #40592 Пока выключаем данную опцию
-		if (!m_ForbiddenModules.isEmpty())
-		{
-			m_CheckForbiddenTimer = QSharedPointer<QTimer>(new QTimer(this));
-			connect(m_CheckForbiddenTimer.data(), &QTimer::timeout, this, &WatchService::checkForbiddenModules);
-			m_CheckForbiddenTimer->start(m_CheckForbiddenTimeout);
+        if (m_TabooEnabled && !m_ForbiddenModules.isEmpty()) {
+            if (!m_CheckForbiddenTimer) {
+                m_CheckForbiddenTimer = QSharedPointer<QTimer>(new QTimer(this));
+                connect(m_CheckForbiddenTimer.data(),
+                        &QTimer::timeout,
+                        this,
+                        &WatchService::checkForbiddenModules);
+            }
+            m_CheckForbiddenTimer->start(m_CheckForbiddenTimeout);
 
-			QMetaObject::invokeMethod(this, "checkForbiddenModules", Qt::QueuedConnection);
-		}
-#endif
+            QMetaObject::invokeMethod(this, "checkForbiddenModules", Qt::QueuedConnection);
+        }
     }
 
     connect(qApp,
@@ -241,6 +258,11 @@ void WatchService::reinitialize() {
 
     m_Timer.stop();
     m_CheckMemoryTimer.clear();
+    if (m_CheckForbiddenTimer) {
+        m_CheckForbiddenTimer->stop();
+    }
+    m_CheckForbiddenTimer.clear();
+    m_TabooCheckInProgress = false;
     m_TimeChangeListener.clear();
 
     if (m_Server) {
@@ -333,18 +355,28 @@ void WatchService::loadConfiguration() {
         }
     }
 
-#if 0 // #40592 Пока выключаем данную опцию
-	QSettings userSettings(ISysUtils::rm_BOM(BasicApplication::getInstance()->getWorkingDirectory() + "/user/user.ini"), QSettings::IniFormat);
-	userSettings.setIniCodec("UTF-8");
+    // Taboo logic: always controlled by ini, no log-only mode
+    const bool defaultTabooEnabled = false;
 
-	if (userSettings.value("watchdog/taboo_enabled").toString() == "true")
-	{
-		settings.beginGroup("taboo");
-		m_ForbiddenModules = settings.value("applications", "").toStringList();
-		m_CheckForbiddenTimeout = settings.value("check_timeout", 60000).toInt();
-		settings.endGroup();
-	}
+    QSettings userSettings(
+        ISysUtils::rm_BOM(BasicApplication::getInstance()->getWorkingDirectory() +
+                          "/user/user.ini"),
+        QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    userSettings.setIniCodec("UTF-8");
 #endif
+
+    m_TabooEnabled = userSettings.value("watchdog/taboo_enabled", defaultTabooEnabled).toBool();
+    m_TabooCheckInProgress = false;
+
+    if (m_TabooEnabled) {
+        settings.beginGroup("taboo");
+        m_ForbiddenModules = settings.value("applications", QStringList()).toStringList();
+        m_CheckForbiddenTimeout = settings.value("check_timeout", 30000).toInt();
+        settings.endGroup();
+    } else {
+        m_ForbiddenModules.clear();
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -1112,55 +1144,77 @@ int WatchService::defaultKillTimeout() {
                                                          : CWatchService::KillModuleTimeout;
 }
 
-#if 0 // #40592 Пока выключаем данную опцию
 //----------------------------------------------------------------------------
-void WatchService::checkForbiddenModules()
-{
-	ProcessEnumerator processes;
+void WatchService::checkForbiddenModules() {
+    if (!m_TabooEnabled || m_ForbiddenModules.isEmpty()) {
+        return;
+    }
 
-	foreach(auto moduleName, m_ForbiddenModules)
-	{
-		for (auto it = processes.begin(); it != processes.end(); )
-		{
-			// Поиск процесса по его имени
-			it = std::find_if(it, processes.end(), [&moduleName](const ProcessEnumerator::ProcessInfo & aPInfo) -> bool {
-				return moduleName.size() && aPInfo.path.contains(moduleName, Qt::CaseInsensitive); });
+    if (m_TabooCheckInProgress) {
+        return;
+    }
 
-			if (it != processes.end())
-			{
-				toLog(LogLevel::Normal, QString("Process '%1' will be killed.").arg(moduleName));
+    m_TabooCheckInProgress = true;
 
-				quint32 error = 0;
-				if (processes.kill(it->pid, error))
-				{
-					if (!m_TerminatedModules.contains(it->path, Qt::CaseInsensitive))
-					{
-						m_TerminatedModules.push_back(it->path);
-					}
-				}
-				else
-				{
-					toLog(LogLevel::Error, QString("Failed kill process '%1' ID: %2 Error: %3.").arg(moduleName).arg(it->pid).arg(error));
-				}
+    const QStringList forbiddenList = m_ForbiddenModules;
+    auto *watcher = new QFutureWatcher<QVector<ForbiddenProcessResult>>(this);
+    connect(watcher,
+            &QFutureWatcher<QVector<ForbiddenProcessResult>>::finished,
+            this,
+            [this, watcher]() {
+                const auto results = watcher->result();
+                for (const auto &result : results) {
+                    if (result.killed) {
+                        toLog(LogLevel::Normal,
+                              QString("Taboo process '%1' (PID %2) killed.")
+                                  .arg(result.path.isEmpty() ? result.matchName : result.path)
+                                  .arg(result.pid));
+                        if (!m_TerminatedModules.contains(result.path, Qt::CaseInsensitive)) {
+                            m_TerminatedModules.push_back(result.path);
+                        }
+                    } else {
+                        toLog(LogLevel::Error,
+                              QString("Failed kill taboo process '%1' (PID %2). Error: %3.")
+                                  .arg(result.path.isEmpty() ? result.matchName : result.path)
+                                  .arg(result.pid)
+                                  .arg(result.error));
+                    }
+                }
+                m_TabooCheckInProgress = false;
+                watcher->deleteLater();
+            });
 
-				it++;
-			}
-		}
-	}
+    watcher->setFuture(QtConcurrent::run([forbiddenList]() {
+        QVector<ForbiddenProcessResult> results;
+        ProcessEnumerator processes;
+        for (const auto &moduleName : forbiddenList) {
+            if (moduleName.trimmed().isEmpty()) {
+                continue;
+            }
+            for (auto it = processes.begin(); it != processes.end();) {
+                it = std::find_if(
+                    it, processes.end(), [&moduleName](const ProcessEnumerator::ProcessInfo &info) {
+                        return info.path.contains(moduleName, Qt::CaseInsensitive);
+                    });
+                if (it == processes.end()) {
+                    break;
+                }
+                ForbiddenProcessResult result;
+                result.matchName = moduleName;
+                result.path = it->path;
+                result.pid = it->pid;
+                result.error = 0;
+                result.killed = processes.kill(it->pid, result.error);
+                results.push_back(result);
+                ++it;
+            }
+        }
+        return results;
+    }));
 }
 
 //----------------------------------------------------------------------------
-void WatchService::startTerminatedModules()
-{
-	m_CheckMemoryTimer->stop();
-
-	foreach(auto program, m_TerminatedModules)
-	{
-		toLog(LogLevel::Normal, QString("Restart process '%1'.").arg(program));
-
-		QProcess::startDetached(program);
-	}
-
-	m_TerminatedModules.clear();
+void WatchService::startTerminatedModules() {
+    // TODO: DEPRECATED - restart logic disabled; keep for compatibility.
+    m_TerminatedModules.clear();
 }
-#endif

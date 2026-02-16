@@ -258,28 +258,26 @@ void SplashScreen::setupBurnInProtection() {
 
     // Создаем 4 анимации для плавного кругового движения content margins
     // Шаг 1: вправо-вниз
-    QPropertyAnimation *anim1 = new QPropertyAnimation(this, "layoutOffset");
+
+    auto *anim1 = new QPropertyAnimation(this, "layoutOffset");
     anim1->setDuration(stepDuration);
     anim1->setStartValue(QPoint(0, 0));
     anim1->setEndValue(QPoint(driftRadius, driftRadius));
     anim1->setEasingCurve(QEasingCurve::InOutSine);
 
-    // Шаг 2: влево-вниз
-    QPropertyAnimation *anim2 = new QPropertyAnimation(this, "layoutOffset");
+    auto *anim2 = new QPropertyAnimation(this, "layoutOffset");
     anim2->setDuration(stepDuration);
     anim2->setStartValue(QPoint(driftRadius, driftRadius));
     anim2->setEndValue(QPoint(-driftRadius, driftRadius));
     anim2->setEasingCurve(QEasingCurve::InOutSine);
 
-    // Шаг 3: влево-вверх
-    QPropertyAnimation *anim3 = new QPropertyAnimation(this, "layoutOffset");
+    auto *anim3 = new QPropertyAnimation(this, "layoutOffset");
     anim3->setDuration(stepDuration);
     anim3->setStartValue(QPoint(-driftRadius, driftRadius));
     anim3->setEndValue(QPoint(-driftRadius, -driftRadius));
     anim3->setEasingCurve(QEasingCurve::InOutSine);
 
-    // Шаг 4: вправо-вверх (возврат к началу)
-    QPropertyAnimation *anim4 = new QPropertyAnimation(this, "layoutOffset");
+    auto *anim4 = new QPropertyAnimation(this, "layoutOffset");
     anim4->setDuration(stepDuration);
     anim4->setStartValue(QPoint(-driftRadius, -driftRadius));
     anim4->setEndValue(QPoint(0, 0));

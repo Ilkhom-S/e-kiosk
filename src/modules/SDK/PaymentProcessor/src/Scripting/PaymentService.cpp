@@ -468,7 +468,7 @@ QVariantMap PaymentService::calculateLimits(const QString &aAmount, bool aFixedA
     }
 
     // Округлим результат после 2ого знака чтобы не было расхождений в копейках
-    maxAmountAll = qRound64(maxAmountAll * 100) / 100.0;
+    maxAmountAll = static_cast<double>(qRound64(maxAmountAll * 100)) / 100.0;
 
     // Если провайдер требует округления - применим округление к пограничным значениям
     if (provider.processor.rounding) {

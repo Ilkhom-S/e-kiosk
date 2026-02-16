@@ -7,7 +7,7 @@
 - [Solution Evolution](#solution-evolution)
 - [Final Implementation](#final-implementation)
 - [How to Use in Other Screens](#how-to-use-in-other-screens)
-- [Technical Details](#technical-details)
+- [Technical Details](#final-implementation)
 - [Testing & Validation](#testing--validation)
 
 ---
@@ -67,6 +67,7 @@ Our splash screen is particularly vulnerable:
 QPropertyAnimation *anim = new QPropertyAnimation(ui->lblMessage, "pos");
 anim->setStartValue(ui->lblMessage->pos());
 anim->setEndValue(ui->lblMessage->pos() + QPoint(10, 10));
+
 ```
 
 **Why it failed:**
@@ -119,11 +120,11 @@ QPropertyAnimation *anim = new QPropertyAnimation(this, "layoutOffset");
 
 **Why this works:**
 
-✅ **Works with QLayout** - Changes container margins, not widget positions  
-✅ **Low performance cost** - Only layout recalculation, no full window redraw  
-✅ **No visual artifacts** - Window stays fixed, content moves inside  
-✅ **Windows 7 compatible** - Minimal GPU load  
-✅ **Smooth animation** - QPropertyAnimation with easing curves  
+✅ **Works with QLayout** - Changes container margins, not widget positions
+✅ **Low performance cost** - Only layout recalculation, no full window redraw
+✅ **No visual artifacts** - Window stays fixed, content moves inside
+✅ **Windows 7 compatible** - Minimal GPU load
+✅ **Smooth animation** - QPropertyAnimation with easing curves
 ✅ **Maintains centering** - Spacers in layout keep content centered
 
 ---
@@ -132,7 +133,7 @@ QPropertyAnimation *anim = new QPropertyAnimation(this, "layoutOffset");
 
 ### Architecture
 
-```
+```text
 SplashScreen (QWidget)
 ├── Q_PROPERTY(QPoint layoutOffset)  # Custom property for animation
 ├── setupBurnInProtection()          # Initialize animation
@@ -233,7 +234,7 @@ void SplashScreen::setLayoutOffset(const QPoint &offset) {
 
 ### Animation Pattern (Circular Drift)
 
-```
+```text
          (-6, -6)             (0, -6)             (+6, -6)
             ┌─────────────────────────────────────┐
             │                                     │
@@ -759,7 +760,7 @@ QDateTime TimeChangeListener::checkTimeOffsetLocked() {
 
 This was fixed in the same commit as burn-in protection.
 
-### Commit History
+### Commit History (Burn-in)
 
 - `53a5f2f9` - WatchService: Add midnight design + burn-in protection + fix deadlock
   - Introduced layout margin animation
@@ -769,22 +770,22 @@ This was fixed in the same commit as burn-in protection.
 
 ---
 
-## References
+## References (Burn-in)
 
-### External Resources
+### External Resources (Burn-in)
 
 - [Qt QPropertyAnimation Documentation](https://doc.qt.io/qt-6/qpropertyanimation.html)
 - [LCD Burn-in Prevention (DisplayMate)](http://www.displaymate.com/LCD_Burn_In.htm)
 - [OLED Burn-in Study (RTings)](https://www.rtings.com/tv/learn/real-life-oled-burn-in-test)
 
-### Internal Documentation
+### Internal Documentation (Burn-in)
 
 - [SplashScreen.cpp](../apps/WatchService/src/SplashScreen.cpp) - Reference implementation
 - [SplashScreen.h](../apps/WatchService/src/SplashScreen.h) - Header with Q_PROPERTY
 - [multiple-inheritance-rtti-casting.md](multiple-inheritance-rtti-casting.md) - Related Qt casting issues
 - [qt6-iterator-safety.md](qt6-iterator-safety.md) - Qt6 container best practices
 
-### Contact
+### Contact (Burn-in)
 
 For questions about burn-in protection implementation:
 n.

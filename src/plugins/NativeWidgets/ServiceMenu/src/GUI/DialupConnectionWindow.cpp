@@ -31,7 +31,7 @@ void DialupConnectionWindow::initialize() {
 
 //---------------------------------------------------------------------------
 QString DialupConnectionWindow::getUserSelection() const {
-    return lwConnections->count() ? lwConnections->currentItem()->text() : "";
+    return (lwConnections->count() != 0) ? lwConnections->currentItem()->text() : "";
 }
 
 //---------------------------------------------------------------------------
@@ -59,7 +59,7 @@ void DialupConnectionWindow::fillConnectionList(const QStringList &aConnections,
 
     QList<QListWidgetItem *> items = lwConnections->findItems(aCurrent, Qt::MatchFixedString);
 
-    if (items.size()) {
+    if (!items.empty()) {
         lwConnections->setCurrentItem(items.first(), QItemSelectionModel::ClearAndSelect);
         items.first()->setSelected(true);
     } else {
@@ -80,7 +80,7 @@ void DialupConnectionWindow::fillTemplateList(const QStringList &aTemplates) {
 void DialupConnectionWindow::onUpdated() {
     btnTest->setEnabled(lwConnections->count() != 0);
     btnRemove->setEnabled(lwConnections->count() != 0);
-    btnCreate->setEnabled(lwModems->count() && lwTemplates->count());
+    btnCreate->setEnabled((lwModems->count() != 0) && (lwTemplates->count() != 0));
 }
 
 //---------------------------------------------------------------------------
