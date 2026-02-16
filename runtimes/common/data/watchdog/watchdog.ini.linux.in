@@ -1,12 +1,10 @@
-[taboo]
-; Linux-specific taboo applications that should not be monitored/killed
-applications=gnome-system-monitor,htop,top,firefox,chromium-browser,chrome,opera
-check_timeout=60000
-
 [module_ekiosk]
-; Путь к исполняемому файлу модуля (Linux)
 file={WS_DIR}/ekiosk
 
 [module_updater]
-; Путь к исполняемому файлу модуля (Linux)
 file={WS_DIR}/updater
+
+[taboo]
+; Linux-specific taboo applications that should not be monitored/killed
+applications=gnome-terminal,konsole,xterm,system-monitor
+check_timeout=60000
