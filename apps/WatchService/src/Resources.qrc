@@ -1,3 +1,4 @@
+<!DOCTYPE RCC>
 <RCC>
     <qresource prefix="/">
         <file>images/bar.png</file>
@@ -22,5 +23,9 @@
         <file>icons/watchdog-app-icon.ico</file>
         <file>icons/watchdog-app-icon.png</file>
         <file>icons/watchdog-app-icon@2x.png</file>
+        <file>icons/maintenance_charming.svg</file>
+    </qresource>
+    <qresource prefix="/brand">
+        <file alias="humo_logo_midnight.svg">icons/humo_logo_midnight.svg</file>
     </qresource>
 </RCC>

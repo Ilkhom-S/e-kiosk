@@ -262,7 +262,7 @@ void WatchServiceController::updateTrayIcon() {
     if (m_Client->isConnected()) {
         // Connected state: show normal template icon
         m_Icon.setIcon(
-            WatchServiceController::createTemplateIcon(":/icons/controller-monogram_Template.png"));
+            WatchServiceController::createTemplateIcon(":/icons/controller-monogramTemplate.png"));
     } else {
         // Disconnected state: show slashed H icon to indicate stopped state
         m_Icon.setIcon(WatchServiceController::createTemplateIcon(

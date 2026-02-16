@@ -1,6 +1,7 @@
 # Burn-in Protection Implementation Guide
 
 ## Table of Contents
+
 - [Problem Overview](#problem-overview)
 - [Why We Need This](#why-we-need-this)
 - [Solution Evolution](#solution-evolution)
@@ -25,6 +26,7 @@
 ### Our Use Case
 
 EKiosk terminals often display **static maintenance/error screens** for hours:
+
 - Outdoor kiosks with old industrial monitors
 - 24/7 operation in harsh environments
 - Static content: logo, icon, error message (no movement)
@@ -46,6 +48,7 @@ EKiosk terminals often display **static maintenance/error screens** for hours:
 ### Risk Factors
 
 Our splash screen is particularly vulnerable:
+
 - ✅ Displayed for **hours** when terminal is offline
 - ✅ **High-contrast** white logo on dark background
 - ✅ **Static positioning** - no movement whatsoever
@@ -59,6 +62,7 @@ Our splash screen is particularly vulnerable:
 ### ❌ Approach 1: Widget Position Animation (External Recommendation)
 
 **Code from external site:**
+
 ```cpp
 QPropertyAnimation *anim = new QPropertyAnimation(ui->lblMessage, "pos");
 anim->setStartValue(ui->lblMessage->pos());
@@ -66,6 +70,7 @@ anim->setEndValue(ui->lblMessage->pos() + QPoint(10, 10));
 ```
 
 **Why it failed:**
+
 - Widgets managed by `QVBoxLayout` → positions are **locked by layout engine**
 - `setPos()` gets **immediately overridden** by layout recalculation
 - Animation runs but widget **never moves** (layout takes precedence)
@@ -74,6 +79,7 @@ anim->setEndValue(ui->lblMessage->pos() + QPoint(10, 10));
 ### ❌ Approach 2: Window Position Animation (Our Initial Implementation)
 
 **Our first attempt:**
+
 ```cpp
 QPropertyAnimation *anim = new QPropertyAnimation(this, "pos");
 anim->setStartValue(pos());
@@ -100,6 +106,7 @@ anim->setEndValue(pos() + QPoint(8, 8));
 ### ✅ Approach 3: Layout Margin Animation (Final Solution)
 
 **Our optimized implementation:**
+
 ```cpp
 Q_PROPERTY(QPoint layoutOffset READ layoutOffset WRITE setLayoutOffset)
 
@@ -142,6 +149,7 @@ Animation Flow:
 ### Code Structure
 
 **Header (SplashScreen.h):**
+
 ```cpp
 class SplashScreen : public QWidget {
     Q_OBJECT
@@ -152,11 +160,11 @@ public:
 
 private:
     void setupBurnInProtection();
-    
+
     // Property accessors
     QPoint layoutOffset() const { return mLayoutOffset; }
     void setLayoutOffset(const QPoint &offset);
-    
+
 private:
     QSequentialAnimationGroup *mBurnInProtectionAnim;
     QPoint mLayoutOffset;
@@ -164,6 +172,7 @@ private:
 ```
 
 **Implementation (SplashScreen.cpp):**
+
 ```cpp
 void SplashScreen::setupBurnInProtection() {
     mBurnInProtectionAnim = new QSequentialAnimationGroup(this);
@@ -245,20 +254,22 @@ Pattern: Square with rounded corners
 
 ### Key Parameters
 
-| Parameter | Value | Rationale |
-|-----------|-------|-----------|
-| **Drift Radius** | 6px | Small enough to be subtle, large enough to prevent burn-in |
-| **Cycle Duration** | 6 minutes | Slow enough to be imperceptible, fast enough to protect |
-| **Step Duration** | 90 seconds | Smooth quarter-circle movement |
-| **Easing Curve** | InOutSine | Natural acceleration/deceleration (not linear) |
-| **Loop Count** | -1 (infinite) | Runs continuously for 24/7 protection |
+| Parameter          | Value         | Rationale                                                  |
+| ------------------ | ------------- | ---------------------------------------------------------- |
+| **Drift Radius**   | 6px           | Small enough to be subtle, large enough to prevent burn-in |
+| **Cycle Duration** | 6 minutes     | Slow enough to be imperceptible, fast enough to protect    |
+| **Step Duration**  | 90 seconds    | Smooth quarter-circle movement                             |
+| **Easing Curve**   | InOutSine     | Natural acceleration/deceleration (not linear)             |
+| **Loop Count**     | -1 (infinite) | Runs continuously for 24/7 protection                      |
 
 **Why 6 minutes?**
+
 - Studies show burn-in starts after 2-3 hours of static display
 - 6-minute cycle = 10 complete cycles per hour = 240 cycles in 24 hours
 - Sufficient pixel variation to prevent permanent image retention
 
 **Why 6px?**
+
 - Invisible to users (±6px movement imperceptible at 1024x768)
 - Large enough to shift critical high-contrast edges (logo outline)
 - Window position uses 8px, but margins need less (layout amplification)
@@ -281,10 +292,10 @@ public:
 
 private:
     void setupBurnInProtection();
-    
+
     QPoint layoutOffset() const { return mLayoutOffset; }
     void setLayoutOffset(const QPoint &offset);
-    
+
     QSequentialAnimationGroup *mBurnInProtectionAnim;
     QPoint mLayoutOffset;
 };
@@ -314,9 +325,9 @@ void YourWidget::setLayoutOffset(const QPoint &offset) {
 ```cpp
 YourWidget::YourWidget(QWidget *parent)
     : QWidget(parent), mBurnInProtectionAnim(nullptr), mLayoutOffset(0, 0) {
-    
+
     setupUi(this);
-    
+
     // Enable burn-in protection for long-running screens
     setupBurnInProtection();
 }
@@ -326,23 +337,24 @@ YourWidget::YourWidget(QWidget *parent)
 
 ✅ **Must have**: `QVBoxLayout` or `QHBoxLayout` as main layout  
 ✅ **Must use**: Spacers for centering (top/bottom or left/right)  
-✅ **Must be**: Long-running static screen (>30 minutes display time)  
+✅ **Must be**: Long-running static screen (>30 minutes display time)
 
 ❌ **Don't use if**:
+
 - Screen changes frequently (<5 minutes display time)
 - Dynamic content (videos, animations already present)
 - Interactive UI (user input expected immediately)
 
 ### When to Apply
 
-| Screen Type | Use Burn-in Protection? | Reason |
-|-------------|------------------------|---------|
-| Splash/Maintenance | ✅ Yes | Hours of static display |
-| Error/Offline | ✅ Yes | Unknown duration |
-| Screensaver | ✅ Yes | Designed for long display |
-| Transaction UI | ❌ No | User interaction, short duration |
-| Menu/Navigation | ❌ No | Changes on input |
-| Video/Animations | ❌ No | Already has motion |
+| Screen Type        | Use Burn-in Protection? | Reason                           |
+| ------------------ | ----------------------- | -------------------------------- |
+| Splash/Maintenance | ✅ Yes                  | Hours of static display          |
+| Error/Offline      | ✅ Yes                  | Unknown duration                 |
+| Screensaver        | ✅ Yes                  | Designed for long display        |
+| Transaction UI     | ❌ No                   | User interaction, short duration |
+| Menu/Navigation    | ❌ No                   | Changes on input                 |
+| Video/Animations   | ❌ No                   | Already has motion               |
 
 ---
 
@@ -361,6 +373,7 @@ Q_PROPERTY(QPoint layoutOffset READ layoutOffset WRITE setLayoutOffset)
 - **Type**: `QPoint` (x, y coordinates)
 
 **Without Q_PROPERTY:**
+
 ```cpp
 // This would NOT work - no property to animate
 QPropertyAnimation *anim = new QPropertyAnimation(this, "layoutOffset");
@@ -368,6 +381,7 @@ QPropertyAnimation *anim = new QPropertyAnimation(this, "layoutOffset");
 ```
 
 **With Q_PROPERTY:**
+
 ```cpp
 // Qt's property system finds the setter automatically
 QPropertyAnimation *anim = new QPropertyAnimation(this, "layoutOffset");
@@ -377,13 +391,14 @@ anim->setEndValue(QPoint(6, 6));
 
 ### Performance Comparison
 
-| Approach | CPU Usage | GPU Usage | Redraw Area | Windows 7 Compatible |
-|----------|-----------|-----------|-------------|---------------------|
-| Window Position | 15-25% | High | 786,432 px | ❌ Tearing |
-| Widget Position | 0% | 0% | 0 px | ❌ Doesn't work |
-| **Layout Margins** | **2-5%** | **Low** | **~50,000 px** | **✅ Smooth** |
+| Approach           | CPU Usage | GPU Usage | Redraw Area    | Windows 7 Compatible |
+| ------------------ | --------- | --------- | -------------- | -------------------- |
+| Window Position    | 15-25%    | High      | 786,432 px     | ❌ Tearing           |
+| Widget Position    | 0%        | 0%        | 0 px           | ❌ Doesn't work      |
+| **Layout Margins** | **2-5%**  | **Low**   | **~50,000 px** | **✅ Smooth**        |
 
 **Why margins are faster:**
+
 - Only repaints widget contents, not entire window frame
 - No window compositor involvement
 - Layout calculation is CPU-only (no GPU round-trip)
@@ -391,13 +406,14 @@ anim->setEndValue(QPoint(6, 6));
 
 ### Qt Version Compatibility
 
-| Qt Version | Status | Notes |
-|------------|--------|-------|
-| Qt 4.8 | ✅ Works | QPropertyAnimation available |
-| Qt 5.x | ✅ Works | Recommended for production |
-| Qt 6.x | ✅ Works | Tested on Qt 6.10.1 |
+| Qt Version | Status   | Notes                        |
+| ---------- | -------- | ---------------------------- |
+| Qt 4.8     | ✅ Works | QPropertyAnimation available |
+| Qt 5.x     | ✅ Works | Recommended for production   |
+| Qt 6.x     | ✅ Works | Tested on Qt 6.10.1          |
 
 **CMake integration:**
+
 ```cmake
 # Already included in Common module
 target_link_libraries(YourTarget
@@ -414,6 +430,7 @@ target_link_libraries(YourTarget
 - **Total overhead**: <2 KB RAM, <0.1% CPU (idle between steps)
 
 **Lifecycle:**
+
 - Created: During widget initialization
 - Runs: Continuously until widget destroyed
 - Cleanup: Automatic (parent-child ownership via `new ...(this)`)
@@ -425,19 +442,21 @@ target_link_libraries(YourTarget
 ### Manual Testing
 
 1. **Visual Verification**:
+
    ```bash
    # Run watchdog application
    ./build/macos-qt6/bin/watchdog.app/Contents/MacOS/watchdog
-   
+
    # Observe content slowly drifting in circular pattern
    # Should be barely noticeable (6px movement over 90 seconds)
    ```
 
 2. **Performance Testing** (macOS):
+
    ```bash
    # Monitor CPU usage
    top -pid $(pgrep watchdog) -stats cpu,mem
-   
+
    # Expected: <5% CPU, <50 MB RAM
    ```
 
@@ -452,16 +471,16 @@ target_link_libraries(YourTarget
 // Unit test for layoutOffset property
 void TestSplashScreen::testBurnInProtection() {
     SplashScreen screen("test", nullptr);
-    
+
     // Test property getter/setter
     QPoint offset(10, 20);
     screen.setLayoutOffset(offset);
     QCOMPARE(screen.layoutOffset(), offset);
-    
+
     // Test animation is running
     QVERIFY(screen.mBurnInProtectionAnim != nullptr);
     QVERIFY(screen.mBurnInProtectionAnim->state() == QAbstractAnimation::Running);
-    
+
     // Test animation loop count
     QCOMPARE(screen.mBurnInProtectionAnim->loopCount(), -1);
 }
@@ -488,6 +507,7 @@ Before deploying to production:
 **Symptoms**: Content stays completely static
 
 **Diagnosis**:
+
 ```cpp
 // Add debug logging in constructor
 void SplashScreen::setupBurnInProtection() {
@@ -500,6 +520,7 @@ void SplashScreen::setupBurnInProtection() {
 ```
 
 **Solutions**:
+
 1. Check Q_PROPERTY is declared in header
 2. Verify `#include <QtCore/QPropertyAnimation>`
 3. Ensure animation group is started: `->start()`
@@ -510,6 +531,7 @@ void SplashScreen::setupBurnInProtection() {
 **Symptoms**: Sudden position changes, no smooth movement
 
 **Diagnosis**:
+
 ```cpp
 // Check easing curve
 anim->setEasingCurve(QEasingCurve::InOutSine); // Should be this
@@ -518,6 +540,7 @@ anim->setEasingCurve(QEasingCurve::InOutSine); // Should be this
 ```
 
 **Solutions**:
+
 1. Use `InOutSine` or `InOutQuad` easing (not Linear)
 2. Increase step duration (90 seconds minimum)
 3. Check for timer conflicts (other timers modifying layout)
@@ -527,6 +550,7 @@ anim->setEasingCurve(QEasingCurve::InOutSine); // Should be this
 **Symptoms**: >10% CPU, fans spinning, sluggish UI
 
 **Diagnosis**:
+
 ```bash
 # Profile with Instruments (macOS)
 instruments -t "Time Profiler" -D profile.trace watchdog
@@ -537,6 +561,7 @@ instruments -t "Time Profiler" -D profile.trace watchdog
 ```
 
 **Solutions**:
+
 1. Reduce drift radius (6px → 4px)
 2. Increase cycle duration (6min → 10min)
 3. Use `QWidget::setAttribute(Qt::WA_OpaquePaintEvent)`
@@ -547,6 +572,7 @@ instruments -t "Time Profiler" -D profile.trace watchdog
 **Symptoms**: Widgets misaligned, content cropped
 
 **Diagnosis**:
+
 ```cpp
 // Check margin values in setLayoutOffset
 void SplashScreen::setLayoutOffset(const QPoint &offset) {
@@ -558,6 +584,7 @@ void SplashScreen::setLayoutOffset(const QPoint &offset) {
 ```
 
 **Solutions**:
+
 1. **Never use negative margins** (causes undefined behavior)
 2. Only modify left/top margins (right/bottom stay 0)
 3. Ensure spacers exist in layout for centering
@@ -572,6 +599,7 @@ void SplashScreen::setLayoutOffset(const QPoint &offset) {
 While testing burn-in protection, we discovered an **unrelated deadlock** in `TimeChangeListener`:
 
 **Problem**:
+
 ```cpp
 void TimeChangeListener::timerEvent(QTimerEvent *aEvent) {
     QMutexLocker locker(&m_HookMutex); // Lock mutex
@@ -585,6 +613,7 @@ QDateTime TimeChangeListener::checkTimeOffset() {
 ```
 
 **Solution**: Separate locked/unlocked paths
+
 ```cpp
 // Public method: locks and delegates
 QDateTime TimeChangeListener::checkTimeOffset() {
@@ -628,6 +657,37 @@ This was fixed in the same commit as burn-in protection.
 ### Contact
 
 For questions about burn-in protection implementation:
+n.
+
+### Commit History
+
+- `53a5f2f9` - WatchService: Add midnight design + burn-in protection + fix deadlock
+  - Introduced layout margin animation
+  - Fixed TimeChangeListener mutex deadlock
+  - Updated splash screen UI to Midnight theme
+  - Added SVG assets (logo + maintenance icon)
+
+---
+
+## References
+
+### External Resources
+
+- [Qt QPropertyAnimation Documentation](https://doc.qt.io/qt-6/qpropertyanimation.html)
+- [LCD Burn-in Prevention (DisplayMate)](http://www.displaymate.com/LCD_Burn_In.htm)
+- [OLED Burn-in Study (RTings)](https://www.rtings.com/tv/learn/real-life-oled-burn-in-test)
+
+### Internal Documentation
+
+- [SplashScreen.cpp](../apps/WatchService/src/SplashScreen.cpp) - Reference implementation
+- [SplashScreen.h](../apps/WatchService/src/SplashScreen.h) - Header with Q_PROPERTY
+- [multiple-inheritance-rtti-casting.md](multiple-inheritance-rtti-casting.md) - Related Qt casting issues
+- [qt6-iterator-safety.md](qt6-iterator-safety.md) - Qt6 container best practices
+
+### Contact
+
+For questions about burn-in protection implementation:
+
 - Review SplashScreen implementation first
 - Check this document's troubleshooting section
 - Test on target hardware (Windows 7 industrial PC)

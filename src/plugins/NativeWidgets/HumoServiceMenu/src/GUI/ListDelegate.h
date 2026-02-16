@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <QPainter>
 #include <QItemDelegate>
+#include <QPainter>
 
 //---------------------------------------------------------------------------
 class ListDelegate : public QItemDelegate {

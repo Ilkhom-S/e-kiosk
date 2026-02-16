@@ -87,7 +87,7 @@ ServiceMenu::ServiceMenu(SDK::Plugin::IEnvironment *aFactory, QString aInstanceP
 //--------------------------------------------------------------------------
 ServiceMenu::~ServiceMenu() {
     if (m_MainServiceWindow) {
-        saveConfiguration();
+        ServiceMenu::saveConfiguration();
     }
 }
 
