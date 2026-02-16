@@ -3,6 +3,12 @@
  * Optimized for: Outdoor Sunlight, Windows 7 (1280x1024), Qt 5/6 Compatible
  * Theme: Midnight Rich UI (High-Contrast Orange/Black)
  * Note: No external plugin dependencies (No QtGraphicalEffects)
+ *
+ * Features:
+ * - Burn-in protection: 6px circular drift (6-minute cycle)
+ * - Device status indicators with breathing animation
+ * - Hidden admin zones for service menu access
+ * - Auto-scaling for different screen sizes
  */
 
 import QtQuick 2.6
@@ -15,6 +21,10 @@ Rectangle {
     property bool showAdminFlash: true    // Toggle the orange background flash
     property real zonePercent: 0.40       // Reduced slightly to 40% to prevent "ghost" double-taps
 
+    // --- BURN-IN PROTECTION ---
+    property int burnInOffsetX: 0  // Current drift offset X
+    property int burnInOffsetY: 0  // Current drift offset Y
+
     width: Core.graphics.width
     height: Core.graphics.height
     // Deep Midnight Black absorbs glare and provides a "Rich" premium feel
@@ -22,8 +32,12 @@ Rectangle {
 
     // --- MAIN UI LAYOUT ---
     Column {
+        id: mainContent
         width: 1000
         anchors.centerIn: parent
+        // Apply burn-in protection offset
+        anchors.horizontalCenterOffset: root.burnInOffsetX
+        anchors.verticalCenterOffset: root.burnInOffsetY
         spacing: 70
 
         // 1. Branding: White Variant Humo Logo (QRC)
@@ -342,6 +356,94 @@ Rectangle {
         onTriggered: {
             global.clickSequence = "";
             Core.log.normal("Admin sequence reset due to timeout.");
+        }
+    }
+
+    // --- BURN-IN PROTECTION ANIMATION ---
+    // Circular drift pattern (6px radius, 6-minute cycle)
+    // Prevents static content burn-in on old LCD panels
+    SequentialAnimation {
+        running: true
+        loops: Animation.Infinite
+
+        // Step 1: Center → Bottom-right (0,0) → (6,6)
+        ParallelAnimation {
+            NumberAnimation {
+                target: root
+                property: "burnInOffsetX"
+                from: 0
+                to: 6
+                duration: 90000 // 90 seconds
+                easing.type: Easing.InOutSine
+            }
+            NumberAnimation {
+                target: root
+                property: "burnInOffsetY"
+                from: 0
+                to: 6
+                duration: 90000
+                easing.type: Easing.InOutSine
+            }
+        }
+
+        // Step 2: Bottom-right → Bottom-left (6,6) → (-6,6)
+        ParallelAnimation {
+            NumberAnimation {
+                target: root
+                property: "burnInOffsetX"
+                from: 6
+                to: -6
+                duration: 90000
+                easing.type: Easing.InOutSine
+            }
+            NumberAnimation {
+                target: root
+                property: "burnInOffsetY"
+                from: 6
+                to: 6
+                duration: 90000
+                easing.type: Easing.InOutSine
+            }
+        }
+
+        // Step 3: Bottom-left → Top-left (-6,6) → (-6,-6)
+        ParallelAnimation {
+            NumberAnimation {
+                target: root
+                property: "burnInOffsetX"
+                from: -6
+                to: -6
+                duration: 90000
+                easing.type: Easing.InOutSine
+            }
+            NumberAnimation {
+                target: root
+                property: "burnInOffsetY"
+                from: 6
+                to: -6
+                duration: 90000
+                easing.type: Easing.InOutSine
+            }
+        }
+
+        // Step 4: Top-left → Center (-6,-6) → (0,0)
+        ParallelAnimation {
+            NumberAnimation {
+                target: root
+                property: "burnInOffsetX"
+                from: -6
+                to: 0
+                duration: 90000
+                easing.type: Easing.InOutSine
+            }
+            NumberAnimation {
+                target: root
+                property: "burnInOffsetY"
+                from: -6
+                to: 0
+                duration: 90000
+                easing.type: Easing.InOutSine
+            }
         }
     }
 }
