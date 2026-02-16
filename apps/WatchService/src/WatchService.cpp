@@ -11,7 +11,6 @@
 #include <QtGui/QSessionManager>
 
 #include <Common/BasicApplication.h>
-#include <Common/SleepHelper.h>
 
 #include <SysUtils/ISysUtils.h>
 #include <WatchServiceClient/Constants.h>
@@ -997,6 +996,13 @@ void WatchService::startModule(SModule &aModule) {
         aModule.initDate = aModule.lastUpdate = QDateTime::currentDateTime();
         aModule.arguments.clear(); // параметры из командной строки передаются только один раз (для
                                    // запуска сервисного меню/первоначальной настройки)
+
+        if (aModule.afterStartDelay > 0) {
+            toLog(LogLevel::Normal,
+                  QString("Module %1 started (afterStartDelay=%2ms ignored, using firstPingTimeout).")
+                      .arg(aModule.name)
+                      .arg(aModule.afterStartDelay));
+        }
     } else {
         toLog(LogLevel::Error,
               QString("Error occured while executing module %1. Code: %2 (%3).")
@@ -1004,11 +1010,6 @@ void WatchService::startModule(SModule &aModule) {
                   .arg(aModule.process->error())
                   .arg(translateError(aModule.process->error())));
     }
-
-    // Ждём указанный таймаут после попытки запуска...
-    toLog(LogLevel::Normal, QString("Waiting %1 ms...").arg(aModule.afterStartDelay));
-
-    SleepHelper::msleep(aModule.afterStartDelay);
 
     // Заполняем структуру использования памяти после старта процесса
     QTimer::singleShot(2 * 60 * 1000, this, [this]() { checkProcessMemory(); });

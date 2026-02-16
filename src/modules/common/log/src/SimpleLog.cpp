@@ -1,5 +1,6 @@
 /* @file Реализация простого логгера в файл. */
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
@@ -118,6 +119,12 @@ void SimpleLog::write(LogLevel::Enum aLevel, const QString &aMessage, const QByt
 
 //---------------------------------------------------------------------------
 bool SimpleLog::init() {
+    // Guard against initialization during shutdown
+    // QSettings constructor crashes when QCoreApplication is destroyed
+    if (!QCoreApplication::instance()) {
+        return false;
+    }
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     static QRecursiveMutex fileListMutex;
 #else
