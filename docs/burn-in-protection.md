@@ -358,7 +358,137 @@ YourWidget::YourWidget(QWidget *parent)
 
 ---
 
-## Technical Details
+## QML Implementation (QtQuick Screens)
+
+For QML-based screens (like EKiosk's splash screen), the implementation is simpler since QML has built-in animation support.
+
+### Quick Integration (2 Steps)
+
+#### 1. Add Properties and Apply Offset
+
+```qml
+Rectangle {
+    id: root
+
+    // --- BURN-IN PROTECTION ---
+    property int burnInOffsetX: 0  // Current drift offset X
+    property int burnInOffsetY: 0  // Current drift offset Y
+
+    // Your main content container
+    Column {
+        id: mainContent
+        anchors.centerIn: parent
+
+        // Apply burn-in protection offset to anchors
+        anchors.horizontalCenterOffset: root.burnInOffsetX
+        anchors.verticalCenterOffset: root.burnInOffsetY
+
+        // ... your content here ...
+    }
+}
+```
+
+#### 2. Add Animation (Before Closing Brace)
+
+```qml
+    // --- BURN-IN PROTECTION ANIMATION ---
+    // Circular drift pattern (6px radius, 6-minute cycle)
+    SequentialAnimation {
+        running: true
+        loops: Animation.Infinite
+
+        // Step 1: Center → Bottom-right (0,0) → (6,6)
+        ParallelAnimation {
+            NumberAnimation {
+                target: root
+                property: "burnInOffsetX"
+                from: 0; to: 6
+                duration: 90000 // 90 seconds
+                easing.type: Easing.InOutSine
+            }
+            NumberAnimation {
+                target: root
+                property: "burnInOffsetY"
+                from: 0; to: 6
+                duration: 90000
+                easing.type: Easing.InOutSine
+            }
+        }
+
+        // Step 2: Bottom-right → Bottom-left (6,6) → (-6,6)
+        ParallelAnimation {
+            NumberAnimation {
+                target: root; property: "burnInOffsetX"
+                from: 6; to: -6; duration: 90000
+                easing.type: Easing.InOutSine
+            }
+            NumberAnimation {
+                target: root; property: "burnInOffsetY"
+                from: 6; to: 6; duration: 90000
+                easing.type: Easing.InOutSine
+            }
+        }
+
+        // Step 3: Bottom-left → Top-left (-6,6) → (-6,-6)
+        ParallelAnimation {
+            NumberAnimation {
+                target: root; property: "burnInOffsetX"
+                from: -6; to: -6; duration: 90000
+                easing.type: Easing.InOutSine
+            }
+            NumberAnimation {
+                target: root; property: "burnInOffsetY"
+                from: 6; to: -6; duration: 90000
+                easing.type: Easing.InOutSine
+            }
+        }
+
+        // Step 4: Top-left → Center (-6,-6) → (0,0)
+        ParallelAnimation {
+            NumberAnimation {
+                target: root; property: "burnInOffsetX"
+                from: -6; to: 0; duration: 90000
+                easing.type: Easing.InOutSine
+            }
+            NumberAnimation {
+                target: root; property: "burnInOffsetY"
+                from: -6; to: 0; duration: 90000
+                easing.type: Easing.InOutSine
+            }
+        }
+    }
+}
+```
+
+### QML-specific Notes
+
+**Advantages of QML approach:**
+
+- ✅ No Q_PROPERTY boilerplate needed
+- ✅ Declarative syntax (easier to read/maintain)
+- ✅ Built-in animation system (no includes required)
+- ✅ Works with any anchored layout
+
+**Key differences from C++:**
+
+- Uses `anchors.horizontalCenterOffset` / `anchors.verticalCenterOffset`
+- No need for custom property getters/setters
+- `ParallelAnimation` runs X and Y simultaneously
+- Animation `running: true` starts automatically on load
+
+**Performance:**
+
+- Same low CPU/GPU usage as C++ implementation
+- QML's scene graph optimizes rendering efficiently
+- Tested: Qt 5.6+ and Qt 6.x (QtQuick 2.6+)
+
+### QML Implementation Reference
+
+**Live example**: [apps/EKiosk/src/SplashScreen/splash_screen_scene.qml](../apps/EKiosk/src/SplashScreen/splash_screen_scene.qml)
+
+---
+
+## Technical Details (C++/Widgets)
 
 ### Why Q_PROPERTY?
 
