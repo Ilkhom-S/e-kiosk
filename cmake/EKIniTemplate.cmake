@@ -91,15 +91,12 @@ endmacro()
 #   - Section only in base: keep as is
 #
 # Returns the output file path in ${NAME}_INI_OUTPUT variable in parent scope
-
 function(ek_generate_ini_template NAME TEMPLATE OUTPUT_DIR)
-    # Extract directory and base name from template path
     get_filename_component(_template_dir "${TEMPLATE}" DIRECTORY)
-    get_filename_component(_template_name "${TEMPLATE}" NAME_WE) # Remove .in extension
-    get_filename_component(_template_base "${_template_name}" NAME_WE) # Remove .ini extension
+    get_filename_component(_template_name "${TEMPLATE}" NAME_WE)
+    get_filename_component(_template_base "${_template_name}" NAME_WE)
 
-    # Determine platform-specific template path
-    # Look in same directory as generic template (e.g., updater/updater.ini.mac.in)
+    # Platform-specific template path
     if(WIN32)
         set(_platform_template "${_template_dir}/${_template_base}.ini.win.in")
     elseif(APPLE)
@@ -110,60 +107,12 @@ function(ek_generate_ini_template NAME TEMPLATE OUTPUT_DIR)
         set(_platform_template "")
     endif()
 
-    # Determine merge strategy
-    set(_merge_script "")
-    if(EXISTS "${_platform_template}")
-        message(STATUS "Will merge platform-specific template at build time: ${_platform_template}")
-        set(_template_deps "${TEMPLATE}" "${_platform_template}")
-
-        # Create Python script for proper INI merging
-        set(_merge_script "${CMAKE_CURRENT_BINARY_DIR}/${NAME}_ini_merge.py")
-        file(WRITE "${_merge_script}" "
-import sys
-import configparser
-
-def merge_ini(base_path, platform_path, output_path):
-    # Read both INI files
-    config = configparser.ConfigParser()
-    config.read(base_path, encoding='utf-8')
-
-    platform = configparser.ConfigParser()
-    platform.read(platform_path, encoding='utf-8')
-
-    # Section-aware merge
-    for section in platform.sections():
-        if not config.has_section(section):
-            # Section only in platform - add as new
-            config.add_section(section)
-        # Merge keys: platform adds new keys, but doesn't override existing base keys
-        for key in platform.options(section):
-            if not config.has_option(section, key):
-                # Key doesn't exist in base - add from platform
-                config.set(section, key, platform.get(section, key))
-            # If key exists in base, keep base value (don't override)
-
-    # Write merged result
-    with open(output_path, 'w', encoding='utf-8') as f:
-        config.write(f)
-
-if __name__ == '__main__':
-    merge_ini(sys.argv[1], sys.argv[2], sys.argv[3])
-")
-        set(_merge_type "MERGE")
-    else()
-        message(STATUS "Will use generic template at build time: ${TEMPLATE}")
-        set(_template_deps "${TEMPLATE}")
-        set(_merge_type "COPY")
-    endif()
-
-    # Process user-provided variables for substitution
-    # First, read the content to substitute variables
+    # Substitute variables in base template
     if(EXISTS "${TEMPLATE}")
         file(READ "${TEMPLATE}" _template_content)
     else()
         set(_template_content "")
     endif()
-
     set(_i 0)
     list(LENGTH ARGN _len)
     while(_i LESS _len)
@@ -173,16 +122,12 @@ if __name__ == '__main__':
         string(REPLACE "@${_var}@" "${_val}" _template_content "${_template_content}")
         math(EXPR _i "${_i} + 2")
     endwhile()
+    set(_base_processed "${CMAKE_CURRENT_BINARY_DIR}/${NAME}_ini_base.ini")
+    file(WRITE "${_base_processed}" "${_template_content}")
 
-    # Output file path
-    set(_out_ini "${OUTPUT_DIR}/${NAME}.ini")
-
-    if(_merge_type STREQUAL "MERGE")
-        # Write processed base template (with substitutions)
-        set(_base_processed "${CMAKE_CURRENT_BINARY_DIR}/${NAME}_ini_base.ini")
-        file(WRITE "${_base_processed}" "${_template_content}")
-
-        # Write processed platform template (with substitutions applied to copy)
+    # Substitute variables in platform template if exists
+    set(_platform_processed "")
+    if(EXISTS "${_platform_template}")
         file(READ "${_platform_template}" _platform_content)
         set(_i 0)
         list(LENGTH ARGN _len)
@@ -195,57 +140,30 @@ if __name__ == '__main__':
         endwhile()
         set(_platform_processed "${CMAKE_CURRENT_BINARY_DIR}/${NAME}_ini_platform.ini")
         file(WRITE "${_platform_processed}" "${_platform_content}")
-
-        # Create a CMake script that runs the merge
-        set(_script_file "${CMAKE_CURRENT_BINARY_DIR}/${NAME}_ini_gen.cmake")
-        file(WRITE "${_script_file}" "
-# Auto-generated script to merge and create ${NAME}.ini at build time
-execute_process(
-    COMMAND \${CMAKE_COMMAND} -E env python3 \"${_merge_script}\" \"${_base_processed}\" \"${_platform_processed}\" \"${_out_ini}\"
-    RESULT_VARIABLE _result
-)
-if(NOT _result EQUAL 0)
-    message(FATAL_ERROR \"Failed to merge INI files\")
-endif()
-file(MAKE_DIRECTORY \"${OUTPUT_DIR}\")
-message(STATUS \"Generated merged .ini at build time: ${_out_ini}\")
-")
-
-        # Add custom command to generate .ini file at build time (only when needed)
-        add_custom_command(
-            OUTPUT "${_out_ini}"
-            COMMAND ${CMAKE_COMMAND} -P "${_script_file}"
-            DEPENDS ${_template_deps} "${_merge_script}"
-            COMMENT "Merging ${NAME}.ini from base + platform config"
-            VERBATIM
-        )
-    else()
-        # Simple copy mode - just write processed content
-        set(_script_file "${CMAKE_CURRENT_BINARY_DIR}/${NAME}_ini_gen.cmake")
-
-        # Escape the content properly for writing to script
-        string(REPLACE "\\" "\\\\" _escaped_content "${_template_content}")
-        string(REPLACE "\"" "\\\"" _escaped_content "${_escaped_content}")
-
-        file(WRITE "${_script_file}" "
-# Auto-generated script to create ${NAME}.ini at build time
-file(MAKE_DIRECTORY \"${OUTPUT_DIR}\")
-file(WRITE \"${_out_ini}\" \"${_escaped_content}\")
-message(STATUS \"Generated .ini at build time: ${_out_ini}\")
-")
-
-        # Add custom command to generate .ini file at build time (only when needed)
-        add_custom_command(
-            OUTPUT "${_out_ini}"
-            COMMAND ${CMAKE_COMMAND} -P "${_script_file}"
-            DEPENDS ${_template_deps}
-            COMMENT "Generating ${NAME}.ini"
-            VERBATIM
-        )
     endif()
 
-    # Return the output file path to parent scope
-    set(${NAME}_INI_OUTPUT "${_out_ini}" PARENT_SCOPE)
+    set(_out_ini "${OUTPUT_DIR}/${NAME}.ini")
+    set(_merge_script "${CMAKE_SOURCE_DIR}/scripts/merge_ini.py")
+    file(MAKE_DIRECTORY "${OUTPUT_DIR}")
 
-    message(STATUS "Configured .ini generation (will run at build time): ${_out_ini}")
+    # Build command line
+    if(EXISTS "${_platform_processed}")
+        set(_merge_cmd python3 "${_merge_script}" --base "${_base_processed}" --platform "${_platform_processed}" --output "${_out_ini}")
+        set(_template_deps "${_base_processed}" "${_platform_processed}" "${_merge_script}")
+    else()
+        set(_merge_cmd python3 "${_merge_script}" --base "${_base_processed}" --output "${_out_ini}")
+        set(_template_deps "${_base_processed}" "${_merge_script}")
+    endif()
+
+    add_custom_command(
+        OUTPUT "${_out_ini}"
+        COMMAND ${_merge_cmd}
+        DEPENDS ${_template_deps}
+        COMMENT "Merging ${NAME}.ini from base + platform config using merge_ini.py"
+        VERBATIM
+    )
+
+    set(${NAME}_INI_OUTPUT "${_out_ini}" PARENT_SCOPE)
+    message(STATUS "Configured .ini generation (merge_ini.py): ${_out_ini}")
 endfunction()
+
