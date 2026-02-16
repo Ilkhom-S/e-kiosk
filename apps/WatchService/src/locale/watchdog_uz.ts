@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="uz">
+<TS version="2.1" language="uz">
 <context>
     <name>SplashScreenClass</name>
     <message>
-        <location filename="../SplashScreen.ui" line="66"/>
+        <location filename="../SplashScreen.ui" line="129"/>
         <source>#terminal_not_available</source>
         <translation>Терминал временно не работает</translation>
     </message>
@@ -18,4 +18,3 @@
     </message>
 </context>
 </TS>
-

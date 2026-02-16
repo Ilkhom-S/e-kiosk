@@ -5,6 +5,9 @@
 #include "SplashScreen.h"
 
 #include <QtCore/QDir>
+#include <QtCore/QEasingCurve>
+#include <QtCore/QPropertyAnimation>
+#include <QtCore/QSequentialAnimationGroup>
 #include <QtCore/QTimer>
 #include <QtWidgets/QHBoxLayout>
 
@@ -35,7 +38,7 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
       QWidget(aParent, Qt::WindowStaysOnTopHint)
 #endif
       ,
-      m_QuitRequested(false) {
+      m_QuitRequested(false), mBurnInProtectionAnim(nullptr), mLayoutOffset(0, 0) {
     ui.setupUi(this);
 
     // FIXME: временно для #18645
@@ -71,6 +74,9 @@ void SplashScreen::onInit() {
         toLog(LogLevel::Normal, "aboutToQuit signal received - setting m_QuitRequested to true");
         m_QuitRequested = true;
     });
+
+    // Настройка защиты от выгорания экрана
+    setupBurnInProtection();
 
     toLog(LogLevel::Normal, "SplashScreen onInit completed");
 }
@@ -227,6 +233,70 @@ void SplashScreen::removeStates(const QString &aSender) {
 void SplashScreen::setCustom_Background(const QString &aPath) {
     aPath.isEmpty() ? setStyleSheet(CSplashScreen::DefaultBackgroundStyle)
                     : setStyleSheet(QString(CSplashScreen::CustomBackgroundStyle).arg(aPath));
+}
+
+//----------------------------------------------------------------------------
+// Setter для layoutOffset - применяет offset к layout margins
+void SplashScreen::setLayoutOffset(const QPoint &offset) {
+    mLayoutOffset = offset;
+    // Применяем offset к левому/верхнему краю для drift-эффекта
+    // Центрирование сохраняется благодаря spacers в layout
+    ui.mainLayout->setContentsMargins(offset.x(), offset.y(), 0, 0);
+}
+
+//----------------------------------------------------------------------------
+// Настройка защиты от выгорания экрана (burn-in protection)
+// Использует margin animation вместо window position для совместимости с Windows 7
+void SplashScreen::setupBurnInProtection() {
+    // Создаем группу анимаций для циклического движения
+    mBurnInProtectionAnim = new QSequentialAnimationGroup(this);
+
+    // Параметры движения: 6px радиус (меньше для margins), 6 минут на цикл
+    const int driftRadius = 6;
+    const int cycleDuration = 360000; // 6 минут = 360000 мс
+    const int stepDuration = cycleDuration / 4;
+
+    // Создаем 4 анимации для плавного кругового движения content margins
+    // Шаг 1: вправо-вниз
+    QPropertyAnimation *anim1 = new QPropertyAnimation(this, "layoutOffset");
+    anim1->setDuration(stepDuration);
+    anim1->setStartValue(QPoint(0, 0));
+    anim1->setEndValue(QPoint(driftRadius, driftRadius));
+    anim1->setEasingCurve(QEasingCurve::InOutSine);
+
+    // Шаг 2: влево-вниз
+    QPropertyAnimation *anim2 = new QPropertyAnimation(this, "layoutOffset");
+    anim2->setDuration(stepDuration);
+    anim2->setStartValue(QPoint(driftRadius, driftRadius));
+    anim2->setEndValue(QPoint(-driftRadius, driftRadius));
+    anim2->setEasingCurve(QEasingCurve::InOutSine);
+
+    // Шаг 3: влево-вверх
+    QPropertyAnimation *anim3 = new QPropertyAnimation(this, "layoutOffset");
+    anim3->setDuration(stepDuration);
+    anim3->setStartValue(QPoint(-driftRadius, driftRadius));
+    anim3->setEndValue(QPoint(-driftRadius, -driftRadius));
+    anim3->setEasingCurve(QEasingCurve::InOutSine);
+
+    // Шаг 4: вправо-вверх (возврат к началу)
+    QPropertyAnimation *anim4 = new QPropertyAnimation(this, "layoutOffset");
+    anim4->setDuration(stepDuration);
+    anim4->setStartValue(QPoint(-driftRadius, -driftRadius));
+    anim4->setEndValue(QPoint(0, 0));
+    anim4->setEasingCurve(QEasingCurve::InOutSine);
+
+    // Добавляем анимации в группу
+    mBurnInProtectionAnim->addAnimation(anim1);
+    mBurnInProtectionAnim->addAnimation(anim2);
+    mBurnInProtectionAnim->addAnimation(anim3);
+    mBurnInProtectionAnim->addAnimation(anim4);
+
+    // Запускаем бесконечный цикл
+    mBurnInProtectionAnim->setLoopCount(-1);
+    mBurnInProtectionAnim->start();
+
+    toLog(LogLevel::Normal,
+          "Burn-in protection enabled: 6px margin drift, 6min cycle (Windows 7 compatible)");
 }
 
 //----------------------------------------------------------------------------

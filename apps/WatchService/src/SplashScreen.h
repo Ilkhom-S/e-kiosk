@@ -11,10 +11,13 @@
 
 #include "ui_SplashScreen.h"
 
+class QSequentialAnimationGroup;
+
 //----------------------------------------------------------------------------
 /// Вспомогательный экран, закрывающий рабочий стол. Предоставляет доступ к сервисному меню.
 class SplashScreen : public QWidget, protected ILogable {
     Q_OBJECT
+    Q_PROPERTY(QPoint layoutOffset READ layoutOffset WRITE setLayoutOffset)
 
 public:
     /// Конструктор.
@@ -51,6 +54,13 @@ private slots:
     void onInit();
 
 private: // Методы
+    // Настройка защиты от выгорания экрана (burn-in protection)
+    void setupBurnInProtection();
+
+    // Getter/Setter для Q_PROPERTY layoutOffset
+    QPoint layoutOffset() const { return mLayoutOffset; }
+    void setLayoutOffset(const QPoint &offset);
+
     typedef QList<QPair<int, QRectF>> TAreas;
 
     void updateAreas();
@@ -74,6 +84,8 @@ private: // Данные
     TAreas m_Areas;
     TStateList m_States;
     bool m_QuitRequested;
+    QSequentialAnimationGroup *mBurnInProtectionAnim;
+    QPoint mLayoutOffset; // Текущий offset для burn-in protection
 };
 
 //----------------------------------------------------------------------------

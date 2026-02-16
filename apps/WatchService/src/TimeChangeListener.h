@@ -28,6 +28,9 @@ protected:
 
     /// Проверка и попытка примерного вычисления смещения нового времени.
     QDateTime checkTimeOffset();
+    
+    /// Внутренний helper - предполагает, что m_HookMutex уже захвачен
+    QDateTime checkTimeOffsetLocked();
 
 protected slots:
     /// слот для развязывания хука с signal\slot Qt

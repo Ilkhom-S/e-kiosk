@@ -1,108 +1,151 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui version="5.0">
-  <class>SplashScreenClass</class>
-  <widget class="QWidget" name="SplashScreenClass">
-    <property name="geometry">
-      <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>834</width>
-        <height>652</height>
-      </rect>
-    </property>
-    <property name="font">
-      <font>
-        <family>PT Sans Caption</family>
-        <pointsize>24</pointsize>
-      </font>
-    </property>
-    <property name="windowTitle">
-      <string notr="true" />
-    </property>
-    <property name="styleSheet">
-      <string notr="true">color: rgb(255, 255, 255);
-        background-color: #f07e1b;</string>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-        <spacer name="verticalSpacer">
-          <property name="orientation">
-            <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-            <size>
-              <width>20</width>
-              <height>254</height>
-            </size>
-          </property>
-        </spacer>
-      </item>
-      <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-            <spacer name="horizontalSpacer">
-              <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-                <size>
-                  <width>40</width>
-                  <height>20</height>
-                </size>
-              </property>
-            </spacer>
-          </item>
-          <item>
-            <widget class="QLabel" name="lblMessage">
-              <property name="font">
-                <font>
-                  <family>PT Sans Caption</family>
-                  <pointsize>24</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                </font>
-              </property>
-              <property name="text">
-                <string>#terminal_not_available</string>
-              </property>
-              <property name="alignment">
-                <set>Qt::AlignCenter</set>
-              </property>
-            </widget>
-          </item>
-          <item>
-            <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-                <size>
-                  <width>40</width>
-                  <height>20</height>
-                </size>
-              </property>
-            </spacer>
-          </item>
+<ui version="4.0">
+    <class>SplashScreenClass</class>
+    <widget class="QWidget" name="SplashScreenClass">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>1024</width>
+                <height>768</height>
+            </rect>
+        </property>
+        <property name="styleSheet">
+            <string notr="true">background-color: #0A0A0A; color: #FA5300; border: none;</string>
+        </property>
+        <layout class="QVBoxLayout" name="mainLayout">
+            <item>
+                <spacer name="topSpacer">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                </spacer>
+            </item>
+            <!-- LOGO -->
+            <item>
+                <layout class="QHBoxLayout" name="logoLayout">
+                    <item>
+                        <spacer name="hS1">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item>
+                        <widget class="QLabel" name="lblLogo">
+                            <property name="minimumSize">
+                                <size>
+                                    <width>350</width>
+                                    <height>100</height>
+                                </size>
+                            </property>
+                            <property name="pixmap">
+                                <pixmap resource="Resources.qrc">:/brand/humo_logo_midnight.svg</pixmap>
+                            </property>
+                            <property name="scaledContents">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <spacer name="hS2">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <spacer name="gap">
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                        <size>
+                            <width>20</width>
+                            <height>40</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
+            <!-- MAINTENANCE ICON -->
+            <item>
+                <layout class="QHBoxLayout" name="iconLayout">
+                    <item>
+                        <spacer name="hS3">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item>
+                        <widget class="QLabel" name="lblIcon">
+                            <property name="minimumSize">
+                                <size>
+                                    <width>60</width>
+                                    <height>60</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>60</width>
+                                    <height>60</height>
+                                </size>
+                            </property>
+                            <property name="pixmap">
+                                <pixmap resource="Resources.qrc">:/icons/maintenance_charming.svg</pixmap>
+                            </property>
+                            <property name="scaledContents">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <spacer name="hS4">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
+            <!-- DYNAMIC MESSAGE (WORD-WRAP ENABLED) -->
+            <item>
+                <widget class="QLabel" name="lblMessage">
+                    <property name="font">
+                        <font>
+                            <family>PT Sans Caption</family>
+                            <pointsize>28</pointsize>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                        </font>
+                    </property>
+                    <property name="styleSheet">
+                        <string notr="true">margin-top: 20px; padding-left: 50px; padding-right:
+                            50px;</string>
+                    </property>
+                    <property name="text">
+                        <string>#terminal_not_available</string>
+                    </property>
+                    <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="wordWrap">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <spacer name="bottomSpacer">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                </spacer>
+            </item>
         </layout>
-      </item>
-      <item>
-        <spacer name="verticalSpacer_2">
-          <property name="orientation">
-            <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-            <size>
-              <width>20</width>
-              <height>255</height>
-            </size>
-          </property>
-        </spacer>
-      </item>
-    </layout>
-  </widget>
-  <layoutdefault spacing="6" margin="11" />
-  <resources>
-    <include location="Resources.qrc" />
-  </resources>
-  <connections />
+    </widget>
+    <resources>
+        <include location="Resources.qrc" />
+    </resources>
 </ui>

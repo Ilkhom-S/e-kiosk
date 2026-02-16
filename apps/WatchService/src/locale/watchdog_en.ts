@@ -4,7 +4,7 @@
 <context>
     <name>SplashScreenClass</name>
     <message>
-        <location filename="../SplashScreen.ui" line="66"/>
+        <location filename="../SplashScreen.ui" line="129"/>
         <source>#terminal_not_available</source>
         <translation>The terminal is temporarily out of service</translation>
     </message>

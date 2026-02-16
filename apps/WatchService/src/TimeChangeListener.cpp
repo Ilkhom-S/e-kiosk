@@ -44,7 +44,7 @@ void TimeChangeListener::timerEvent(QTimerEvent *aEvent) {
     QMutexLocker locker(&m_HookMutex);
 
 #ifndef Q_OS_WIN
-    m_LastCheckTime = checkTimeOffset();
+    m_LastCheckTime = checkTimeOffsetLocked();
 #else
     m_LastCheckTime = QDateTime::currentDateTime();
 #endif
@@ -53,7 +53,12 @@ void TimeChangeListener::timerEvent(QTimerEvent *aEvent) {
 //------------------------------------------------------------------------
 QDateTime TimeChangeListener::checkTimeOffset() {
     QMutexLocker locker(&m_HookMutex);
+    return checkTimeOffsetLocked();
+}
 
+//------------------------------------------------------------------------
+QDateTime TimeChangeListener::checkTimeOffsetLocked() {
+    // Предполагается, что m_HookMutex уже захвачен вызывающей стороной
     QDateTime currentTime = QDateTime::currentDateTime();
 
     if (m_TimeOffset == 0) {
