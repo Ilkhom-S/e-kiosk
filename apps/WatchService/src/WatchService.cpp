@@ -60,8 +60,9 @@ bool SModule::kill() {
     if (process) {
         process->kill();
 
-        // Ждём завершения...
-        result = process->waitForFinished();
+        // НЕ ждём завершения - используем короткий timeout чтобы не блокировать event loop
+        // finished() signal обработает cleanup асинхронно
+        result = process->waitForFinished(1000); // 1 sec timeout вместо бесконечного ожидания
     }
 
     if (lastUpdate == initDate) {
@@ -279,16 +280,28 @@ void WatchService::loadConfiguration() {
         if (group.toLower().indexOf("module") != -1) {
             SModule info;
             info.name = settings.value(group + "/name").toString();
+
+            // На macOS applicationDirPath() возвращает путь внутри .app bundle (Contents/MacOS),
+            // но нам нужен bin directory где находятся все .app
+            QString workingDir = QCoreApplication::applicationDirPath();
+#ifdef Q_OS_MAC
+            // Если мы внутри .app bundle (path/to/bin/watchdog.app/Contents/MacOS),
+            // поднимаемся на три уровня вверх чтобы получить bin directory
+            if (workingDir.contains(".app/Contents/MacOS")) {
+                QDir dir(workingDir);
+                dir.cdUp(); // Contents
+                dir.cdUp(); // watchdog.app
+                dir.cdUp(); // bin
+                workingDir = dir.absolutePath();
+            }
+#endif
+
             info.file = settings.value(group + "/file")
                             .toString()
-                            .replace("{WS_DIR}",
-                                     QCoreApplication::applicationDirPath(),
-                                     Qt::CaseInsensitive);
+                            .replace("{WS_DIR}", workingDir, Qt::CaseInsensitive);
             info.workingDirectory = settings.value(group + "/workingdirectory")
                                         .toString()
-                                        .replace("{WS_DIR}",
-                                                 QCoreApplication::applicationDirPath(),
-                                                 Qt::CaseInsensitive);
+                                        .replace("{WS_DIR}", workingDir, Qt::CaseInsensitive);
             info.restartCount = 0;
             info.startMode = settings.value(group + "/startmode").toString().toLower();
             info.autoStart = settings.value(group + "/autostart").toBool();
@@ -582,6 +595,9 @@ void WatchService::onCheckModules() {
                         QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
                         this,
                         &WatchService::onModuleFinished);
+                // Подключаем обработчик started() один раз при создании QProcess
+                connect(
+                    it.value().process, &QProcess::started, this, &WatchService::onModuleStarted);
             }
 
             if (it.value().process->state() == QProcess::NotRunning) {
@@ -709,6 +725,41 @@ void WatchService::onModuleFinished(int aExitCode, QProcess::ExitStatus aExitSta
 
                 break;
             }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
+void WatchService::onModuleStarted() {
+    // Находим модуль по отправителю сигнала
+    QProcess *process = qobject_cast<QProcess *>(sender());
+    if (!process) {
+        return;
+    }
+
+    for (auto &module : m_Modules) {
+        if (module.process == process) {
+            toLog(LogLevel::Normal,
+                  QString("Module %1 has been successfully %2.")
+                      .arg(module.name)
+                      .arg(module.restartCount > 0 ? "restarted" : "started"));
+
+            ++(module.restartCount);
+            module.initDate = module.lastUpdate = QDateTime::currentDateTime();
+            module.arguments.clear(); // параметры из командной строки передаются только один раз
+
+            if (module.afterStartDelay > 0) {
+                toLog(LogLevel::Normal,
+                      QString("Module %1 started (afterStartDelay=%2ms ignored, using "
+                              "firstPingTimeout).")
+                          .arg(module.name)
+                          .arg(module.afterStartDelay));
+            }
+
+            // Запланируем проверку памяти через 2 минуты после старта
+            QTimer::singleShot(2 * 60 * 1000, this, [this]() { checkProcessMemory(); });
+
+            break;
         }
     }
 }
@@ -976,34 +1027,26 @@ void WatchService::closeAction() {
 
 //----------------------------------------------------------------------------
 void WatchService::startModule(SModule &aModule) {
-    QString runCommand = QString("\"%1\" %2")
-                             .arg(aModule.file)
-                             .arg(aModule.params.isEmpty() ? aModule.arguments : aModule.params);
+    // Разделяем аргументы правильно для QProcess
+    QString args = aModule.params.isEmpty() ? aModule.arguments : aModule.params;
+    QStringList argList;
+    if (!args.trimmed().isEmpty()) {
+        // Простой split по пробелам (для более сложных случаев можно улучшить парсинг)
+        argList = args.split(" ", Qt::SkipEmptyParts);
+    }
 
+    QString runCommand = QString("\"%1\" %2").arg(aModule.file).arg(args);
     toLog(LogLevel::Normal,
           QString("Starting module %1... Executing command %2.").arg(aModule.name).arg(runCommand));
 
     aModule.process->setWorkingDirectory(aModule.workingDirectory);
-    aModule.process->start(runCommand);
+    // Используем правильный overload для Qt6: program + arguments отдельно
+    aModule.process->start(aModule.file, argList);
 
-    if (aModule.process->waitForStarted()) {
-        toLog(LogLevel::Normal,
-              QString("Module %1 has been successfully %2.")
-                  .arg(aModule.name)
-                  .arg(aModule.restartCount > 0 ? "restarted" : "started"));
-
-        ++(aModule.restartCount);
-        aModule.initDate = aModule.lastUpdate = QDateTime::currentDateTime();
-        aModule.arguments.clear(); // параметры из командной строки передаются только один раз (для
-                                   // запуска сервисного меню/первоначальной настройки)
-
-        if (aModule.afterStartDelay > 0) {
-            toLog(LogLevel::Normal,
-                  QString("Module %1 started (afterStartDelay=%2ms ignored, using firstPingTimeout).")
-                      .arg(aModule.name)
-                      .arg(aModule.afterStartDelay));
-        }
-    } else {
+    // НЕ вызываем waitForStarted() чтобы не блокировать event loop!
+    // Вместо этого используем async сигнал started() (подключен в onCheckModules)
+    // Проверяем только синхронные ошибки (файл не найден, нет прав и т.д.)
+    if (aModule.process->error() != QProcess::UnknownError) {
         toLog(LogLevel::Error,
               QString("Error occured while executing module %1. Code: %2 (%3).")
                   .arg(aModule.name)

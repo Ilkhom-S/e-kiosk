@@ -161,6 +161,9 @@ private slots:
     /// Один из модулей был закрыт.
     void onModuleFinished(int aExitCode, QProcess::ExitStatus aExitStatus);
 
+    /// Один из модулей был запущен.
+    void onModuleStarted();
+
     /// Обработчик сигнала об изменении системного времени
     void onTimeChanged(qint64 aTimeOffset);
 
