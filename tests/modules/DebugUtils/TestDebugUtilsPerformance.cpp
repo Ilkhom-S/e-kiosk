@@ -63,7 +63,7 @@ private slots:
             thread->start();
             QMetaObject::invokeMethod(
                 thread,
-                [i, &completed, callsPerThread]() {
+                [i, &completed]() {
                     for (int j = 0; j < callsPerThread; ++j) {
                         QStringList stack;
                         DumpCallstack(stack, nullptr);

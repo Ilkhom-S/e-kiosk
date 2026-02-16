@@ -143,7 +143,7 @@ bool EncashmentWindow::doEncashmentProcess() {
 
 //---------------------------------------------------------------------------
 void EncashmentWindow::onPrintZReport() {
-    auto *zReportButton = dynamic_cast<QPushButton *>(sender());
+    Q_UNUSED(sender());
     GUI::MessageBox::hide();
 
     m_MessageError = tr("#zreport_failed");

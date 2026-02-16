@@ -14,7 +14,7 @@ private slots:
     void testProcessEnumeratorCanBeCreated() {
         // Test that ProcessEnumerator can be instantiated
         ProcessEnumerator enumerator;
-        QVERIFY(&enumerator != nullptr);
+        QVERIFY(true); // If we got here, construction succeeded
     }
 
     void testProcessEnumeratorEnumeratesProcesses() {

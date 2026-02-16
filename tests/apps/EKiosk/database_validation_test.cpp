@@ -103,7 +103,7 @@ void DatabaseValidationTest::testScriptFileContent() {
     QFile file(scriptPath);
 
     if (!file.exists()) {
-        QSKIP(QString("Script not found: %1 - skipping content check").arg(scriptPath).toLatin1());
+        QSKIP(qPrintable(QString("Script not found: %1 - skipping content check").arg(scriptPath)));
         return;
     }
 

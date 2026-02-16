@@ -1,7 +1,9 @@
 /* @file Делегат отображения элемента с комментарием в QListWidget */
 
-#include <QtGui/QPainter>
-#include <QtWidgets/QItemDelegate>
+#pragma once
+
+#include <QPainter>
+#include <QItemDelegate>
 
 //---------------------------------------------------------------------------
 class ListDelegate : public QItemDelegate {

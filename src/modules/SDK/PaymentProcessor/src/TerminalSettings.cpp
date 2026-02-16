@@ -130,8 +130,9 @@ void TerminalSettings::setConnection(const SConnection &aConnection) {
     } else {
         try {
             m_properties.get_child("terminal.proxy").clear();
-        } catch (std::exception &) {
-            // Ветвь не была найдена.
+        } catch (const std::exception &e) {
+            // Branch not found - this is expected when proxy settings don't exist
+            Q_UNUSED(e);
         }
     }
 }

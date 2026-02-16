@@ -92,12 +92,10 @@ bool Provider::isCheckStepSettingsOK() const {
 
     QStringList limits2;
     foreach (QString l, limits) {
-        int pos = 0;
-
-        QRegularExpressionMatch match = rx.match(l, pos);
-        while ((pos = match.capturedStart()) != -1) {
+        QRegularExpressionMatchIterator i = rx.globalMatch(l);
+        while (i.hasNext()) {
+            QRegularExpressionMatch match = i.next();
             limits2 << match.captured(1);
-            pos += match.capturedLength();
         }
     }
 
@@ -110,9 +108,11 @@ bool Provider::isCheckStepSettingsOK() const {
 
     QSet<QString> limitsSet(limits2.begin(), limits2.end());
     QSet<QString> responseFieldsSet(responseFields.begin(), responseFields.end());
-    return limitsSet.intersect(responseFieldsSet).isEmpty()
-               ? true
-               : (m_Provider.processor.showAddInfo ? true : !m_Provider.processor.skipCheck);
+
+    if (!limitsSet.intersect(responseFieldsSet).isEmpty()) {
+        return m_Provider.processor.showAddInfo || !m_Provider.processor.skipCheck;
+    }
+    return true;
 }
 
 //------------------------------------------------------------------------------
@@ -374,7 +374,9 @@ QVariantMap PaymentService::calculateLimits(const QString &aAmount, bool aFixedA
     // Если провайдер требует округления - применим округление к пограничным значениям
     if (provider.processor.rounding) {
         maxAmount = qCeil(maxAmount);
-        minAmount = aFixedAmount ? maxAmount : qCeil(minAmount);
+        if (!aFixedAmount) {
+            minAmount = qCeil(minAmount);
+        }
     }
 
     // Формируем массив заполненных полей для подсчёта комиссий.
@@ -420,7 +422,7 @@ QVariantMap PaymentService::calculateLimits(const QString &aAmount, bool aFixedA
     auto calcAmountAllByAmountAll = [&com, &provider](double &aAmount) -> double {
         double amountAll = 0.0;
 
-        if (com.getType() == PPSDK::Commission::Percent && com.getValue()) {
+        if (com.getType() == PPSDK::Commission::Percent && !qFuzzyIsNull(com.getValue())) {
             double amountAllLimit1 = 0.0;
 
             if (provider.processor.feeType == PPSDK::SProvider::FeeByAmount ||
@@ -433,12 +435,12 @@ QVariantMap PaymentService::calculateLimits(const QString &aAmount, bool aFixedA
             amountAll = amountAllLimit1;
             double fee = aAmount - amountAllLimit1;
 
-            if (com.getMinCharge() && fee < com.getMinCharge()) {
+            if (!qFuzzyIsNull(com.getMinCharge()) && fee < com.getMinCharge()) {
                 double amountAllLimit2 = aAmount - com.getMinCharge();
                 amountAll = amountAllLimit1 > amountAllLimit2 ? amountAllLimit1 : amountAllLimit2;
             }
 
-            if (com.getMaxCharge() && fee > com.getMaxCharge()) {
+            if (!qFuzzyIsNull(com.getMaxCharge()) && fee > com.getMaxCharge()) {
                 double amountAllLimit3 = aAmount - com.getMaxCharge();
                 amountAll = qMax(amountAllLimit3, amountAll);
             }
@@ -466,7 +468,7 @@ QVariantMap PaymentService::calculateLimits(const QString &aAmount, bool aFixedA
     }
 
     // Округлим результат после 2ого знака чтобы не было расхождений в копейках
-    maxAmountAll = qRound64(maxAmountAll * 100) / double(100);
+    maxAmountAll = qRound64(maxAmountAll * 100) / 100.0;
 
     // Если провайдер требует округления - применим округление к пограничным значениям
     if (provider.processor.rounding) {
