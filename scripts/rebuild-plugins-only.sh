@@ -49,14 +49,14 @@ echo "Rebuilding all plugin targets..."
 cmake --build "$BUILD_DIR" --target all -j8 || {
     echo "Warning: Some targets failed to build (possibly tests)"
     echo "Verifying plugin targets..."
-    
+
     # Check that main plugins were built
     PLUGIN_COUNT=$(find "$BUILD_DIR/bin/plugins" -name "*.dylib" -type f 2>/dev/null | wc -l)
     if [ "$PLUGIN_COUNT" -eq 0 ]; then
         echo "Error: No plugins were built"
         exit 1
     fi
-    
+
     echo "Main plugin targets built successfully despite test failures"
 }
 

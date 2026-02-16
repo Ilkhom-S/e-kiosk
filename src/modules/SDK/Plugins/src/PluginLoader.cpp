@@ -224,13 +224,32 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
                     m_Libraries << library;
 
                     // Загрузка локализации
+                    QString pluginBaseName = dirEntry.fileInfo().baseName();
+
+                    // На macOS убираем префикс "lib" из имени библиотеки
+                    if (pluginBaseName.startsWith("lib")) {
+                        pluginBaseName = pluginBaseName.mid(3);
+                    }
+
+                    // Пытаемся найти файлы переводов с текущим именем
                     QDir translations(dirEntry.fileInfo().absolutePath(),
-                                      QString("%1_*.qm").arg(dirEntry.fileInfo().baseName()));
+                                      QString("%1_*.qm").arg(pluginBaseName));
+
+                    // Если не найдены и имя заканчивается на "d", пробуем без него
+                    // (debug builds добавляют суффикс "d", но файлы переводов без него)
+                    if (translations.count() == 0 && pluginBaseName.endsWith("d")) {
+                        QString baseNameWithoutDebug = pluginBaseName;
+                        baseNameWithoutDebug.chop(1);
+                        translations = QDir(dirEntry.fileInfo().absolutePath(),
+                                            QString("%1_*.qm").arg(baseNameWithoutDebug));
+                        if (translations.count() != 0) {
+                            pluginBaseName = baseNameWithoutDebug;
+                        }
+                    }
 
                     if (translations.count() != 0) {
                         // Получаем текущий язык приложения
                         QString currentLanguage = m_Kernel->getLanguage();
-                        QString pluginBaseName = dirEntry.fileInfo().baseName();
 
                         // Ищем файл перевода для текущего языка
                         QString targetTranslation =
