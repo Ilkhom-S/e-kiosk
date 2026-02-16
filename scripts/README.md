@@ -4,9 +4,7 @@ This directory contains build automation scripts for the e-kiosk project.
 
 ## 📋 Scripts
 
-### `clean-rebuild-macos.sh`
-
-**Full clean rebuild for macOS (Qt6)**
+### `clean-rebuild-macos.sh` - Full clean rebuild for macOS (Qt6)
 
 Removes the entire build directory and rebuilds everything from scratch. Use this when:
 
@@ -23,9 +21,7 @@ Removes the entire build directory and rebuilds everything from scratch. Use thi
 
 ---
 
-### `clean-rebuild-windows.ps1`
-
-**Full clean rebuild for Windows (MinGW Qt6)**
+### `clean-rebuild-windows.ps1` - Full clean rebuild for Windows (MinGW Qt6)
 
 Windows equivalent of clean-rebuild-macos.sh.
 
@@ -37,9 +33,7 @@ Windows equivalent of clean-rebuild-macos.sh.
 
 ---
 
-### `rebuild-plugins-only.sh`
-
-**Fast plugin-only rebuild**
+### `rebuild-plugins-only.sh` - Fast plugin-only rebuild
 
 Removes plugin binaries and translations, then rebuilds only plugin targets. Use this when:
 
@@ -155,31 +149,6 @@ cmake --build "$BUILD_DIR" -j16
 # Normal incremental build
 cmake --build build/macos-qt6 -j8
 ```
-
----
-
-## 🐛 Troubleshooting
-
-### "Plugin not found" Errors
-
-- Check `build/macos-qt6/bin/plugins/` directory exists
-- Verify plugin files have `.dylib` extension (macOS) or `.dll` (Windows)
-- Run `clean-rebuild-*.sh` to regenerate everything
-
-### Crashes on Plugin Load
-
-- Usually indicates interface mismatch
-- Run `clean-rebuild-*.sh` to rebuild with current interfaces
-- Check for pure virtual method errors in logs
-
-### Translation Files Missing
-
-- Run `rebuild-plugins-only.sh` to regenerate `.qm` files
-- Check source `.ts` files exist in plugin directories
-
----
-
-## 📚 See Also
 
 ---
 

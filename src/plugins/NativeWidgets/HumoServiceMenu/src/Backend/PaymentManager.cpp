@@ -151,8 +151,7 @@ bool PaymentManager::printReceipt(qint64 aPaymentId, DSDK::EPrintingModes::Enum 
     // См. docs/multiple-inheritance-rtti-casting.md
     void *dealerSettingsPtr = reinterpret_cast<void *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
-    PPSDK::DealerSettings *dealerSettings =
-        reinterpret_cast<PPSDK::DealerSettings *>(dealerSettingsPtr);
+    auto *dealerSettings = reinterpret_cast<PPSDK::DealerSettings *>(dealerSettingsPtr);
     PPSDK::SProvider provider = dealerSettings->getProvider(providerId);
 
     QString receiptTemplate =
@@ -354,8 +353,7 @@ bool PaymentManager::printEncashment(int aIndex /*= -1*/) {
         // См. docs/multiple-inheritance-rtti-casting.md
         void *terminalSettingsPtr = reinterpret_cast<void *>(
             m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
-        PPSDK::TerminalSettings *terminalSettings =
-            reinterpret_cast<PPSDK::TerminalSettings *>(terminalSettingsPtr);
+        auto *terminalSettings = reinterpret_cast<PPSDK::TerminalSettings *>(terminalSettingsPtr);
 
         if (terminalSettings->getCommonSettings().printFailedReceipts) {
             // Перед отчётом печатаем все не напечатанные чеки

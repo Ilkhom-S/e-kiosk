@@ -37,7 +37,7 @@ LogsServiceWindow::LogsServiceWindow(HumoServiceBackend *aBackend, QWidget *aPar
     void *terminalSettingsPtr =
         reinterpret_cast<void *>(m_Backend->getCore()->getSettingsService()->getAdapter(
             SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
-    SDK::PaymentProcessor::TerminalSettings *terminalSettings =
+    auto *terminalSettings =
         reinterpret_cast<SDK::PaymentProcessor::TerminalSettings *>(terminalSettingsPtr);
 
     QString logPath(QString("%1/../logs").arg(terminalSettings->getAppEnvironment().userDataPath));

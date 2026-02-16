@@ -37,7 +37,7 @@ LogsServiceWindow::LogsServiceWindow(ServiceMenuBackend *aBackend, QWidget *aPar
     void *terminalSettingsPtr =
         reinterpret_cast<void *>(m_Backend->getCore()->getSettingsService()->getAdapter(
             SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
-    SDK::PaymentProcessor::TerminalSettings *terminalSettings =
+    auto *terminalSettings =
         reinterpret_cast<SDK::PaymentProcessor::TerminalSettings *>(terminalSettingsPtr);
 
     QString logPath(QString("%1/../logs").arg(terminalSettings->getAppEnvironment().userDataPath));
@@ -74,7 +74,7 @@ bool LogsServiceWindow::shutdown() {
 
 //------------------------------------------------------------------------
 void LogsServiceWindow::onShowLogButtonClicked() {
-    if (lvLogsList->selectedItems().size() > 0) {
+    if (!lvLogsList->selectedItems().empty()) {
         QFile logFile(m_Logs.value(lvLogsList->selectedItems().first()->text()));
 
         if (logFile.open(QIODevice::ReadOnly)) {
@@ -109,7 +109,7 @@ void LogsServiceWindow::onScrollUpClicked() {
 
 //------------------------------------------------------------------------
 void LogsServiceWindow::logsSelectionChanged() {
-    btnShowLog->setEnabled(lvLogsList->selectedItems().size() > 0);
+    btnShowLog->setEnabled(!lvLogsList->selectedItems().empty());
 }
 
 //------------------------------------------------------------------------

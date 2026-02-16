@@ -71,8 +71,7 @@ void EncashmentWindow::doEncashment() {
         void *userSettingsPtr =
             reinterpret_cast<void *>(m_Backend->getCore()->getSettingsService()->getAdapter(
                 PPSDK::CAdapterNames::UserAdapter));
-        PPSDK::UserSettings *userSettings =
-            reinterpret_cast<PPSDK::UserSettings *>(userSettingsPtr);
+        auto *userSettings = reinterpret_cast<PPSDK::UserSettings *>(userSettingsPtr);
 
         if (paymentManager->getBalanceInfo()[CServiceTags::CashAmount].toDouble() > 0.0 &&
             userSettings->useStackerID()) {

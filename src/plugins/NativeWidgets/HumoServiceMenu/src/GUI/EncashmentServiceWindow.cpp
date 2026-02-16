@@ -44,7 +44,7 @@ EncashmentServiceWindow::EncashmentServiceWindow(HumoServiceBackend *aBackend, Q
     void *terminalSettingsPtr =
         reinterpret_cast<void *>(m_Backend->getCore()->getSettingsService()->getAdapter(
             SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
-    PPSDK::TerminalSettings *s = reinterpret_cast<PPSDK::TerminalSettings *>(terminalSettingsPtr);
+    auto *s = reinterpret_cast<PPSDK::TerminalSettings *>(terminalSettingsPtr);
 
     m_PayloadSettingsPath =
         QString("%1/%2")
