@@ -1,7 +1,5 @@
 /* @file Реализация менеджера загрузки файлов с возможностью докачки. */
 
-#include "NetworkTaskManager.h"
-
 #include <QtCore/QByteArray>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QResource>
@@ -10,8 +8,9 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QSslConfiguration>
 
-#include "DataStream.h"
-#include "NetworkTask.h"
+#include <NetworkTaskManager/DataStream.h>
+#include <NetworkTaskManager/NetworkTask.h>
+#include <NetworkTaskManager/NetworkTaskManager.h>
 
 const char CNetworkTaskManager::LogName[] = "DownloadManager";
 
@@ -413,6 +412,11 @@ void NetworkTaskManager::run() {
 //------------------------------------------------------------------------
 QSslCertificate NetworkTaskManager::loadCertResource(const QString &aPath) {
     QResource res(aPath);
+    if (!res.isValid() || res.size() == 0 || res.data() == nullptr) {
+        toLog(LogLevel::Warning, QString("Certificate resource not found or empty: %1").arg(aPath));
+        return QSslCertificate();
+    }
+
     QByteArray buffer(reinterpret_cast<const char *>(res.data()), res.size());
 
     QSslCertificate cert(buffer,

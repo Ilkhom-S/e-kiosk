@@ -12,5 +12,5 @@ ek_add_library(PluginTestCommon
     FOLDER "tests/plugins/common"
     SOURCES ${PLUGIN_TEST_COMMON_SOURCES}
     QT_MODULES Core Test
-    DEPENDS PluginsSDK
+    DEPENDS PluginsSDK PPSDK
 )

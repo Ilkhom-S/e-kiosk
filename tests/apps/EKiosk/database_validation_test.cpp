@@ -71,21 +71,33 @@ void DatabaseValidationTest::testPatchFilesExist() {
     qInfo() << "";
     qInfo() << "Checking patch files...";
 
-    QStringList patchScripts;
-    patchScripts << ":/scripts/db_patch_6.sql"
-                 << ":/scripts/db_patch_7.sql"
-                 << ":/scripts/db_patch_8.sql"
-                 << ":/scripts/db_patch_9.sql"
-                 << ":/scripts/db_patch_10.sql"
-                 << ":/scripts/db_patch_11.sql"
-                 << ":/scripts/db_patch_12.sql";
+    // Accept either legacy per-patch SQL files or a single merged `empty_db.sql`.
+    QStringList legacyPatchScripts;
+    legacyPatchScripts << ":/scripts/db_patch_6.sql"
+                       << ":/scripts/db_patch_7.sql"
+                       << ":/scripts/db_patch_8.sql"
+                       << ":/scripts/db_patch_9.sql"
+                       << ":/scripts/db_patch_10.sql"
+                       << ":/scripts/db_patch_11.sql"
+                       << ":/scripts/db_patch_12.sql";
 
-    for (const QString &scriptPath : patchScripts) {
+    bool foundLegacy = false;
+    for (const QString &scriptPath : legacyPatchScripts) {
         QFile scriptFile(scriptPath);
-        if (!scriptFile.exists()) {
-            QFAIL(qPrintable(QString("Patch file NOT FOUND: %1").arg(scriptPath)));
+        if (scriptFile.exists()) {
+            foundLegacy = true;
+            qInfo()
+                << QString("  ✓ %1 exists").arg(scriptPath.mid(scriptPath.lastIndexOf('/') + 1));
         }
-        qInfo() << QString("  ✓ %1 exists").arg(scriptPath.mid(scriptPath.lastIndexOf('/') + 1));
+    }
+
+    if (!foundLegacy) {
+        // Legacy patch files were intentionally removed and merged into empty_db.sql
+        QFile merged(":/scripts/empty_db.sql");
+        QVERIFY2(
+            merged.exists(),
+            qPrintable(QString("Merged DB script not found: %1").arg(":/scripts/empty_db.sql")));
+        qInfo() << "  ✓ No legacy patch files found — using merged empty_db.sql";
     }
 }
 

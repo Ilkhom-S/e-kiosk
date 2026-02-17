@@ -38,7 +38,7 @@ public:
     virtual bool subscribeOnDisconnected(QObject *aObject) override;
 
 protected:
-    virtual void incomingConnection(int socketDescriptor);
+    virtual void incomingConnection(qintptr socketDescriptor) override;
 
 private:
     QByteArray parseInputBuffer(QByteArray aBuffer);

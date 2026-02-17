@@ -15,13 +15,19 @@ QString getPluginPath() {
         return QString::fromUtf8(envPath);
     }
 
+    // Try to resolve via PluginTestBase search first
+    const QString resolved = PluginTestBase::findPlugin("humo_payments");
+    if (!resolved.isEmpty())
+        return resolved;
+
     const QString appDir = QCoreApplication::applicationDirPath();
     const QString baseDir = QDir(appDir).filePath("../../../../bin/plugins");
     const QString cleanBase = QDir::cleanPath(baseDir);
 
-    const QStringList candidates = {QDir(cleanBase).filePath("libhumo_payments.dylib"),
+    const QStringList candidates = {QDir(cleanBase).filePath("libhumo_paymentsd.dylib"),
+                                    QDir(cleanBase).filePath("libhumo_payments.dylib"),
                                     QDir(cleanBase).filePath("libhumo_payments.so"),
-                                    QDir(cleanBase).filePath("humo_payments.dll"),
+                                    QDir(cleanBase).filePath("humo_paymentsd.dll"),
                                     QDir(cleanBase).filePath("humo_payments.dll")};
 
     for (const QString &path : candidates) {

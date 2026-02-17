@@ -1,8 +1,8 @@
 /* @file Абстрактный запрос к серверу. */
 
-#include "Request.h"
-
 #include <QtCore/QStringList>
+
+#include <SDK/PaymentProcessor/Humo/Request.h>
 
 namespace SDK {
 namespace PaymentProcessor {

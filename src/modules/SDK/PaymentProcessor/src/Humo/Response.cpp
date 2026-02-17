@@ -1,9 +1,9 @@
 /* @file Базовый ответ сервера. */
 
-#include "Response.h"
-
 #include <QtCore/QRegularExpression>
 #include <QtCore/QStringList>
+
+#include <SDK/PaymentProcessor/Humo/Response.h>
 
 #include <utility>
 

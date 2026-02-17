@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "NetworkTask.h"
+#include <NetworkTaskManager/NetworkTask.h>
 
 //------------------------------------------------------------------------
 /// Запрос на загрузку файла по пути aUrl.

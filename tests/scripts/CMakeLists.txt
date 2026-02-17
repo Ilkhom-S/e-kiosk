@@ -2,8 +2,6 @@
 
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
-add_test(NAME include_reflow_pytest
-    COMMAND ${Python3_EXECUTABLE} -m unittest test_include_reflow.py
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-set_tests_properties(include_reflow_pytest PROPERTIES TIMEOUT 10)
+# include_reflow_pytest removed — script no longer required
+# If you need to re-enable this test, add it back conditionally only when
+# tests/scripts/test_include_reflow.py is present.

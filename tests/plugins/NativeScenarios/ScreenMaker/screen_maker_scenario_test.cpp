@@ -10,7 +10,7 @@ class ScreenMakerScenarioTest : public QObject {
     Q_OBJECT
 
 public:
-    ScreenMakerScenarioTest() : m_testBase("D:/plugins/Debug/screen_maker_scenariod.dll") {}
+    ScreenMakerScenarioTest() : m_testBase(PluginTestBase::findPlugin("screen_maker_scenario")) {}
 
 private slots:
     void testPluginExists();
@@ -25,8 +25,9 @@ private:
 
 //---------------------------------------------------------------------------
 void ScreenMakerScenarioTest::testPluginExists() {
-    // Verify that the ScreenMaker plugin DLL exists at expected location
-    QString pluginPath = "D:/plugins/Debug/screen_maker_scenariod.dll";
+    QString pluginPath = PluginTestBase::findPlugin("screen_maker_scenario");
+    QVERIFY2(!pluginPath.isEmpty(),
+             qPrintable(QString("Plugin not found for: %1").arg("screen_maker_scenario")));
     QVERIFY2(QFile::exists(pluginPath),
              qPrintable(QString("Plugin DLL not found at: %1").arg(pluginPath)));
 

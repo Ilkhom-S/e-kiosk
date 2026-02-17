@@ -1,9 +1,9 @@
 /* @file Класс-фильтр содержимого полей ввода пользователя. */
 
-#include "SecurityFilter.h"
-
 #include <QtCore/QDebug>
 #include <QtCore/QStringList>
+
+#include <SDK/PaymentProcessor/Payment/Security.h>
 
 namespace SDK {
 namespace PaymentProcessor {

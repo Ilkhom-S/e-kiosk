@@ -1,8 +1,7 @@
 /* @file  Настройки терминала (данной инсталляции ПО). */
 
-#include "TerminalSettings.h"
-
 #include <SDK/Drivers/Components.h>
+#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
 #include <array>
 #include <boost/foreach.hpp>

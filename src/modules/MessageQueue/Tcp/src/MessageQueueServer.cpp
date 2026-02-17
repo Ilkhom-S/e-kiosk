@@ -60,13 +60,14 @@ void MessageQueueServer::sendMessage(const QByteArray &aMessage) {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::incomingConnection(int aSocketDescriptor) {
+void MessageQueueServer::incomingConnection(qintptr aSocketDescriptor) {
     LOG(m_Log,
         LogLevel::Normal,
         QString("New incoming connection... Socket with descriptor %1 has been connected.")
             .arg(aSocketDescriptor));
 
     auto *newSocket = new QTcpSocket(this);
+    // Use the qintptr overload (Qt5/Qt6 compatible) to avoid narrowing/casting
     newSocket->setSocketDescriptor(aSocketDescriptor);
 
     // Use lambda connections instead of QSignalMapper for Qt6 compatibility
@@ -78,7 +79,7 @@ void MessageQueueServer::incomingConnection(int aSocketDescriptor) {
         onSocketReadyRead(newSocket);
     });
 
-    m_Sockets[newSocket] = aSocketDescriptor;
+    m_Sockets[newSocket] = static_cast<quintptr>(aSocketDescriptor);
 }
 
 //----------------------------------------------------------------------------

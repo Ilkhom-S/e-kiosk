@@ -1,7 +1,6 @@
 /* @file Настройки расширений. */
 
-#include "ExtensionsSettings.h"
-
+#include <SDK/PaymentProcessor/Settings/ExtensionsSettings.h>
 #include <SDK/PaymentProcessor/Settings/Provider.h>
 
 #include <array>

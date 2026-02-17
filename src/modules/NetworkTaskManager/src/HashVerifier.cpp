@@ -1,9 +1,8 @@
 /* @file Верификатор данных по алгоритму MD5. */
 
-#include "HashVerifier.h"
-
 #include <QtCore/QCryptographicHash>
 
+#include <NetworkTaskManager/HashVerifier.h>
 #include <utility>
 
 Md5Verifier::Md5Verifier(QString aMd5) : m_MD5(std::move(aMd5)) {}

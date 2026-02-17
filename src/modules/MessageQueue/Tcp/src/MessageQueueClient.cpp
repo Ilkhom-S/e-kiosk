@@ -104,11 +104,8 @@ void MessageQueueClient::parseInputBuffer(QByteArray &aBuffer) {
     int messageEnd = aBuffer.indexOf('\0');
     while (messageEnd != -1) {
         QByteArray newMessageData = aBuffer.left(messageEnd);
-
         aBuffer = aBuffer.right(aBuffer.size() - messageEnd - 1);
-
         emit onMessageReceived(newMessageData);
-
         messageEnd = aBuffer.indexOf('\0');
     }
 }

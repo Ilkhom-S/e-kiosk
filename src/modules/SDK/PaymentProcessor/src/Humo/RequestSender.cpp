@@ -12,14 +12,14 @@
 
 #include <Common/ScopedPointerLaterDeleter.h>
 
+#include <SDK/PaymentProcessor/Humo/Request.h>
+#include <SDK/PaymentProcessor/Humo/RequestSender.h>
+#include <SDK/PaymentProcessor/Humo/Response.h>
+
 #include <Crypt/ICryptEngine.h>
 #include <NetworkTaskManager/MemoryDataStream.h>
 #include <NetworkTaskManager/NetworkTaskManager.h>
 #include <functional>
-
-#include "Request.h"
-#include "RequestSender.h"
-#include "Response.h"
 
 using namespace std::placeholders;
 

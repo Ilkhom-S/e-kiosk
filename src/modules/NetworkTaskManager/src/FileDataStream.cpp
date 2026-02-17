@@ -1,8 +1,8 @@
 /* @file Реализация файлового потока данных. */
 
-#include "FileDataStream.h"
-
 #include <QtCore/QFile>
+
+#include <NetworkTaskManager/FileDataStream.h>
 
 FileDataStream::FileDataStream(const QString &aPath) : DataStream(nullptr) {
     m_stream = QSharedPointer<QIODevice>(new QFile(aPath));

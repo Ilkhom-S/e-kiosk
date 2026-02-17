@@ -2,8 +2,6 @@
 
 // Stl
 
-#include "DealerSettings.h"
-
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QFile>
 #include <QtCore/QStack>
@@ -11,6 +9,8 @@
 #include <QtCore/QXmlStreamReader>
 
 #include <Common/ILog.h>
+
+#include <SDK/PaymentProcessor/Settings/DealerSettings.h>
 
 #include <algorithm>
 #include <boost/foreach.hpp>

@@ -1,3 +1,9 @@
+#ifdef UNIT_TEST_WATCHSERVICECLIENT
+// Test-only accessors for last parsed values
+extern std::string g_lastSender;
+extern std::string g_lastType;
+extern std::string g_lastTarget;
+#endif
 /* @file Реализация клиента сторожевого сервиса. */
 
 #pragma once
@@ -120,7 +126,7 @@ signals:
 
 protected slots:
     /// Обработчик при вызове метода из родного потока.
-    static void onInvokeMethod(const WatchServiceClient::TMethod &aMethod);
+    void onInvokeMethod(const WatchServiceClient::TMethod &aMethod);
 
     /// Обработчик для пинга сторожевого сервиса.
     void onPing();

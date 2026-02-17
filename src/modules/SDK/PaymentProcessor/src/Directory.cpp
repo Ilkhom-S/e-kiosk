@@ -1,7 +1,6 @@
 /* @file Справочники. */
 
-#include "Directory.h"
-
+#include <SDK/PaymentProcessor/Settings/Directory.h>
 #include <SDK/PaymentProcessor/Settings/Provider.h>
 
 #include <algorithm>

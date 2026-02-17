@@ -1,6 +1,6 @@
 /* @file Реализация базового класса потока данных. */
 
-#include "DataStream.h"
+#include <NetworkTaskManager/DataStream.h>
 
 DataStream::DataStream(QIODevice *aDevice) : m_stream(aDevice) {
     if (m_stream) {

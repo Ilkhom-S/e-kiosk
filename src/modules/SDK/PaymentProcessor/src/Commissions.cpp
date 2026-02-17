@@ -2,10 +2,10 @@
 
 // Stl
 
-#include "Commissions.h"
-
 #include <QtCore/QRegularExpression>
 #include <QtCore/QStringList>
+
+#include <SDK/PaymentProcessor/Settings/Commissions.h>
 
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>

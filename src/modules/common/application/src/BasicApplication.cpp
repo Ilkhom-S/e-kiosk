@@ -55,9 +55,19 @@ BasicApplication::BasicApplication(const QString &aName,
                  qEnvironmentVariableIsSet("TEST_MODE");
 
     // Инициализируем настройки из .ini файла на основе пути к исполняемому
-    // файлу
-    QFileInfo info(QString::fromLocal8Bit(m_Arguments[0]));
-    QString basePath = info.absolutePath();
+    // файлу. Поддерживаем случай unit-тестов, когда argc == 0 и argv == nullptr.
+    QString basePath;
+    QFileInfo exeInfo;
+    if (m_ArgumentCount > 0 && m_Arguments != nullptr && m_Arguments[0] != nullptr) {
+        exeInfo = QFileInfo(QString::fromLocal8Bit(m_Arguments[0]));
+        basePath = exeInfo.absolutePath();
+    } else if (QCoreApplication::instance()) {
+        exeInfo = QFileInfo(QCoreApplication::applicationFilePath());
+        basePath = exeInfo.absolutePath();
+    } else {
+        exeInfo = QFileInfo(QDir::currentPath());
+        basePath = exeInfo.absolutePath();
+    }
 
     // На macOS для app bundle нужно использовать директорию, содержащую .app,
     // а не внутреннюю структуру bundle
@@ -79,8 +89,8 @@ BasicApplication::BasicApplication(const QString &aName,
     }
 #endif
 
-    QString settingsFilePath =
-        QDir::toNativeSeparators(basePath + QDir::separator() + info.completeBaseName() + ".ini");
+    QString settingsFilePath = QDir::toNativeSeparators(basePath + QDir::separator() +
+                                                        exeInfo.completeBaseName() + ".ini");
 
     m_Settings.reset(new QSettings(ISysUtils::rm_BOM(settingsFilePath), QSettings::IniFormat));
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) && defined(Q_OS_WIN)

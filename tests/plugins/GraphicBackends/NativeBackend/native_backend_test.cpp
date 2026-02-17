@@ -10,7 +10,7 @@ class NativeBackendTest : public QObject {
     Q_OBJECT
 
 public:
-    NativeBackendTest() : m_testBase("native_backendd.dll") {}
+    NativeBackendTest() : m_testBase(PluginTestBase::findPlugin("native_backend")) {}
 
 private slots:
     // Basic plugin build verification
@@ -30,8 +30,9 @@ private:
 };
 
 void NativeBackendTest::testPluginExists() {
-    // Test that the NativeBackend plugin DLL was built successfully
-    QString pluginPath = "Debug/native_backendd.dll";
+    QString pluginPath = PluginTestBase::findPlugin("native_backend");
+    QVERIFY2(!pluginPath.isEmpty(),
+             qPrintable(QString("Plugin not found for: %1").arg("native_backend")));
     QVERIFY(QFile::exists(pluginPath));
 
     // Verify it's not empty (basic corruption check)

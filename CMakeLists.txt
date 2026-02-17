@@ -94,6 +94,14 @@ add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(tests)
 
+# Ensure CTestCustom.cmake is picked up for test output control
+if(EXISTS "${CMAKE_SOURCE_DIR}/tests/CTestCustom.cmake")
+    configure_file(
+        "${CMAKE_SOURCE_DIR}/tests/CTestCustom.cmake"
+        "${CMAKE_BINARY_DIR}/CTestCustom.cmake"
+    )
+endif()
+
 # 11. Deprecated Code (optional)
 if(BUILD_DEPRECATED)
     add_subdirectory(deprecated)

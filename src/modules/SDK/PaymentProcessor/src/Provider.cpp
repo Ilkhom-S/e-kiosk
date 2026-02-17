@@ -1,11 +1,11 @@
 /* @file Описание платёжного оператора. */
 
-#include "Provider.h"
-
 #include <QtCore/QDebug>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
+
+#include <SDK/PaymentProcessor/Settings/Provider.h>
 
 namespace SDK {
 namespace PaymentProcessor {

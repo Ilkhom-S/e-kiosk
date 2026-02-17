@@ -1,12 +1,10 @@
 /* @file Реализация класса-запроса для скачивания файла с докачкой. */
 
-#include "FileDownloadTask.h"
-
 #include <QtCore/QFile>
 
+#include <NetworkTaskManager/FileDataStream.h>
+#include <NetworkTaskManager/FileDownloadTask.h>
 #include <utility>
-
-#include "FileDataStream.h"
 
 FileDownloadTask::FileDownloadTask(QUrl aUrl, QString aPath)
     : m_Url(std::move(aUrl)), m_Path(std::move(aPath)) {

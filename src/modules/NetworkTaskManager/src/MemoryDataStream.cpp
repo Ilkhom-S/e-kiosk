@@ -1,8 +1,8 @@
 /* @file Реализация потока данных в памяти. */
 
-#include "MemoryDataStream.h"
-
 #include <QtCore/QBuffer>
+
+#include <NetworkTaskManager/MemoryDataStream.h>
 
 MemoryDataStream::MemoryDataStream() : DataStream(new QBuffer()) {}
 

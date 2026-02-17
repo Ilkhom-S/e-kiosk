@@ -1,7 +1,5 @@
 /* @file Базовый класс для класса реализующего платёж. */
 
-#include "PaymentBase.h"
-
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QRandomGenerator>
 #include <QtCore/QReadLocker>
@@ -19,6 +17,7 @@
 #include <SDK/PaymentProcessor/Payment/IPaymentFactory.h>
 #include <SDK/PaymentProcessor/Payment/Parameters.h>
 
+#include <Payment/PaymentBase.h>
 #include <algorithm>
 
 //------------------------------------------------------------------------------

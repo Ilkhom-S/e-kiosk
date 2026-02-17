@@ -1,8 +1,8 @@
 /* @file Настройки пользователя. */
 
-#include "UserSettings.h"
-
 #include <QtCore/QDebug>
+
+#include <SDK/PaymentProcessor/Settings/UserSettings.h>
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>

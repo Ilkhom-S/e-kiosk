@@ -1,6 +1,6 @@
 /* @file Диапазон номерной ёмкости. */
 
-#include "Range.h"
+#include <SDK/PaymentProcessor/Settings/Range.h>
 
 namespace SDK {
 namespace PaymentProcessor {

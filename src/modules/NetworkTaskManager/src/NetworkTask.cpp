@@ -1,13 +1,12 @@
 /* @file Реализация базового класса для сетевого запроса. */
 
-#include "NetworkTask.h"
-
 #include <QtCore/QMutexLocker>
 #include <QtCore/QTimeZone>
 
-#include "DataStream.h"
-#include "IVerifier.h"
-#include "NetworkTaskManager.h"
+#include <NetworkTaskManager/DataStream.h>
+#include <NetworkTaskManager/IVerifier.h>
+#include <NetworkTaskManager/NetworkTask.h>
+#include <NetworkTaskManager/NetworkTaskManager.h>
 
 NetworkTask::NetworkTask()
     : m_Type(Get), m_Timeout(0), m_Error(NotReady), m_HttpError(0), m_Processing(false),

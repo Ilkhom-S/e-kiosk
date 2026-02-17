@@ -10,7 +10,7 @@ class QMLBackendTest : public QObject {
     Q_OBJECT
 
 public:
-    QMLBackendTest() : m_testBase("D:/plugins/Debug/qml_backend.dll") {}
+    QMLBackendTest() : m_testBase(PluginTestBase::findPlugin("qml_backend")) {}
 
 private slots:
     // Basic plugin build verification
@@ -25,15 +25,16 @@ private:
 };
 
 void QMLBackendTest::testPluginExists() {
-    // Test that the QML Backend plugin DLL was built successfully
-    QString pluginPath = "D:/plugins/Debug/qml_backend.dll";
+    QString pluginPath = PluginTestBase::findPlugin("qml_backend");
+    QVERIFY2(!pluginPath.isEmpty(),
+             qPrintable(QString("Plugin not found for: %1").arg("qml_backend")));
     QVERIFY(QFile::exists(pluginPath));
     qDebug() << "QML Backend plugin DLL exists at:" << pluginPath;
 
     // Verify it's not empty (basic corruption check)
     QFile pluginFile(pluginPath);
     QVERIFY(pluginFile.size() > 0);
-    qDebug() << "Plugin DLL size:" << pluginFile.size() << "bytes";
+    qDebug() << "Plugin size:" << pluginFile.size() << "bytes";
 }
 
 void QMLBackendTest::testPluginLoading() {
