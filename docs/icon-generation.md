@@ -1,171 +1,123 @@
-# Humo Kiosk Ecosystem: Icon Design Guidelines (2026)
+# 🚀 Humo Kiosk Ecosystem: Icon Design Guidelines (2026 Revision)
 
-To maintain a premium, unified aesthetic across the **macOS Sequoia**, **Windows 11**, and **Linux** versions of the Humo Kiosk suite, all icons must follow these technical and visual standards.
+This document has been refactored to include the "Liquid Glass" and "Charming" aesthetics finalized in our latest session. These standards apply to macOS Sequoia, Windows 11, and Linux versions of the Humo suite.
 
-## 1. Visual Hierarchy
+## 1. Visual Hierarchy: The "Liquid Glass" Standard
 
-The ecosystem is divided into two tiers to help users and admins distinguish between platform tools and third-party services:
+The 2026 aesthetic moves away from flat vectors toward Material Physics. Icons now treat foreground objects as physical, translucent glass layers.
 
-| Tier           | Background                 | Glyph Color     | Usage                                       |
-| :------------- | :------------------------- | :-------------- | :------------------------------------------ |
-| **Core Suite** | **Brand Orange Gradient**  | White (#FFFFFF) | Kiosk Client, Controller, Watchdog, Updater |
-| **Providers**  | **Dark Charcoal Gradient** | White (#FFFFFF) | Banks, Utilities, Mobile Operators          |
-
----
+| Tier       | Background                 | Glyph Style   | Finish                                |
+| ---------- | -------------------------- | ------------- | ------------------------------------- |
+| Core Suite | Vibrant Orange Gradient    | Frosted White | High-Gloss Surface / 85% Translucency |
+| Providers  | Midnight Charcoal Gradient | Frosted White | Soft-Matte Surface / 75% Translucency |
 
 ## 2. Technical Specifications
 
-- **Canvas Size:** 512 x 512 px.
-- **Corner Radius:** 112px (Standard Apple Squircle).
-- **Namespace (Critical):** All SVGs **MUST** include `xmlns="http://www.w3.org/2000/svg"`. Without this exact URL, the `rsvg-convert` tool will fail with "XML does not have root."
-- **Bezel (The "Charm"):** Icons utilize a dual-hairline rim light to simulate glass depth.
-  - **Top-Left:** 1.5pt White Stroke (0.8 Opacity).
-  - **Bottom-Right:** 1.2pt White Stroke (0.4 Opacity).
+- **Canvas Size:** 512 x 512 px
+- **Corner Radius:** 112px (Standard Apple Squircle)
+- **The "Charming" Bezel:** Dual-hairline rim lights
+  - Top-Left: 1.5pt White Stroke (`stop-opacity="0.8"`)
+  - Bottom-Right: 1.2pt White Stroke (`stop-opacity="0.4"`)
+- **Material Depth:** Use a `linearGradient` for the body color and a separate `linearGradient` for the Specular Shine (The Glint)
 
----
+## 3. Master App Icon Template (Core Suite)
 
-## 3. Provider Icon Template (SVG)
-
-Third-party providers should use the following SVG structure. Simply replace the `<!-- LOGO HERE -->` section with the provider's vector logo.
+Use this structure for all Core Suite apps (EKioskApp.svg, ControllerApp.svg, etc.).
 
 ```xml
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
     <defs>
-        <!-- Neutral Background for Providers -->
         <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#2D2D2D" />
-            <stop offset="100%" stop-color="#1A1A1A" />
+            <stop offset="0%" stop-color="#FF7D40" />
+            <stop offset="100%" stop-color="#FA5300" />
         </linearGradient>
-
-        <!-- Standardized Rim Lights -->
+        <!-- Frosted Glass Effect -->
+        <linearGradient id="frostedGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.7" />
+        </linearGradient>
+        <!-- Specular Surface Shine -->
+        <linearGradient id="specular" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+            <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0" />
+        </linearGradient>
         <linearGradient id="topGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.6" />
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.8" />
             <stop offset="40%" stop-color="#FFFFFF" stop-opacity="0" />
         </linearGradient>
         <linearGradient id="bottomGlow" x1="100%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.3" />
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.4" />
             <stop offset="40%" stop-color="#FFFFFF" stop-opacity="0" />
         </linearGradient>
     </defs>
 
-    <!-- 1. Background Layer -->
+    <!-- 1. Background & Bezels -->
     <rect width="512" height="512" rx="112" fill="url(#bg)" />
-
-    <!-- 2. The Bezel (Hairline Highlights) -->
     <rect x="2" y="1" width="508" height="508" rx="111" fill="none" stroke="url(#topGlow)" stroke-width="1.5" />
     <rect x="2" y="2" width="508" height="508" rx="111" fill="none" stroke="url(#bottomGlow)" stroke-width="1.2" />
 
-    <!-- 3. Provider Logo Placement -->
-    <g fill="#FFFFFF">
-        <!-- LOGO HERE: Ensure logo is centered and stays within 380x380 safe zone -->
+    <!-- 2. Translucent Foreground (The Glyph) -->
+    <g opacity="0.88" fill="url(#frostedGlass)">
+        <!-- INSERT GLYPH PATH HERE -->
         <circle cx="256" cy="256" r="120" />
     </g>
+
+    <!-- 3. Top Glint (The Charm) -->
+    <path d="M112,0 h288 a112,112 0 0 1 112,112 v100 q-256,50 -512,0 v-100 a112,112 0 0 1 112,-112"
+          fill="url(#specular)" opacity="0.5" pointer-events="none" />
 </svg>
 ```
 
-## 4. Icon Generation and Export
+## 4. Provider Icon Template (SVG)
 
-### Source Files
+For third-party banks and utilities. Note the Midnight Charcoal background.
 
-- All vector icon sources are organized by app in `assets/icons/templates/` subdirectories
-- Core suite apps use brand orange gradient backgrounds
-- Provider apps use dark charcoal gradient backgrounds
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <defs>
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#2D2D2D" />
+            <stop offset="100%" stop-color="#0A0A0B" />
+        </linearGradient>
+        <linearGradient id="specular" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.4" />
+            <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0" />
+        </linearGradient>
+    </defs>
 
-### Icon Types and Naming Conventions
+    <rect width="512" height="512" rx="112" fill="url(#bg)" />
 
-The icon generation system automatically detects icon types based on filename patterns and generates appropriate output formats:
+    <!-- Provider Glyph (75% Translucency) -->
+    <g fill="#FFFFFF" opacity="0.75" transform="translate(64,64) scale(0.75)">
+        <!-- PROVIDER LOGO HERE -->
+    </g>
 
-#### App Icons (`*App.svg`)
+    <!-- Surface Polish Overlay -->
+    <rect width="512" height="256" rx="112" fill="url(#specular)" />
+</svg>
+```
 
-- **Pattern:** Files ending with `App.svg` (e.g., `EKioskApp.svg`, `ControllerApp.svg`)
-- **Generated Formats:**
-  - PNG: 16, 22, 24, 32, 48, 64, 96, 128, 256, 512px
-  - ICO: Windows icon file (16, 24, 32, 48, 64, 128, 256px)
-  - ICNS: macOS icon file (16, 32, 48, 64, 128, 256, 512px)
-- **Usage:** Application icons for desktop shortcuts, taskbar, dock
+## 5. Automated Generation: scripts/generate_icons.py
 
-#### UI Icons (`*Icon.svg`)
+The script now handles Liquid Glass transparency and multi-layer exports.
 
-- **Pattern:** Files ending with `Icon.svg` (e.g., `menu-closeIcon.svg`, `settingsIcon.svg`)
-- **Generated Formats:**
-  - PNG: 16, 22, 24, 32, 48, 64, 96, 128px
-- **Usage:** Interface elements, buttons, menus, toolbars
+| Pattern         | Description                                                             |
+| --------------- | ----------------------------------------------------------------------- |
+| `*App.svg`      | Generates full ICO (Windows) and ICNS (macOS) with transparency support |
+| `*Icon.svg`     | Generates UI-ready PNGs (16px - 128px) for buttons                      |
+| `*Template.svg` | Generates 100% monochrome black alpha-masks for the macOS menu bar      |
 
-#### Template Icons (`*Template.svg`)
-
-- **Pattern:** Files ending with `Template.svg` (e.g., `menuTemplate.svg`, `statusTemplate.svg`)
-- **Generated Formats:**
-  - PNG: 16, 22, 24, 32, 48, 64px (monochrome for macOS template images)
-- **Usage:** macOS template images, monochrome icons for menu bars
-
-### Automated Export: `scripts/generate_icons.py`
-
-Use the provided script to generate all required icon files for each app:
+### Execution Command
 
 ```bash
-# Generate icons for specific apps (by app directory name)
-python3 scripts/generate_icons.py --apps WatchServiceController
-
-# Generate icons for multiple apps
-python3 scripts/generate_icons.py --apps WatchServiceController EKiosk Updater
-
-# Generate icons using template subdirectory names (auto-maps to correct app directories)
-python3 scripts/generate_icons.py --apps controller kiosk updater
-
-# Generate all icons
+# Generate all Humo 2026 suite icons
 python3 scripts/generate_icons.py --all
 ```
 
-**App Name Mapping:** The script automatically maps between app directory names and template subdirectory names:
+## 6. Troubleshooting "White Screen" or "XML Error"
 
-- `WatchServiceController` ↔ `controller` templates
-- `EKiosk` ↔ `kiosk` templates
-- `Updater` ↔ `updater` templates
-- `WatchService` ↔ `watchdog` templates
-
-You can specify either the app directory name (e.g., `WatchServiceController`) or the template subdirectory name (e.g., `controller`) - the script will generate icons to the correct app directory.
-
-- Detects icon types based on filename patterns
-- Generates appropriate output formats for each type
-- Uses multiple converter fallbacks for reliability
-- Organizes output in `apps/<app>/src/icons/` directories
-
-### Converter Requirements
-
-- **Preferred:** `cairosvg` Python module (`pip install cairosvg Pillow`)
-- **Fallbacks:** Inkscape (CLI), `rsvg-convert`, ImageMagick `convert`
-
-## 5. Integration
-
-- Place generated icons in `apps/<app>/src/icons/`
-- Reference icons in your Qt `.qrc` resource files for use in the app
-- Ensure proper namespace declaration in all SVG sources
-
-## 6. Platform-Specific Notes
-
-- **macOS:** For menu bar (template) images, supply a monochrome PNG (alpha mask)
-- **Windows:** ICO files are automatically generated from PNG sources
-- **Linux:** PNG files are used directly in desktop environments
-
-## 7. Troubleshooting
-
-### Common Issues
-
-- **"XML does not have root" error:** Ensure SVG includes `xmlns="http://www.w3.org/2000/svg"`
-- **Icons not generating:** Check that cairosvg or fallback converters are installed
-- **Wrong icon types:** Verify filename follows naming conventions (App.svg, Icon.svg, Template.svg)
-
-### Manual Generation
-
-If automated generation fails, manually export using:
-
-```bash
-# PNG export with cairosvg
-cairosvg input.svg -o output.png -s 64
-
-# ICO generation with ImageMagick
-convert input.png output.ico
-
-# ICNS generation (macOS)
-iconutil -c icns iconset.iconset
-```
+| Issue                    | Solution                                                                                                       |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| White Screen in Qt       | Ensure decimal properties in QML use `property real` instead of `int`                                          |
+| "XML does not have root" | Verify the `xmlns="http://www.w3.org/2000/svg"` is present in every SVG                                        |
+| Blurry Icons             | For Windows 7, ensure `sourceSize.width` and `sourceSize.height` are explicitly set in the QML Image component |

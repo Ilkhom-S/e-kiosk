@@ -27,5 +27,6 @@
         <file>images/ic_update.svg</file>
         <file>images/ic_card_error.svg</file>
         <file>images/ic_validator_error.svg</file>
+        <file>images/humo_logo_midnight.svg</file>
     </qresource>
 </RCC>

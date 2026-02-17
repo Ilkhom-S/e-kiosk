@@ -47,7 +47,7 @@ Rectangle {
             sourceSize.width: 520 // Fixes SVG sharpness for Windows 7 / Qt 5
             fillMode: Image.PreserveAspectFit
             anchors.horizontalCenter: parent.horizontalCenter
-            source: "qrc:/GraphicsItems/images/humo-logo-light.svg"
+            source: "qrc:/GraphicsItems/images/humo_logo_midnight.svg"
             smooth: true
             asynchronous: true
         }

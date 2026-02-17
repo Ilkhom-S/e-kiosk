@@ -4,26 +4,24 @@
             <stop offset="0%" stop-color="#FF7D40" />
             <stop offset="100%" stop-color="#FA5300" />
         </linearGradient>
-        <linearGradient id="topGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.8" />
-            <stop offset="40%" stop-color="#FFFFFF" stop-opacity="0" />
+        <linearGradient id="frostedGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.7" />
         </linearGradient>
-        <linearGradient id="bottomGlow" x1="100%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.4" />
-            <stop offset="40%" stop-color="#FFFFFF" stop-opacity="0" />
+        <linearGradient id="specular" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+            <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0" />
         </linearGradient>
     </defs>
     <rect width="512" height="512" rx="112" fill="url(#bg)" />
-    <rect x="2" y="1" width="508" height="508" rx="111" fill="none" stroke="url(#topGlow)" stroke-width="1.5" />
-    <rect x="2" y="2" width="508" height="508" rx="111" fill="none" stroke="url(#bottomGlow)" stroke-width="1.2" />
-
-    <!-- Shield Body -->
-    <path fill="#FFFFFF"
+    <!-- Frosted Shield -->
+    <path opacity="0.88" fill="url(#frostedGlass)"
         d="M256,80c-50,0-120-30-120-30s0,120,0,200c0,100,120,180,120,180s120-80,120-180c0-80,0-200,0-200S306,80,256,80z" />
-
-    <!-- The "Heartbeat" Humo Bird -->
-    <g transform="translate(206, 175) scale(0.69)" fill="#FA5300">
+    <!-- Glowing Internal Bird -->
+    <g transform="translate(196, 165) scale(0.85)" fill="#FA5300" opacity="0.9">
         <path
             d="M69.75.64a67.71,67.71,0,1,0,67.72,67.71A67.79,67.79,0,0,0,69.75.64m7.87,94.14a41.93,41.93,0,0,1-27.42,15.6s7.88-3,15.36-15.33C72.72,82,73.33,72.14,80.07,63.67c11.39-14.32,26.07-10.93,26.07-10.93-1.69-5.36-6.67-8.66-13.74-8.35-2.3-7.45-12.25-10.21-19.34-6.52-5.27,2.73-10.93,6.69-17.25,6.56a16.63,16.63,0,0,1-2.11-.09A18.36,18.36,0,0,1,43.34,39c-.44,6.15,3.52,11.91,8.2,13.83,8,3.27,13.65-.7,13.65-.7a68.36,68.36,0,0,1-26,32.64c-13.35-6.61-22.15-18.65-24-35.24A57.52,57.52,0,0,1,127.08,68.52c0,.64,0,1.27,0,1.91A57,57,0,0,1,77.62,94.78" />
     </g>
+    <!-- Surface Glint -->
+    <path fill="url(#specular)" opacity="0.5" d="M256,80c-50,0-120-30-120-30s0,120,0,200c0,100,120,180,120,180z" />
 </svg>
