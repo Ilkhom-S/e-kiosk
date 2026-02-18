@@ -29,8 +29,8 @@ class ZoneFlashOverlay : public QWidget {
 public:
     ZoneFlashOverlay(
         int aZoneNumber, const QRect &aRect, bool aShowFlash, bool aShowNumbers, QWidget *aParent)
-        : QWidget(aParent), mZoneNumber(aZoneNumber), mFlashOpacity(1.0), mShowFlash(aShowFlash),
-          mShowNumbers(aShowNumbers) {
+        : QWidget(aParent), m_ZoneNumber(aZoneNumber), m_FlashOpacity(1.0), m_ShowFlash(aShowFlash),
+          m_ShowNumbers(aShowNumbers) {
         setAttribute(Qt::WA_TransparentForMouseEvents);
         setAttribute(Qt::WA_NoSystemBackground);
         setAutoFillBackground(false);
@@ -49,10 +49,10 @@ public:
         anim->start(QAbstractAnimation::DeleteWhenStopped);
     }
 
-    qreal flashOpacity() const { return mFlashOpacity; }
+    qreal flashOpacity() const { return m_FlashOpacity; }
 
     void setFlashOpacity(qreal aOpacity) {
-        mFlashOpacity = aOpacity;
+        m_FlashOpacity = aOpacity;
         update();
     }
 
@@ -62,26 +62,26 @@ protected:
         p.setRenderHint(QPainter::Antialiasing);
 
         // Оранжевый полупрозрачный фон (opacity 0.15 как в QML showAdminFlash)
-        if (mShowFlash) {
-            p.fillRect(rect(), QColor(0xFA, 0x53, 0x00, int(0.15 * 255 * mFlashOpacity)));
+        if (m_ShowFlash) {
+            p.fillRect(rect(), QColor(0xFA, 0x53, 0x00, int(0.15 * 255 * m_FlashOpacity)));
         }
 
         // Номер зоны крупным белым шрифтом (как в QML showAdminNumbers: pixelSize 160, Font.Black)
-        if (mShowNumbers) {
+        if (m_ShowNumbers) {
             QFont f;
             f.setPixelSize(160);
             f.setBold(true);
             p.setFont(f);
-            p.setPen(QColor(255, 255, 255, int(255 * mFlashOpacity)));
-            p.drawText(rect(), Qt::AlignCenter, QString::number(mZoneNumber));
+            p.setPen(QColor(255, 255, 255, int(255 * m_FlashOpacity)));
+            p.drawText(rect(), Qt::AlignCenter, QString::number(m_ZoneNumber));
         }
     }
 
 private:
-    int mZoneNumber;
-    qreal mFlashOpacity;
-    bool mShowFlash;
-    bool mShowNumbers;
+    int m_ZoneNumber;
+    qreal m_FlashOpacity;
+    bool m_ShowFlash;
+    bool m_ShowNumbers;
 };
 
 //----------------------------------------------------------------------------
@@ -104,7 +104,7 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
 #endif
       ,
       m_QuitRequested(false), mBurnInProtectionAnim(nullptr), mLayoutOffset(0, 0),
-      mShowAdminFlash(true), mShowAdminNumbers(true) {
+      m_ShowAdminFlash(true), m_ShowAdminNumbers(true) {
     ui.setupUi(this);
 
     // FIXME: временно для #18645
@@ -196,7 +196,7 @@ bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent) {
             if (area != m_Areas.end()) {
                 // Показываем flash-оверлей с номером зоны (как в QML версии)
                 new ZoneFlashOverlay(
-                    area->first, area->second.toRect(), mShowAdminFlash, mShowAdminNumbers, this);
+                    area->first, area->second.toRect(), m_ShowAdminFlash, m_ShowAdminNumbers, this);
                 emit clicked(area->first);
             }
         }

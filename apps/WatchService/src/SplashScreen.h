@@ -39,10 +39,10 @@ public:
     void requestQuit();
 
     /// Показывать оранжевый flash при клике по зоне (аналог QML showAdminFlash).
-    void setShowAdminFlash(bool aEnabled) { mShowAdminFlash = aEnabled; }
+    void setShowAdminFlash(bool aEnabled) { m_ShowAdminFlash = aEnabled; }
 
     /// Показывать номер зоны при клике (аналог QML showAdminNumbers).
-    void setShowAdminNumbers(bool aEnabled) { mShowAdminNumbers = aEnabled; }
+    void setShowAdminNumbers(bool aEnabled) { m_ShowAdminNumbers = aEnabled; }
 
 public slots:
     /// Показывает значок для состояния aState, связанный с отправителем aSender.
@@ -94,9 +94,9 @@ private: // Данные
     TStateList m_States;
     bool m_QuitRequested;
     QSequentialAnimationGroup *mBurnInProtectionAnim;
-    QPoint mLayoutOffset;   // Текущий offset для burn-in protection
-    bool mShowAdminFlash;   // Показывать оранжевый flash (аналог QML showAdminFlash)
-    bool mShowAdminNumbers; // Показывать номер зоны (аналог QML showAdminNumbers)
+    QPoint mLayoutOffset;    // Текущий offset для burn-in protection
+    bool m_ShowAdminFlash;   // Показывать оранжевый flash (аналог QML showAdminFlash)
+    bool m_ShowAdminNumbers; // Показывать номер зоны (аналог QML showAdminNumbers)
 };
 
 //----------------------------------------------------------------------------
