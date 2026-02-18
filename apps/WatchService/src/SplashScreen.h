@@ -13,6 +13,7 @@
 #include "ui_SplashScreen.h"
 
 class QSequentialAnimationGroup;
+class FlashOverlay;
 
 //----------------------------------------------------------------------------
 /// Вспомогательный экран, закрывающий рабочий стол. Предоставляет доступ к сервисному меню.
@@ -40,10 +41,10 @@ public:
     void requestQuit();
 
     /// Показывать оранжевый flash при клике по зоне (аналог QML showAdminFlash).
-    void setShowAdminFlash(bool aEnabled) { m_ShowAdminFlash = aEnabled; }
+    void setShowAdminFlash(bool aEnabled) { mShowAdminFlash = aEnabled; }
 
     /// Показывать номер зоны при клике (аналог QML showAdminNumbers).
-    void setShowAdminNumbers(bool aEnabled) { m_ShowAdminNumbers = aEnabled; }
+    void setShowAdminNumbers(bool aEnabled) { mShowAdminNumbers = aEnabled; }
 
 public slots:
     /// Показывает значок для состояния aState, связанный с отправителем aSender.
@@ -56,25 +57,20 @@ signals:
     /// Сигнал о клике в определённую зону.
     void clicked(int aArea);
 
-    /// Сигнал о закрытии окна по внешнему сигналу
+    /// Сигнал о закрытии окна по внешнему сигналу.
     void hidden();
 
 protected:
-    /// Рисует активные flash-оверлеи поверх виджета.
-    void paintEvent(QPaintEvent *aEvent) override;
+    /// Подгоняет overlay под размер окна при изменении размера.
+    void resizeEvent(QResizeEvent *aEvent) override;
 
 private slots:
-    // Выполнение полезной инициализации после загрузки.
     void onInit();
-
-    // Тик таймера затухания flash-оверлеев
     void onFlashTick();
 
-private: // Методы
-    // Настройка защиты от выгорания экрана (burn-in protection)
+private:
     void setupBurnInProtection();
 
-    // Getter/Setter для Q_PROPERTY layoutOffset
     QPoint layoutOffset() const { return mLayoutOffset; }
     void setLayoutOffset(const QPoint &offset);
 
@@ -83,7 +79,6 @@ private: // Методы
     void updateAreas();
     bool testPoint(const TAreas::value_type &aArea, const QPoint &aPoint) const;
 
-private: // Данные
     struct SState {
         SState(const QString &aSender, const QString &aState, QWidget *aWidget)
             : sender(aSender), state(aState), widget(aWidget), date(QDateTime::currentDateTime()) {}
@@ -96,7 +91,7 @@ private: // Данные
 
     typedef QList<SState> TStateList;
 
-    // Активный flash-оверлей для одной зоны (рисуется прямо в paintEvent)
+    // Активный flash-оверлей для одной зоны
     struct SActiveFlash {
         int zoneNumber;
         QRectF zoneRect;
@@ -107,15 +102,18 @@ private: // Данные
 
     Ui::SplashScreenClass ui;
 
-    TAreas m_Areas;
-    TStateList m_States;
-    bool m_QuitRequested;
+    TAreas mAreas;
+    TStateList mStates;
+    bool mQuitRequested;
     QSequentialAnimationGroup *mBurnInProtectionAnim;
-    QPoint mLayoutOffset;           // Текущий offset для burn-in protection
-    bool m_ShowAdminFlash;          // Показывать оранжевый flash (аналог QML showAdminFlash)
-    bool m_ShowAdminNumbers;        // Показывать номер зоны (аналог QML showAdminNumbers)
-    TActiveFlashes m_ActiveFlashes; // Текущие активные flash-оверлеи
-    QTimer m_FlashTimer;            // Таймер затухания flash (~60fps)
+    QPoint mLayoutOffset;
+    bool mShowAdminFlash;   // Показывать оранжевый flash (аналог QML showAdminFlash)
+    bool mShowAdminNumbers; // Показывать номер зоны (аналог QML showAdminNumbers)
+    TActiveFlashes mActiveFlashes;
+    QTimer mFlashTimer;     // ~60fps, активен только при наличии флешей
+    QWidget *mFlashOverlay; // Прозрачный overlay поверх всех child-виджетов
+
+    friend class FlashOverlay;
 };
 
 //----------------------------------------------------------------------------
