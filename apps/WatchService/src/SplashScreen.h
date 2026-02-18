@@ -38,6 +38,12 @@ public:
     /// Разрешить закрытие окна (вызвать перед quit()).
     void requestQuit();
 
+    /// Показывать оранжевый flash при клике по зоне (аналог QML showAdminFlash).
+    void setShowAdminFlash(bool aEnabled) { mShowAdminFlash = aEnabled; }
+
+    /// Показывать номер зоны при клике (аналог QML showAdminNumbers).
+    void setShowAdminNumbers(bool aEnabled) { mShowAdminNumbers = aEnabled; }
+
 public slots:
     /// Показывает значок для состояния aState, связанный с отправителем aSender.
     virtual void setState(const QString &aSender, const QString &aState);
@@ -88,7 +94,9 @@ private: // Данные
     TStateList m_States;
     bool m_QuitRequested;
     QSequentialAnimationGroup *mBurnInProtectionAnim;
-    QPoint mLayoutOffset; // Текущий offset для burn-in protection
+    QPoint mLayoutOffset;   // Текущий offset для burn-in protection
+    bool mShowAdminFlash;   // Показывать оранжевый flash (аналог QML showAdminFlash)
+    bool mShowAdminNumbers; // Показывать номер зоны (аналог QML showAdminNumbers)
 };
 
 //----------------------------------------------------------------------------
