@@ -34,10 +34,21 @@ tests/          → Mirror src/ structure
 
 ### **Naming**
 
-- Classes: `PascalCase`
-- Methods: `camelCase`
-- Members: `mCamelCase`
-- Interfaces: `IInterface`
+Source of truth: `.clang-tidy` `CheckOptions` (`readability-identifier-naming.*`).
+
+| Symbol                            | Convention    | Example                           |
+| --------------------------------- | ------------- | --------------------------------- |
+| Class / Struct / Enum / Namespace | `PascalCase`  | `MyClass`, `SState`               |
+| Method / Free function            | `camelCase`   | `updateAreas()`                   |
+| Private / Protected member        | `m_camelCase` | `m_areas`, `m_flashTimer`         |
+| Public member (struct field)      | `camelCase`   | `sender`, `state`                 |
+| Parameter / Local variable        | `camelCase`   | `aEvent`, `stateCode`             |
+| Global / Static constant          | `PascalCase`  | `DefaultBackgroundStyle`          |
+| Macro                             | `UPPER_CASE`  | `REGISTER_PLUGIN_WITH_PARAMETERS` |
+| Interface                         | `IInterface`  | `ILogable`, `ICore`               |
+
+> **Note:** Older code uses the legacy `mCamelCase` (no underscore) prefix.
+> New code must use `m_camelCase` per `.clang-tidy` enforcement.
 
 ### **Headers**
 

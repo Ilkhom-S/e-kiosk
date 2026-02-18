@@ -42,19 +42,19 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *) override {
-        if (mScreen->mActiveFlashes.isEmpty()) {
+        if (mScreen->m_activeFlashes.isEmpty()) {
             return;
         }
 
         QPainter p(this);
         p.setRenderHint(QPainter::Antialiasing);
 
-        for (const auto &flash : mScreen->mActiveFlashes) {
-            if (mScreen->mShowAdminFlash) {
+        for (const auto &flash : mScreen->m_activeFlashes) {
+            if (mScreen->m_showAdminFlash) {
                 p.fillRect(flash.zoneRect,
                            QColor(0xFA, 0x53, 0x00, int(0.15 * 255 * flash.opacity)));
             }
-            if (mScreen->mShowAdminNumbers) {
+            if (mScreen->m_showAdminNumbers) {
                 QFont f;
                 f.setPixelSize(160);
                 f.setBold(true);
@@ -79,18 +79,18 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
       QWidget(aParent, Qt::WindowStaysOnTopHint)
 #endif
       ,
-      mQuitRequested(false), mBurnInProtectionAnim(nullptr), mLayoutOffset(0, 0),
-      mShowAdminFlash(true), mShowAdminNumbers(true), mFlashOverlay(nullptr) {
+      m_quitRequested(false), mBurnInProtectionAnim(nullptr), mLayoutOffset(0, 0),
+      m_showAdminFlash(true), m_showAdminNumbers(true), m_flashOverlay(nullptr) {
     ui.setupUi(this);
 
     // Overlay поверх всех child-виджетов — рисует flash-эффекты без блокировки кликов
-    mFlashOverlay = new FlashOverlay(this);
-    mFlashOverlay->resize(size());
-    mFlashOverlay->raise();
+    m_flashOverlay = new FlashOverlay(this);
+    m_flashOverlay->resize(size());
+    m_flashOverlay->raise();
 
     // Flash-таймер: ~60fps, стартует только при наличии активных флешей
-    connect(&mFlashTimer, &QTimer::timeout, this, &SplashScreen::onFlashTick);
-    mFlashTimer.setInterval(16);
+    connect(&m_flashTimer, &QTimer::timeout, this, &SplashScreen::onFlashTick);
+    m_flashTimer.setInterval(16);
 
     // FIXME: временно для #18645
     // ui.lblSupportPhone->hide();
@@ -112,8 +112,8 @@ void SplashScreen::onInit() {
 
     // Connect после инициализации, чтобы не поймать сигнал до готовности
     connect(qApp, &QApplication::aboutToQuit, this, [this]() {
-        toLog(LogLevel::Normal, "aboutToQuit signal received - setting mQuitRequested to true");
-        mQuitRequested = true;
+        toLog(LogLevel::Normal, "aboutToQuit signal received - setting m_quitRequested to true");
+        m_quitRequested = true;
     });
 
     // Настройка защиты от выгорания экрана
@@ -125,8 +125,8 @@ void SplashScreen::onInit() {
 //----------------------------------------------------------------------------
 // Разрешить закрытие окна перед вызовом quit()
 void SplashScreen::requestQuit() {
-    toLog(LogLevel::Normal, "requestQuit called - setting mQuitRequested to true");
-    mQuitRequested = true;
+    toLog(LogLevel::Normal, "requestQuit called - setting m_quitRequested to true");
+    m_quitRequested = true;
     hide();
 }
 
@@ -134,9 +134,9 @@ void SplashScreen::requestQuit() {
 // Обработка события закрытия окна
 void SplashScreen::closeEvent(QCloseEvent *aEvent) {
     toLog(LogLevel::Normal,
-          QString("Close splash screen by event. mQuitRequested=%1").arg(mQuitRequested));
+          QString("Close splash screen by event. m_quitRequested=%1").arg(m_quitRequested));
 
-    if (mQuitRequested) {
+    if (m_quitRequested) {
         aEvent->accept();
         toLog(LogLevel::Normal, "Quit requested - accepting close event.");
     } else {
@@ -151,9 +151,9 @@ void SplashScreen::closeEvent(QCloseEvent *aEvent) {
 // Подгоняет overlay под актуальный размер окна
 void SplashScreen::resizeEvent(QResizeEvent *aEvent) {
     QWidget::resizeEvent(aEvent);
-    if (mFlashOverlay) {
-        mFlashOverlay->resize(size());
-        mFlashOverlay->raise();
+    if (m_flashOverlay) {
+        m_flashOverlay->resize(size());
+        m_flashOverlay->raise();
     }
 }
 
@@ -163,25 +163,25 @@ bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent) {
     if (aEvent->type() == QEvent::MouseButtonPress) {
         auto *mouseEvent = dynamic_cast<QMouseEvent *>(aEvent);
         if (mouseEvent) {
-            if (mAreas.isEmpty()) {
+            if (m_areas.isEmpty()) {
                 // Размеры виджета до первого показа кривые
                 updateAreas();
             }
 
             TAreas::iterator area =
-                std::find_if(mAreas.begin(),
-                             mAreas.end(),
+                std::find_if(m_areas.begin(),
+                             m_areas.end(),
                              [this, pos = mouseEvent->pos()](const TAreas::value_type &a) {
                                  return testPoint(a, pos);
                              });
 
-            if (area != mAreas.end()) {
+            if (area != m_areas.end()) {
                 // Добавляем flash — overlay перерисует поверх child-виджетов
-                mActiveFlashes.append({area->first, area->second, 1.0});
-                if (!mFlashTimer.isActive()) {
-                    mFlashTimer.start();
+                m_activeFlashes.append({area->first, area->second, 1.0});
+                if (!m_flashTimer.isActive()) {
+                    m_flashTimer.start();
                 }
-                mFlashOverlay->update();
+                m_flashOverlay->update();
                 emit clicked(area->first);
             }
         }
@@ -202,7 +202,7 @@ void SplashScreen::updateAreas() {
     int width = rect().width();
     int height = rect().height();
 
-    mAreas << qMakePair(1, QRectF(QPointF(0, 0), QPointF(0.33 * width, 0.33 * height)))
+    m_areas << qMakePair(1, QRectF(QPointF(0, 0), QPointF(0.33 * width, 0.33 * height)))
            << qMakePair(2, QRectF(QPointF(0.66 * width, 0), QPointF(width, 0.33 * height)))
            << qMakePair(5,
                         QRectF(QPointF(0.33 * width, 0.33 * height),
@@ -216,20 +216,20 @@ void SplashScreen::updateAreas() {
 void SplashScreen::onFlashTick() {
     const qreal step = 1.0 / (300.0 / 16.0);
 
-    for (auto &flash : mActiveFlashes) {
+    for (auto &flash : m_activeFlashes) {
         flash.opacity -= step;
     }
 
-    mActiveFlashes.erase(std::remove_if(mActiveFlashes.begin(),
-                                        mActiveFlashes.end(),
+    m_activeFlashes.erase(std::remove_if(m_activeFlashes.begin(),
+                                        m_activeFlashes.end(),
                                         [](const SActiveFlash &f) { return f.opacity <= 0.0; }),
-                         mActiveFlashes.end());
+                         m_activeFlashes.end());
 
-    if (mActiveFlashes.isEmpty()) {
-        mFlashTimer.stop();
+    if (m_activeFlashes.isEmpty()) {
+        m_flashTimer.stop();
     }
 
-    mFlashOverlay->update();
+    m_flashOverlay->update();
 }
 
 //----------------------------------------------------------------------------
@@ -240,7 +240,7 @@ void SplashScreen::setState(const QString &aSender, const QString &aState) {
     QString stateCode = aState.left(aState.indexOf('_'));
     QString stateStatus = aState.right(aState.size() - stateCode.size() - 1);
 
-    for (it = mStates.begin(); it != mStates.end(); ++it) {
+    for (it = m_states.begin(); it != m_states.end(); ++it) {
         QString oldStateCode = it->state.left(it->state.indexOf('_'));
         QString oldStateStatus = it->state.right(it->state.size() - oldStateCode.size() - 1);
 
@@ -259,7 +259,7 @@ void SplashScreen::setState(const QString &aSender, const QString &aState) {
                 it->widget->deleteLater();
             }
 
-            mStates.erase(it);
+            m_states.erase(it);
 
             break;
         }
@@ -283,9 +283,9 @@ void SplashScreen::setState(const QString &aSender, const QString &aState) {
     ui.stateLayout->insertWidget(ui.stateLayout->count() - 1, widget.get());
 
     // Overlay должен оставаться поверх всех child-виджетов
-    mFlashOverlay->raise();
+    m_flashOverlay->raise();
 
-    mStates << SState(aSender, aState, widget.release());
+    m_states << SState(aSender, aState, widget.release());
 }
 
 //----------------------------------------------------------------------------
@@ -293,7 +293,7 @@ void SplashScreen::setState(const QString &aSender, const QString &aState) {
 void SplashScreen::removeStates(const QString &aSender) {
     TStateList::iterator it;
 
-    for (it = mStates.begin(); it != mStates.end(); ++it) {
+    for (it = m_states.begin(); it != m_states.end(); ++it) {
         if (aSender == it->sender) {
             if (it->date.secsTo(QDateTime::currentDateTime()) <
                 CSplashScreen::MinStateShowSeconds) {
@@ -304,7 +304,7 @@ void SplashScreen::removeStates(const QString &aSender) {
                 it->widget->deleteLater();
             }
 
-            it = mStates.erase(it);
+            it = m_states.erase(it);
 
             --it;
         }

@@ -41,10 +41,10 @@ public:
     void requestQuit();
 
     /// Показывать оранжевый flash при клике по зоне (аналог QML showAdminFlash).
-    void setShowAdminFlash(bool aEnabled) { mShowAdminFlash = aEnabled; }
+    void setShowAdminFlash(bool aEnabled) { m_showAdminFlash = aEnabled; }
 
     /// Показывать номер зоны при клике (аналог QML showAdminNumbers).
-    void setShowAdminNumbers(bool aEnabled) { mShowAdminNumbers = aEnabled; }
+    void setShowAdminNumbers(bool aEnabled) { m_showAdminNumbers = aEnabled; }
 
 public slots:
     /// Показывает значок для состояния aState, связанный с отправителем aSender.
@@ -102,16 +102,16 @@ private:
 
     Ui::SplashScreenClass ui;
 
-    TAreas mAreas;
-    TStateList mStates;
-    bool mQuitRequested;
+    TAreas m_areas;
+    TStateList m_states;
+    bool m_quitRequested;
     QSequentialAnimationGroup *mBurnInProtectionAnim;
     QPoint mLayoutOffset;
-    bool mShowAdminFlash;   // Показывать оранжевый flash (аналог QML showAdminFlash)
-    bool mShowAdminNumbers; // Показывать номер зоны (аналог QML showAdminNumbers)
-    TActiveFlashes mActiveFlashes;
-    QTimer mFlashTimer;     // ~60fps, активен только при наличии флешей
-    QWidget *mFlashOverlay; // Прозрачный overlay поверх всех child-виджетов
+    bool m_showAdminFlash;   // Показывать оранжевый flash (аналог QML showAdminFlash)
+    bool m_showAdminNumbers; // Показывать номер зоны (аналог QML showAdminNumbers)
+    TActiveFlashes m_activeFlashes;
+    QTimer m_flashTimer;     // ~60fps, активен только при наличии флешей
+    QWidget *m_flashOverlay; // Прозрачный overlay поверх всех child-виджетов
 
     friend class FlashOverlay;
 };
