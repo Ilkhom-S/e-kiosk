@@ -277,13 +277,11 @@ template <class T> void DeviceBase<T>::finalizeInitialization() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool DeviceBase<T>::release() {
-    bool result = this->release();
-
     this->m_Connected = false;
     this->m_LastWarningLevel = static_cast<EWarningLevel::Enum>(-1);
     m_StatusCollection.clear();
 
-    return result;
+    return true;
 }
 
 //---------------------------------------------------------------------------
