@@ -124,6 +124,11 @@ int MessageBox::showPopup(const QString &aText,
         if (m_Overlay) {
             m_Overlay->hide();
         }
+        // Восстанавливаем родительское окно после закрытия модального диалога
+        if (m_ParentWidget) {
+            m_ParentWidget->raise();
+            m_ParentWidget->activateWindow();
+        }
         return result;
     }
     m_Window->show();
