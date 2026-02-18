@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtCore/QPointer>
+#include <QtGui/QPainter>
 #include <QtWidgets/QDialog>
 
 #include <SDK/GUI/MessageBoxParams.h>
@@ -24,6 +25,7 @@ private slots:
     void onClickedReject();
 
 private:
+    virtual void paintEvent(QPaintEvent *aEvent) override;
     virtual void showEvent(QShowEvent *aEvent) override;
     virtual void hideEvent(QHideEvent *aEvent) override;
 

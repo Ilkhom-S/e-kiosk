@@ -1,11 +1,19 @@
 #include "MessageWindow.h"
 
 #include <QtGui/QMovie>
+#include <QtGui/QPainterPath>
 
-MessageWindow::MessageWindow(QWidget *parent) : QDialog(parent, Qt::SplashScreen) {
-    // Прозрачный фон окна — OS-уровень compositor обрезает углы,
-    // QSS border-radius рисует тёмную карточку без прямоугольных артефактов
+MessageWindow::MessageWindow(QWidget *parent)
+    : QDialog(parent, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint) {
+    // Qt::SplashScreen на macOS создаёт NSPanel, который блокирует compositor-прозрачность.
+    // Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint — обычное безрамочное окно,
+    // поддерживающее WA_TranslucentBackground корректно на всех платформах.
     setAttribute(Qt::WA_TranslucentBackground);
+
+    // WA_TranslucentBackground автоматически выставляет WA_NoSystemBackground,
+    // но мы явно сбрасываем его, чтобы QSS background:transparent работал корректно
+    setAttribute(Qt::WA_NoSystemBackground, false);
+    setAttribute(Qt::WA_OpaquePaintEvent, false);
 
     ui.setupUi(this);
 
@@ -16,8 +24,8 @@ MessageWindow::MessageWindow(QWidget *parent) : QDialog(parent, Qt::SplashScreen
     ui.btnOK->setText(tr("#ok"));
     ui.btnCancel->setText(tr("#cancel"));
 
-    connect(ui.btnOK, SIGNAL(clicked()), this, SLOT(onClickedOk()));
-    connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(onClickedReject()));
+    connect(ui.btnOK, &QPushButton::clicked, this, &MessageWindow::onClickedOk);
+    connect(ui.btnCancel, &QPushButton::clicked, this, &MessageWindow::onClickedReject);
 }
 
 //------------------------------------------------------------------------
@@ -64,13 +72,29 @@ void MessageWindow::onClickedReject() {
 }
 
 //------------------------------------------------------------------------
+void MessageWindow::paintEvent(QPaintEvent *) {
+    // Рисуем скруглённый фон напрямую через QPainter.
+    // WA_TranslucentBackground делает OS-окно прозрачным — непрокрашенные углы
+    // показывают содержимое родительского окна за диалогом.
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setPen(QPen(QColor(0x3A, 0x3A, 0x3C), 4));
+    painter.setBrush(QColor(0x0A, 0x0A, 0x0B));
+    painter.drawRoundedRect(rect().adjusted(2, 2, -2, -2), 45, 45);
+}
+
+//------------------------------------------------------------------------
 void MessageWindow::showEvent(QShowEvent *aEvent) {
-    qobject_cast<QWidget *>(parent())->setAttribute(Qt::WA_TransparentForMouseEvents);
     QDialog::showEvent(aEvent);
+    if (auto *p = qobject_cast<QWidget *>(parent())) {
+        p->setAttribute(Qt::WA_TransparentForMouseEvents);
+    }
 }
 
 //------------------------------------------------------------------------
 void MessageWindow::hideEvent(QHideEvent *aEvent) {
-    qobject_cast<QWidget *>(parent())->setAttribute(Qt::WA_TransparentForMouseEvents, false);
+    if (auto *p = qobject_cast<QWidget *>(parent())) {
+        p->setAttribute(Qt::WA_TransparentForMouseEvents, false);
+    }
     QDialog::hideEvent(aEvent);
 }

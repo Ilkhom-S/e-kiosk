@@ -368,6 +368,11 @@ bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
         return false;
     }
 
+    // Останавливаем таймер бездействия до показа диалога — exec() запускает
+    // вложенный event loop, и таймер может сработать пока диалог открыт,
+    // что закроет сервисное меню за спиной диалога.
+    m_IdleTimer.stop();
+
     if (GUI::MessageBox::question(aMessage) != 0) {
         auto *window = dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex));
         if (window) {
@@ -377,6 +382,9 @@ bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
         closeMenu(aStartIdle);
         return true;
     }
+
+    // Оператор нажал Cancel — возобновляем таймер бездействия
+    m_IdleTimer.start();
 
     // Оператор нажал Cancel — подавляем TryStopScenario до конца сессии
     if (aExitByNotify) {

@@ -172,9 +172,11 @@ void SimpleLog::write(LogLevel::Enum aLevel, const QString &aMessage, const QByt
 
 //---------------------------------------------------------------------------
 bool SimpleLog::init() {
-    // Guard against initialization during shutdown
-    // QSettings constructor crashes when QCoreApplication is destroyed
-    if (!QCoreApplication::instance()) {
+    // Защита от инициализации во время shutdown.
+    // QSettings падает, когда QCoreApplication уничтожен или в процессе завершения.
+    // QCoreApplication::instance() может быть не-null во время __cxa_finalize_ranges,
+    // поэтому дополнительно проверяем closingDown().
+    if (!QCoreApplication::instance() || QCoreApplication::closingDown()) {
         return false;
     }
 

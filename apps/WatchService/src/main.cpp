@@ -51,6 +51,11 @@ int main(int aArgc, char *aArgv[]) {
     ILog::getInstance("CryptEngine")->setDestination(mainLog->getDestination());
     ILog::getInstance("QtMessages")->setDestination(mainLog->getDestination());
 
+    // На macOS [NSApplication terminate:] вызывает exit() напрямую, минуя возврат из exec(),
+    // поэтому qInstallMessageHandler(nullptr) после exec() может не выполниться.
+    // Регистрируем atexit-хендлер (LIFO — выполнится раньше Qt-статиков) для гарантированного
+    // снятия message handler до разрушения Qt-инфраструктуры.
+    std::atexit([] { qInstallMessageHandler(nullptr); });
     qInstallMessageHandler(qtMessageHandler);
 
     WatchService service;

@@ -1,185 +1,205 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Debug EKiosk (macOS)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/macos-qt6/bin/ekiosk.app/Contents/MacOS/ekiosk",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/macos-qt6/bin",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "lldb",
-      "targetArchitecture": "arm64",
-      "preLaunchTask": "build-ekiosk",
-      "logging": {
-        "moduleLoad": false,
-        "trace": false
-      },
-      "setupCommands": [
+    "version": "0.2.0",
+    "configurations": [
         {
-          "text": "settings set target.process.show-loads false",
-          "description": "Disable module load notifications",
-          "ignoreFailures": true
+            "name": "Debug EKiosk (macOS)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/macos-qt6/bin/ekiosk.app/Contents/MacOS/ekiosk",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/macos-qt6/bin",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "targetArchitecture": "arm64",
+            "preLaunchTask": "build-ekiosk",
+            "logging": {
+                "moduleLoad": false,
+                "trace": false
+            },
+            "setupCommands": [
+                {
+                    "text": "settings set target.process.show-loads false",
+                    "description": "Disable module load notifications",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "type category enable default",
+                    "description": "Enable default type category for pretty printing",
+                    "ignoreFailures": true
+                }
+            ]
         },
         {
-          "text": "type category enable default",
-          "description": "Enable default type category for pretty printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "Run EKiosk (macOS)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/macos-qt6/bin/ekiosk.app/Contents/MacOS/ekiosk",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/macos-qt6/bin",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "lldb",
-      "targetArchitecture": "arm64",
-      "preLaunchTask": "build-ekiosk",
-      "logging": {
-        "moduleLoad": false,
-        "trace": false
-      },
-      "setupCommands": [
-        {
-          "text": "settings set target.process.show-loads false",
-          "description": "Disable module load notifications",
-          "ignoreFailures": true
+            "name": "Run EKiosk (macOS)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/macos-qt6/bin/ekiosk.app/Contents/MacOS/ekiosk",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/macos-qt6/bin",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "targetArchitecture": "arm64",
+            "preLaunchTask": "build-ekiosk",
+            "logging": {
+                "moduleLoad": false,
+                "trace": false
+            },
+            "setupCommands": [
+                {
+                    "text": "settings set target.process.show-loads false",
+                    "description": "Disable module load notifications",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "type category enable default",
+                    "description": "Enable default type category for pretty printing",
+                    "ignoreFailures": true
+                }
+            ]
         },
         {
-          "text": "type category enable default",
-          "description": "Enable default type category for pretty printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "Debug Controller (CMake)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/macos-qt6/bin/controller.app/Contents/MacOS/controller",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/macos-qt6/bin",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "lldb",
-      "targetArchitecture": "arm64",
-      "preLaunchTask": "build-controller",
-      "logging": {
-        "moduleLoad": false,
-        "trace": false
-      },
-      "setupCommands": [
-        {
-          "text": "settings set target.process.show-loads false",
-          "description": "Disable module load notifications",
-          "ignoreFailures": true
+            "name": "Debug Controller (CMake)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/macos-qt6/bin/controller.app/Contents/MacOS/controller",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/macos-qt6/bin",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "targetArchitecture": "arm64",
+            "preLaunchTask": "build-controller",
+            "logging": {
+                "moduleLoad": false,
+                "trace": false
+            },
+            "setupCommands": [
+                {
+                    "text": "settings set target.process.show-loads false",
+                    "description": "Disable module load notifications",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "type category enable default",
+                    "description": "Enable default type category for pretty printing",
+                    "ignoreFailures": true
+                }
+            ]
         },
         {
-          "text": "type category enable default",
-          "description": "Enable default type category for pretty printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "Run Controller (macOS)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/macos-qt6/bin/controller.app/Contents/MacOS/controller",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/macos-qt6/bin",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "lldb",
-      "targetArchitecture": "arm64",
-      "preLaunchTask": "build-controller",
-      "logging": {
-        "moduleLoad": false,
-        "trace": false
-      },
-      "setupCommands": [
-        {
-          "text": "settings set target.process.show-loads false",
-          "description": "Disable module load notifications",
-          "ignoreFailures": true
+            "name": "Run Controller (macOS)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/macos-qt6/bin/controller.app/Contents/MacOS/controller",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/macos-qt6/bin",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "targetArchitecture": "arm64",
+            "preLaunchTask": "build-controller",
+            "logging": {
+                "moduleLoad": false,
+                "trace": false
+            },
+            "setupCommands": [
+                {
+                    "text": "settings set target.process.show-loads false",
+                    "description": "Disable module load notifications",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "type category enable default",
+                    "description": "Enable default type category for pretty printing",
+                    "ignoreFailures": true
+                }
+            ]
         },
         {
-          "text": "type category enable default",
-          "description": "Enable default type category for pretty printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "Debug Watchdog (CMake)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/macos-qt6/bin/watchdog.app/Contents/MacOS/watchdog",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/macos-qt6/bin",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "lldb",
-      "targetArchitecture": "arm64",
-      "preLaunchTask": "build-watchdog",
-      "logging": {
-        "moduleLoad": false,
-        "trace": false
-      },
-      "setupCommands": [
-        {
-          "text": "settings set target.process.show-loads false",
-          "description": "Disable module load notifications",
-          "ignoreFailures": true
+            "name": "Debug Watchdog (CMake)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/macos-qt6/bin/watchdog.app/Contents/MacOS/watchdog",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/macos-qt6/bin",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "targetArchitecture": "arm64",
+            "preLaunchTask": "build-watchdog",
+            "logging": {
+                "moduleLoad": false,
+                "trace": false
+            },
+            "setupCommands": [
+                {
+                    "text": "settings set target.process.show-loads false",
+                    "description": "Disable module load notifications",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "type category enable default",
+                    "description": "Enable default type category for pretty printing",
+                    "ignoreFailures": true
+                }
+            ]
         },
         {
-          "text": "type category enable default",
-          "description": "Enable default type category for pretty printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "Run Watchdog (macOS)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/macos-qt6/bin/watchdog.app/Contents/MacOS/watchdog",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/macos-qt6/bin",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "lldb",
-      "targetArchitecture": "arm64",
-      "preLaunchTask": "build-watchdog",
-      "logging": {
-        "moduleLoad": false,
-        "trace": false
-      },
-      "setupCommands": [
-        {
-          "text": "settings set target.process.show-loads false",
-          "description": "Disable module load notifications",
-          "ignoreFailures": true
+            "name": "Run Watchdog (macOS)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/macos-qt6/bin/watchdog.app/Contents/MacOS/watchdog",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/macos-qt6/bin",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "targetArchitecture": "arm64",
+            "preLaunchTask": "build-watchdog",
+            "logging": {
+                "moduleLoad": false,
+                "trace": false
+            },
+            "setupCommands": [
+                {
+                    "text": "settings set target.process.show-loads false",
+                    "description": "Disable module load notifications",
+                    "ignoreFailures": true
+                },
+                {
+                    "text": "type category enable default",
+                    "description": "Enable default type category for pretty printing",
+                    "ignoreFailures": true
+                }
+            ]
         },
         {
-          "text": "type category enable default",
-          "description": "Enable default type category for pretty printing",
-          "ignoreFailures": true
+            "name": "Attach to EKiosk",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "${workspaceFolder}/build/macos-qt6/bin/ekiosk.app/Contents/MacOS/ekiosk",
+            "MIMode": "lldb",
+            "targetArchitecture": "arm64",
+            "processId": "${command:pickProcess}",
+            "logging": {
+                "moduleLoad": true,
+                "trace": false
+            },
+            "setupCommands": [
+                {
+                    "text": "settings set target.process.show-loads true",
+                    "description": "Show module loads to see plugin dylibs loading",
+                    "ignoreFailures": true
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }
