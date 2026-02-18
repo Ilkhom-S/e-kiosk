@@ -78,6 +78,9 @@ MainServiceWindow::MainServiceWindow(ServiceMenuBackend *aBackend, QWidget *aPar
 bool MainServiceWindow::initialize() {
     connect(twServiceScreens, SIGNAL(currentChanged(int)), SLOT(onCurrentPageChanged(int)));
 
+    // Сбрасываем флаг подавления диалога — новая сессия, оператор может снова получить запрос
+    m_stopNotifyDialogSuppressed = false;
+
     // Обновим состояние диспенсера
     m_Backend->saveDispenserUnitState();
 
@@ -360,13 +363,9 @@ void MainServiceWindow::onStopApplication() {
 bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
                                          const QString &aMessage,
                                          bool aStartIdle) {
-    static QTime lastExitQuestionTime;
-
-    if (aExitByNotify) {
-        if (!lastExitQuestionTime.isNull() && lastExitQuestionTime.secsTo(QTime::currentTime()) <
-                                                  CMainServiceWindow::ExitQuestionTimeout) {
-            return false;
-        }
+    // Если в этой сессии оператор уже отказался от остановки — больше не беспокоим
+    if (aExitByNotify && m_stopNotifyDialogSuppressed) {
+        return false;
     }
 
     if (GUI::MessageBox::question(aMessage) != 0) {
@@ -375,11 +374,13 @@ bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
             window->deactivate();
         }
 
-        lastExitQuestionTime = QTime::currentTime();
         closeMenu(aStartIdle);
         return true;
-    } else {
-        lastExitQuestionTime = QTime::currentTime();
+    }
+
+    // Оператор нажал Cancel — подавляем TryStopScenario до конца сессии
+    if (aExitByNotify) {
+        m_stopNotifyDialogSuppressed = true;
     }
 
     return false;

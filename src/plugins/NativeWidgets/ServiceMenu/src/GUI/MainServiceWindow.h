@@ -76,6 +76,9 @@ private:
 
     QList<IServiceWindow *> m_ServiceWindowList;
     ServiceMenuBackend *m_Backend;
+
+    // Подавляем повторные запросы TryStopScenario, если оператор уже отказался в этой сессии
+    bool m_stopNotifyDialogSuppressed{false};
 };
 
 //------------------------------------------------------------------------
