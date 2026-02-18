@@ -1042,10 +1042,12 @@ void WatchService::closeAction() {
         /// TODO : отслеживать провал перезагрузки
         ISysUtils::system_Reboot();
 
+        m_SplashScreen.requestQuit();
         QCoreApplication::instance()->quit();
     } else if (m_CloseAction == ECloseAction::Exit) {
         toLog(LogLevel::Normal, "Stopping service...");
 
+        m_SplashScreen.requestQuit();
         QCoreApplication::instance()->quit();
     } else if (m_CloseAction == ECloseAction::Shutdown) {
         toLog(LogLevel::Normal, "Shutting down the terminal...");
@@ -1053,6 +1055,7 @@ void WatchService::closeAction() {
         /// TODO : отслеживать провал выключения
         ISysUtils::system_Shutdown();
 
+        m_SplashScreen.requestQuit();
         QCoreApplication::instance()->quit();
     }
 }

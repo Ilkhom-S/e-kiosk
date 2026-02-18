@@ -35,6 +35,9 @@ public:
     /// Установка произвольного изображения в качестве фона для защитного экрана.
     virtual void setCustom_Background(const QString &aPath);
 
+    /// Разрешить закрытие окна (вызвать перед quit()).
+    void requestQuit();
+
 public slots:
     /// Показывает значок для состояния aState, связанный с отправителем aSender.
     virtual void setState(const QString &aSender, const QString &aState);

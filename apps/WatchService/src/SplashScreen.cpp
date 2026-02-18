@@ -82,6 +82,14 @@ void SplashScreen::onInit() {
 }
 
 //----------------------------------------------------------------------------
+// Разрешить закрытие окна перед вызовом quit()
+void SplashScreen::requestQuit() {
+    toLog(LogLevel::Normal, "requestQuit called - setting m_QuitRequested to true");
+    m_QuitRequested = true;
+    hide();
+}
+
+//----------------------------------------------------------------------------
 // Обработка события закрытия окна
 void SplashScreen::closeEvent(QCloseEvent *aEvent) {
     toLog(LogLevel::Normal,
