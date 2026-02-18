@@ -21,70 +21,6 @@
 #include <algorithm>
 #include <memory>
 
-// Оверлей для визуальной обратной связи при клике по зоне (аналог QML flash + number)
-class ZoneFlashOverlay : public QWidget {
-    Q_OBJECT
-    Q_PROPERTY(qreal flashOpacity READ flashOpacity WRITE setFlashOpacity)
-
-public:
-    ZoneFlashOverlay(
-        int aZoneNumber, const QRect &aRect, bool aShowFlash, bool aShowNumbers, QWidget *aParent)
-        : QWidget(aParent), m_ZoneNumber(aZoneNumber), m_FlashOpacity(1.0), m_ShowFlash(aShowFlash),
-          m_ShowNumbers(aShowNumbers) {
-        setAttribute(Qt::WA_TransparentForMouseEvents);
-        setAttribute(Qt::WA_NoSystemBackground);
-        setAutoFillBackground(false);
-        setGeometry(aRect);
-        raise();
-        show();
-
-        // Плавное затухание за 300мс (как в QML: Behavior on opacity { NumberAnimation 100ms },
-        // но держим чуть дольше чтобы tap был виден)
-        auto *anim = new QPropertyAnimation(this, "flashOpacity", this);
-        anim->setDuration(300);
-        anim->setStartValue(1.0);
-        anim->setEndValue(0.0);
-        anim->setEasingCurve(QEasingCurve::OutQuad);
-        connect(anim, &QPropertyAnimation::finished, this, &QWidget::deleteLater);
-        anim->start(QAbstractAnimation::DeleteWhenStopped);
-    }
-
-    qreal flashOpacity() const { return m_FlashOpacity; }
-
-    void setFlashOpacity(qreal aOpacity) {
-        m_FlashOpacity = aOpacity;
-        update();
-    }
-
-protected:
-    void paintEvent(QPaintEvent *) override {
-        QPainter p(this);
-        p.setRenderHint(QPainter::Antialiasing);
-
-        // Оранжевый полупрозрачный фон (opacity 0.15 как в QML showAdminFlash)
-        if (m_ShowFlash) {
-            p.fillRect(rect(), QColor(0xFA, 0x53, 0x00, int(0.15 * 255 * m_FlashOpacity)));
-        }
-
-        // Номер зоны крупным белым шрифтом (как в QML showAdminNumbers: pixelSize 160, Font.Black)
-        if (m_ShowNumbers) {
-            QFont f;
-            f.setPixelSize(160);
-            f.setBold(true);
-            p.setFont(f);
-            p.setPen(QColor(255, 255, 255, int(255 * m_FlashOpacity)));
-            p.drawText(rect(), Qt::AlignCenter, QString::number(m_ZoneNumber));
-        }
-    }
-
-private:
-    int m_ZoneNumber;
-    qreal m_FlashOpacity;
-    bool m_ShowFlash;
-    bool m_ShowNumbers;
-};
-
-//----------------------------------------------------------------------------
 namespace CSplashScreen {
 const char DefaultBackgroundStyle[] = "QWidget#wgtBackground { background-color: #f07e1b; }";
 const char CustomBackgroundStyle[] = "QWidget#wgtBackground { border-image: url(%1); }";
@@ -106,6 +42,10 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
       m_QuitRequested(false), mBurnInProtectionAnim(nullptr), mLayoutOffset(0, 0),
       m_ShowAdminFlash(true), m_ShowAdminNumbers(true) {
     ui.setupUi(this);
+
+    // Flash-таймер: ~60fps, стартует только при наличии активных флешей
+    connect(&m_FlashTimer, &QTimer::timeout, this, &SplashScreen::onFlashTick);
+    m_FlashTimer.setInterval(16);
 
     // FIXME: временно для #18645
     // ui.lblSupportPhone->hide();
@@ -194,9 +134,12 @@ bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent) {
                              });
 
             if (area != m_Areas.end()) {
-                // Показываем flash-оверлей с номером зоны (как в QML версии)
-                new ZoneFlashOverlay(
-                    area->first, area->second.toRect(), m_ShowAdminFlash, m_ShowAdminNumbers, this);
+                // Добавляем flash прямо в список — не создаём child widget, нет блокировки кликов
+                m_ActiveFlashes.append({area->first, area->second, 1.0});
+                if (!m_FlashTimer.isActive()) {
+                    m_FlashTimer.start();
+                }
+                update(); // перерисовать немедленно
                 emit clicked(area->first);
             }
         }
@@ -375,5 +318,49 @@ void SplashScreen::setupBurnInProtection() {
 }
 
 //----------------------------------------------------------------------------
-// Необходимо для Q_OBJECT в ZoneFlashOverlay, объявленном в .cpp
-#include "SplashScreen.moc"
+// Отрисовка активных flash-эффектов поверх виджета
+void SplashScreen::paintEvent(QPaintEvent *aEvent) {
+    QWidget::paintEvent(aEvent);
+
+    if (m_ActiveFlashes.isEmpty()) {
+        return;
+    }
+
+    QPainter p(this);
+    p.setRenderHint(QPainter::Antialiasing);
+
+    for (const auto &flash : m_ActiveFlashes) {
+        if (m_ShowAdminFlash) {
+            p.fillRect(flash.zoneRect, QColor(0xFA, 0x53, 0x00, int(0.15 * 255 * flash.opacity)));
+        }
+        if (m_ShowAdminNumbers) {
+            QFont f;
+            f.setPixelSize(160);
+            f.setBold(true);
+            p.setFont(f);
+            p.setPen(QColor(255, 255, 255, int(255 * flash.opacity)));
+            p.drawText(flash.zoneRect, Qt::AlignCenter, QString::number(flash.zoneNumber));
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
+// Таймер-тик: затухание активных flash-эффектов (~300ms при 16ms тике)
+void SplashScreen::onFlashTick() {
+    const qreal step = 1.0 / (300.0 / 16.0);
+
+    for (auto &flash : m_ActiveFlashes) {
+        flash.opacity -= step;
+    }
+
+    m_ActiveFlashes.erase(std::remove_if(m_ActiveFlashes.begin(),
+                                         m_ActiveFlashes.end(),
+                                         [](const SActiveFlash &f) { return f.opacity <= 0.0; }),
+                          m_ActiveFlashes.end());
+
+    if (m_ActiveFlashes.isEmpty()) {
+        m_FlashTimer.stop();
+    }
+
+    update();
+}

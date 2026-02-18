@@ -4,6 +4,7 @@
 
 #include <QtCore/QDateTime>
 #include <QtCore/QList>
+#include <QtCore/QTimer>
 #include <QtGui/QCloseEvent>
 #include <QtWidgets/QWidget>
 
@@ -58,9 +59,16 @@ signals:
     /// Сигнал о закрытии окна по внешнему сигналу
     void hidden();
 
+protected:
+    /// Рисует активные flash-оверлеи поверх виджета.
+    void paintEvent(QPaintEvent *aEvent) override;
+
 private slots:
     // Выполнение полезной инициализации после загрузки.
     void onInit();
+
+    // Тик таймера затухания flash-оверлеев
+    void onFlashTick();
 
 private: // Методы
     // Настройка защиты от выгорания экрана (burn-in protection)
@@ -88,15 +96,26 @@ private: // Данные
 
     typedef QList<SState> TStateList;
 
+    // Активный flash-оверлей для одной зоны (рисуется прямо в paintEvent)
+    struct SActiveFlash {
+        int zoneNumber;
+        QRectF zoneRect;
+        qreal opacity; // 1.0 → 0.0
+    };
+
+    typedef QList<SActiveFlash> TActiveFlashes;
+
     Ui::SplashScreenClass ui;
 
     TAreas m_Areas;
     TStateList m_States;
     bool m_QuitRequested;
     QSequentialAnimationGroup *mBurnInProtectionAnim;
-    QPoint mLayoutOffset;    // Текущий offset для burn-in protection
-    bool m_ShowAdminFlash;   // Показывать оранжевый flash (аналог QML showAdminFlash)
-    bool m_ShowAdminNumbers; // Показывать номер зоны (аналог QML showAdminNumbers)
+    QPoint mLayoutOffset;           // Текущий offset для burn-in protection
+    bool m_ShowAdminFlash;          // Показывать оранжевый flash (аналог QML showAdminFlash)
+    bool m_ShowAdminNumbers;        // Показывать номер зоны (аналог QML showAdminNumbers)
+    TActiveFlashes m_ActiveFlashes; // Текущие активные flash-оверлеи
+    QTimer m_FlashTimer;            // Таймер затухания flash (~60fps)
 };
 
 //----------------------------------------------------------------------------
