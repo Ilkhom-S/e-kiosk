@@ -98,6 +98,8 @@ void MessageBox::showPopup(const QString &aText,
     params[SDK::GUI::CMessageBox::Icon] = aIcon;
     params[SDK::GUI::CMessageBox::Button] = aButton;
     params[SDK::GUI::CMessageBox::Scaled] = true;
+    // Полупрозрачный overlay — скруглённая карточка видна без прямоугольного фона
+    params["popup_overlay_color"] = "#AA000000";
 
     m_GUIService->showPopup(SDK::GUI::CMessageBox::SceneName, params);
 }
@@ -111,6 +113,8 @@ bool MessageBox::showModal(const QString &aText, SDK::GUI::MessageBoxParams::Enu
     params[SDK::GUI::CMessageBox::Icon] = aIcon;
     params[SDK::GUI::CMessageBox::Button] = SDK::GUI::MessageBoxParams::OK;
     params[SDK::GUI::CMessageBox::Scaled] = true;
+    // Полупрозрачный overlay — скруглённая карточка видна без прямоугольного фона
+    params["popup_overlay_color"] = "#AA000000";
 
     QVariantMap returnParams = m_GUIService->showModal(SDK::GUI::CMessageBox::SceneName, params);
 

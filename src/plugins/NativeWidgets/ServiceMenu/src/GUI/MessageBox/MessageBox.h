@@ -82,6 +82,7 @@ private:
     QPointer<QObject> m_SignalReceiver;
     QTimer m_WaitTimer;
     QPointer<MessageWindow> m_Window;
+    QPointer<QWidget> m_Overlay;
     QWidget *m_ParentWidget{};
 };
 

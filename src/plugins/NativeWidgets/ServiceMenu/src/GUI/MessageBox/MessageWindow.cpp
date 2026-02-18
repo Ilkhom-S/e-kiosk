@@ -3,18 +3,18 @@
 #include <QtGui/QMovie>
 
 MessageWindow::MessageWindow(QWidget *parent) : QDialog(parent, Qt::SplashScreen) {
+    // Прозрачный фон окна — OS-уровень compositor обрезает углы,
+    // QSS border-radius рисует тёмную карточку без прямоугольных артефактов
+    setAttribute(Qt::WA_TranslucentBackground);
+
     ui.setupUi(this);
 
-    auto setPixmap = [](QPushButton *aButton, const QString &aPath) {
-        QPixmap pixmap(aPath);
-        QIcon buttonIcon(pixmap);
-        aButton->setIcon(buttonIcon);
-        aButton->setIconSize(pixmap.rect().size());
-        aButton->setFixedSize(pixmap.rect().size());
-    };
-
-    setPixmap(ui.btnOK, ":/Images/MessageBox/ok.png");
-    setPixmap(ui.btnCancel, ":/Images/MessageBox/cancel.png");
+    // Иконки на кнопках убраны — синие PNG не соответствуют brand-стилю;
+    // стиль кнопок полностью задан через QSS в .ui (градиент, border-radius)
+    ui.btnOK->setIcon(QIcon());
+    ui.btnCancel->setIcon(QIcon());
+    ui.btnOK->setText(tr("#ok"));
+    ui.btnCancel->setText(tr("#cancel"));
 
     connect(ui.btnOK, SIGNAL(clicked()), this, SLOT(onClickedOk()));
     connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(onClickedReject()));
@@ -37,7 +37,7 @@ void MessageWindow::setup(const QString &aText,
         ui.btnOK->setVisible(true);
         ui.btnCancel->setVisible(true);
 
-        ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/question.png"));
+        ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/question.svg"));
     } else if (aIcon == SDK::GUI::MessageBoxParams::Wait) {
         if (!ui.lbIcon->movie()) {
             QPointer<QMovie> gif = QPointer<QMovie>(new QMovie(":/Images/MessageBox/wait.gif"));
@@ -45,11 +45,11 @@ void MessageWindow::setup(const QString &aText,
             gif->start();
         }
     } else if (aIcon == SDK::GUI::MessageBoxParams::Info) {
-        ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/info.png"));
+        ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/info.svg"));
     } else if (aIcon == SDK::GUI::MessageBoxParams::Warning) {
-        ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/warning.png"));
+        ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/warning.svg"));
     } else if (aIcon == SDK::GUI::MessageBoxParams::Critical) {
-        ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/critical.png"));
+        ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/critical.svg"));
     }
 }
 

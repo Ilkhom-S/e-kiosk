@@ -332,7 +332,7 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
         QStringList parameters;
 
         if (!aArguments.isEmpty()) {
-            parameters << QString("-client_options=%1").arg(aArguments);
+            parameters << QString("-ekiosk_options=%1").arg(aArguments);
         }
 
         // Attempt to start the process
@@ -348,7 +348,7 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
                 QString("Failed to start service process: %1").arg(path));
         }
     } else {
-        m_Client->restartService(QStringList());
+        m_Client->restartService(aArguments.isEmpty() ? QStringList() : QStringList{aArguments});
     }
 }
 

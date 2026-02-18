@@ -1,7 +1,5 @@
 /* @file Графический интерфейс. */
 
-#include "GraphicsEngine.h"
-
 #include <QtCore/QDebug>
 #include <QtCore/QDirIterator>
 #include <QtCore/QJsonDocument>
@@ -18,6 +16,8 @@
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
+
+#include <GraphicsEngine/GraphicsEngine.h>
 
 namespace GUI {
 
@@ -188,9 +188,9 @@ bool GraphicsEngine::initialize(
 //---------------------------------------------------------------------------
 bool GraphicsEngine::finalize() {
     foreach (const SWidget &widget, m_Widgets) {
-        if (!widget.graphics.expired() && widget.graphics.lock()->isValid() &&
-            widget.graphics.lock()->getWidget()->window() == m_QuickView) {
-            widget.graphics.lock()->getWidget()->setParentItem(nullptr);
+        // Используем cachedItem: QPointer обнуляется, если Qt уничтожил item раньше нас
+        if (!widget.cachedItem.isNull()) {
+            widget.cachedItem->setParentItem(nullptr);
         }
     }
 
@@ -222,9 +222,10 @@ void GraphicsEngine::stop() {
     m_RootView->hide();
 
     foreach (SWidget widget, m_Widgets.values()) {
-        if (!widget.graphics.expired() && widget.graphics.lock()->isValid()) {
-            widget.graphics.lock()->getWidget()->setVisible(false);
-            widget.graphics.lock()->getWidget()->setZ(0);
+        // Используем cachedItem: QPointer обнуляется, если Qt уничтожил item раньше нас
+        if (!widget.cachedItem.isNull()) {
+            widget.cachedItem->setVisible(false);
+            widget.cachedItem->setZ(0);
         }
     }
 
@@ -253,9 +254,9 @@ void GraphicsEngine::reset(EWidgetType aType) {
             continue;
         }
 
-        if (!widget.graphics.expired() && widget.graphics.lock()->isValid() &&
-            widget.graphics.lock()->getWidget()->window() == m_QuickView) {
-            widget.graphics.lock()->getWidget()->setParentItem(nullptr);
+        // Используем cachedItem: QPointer обнуляется, если Qt уничтожил item раньше нас
+        if (!widget.cachedItem.isNull()) {
+            widget.cachedItem->setParentItem(nullptr);
             m_Backends[widget.info.type]->removeItem(widget.info);
             toLog(LogLevel::Debug, QString("REMOVE widget '%1'").arg(widget.info.name));
         }
@@ -530,9 +531,13 @@ bool GraphicsEngine::showWidget(const QString &aWidget,
     }
 
     if (!newWidget->graphics.expired() && newWidget->graphics.lock()->isValid()) {
-        if ((newWidget->graphics.lock()->getWidget() != nullptr) &&
-            (newWidget->graphics.lock()->getWidget()->window() == nullptr)) {
-            newWidget->graphics.lock()->getWidget()->setParentItem(m_QuickView->contentItem());
+        QQuickItem *item = newWidget->graphics.lock()->getWidget();
+        if (item != nullptr) {
+            // Кэшируем QPointer — при уничтожении item Qt-ом он обнулится автоматически
+            newWidget->cachedItem = item;
+            if (item->window() == nullptr) {
+                item->setParentItem(m_QuickView->contentItem());
+            }
         } else if (QWidget *w = newWidget->graphics.lock()->getNativeWidget()) {
         }
     } else {

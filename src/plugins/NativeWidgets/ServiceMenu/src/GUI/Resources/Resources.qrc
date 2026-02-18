@@ -15,13 +15,13 @@
         <file>Images/prev_w.png</file>
         <file>Images/right_arrow.png</file>
         <file>Images/up_arrow.png</file>
-        <file>Images/MessageBox/cancel.png</file>
-        <file>Images/MessageBox/critical.png</file>
-        <file>Images/MessageBox/info.png</file>
-        <file>Images/MessageBox/ok.png</file>
-        <file>Images/MessageBox/question.png</file>
+        
+        <file>Images/MessageBox/critical.svg</file>
+        <file>Images/MessageBox/info.svg</file>
+        
+        <file>Images/MessageBox/question.svg</file>
         <file>Images/MessageBox/wait.gif</file>
-        <file>Images/MessageBox/warning.png</file>
+        <file>Images/MessageBox/warning.svg</file>
         <file>Scenario/autoencashment_scenario.ini</file>
         <file>Scenario/first_setup_scenario.ini</file>
         <file>Scenario/service_menu_scenario.ini</file>

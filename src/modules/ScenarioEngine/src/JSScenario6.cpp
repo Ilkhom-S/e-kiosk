@@ -8,6 +8,7 @@
 #include <QtGlobal>
 #include <QtQml/QJSEngine>
 #include <QtQml/QJSValue>
+#include <QtQml/QQmlEngine>
 #include <QtStateMachine/QAbstractTransition>
 #include <QtStateMachine/QFinalState>
 
@@ -182,12 +183,16 @@ bool JSScenario::initialize(const QList<SScriptObject> &aScriptObjects) {
             m_ScriptEngine->globalObject().setProperty(
                 object.name, m_ScriptEngine->newQMetaObject(object.metaObject));
         } else {
+            // Объект управляется C++, JS движок не должен удалять его при GC
+            QQmlEngine::setObjectOwnership(object.object, QQmlEngine::CppOwnership);
             m_ScriptEngine->globalObject().setProperty(object.name,
                                                        m_ScriptEngine->newQObject(object.object));
         }
     }
 
     // Register this scenario object
+    // Предотвращаем двойное удаление: при уничтожении QJSEngine GC не должен вызывать delete this
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
     m_ScriptEngine->globalObject().setProperty(CJSScenario::ServiceName,
                                                m_ScriptEngine->newQObject(this));
 

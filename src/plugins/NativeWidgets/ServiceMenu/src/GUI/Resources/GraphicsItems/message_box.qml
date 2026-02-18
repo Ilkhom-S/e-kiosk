@@ -1,266 +1,221 @@
-/* @file Всплывающее окно */
-
 import QtQuick 2.15
 import Core.Types 1.0
 
-Rectangle {
+Item {
     id: rootItem
-
     width: 900
-    height: 400
-    color: "#f7f5ed"
-    radius: 10
-    border {
-        width: 4
-        color: "#a6a6a6"
-    }
-    opacity: 1
+    height: 480 // Increased to fit massive text comfortably
 
-    Image {
-        id: imageMain
+    Rectangle {
+        id: card
+        anchors.fill: parent
+        color: "#0A0A0B"
+        radius: 45
+        border.width: 4
+        border.color: "#3A3A3C"
 
-        x: 44
-        y: 50
-        sourceSize.height: 188
-        sourceSize.width: 188
-        fillMode: Image.PreserveAspectFit
-        source: ""
-    }
-
-    Item {
-        id: imageWait
-
-        x: 44
-        y: 50
-
-        height: 188
-        width: 188
-
-        AnimatedImage {
-            anchors.centerIn: parent
-            source: "qrc:/Images/MessageBox/wait.gif"
-        }
-    }
-
-    Text {
-        id: textMessage
-
-        x: 271
-        y: 50
-        width: 592
-        height: paintedHeight
-        color: "#000000"
-        text: ""
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WordWrap
-        font.pixelSize: 30
-    }
-
-    Flickable {
-        id: flick
-
-        x: 271
-        width: 592
-        height: 200
-        contentWidth: textMessageExt.paintedWidth
-        contentHeight: textMessageExt.paintedHeight
-        clip: true
-        anchors.top: textMessage.bottom
-
-        function ensureVisible(r) {
-            if (contentX >= r.x) {
-                contentX = r.x;
-            } else if (contentX + width <= r.x + r.width) {
-                contentX = r.x + r.width - width;
-            }
-            if (contentY >= r.y) {
-                contentY = r.y;
-            } else if (contentY + height <= r.y + r.height) {
-                contentY = r.y + r.height - height;
-            }
-        }
-
-        TextEdit {
-            id: textMessageExt
-
-            width: flick.width
-            height: flick.height
-            wrapMode: TextEdit.Wrap
-            text: ""
-            font.pixelSize: 20
-            horizontalAlignment: Text.AlignHCenter
-            visible: false
-            readOnly: true
-            onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
-        }
-    }
-
-    Image {
-        id: btnCancel
-
-        x: 606
-        y: 264
-        source: ""
-
-        Text {
-            id: btnText
-
-            text: "#btn_caption"
-            anchors {
-                left: parent.left
-                top: parent.top
-            }
-            width: parent.width
-            height: parent.height
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            color: "#ffffff"
-            font {
-                family: "PT Sans Caption"
-                pointSize: 21
-            }
-        }
-
-        MouseArea {
+        // --- THE CHARM (Hairline Glint) ---
+        Rectangle {
             anchors.fill: parent
-            onClicked: {
-                if (global.closeWindow) {
-                    Core.graphics.hidePopup();
-                    global.closeWindow = false;
-                } else {
-                    Core.postEvent(EventType.UpdateScenario, {
-                        signal: "popup_notify"
-                    });
+            anchors.margins: 2
+            radius: 43
+            color: "transparent"
+            border.width: 1
+            border.color: Qt.rgba(255, 255, 255, 0.15)
+        }
+
+        // --- MAIN CONTENT ---
+        Row {
+            id: mainContent
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+                margins: 45
+                topMargin: 50
+            }
+            spacing: 40
+
+            Item {
+                id: iconContainer
+                width: 170
+                height: 170
+                anchors.verticalCenter: textColumn.verticalCenter
+
+                Image {
+                    id: imageMain
+                    anchors.fill: parent
+                    fillMode: Image.PreserveAspectFit
+                    smooth: true
+                    mipmap: true
+                    visible: !imageWait.visible
+                }
+
+                Item {
+                    id: imageWait
+                    anchors.fill: parent
+                    visible: false
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "#1C1C1E"
+                        radius: 40
+                        border.color: "#FA5300"
+                        border.width: 2
+                        AnimatedImage {
+                            anchors.centerIn: parent
+                            width: 90
+                            height: 90
+                            source: "qrc:/Images/MessageBox/wait.gif"
+                        }
+                    }
+                }
+            }
+
+            Column {
+                id: textColumn
+                width: mainContent.width - iconContainer.width - mainContent.spacing
+                spacing: 16
+
+                Text {
+                    id: textMessage
+                    width: parent.width
+                    color: "#FFFFFF"
+                    // --- MONSTROUS OUTDOOR SIZE ---
+                    font {
+                        pixelSize: 52
+                        weight: Font.Black
+                        family: "Segoe UI, Arial"
+                    }
+                    wrapMode: Text.WordWrap
+                    // High-Contrast Sunlight Outline
+                    style: Text.Outline
+                    styleColor: "#40000000"
+                }
+
+                Flickable {
+                    id: flick
+                    width: parent.width
+                    height: 100
+                    contentHeight: textMessageExt.paintedHeight
+                    clip: true
+                    visible: textMessageExt.text !== ""
+
+                    TextEdit {
+                        id: textMessageExt
+                        width: flick.width
+                        wrapMode: TextEdit.Wrap
+                        color: "#8E8E93"
+                        font.pixelSize: 24
+                        readOnly: true
+                    }
                 }
             }
         }
-    }
 
-    Image {
-        id: imageFromCamera
-        visible: false
-        cache: false
-        x: 140
-        y: 40
-
-        width: 320
-        height: 240
-
-        function update(aSource) {
-            source = aSource;
-        }
-
-        onStatusChanged: {
-            if (status == Image.Ready) {
-                imageMain.visible = false;
-                textMessage.visible = false;
-                visible = true;
+        // --- BUTTON BAR (Massive Touch Targets) ---
+        Row {
+            id: buttonBar
+            anchors {
+                bottom: parent.bottom
+                right: parent.right
+                margins: 40
             }
-        }
+            spacing: 25
 
-        function reset() {
-            source = "";
-            visible = false;
-            imageMain.visible = true;
-            textMessage.visible = true;
-        }
-    }
+            Rectangle {
+                id: btnCancel
+                width: 260
+                height: 95
+                color: "#1C1C1E"
+                radius: 25
+                visible: false
+                border.color: "#3A3A3C"
+                border.width: 1
 
-    Image {
-        id: btnOK
+                Text {
+                    id: btnCancelText
+                    anchors.centerIn: parent
+                    color: "#8E8E93"
+                    font {
+                        pixelSize: 28
+                        weight: Font.Bold
+                    }
+                    text: "#cancel"
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: Core.graphics.hidePopup()
+                }
+            }
 
-        x: 271
-        y: 264
-        source: "qrc:/Images/MessageBox/ok.png"
+            Rectangle {
+                id: btnOK
+                width: 260
+                height: 95
+                radius: 25
+                visible: false
+                gradient: Gradient {
+                    GradientStop {
+                        position: 0.0
+                        color: "#FF7D40"
+                    }
+                    GradientStop {
+                        position: 1.0
+                        color: "#FA5300"
+                    }
+                }
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                textMessageExt.visible = false;
-                Core.graphics.hidePopup({
-                    button: MessageBox.OK
-                });
-                Core.postEvent(EventType.UpdateScenario, {
-                    signal: "popup_notify"
-                });
+                Text {
+                    anchors.centerIn: parent
+                    text: "OK"
+                    color: "#FFFFFF"
+                    font {
+                        pixelSize: 32
+                        weight: Font.Black
+                    }
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        Core.graphics.hidePopup({
+                            button: MessageBox.OK
+                        });
+                        Core.postEvent(EventType.UpdateScenario, {
+                            signal: "popup_notify"
+                        });
+                    }
+                }
             }
         }
     }
 
     QtObject {
         id: global
-
         property bool closeWindow: false
-    }
-
-    function notifyHandler(aEvent, aParameters) {
-        if (aParameters["button_type"] == MessageBox.Text) {
-            btnText.visible = true;
-            btnText.text = aParameters["button_text"];
-            btnCancel.source = "qrc:/Images/MessageBox/btn_empty.png";
-        } else if (aParameters["text_message_ext"]) {
-            if (aParameters["text_append_mode"]) {
-                textMessageExt.text += aParameters["text_message_ext"] + "\n";
-                textMessageExt.cursorPosition = textMessageExt.text.length;
-            } else {
-                textMessageExt.text = aParameters["text_message_ext"];
-            }
-
-            textMessageExt.visible = true;
-        } else if (aParameters["image"]) {
-            imageFromCamera.update(aParameters["image"]);
-        }
     }
 
     function resetHandler(aParameters) {
         btnOK.visible = false;
         btnCancel.visible = false;
-        btnText.visible = false;
-        btnCancel.source = "qrc:/Images/MessageBox/cancel.png";
-        imageMain.visible = false;
         imageWait.visible = false;
-        textMessage.visible = true;
-        textMessage.text = aParameters["text_message"];
-        textMessageExt.text = "";
-        imageFromCamera.reset();
+        textMessage.text = aParameters["text_message"] || "";
+        textMessageExt.text = aParameters["text_message_ext"] || "";
 
-        if (aParameters["icon"] == MessageBox.Question) {
-            btnOK.pos.x = 271;
-            btnOK.pos.y = 264;
+        // Map to 2026 Industrial SVG Suite
+        var iconMap = {
+            [MessageBox.Critical]: "qrc:/GraphicsItems/images/critical_industrial.svg",
+            [MessageBox.Warning]: "qrc:/GraphicsItems/images/warning_industrial.svg",
+            [MessageBox.Question]: "qrc:/GraphicsItems/images/question_industrial.svg",
+            [MessageBox.Info]: "qrc:/GraphicsItems/images/info_industrial.svg"
+        };
 
+        imageMain.source = iconMap[aParameters["icon"]] || "";
+        imageWait.visible = (aParameters["icon"] === MessageBox.Wait);
+        imageMain.visible = !imageWait.visible;
+
+        if (aParameters["button"] === MessageBox.OK || aParameters["icon"] === MessageBox.Question)
             btnOK.visible = true;
+        if (aParameters["button"] === MessageBox.Cancel || aParameters["icon"] === MessageBox.Question)
             btnCancel.visible = true;
-
-            imageMain.source = "qrc:/Images/MessageBox/question.png";
-            imageMain.visible = true;
-
-            global.closeWindow = true;
-        } else {
-            btnOK.pos = btnCancel.pos;
-
-            if (aParameters["icon"] == MessageBox.Wait) {
-                imageWait.visible = true;
-                imageMain.visible = false;
-
-                if (aParameters["button"] == MessageBox.Cancel) {
-                    btnCancel.visible = true;
-                    btnCancel.source = "qrc:/Images/MessageBox/cancel_t.png";
-                }
-
-                return;
-            } else if (aParameters["icon"] == MessageBox.Info) {
-                imageMain.source = "qrc:/Images/MessageBox/info.png";
-            } else if (aParameters["icon"] == MessageBox.Warning) {
-                imageMain.source = "qrc:/Images/MessageBox/warning.png";
-            } else if (aParameters["icon"] == MessageBox.Critical) {
-                imageMain.source = "qrc:/Images/MessageBox/critical.png";
-            }
-
-            imageMain.visible = true;
-
-            if (aParameters["button"] == MessageBox.OK) {
-                btnOK.visible = true;
-            }
-        }
     }
 }

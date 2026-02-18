@@ -3,6 +3,7 @@
 #include "MessageBox.h"
 
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QWidget>
 
 namespace GUI {
 
@@ -97,9 +98,33 @@ void MessageBox::setParentWidget(QWidget *aParent) {
 int MessageBox::showPopup(const QString &aText,
                           SDK::GUI::MessageBoxParams::Enum aIcon,
                           SDK::GUI::MessageBoxParams::Enum aButton) {
+    // Показываем затемняющий overlay поверх родительского окна
+    if (m_ParentWidget) {
+        if (m_Overlay.isNull()) {
+            m_Overlay = QPointer<QWidget>(new QWidget(m_ParentWidget));
+            m_Overlay->setStyleSheet(QStringLiteral("background-color: rgba(0, 0, 0, 168);"));
+            m_Overlay->setAttribute(Qt::WA_TransparentForMouseEvents);
+        }
+        m_Overlay->setGeometry(m_ParentWidget->rect());
+        m_Overlay->show();
+        m_Overlay->raise();
+    }
+
     m_Window->setup(aText, aIcon, aButton);
+
+    // Центрируем диалог над родительским окном
+    if (m_ParentWidget) {
+        m_Window->adjustSize();
+        const QPoint center = m_ParentWidget->mapToGlobal(m_ParentWidget->rect().center());
+        m_Window->move(center - QPoint(m_Window->width() / 2, m_Window->height() / 2));
+    }
+
     if (aIcon == SDK::GUI::MessageBoxParams::Question) {
-        return m_Window->exec();
+        const int result = m_Window->exec();
+        if (m_Overlay) {
+            m_Overlay->hide();
+        }
+        return result;
     }
     m_Window->show();
 
@@ -138,6 +163,7 @@ void MessageBox::emitPopupSignal(const QVariantMap &aParameters) {
 
 //------------------------------------------------------------------------
 void MessageBox::updateParentWidget(QWidget *aParent) {
+    m_ParentWidget = aParent;
     if (m_Window.isNull()) {
         m_Window = QPointer<MessageWindow>(new MessageWindow(aParent));
     }
@@ -157,6 +183,9 @@ void MessageBox::hideWindow() {
 
     if (!m_WaitTimer.isActive()) {
         m_Window->hide();
+        if (m_Overlay) {
+            m_Overlay->hide();
+        }
     }
 }
 } // namespace GUI

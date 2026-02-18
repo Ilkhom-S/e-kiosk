@@ -4,6 +4,7 @@
 
 #include <QtCore/QMap>
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtCore/QString>
 #include <QtGui/QColor>
 #include <QtGui/QInputEvent>
@@ -228,6 +229,8 @@ private: // Типы
     struct SWidget {
         SDK::GUI::GraphicsItem_Info info;
         std::weak_ptr<SDK::GUI::IGraphicsItem> graphics;
+        /// QPointer автоматически обнуляется при уничтожении item Qt через parent-child механизм
+        QPointer<QQuickItem> cachedItem;
     };
 
     typedef QMultiMap<QString, SWidget> TWidgetList;

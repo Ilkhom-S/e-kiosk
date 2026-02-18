@@ -379,9 +379,9 @@ bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
         closeMenu(aStartIdle);
         return true;
     }
-    if (aExitByNotify) {
-        lastExitQuestionTime = QTime::currentTime();
-    }
+    // Обновляем время независимо от результата — иначе TryStopScenario
+    // покажет диалог повторно сразу после нажатия Cancel
+    lastExitQuestionTime = QTime::currentTime();
 
     return false;
 }
