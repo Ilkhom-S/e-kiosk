@@ -9,6 +9,7 @@
 #include <QtCore/QPropertyAnimation>
 #include <QtCore/QSequentialAnimationGroup>
 #include <QtCore/QTimer>
+#include <QtGui/QPainter>
 #include <QtWidgets/QHBoxLayout>
 
 #include <Common/BasicApplication.h>
@@ -20,6 +21,62 @@
 #include <algorithm>
 #include <memory>
 
+// Оверлей для визуальной обратной связи при клике по зоне (аналог QML flash + number)
+class ZoneFlashOverlay : public QWidget {
+    Q_OBJECT
+    Q_PROPERTY(qreal flashOpacity READ flashOpacity WRITE setFlashOpacity)
+
+public:
+    ZoneFlashOverlay(int aZoneNumber, const QRect &aRect, QWidget *aParent)
+        : QWidget(aParent), mZoneNumber(aZoneNumber), mFlashOpacity(1.0) {
+        setAttribute(Qt::WA_TransparentForMouseEvents);
+        setAttribute(Qt::WA_NoSystemBackground);
+        setAutoFillBackground(false);
+        setGeometry(aRect);
+        raise();
+        show();
+
+        // Плавное затухание за 300мс (как в QML: Behavior on opacity { NumberAnimation 100ms },
+        // но держим чуть дольше чтобы tap был виден)
+        auto *anim = new QPropertyAnimation(this, "flashOpacity", this);
+        anim->setDuration(300);
+        anim->setStartValue(1.0);
+        anim->setEndValue(0.0);
+        anim->setEasingCurve(QEasingCurve::OutQuad);
+        connect(anim, &QPropertyAnimation::finished, this, &QWidget::deleteLater);
+        anim->start(QAbstractAnimation::DeleteWhenStopped);
+    }
+
+    qreal flashOpacity() const { return mFlashOpacity; }
+
+    void setFlashOpacity(qreal aOpacity) {
+        mFlashOpacity = aOpacity;
+        update();
+    }
+
+protected:
+    void paintEvent(QPaintEvent *) override {
+        QPainter p(this);
+        p.setRenderHint(QPainter::Antialiasing);
+
+        // Оранжевый полупрозрачный фон (opacity 0.15 как в QML)
+        p.fillRect(rect(), QColor(0xFA, 0x53, 0x00, int(0.15 * 255 * mFlashOpacity)));
+
+        // Номер зоны крупным белым шрифтом (как в QML: pixelSize 160, Font.Black)
+        QFont f;
+        f.setPixelSize(160);
+        f.setBold(true);
+        p.setFont(f);
+        p.setPen(QColor(255, 255, 255, int(255 * mFlashOpacity)));
+        p.drawText(rect(), Qt::AlignCenter, QString::number(mZoneNumber));
+    }
+
+private:
+    int mZoneNumber;
+    qreal mFlashOpacity;
+};
+
+//----------------------------------------------------------------------------
 namespace CSplashScreen {
 const char DefaultBackgroundStyle[] = "QWidget#wgtBackground { background-color: #f07e1b; }";
 const char CustomBackgroundStyle[] = "QWidget#wgtBackground { border-image: url(%1); }";
@@ -128,6 +185,8 @@ bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent) {
                              });
 
             if (area != m_Areas.end()) {
+                // Показываем flash-оверлей с номером зоны (как в QML версии)
+                new ZoneFlashOverlay(area->first, area->second.toRect(), this);
                 emit clicked(area->first);
             }
         }
@@ -306,3 +365,5 @@ void SplashScreen::setupBurnInProtection() {
 }
 
 //----------------------------------------------------------------------------
+// Необходимо для Q_OBJECT в ZoneFlashOverlay, объявленном в .cpp
+#include "SplashScreen.moc"
