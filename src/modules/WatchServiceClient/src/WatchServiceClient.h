@@ -1,9 +1,3 @@
-#ifdef UNIT_TEST_WATCHSERVICECLIENT
-// Test-only accessors for last parsed values
-extern std::string g_lastSender;
-extern std::string g_lastType;
-extern std::string g_lastTarget;
-#endif
 /* @file Реализация клиента сторожевого сервиса. */
 
 #pragma once
