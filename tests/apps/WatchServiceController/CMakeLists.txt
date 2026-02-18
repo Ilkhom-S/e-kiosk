@@ -7,7 +7,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKTesting.cmake)
 add_executable(TestWatchServiceController TestWatchServiceController.cpp ../../../apps/WatchServiceController/src/WatchServiceController.cpp)
 target_link_libraries(TestWatchServiceController PRIVATE Qt${QT_VERSION_MAJOR}::Test Qt${QT_VERSION_MAJOR}::Widgets BasicApplication WatchServiceClient Log DebugUtils)
 target_include_directories(TestWatchServiceController PRIVATE ../../../apps/WatchServiceController/src ${CMAKE_SOURCE_DIR}/include)
-set_target_properties(TestWatchServiceController PROPERTIES FOLDER "tests/apps/WatchServiceController")
+set_target_properties(TestWatchServiceController PROPERTIES FOLDER "tests/apps/WatchServiceController" AUTOMOC ON)
 
 # Integration test: controller -> watchdog via MessageQueue (TCP)
 ek_add_test(TestControllerWatchdogIntegration

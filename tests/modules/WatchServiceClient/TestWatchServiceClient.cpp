@@ -91,17 +91,8 @@ void TestWatchServiceClient::testCloseCommandEmitted() {
     qDebug() << "Test message:" << msg;
     client.callOnMessage(msg);
     qDebug() << "spy.count() after callOnMessage:" << spy.count();
-    qDebug() << "lastSender:" << QString::fromStdString(g_lastSender)
-             << ", lastType:" << QString::fromStdString(g_lastType)
-             << ", lastTarget:" << QString::fromStdString(g_lastTarget);
 
-    if (spy.count() != 1) {
-        QFAIL(qPrintable(QString("spy.count()=%1, lastSender='%2', lastType='%3', lastTarget='%4'")
-                             .arg(spy.count())
-                             .arg(QString::fromStdString(g_lastSender))
-                             .arg(QString::fromStdString(g_lastType))
-                             .arg(QString::fromStdString(g_lastTarget))));
-    }
+    QCOMPARE(spy.count(), 1);
 }
 
 void TestWatchServiceClient::testModuleClosedEmitted() {

@@ -3,6 +3,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtTest/QtTest>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QSystemTrayIcon>
 
 #include "../../../apps/WatchServiceController/src/WatchServiceController.h"
 
@@ -24,7 +25,7 @@ void TestWatchServiceController::test_trayIconMenu() {
     // Проверяем, что меню трея создается
     // (доступ к приватным членам невозможен, но можно проверить через QSystem_TrayIcon)
     // Здесь можно добавить проверки сигналов/слотов через QSignalSpy при необходимости
-    QVERIFY(controller.findChild<QSystem_TrayIcon *>() != nullptr || true);
+    QVERIFY(controller.findChild<QSystemTrayIcon *>() != nullptr || true);
 }
 
 QTEST_MAIN(TestWatchServiceController)
