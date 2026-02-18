@@ -110,6 +110,28 @@
                     </item>
                 </layout>
             </item>
+            <!-- STATE ICONS (индикаторы состояния устройств, аналог statusRow в QML) -->
+            <item>
+                <layout class="QHBoxLayout" name="stateLayout">
+                    <property name="spacing">
+                        <number>8</number>
+                    </property>
+                    <item>
+                        <spacer name="hSS1">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item>
+                        <spacer name="hSS2">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
             <!-- DYNAMIC MESSAGE (WORD-WRAP ENABLED) -->
             <item>
                 <widget class="QLabel" name="lblMessage">

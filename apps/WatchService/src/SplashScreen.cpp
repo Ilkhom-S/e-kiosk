@@ -275,8 +275,8 @@ void SplashScreen::setState(const QString &aSender, const QString &aState) {
     std::unique_ptr<QWidget> widget(new QWidget(this));
     widget->setStyleSheet(css);
 
-    // FIXME: временно для #21549
-    // ui.stateLayout->addWidget(widget.get());
+    // Вставляем иконку между двумя spacers (центрирование)
+    ui.stateLayout->insertWidget(ui.stateLayout->count() - 1, widget.get());
 
     m_States << SState(aSender, aState, widget.release());
 }
