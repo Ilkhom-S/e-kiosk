@@ -33,7 +33,13 @@
 //---------------------------------------------------------------------------
 SimpleLog::SimpleLog(const QString &aName, LogType::Enum aType, LogLevel::Enum aMaxLogLevel)
     : m_InitOk(false), m_MaxLogLevel(aMaxLogLevel), m_Name(aName), m_Destination(aName),
-      m_Type(aType), m_Padding(0), m_DuplicateCounter(0) {}
+      m_Type(aType), m_Padding(0), m_DuplicateCounter(0), m_LastLevel(LogLevel::Normal)
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+      ,
+      m_WriteMutex(QMutex::Recursive)
+#endif
+{
+}
 
 //---------------------------------------------------------------------------
 SimpleLog::~SimpleLog() {
@@ -42,7 +48,17 @@ SimpleLog::~SimpleLog() {
         // adjustPadding(), safeWrite(), and getName() are virtual methods
         // and calling them in the destructor causes undefined behavior.
         // The derived class may have already been destroyed at this point.
-        // Logging footer is skipped to maintain safe destruction semantics.
+        // Сбрасываем счетчик повторов напрямую в файл.
+        if (m_DuplicateCounter > 0 && m_CurrentFile) {
+            QString summary =
+                QTime::currentTime().toString("hh:mm:ss.zzz ") +
+                QString("T:%1 ").arg(reinterpret_cast<quint64>(QThread::currentThreadId()),
+                                     8,
+                                     16,
+                                     QLatin1Char('0')) +
+                QString("[I]  last message repeated %1 times\n").arg(m_DuplicateCounter);
+            m_CurrentFile->write(summary);
+        }
     }
 }
 
@@ -94,8 +110,45 @@ void SimpleLog::adjustPadding(int aStep) {
 
 //---------------------------------------------------------------------------
 void SimpleLog::logRotate() {
+    // Сбрасываем счетчик повторов перед ротацией
+    flushDuplicateCounter();
+
     if (!isInitiated()) {
         init();
+    }
+}
+
+//---------------------------------------------------------------------------
+void SimpleLog::flushDuplicateCounter() {
+    QMutexLocker locker(&m_WriteMutex);
+
+    if (m_DuplicateCounter > 0 && m_InitOk) {
+        QString formattedMessage = QTime::currentTime().toString("hh:mm:ss.zzz ");
+
+        auto threadId = reinterpret_cast<quint64>(QThread::currentThreadId());
+        formattedMessage += QString("T:%1 ").arg(threadId, 8, 16, QLatin1Char('0'));
+
+        formattedMessage += "[I]  last message repeated %1 times\n";
+        formattedMessage = formattedMessage.arg(m_DuplicateCounter);
+
+        switch (m_Type) {
+        case LogType::File:
+            m_CurrentFile->write(formattedMessage);
+            break;
+
+        case LogType::Debug:
+            qDebug() << formattedMessage;
+            break;
+
+        case LogType::Console:
+            printf("%s", formattedMessage.toLocal8Bit().data());
+            break;
+
+        default:
+            break;
+        }
+
+        m_DuplicateCounter = 0;
     }
 }
 
@@ -306,10 +359,53 @@ void SimpleLog::writeHeader() {
 
 //---------------------------------------------------------------------------
 void SimpleLog::safeWrite(LogLevel::Enum aLevel, const QString &aMessage) {
+    QMutexLocker locker(&m_WriteMutex);
+
     if (!m_InitOk) {
         return;
     }
 
+    // Проверяем на дубликат: тот же уровень и то же сообщение
+    if (aLevel == m_LastLevel && aMessage == m_LastMessage) {
+        ++m_DuplicateCounter;
+        return;
+    }
+
+    // Если есть накопленные дубликаты, сначала выводим сводку
+    if (m_DuplicateCounter > 0) {
+        QString summaryMessage = QTime::currentTime().toString("hh:mm:ss.zzz ");
+
+        auto threadId = reinterpret_cast<quint64>(QThread::currentThreadId());
+        summaryMessage += QString("T:%1 ").arg(threadId, 8, 16, QLatin1Char('0'));
+
+        summaryMessage += "[I]  last message repeated %1 times\n";
+        summaryMessage = summaryMessage.arg(m_DuplicateCounter);
+
+        switch (m_Type) {
+        case LogType::File:
+            m_CurrentFile->write(summaryMessage);
+            break;
+
+        case LogType::Debug:
+            qDebug() << summaryMessage;
+            break;
+
+        case LogType::Console:
+            printf("%s", summaryMessage.toLocal8Bit().data());
+            break;
+
+        default:
+            break;
+        }
+
+        m_DuplicateCounter = 0;
+    }
+
+    // Запоминаем текущее сообщение для будущих сравнений
+    m_LastMessage = aMessage;
+    m_LastLevel = aLevel;
+
+    // Формируем и выводим сообщение
     QString formattedMessage = QTime::currentTime().toString("hh:mm:ss.zzz ");
 
     auto threadId = reinterpret_cast<quint64>(QThread::currentThreadId());

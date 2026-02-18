@@ -25,6 +25,7 @@ logger->write(LogLevel::Info, "Application started");
 - Severity levels: Debug, Info (Normal), Warning, Error
 - Thread-safe operations
 - Configurable destinations and log levels
+- **Automatic duplicate message suppression** — consecutive identical messages (same level and text) are collapsed into a single summary line
 
 ---
 
@@ -74,14 +75,44 @@ Logs from previous days are automatically archived into 7zip files named `YYYY.M
 Each log entry follows the format:
 
 ```
-hh.mm.ss.zzz [L] Message
+hh:mm:ss.zzz T:xxxxxxxx [L]  Message
 ```
 
 Where:
 
-- `hh.mm.ss.zzz` - timestamp (hours.minutes.seconds.milliseconds)
+- `hh:mm:ss.zzz` - timestamp (hours:minutes:seconds.milliseconds)
+- `T:xxxxxxxx` - thread ID (hexadecimal)
 - `[L]` - log level indicator
 - `Message` - the actual log message
+
+### Duplicate Message Suppression
+
+When consecutive log entries have the same level and message text, they are automatically collapsed into a summary line. This reduces log noise from repetitive events like NTP time adjustments.
+
+**Before suppression:**
+
+```
+10:14:04.645 T:1eec4b080 [I]  System time changed. Offset 1.010 sec.
+10:14:09.745 T:1eec4b080 [I]  System time changed. Offset 1.010 sec.
+10:14:11.845 T:1eec4b080 [I]  System time changed. Offset 1.010 sec.
+10:14:13.845 T:1eec4b080 [I]  System time changed. Offset 1.010 sec.
+...
+```
+
+**After suppression:**
+
+```
+10:14:04.645 T:1eec4b080 [I]  System time changed. Offset 1.010 sec.
+10:14:13.845 T:1eec4b080 [I]  last message repeated 3 times
+```
+
+The summary line is emitted when:
+
+- A different message arrives
+- `logRotate()` is called
+- The logger is destroyed
+
+Messages with different log levels are **not** considered duplicates, even if the text is identical.
 
 ### Log Levels
 
@@ -169,7 +200,25 @@ target_link_libraries(MyApp PRIVATE Log SysUtils)
 
 ## Testing
 
-Unit tests live in `tests/unit/` (e.g., `TestQFileLogger.cpp`). Run tests with `ctest -R TestQFileLogger`.
+Unit tests for the logging module are in `tests/modules/Common/log/`. Key test cases include:
+
+- Basic write operations
+- Log level filtering
+- Duplicate message suppression
+- Thread safety under concurrent writes
+
+Run tests with:
+
+```bash
+cmake --build build/macos-qt6 --target TestSimpleLog
+./build/macos-qt6/tests/TestSimpleLog
+```
+
+Or via CTest:
+
+```bash
+cd build/macos-qt6 && ctest -R TestSimpleLog
+```
 
 ---
 

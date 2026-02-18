@@ -139,10 +139,20 @@ private:
     LogType::Enum m_Type;
     int m_Padding;
 
-    // TODO реализовать свёртку повторяющихся сообщений. Решить проблему сброса
-    // кэша на диск в этом режиме.
+    // Свертка повторяющихся сообщений.
+    // При получении одинаковых сообщений подряд, выводим "last message repeated N times"
     int m_DuplicateCounter;
     QString m_LastMessage;
+    LogLevel::Enum m_LastLevel;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRecursiveMutex m_WriteMutex;
+#else
+    QMutex m_WriteMutex;
+#endif
+
+    /// Сбросить счетчик повторов и записать сводку (если есть)
+    void flushDuplicateCounter();
 
     DestinationFilePtr m_CurrentFile;
 };

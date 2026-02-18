@@ -80,6 +80,9 @@ logs/
 # allow committed 'log' source modules under src (we use 'log' as a module name)
 !src/modules/common/log/
 !src/modules/common/log/**
+# also allow log test directory
+!tests/modules/Common/log/
+!tests/modules/Common/log/**
 .fuse_hidden*
 .directory
 .Trash-*
