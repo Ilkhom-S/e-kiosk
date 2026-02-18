@@ -277,11 +277,16 @@ template <class T> void DeviceBase<T>::finalizeInitialization() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool DeviceBase<T>::release() {
+    // Вызываем T::release() не-виртуально (CRTP), чтобы остановить поток через
+    // MetaDevice::release(). Нельзя использовать this->release() — виртуальный вызов уходит наверх
+    // цепочки (бесконечная рекурсия).
+    bool result = T::release();
+
     this->m_Connected = false;
     this->m_LastWarningLevel = static_cast<EWarningLevel::Enum>(-1);
     m_StatusCollection.clear();
 
-    return true;
+    return result;
 }
 
 //---------------------------------------------------------------------------
