@@ -34,21 +34,12 @@ tests/          → Mirror src/ structure
 
 ### **Naming**
 
-Source of truth: `.clang-tidy` `CheckOptions` (`readability-identifier-naming.*`).
+**Source of truth: `.clang-tidy`** — read `CheckOptions` (`readability-identifier-naming.*`) for all naming rules. Do not guess; the tool enforces them.
 
-| Symbol                            | Convention    | Example                           |
-| --------------------------------- | ------------- | --------------------------------- |
-| Class / Struct / Enum / Namespace | `PascalCase`  | `MyClass`, `SState`               |
-| Method / Free function            | `camelCase`   | `updateAreas()`                   |
-| Private / Protected member        | `m_camelCase` | `m_areas`, `m_flashTimer`         |
-| Public member (struct field)      | `camelCase`   | `sender`, `state`                 |
-| Parameter / Local variable        | `camelCase`   | `aEvent`, `stateCode`             |
-| Global / Static constant          | `PascalCase`  | `DefaultBackgroundStyle`          |
-| Macro                             | `UPPER_CASE`  | `REGISTER_PLUGIN_WITH_PARAMETERS` |
-| Interface                         | `IInterface`  | `ILogable`, `ICore`               |
+**Formatting: `.clang-format`** — all style decisions (indent, column limit, include order, etc.) are there.
 
-> **Note:** Older code uses the legacy `mCamelCase` (no underscore) prefix.
-> New code must use `m_camelCase` per `.clang-tidy` enforcement.
+> **Note:** Older code uses the legacy `mCamelCase` (no underscore) prefix for members.
+> New code must follow `.clang-tidy` (`m_camelCase` for private/protected, `camelCase` for public).
 
 ### **Headers**
 
