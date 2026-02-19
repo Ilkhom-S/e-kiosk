@@ -35,6 +35,12 @@ MessageWindow::~MessageWindow() = default;
 void MessageWindow::setup(const QString &aText,
                           SDK::GUI::MessageBoxParams::Enum aIcon,
                           SDK::GUI::MessageBoxParams::Enum aButton) {
+    // Убеждаемся, что UI инициализирован (защита от вызова до завершения конструктора)
+    if (!ui.lbText || !ui.btnOK || !ui.btnCancel || !ui.lbIcon) {
+        qWarning("MessageWindow::setup() called with uninitialized UI!");
+        return;
+    }
+
     ui.lbText->setVisible(true);
     ui.lbText->setText(aText);
 
