@@ -53,30 +53,6 @@
         <source>#printer_failed</source>
         <translation>Failed to print out.</translation>
     </message>
-    <message>
-        <source>#question_encash</source>
-        <translation type="obsolete">Proceed with encashment?</translation>
-    </message>
-    <message>
-        <source>#question_encash_without_receipt</source>
-        <translation type="obsolete">Cannot print receipt, still want to encash?</translation>
-    </message>
-    <message>
-        <source>#encashment_complete</source>
-        <translation type="obsolete">Encashment complete.</translation>
-    </message>
-    <message>
-        <source>#encashment_error_try_later</source>
-        <translation type="obsolete">Error during encashment. Try later.</translation>
-    </message>
-    <message>
-        <source>#encashment_error</source>
-        <translation type="obsolete">Error during encashment.</translation>
-    </message>
-    <message>
-        <source>#print_full_zreport</source>
-        <translation type="obsolete">Print deferred Z-reports?</translation>
-    </message>
 </context>
 <context>
     <name>BillAcceptorTest</name>
@@ -94,10 +70,6 @@
         <location filename="../DeviceTests/BillAcceptorTest.cpp" line="78"/>
         <source>#bill_is_escrowed</source>
         <translation>Note escrowed</translation>
-    </message>
-    <message>
-        <source>#bill_is_rejected</source>
-        <translation type="obsolete">Note rejected </translation>
     </message>
     <message>
         <location filename="../DeviceTests/BillAcceptorTest.cpp" line="82"/>
@@ -341,37 +313,9 @@
 <context>
     <name>DispenserServiceWindow</name>
     <message>
-        <source>x</source>
-        <translation type="obsolete">x</translation>
-    </message>
-    <message>
-        <source>0</source>
-        <translation type="obsolete">0</translation>
-    </message>
-    <message>
-        <source>=</source>
-        <translation type="obsolete">=</translation>
-    </message>
-    <message>
-        <source>0.0</source>
-        <translation type="obsolete">0.0</translation>
-    </message>
-    <message>
-        <source>RUR</source>
-        <translation type="obsolete">RUR</translation>
-    </message>
-    <message>
-        <source>#title_update_cash_unit</source>
-        <translation type="obsolete">Save changes</translation>
-    </message>
-    <message>
         <location filename="../GUI/DispenserServiceWindow.cpp" line="40"/>
         <source>#pts</source>
         <translation>pts</translation>
-    </message>
-    <message>
-        <source>#update_cash_unit_ok</source>
-        <translation type="obsolete">Cash unit update ok.</translation>
     </message>
 </context>
 <context>
@@ -444,10 +388,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>#print_full_zreport</source>
-        <translation type="obsolete">Print deferred Z-reports</translation>
-    </message>
-    <message>
         <location filename="../GUI/UI/EncashmentServiceWindow.ui" line="193"/>
         <source>#title_coin_count</source>
         <translation>Total coins</translation>
@@ -456,34 +396,6 @@
         <location filename="../GUI/UI/EncashmentServiceWindow.ui" line="93"/>
         <source>#title_encash</source>
         <translation>Encash</translation>
-    </message>
-    <message>
-        <source>#question_encash</source>
-        <translation type="obsolete">Proceed with encashment?</translation>
-    </message>
-    <message>
-        <source>#question_encash_without_receipt</source>
-        <translation type="obsolete">Cannot print receipt, still want to encash?</translation>
-    </message>
-    <message>
-        <source>#encashment_print_failed</source>
-        <translation type="obsolete">Encashment printed</translation>
-    </message>
-    <message>
-        <source>#encashment_complete</source>
-        <translation type="obsolete">Encashment complete.</translation>
-    </message>
-    <message>
-        <source>#encashment_complete_and_printed</source>
-        <translation type="obsolete">Encashment complete and printed</translation>
-    </message>
-    <message>
-        <source>#encashment_error_try_later</source>
-        <translation type="obsolete">Error during encashment. Try later.</translation>
-    </message>
-    <message>
-        <source>#encashment_error</source>
-        <translation type="obsolete">Error during encashment.</translation>
     </message>
     <message>
         <location filename="../GUI/EncashmentServiceWindow.cpp" line="178"/>
@@ -499,14 +411,6 @@
         <location filename="../GUI/EncashmentServiceWindow.cpp" line="175"/>
         <source>#balance_print_failed</source>
         <translation>Failed to print out balance.</translation>
-    </message>
-    <message>
-        <source>#zreport_printed</source>
-        <translation type="obsolete">Z-report printed out.</translation>
-    </message>
-    <message>
-        <source>#zreport_failed</source>
-        <translation type="obsolete">Failed to print out Z-report.</translation>
     </message>
 </context>
 <context>
@@ -617,37 +521,11 @@
     </message>
 </context>
 <context>
-    <name>Hardware::CommonParameters</name>
-    <message>
-        <source>#unknown_model</source>
-        <translation type="vanished">Model is not selected</translation>
-    </message>
-    <message>
-        <source>#model</source>
-        <translation type="vanished">Model</translation>
-    </message>
-    <message>
-        <source>#model_howto</source>
-        <translation type="vanished">Select the device model from the list.</translation>
-    </message>
-</context>
-<context>
-    <name>Hardware::PrinterParameters</name>
-    <message>
-        <source>#sytem_printer_name</source>
-        <translation type="vanished">System printer</translation>
-    </message>
-</context>
-<context>
     <name>Hardware::Types</name>
     <message>
         <location filename="../GUI/HardwareWindow.cpp" line="18"/>
         <source>BillAcceptor</source>
         <translation>Cash acceptor</translation>
-    </message>
-    <message>
-        <source>BillDispenser</source>
-        <translation type="obsolete">Dispenser</translation>
     </message>
     <message>
         <location filename="../GUI/HardwareWindow.cpp" line="19"/>
@@ -713,10 +591,6 @@
 </context>
 <context>
     <name>HardwareManager</name>
-    <message>
-        <source>#status_undefined</source>
-        <translation type="obsolete">Status undefined</translation>
-    </message>
     <message>
         <location filename="../Backend/HardwareManager.cpp" line="192"/>
         <source>#unknown_status</source>
@@ -1275,117 +1149,117 @@
 <context>
     <name>MainServiceWindow</name>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="638"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="650"/>
         <source>#title_cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="664"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="676"/>
         <source>#title_ok</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="745"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="757"/>
         <source>#title_enter_password</source>
         <translation>Enter password:</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="847"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="861"/>
         <source>#title_reboot_terminal</source>
         <translation>Reboot terminal</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="860"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="876"/>
         <source>#title_reboot_software</source>
         <translation>Restart software</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="873"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="891"/>
         <source>#title_stop_software</source>
         <translation>Stop terminal software</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="899"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="920"/>
         <source>#title_exit</source>
         <translation>Exit</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="85"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="88"/>
         <source>#terminal_number</source>
         <translation>Terminal #</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="87"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="90"/>
         <source>#software_version</source>
         <translation>Version </translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="167"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="170"/>
         <source>#title_diagnostic</source>
         <translation>Diagnostics</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="168"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="171"/>
         <source>#title_logs</source>
         <translation>Logs</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="188"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="191"/>
         <source>#title_setup</source>
         <translation>Setup</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="179"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="182"/>
         <source>#title_payments</source>
         <translation>Payments</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="173"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="176"/>
         <source>#title_encashment</source>
         <translation>Encashment</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="330"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="333"/>
         <source>#question_reboot_software</source>
         <translation>Are you sure you want to reboot the software?</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="337"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="340"/>
         <source>#question_reboot_terminal</source>
         <translation>Reboot terminal?</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="346"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="349"/>
         <source>#question_unblock_terminal</source>
         <translation>Unlock terminal?</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="346"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="349"/>
         <source>#question_block_terminal</source>
         <translation>Lock terminal?</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="354"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="357"/>
         <source>#question_stop_terminal</source>
         <translation>Stop terminal software?</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="313"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="316"/>
         <source>#error_auth_failed</source>
         <translation>Wrong password</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="91"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="94"/>
         <source>#title_unlock</source>
         <translation>Unlock</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="92"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="95"/>
         <source>#title_lock</source>
         <translation>Lock</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="395"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="403"/>
         <source>#question_leave_service_menu</source>
         <translation>Quit service menu?</translation>
     </message>
@@ -1393,32 +1267,27 @@
 <context>
     <name>MessageWindow</name>
     <message>
-        <location filename="../GUI/MessageBox/MessageWindow.cpp" line="16"/>
+        <location filename="../GUI/MessageBox/MessageWindow.cpp" line="24"/>
         <source>#ok</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../GUI/MessageBox/MessageWindow.cpp" line="17"/>
+        <location filename="../GUI/MessageBox/MessageWindow.cpp" line="25"/>
         <source>#cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../GUI/MessageBox/MessageWindow.ui" line="14"/>
-        <source>MessageWindow</source>
+        <location filename="../GUI/MessageBox/MessageWindow.ui" line="112"/>
+        <source>System message content...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/MessageBox/MessageWindow.ui" line="136"/>
-        <source>System alert message text...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../GUI/MessageBox/MessageWindow.ui" line="169"/>
+        <location filename="../GUI/MessageBox/MessageWindow.ui" line="148"/>
         <source>CANCEL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/MessageBox/MessageWindow.ui" line="182"/>
+        <location filename="../GUI/MessageBox/MessageWindow.ui" line="161"/>
         <source>OK</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1496,14 +1365,14 @@
 <context>
     <name>NetworkWizardPage</name>
     <message>
-        <location filename="../FirstSetup/UI/NetworkWizardPage.ui" line="98"/>
-        <source>#unmanaged_connection</source>
-        <translation>Local network connection</translation>
+        <location filename="../FirstSetup/UI/NetworkWizardPage.ui" line="23"/>
+        <source>LAN / ETHERNET</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FirstSetup/UI/NetworkWizardPage.ui" line="130"/>
-        <source>#modem_connection</source>
-        <translation>Dialup connection</translation>
+        <location filename="../FirstSetup/UI/NetworkWizardPage.ui" line="30"/>
+        <source>GSM / MODEM</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1512,10 +1381,6 @@
         <location filename="../Backend/PaymentManager.cpp" line="501"/>
         <source>#lost_change</source>
         <translation>Change</translation>
-    </message>
-    <message>
-        <source>#crypted</source>
-        <translation type="obsolete">Crypted</translation>
     </message>
 </context>
 <context>
@@ -1822,14 +1687,6 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>#cyberplat_copyright</source>
-        <translation type="vanished">Humo LLC, technical support service: +992 88 777 55 44</translation>
-    </message>
-    <message>
-        <source>#password_not_set</source>
-        <translation type="obsolete">Password for entering the service menu is not set</translation>
-    </message>
-    <message>
         <location filename="../GUI/PaymentInfo.h" line="74"/>
         <source>#lost_change</source>
         <translation>Change</translation>
@@ -1886,7 +1743,7 @@
                 Reboot now?</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/FirstSetup.cpp" line="63"/>
+        <location filename="../FirstSetup/FirstSetup.cpp" line="57"/>
         <source>#humo_copyright</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1894,32 +1751,22 @@
 <context>
     <name>SaveSettingsWizardPage</name>
     <message>
-        <location filename="../FirstSetup/UI/SaveSettingsWizardPage.ui" line="79"/>
-        <source>#repeat</source>
-        <translation>Repeat</translation>
-    </message>
-    <message>
-        <location filename="../FirstSetup/UI/SaveSettingsWizardPage.ui" line="116"/>
-        <source>#finish</source>
-        <translation>Finish</translation>
-    </message>
-    <message>
-        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="46"/>
+        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="42"/>
         <source>#saving_configs</source>
         <translation>Saving settings...</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="50"/>
+        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="46"/>
         <source>#when_saving_configs</source>
         <translation>Error occured while saving settings:</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="50"/>
+        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="46"/>
         <source>#save_configuration_error</source>
         <translation>Error occured while saving configuration</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="54"/>
+        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="50"/>
         <source>#saved_successfully</source>
         <translation>Congratulations, the terminal is set up!
                 Click on the button &quot;Finish&quot; and in a while the terminal software will
@@ -1927,6 +1774,11 @@
                 the required configuration files from Humo server (this may take a while). Once all
                 required files are retrieved, the terminal will be ready to process payments.
                 NOTE: make sure to confirm generated keys on the dealer&apos;s office web site!</translation>
+    </message>
+    <message>
+        <location filename="../FirstSetup/UI/SaveSettingsWizardPage.ui" line="25"/>
+        <source>WRITING TO SYSTEM...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1992,14 +1844,6 @@
 </context>
 <context>
     <name>TokenServiceWindow</name>
-    <message>
-        <source>#keys_howto</source>
-        <translation type="obsolete">Every terminal uses a unique pair of keys for authorizing
-                on payment processing servers. To create keys choose the country you are in and fill
-                the &quot;User&quot; and &quot;Password&quot; fields with the values generated on
-                the dealer&apos;s office web site.
-                NOTE: the keys must be confirmed afterwards on the dealer&apos;s office web site!</translation>
-    </message>
     <message>
         <location filename="../GUI/TokenServiceWindow.cpp" line="61"/>
         <source>#question_format_token_warning</source>
@@ -2072,14 +1916,6 @@
 </context>
 <context>
     <name>TokenWizardPage</name>
-    <message>
-        <source>#creating_keys</source>
-        <translation type="obsolete">Creating keys...</translation>
-    </message>
-    <message>
-        <source>#cannot_save_keys</source>
-        <translation type="obsolete">Failed to save keys!</translation>
-    </message>
     <message>
         <location filename="../FirstSetup/TokenWizardPage.cpp" line="60"/>
         <source>#format_token</source>
@@ -2155,18 +1991,13 @@
 <context>
     <name>WelcomeWizardPage</name>
     <message>
-        <location filename="../FirstSetup/UI/WelcomeWizardPage.ui" line="160"/>
+        <location filename="../FirstSetup/UI/WelcomeWizardPage.ui" line="99"/>
         <source>#run_setup</source>
         <translation>Run setup</translation>
     </message>
 </context>
 <context>
     <name>WizardFrame</name>
-    <message>
-        <location filename="../FirstSetup/UI/WizardFrame.ui" line="167"/>
-        <source>#exit</source>
-        <translation>Exit</translation>
-    </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="271"/>
         <source>#hardware_setup_stage</source>
@@ -2308,6 +2139,31 @@
         <source>#question_exit</source>
         <translation>Stop setup process and exit?</translation>
     </message>
+    <message>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="48"/>
+        <source>#title_system_setup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="55"/>
+        <source>#howto_follow_sequence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="108"/>
+        <source>X</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="136"/>
+        <source>#title_back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="156"/>
+        <source>#title_continue</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>frmDeviceSlot</name>
@@ -2343,10 +2199,6 @@
         <location filename="../GUI/UI/EditorPane.ui" line="492"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>#default</source>
-        <translation type="obsolete">Default</translation>
     </message>
     <message>
         <location filename="../GUI/UI/EditorPane.ui" line="517"/>

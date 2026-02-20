@@ -2,11 +2,8 @@
 
 #include "FirstSetup.h"
 
-#include <QtWidgets/QGraphicsScene>
-
 #include <SDK/PaymentProcessor/Components.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
-#include <SDK/PaymentProcessor/Core/IGUIService.h>
 #include <SDK/Plugins/IExternalInterface.h>
 #include <SDK/Plugins/IPluginLoader.h>
 #include <SDK/Plugins/PluginInitializer.h>
@@ -40,8 +37,7 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
 
 //--------------------------------------------------------------------------
 FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
-    : m_MainWidget(nullptr), m_Environment(aFactory), m_InstancePath(std::move(aInstancePath)),
-      m_IsReady(false) {
+    : m_Environment(aFactory), m_InstancePath(std::move(aInstancePath)), m_IsReady(false) {
     void *voidPtr = reinterpret_cast<void *>(
         m_Environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
     auto *core = reinterpret_cast<SDK::PaymentProcessor::ICore *>(voidPtr);
@@ -56,34 +52,17 @@ FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, QString aInstancePat
     m_IsReady = core != nullptr;
 
     if (m_IsReady) {
-        m_MainWidget = new QGraphicsProxyWidget();
-
         m_WizardFrame = new WizardFrame(m_Backend.data());
         m_WizardFrame->initialize();
         m_WizardFrame->setStatus(QObject::tr("#humo_copyright"));
-
-        m_MainWidget->setWidget(m_WizardFrame);
-        m_MainWidget->setScale(qMin(
-            core->getGUIService()->getScreenSize(0).width() / qreal(m_WizardFrame->width()),
-            core->getGUIService()->getScreenSize(0).height() / qreal(m_WizardFrame->height())));
-
-        qreal newWidgetWidth =
-            core->getGUIService()->getScreenSize(0).width() / m_MainWidget->scale();
-        m_MainWidget->setMinimumWidth(newWidgetWidth);
-        m_MainWidget->setMaximumWidth(newWidgetWidth);
-
-        qreal newWidgetHeight =
-            core->getGUIService()->getScreenSize(0).height() / m_MainWidget->scale();
-        m_MainWidget->setMinimumHeight(newWidgetHeight);
-        m_MainWidget->setMaximumHeight(newWidgetHeight);
     }
 }
 
 //--------------------------------------------------------------------------
 FirstSetup::~FirstSetup() {
-    if (m_MainWidget) {
+    if (m_WizardFrame) {
         m_WizardFrame->shutdown();
-        m_MainWidget->deleteLater();
+        m_WizardFrame->deleteLater();
     }
 }
 
@@ -133,8 +112,6 @@ void FirstSetup::reset(const QVariantMap & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 QQuickItem *FirstSetup::getWidget() const {
-    // return m_MainWidget;
-    // FIXME
     return nullptr;
 }
 
@@ -146,7 +123,7 @@ QVariantMap FirstSetup::getContext() const {
 
 //---------------------------------------------------------------------------
 bool FirstSetup::isValid() const {
-    return m_MainWidget != nullptr;
+    return m_WizardFrame != nullptr;
 }
 
 //---------------------------------------------------------------------------

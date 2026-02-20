@@ -53,35 +53,6 @@
         <source>#printer_failed</source>
         <translation>Chekni chop etib bo‘lmaydi.</translation>
     </message>
-    <message>
-        <source>#question_encash</source>
-        <translation type="obsolete">Inkassatsiya qilinsinmi?</translation>
-    </message>
-    <message>
-        <source>#question_encash_without_receipt</source>
-        <translation type="obsolete">Chekni chop etib bo‘lmaydi. Inkassatsiya qilinsinmi?</translation>
-    </message>
-    <message>
-        <source>#enter_stacker_id</source>
-        <translation type="obsolete">Kasseta raqamini kiriting:</translation>
-    </message>
-    <message>
-        <source>#encashment_complete</source>
-        <translation type="obsolete">Inkassatsiya bajarildi.</translation>
-    </message>
-    <message>
-        <source>#encashment_error_try_later</source>
-        <translation type="obsolete">Inkassatsiya vaqtida xatolik yuz berdi. Bir daqiqadan so‘ng
-                qayta urinib ko‘ring.</translation>
-    </message>
-    <message>
-        <source>#encashment_error</source>
-        <translation type="obsolete">Inkassatsiya vaqtida xatolik yuz berdi.</translation>
-    </message>
-    <message>
-        <source>#print_full_zreport</source>
-        <translation type="obsolete">Kechiktirilgan Z-hisobotlarni chop etilsinmi?</translation>
-    </message>
 </context>
 <context>
     <name>BillAcceptorTest</name>
@@ -99,10 +70,6 @@
         <location filename="../DeviceTests/BillAcceptorTest.cpp" line="78"/>
         <source>#bill_is_escrowed</source>
         <translation>Banknot qabul qilindi</translation>
-    </message>
-    <message>
-        <source>#bill_is_rejected</source>
-        <translation type="obsolete">Banknot qaytarildi</translation>
     </message>
     <message>
         <location filename="../DeviceTests/BillAcceptorTest.cpp" line="82"/>
@@ -346,29 +313,9 @@
 <context>
     <name>DispenserServiceWindow</name>
     <message>
-        <source>0</source>
-        <translation type="obsolete">0</translation>
-    </message>
-    <message>
-        <source>=</source>
-        <translation type="obsolete">=</translation>
-    </message>
-    <message>
-        <source>0.0</source>
-        <translation type="obsolete">0.0</translation>
-    </message>
-    <message>
-        <source>#title_update_cash_unit</source>
-        <translation type="obsolete">Сохранить изменения</translation>
-    </message>
-    <message>
         <location filename="../GUI/DispenserServiceWindow.cpp" line="40"/>
         <source>#pts</source>
         <translation>шт.</translation>
-    </message>
-    <message>
-        <source>#update_cash_unit_ok</source>
-        <translation type="obsolete">Состояние кассеты обновлено.</translation>
     </message>
 </context>
 <context>
@@ -441,10 +388,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>#print_full_zreport</source>
-        <translation type="obsolete">Печатать отложенные Z-отчеты</translation>
-    </message>
-    <message>
         <location filename="../GUI/UI/EncashmentServiceWindow.ui" line="193"/>
         <source>#title_coin_count</source>
         <translation>Всего монет</translation>
@@ -453,39 +396,6 @@
         <location filename="../GUI/UI/EncashmentServiceWindow.ui" line="93"/>
         <source>#title_encash</source>
         <translation>Инкассировать</translation>
-    </message>
-    <message>
-        <source>#question_encash</source>
-        <translation type="obsolete">Произвести инкассацию?</translation>
-    </message>
-    <message>
-        <source>#question_encash_without_receipt</source>
-        <translation type="obsolete">Печать чека невозможна. Произвести инкассацию?</translation>
-    </message>
-    <message>
-        <source>#encashment_print_failed</source>
-        <translation type="obsolete">Инкассацция произведена без печати.</translation>
-    </message>
-    <message>
-        <source>#encashment_complete</source>
-        <translation type="obsolete">Инкассация произведена.</translation>
-    </message>
-    <message>
-        <source>#enter_stacker_id</source>
-        <translation type="obsolete">Введите номер кассеты:</translation>
-    </message>
-    <message>
-        <source>#encashment_complete_and_printed</source>
-        <translation type="obsolete">Инкассация произведена и распечатана.</translation>
-    </message>
-    <message>
-        <source>#encashment_error_try_later</source>
-        <translation type="obsolete">Во время инкассации произошла ошибка. Повторите операцию
-                через минуту.</translation>
-    </message>
-    <message>
-        <source>#encashment_error</source>
-        <translation type="obsolete">Во время инкассации произошла ошибка.</translation>
     </message>
     <message>
         <location filename="../GUI/EncashmentServiceWindow.cpp" line="178"/>
@@ -501,14 +411,6 @@
         <location filename="../GUI/EncashmentServiceWindow.cpp" line="175"/>
         <source>#balance_print_failed</source>
         <translation>Невозможно распечатать баланс.</translation>
-    </message>
-    <message>
-        <source>#zreport_printed</source>
-        <translation type="obsolete">Z-отчёт распечатан.</translation>
-    </message>
-    <message>
-        <source>#zreport_failed</source>
-        <translation type="obsolete">Невозможно распечатать Z-отчёт.</translation>
     </message>
 </context>
 <context>
@@ -619,28 +521,6 @@
     </message>
 </context>
 <context>
-    <name>Hardware::CommonParameters</name>
-    <message>
-        <source>#unknown_model</source>
-        <translation type="vanished">Модель не выбрана</translation>
-    </message>
-    <message>
-        <source>#model</source>
-        <translation type="vanished">Модель</translation>
-    </message>
-    <message>
-        <source>#model_howto</source>
-        <translation type="vanished">Выберите модель устройства из списка:</translation>
-    </message>
-</context>
-<context>
-    <name>Hardware::PrinterParameters</name>
-    <message>
-        <source>#sytem_printer_name</source>
-        <translation type="vanished">Системный принтер</translation>
-    </message>
-</context>
-<context>
     <name>Hardware::Types</name>
     <message>
         <location filename="../GUI/HardwareWindow.cpp" line="18"/>
@@ -711,10 +591,6 @@
 </context>
 <context>
     <name>HardwareManager</name>
-    <message>
-        <source>#status_undefined</source>
-        <translation type="obsolete">Статус не определен</translation>
-    </message>
     <message>
         <location filename="../Backend/HardwareManager.cpp" line="192"/>
         <source>#unknown_status</source>
@@ -1110,7 +986,7 @@
         <source>#keys_howto</source>
         <translation>Каждый аппарат использует уникальную пару ключей для подключения к серверам
                 Ҳумо. Сейчас вам необходимо создать эти ключи. Для этого заполните поля
-                &quot;Логин&quot; и &quot;Пароль&quot; значениями, полученными в кабинете дилера, и
+                &quot;Логин&quot; va &quot;Пароль&quot; значениями, полученными в кабинете дилера, и
                 нажмите кнопку &quot;Сгенерировать ключи&quot;.
                 ВНИМАНИЕ: после завершения установки необходимо заверить созданные ключи в кабинете
                 дилера в разделе &quot;API ключи&quot;.</translation>
@@ -1274,117 +1150,117 @@
 <context>
     <name>MainServiceWindow</name>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="638"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="650"/>
         <source>#title_cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="664"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="676"/>
         <source>#title_ok</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="745"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="757"/>
         <source>#title_enter_password</source>
         <translation>Введите пароль:</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="847"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="861"/>
         <source>#title_reboot_terminal</source>
         <translation>Перезагрузить аппарат</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="860"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="876"/>
         <source>#title_reboot_software</source>
         <translation>Перегрузить ПО</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="873"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="891"/>
         <source>#title_stop_software</source>
         <translation>Остановить ПО</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/MainServiceWindow.ui" line="899"/>
+        <location filename="../GUI/UI/MainServiceWindow.ui" line="920"/>
         <source>#title_exit</source>
         <translation>Выйти из меню</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="85"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="88"/>
         <source>#terminal_number</source>
         <translation>Аппарат №</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="87"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="90"/>
         <source>#software_version</source>
         <translation>Версия </translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="167"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="170"/>
         <source>#title_diagnostic</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="168"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="171"/>
         <source>#title_logs</source>
         <translation>Логи</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="188"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="191"/>
         <source>#title_setup</source>
         <translation>Настройка</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="179"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="182"/>
         <source>#title_payments</source>
         <translation>Платежи</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="173"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="176"/>
         <source>#title_encashment</source>
         <translation>Инкассация</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="330"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="333"/>
         <source>#question_reboot_software</source>
         <translation>Вы уверены, что хотите перегрузить ПО?</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="337"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="340"/>
         <source>#question_reboot_terminal</source>
         <translation>Вы уверены, что хотите перезагрузить аппарат?</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="346"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="349"/>
         <source>#question_unblock_terminal</source>
         <translation>Вы уверены, что хотите разблокировать аппарат?</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="346"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="349"/>
         <source>#question_block_terminal</source>
         <translation>Вы уверены, что хотите заблокировать аппарат?</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="354"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="357"/>
         <source>#question_stop_terminal</source>
         <translation>Вы уверены, что хотите остановить программное обеспечение?</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="313"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="316"/>
         <source>#error_auth_failed</source>
         <translation>Неверный пароль</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="91"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="94"/>
         <source>#title_unlock</source>
         <translation>Разблокировать</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="92"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="95"/>
         <source>#title_lock</source>
         <translation>Заблокировать</translation>
     </message>
     <message>
-        <location filename="../GUI/MainServiceWindow.cpp" line="395"/>
+        <location filename="../GUI/MainServiceWindow.cpp" line="403"/>
         <source>#question_leave_service_menu</source>
         <translation>Вы уверены, что хотите выйти из сервисного меню?</translation>
     </message>
@@ -1392,32 +1268,27 @@
 <context>
     <name>MessageWindow</name>
     <message>
-        <location filename="../GUI/MessageBox/MessageWindow.cpp" line="16"/>
+        <location filename="../GUI/MessageBox/MessageWindow.cpp" line="24"/>
         <source>#ok</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../GUI/MessageBox/MessageWindow.cpp" line="17"/>
+        <location filename="../GUI/MessageBox/MessageWindow.cpp" line="25"/>
         <source>#cancel</source>
         <translation>Bekor</translation>
     </message>
     <message>
-        <location filename="../GUI/MessageBox/MessageWindow.ui" line="14"/>
-        <source>MessageWindow</source>
+        <location filename="../GUI/MessageBox/MessageWindow.ui" line="112"/>
+        <source>System message content...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/MessageBox/MessageWindow.ui" line="136"/>
-        <source>System alert message text...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../GUI/MessageBox/MessageWindow.ui" line="169"/>
+        <location filename="../GUI/MessageBox/MessageWindow.ui" line="148"/>
         <source>CANCEL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/MessageBox/MessageWindow.ui" line="182"/>
+        <location filename="../GUI/MessageBox/MessageWindow.ui" line="161"/>
         <source>OK</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1462,16 +1333,6 @@
 </source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>#phone_entry_already_exist
-            </source>
-        <translation type="vanished">Соединение уже существует.</translation>
-    </message>
-    <message>
-        <source>#phone_entry_not_exist
-            </source>
-        <translation type="vanished">Соединение не найдено</translation>
-    </message>
 </context>
 <context>
     <name>NetworkServiceWindow</name>
@@ -1505,14 +1366,14 @@
 <context>
     <name>NetworkWizardPage</name>
     <message>
-        <location filename="../FirstSetup/UI/NetworkWizardPage.ui" line="98"/>
-        <source>#unmanaged_connection</source>
-        <translation>Соединение по локальной сети</translation>
+        <location filename="../FirstSetup/UI/NetworkWizardPage.ui" line="23"/>
+        <source>LAN / ETHERNET</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FirstSetup/UI/NetworkWizardPage.ui" line="130"/>
-        <source>#modem_connection</source>
-        <translation>Модемное соединение</translation>
+        <location filename="../FirstSetup/UI/NetworkWizardPage.ui" line="30"/>
+        <source>GSM / MODEM</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1521,10 +1382,6 @@
         <location filename="../Backend/PaymentManager.cpp" line="501"/>
         <source>#lost_change</source>
         <translation>Сдача</translation>
-    </message>
-    <message>
-        <source>#crypted</source>
-        <translation type="obsolete">Зашифровано</translation>
     </message>
 </context>
 <context>
@@ -1831,14 +1688,6 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>#cyberplat_copyright</source>
-        <translation type="vanished">ООО &quot;Хумо&quot;, тел. техподдержки: +992 88 777 55 44</translation>
-    </message>
-    <message>
-        <source>#password_not_set</source>
-        <translation type="obsolete">Не установлен пароль для входа в сервисное меню.</translation>
-    </message>
-    <message>
         <location filename="../GUI/PaymentInfo.h" line="74"/>
         <source>#lost_change</source>
         <translation>Сдача</translation>
@@ -1895,7 +1744,7 @@
                 Вы согласны?</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/FirstSetup.cpp" line="63"/>
+        <location filename="../FirstSetup/FirstSetup.cpp" line="57"/>
         <source>#humo_copyright</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1903,38 +1752,33 @@
 <context>
     <name>SaveSettingsWizardPage</name>
     <message>
-        <location filename="../FirstSetup/UI/SaveSettingsWizardPage.ui" line="79"/>
-        <source>#repeat</source>
-        <translation>Повторить</translation>
-    </message>
-    <message>
-        <location filename="../FirstSetup/UI/SaveSettingsWizardPage.ui" line="116"/>
-        <source>#finish</source>
-        <translation>Готово</translation>
-    </message>
-    <message>
-        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="46"/>
+        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="42"/>
         <source>#saving_configs</source>
         <translation>Сохранение настроек...</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="50"/>
+        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="46"/>
         <source>#when_saving_configs</source>
         <translation>Во время сохранения настроек произошла следующая ошибка:</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="50"/>
+        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="46"/>
         <source>#save_configuration_error</source>
         <translation>Во время сохранения конфигурации произошла ошибка.</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="54"/>
+        <location filename="../FirstSetup/SaveSettingsWizardPage.cpp" line="50"/>
         <source>#saved_successfully</source>
         <translation>Поздравляем, аппарат настроен!
                 Теперь нажмите кнопку &quot;Готово&quot; и ПО загрузит необходимые для работы файлы
                 с сервера Ҳумо (это может занять некоторое время). После получения всех
                 необходимых файлов, аппарат сможет принимать платежи.
                 ВНИМАНИЕ: не забудьте заверить сгенерированные ключи в кабинете дилера!</translation>
+    </message>
+    <message>
+        <location filename="../FirstSetup/UI/SaveSettingsWizardPage.ui" line="25"/>
+        <source>WRITING TO SYSTEM...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2000,15 +1844,6 @@
 </context>
 <context>
     <name>TokenServiceWindow</name>
-    <message>
-        <source>#keys_howto</source>
-        <translation type="obsolete">Каждый аппарат использует уникальную пару ключей для
-                подключения к серверам Ҳумо. Сейчас вам необходимо создать эти ключи. Для этого
-                заполните поля &quot;Логин&quot; и &quot;Пароль&quot; значениями, полученными в
-                кабинете дилера, и нажмите кнопку &quot;Сгенерировать ключи&quot;.
-                ВНИМАНИЕ: после завершения установки необходимо заверить созданные ключи в кабинете
-                дилера в разделе &quot;API ключи&quot;.</translation>
-    </message>
     <message>
         <location filename="../GUI/TokenServiceWindow.cpp" line="61"/>
         <source>#question_format_token_warning</source>
@@ -2080,14 +1915,6 @@
 </context>
 <context>
     <name>TokenWizardPage</name>
-    <message>
-        <source>#creating_keys</source>
-        <translation type="obsolete">Создание ключей...</translation>
-    </message>
-    <message>
-        <source>#cannot_save_keys</source>
-        <translation type="obsolete">Во время сохранения ключей произошла ошибка!</translation>
-    </message>
     <message>
         <location filename="../FirstSetup/TokenWizardPage.cpp" line="60"/>
         <source>#format_token</source>
@@ -2163,7 +1990,7 @@
 <context>
     <name>WelcomeWizardPage</name>
     <message>
-        <location filename="../FirstSetup/UI/WelcomeWizardPage.ui" line="160"/>
+        <location filename="../FirstSetup/UI/WelcomeWizardPage.ui" line="99"/>
         <source>#run_setup</source>
         <translation>Начать настройку</translation>
     </message>
@@ -2171,29 +1998,44 @@
 <context>
     <name>WizardFrame</name>
     <message>
-        <location filename="../FirstSetup/UI/WizardFrame.ui" line="167"/>
-        <source>#exit</source>
-        <translation>Выход</translation>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="48"/>
+        <source>#title_system_setup</source>
+        <translation>Tizim sozlamalari</translation>
+    </message>
+    <message>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="55"/>
+        <source>#howto_follow_sequence</source>
+        <translation>Sanoat ketma-ketligiga rioya qiling</translation>
+    </message>
+    <message>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="108"/>
+        <source>X</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="136"/>
+        <source>#title_back</source>
+        <translation>Orqaga</translation>
+    </message>
+    <message>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="156"/>
+        <source>#title_continue</source>
+        <translation>Davom etish</translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="271"/>
         <source>#hardware_setup_stage</source>
-        <translation>Настройка оборудования</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="271"/>
         <source>#hardware_setup_howto</source>
-        <translation>На данной странице можно добавить устройства. Если какое-либо устройство,
-                не удалось определить автоматически (не все устройства поддерживают автоматическую
-                идентификацию), и Вы уверены в том, что оно подключено, можно вручную выбрать
-                производителя, модель и порт данного устройства. После того, как всё оборудование
-                определено, переходите к следующему экрану настройки, нажав кнопку &quot;Настройка
-                сети&quot;.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="273"/>
         <source>#to_start_page</source>
-        <translation>В начало</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="276"/>
@@ -2202,132 +2044,96 @@
         <location filename="../FirstSetup/WizardFrame.cpp" line="335"/>
         <location filename="../FirstSetup/WizardFrame.cpp" line="352"/>
         <source>#to_network_setup</source>
-        <translation>Настройка сети</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="285"/>
         <source>#network_setup_stage</source>
-        <translation>Настройка сетевого соединения</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="285"/>
         <source>#network_setup_howto</source>
-        <translation>Сейчас Вам необходимо выбрать тип используемого сетевого соединения. Это
-                может быть как постоянное подключение по локальной сети, так и подключение типа
-                GPRS/VPN и т.п.
-                Внимание: если сетевым подключением управляет сторонняя программа, сторожевой таймер
-                или операционная система (например автодозвон Windows), выберите &quot;Соединение по
-                локальной сети&quot;.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="287"/>
         <source>#to_hardware_setup</source>
-        <translation>Настройка оборудования</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="294"/>
         <source>#dialup_setup_stage</source>
-        <translation>Настройка модемного соединения</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="294"/>
         <source>#dialup_setup_howto</source>
-        <translation>Для модемного подключения можно:
-                а) выбрать существующее подключение (в настройках модема, при этом, должны быть
-                прописаны все необходимые команды инициализации),
-                б) создать новое подключение, используя один из предлагаемых шаблонов.
-
-                После выбора/создания соединения протестируйте его, нажав &quot;Тест
-                соединения&quot;. Только после удачной проверки вы сможете перейти к генерации
-                ключей.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="301"/>
         <location filename="../FirstSetup/WizardFrame.cpp" line="321"/>
         <location filename="../FirstSetup/WizardFrame.cpp" line="348"/>
         <source>#to_token_setup</source>
-        <translation>Инициализация Token</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="305"/>
         <location filename="../FirstSetup/WizardFrame.cpp" line="325"/>
         <location filename="../FirstSetup/WizardFrame.cpp" line="337"/>
         <source>#to_keys_setup</source>
-        <translation>Генерация ключей</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="314"/>
         <source>#unmanaged_setup_stage</source>
-        <translation>Настройка соединения по локальной сети</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="314"/>
         <source>#unmanaged_setup_howto</source>
-        <translation>При соединении по локальной сети ПО считает, что аппарат постоянно
-                подключен к интернет (или это подключение выполняется другой программой).</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="333"/>
         <source>#token_setup_stage</source>
-        <translation>Инициализация Token</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="333"/>
         <source>#token_setup_howto</source>
-        <translation>При обнаружении аппаратного токена Терминальный Клиент использует его для
-                хранения ключей. Для начала работы token необходимо предварительно отформатировать.
-                Если вы использовали token на этом терминале ранее, форматирование не нужно.
-                Внимание: убедитесь что на токене нет нужной вам информации, вся инфрмация при
-                форматировании будет удалена.</translation>
-    </message>
-    <message>
-        <source>#rutoken_setup_stage</source>
-        <translation type="obsolete">Инициализация Token</translation>
-    </message>
-    <message>
-        <source>#rutoken_setup_howto</source>
-        <translation type="obsolete">Для работы с ключом eToken или ruToken его необходимо
-                предварительно отформатировать. Если вы использовали token на этом терминале ранее,
-                форматирование не нужно.
-
-                Внимание: убедитесь что на токене нет нужной вам информации, вся инфрмация при
-                форматировании будет удалена.
-                После форматирования можно будет перейти к генерации ключей.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="344"/>
         <source>#keys_setup_stage</source>
-        <translation>Создание и регистрация ключей</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="344"/>
         <source>#keys_setup_howto</source>
-        <translation>Для связи с серверами Ҳумо аппарат должен иметь уникальные ключи,
-                которые заверяются в кабинете дилера. Это необходимо для безопасной передачи
-                платёжной информации. Введите имя пользователя и пароль, полученные в кабинете
-                дилера, и нажмите &quot;Сгенерировать ключи&quot;.
-                После удачной генерации можно будет перейти к последнему шагу настройки.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="358"/>
         <source>#to_save_settings</source>
-        <translation>Сохранить настройки</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="367"/>
         <source>#save_settings_stage</source>
-        <translation>Сохранение настроек и завершение установки</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="367"/>
         <source>#save_settings_howto</source>
-        <translation>Для завершения конфигурирования аппарата осталось сохранить выбранные
-                настройки. Это произойдёт без вашего участия, просто немного подождите.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../FirstSetup/WizardFrame.cpp" line="377"/>
         <source>#question_exit</source>
-        <translation>Прервать настройку и выйти из программы установки?</translation>
+        <translation>Sozlash jarayonini to&apos;xtatib, dasturdan chiqishni istaysizmi?</translation>
     </message>
 </context>
 <context>
@@ -2335,17 +2141,17 @@
     <message>
         <location filename="../GUI/UI/DeviceSlot.ui" line="210"/>
         <source>#delete_device</source>
-        <translation>Удалить</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/UI/DeviceSlot.ui" line="240"/>
         <source>#run_test</source>
-        <translation>Тест</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/UI/DeviceSlot.ui" line="261"/>
         <source>#status_undefined</source>
-        <translation>Статус не определен</translation>
+        <translation type="unfinished">Статус не определен</translation>
     </message>
 </context>
 <context>
@@ -2353,12 +2159,12 @@
     <message>
         <location filename="../GUI/UI/EditorPane.ui" line="197"/>
         <source>#on</source>
-        <translation>Да</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/UI/EditorPane.ui" line="210"/>
         <source>#off</source>
-        <translation>Нет</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/UI/EditorPane.ui" line="492"/>
@@ -2366,18 +2172,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>#default</source>
-        <translation type="obsolete">По умолчанию</translation>
-    </message>
-    <message>
         <location filename="../GUI/UI/EditorPane.ui" line="517"/>
         <source>#ok</source>
-        <translation>OK</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/UI/EditorPane.ui" line="530"/>
         <source>#cancel</source>
-        <translation>Отмена</translation>
+        <translation type="unfinished">Bekor</translation>
     </message>
 </context>
 <context>
@@ -2385,26 +2187,22 @@
     <message>
         <location filename="../GUI/UI/HardwareWindow.ui" line="110"/>
         <source>#detect</source>
-        <translation>Поиск оборудования</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/UI/HardwareWindow.ui" line="117"/>
         <source>#add_slot</source>
-        <translation>Добавить устройство</translation>
-    </message>
-    <message>
-        <source>#use_quick_device_detect</source>
-        <translation type="vanished">Использовать быстрый автопоиск</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/UI/HardwareWindow.ui" line="299"/>
         <source>#ok</source>
-        <translation>ОK</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/UI/HardwareWindow.ui" line="312"/>
         <source>#cancel</source>
-        <translation>Отмена</translation>
+        <translation type="unfinished">Bekor</translation>
     </message>
 </context>
 </TS>

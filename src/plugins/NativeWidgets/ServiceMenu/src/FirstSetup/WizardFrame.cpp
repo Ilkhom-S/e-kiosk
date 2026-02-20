@@ -18,7 +18,7 @@
 #include "WizardContext.h"
 
 namespace CWizardFrame {
-char *ContextProperty = "cyberContext";
+const char *ContextProperty = "cyberContext";
 } // namespace CWizardFrame
 
 //----------------------------------------------------------------------------
@@ -27,13 +27,23 @@ WizardFrame::WizardFrame(ServiceMenuBackend *aBackend, QWidget *aParent)
     setupUi(this);
     wPage->setLayout(new QGridLayout);
 
-    m_SignalMapper.connect(btnBack, SIGNAL(clicked()), SLOT(map()));
-    m_SignalMapper.connect(btnForward, SIGNAL(clicked()), SLOT(map()));
+    // Используем lambda-соединения вместо устаревшего QSignalMapper
+    connect(btnBack, &QPushButton::clicked, this, [this]() {
+        QString context = btnBack->property(CWizardFrame::ContextProperty).toString();
+        if (!context.isEmpty()) {
+            onControlEvent(context);
+        }
+    });
 
-    connect(this, SIGNAL(changePage(const QString &)), this, SLOT(onChangePage(const QString &)));
-    connect(
-        &m_SignalMapper, SIGNAL(mapped(const QString &)), SLOT(onControlEvent(const QString &)));
-    connect(btnExit, SIGNAL(clicked()), SLOT(onExit()));
+    connect(btnForward, &QPushButton::clicked, this, [this]() {
+        QString context = btnForward->property(CWizardFrame::ContextProperty).toString();
+        if (!context.isEmpty()) {
+            onControlEvent(context);
+        }
+    });
+
+    connect(this, &WizardFrame::changePage, this, &WizardFrame::onChangePage);
+    connect(btnExit, &QPushButton::clicked, this, &WizardFrame::onExit);
 
     m_Backend->toLog("Welcome to the First Setup Wizard!");
 }
@@ -57,7 +67,7 @@ void WizardFrame::shutdown() {
 
 //----------------------------------------------------------------------------
 void WizardFrame::setStatus(const QString &aStatus) {
-    lbStatus->setText(aStatus);
+    // lbStatus->setText(aStatus);
 }
 
 //----------------------------------------------------------------------------
@@ -115,22 +125,22 @@ void WizardFrame::hidePage(const QString &aContext, WizardPageBase *aPage) {
             case ForwardButton:
                 control.enabled = btnForward->isEnabled();
                 break;
+
+            case ExitButton:
+                break;
             }
         }
     }
 
     btnBack->hide();
     btnForward->hide();
-
-    m_SignalMapper.removeMappings(btnBack);
-    m_SignalMapper.removeMappings(btnForward);
 }
 
 //----------------------------------------------------------------------------
 void WizardFrame::setupDecoration(const QString &aStage,
                                   const QString &aStageName,
                                   const QString &aStageHowto) {
-    lbStage->setText(aStage);
+    // lbStage->setText(aStage);
     lbStageName->setText(aStageName);
     lbStageHowto->setText(aStageHowto);
 
@@ -155,7 +165,6 @@ void WizardFrame::setupControl(Control aControl,
         btnBack->setEnabled(aEnabled);
         btnBack->setText(aTitle);
         btnBack->setProperty(CWizardFrame::ContextProperty, aContext);
-        m_SignalMapper.setMapping(btnBack, aContext);
         break;
 
     case ForwardButton:
@@ -163,7 +172,6 @@ void WizardFrame::setupControl(Control aControl,
         btnForward->setEnabled(aEnabled);
         btnForward->setText(aTitle);
         btnForward->setProperty(CWizardFrame::ContextProperty, aContext);
-        m_SignalMapper.setMapping(btnForward, aContext);
         break;
 
     case ExitButton:

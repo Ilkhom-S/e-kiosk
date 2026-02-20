@@ -1,3 +1,4 @@
+<!DOCTYPE RCC>
 <RCC>
     <qresource prefix="/">
         <file>Scenario/autoencashment_scenario.js</file>
@@ -6,19 +7,14 @@
         <file>Images/button_close.png</file>
         <file>Images/down_arrow.png</file>
         <file>Images/left_arrow.png</file>
-        <file>Images/logo.png</file>
-        <file>Images/logo_big.png</file>
-        <file>Images/logo_small.png</file>
         <file>Images/next_b.png</file>
         <file>Images/next_w.png</file>
         <file>Images/prev_b.png</file>
         <file>Images/prev_w.png</file>
         <file>Images/right_arrow.png</file>
         <file>Images/up_arrow.png</file>
-        
         <file>Images/MessageBox/critical.svg</file>
         <file>Images/MessageBox/info.svg</file>
-        
         <file>Images/MessageBox/question.svg</file>
         <file>Images/MessageBox/wait.gif</file>
         <file>Images/MessageBox/warning.svg</file>
@@ -33,5 +29,10 @@
         <file>GraphicsItems/autoencashment.ini</file>
         <file>GraphicsItems/keyboard.ini</file>
         <file>Images/rutoken_s_01.png</file>
+        <file>Images/humo-logo-light.svg</file>
+        <file>Images/humo_logo_light_symbol.svg</file>
+        <file>Images/humo-logo.svg</file>
+        <file>Images/humo_logo_midnight.svg</file>
+        <file>Images/humo_logo_symbol.svg</file>
     </qresource>
 </RCC>

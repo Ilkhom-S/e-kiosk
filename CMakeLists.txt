@@ -31,7 +31,7 @@ endif()
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
     Core Widgets Gui Network WebSockets SerialPort Sql Test
-    Quick Concurrent Xml LinguistTools QuickWidgets Qml PrintSupport
+    Quick Concurrent Xml LinguistTools QuickWidgets Qml PrintSupport Svg
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)

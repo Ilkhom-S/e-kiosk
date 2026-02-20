@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <QtCore/QSignalMapper>
 #include <QtWidgets/QWidget>
 
 #include "WizardPage.h"
@@ -74,7 +73,6 @@ private:
     typedef QMap<QString, CacheItem> TPageMap;
 
     TPageMap m_Pages;
-    QSignalMapper m_SignalMapper;
 
     QString m_CurrentContext;
     WizardPageBase *m_CurrentPage;

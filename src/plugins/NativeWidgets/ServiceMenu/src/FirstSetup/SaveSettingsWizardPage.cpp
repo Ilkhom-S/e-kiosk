@@ -12,9 +12,6 @@
 SaveSettingsWizardPage::SaveSettingsWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
     : WizardPageBase(aBackend, aParent) {
     setupUi(this);
-
-    connect(btnRepeat, SIGNAL(clicked()), SLOT(onSave()));
-    connect(btnFinish, SIGNAL(clicked()), SLOT(onFinish()));
 }
 
 //------------------------------------------------------------------------
@@ -29,9 +26,8 @@ bool SaveSettingsWizardPage::shutdown() {
 
 //------------------------------------------------------------------------
 bool SaveSettingsWizardPage::activate() {
-    swPages->setCurrentWidget(wProgressPage);
-
-    QTimer::singleShot(0, this, SLOT(onSave()));
+    pbProgress->setRange(0, 0); // Indeterminate progress
+    onSave();
 
     return true;
 }
@@ -52,7 +48,11 @@ void SaveSettingsWizardPage::onSave() {
     }
 
     lbStatus->setText(tr("#saved_successfully"));
-    swPages->setCurrentWidget(wFinishPage);
+    pbProgress->setRange(0, 100);
+    pbProgress->setValue(100);
+
+    // Завершаем сценарий после успешного сохранения
+    QTimer::singleShot(2000, this, SLOT(onFinish()));
 }
 
 //----------------------------------------------------------------------------
@@ -68,9 +68,9 @@ void SaveSettingsWizardPage::onFinish() {
 
 //----------------------------------------------------------------------------
 void SaveSettingsWizardPage::showError(const QString &aContext, const QString &aError) {
-    swPages->setCurrentWidget(wRepeatPage);
-
     lbStatus->setText(aContext + "\n" + aError);
+    pbProgress->setRange(0, 100);
+    pbProgress->setValue(0);
 }
 
 //----------------------------------------------------------------------------

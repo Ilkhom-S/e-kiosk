@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <QtWidgets/QGraphicsProxyWidget>
-
 // Plugin SDK
 #include <SDK/GUI/IGraphicsItem.h>
 #include <SDK/Plugins/IPlugin.h>
@@ -77,7 +75,6 @@ private:
     SDK::Plugin::IEnvironment *m_Environment;
     QVariantMap m_Parameters;
 
-    QGraphicsProxyWidget *m_MainWidget;
     WizardFrame *m_WizardFrame{};
     QSharedPointer<ServiceMenuBackend> m_Backend;
 };

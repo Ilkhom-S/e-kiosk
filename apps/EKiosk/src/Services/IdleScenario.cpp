@@ -159,7 +159,7 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
         // DEBUG ONLY: Backdoor password для тестирования
         if (sequence == "5555") {
             QVariantMap parameters;
-            parameters["name"] = "service_menu";
+            parameters["name"] = "first_setup";
             EventService::instance(m_Application)
                 ->sendEvent(PPSDK::EEventType::StartScenario, parameters);
             return;

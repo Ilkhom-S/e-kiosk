@@ -6,169 +6,136 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>518</height>
+    <width>1280</width>
+    <height>1024</height>
    </rect>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget
-{
-	background-color: white;
-}
+   <string notr="true">
+                QWidget#WizardFrame { background-color: #0A0A0B; }
+                QWidget#wPage, QWidget#wButtonBar { background-color: #1C1C1E; border-radius: 45px;
+                }
 
-QFrame
-{
-	border: 0px;
-}
+                QLabel#lbStageName {
+                color: #FFFFFF;
+                font-family: &quot;Segoe UI&quot;;
+                font-size: 42px;
+                font-weight: 900;
+                text-transform: uppercase;
+                }
+                QLabel#lbStageHowto {
+                color: #8E8E93;
+                font-family: &quot;Segoe UI&quot;;
+                font-size: 22px;
+                font-weight: 600;
+                }
 
-QPushButton
-{
-	border: 1px solid gray;
-	border-radius: 5px;
-	padding: 8px;
-	color: white;
-	background-color: rgba(80, 107, 176);
-}
+                QPushButton {
+                background-color: #FA5300;
+                color: #FFFFFF;
+                border-radius: 25px;
+                font-size: 28px;
+                font-weight: 700;
+                padding: 20px;
+                min-width: 200px;
+                }
 
-QPushButton:disabled
-{
-	color: gray;
-	background-color: lightgray;
-}
+                /* Back Button */
+                QPushButton#btnBack {
+                background-color: transparent;
+                border: 3px solid #FA5300;
+                color: #FA5300;
+                }
+                QPushButton#btnBack:pressed {
+                background-color: #FF7A3D; /* Orange fill on press */
+                color: #FFFFFF; /* Switch text to white */
+                }
 
-QPushButton:pressed 
-{
-	background-color: rgba(98, 141, 191);
-}
+                /* Forward Button */
+                QPushButton#btnForward {
+                background-color: #FA5300;
+                color: #FFFFFF;
+                }
+                QPushButton#btnForward:pressed {
+                background-color: #FF7A3D; /* Darker orange on press */
+                }
 
-QPushButton#btnExit 
-{
-	color: black;
-	padding: 0px;
-	border: none; 
-	background-color: none;
-	width: 70;
-}
-
-QLabel#lbStageName, QLabel#lbStage
-{
-	font: 75 12pt &quot;Trebuchet MS&quot;;
-	padding: 0px;
-}
-
-QLineEdit 
-{
-	padding: 8;
-	border: 2px solid rgba(160, 175, 211);
-	border-radius: 10px;
-}
-
-QLineEdit:disabled {
-	color: #808080;
-	background-color: #d3d3d3;
-	border: 2px solid #a6a6a6;
-}
-
-QLabel:disabled {
-	color: #808080;
-}
-
-</string>
+                /* Exit Button */
+                QPushButton#btnExit {
+                background-color: #FF3B30; /* Industrial Critical Red */
+                color: #FFFFFF;
+                border-radius: 40px; /* Perfect Circle */
+                font-size: 42px;
+                font-weight: 900;
+                border: none;
+                }
+                QPushButton#btnExit:pressed {
+                background-color: #8B0000;
+                }
+            </string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="mainLayout">
    <property name="spacing">
-    <number>5</number>
+    <number>30</number>
    </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>5</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>5</number>
+   <property name="margin" stdset="0">
+    <number>50</number>
    </property>
    <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <property name="rightMargin">
-      <number>0</number>
+    <layout class="QHBoxLayout" name="header">
+     <property name="spacing">
+      <number>20</number>
      </property>
-     <item row="0" column="0" rowspan="2">
-      <widget class="QLabel" name="lbStage">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+     <item>
+      <layout class="QVBoxLayout" name="titleLayout">
+       <item>
+        <widget class="QLabel" name="lbStageName">
+         <property name="text">
+          <string>#title_system_setup</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lbStageHowto">
+         <property name="text">
+          <string>#howto_follow_sequence</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="headerSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnExit">
+       <property name="minimumSize">
+        <size>
+         <width>240</width>
+         <height>80</height>
+        </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>60</width>
-         <height>16777215</height>
+         <width>80</width>
+         <height>80</height>
         </size>
        </property>
-       <property name="text">
-        <string notr="true">Stage</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignHCenter|Qt::AlignTop</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="lbStageName">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
        </property>
        <property name="text">
-        <string notr="true">Stage name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="lbStageHowto">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string notr="true">Stage howto</string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="btnExit">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-        </font>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::RightToLeft</enum>
-       </property>
-       <property name="text">
-        <string>#exit</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../../GUI/Resources/Resources.qrc">
-         <normaloff>:/Images/button_close.png</normaloff>:/Images/button_close.png</iconset>
+        <string>X</string>
        </property>
       </widget>
      </item>
@@ -177,7 +144,7 @@ QLabel:disabled {
    <item>
     <widget class="QWidget" name="wPage" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -186,57 +153,29 @@ QLabel:disabled {
    </item>
    <item>
     <widget class="QWidget" name="wButtonBar" native="true">
-     <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-	border: 1px solid gray;
-	border-radius: 5px;
-	padding: 8px;
-	color: white;
-	background-color: rgba(80, 107, 176);
-	width: 150px;
-}
-
-QPushButton:disabled
-{
-	color: gray;
-	background-color: lightgray;
-}
-
-QPushButton:pressed 
-{
-	background-color: rgba(98, 141, 191);
-}</string>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>120</height>
+      </size>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <property name="leftMargin">
-       <number>60</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>60</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
+     <layout class="QHBoxLayout">
       <item>
        <widget class="QPushButton" name="btnBack">
         <property name="text">
-         <string notr="true">Back</string>
+         <string>#title_back</string>
         </property>
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_2">
+       <spacer name="hsp2">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>40</width>
-          <height>20</height>
+          <width>0</width>
+          <height>0</height>
          </size>
         </property>
        </spacer>
@@ -244,33 +183,15 @@ QPushButton:pressed
       <item>
        <widget class="QPushButton" name="btnForward">
         <property name="text">
-         <string notr="true">Forward</string>
+         <string>#title_continue</string>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QLabel" name="lbStatus">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string notr="true">(C)</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../GUI/Resources/Resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

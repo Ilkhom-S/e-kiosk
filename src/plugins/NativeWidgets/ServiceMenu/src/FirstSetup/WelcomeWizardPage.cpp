@@ -9,6 +9,9 @@ WelcomeWizardPage::WelcomeWizardPage(ServiceMenuBackend *aBackend, QWidget *aPar
     : WizardPageBase(aBackend, aParent) {
     setupUi(this);
 
+    // Загружаем SVG логотип программно, т.к. Qt Designer не корректно обрабатывает SVG в <pixmap>
+    lbLogo->setPixmap(QPixmap(":/Images/humo_logo_midnight.svg"));
+
     connect(btnSetup, SIGNAL(clicked()), SLOT(onRunSetup()));
 }
 

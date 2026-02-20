@@ -21,7 +21,7 @@ set(VERSION_RC ${EK_INCLUDES_DIR}/Common/CoreVersion.rc)
 ek_add_plugin(service_menu
     FOLDER "plugins/NativeWidgets"
     SOURCES ${SERVICEMENU_SOURCES} ${SERVICEMENU_UI_FILES} ${SERVICEMENU_RESOURCES}
-    QT_MODULES Core Gui Widgets Network
+    QT_MODULES Core Gui Widgets Network Svg
     DEPENDS
     BasicApplication
     Connection

@@ -12,7 +12,7 @@ class MessageWindow : public QDialog {
     Q_OBJECT
 
 public:
-    MessageWindow(QWidget *parent = 0);
+    MessageWindow(QWidget *parent = nullptr);
     ~MessageWindow();
 
 public:
