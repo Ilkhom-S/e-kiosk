@@ -60,7 +60,10 @@ HardwareWindow::HardwareWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
         SLOT(onDeviceStatusChanged(
             const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)));
 
-    connect(&m_ApplyingWatcher, SIGNAL(finished()), this, SIGNAL(applyingFinished()));
+    connect(&m_ApplyingWatcher,
+            &QFutureWatcher<void>::finished,
+            this,
+            &HardwareWindow::applyingFinished);
 
     ui.lwTypes->clear();
 
