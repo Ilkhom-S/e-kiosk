@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <QtCore/QSignalMapper>
-
 #include "ui_encashmentHistoryWindow.h"
 
 class ServiceMenuBackend;
@@ -26,7 +24,6 @@ private slots:
 protected:
     ServiceMenuBackend *m_Backend;
     QList<QWidget *> m_Widgets;
-    QSignalMapper *m_SignalMapper{};
 };
 
 //------------------------------------------------------------------------

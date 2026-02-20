@@ -2,7 +2,6 @@
 
 #include <QtCore/QList>
 #include <QtCore/QMap>
-#include <QtCore/QSignalMapper>
 #include <QtCore/QString>
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
@@ -48,12 +47,10 @@ signals:
     void onDisconnected();
 
 private slots:
-    void onSocketDisconnected(QObject *aObject);
+    void onSocketDisconnected();
     void onSocketReadyRead(QObject *aObject);
 
 private:
-    QSignalMapper m_DisconnectSignalMapper{};
-    QSignalMapper m_ReadyReadSignalMapper{};
     TLocalSocketMap m_Sockets{};
     TSocketBufferMap m_Buffers{};
     QString m_QueueName{};

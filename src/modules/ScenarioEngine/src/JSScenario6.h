@@ -3,7 +3,6 @@
 #pragma once
 
 #include <QtCore/QSharedPointer>
-#include <QtCore/QSignalMapper>
 #include <QtCore/QTimer>
 #include <QtQml/QJSEngine>
 #include <QtQml/QJSValue>
@@ -102,18 +101,16 @@ private:
     QSharedPointer<QJSEngine> m_ScriptEngine;     /// Скриптовый движок для обработчиков.
     QSharedPointer<QStateMachine> m_StateMachine; /// Конечный автомат.
     TStateList m_States;                          /// Набор состояний.
-    QSignalMapper m_EnterSignalMapper;
-    QSignalMapper m_ExitSignalMapper;
-    QString m_CurrentState;                    /// Имя текущего состояния.
-    QString m_InitialState;                    /// Начальное состояние.
-    QVariantMap m_SignalArguments;             /// Параметры сигналов.
-    QVariantMap m_Context;                     /// Контекст.
-    QString m_ScriptPath;                      /// Путь к файлу скрипты.
-    QJSValue m_TimeoutHandler;                 /// Обработчик таймаута.
-    QMultiMap<QString, QString> m_Transitions; /// Список возможных переходов для состояния.
-    bool m_IsPaused;                           /// Флаг для пропуска переходов в сценариях "на паузе"
-    int m_DefaultTimeout;                      /// Таймаут по умолчанию.
-    QTimer m_TimeoutTimer;                     /// Таймер для таймаутов состояний.
+    QString m_CurrentState;                       /// Имя текущего состояния.
+    QString m_InitialState;                       /// Начальное состояние.
+    QVariantMap m_SignalArguments;                /// Параметры сигналов.
+    QVariantMap m_Context;                        /// Контекст.
+    QString m_ScriptPath;                         /// Путь к файлу скрипты.
+    QJSValue m_TimeoutHandler;                    /// Обработчик таймаута.
+    QMultiMap<QString, QString> m_Transitions;    /// Список возможных переходов для состояния.
+    bool m_IsPaused;       /// Флаг для пропуска переходов в сценариях "на паузе"
+    int m_DefaultTimeout;  /// Таймаут по умолчанию.
+    QTimer m_TimeoutTimer; /// Таймер для таймаутов состояний.
 
     QList<Scenario::SExternalStateHook> m_Hooks;
 };

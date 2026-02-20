@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <QtCore/QSignalMapper>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QtStateMachine/QStateMachine>
 #else
@@ -139,20 +138,18 @@ private:
 #endif
     QSharedPointer<QStateMachine> m_StateMachine; /// Конечный автомат.
     TStateList m_States;                          /// Набор состояний.
-    QSignalMapper m_EnterSignalMapper;
-    QSignalMapper m_ExitSignalMapper;
-    QString m_CurrentState;        /// Имя текущего состояния.
-    QString m_InitialState;        /// Начальное состояние.
-    QVariantMap m_SignalArguments; /// Параметры сигналов.
-    QVariantMap m_Context;         /// Контекст.
-    QString m_ScriptPath;          /// Путь к файлу скрипты.
+    QString m_CurrentState;                       /// Имя текущего состояния.
+    QString m_InitialState;                       /// Начальное состояние.
+    QVariantMap m_SignalArguments;                /// Параметры сигналов.
+    QVariantMap m_Context;                        /// Контекст.
+    QString m_ScriptPath;                         /// Путь к файлу скрипты.
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QJSValue m_TimeoutHandler; /// Обработчик таймаута.
 #else
     QScriptValue m_TimeoutHandler; /// Обработчик таймаута.
 #endif
     QMultiMap<QString, QString> m_Transitions; /// Список возможных переходов для состояния.
-    bool m_IsPaused;                           /// Флаг для пропуска переходов в сценариях "на паузе"
+    bool m_IsPaused; /// Флаг для пропуска переходов в сценариях "на паузе"
 
     QList<Scenario::SExternalStateHook> m_Hooks;
 };

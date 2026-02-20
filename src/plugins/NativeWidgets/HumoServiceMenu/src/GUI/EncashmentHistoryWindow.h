@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <QtCore/QSignalMapper>
-
 #include "ui_encashmentHistoryWindow.h"
 
 class HumoServiceBackend;
@@ -26,7 +24,6 @@ private slots:
 protected:
     HumoServiceBackend *m_Backend;
     QList<QWidget *> m_Widgets;
-    QSignalMapper *m_SignalMapper{};
 };
 
 //------------------------------------------------------------------------

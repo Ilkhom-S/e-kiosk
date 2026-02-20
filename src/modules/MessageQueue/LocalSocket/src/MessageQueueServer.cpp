@@ -19,17 +19,6 @@ MessageQueueServer::~MessageQueueServer() = default;
 
 //----------------------------------------------------------------------------
 bool MessageQueueServer::init() {
-    if (!connect(&m_DisconnectSignalMapper,
-                 SIGNAL(mapped(QObject *)),
-                 this,
-                 SLOT(onSocketDisconnected(QObject *))) ||
-        !connect(&m_ReadyReadSignalMapper,
-                 SIGNAL(mapped(QObject *)),
-                 this,
-                 SLOT(onSocketReadyRead(QObject *)))) {
-        return false;
-    }
-
     if (!isListening()) {
         return listen(m_QueueName);
     }
@@ -74,20 +63,24 @@ void MessageQueueServer::incomingConnection(quintptr aSocketDescriptor) {
     QLocalSocket *newSocket = new QLocalSocket(this);
     newSocket->setSocketDescriptor(aSocketDescriptor);
 
-    m_DisconnectSignalMapper.setMapping(newSocket, newSocket);
-    connect(newSocket, SIGNAL(disconnected()), &m_DisconnectSignalMapper, SLOT(map()));
-
-    m_ReadyReadSignalMapper.setMapping(newSocket, newSocket);
-    connect(newSocket, SIGNAL(readyRead()), &m_ReadyReadSignalMapper, SLOT(map()));
-
     m_Sockets[newSocket] = aSocketDescriptor;
+
+    // Используем lambda-соединения вместо устаревшего QSignalMapper
+    connect(newSocket, &QLocalSocket::disconnected, this, [this, newSocket]() {
+        onSocketDisconnected();
+    });
+
+    connect(newSocket, &QLocalSocket::readyRead, this, [this, newSocket]() {
+        onSocketReadyRead(newSocket);
+    });
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketDisconnected(const QObject *aObject) {
+void MessageQueueServer::onSocketDisconnected() {
     emit onDisconnected();
 
-    QLocalSocket *socket = dynamic_cast<QLocalSocket *>(aObject);
+    // Find the socket that was disconnected
+    QLocalSocket *socket = qobject_cast<QLocalSocket *>(sender());
 
     if (socket) {
         LOG(m_Log,
@@ -96,9 +89,8 @@ void MessageQueueServer::onSocketDisconnected(const QObject *aObject) {
 
         m_Buffers.remove(m_Sockets[socket]);
         m_Sockets.remove(socket);
+        socket->deleteLater();
     }
-
-    aObject->deleteLater();
 }
 
 //----------------------------------------------------------------------------

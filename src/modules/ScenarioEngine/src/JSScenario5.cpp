@@ -86,12 +86,7 @@ JSScenario::JSScenario(const QString &aName,
                        const QString &aPath,
                        const QString &aBasePath,
                        ILog *aLog)
-    : Scenario(aName, aLog), m_BasePath(aBasePath), m_Path(aPath), m_IsPaused(true) {
-    connect(
-        &m_EnterSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onEnterState(const QString &)));
-    connect(
-        &m_ExitSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onExitState(const QString &)));
-}
+    : Scenario(aName, aLog), m_BasePath(aBasePath), m_Path(aPath), m_IsPaused(true) {}
 
 //---------------------------------------------------------------------------
 JSScenario::~JSScenario() {}
@@ -285,11 +280,14 @@ void JSScenario::addState(const QString &aStateName, const QVariantMap &aParamet
         state.qstate = new QState();
     }
 
-    m_EnterSignalMapper.connect(state.qstate, SIGNAL(entered()), SLOT(map()));
-    m_EnterSignalMapper.setMapping(state.qstate, aStateName);
+    // Используем lambda-соединения вместо устаревшего QSignalMapper
+    connect(state.qstate, &QAbstractState::entered, this, [this, aStateName]() {
+        onEnterState(aStateName);
+    });
 
-    m_ExitSignalMapper.connect(state.qstate, SIGNAL(exited()), SLOT(map()));
-    m_ExitSignalMapper.setMapping(state.qstate, aStateName);
+    connect(state.qstate, &QAbstractState::exited, this, [this, aStateName]() {
+        onExitState(aStateName);
+    });
 
     m_States[aStateName] = state;
     m_StateMachine->addState(state.qstate);

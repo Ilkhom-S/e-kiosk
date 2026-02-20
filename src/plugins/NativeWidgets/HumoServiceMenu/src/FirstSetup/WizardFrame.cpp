@@ -26,13 +26,23 @@ WizardFrame::WizardFrame(HumoServiceBackend *aBackend, QWidget *aParent)
     setupUi(this);
     wPage->setLayout(new QGridLayout);
 
-    m_SignalMapper.connect(btnBack, SIGNAL(clicked()), SLOT(map()));
-    m_SignalMapper.connect(btnForward, SIGNAL(clicked()), SLOT(map()));
+    // Используем lambda-соединения вместо устаревшего QSignalMapper
+    connect(btnBack, &QPushButton::clicked, this, [this]() {
+        QString context = btnBack->property(CWizardFrame::ContextProperty).toString();
+        if (!context.isEmpty()) {
+            onControlEvent(context);
+        }
+    });
 
-    connect(this, SIGNAL(changePage(const QString &)), this, SLOT(onChangePage(const QString &)));
-    connect(
-        &m_SignalMapper, SIGNAL(mapped(const QString &)), SLOT(onControlEvent(const QString &)));
-    connect(btnExit, SIGNAL(clicked()), SLOT(onExit()));
+    connect(btnForward, &QPushButton::clicked, this, [this]() {
+        QString context = btnForward->property(CWizardFrame::ContextProperty).toString();
+        if (!context.isEmpty()) {
+            onControlEvent(context);
+        }
+    });
+
+    connect(this, &WizardFrame::changePage, this, &WizardFrame::onChangePage);
+    connect(btnExit, &QPushButton::clicked, this, &WizardFrame::onExit);
 
     m_Backend->toLog("Welcome to the First Setup Wizard!");
 }
@@ -138,10 +148,7 @@ void WizardFrame::setupControl(Control aControl,
         button->setEnabled(aEnabled);
         button->setText(aTitle);
         button->setVisible(aEnabled);
-
-        if (aCanCache) {
-            m_SignalMapper.setMapping(button, aContext);
-        }
+        button->setProperty(CWizardFrame::ContextProperty, aContext);
     }
 }
 

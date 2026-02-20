@@ -12,11 +12,8 @@
 #include "ServiceTags.h"
 
 EncashmentHistoryWindow::EncashmentHistoryWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), m_Backend(aBackend), m_SignalMapper(new QSignalMapper(this)) {
+    : QWidget(aParent), m_Backend(aBackend) {
     setupUi(this);
-
-    
-    connect(m_SignalMapper, SIGNAL(mapped(int)), this, SLOT(printEncashment(int)));
 }
 
 //------------------------------------------------------------------------
@@ -48,8 +45,8 @@ void EncashmentHistoryWindow::updateHistory() {
         button->setEnabled(
             paymentManager->canPrint(SDK::PaymentProcessor::CReceiptType::Encashment));
 
-        connect(button, SIGNAL(clicked()), m_SignalMapper, SLOT(map()));
-        m_SignalMapper->setMapping(button, i);
+        // Используем lambda-соединения вместо устаревшего QSignalMapper
+        connect(button, &QPushButton::clicked, this, [this, i]() { printEncashment(i); });
 
         gridHistoryLayout->addWidget(button, i % 5, i / 5);
         m_Widgets << button;

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <QtCore/QSignalMapper>
 #include <QtWidgets/QWidget>
 
 #include "WizardPage.h"
@@ -61,7 +60,6 @@ private:
     };
 
     QMap<QString, CacheItem> m_Pages;
-    QSignalMapper m_SignalMapper;
 };
 
 //----------------------------------------------------------------------------
