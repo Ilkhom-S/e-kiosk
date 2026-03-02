@@ -350,7 +350,7 @@
         <translation>Press the button to print a copy of the cash collection receipt</translation>
     </message>
     <message>
-        <location filename="../GUI/EncashmentHistoryWindow.cpp" line="43"/>
+        <location filename="../GUI/EncashmentHistoryWindow.cpp" line="40"/>
         <source>#total</source>
         <translation>Total</translation>
     </message>
@@ -1999,12 +1999,12 @@
 <context>
     <name>WizardFrame</name>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="271"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="279"/>
         <source>#hardware_setup_stage</source>
         <translation>Hardware setup</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="271"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="279"/>
         <source>#hardware_setup_howto</source>
         <translation>On this page you can add peripherals. If any peripheral is not detected
                 automatically (not every device provides certain identification) and you are sure
@@ -2013,26 +2013,26 @@
                 button.</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="273"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="281"/>
         <source>#to_start_page</source>
         <translation>To welcome screen</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="276"/>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="296"/>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="316"/>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="335"/>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="352"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="284"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="304"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="324"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="343"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="360"/>
         <source>#to_network_setup</source>
         <translation>Network setup</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="285"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="293"/>
         <source>#network_setup_stage</source>
         <translation>Network connection setup</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="285"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="293"/>
         <source>#network_setup_howto</source>
         <translation>The terminal requires an internet connection to connect to payment
                 processing servers. It can be a permanent connection over a local network or a
@@ -2042,17 +2042,17 @@
                 operating system (e.g. Windows autodial), choose local network connection.</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="287"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="295"/>
         <source>#to_hardware_setup</source>
         <translation>Hardware setup</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="294"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="302"/>
         <source>#dialup_setup_stage</source>
         <translation>Modem connection setup</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="294"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="302"/>
         <source>#dialup_setup_howto</source>
         <translation>To set up a dialup connection:
                 a) Choose an existing connection (the modem driver initialization string should be
@@ -2064,37 +2064,37 @@
                 test is successfully completed.</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="301"/>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="321"/>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="348"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="309"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="329"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="356"/>
         <source>#to_token_setup</source>
         <translation>Token setup</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="305"/>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="325"/>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="337"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="313"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="333"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="345"/>
         <source>#to_keys_setup</source>
         <translation>Generate keys</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="314"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="322"/>
         <source>#unmanaged_setup_stage</source>
         <translation>Local network connection setup</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="314"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="322"/>
         <source>#unmanaged_setup_howto</source>
         <translation>Local network connection means that the terminal is always connected to the
                 internet (or the connection is maintened by some other thirdparty program).</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="333"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="341"/>
         <source>#token_setup_stage</source>
         <translation>Initialize token</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="333"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="341"/>
         <source>#token_setup_howto</source>
         <translation>Terminal Client uses all device tokens for storing keys. To start working
                 you should format the token. If you have already used this token before you
@@ -2104,12 +2104,12 @@
                 information will be deleted during the formatting.</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="344"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="352"/>
         <source>#keys_setup_stage</source>
         <translation>Creating and registering keys</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="344"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="352"/>
         <source>#keys_setup_howto</source>
         <translation>So that the processing servers can authorize the terminal it must aquire
                 unique keys that must be confirmed on the dealer&apos;s office web site. Also these
@@ -2119,48 +2119,48 @@
                 After the keys are generated, proceed to the last stage of the set up process.</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="358"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="366"/>
         <source>#to_save_settings</source>
         <translation>Save settings</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="367"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="375"/>
         <source>#save_settings_stage</source>
         <translation>Saving settings and finishing setup</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="367"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="375"/>
         <source>#save_settings_howto</source>
         <translation>Terminal configuration will be finalized once your settings are saved. It
                 will be performed automatically, just wait for a while.</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/WizardFrame.cpp" line="377"/>
+        <location filename="../FirstSetup/WizardFrame.cpp" line="385"/>
         <source>#question_exit</source>
         <translation>Stop setup process and exit?</translation>
     </message>
     <message>
-        <location filename="../FirstSetup/UI/WizardFrame.ui" line="48"/>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="94"/>
         <source>#title_system_setup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FirstSetup/UI/WizardFrame.ui" line="55"/>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="101"/>
         <source>#howto_follow_sequence</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FirstSetup/UI/WizardFrame.ui" line="108"/>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="138"/>
         <source>X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FirstSetup/UI/WizardFrame.ui" line="136"/>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="166"/>
         <source>#title_back</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FirstSetup/UI/WizardFrame.ui" line="156"/>
+        <location filename="../FirstSetup/UI/WizardFrame.ui" line="186"/>
         <source>#title_continue</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2214,22 +2214,22 @@
 <context>
     <name>frmHardwareWindow</name>
     <message>
-        <location filename="../GUI/UI/HardwareWindow.ui" line="110"/>
+        <location filename="../GUI/UI/HardwareWindow.ui" line="87"/>
         <source>#detect</source>
         <translation>Detect hardware</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/HardwareWindow.ui" line="117"/>
+        <location filename="../GUI/UI/HardwareWindow.ui" line="94"/>
         <source>#add_slot</source>
         <translation>Add hardware</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/HardwareWindow.ui" line="299"/>
+        <location filename="../GUI/UI/HardwareWindow.ui" line="165"/>
         <source>#ok</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../GUI/UI/HardwareWindow.ui" line="312"/>
+        <location filename="../GUI/UI/HardwareWindow.ui" line="172"/>
         <source>#cancel</source>
         <translation>Cancel</translation>
     </message>

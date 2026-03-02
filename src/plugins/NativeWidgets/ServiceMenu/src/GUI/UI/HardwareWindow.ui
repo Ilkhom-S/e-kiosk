@@ -11,9 +11,8 @@
 
                 /* Secondary action buttons (Detect, Add, Ok, Cancel) */
                 QPushButton {
-                background-color: #1C1C1E; /* Neutral dark background */
-                color: #FFFFFF;
-                border: 2px solid #FA5300; /* Orange border for consistency */
+                background-color: #D4D4D4; /* Neutral grey background */
+                color: #172B4D; /* Deep navy text for outdoor readability */
                 border-radius: 20px;
                 font-family: "Segoe UI";
                 font-size: 24px;
@@ -23,16 +22,17 @@
                 text-transform: uppercase;
                 }
                 QPushButton:pressed {
-                background-color: #FA5300; /* Fill orange on press */
-                color: #FFFFFF;
+                background-color: #A6A6A6; /* Darker grey on press */
+                color: #172B4D;
                 }
                 QPushButton:disabled {
-                background-color: #3A3A3C;
+                background-color: #F0F0F0;
                 color: #8E8E93;
                 }
 
                 /* Cancel button variant */
                 QPushButton#btnCancel {
+                background-color: transparent;
                 border: 2px solid #8E8E93;
                 color: #8E8E93;
                 }
@@ -41,23 +41,23 @@
                 color: #FFFFFF;
                 }
 
-                /* List styling */
+                /* List styling for touchscreen */
                 QListWidget {
                 border: none;
-                min-width: 360px;
-                color: #FFFFFF;
+                color: #172B4D;
                 font-family: "Segoe UI";
-                font-size: 22px;
-                font-weight: 600;
+                font-size: 24px;
+                font-weight: 700;
                 }
                 QListWidget::item {
-                border: none;
-                height: 40px;
-                background-color: #1C1C1E;
+                height: 60px; /* Larger touch target */
+                background-color: #D4D4D4; /* Neutral grey background */
+                border-bottom: 1px solid #A6A6A6; /* Divider line between items */
+                padding-left: 12px;
                 }
                 QListWidget::item:selected {
-                background-color: #FA5300;
-                color: #FFFFFF;
+                background-color: #FA5300; /* Orange highlight */
+                color: #FFFFFF; /* White text for contrast */
                 }
             </string>
         </property>
